@@ -145,7 +145,7 @@ This part showsn an entire MOSAIC_DIR configuration.
 #### datastore.properties:
 
 ```
-{%raw%}{%endraw%}{% include "./src/datastore.properties" %}
+{%raw%}{% include "./src/datastore.properties" %}{%endraw%}
 ```
 
 !!! note
@@ -255,7 +255,7 @@ After this steps the new layer is available in GeoServer. GeoServer will create 
 #### Generated property file:
 
 ```
-{%raw%}{%endraw%}{% include "./src/snow.properties" %}
+{%raw%}{% include "./src/snow.properties" %}{%endraw%}
 ```
 
 !!! note

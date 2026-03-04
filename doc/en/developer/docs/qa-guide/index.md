@@ -25,7 +25,7 @@ The plugin version is managed in the pluginManagement section.
 The actual plugin configuration and execution is defined as:
 
 ```xml
-{%raw%}{%endraw%}{% include "../../../../src/pom.xml" start="<!-- doc-include-pmd-plugin-start" %}
+{%raw%}{% include "../../../../src/pom.xml" start="<!-- doc-include-pmd-plugin-start" %}{%endraw%}
 ```
 
 Rules are configured in our build [build/qa/pmd-ruleset.xml](https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml):
@@ -100,7 +100,7 @@ The [Error Prone](https://errorprone.info/) checker runs a compiler plugin.
 In order to activate the Error Prone checks, use the "-Perrorprone":
 
 ```xml
-{%raw%}{%endraw%}{% include "../../../../src/pom.xml" end="</profile>" %}
+{%raw%}{% include "../../../../src/pom.xml" end="</profile>" %}{%endraw%}
 ```
 
 Any failure to comply with the "Error Prone" rules will show up as a compile error in the build output, e.g. (example taken from GeoTools):
@@ -204,7 +204,7 @@ The plugin version is managed in the pluginManagement section.
 The actual plugin configuration and execution is defined as:
 
 ```xml
-{%raw%}{%endraw%}{% include "../../../../src/pom.xml" start="<!-- doc-include-sortpom-plugin-start" %}
+{%raw%}{% include "../../../../src/pom.xml" start="<!-- doc-include-sortpom-plugin-start" %}{%endraw%}
 ```
 
 The plugin is attached to verification phase to sort **`pom.xml`** files.
@@ -240,7 +240,7 @@ The plugin version is managed in the pluginManagement section.
 The actual plugin configuration and execution is defined as:
 
 ```xml
-{%raw%}{%endraw%}{% include "../../../../src/pom.xml" start="<!-- doc-include-checkstyle-plugin-start" %}
+{%raw%}{% include "../../../../src/pom.xml" start="<!-- doc-include-checkstyle-plugin-start" %}{%endraw%}
 ```
 
 The checkstyle ruleset checks the following:

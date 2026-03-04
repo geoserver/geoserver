@@ -3,11 +3,11 @@
 ## Dynamic Map Layer
 
 ```html
-{%raw%}{%endraw%}{% include "./dynamic_map_layer/layers-dynamicmaplayer.html" %}
+{%raw%}{% include "./dynamic_map_layer/layers-dynamicmaplayer.html" %}{%endraw%}
 ```
 
 ## Dynamic Map Layer Wholeservice
 
 ```html
-{%raw%}{%endraw%}{% include "./dynamic_map_layer/layers-dynamicmaplayer-wholeservice.html" %}
+{%raw%}{% include "./dynamic_map_layer/layers-dynamicmaplayer-wholeservice.html" %}{%endraw%}
 ```

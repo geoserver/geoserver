@@ -10,7 +10,7 @@ The first step in creating our plug-in is setting up a maven project for it. The
 2.  Add a maven pom called **`pom.xml`** to the **`hello`** directory:
 
 ```xml
-{%raw%}{%endraw%}{% include "./hello/pom.xml" %}
+{%raw%}{% include "./hello/pom.xml" %}{%endraw%}
 ```
 
 1.  Create a java source directory, **`src/main/java`** under the **`hello`** directory:
@@ -28,7 +28,7 @@ A plug-in is a collection of extensions realized as spring beans. In this exampl
 1.  Create a class called **HelloWorld**:
 
 ```java
-{%raw%}{%endraw%}{% include "./hello/src/main/java/HelloWorld.java" %}
+{%raw%}{% include "./hello/src/main/java/HelloWorld.java" %}{%endraw%}
 ```
 
 The service is relatively simple. It provides a method sayHello(..) which takes a HttpServletRequest, and a HttpServletResponse. The parameter list for this function is automatically discovered by the org.geoserver.ows.Dispatcher.
@@ -36,7 +36,7 @@ The service is relatively simple. It provides a method sayHello(..) which takes 
 1.  Create an **`applicationContext.xml`** declaring the above class as a bean.
 
 ```xml
-{%raw%}{%endraw%}{% include "./hello/src/main/java/applicationContext.xml" %}
+{%raw%}{% include "./hello/src/main/java/applicationContext.xml" %}{%endraw%}
 ```
 
 At this point the hello project should look like the following:

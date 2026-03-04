@@ -207,7 +207,7 @@ The fill pattern is defined by repeating an image defined in a sprite-sheet.
 3.  You can view the names of all the icons in the sprite-sheet by looking at its json definition, at <http://localhost:8080/geoserver/styles/sprites.json>.
 
     ```json
-    {% include "../files/sprites.json" %}
+    {%raw%}{% include "../files/sprites.json" %}{%endraw%}
     ```
 
     Update the example to use **grey_diag16** for a pattern of left hatching.

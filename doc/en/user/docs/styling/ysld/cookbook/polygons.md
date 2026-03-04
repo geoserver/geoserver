@@ -31,7 +31,7 @@ This example shows a polygon filled in blue.
 [Download the "Simple polygon" YSLD](artifacts/polygon_simplepolygon.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_simplepolygon.ysld" %}
+{%raw%}{% include "./artifacts/polygon_simplepolygon.ysld" %}{%endraw%}
 ```
 
 ### Details
@@ -54,7 +54,7 @@ This example adds a 2 pixel white stroke to the [Simple polygon](polygons.md#ysl
 [Download the "Simple polygon with stroke" YSLD](artifacts/polygon_simplepolygonwithstroke.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_simplepolygonwithstroke.ysld" %}
+{%raw%}{% include "./artifacts/polygon_simplepolygonwithstroke.ysld" %}{%endraw%}
 ```
 
 ### Details
@@ -73,7 +73,7 @@ This example builds on the [Simple polygon with stroke](polygons.md#ysld_cookboo
 [Download the "Transparent polygon" YSLD](artifacts/polygon_transparentpolygon.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_transparentpolygon.ysld" %}
+{%raw%}{% include "./artifacts/polygon_transparentpolygon.ysld" %}{%endraw%}
 ```
 
 ### Details
@@ -92,7 +92,7 @@ This example fills the polygons with a tiled graphic.
 [Download the "Graphic fill" YSLD](artifacts/polygon_graphicfill.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_graphicfill.ysld" %}
+{%raw%}{% include "./artifacts/polygon_graphicfill.ysld" %}{%endraw%}
 ```
 
 ### Details
@@ -114,7 +114,7 @@ This example fills the polygons with a hatching pattern.
 [Download the "Hatching fill" YSLD](artifacts/polygon_hatchingfill.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_hatchingfill.ysld" %}
+{%raw%}{% include "./artifacts/polygon_hatchingfill.ysld" %}{%endraw%}
 ```
 
 ### Details
@@ -133,7 +133,7 @@ This example shows a text label on the polygon. In the absence of any other cust
 [Download the "Polygon with default label" YSLD](artifacts/polygon_polygonwithdefaultlabel.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_polygonwithdefaultlabel.ysld" %}
+{%raw%}{% include "./artifacts/polygon_polygonwithdefaultlabel.ysld" %}{%endraw%}
 ```
 
 ### Details
@@ -152,7 +152,7 @@ This example alters the look of the [Polygon with default label](polygons.md#ysl
 [Download the "Label halo" YSLD](artifacts/polygon_labelhalo.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_labelhalo.ysld" %}
+{%raw%}{% include "./artifacts/polygon_labelhalo.ysld" %}{%endraw%}
 ```
 
 ### Details
@@ -171,7 +171,7 @@ This example improves the label style from the [Polygon with default label](poly
 [Download the "Polygon with styled label" YSLD](artifacts/polygon_polygonwithstyledlabel.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_polygonwithstyledlabel.ysld" %}
+{%raw%}{% include "./artifacts/polygon_polygonwithstyledlabel.ysld" %}{%endraw%}
 ```
 
 ### Details
@@ -194,7 +194,7 @@ This example styles the polygons differently based on the "pop" (Population) att
 [Download the "Attribute-based polygon" YSLD](artifacts/polygon_attributebasedpolygon.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_attributebasedpolygon.ysld" %}
+{%raw%}{% include "./artifacts/polygon_attributebasedpolygon.ysld" %}{%endraw%}
 ```
 
 ### Details
@@ -239,7 +239,7 @@ This example alters the style of the polygon at different zoom levels.
 [Download the "Zoom-based polygon" YSLD](artifacts/polygon_zoombasedpolygon.ysld)
 
 ```yaml
-{%raw%}{%endraw%}{% include "./artifacts/polygon_zoombasedpolygon.ysld" %}
+{%raw%}{% include "./artifacts/polygon_zoombasedpolygon.ysld" %}{%endraw%}
 ```
 
 ### Details

@@ -352,7 +352,7 @@ This example shows the process for uploading a Shapefile (in a zip file) to an e
 1.  Setup `cite:postgis` datastore:
 
     ```json
-    {% include "./files/postgis.json" %}
+    {%raw%}{% include "./files/postgis.json" %}{%endraw%}
     ```
 
     Using curl POST:

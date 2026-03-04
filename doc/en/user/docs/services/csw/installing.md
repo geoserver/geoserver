@@ -11,8 +11,8 @@ The installation process is similar to other GeoServer extensions:
 
 1.  Download:
 
-    - {{ release }} [csw](https://build.geoserver.org/geoserver/main/ext-latest/csw)
-    - {{ version }} [csw](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-csw-plugin.zip)
+    - {{ release }} [csw](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-csw-plugin.zip)
+    - {{ version }} [csw](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-csw-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

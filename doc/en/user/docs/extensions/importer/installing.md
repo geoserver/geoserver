@@ -11,15 +11,15 @@ render_macros: true
 
     From the list of **Other** extensions download **Importer (Core)**.
 
-    - {{ release }} example: [importer](https://build.geoserver.org/geoserver/main/ext-latest/importer)
-    - {{ version }} example: [importer](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-importer-plugin.zip)
+    - {{ release }} example: [importer](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-importer-plugin.zip)
+    - {{ version }} example: [importer](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-importer-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 
     The optional importer download **Importer (BDB Backend)** is used in a clustered environment to share state importer progress between nodes.
 
-    - {{ release }} example: [importer-bdb](https://build.geoserver.org/geoserver/main/ext-latest/importer-bdb)
-    - {{ version }} example: [importer-bdb](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-importer-bdb-plugin.zip)
+    - {{ release }} example: [importer-bdb](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-importer-bdb-plugin.zip)
+    - {{ version }} example: [importer-bdb](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-importer-bdb-plugin.zip)
 
 3.  Extract the archive and copy the contents into the GeoServer **`WEB-INF/lib`** directory.
 

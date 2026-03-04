@@ -27,8 +27,8 @@ From GeoServer version 2.2.x, GDAL must be installed as an extension. To install
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download:
 
-    - {{ release }} [gdal](https://build.geoserver.org/geoserver/main/ext-latest/gdal)
-    - {{ version }} [gdal](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-gdal-plugin.zip)
+    - {{ release }} [gdal](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-gdal-plugin.zip)
+    - {{ version }} [gdal](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-gdal-plugin.zip)
 
     !!! warning
 

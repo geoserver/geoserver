@@ -18,8 +18,8 @@ The installation process is similar to other GeoServer extensions:
 
     From the list of **OGC Services** extensions download **WPS download**.
 
-    - {{ release }} example: [wps-download](https://build.geoserver.org/geoserver/main/ext-latest/wps-download)
-    - {{ version }} example: [wps-download](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-wps-download-plugin.zip)
+    - {{ release }} example: [wps-download](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wps-download-plugin.zip)
+    - {{ version }} example: [wps-download](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-wps-download-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

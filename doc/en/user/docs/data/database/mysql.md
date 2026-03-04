@@ -19,8 +19,8 @@ render_macros: true
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download:
 
-    - {{ release }} [mysql](https://build.geoserver.org/geoserver/main/ext-latest/mysql)
-    - {{ version }} [mysql](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-mysql-plugin.zip)
+    - {{ release }} [mysql](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-mysql-plugin.zip)
+    - {{ version }} [mysql](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-mysql-plugin.zip)
 
     !!! warning
 

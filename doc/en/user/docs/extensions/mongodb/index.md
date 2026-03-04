@@ -17,8 +17,8 @@ This module provides support for MongoDB data store. This extension is build on 
 
     From the list of **Vector Formats** extensions download **MongoDB**.
 
-    - {{ release }} example: [mongodb](https://build.geoserver.org/geoserver/main/ext-latest/mongodb)
-    - {{ version }} example: [mongodb](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-mongodb-plugin.zip)
+    - {{ release }} example: [mongodb](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-mongodb-plugin.zip)
+    - {{ version }} example: [mongodb](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-mongodb-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

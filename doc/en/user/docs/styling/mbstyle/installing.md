@@ -11,8 +11,8 @@ To install MBStyle extension:
 
 1.  Download:
 
-    - {{ release }} [mbstyle](https://build.geoserver.org/geoserver/main/ext-latest/mbstyle)
-    - {{ version }} [mbstyle](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-mbstyle-plugin.zip)
+    - {{ release }} [mbstyle](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-mbstyle-plugin.zip)
+    - {{ version }} [mbstyle](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-mbstyle-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

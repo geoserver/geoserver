@@ -15,8 +15,8 @@ ArcGrid is a coverage file format created by ESRI.
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download:
 
-    - {{ release }} [arcgrid](https://build.geoserver.org/geoserver/main/ext-latest/arcgrid)
-    - {{ version }} [arcgrid](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-arcgrid-plugin.zip)
+    - {{ release }} [arcgrid](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-arcgrid-plugin.zip)
+    - {{ version }} [arcgrid](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-arcgrid-plugin.zip)
 
     !!! warning
 

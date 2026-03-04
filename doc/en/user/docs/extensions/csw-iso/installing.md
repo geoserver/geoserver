@@ -13,13 +13,13 @@ To install the CSW ISO extension:
 
     If you do not have the CSW extension yet, get it first. From the list of **OGC Services** extensions download **CSW**.
 
-    - {{ release }} example: [csw](https://build.geoserver.org/geoserver/main/ext-latest/csw)
-    - {{ version }} example: [csw](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-csw-plugin.zip)
+    - {{ release }} example: [csw](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-csw-plugin.zip)
+    - {{ version }} example: [csw](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-csw-plugin.zip)
 
     From the list of **OGC Services** extensions download **CSW ISO Metadata Profile**.
 
-    - {{ release }} example: [csw-iso](https://build.geoserver.org/geoserver/main/ext-latest/csw-iso)
-    - {{ version }} example: [csw-iso](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-csw-iso-plugin.zip)
+    - {{ release }} example: [csw-iso](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-csw-iso-plugin.zip)
+    - {{ version }} example: [csw-iso](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-csw-iso-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

@@ -13,8 +13,8 @@ render_macros: true
 
     From the list of **Coverage Formats** extensions download **GRIB**.
 
-    - {{ release }} example: [grib](https://build.geoserver.org/geoserver/main/ext-latest/grib)
-    - {{ version }} example: [grib](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-grib-plugin.zip)
+    - {{ release }} example: [grib](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-grib-plugin.zip)
+    - {{ version }} example: [grib](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-grib-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

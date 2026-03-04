@@ -13,8 +13,8 @@ To install:
 
 1.  Download:
 
-    - {{ release }} [ysld](https://build.geoserver.org/geoserver/main/ext-latest/ysld)
-    - {{ version }} [ysld](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-ysld-plugin.zip)
+    - {{ release }} [ysld](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-ysld-plugin.zip)
+    - {{ version }} [ysld](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-ysld-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

@@ -11,8 +11,8 @@ render_macros: true
 
     From the list of **Security** extensions download **GeoFence Client**.
 
-    - {{ release }} example: [geofence](https://build.geoserver.org/geoserver/main/ext-latest/geofence)
-    - {{ version }} example: [geofence](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-geofence-plugin.zip)
+    - {{ release }} example: [geofence](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-geofence-plugin.zip)
+    - {{ version }} example: [geofence](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-geofence-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

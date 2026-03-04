@@ -13,8 +13,8 @@ The installation process is similar to other GeoServer extensions:
 
     From the list of **Other** extensions download **GWC S3 tile storage**.
 
-    - {{ release }} example: [gwc-s3](https://build.geoserver.org/geoserver/main/ext-latest/gwc-s3)
-    - {{ version }} example: [gwc-s3](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-gwc-s3-plugin.zip)
+    - {{ release }} example: [gwc-s3](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-gwc-s3-plugin.zip)
+    - {{ version }} example: [gwc-s3](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-gwc-s3-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

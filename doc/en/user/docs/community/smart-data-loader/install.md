@@ -17,8 +17,8 @@ The installation process is similar to other GeoServer community modules:
 
     From the list of **Vector Formats** extensions download **App Schema**.
 
-    - {{ release }} example: [app-schema](https://build.geoserver.org/geoserver/main/ext-latest/app-schema)
-    - {{ version }} example: [app-schema](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-app-schema-plugin.zip)
+    - {{ release }} example: [app-schema](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-app-schema-plugin.zip)
+    - {{ version }} example: [app-schema](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-app-schema-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

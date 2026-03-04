@@ -11,8 +11,8 @@ render_macros: true
 
     From the list of **Output Formats** extensions download **Vector Tiles**.
 
-    - {{ release }} example: [vectortiles](https://build.geoserver.org/geoserver/main/ext-latest/vectortiles)
-    - {{ version }} example: [vectortiles](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-vectortiles-plugin.zip)
+    - {{ release }} example: [vectortiles](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-vectortiles-plugin.zip)
+    - {{ version }} example: [vectortiles](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-vectortiles-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

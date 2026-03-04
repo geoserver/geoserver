@@ -13,8 +13,8 @@ The monitor extension is not part of the GeoServer core and must be installed as
 
     From the list of **Miscellaneous** extensions download **Monitor (Core)**.
 
-    - {{ release }} example: [monitor](https://build.geoserver.org/geoserver/main/ext-latest/monitor)
-    - {{ version }} example: [monitor](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-monitor-plugin.zip)
+    - {{ release }} example: [monitor](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-monitor-plugin.zip)
+    - {{ version }} example: [monitor](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-monitor-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

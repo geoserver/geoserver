@@ -11,8 +11,8 @@ render_macros: true
 
     From the list of **Cartography** extensions download **Printing**.
 
-    - {{ release }} example: [printing](https://build.geoserver.org/geoserver/main/ext-latest/printing)
-    - {{ version }} example: [printing](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-printing-plugin.zip)
+    - {{ release }} example: [printing](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-printing-plugin.zip)
+    - {{ version }} example: [printing](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-printing-plugin.zip)
 
 3.  Extract the contents of the ZIP archive into the **`/WEB-INF/lib/`** in the GeoServer webapp.
 

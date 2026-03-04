@@ -23,8 +23,8 @@ To install the ArcGrid extension:
 
 3.  Download the ArcGrid extension:
 
-    - {{ release }} [arcgrid](https://build.geoserver.org/geoserver/main/ext-latest/arcgrid)
-    - {{ version }} [arcgrid](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-arcgrid-plugin.zip)
+    - {{ release }} [arcgrid](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-arcgrid-plugin.zip)
+    - {{ version }} [arcgrid](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-arcgrid-plugin.zip)
 
     The download link for **ArcGrid** will be in the **Extensions** section.
 

@@ -63,8 +63,8 @@ To perform the installation of the libjpeg-turbo binaries (or native library) yo
 
     From the list of **Output Formats** extensions download **JPEG Turbo**.
 
-    - {{ release }} example: [libjpeg-turbo](https://build.geoserver.org/geoserver/main/ext-latest/libjpeg-turbo)
-    - {{ version }} example: [libjpeg-turbo](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-libjpeg-turbo-plugin.zip)
+    - {{ release }} example: [libjpeg-turbo](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-libjpeg-turbo-plugin.zip)
+    - {{ version }} example: [libjpeg-turbo](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-libjpeg-turbo-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

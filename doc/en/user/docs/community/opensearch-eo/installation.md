@@ -33,7 +33,7 @@ This module is a community module pending graduation, and is available alongside
     From the list of **Pending** community plugins download **OpenSearch (EO)**.
 
     - {{ release }} example: [opensearch-eo-plugin](https://sourceforge.net/projects/geoserver/files/GeoServer/opensearch-eo-plugin)
-    - {{ version }} example: [opensearch-eo-plugin](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ version }}-SNAPSHOT-opensearch-eo-plugin-plugin.zip)
+    - {{ version }} example: [opensearch-eo-plugin](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-opensearch-eo-plugin-plugin.zip)
 
     The website lists community modules for active nightly builds providing feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier versions.
 

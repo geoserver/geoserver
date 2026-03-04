@@ -35,5 +35,10 @@ public class WMTSAdminPage extends BaseServiceAdminPage<WMTSInfo> {
     }
 
     @Override
+    protected String getServiceType() {
+        return "WMTS";
+    }
+
+    @Override
     protected void build(IModel info, Form form) {}
 }

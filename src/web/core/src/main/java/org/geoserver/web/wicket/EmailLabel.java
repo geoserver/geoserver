@@ -38,7 +38,28 @@ public class EmailLabel extends Label {
     private static boolean REVEALED = false;
 
     public EmailLabel(String id, final IModel<?> emailModel) {
-        super(id, new LoadableDetachableModel<String>() {
+        super(id, createEmailModel(emailModel));
+
+        setOutputMarkupId(true);
+
+        if (emailDisplayMode() == EmailDisplayMode.HIDDEN) {
+            add(new AttributeModifier("class", "italic"));
+        }
+
+        if (shouldRevealEmail()) {
+            add(new AjaxEventBehavior("click") {
+                @Override
+                protected void onEvent(AjaxRequestTarget target) {
+                    REVEALED = true;
+                    getDefaultModel().detach();
+                    target.add(EmailLabel.this);
+                }
+            });
+        }
+    }
+
+    private static IModel<String> createEmailModel(final IModel<?> emailModel) {
+        return new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
                 String email = (String) emailModel.getObject();
@@ -60,24 +81,7 @@ public class EmailLabel extends Label {
                     case FULL -> email;
                 };
             }
-        });
-
-        setOutputMarkupId(true);
-
-        if (emailDisplayMode() == EmailDisplayMode.HIDDEN) {
-            add(new AttributeModifier("class", "italic"));
-        }
-
-        if (shouldRevealEmail()) {
-            add(new AjaxEventBehavior("click") {
-                @Override
-                protected void onEvent(AjaxRequestTarget target) {
-                    REVEALED = true;
-                    getDefaultModel().detach();
-                    target.add(EmailLabel.this);
-                }
-            });
-        }
+        };
     }
 
     private static EmailDisplayMode emailDisplayMode() {

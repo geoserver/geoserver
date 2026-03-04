@@ -249,7 +249,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Commit fixes with message: "Fix 219 unknown interpreted text roles"
     - _Requirements: 5.5, 5.6_
 
-  - [-] 5.5 Validate 3.0 conversion
+  - [x] 5.5 Validate 3.0 conversion
     - Run same validation steps as 2.28.x branch (HTML comparison, link validation, build tests)
     - Fix any issues specific to 3.0 branch
     - **NOTE**: Unknown interpreted text roles should be fixed in task 5.4.1 before this validation

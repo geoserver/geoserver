@@ -789,7 +789,11 @@ nav:
     - community/jms-cluster/activemq/activemqBroker.md
     - community/jms-cluster/activemq/JDBC.md
     - community/jms-cluster/activemq/SharedFolder.md
-  - community/jwt-headers/index.md
+  - JWT Headers:
+    - community/jwt-headers/index.md
+    - community/jwt-headers/overview.md
+    - community/jwt-headers/installing.md
+    - community/jwt-headers/configuration.md
   - community/libdeflate/index.md
   - Mbtiles:
     - community/mbtiles/index.md

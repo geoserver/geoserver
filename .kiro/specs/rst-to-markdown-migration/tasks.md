@@ -214,7 +214,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Review conversion logs for warnings and errors
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
 
-  - [ ] 5.2 Update mkdocs.yml configurations for 3.0
+  - [x] 5.2 Update mkdocs.yml configurations for 3.0
     - Apply same configuration as 2.28.x branch (theme, plugins, extensions)
     - Update version variables to 3.0
     - Configure version selector with correct version number
@@ -222,7 +222,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - **NOTE**: PDF generation configuration removed for 3.0 branch
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 16.1, 16.2, 16.3_
 
-  - [ ] 5.3 Update GitHub Actions workflow for 3.0
+  - [x] 5.3 Update GitHub Actions workflow for 3.0
     - Apply same workflow changes as 2.28.x branch
     - Verify workflow triggers on 3.0 branch
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
@@ -234,7 +234,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Commit with message: "Convert 3.0 documentation from RST to Markdown"
     - _Requirements: 2.1, 2.2, 2.5_
 
-  - [-] 5.4.1 Fix unknown interpreted text roles (NEW - 3.0 specific issue)
+  - [x] 5.4.1 Fix unknown interpreted text roles (NEW - 3.0 specific issue)
     - **CRITICAL**: 219 unknown role occurrences detected (62% unconverted rate)
     - Create fix_unknown_roles.py script with mappings:
       - `nightly_community` → `https://build.geoserver.org/geoserver/main/community-latest/`

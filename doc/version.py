@@ -18,8 +18,8 @@ def define_env(env):
     
     # Central version configuration
     # Update these values when releasing a new version
-    env.variables['version'] = '2.28.x'
-    env.variables['release'] = '2.28.2'
+    env.variables['version'] = '3.0'
+    env.variables['release'] = '3.0.0'
     
     # Additional useful variables
     env.variables['geoserver_repo'] = 'https://github.com/geoserver/geoserver'

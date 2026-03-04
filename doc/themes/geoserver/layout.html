@@ -1,0 +1,168 @@
+{% extends "basic/layout.html" %}
+{%- set breadcrumbdelim = breadcrumbdelim is not defined and ' &raquo;' or breadcrumbdelim %}
+
+{%- macro gs_breadcrumbs() %}
+<ul id="breadcrumbs">
+  {% if pagename != 'index' %}
+    {%- block rootrellink %}
+    <li><a href="{{ pathto('index') }}">{{ docstitle }}</a>{{ breadcrumbdelim }}</li>
+    {%- endblock %}
+
+    {%- for parent in parents %}
+        <li><a href="{{ parent.link|e }}" accesskey="U">{{ parent.title }}</a>{{ breadcrumbdelim }}</li>
+    {%- endfor %}
+    <li>{{ title|striptags }}</li>
+  {%- else %}
+      <li>{{ docstitle }}</li>
+  {%- endif %}
+</ul>
+{%- endmacro %}
+
+{%- macro gs_rellinkbar() %}
+<ul id="relatedlinks" class="selfclear">
+  {%- if next %}
+  <li class="first"><a href="{{ next.link|e }}" title="{{ next.title }}" accesskey="N">Next</a></li>
+  {%- endif %}
+  {%- if prev %}
+  <li {%- if not next %}class="first"{%- endif %}>
+    <a href="{{ prev.link|e }}" title="{{ prev.title }}" accesskey="P">Previous</a>
+    {%- if next %}|{%- endif %}
+  </li>
+  {%- endif %}
+</ul>
+{%- endmacro %}
+
+{%- macro gs_sidebar() %}
+  {%- if builder != 'htmlhelp' %}
+  <div id="sidebar"{%- if pagename not in ['index', 'search'] %} class="contrast"{%- endif %}>
+    {%- if display_toc %}
+      {%- block sidebartoc %}
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="{{ pathto(root_doc)|e }}">Table Of Contents</a></h3>
+        {{ toc }}
+        <div class="section-footer"></div>
+      </div>
+      {%- endblock %}
+    {%- endif %}
+      {%- block sidebarrel %}
+        {%- if (prev or next) %}
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+          {%- if prev %}
+            <li>Previous: <a href="{{ prev.link|e }}" title="previous chapter">{{ prev.title }}</a></li>
+          {%- endif %}
+          {%- if next %}
+            <li>Next: <a href="{{ next.link|e }}" title="next chapter">{{ next.title }}</a></li>
+          {%- endif %}
+          </ul>
+        </div>
+        {%- endif %}
+      {%- endblock %}
+      {%- if sourcename or display_github %}
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        {% if display_github %}
+        <li><a href="https://github.com/{{github_user}}/{{ github_repo }}/tree/{{ github_version }}/{{ conf_py_path }}/{{ pagename }}{{ page_source_suffix }}">Edit</a></li>
+        {%- endif %}
+        {%- if show_source and has_source and sourcename %}
+          <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}">Source</a></li>
+        {%- endif %}
+        </ul>
+        </div>
+      {%- endif %}
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+      {%- if customsidebar %}
+      {{ rendertemplate(customsidebar) }}
+      {%- endif %}
+      {%- block sidebarsearch %}{%- endblock %}
+  </div><!-- /#sidebar -->
+  {%- endif %}
+{%- endmacro -%}
+
+{%- block css %}
+    <link rel="stylesheet" href="{{ pathto('_static/blueprint/screen.css', 1) }}" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{ pathto('_static/blueprint/print.css', 1) }}" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="{{ pathto('_static/blueprint/ie.css', 1) }}" type="text/css" media="screen, projection" />
+    <![endif]-->
+    {{ super() }}
+{%- endblock %}
+
+{%- block body_tag %}<body class="{{pagename}}">{% endblock %}
+{%- block header %}
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="{{ pathto('search') }}" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search {{ manual|e }}&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="{{ pathto('_static/chrome/search_icon_green.png', 1)}}" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+{%- endblock %}
+
+{%- block relbar1 %}{% endblock %}
+{%- block relbar2 %}{% endblock %}
+
+{%- block content %}
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        {{ gs_breadcrumbs() }}
+        {{ gs_rellinkbar() }}
+        {%- block document %}
+          {% block body %}{% endblock %}
+        {%- endblock %}
+        {%- if (prev or next) %}
+        <div class="selfclear pagination-nav">
+          {%- if prev %}
+            <div class="leftwise"><strong>Previous</strong>: <a href="{{ prev.link|e }}" title="previous chapter">{{ prev.title }}</a></div>
+          {%- endif %}
+          {%- if next %}
+            <div class="rightwise"><strong>Next</strong>: <a href="{{ next.link|e }}" title="next chapter">{{ next.title }}</a></div>
+          {%- endif %}
+        </div>
+        {%- endif %}
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        {{ gs_sidebar() }}
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+{%- endblock %}
+
+{%- block footer %}
+<div id="footer">
+    <div class="wrap">
+    {%- if hasdoc('copyright') %}
+        &copy; <a href="{{ pathto('copyright') }}">Copyright</a> {{ copyright }}.
+    {%- else %}
+        &copy; Copyright {{ copyright }}. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+    {%- endif %}
+    {%- if last_updated %}
+        Last updated on {{ last_updated }}.
+    {%- endif %}
+    {%- if show_sphinx %}
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    {%- endif %}
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+{%- endblock %}

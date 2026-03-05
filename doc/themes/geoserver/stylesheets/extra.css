@@ -119,6 +119,18 @@
 .md-doc-switcher-integrated {
   position: relative;
   padding-top: 0.6rem;
+  z-index: 3;
+}
+
+/* Ensure proper stacking context for nested elements */
+.md-doc-switcher-integrated .md-header__ellipsis {
+  position: relative;
+  z-index: 3;
+}
+
+.md-doc-switcher-integrated .md-header__topic {
+  position: relative;
+  z-index: 3;
 }
 
 /* Button styled to look like header title */
@@ -177,7 +189,7 @@
 /* Dropdown menu container */
 .md-doc-switcher-integrated__dropdown {
   position: absolute;
-  top: calc(100% + 0.75rem);
+  top: calc(100% + 0.5rem);
   left: 0;
   min-width: 220px;
   background: var(--md-default-bg-color);
@@ -188,17 +200,32 @@
   visibility: hidden;
   transform: translateY(-0.5rem);
   transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
-  z-index: 1000;
+  z-index: 1001;
+  pointer-events: none;
 }
 
-/* Show dropdown on hover - with delay only on show */
+/* Enable pointer events when dropdown is visible */
+.md-doc-switcher-integrated:hover .md-doc-switcher-integrated__dropdown,
+.md-doc-switcher-integrated__button:focus + .md-doc-switcher-integrated__dropdown,
+.md-doc-switcher-integrated:focus-within .md-doc-switcher-integrated__dropdown {
+  pointer-events: auto;
+}
+
+/* Show dropdown on hover - with shorter delay for better UX */
 .md-doc-switcher-integrated:hover .md-doc-switcher-integrated__dropdown,
 .md-doc-switcher-integrated__button:focus + .md-doc-switcher-integrated__dropdown,
 .md-doc-switcher-integrated:focus-within .md-doc-switcher-integrated__dropdown {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
-  transition: opacity 0.2s ease 0.8s, transform 0.2s ease 0.8s, visibility 0s linear 0s;
+  transition: opacity 0.2s ease 0.3s, transform 0.2s ease 0.3s, visibility 0s linear 0s;
+}
+
+/* Keep dropdown visible when hovering over it */
+.md-doc-switcher-integrated__dropdown:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 /* Dropdown links */

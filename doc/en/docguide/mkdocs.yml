@@ -9,7 +9,7 @@ site_dir: target/html
 
 theme:
   name: material
-  custom_dir: ../themes/geoserver
+  custom_dir: ../../themes/geoserver
   logo: img/geoserver-logo.png
   favicon: img/geoserver.ico
   palette:

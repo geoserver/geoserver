@@ -143,6 +143,9 @@ def copy_api_directory(config) -> int:
     throughout the REST API documentation. This function copies the entire
     doc/en/api/ directory to the site output, preserving the directory structure.
     
+    Only copies for the user manual build, as the API documentation is only
+    accessible through the user manual (documentation switcher links to ../user/api/).
+    
     Args:
         config: MkDocs configuration object
         
@@ -152,6 +155,12 @@ def copy_api_directory(config) -> int:
     # Get the base documentation directory (doc/en/)
     docs_dir = Path(config.get('docs_dir', 'docs'))
     site_dir = Path(config.get('site_dir', 'site'))
+    
+    # Only copy API directory for user manual build
+    # Check if this is the user manual by looking at the docs_dir path
+    if 'user' not in str(docs_dir):
+        logger.debug("Skipping API directory copy (not user manual build)")
+        return 0
     
     # API directory is at doc/en/api/ (sibling to docs directory)
     # docs_dir is typically doc/en/user/docs, so we need to go up two levels to get to doc/en/

@@ -6,14 +6,14 @@ Implement a documentation type switcher as a MkDocs Material theme customization
 
 ## Tasks
 
-- [ ] 1. Set up theme directory structure
+- [x] 1. Set up theme directory structure
   - Create `doc/themes/geoserver/partials/` directory
   - Create `doc/themes/geoserver/overrides/partials/` directory
   - Create `doc/themes/geoserver/stylesheets/` directory if not exists
   - _Requirements: 1.1, 3.1_
 
 - [ ] 2. Create switcher component template
-  - [ ] 2.1 Implement header-switcher.html Jinja2 template
+  - [x] 2.1 Implement header-switcher.html Jinja2 template
     - Read `config.extra.doc_type` and `config.extra.doc_switcher` from configuration
     - Render dropdown button with current documentation type label
     - Render dropdown menu with all documentation type links
@@ -25,7 +25,7 @@ Implement a documentation type switcher as a MkDocs Material theme customization
     - **Validates: Requirements 2.1, 2.3**
 
 - [ ] 3. Override Material theme header
-  - [ ] 3.1 Create header.html override template
+  - [x] 3.1 Create header.html override template
     - Extend Material theme's base header template
     - Include switcher component after logo
     - Preserve existing header functionality
@@ -35,8 +35,8 @@ Implement a documentation type switcher as a MkDocs Material theme customization
     - **Property 2: Switcher Presence Across Pages**
     - **Validates: Requirements 1.3**
 
-- [ ] 4. Implement CSS styling
-  - [ ] 4.1 Add switcher styles to extra.css
+- [x] 4. Implement CSS styling
+  - [x] 4.1 Add switcher styles to extra.css
     - Style switcher button and dropdown container
     - Implement hover and focus states
     - Add responsive breakpoints for mobile devices
@@ -47,8 +47,8 @@ Implement a documentation type switcher as a MkDocs Material theme customization
     - **Property 4: Responsive Behavior**
     - **Validates: Requirements 3.3**
 
-- [ ] 5. Configure documentation types
-  - [ ] 5.1 Add switcher configuration to mkdocs.yml files
+- [x] 5. Configure documentation types
+  - [x] 5.1 Add switcher configuration to mkdocs.yml files
     - Add `extra.doc_type` and `extra.doc_switcher` to each documentation type's config
     - Define all four documentation types with labels and URLs
     - Ensure each config identifies its own type correctly
@@ -58,7 +58,7 @@ Implement a documentation type switcher as a MkDocs Material theme customization
     - **Property 1: Active Documentation Type Display**
     - **Validates: Requirements 1.2, 2.4**
 
-- [ ] 6. Checkpoint - Build and verify
+- [x] 6. Checkpoint - Build and verify
   - Build all documentation types and verify switcher appears correctly
   - Test navigation between documentation types
   - Ensure all tests pass, ask the user if questions arise

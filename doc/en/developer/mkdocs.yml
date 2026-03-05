@@ -48,6 +48,20 @@ theme:
     - content.action.edit
 
 extra:
+  doc_type: "developer"
+  doc_switcher:
+    - label: "User Manual"
+      url: "/en/user/"
+      type: "user"
+    - label: "Developer Manual"
+      url: "/en/developer/"
+      type: "developer"
+    - label: "Documentation Guide"
+      url: "/en/docguide/"
+      type: "docguide"
+    - label: "Swagger APIs"
+      url: "/en/api/"
+      type: "swagger"
   version_selector:
     - version: latest
       title: Latest (3.0)

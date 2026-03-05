@@ -269,14 +269,18 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     /**
      * Callback for submit.
      *
-     * <p>This implementation simply saves the service. Subclasses may extend / override if need be.
+     * <p>This implementation persists the service configuration. If the service has already been persisted (i.e.
+     * {@code info.getId() != null}), it is saved (updated). Otherwise, it is added as a new service configuration —
+     * this happens when a workspace-specific service is configured for the first time. Subclasses may extend / override
+     * if need be.
      */
     protected void handleSubmit(T info) {
         if (info.getId() != null) {
             getGeoServer().save(info);
+        } else {
+            // ServiceInfo override being created for the first time
+            getGeoServer().add(info);
         }
-        // else means a non-attached instance was passed to us, do nothing, up to caller to add it
-        // to configuration
     }
 
     /** The string to use when representing this service to users. Subclasses must override. */

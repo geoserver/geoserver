@@ -1,4 +1,4 @@
-<img src="/doc/en/themes/geoserver/static/GeoServer_500.png" width="353">
+<img src="/doc/themes/geoserver/static/GeoServer_500.png" width="353">
 
 [![Gitter](https://badges.gitter.im/geoserver/geoserver.svg)](https://gitter.im/geoserver/geoserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![DOI](https://zenodo.org/badge/2751199.svg)](https://zenodo.org/badge/latestdoi/2751199)

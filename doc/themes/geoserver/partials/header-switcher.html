@@ -1,0 +1,62 @@
+{#
+  Documentation Type Switcher Component - Integrated with Header Title
+  
+  This component replaces the standard header title with an integrated dropdown
+  that displays "GeoServer [Doc Type]" and allows switching between documentation types.
+  
+  Configuration:
+    - config.extra.doc_type: Current documentation type identifier
+    - config.extra.doc_switcher: List of available documentation types
+  
+  Requirements: 1.2, 2.1, 2.2
+#}
+
+{% if config.extra.doc_switcher %}
+  {% set current_doc_type = config.extra.doc_type | default('') %}
+  
+  {# Find the label for the current documentation type #}
+  {% set current_doc_label = namespace(value='Documentation') %}
+  {% for doc in config.extra.doc_switcher %}
+    {% if doc.type == current_doc_type %}
+      {% set current_doc_label.value = doc.label %}
+    {% endif %}
+  {% endfor %}
+  
+  {# Integrated header title with dropdown #}
+  <div class="md-header__title md-doc-switcher-integrated" data-md-component="header-title">
+    <div class="md-header__ellipsis">
+      <div class="md-header__topic">
+        <button class="md-doc-switcher-integrated__button" aria-label="Switch documentation type" aria-haspopup="true" aria-expanded="false">
+          <span class="md-doc-switcher-integrated__text">
+            <span class="md-doc-switcher-integrated__prefix">GeoServer</span>
+            <span class="md-doc-switcher-integrated__label">{{ current_doc_label.value }}</span>
+          </span>
+          <svg class="md-doc-switcher-integrated__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+            <path d="M7 10l5 5 5-5z" fill="currentColor"/>
+          </svg>
+        </button>
+        <div class="md-doc-switcher-integrated__dropdown" role="menu">
+          {% for doc in config.extra.doc_switcher %}
+            <a href="{{ doc.url }}" 
+               class="md-doc-switcher-integrated__link{% if doc.type == current_doc_type %} md-doc-switcher-integrated__link--active{% endif %}"
+               role="menuitem">
+              <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
+              <span class="md-doc-switcher-integrated__link-label">{{ doc.label }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% else %}
+  {# Fallback to standard header title if no switcher config #}
+  <div class="md-header__title" data-md-component="header-title">
+    <div class="md-header__ellipsis">
+      <div class="md-header__topic">
+        <span class="md-ellipsis">
+          {{ config.site_name }}
+        </span>
+      </div>
+    </div>
+  </div>
+{% endif %}

@@ -1,5 +1,5 @@
 site_name: GeoServer Developer Manual
-site_url: https://docs.geoserver.org/3.0/en/developer/
+site_url: https://docs.geoserver.org/2.28.x/en/developer/
 repo_url: https://github.com/geoserver/geoserver
 repo_name: geoserver/geoserver
 edit_uri: edit/main/doc/en/developer/docs/

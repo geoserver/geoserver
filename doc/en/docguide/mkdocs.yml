@@ -55,7 +55,7 @@ extra:
       url: "../docguide/"
       type: "docguide"
     - label: "Swagger APIs"
-      url: "../api/"
+      url: "../user/api/"
       type: "swagger"
   version_selector:
     - version: latest

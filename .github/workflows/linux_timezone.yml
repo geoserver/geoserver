@@ -18,8 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # America/St_Johns: We cannot handle this one yet see GEOT-2870
-        timezone: ['America/Vancouver','America/St_Johns']
+        timezone: ['America/St_Johns']
         jdk: [ 17 ]
         dist: [ 'temurin' ]
         os: [ 'ubuntu-22.04' ]

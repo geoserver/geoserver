@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.system.status;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.markup.html.panel.Panel;
 
@@ -14,8 +16,7 @@ import org.apache.wicket.markup.html.panel.Panel;
  */
 public class SystemStatusMonitorPanel extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SystemStatusMonitorPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

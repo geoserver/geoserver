@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import org.apache.wicket.markup.html.basic.Label;
@@ -18,8 +20,7 @@ import org.apache.wicket.model.IModel;
 @SuppressWarnings("serial")
 public class CharsetPanel extends Panel implements ParamPanel<String> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CharsetPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

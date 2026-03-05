@@ -9,6 +9,7 @@ import static org.geoserver.catalog.CascadeRemovalReporter.ModificationType.DELE
 import static org.geoserver.catalog.CascadeRemovalReporter.ModificationType.EXTRA_STYLE_REMOVED;
 import static org.geoserver.catalog.CascadeRemovalReporter.ModificationType.GROUP_CHANGED;
 import static org.geoserver.catalog.CascadeRemovalReporter.ModificationType.STYLE_RESET;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,8 +38,7 @@ import org.geoserver.web.GeoServerApplication;
 @SuppressWarnings("serial")
 public class ConfirmRemovalPanel extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ConfirmRemovalPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

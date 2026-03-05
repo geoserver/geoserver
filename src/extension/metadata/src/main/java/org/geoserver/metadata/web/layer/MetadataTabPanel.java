@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
@@ -42,8 +44,7 @@ import org.geotools.util.logging.Logging;
  */
 public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MetadataTabPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

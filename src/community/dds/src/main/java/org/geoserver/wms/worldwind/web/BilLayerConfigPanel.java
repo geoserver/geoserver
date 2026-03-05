@@ -4,6 +4,8 @@
  */
 package org.geoserver.wms.worldwind.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -31,8 +33,7 @@ import org.geotools.util.logging.Logging;
  */
 public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(BilLayerConfigPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

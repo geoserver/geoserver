@@ -5,6 +5,8 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,8 +49,7 @@ import org.geowebcache.grid.GridSetBroker;
 
 class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GridSubsetsEditor.class);
 
     @Serial
     private static final long serialVersionUID = 5098470663723800345L;

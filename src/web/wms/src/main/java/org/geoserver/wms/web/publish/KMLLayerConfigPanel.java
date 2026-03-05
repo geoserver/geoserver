@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.util.ArrayList;
@@ -27,8 +29,7 @@ import org.geotools.api.feature.type.PropertyDescriptor;
 /** Configures a layer KML related attributes (coming from metadata) */
 public class KMLLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(KMLLayerConfigPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

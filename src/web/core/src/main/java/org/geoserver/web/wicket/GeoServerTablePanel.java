@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,8 +55,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  */
 public abstract class GeoServerTablePanel<T> extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerTablePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -744,8 +745,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     protected class Pager extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerTablePanel.Pager.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

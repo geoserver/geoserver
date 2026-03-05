@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.data;
 
 import static freemarker.ext.beans.BeansWrapper.EXPOSE_NOTHING;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -63,8 +64,7 @@ import org.geotools.util.logging.Logging;
 // TODO: WICKET 9 test this page
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(OpenLayersPreviewPanel.class);
 
     @Serial
     private static final long serialVersionUID = -8742721113748106000L;

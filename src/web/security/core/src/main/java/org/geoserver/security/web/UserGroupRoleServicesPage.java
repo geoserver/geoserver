@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -57,8 +59,7 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
 
     class ServicesPanel extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(UserGroupRoleServicesPage.ServicesPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -84,8 +85,8 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
 
     static class UsersGroupsPanel extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(UserGroupRoleServicesPage.UsersGroupsPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -107,8 +108,7 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
 
     static class RolesPanel extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(UserGroupRoleServicesPage.RolesPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

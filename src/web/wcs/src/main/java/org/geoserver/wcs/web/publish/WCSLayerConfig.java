@@ -5,6 +5,8 @@
  */
 package org.geoserver.wcs.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +33,7 @@ import org.geotools.util.SuppressFBWarnings;
 /** A configuration panel for CoverageInfo properties that related to WCS publication */
 public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(WCSLayerConfig.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

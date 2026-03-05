@@ -5,6 +5,8 @@
 
 package org.geoserver.elasticsearch;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.util.List;
@@ -46,8 +48,7 @@ import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
 @SuppressWarnings("WeakerAccess")
 public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ElasticConfigurationPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

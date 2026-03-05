@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.wps;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,8 +24,7 @@ import org.geotools.util.logging.Logging;
 /** Extension to the WPS admin panel, allowing to edit the download limits */
 public class DownloadLimitsPanel extends AdminPagePanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DownloadLimitsPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

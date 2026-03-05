@@ -4,6 +4,7 @@
  */
 package org.geoserver.pmtiles.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.tileverse.rangereader.RangeReaderParams.MEMORY_CACHE_BLOCK_SIZE;
 import static org.geotools.tileverse.rangereader.RangeReaderParams.RANGEREADER_PROVIDER_ID;
 import static org.geotools.tileverse.rangereader.RangeReaderParams.S3_AWS_REGION;
@@ -40,8 +41,7 @@ import org.springframework.util.unit.DataSize;
 @SuppressWarnings("serial")
 public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(PMTilesDataStoreEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

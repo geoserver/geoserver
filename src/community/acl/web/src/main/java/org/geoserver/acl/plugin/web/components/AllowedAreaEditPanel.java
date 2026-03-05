@@ -6,6 +6,8 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.Radio;
@@ -23,8 +25,7 @@ import org.geoserver.acl.domain.rules.SpatialFilterType;
 @SuppressWarnings({"serial", "rawtypes"})
 public abstract class AllowedAreaEditPanel<T> extends FormComponentPanel<T> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AllowedAreaEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

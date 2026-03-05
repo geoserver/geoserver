@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.store.dggs;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +27,7 @@ import org.geotools.dggs.gstore.DGGSGeometryStoreFactory;
  */
 public class DGGSGeometryStoreEditPanel extends StoreEditPanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DGGSGeometryStoreEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -4,6 +4,8 @@
  */
 package org.geoserver.smartdataloader.data.store.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,8 +47,7 @@ import org.geotools.util.logging.Logging;
  */
 public class VirtualRelationshipsPanel extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(VirtualRelationshipsPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -335,8 +336,7 @@ public class VirtualRelationshipsPanel extends Panel {
 
     private class RelationshipFormPanel extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(VirtualRelationshipsPanel.RelationshipFormPanel.class);
 
         private final CompoundPropertyModel<VirtualRelationshipBean> formModel;
         private final FeedbackPanel modalFeedback;

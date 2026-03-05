@@ -5,6 +5,8 @@
  */
 package org.geoserver.importer.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -24,8 +26,7 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 // TODO WICKET8 - Verify this page works OK
 public class SpatialFilePanel extends ImportSourcePanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SpatialFilePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

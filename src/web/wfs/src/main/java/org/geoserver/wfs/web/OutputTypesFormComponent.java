@@ -4,6 +4,8 @@
  */
 package org.geoserver.wfs.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +27,7 @@ import org.geoserver.web.wicket.SimpleChoiceRenderer;
 
 public class OutputTypesFormComponent extends FormComponentPanel<String> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(OutputTypesFormComponent.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

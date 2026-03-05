@@ -6,6 +6,7 @@
 package org.geoserver.web.wicket;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,8 +47,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 @SuppressWarnings("serial")
 public class CodeMirrorEditor extends FormComponentPanel<String> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CodeMirrorEditor.class);
 
     public static final PackageResourceReference REFERENCE =
             new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/codemirror.js");

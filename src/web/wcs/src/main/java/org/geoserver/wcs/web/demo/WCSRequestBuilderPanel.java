@@ -5,6 +5,8 @@
  */
 package org.geoserver.wcs.web.demo;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.Arrays;
@@ -49,8 +51,7 @@ import org.locationtech.jts.geom.Envelope;
 @SuppressWarnings("serial")
 public class WCSRequestBuilderPanel extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(WCSRequestBuilderPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

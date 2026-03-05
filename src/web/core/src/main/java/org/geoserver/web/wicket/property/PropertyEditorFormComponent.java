@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket.property;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,8 +36,7 @@ import org.springframework.util.StringUtils;
  */
 public class PropertyEditorFormComponent extends FormComponentPanel<Properties> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(PropertyEditorFormComponent.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

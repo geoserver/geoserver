@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.wicket.browser;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.Serial;
@@ -34,8 +36,7 @@ import org.geotools.util.logging.Logging;
  */
 public class FileInput extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FileInput.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -9,6 +9,7 @@ import static org.geoserver.featurestemplating.web.schema.SchemaRuleProvider.NAM
 import static org.geoserver.featurestemplating.web.schema.SchemaRuleProvider.OUTPUT_FORMAT;
 import static org.geoserver.featurestemplating.web.schema.SchemaRuleProvider.PRIORITY;
 import static org.geoserver.featurestemplating.web.schema.SchemaRuleProvider.PROFILE_FILTER;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.util.HashSet;
@@ -31,8 +32,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 
 public class SchemaRulesTablePanel extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SchemaRulesTablePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

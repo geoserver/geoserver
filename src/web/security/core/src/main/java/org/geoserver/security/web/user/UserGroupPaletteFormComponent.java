@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.user;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.util.ArrayList;
@@ -23,8 +25,7 @@ import org.geoserver.web.GeoServerApplication;
 /** A form component that can be used to edit user to group assignments */
 public class UserGroupPaletteFormComponent extends PaletteFormComponent<GeoServerUserGroup> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(UserGroupPaletteFormComponent.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

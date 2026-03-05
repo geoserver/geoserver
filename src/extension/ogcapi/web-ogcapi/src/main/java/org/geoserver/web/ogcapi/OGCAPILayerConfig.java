@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.ogcapi;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.List;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -16,8 +18,7 @@ import org.geoserver.web.util.MetadataMapModel;
 /** Configuration panel for OGC API links attached to a given layer/layer group */
 public class OGCAPILayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(OGCAPILayerConfig.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

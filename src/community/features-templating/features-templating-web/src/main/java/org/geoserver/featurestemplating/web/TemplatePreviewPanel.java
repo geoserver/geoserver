@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -69,8 +71,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 public class TemplatePreviewPanel extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TemplatePreviewPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

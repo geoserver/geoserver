@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.netcdf;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.MetadataMap;
@@ -15,8 +17,7 @@ import org.geoserver.web.util.MetadataMapModel;
 /** @author Nicola Lagomarsini Geosolutions S.A.S. */
 public class NetCDFOutSettingsPanel extends SettingsPluginPanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NetCDFOutSettingsPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

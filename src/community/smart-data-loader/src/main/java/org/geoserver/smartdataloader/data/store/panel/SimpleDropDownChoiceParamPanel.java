@@ -4,6 +4,8 @@
  */
 package org.geoserver.smartdataloader.data.store.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
@@ -20,8 +22,7 @@ import org.geoserver.web.data.store.panel.ParamPanel;
  */
 public class SimpleDropDownChoiceParamPanel extends Panel implements ParamPanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SimpleDropDownChoiceParamPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

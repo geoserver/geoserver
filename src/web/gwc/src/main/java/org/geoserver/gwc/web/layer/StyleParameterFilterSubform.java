@@ -6,6 +6,8 @@
 
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,8 +27,7 @@ import org.geoserver.gwc.layer.StyleParameterFilter;
  */
 public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<StyleParameterFilter> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(StyleParameterFilterSubform.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

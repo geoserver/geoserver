@@ -7,6 +7,7 @@ package org.geoserver.web.demo;
 
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -306,8 +307,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
      */
     static class WKTPanel extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(SRSDescriptionPage.WKTPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -5,6 +5,8 @@
  */
 package org.geoserver.monitor.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.Color;
 import java.io.Serial;
 import java.util.Map;
@@ -18,8 +20,7 @@ import org.jfree.data.general.DefaultPieDataset;
 
 public abstract class OWSSummaryChartBasePanel extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(OWSSummaryChartBasePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

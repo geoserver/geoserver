@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.store;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serial;
@@ -70,8 +72,7 @@ import org.xml.sax.EntityResolver;
 @SuppressWarnings("serial")
 public class DefaultDataStoreEditPanel extends StoreEditPanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DefaultDataStoreEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import com.google.common.annotations.VisibleForTesting;
 import java.io.Serial;
 import java.util.ArrayList;
@@ -43,8 +45,7 @@ import org.geowebcache.layer.TileLayer;
 // TODO WICKET8 - Verify this page works OK
 public class BlobStorePage extends GeoServerSecuredPage {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(BlobStorePage.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

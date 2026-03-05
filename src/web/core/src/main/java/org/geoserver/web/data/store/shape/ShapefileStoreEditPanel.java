@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.shape;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.CACHE_MEMORY_MAPS;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.CREATE_SPATIAL_INDEX;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.DBFCHARSET;
@@ -34,8 +35,7 @@ import org.geoserver.web.wicket.browser.ExtensionFileFilter;
 @SuppressWarnings("serial")
 public class ShapefileStoreEditPanel extends StoreEditPanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ShapefileStoreEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

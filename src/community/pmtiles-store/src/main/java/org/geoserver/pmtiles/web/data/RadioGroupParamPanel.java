@@ -4,6 +4,8 @@
  */
 package org.geoserver.pmtiles.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.List;
 import org.apache.wicket.markup.html.basic.Label;
@@ -20,8 +22,7 @@ import org.geoserver.web.data.store.panel.ParamPanel;
 @SuppressWarnings("serial")
 public class RadioGroupParamPanel<T extends Serializable> extends Panel implements ParamPanel<T> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RadioGroupParamPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

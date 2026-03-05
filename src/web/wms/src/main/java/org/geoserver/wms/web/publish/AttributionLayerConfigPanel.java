@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.image.BufferedImage;
 import java.io.Serial;
 import java.net.URL;
@@ -26,8 +28,7 @@ import org.geoserver.web.publish.PublishedConfigurationPanel;
 // TODO WICKET8 - Verify this page works OK
 public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<PublishedInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AttributionLayerConfigPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

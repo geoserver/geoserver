@@ -5,6 +5,8 @@
  */
 package org.geoserver.wcs2_0.eo.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -20,8 +22,7 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 /** A configuration panel for CoverageInfo properties that related to WCS publication */
 public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(WCSEOLayerConfig.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.FileFilter;
 import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,8 +23,7 @@ import org.geoserver.web.wicket.browser.FileInput;
  */
 public class FileParamPanel extends Panel implements ParamPanel<String> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FileParamPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

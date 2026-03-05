@@ -9,6 +9,7 @@ package org.geoserver.acl.plugin.web.accessrules.layerdetails;
 import static org.geoserver.acl.domain.rules.LayerDetails.LayerType.LAYERGROUP;
 import static org.geoserver.acl.domain.rules.LayerDetails.LayerType.RASTER;
 import static org.geoserver.acl.domain.rules.LayerDetails.LayerType.VECTOR;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -23,8 +24,7 @@ import org.geoserver.catalog.PublishedInfo;
 @SuppressWarnings("serial")
 class LayerTypeFormComponent extends FormComponentPanel<LayerType> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerTypeFormComponent.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

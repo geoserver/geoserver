@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.ByteArrayOutputStream;
@@ -63,8 +65,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig> 
 
     class ContentPanel extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityNamedServiceEditPage.ContentPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -105,8 +106,8 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig> 
      */
     class BasicLayoutPanel extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(SecurityNamedServiceEditPage.BasicLayoutPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -132,8 +133,8 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig> 
      */
     class TabbedLayoutPanel extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(SecurityNamedServiceEditPage.TabbedLayoutPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -183,8 +184,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig> 
 
     class ErrorPanel extends Panel {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityNamedServiceEditPage.ErrorPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

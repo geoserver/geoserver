@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,8 +48,7 @@ import org.springframework.util.Assert;
 // TODO WICKET8 - Verify this page works OK
 public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIdentifierInfo>> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerIdentifierListEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

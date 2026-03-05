@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.role;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,8 +26,7 @@ import org.geoserver.web.GeoServerApplication;
 @SuppressWarnings("serial")
 public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RolePaletteFormComponent.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

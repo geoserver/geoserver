@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.passwd;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -63,8 +65,7 @@ public class PasswordPolicyPanel extends SecurityNamedServicePanel<PasswordPolic
 
     static class MaxLengthPanel extends FormComponentPanel<PasswordPolicyConfig> {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(PasswordPolicyPanel.MaxLengthPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

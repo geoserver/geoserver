@@ -5,6 +5,8 @@
  */
 package org.geoserver.wcs.web.demo;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.geom.AffineTransform;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -21,8 +23,7 @@ import org.apache.wicket.model.PropertyModel;
  */
 public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AffineTransformPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

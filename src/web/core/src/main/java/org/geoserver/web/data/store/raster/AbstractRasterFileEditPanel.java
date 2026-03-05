@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.store.raster;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -24,8 +26,7 @@ import org.geoserver.web.wicket.browser.ExtensionFileFilter;
 @SuppressWarnings("serial")
 public abstract class AbstractRasterFileEditPanel extends StoreEditPanel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AbstractRasterFileEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

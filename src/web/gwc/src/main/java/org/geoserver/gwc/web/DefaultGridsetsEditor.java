@@ -5,6 +5,8 @@
  */
 package org.geoserver.gwc.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,8 +44,7 @@ import org.geowebcache.grid.GridSetBroker;
  */
 class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DefaultGridsetsEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

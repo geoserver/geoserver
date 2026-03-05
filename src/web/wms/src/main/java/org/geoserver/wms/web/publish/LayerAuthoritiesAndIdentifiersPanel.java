@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -19,8 +21,7 @@ import org.geoserver.wms.WMSInfo;
 
 public class LayerAuthoritiesAndIdentifiersPanel extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerAuthoritiesAndIdentifiersPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

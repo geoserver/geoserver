@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.ogcapi;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +40,7 @@ import org.springframework.context.ApplicationContext;
 /** Component editing a list of {@link AttributeTypeInfo} */
 class LinkInfoEditor extends FormComponentPanel<List<LinkInfo>> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LinkInfoEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

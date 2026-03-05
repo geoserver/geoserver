@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.auth;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.RequestDispatcher;
@@ -217,8 +219,8 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
     static class AuthenticationChainPanel extends FormComponentPanel<SecurityManagerConfig> {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(AuthenticationPage.AuthenticationChainPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -240,8 +242,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
     class AuthFilterChainPanel extends FormComponentPanel<GeoServerSecurityFilterChain> {
 
-        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-                java.lang.invoke.MethodHandles.lookup().lookupClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(AuthenticationPage.AuthFilterChainPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

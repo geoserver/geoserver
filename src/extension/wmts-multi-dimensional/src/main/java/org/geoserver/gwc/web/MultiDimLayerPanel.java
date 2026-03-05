@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -46,8 +48,7 @@ import org.geotools.util.logging.Logging;
  */
 public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MultiDimLayerPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

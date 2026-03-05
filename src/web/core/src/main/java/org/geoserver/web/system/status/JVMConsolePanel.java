@@ -6,6 +6,7 @@ package org.geoserver.web.system.status;
 
 import static org.geoserver.web.system.status.ConsoleInfoUtils.getHistoMemoryDump;
 import static org.geoserver.web.system.status.ConsoleInfoUtils.getThreadsInfo;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -19,8 +20,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 /** Panel displaying the JVM threads allocated or the heap memory objects */
 public class JVMConsolePanel extends Panel {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(JVMConsolePanel.class);
 
     private final boolean lockedMonitors = true;
     private final boolean lockedSynchronizers = true;

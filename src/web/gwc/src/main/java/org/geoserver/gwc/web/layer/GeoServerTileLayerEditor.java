@@ -7,6 +7,7 @@ package org.geoserver.gwc.web.layer;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -75,8 +76,7 @@ import org.geowebcache.layer.TileLayer;
  */
 class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerTileLayerEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

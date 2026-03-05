@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -22,8 +24,7 @@ import org.wicketstuff.select2.Settings;
 @SuppressWarnings("serial")
 public class Select2SetMultiChoice<T> extends FormComponentPanel<Set<T>> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(Select2SetMultiChoice.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

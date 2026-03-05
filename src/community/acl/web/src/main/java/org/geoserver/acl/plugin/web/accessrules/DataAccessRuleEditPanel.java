@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.plugin.web.accessrules;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -52,8 +54,7 @@ import org.geoserver.acl.plugin.web.support.SerializableFunction;
 @SuppressWarnings("serial")
 class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DataAccessRuleEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -5,6 +5,8 @@
  */
 package org.geoserver.wfs.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -28,8 +30,7 @@ import org.geoserver.web.wicket.SRSListTextArea;
 
 public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(WFSLayerConfig.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

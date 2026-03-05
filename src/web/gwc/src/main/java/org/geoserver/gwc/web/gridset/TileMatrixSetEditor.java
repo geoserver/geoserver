@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web.gridset;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.text.NumberFormat;
@@ -44,8 +45,7 @@ import org.geowebcache.grid.SRS;
 
 public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TileMatrixSetEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

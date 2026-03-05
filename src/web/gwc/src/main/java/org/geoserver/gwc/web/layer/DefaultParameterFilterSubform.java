@@ -6,6 +6,8 @@
 
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
@@ -22,8 +24,7 @@ import org.geowebcache.filter.parameters.ParameterFilter;
  */
 public class DefaultParameterFilterSubform extends AbstractParameterFilterSubform<ParameterFilter> {
 
-    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DefaultParameterFilterSubform.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

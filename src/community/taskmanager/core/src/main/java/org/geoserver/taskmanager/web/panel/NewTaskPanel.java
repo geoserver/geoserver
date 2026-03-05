@@ -4,6 +4,8 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -19,7 +21,7 @@ import org.geoserver.taskmanager.util.TaskManagerBeans;
 
 public class NewTaskPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NewTaskPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

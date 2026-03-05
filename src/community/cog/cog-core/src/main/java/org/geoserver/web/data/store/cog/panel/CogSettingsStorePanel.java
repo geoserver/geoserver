@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -19,7 +21,7 @@ import org.geoserver.web.util.MapModel;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class CogSettingsStorePanel<T extends CogSettingsStore> extends CogSettingsPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CogSettingsStorePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -4,6 +4,8 @@
  */
 package org.geoserver.pmtiles.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +34,7 @@ import org.wicketstuff.select2.StringTextChoiceProvider;
 @SuppressWarnings("serial")
 public class Select2ChoiceParamPanel<T extends Serializable> extends Panel implements ParamPanel<T> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(Select2ChoiceParamPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

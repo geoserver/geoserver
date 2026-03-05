@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -56,7 +58,7 @@ import org.geotools.util.logging.Logging;
 @SuppressWarnings("serial")
 public class FeatureResourceConfigurationPanel extends ResourceConfigurationPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FeatureResourceConfigurationPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -255,7 +257,8 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
     }
 
     static class ReloadWarningDialog extends Panel {
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(FeatureResourceConfigurationPanel.ReloadWarningDialog.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

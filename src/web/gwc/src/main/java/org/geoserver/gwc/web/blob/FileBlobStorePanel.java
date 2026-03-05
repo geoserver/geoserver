@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Arrays;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -27,7 +29,7 @@ import org.geowebcache.config.FileBlobStoreInfo;
  */
 public class FileBlobStorePanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FileBlobStorePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

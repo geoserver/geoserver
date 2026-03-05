@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.data.postgis.PostgisNGDataStoreFactory.PREPARED_STATEMENTS;
 import static org.geotools.jdbc.JDBCDataStoreFactory.FETCHSIZE;
 import static org.geotools.jdbc.JDBCDataStoreFactory.MAXCONN;
@@ -43,7 +44,7 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 @SuppressWarnings("serial")
 public abstract class AbstractDbPanel extends ImportSourcePanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AbstractDbPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

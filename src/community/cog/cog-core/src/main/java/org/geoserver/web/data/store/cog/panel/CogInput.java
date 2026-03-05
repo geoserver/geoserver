@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.Serial;
@@ -29,7 +31,7 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 /** Basic panel to set the Cog input URL. */
 public class CogInput extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CogInput.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

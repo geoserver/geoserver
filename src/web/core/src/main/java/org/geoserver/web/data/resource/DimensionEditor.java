@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -17,7 +19,7 @@ import org.geoserver.catalog.impl.DimensionInfoImpl;
  */
 public class DimensionEditor extends DimensionEditorBase<DimensionInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DimensionEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

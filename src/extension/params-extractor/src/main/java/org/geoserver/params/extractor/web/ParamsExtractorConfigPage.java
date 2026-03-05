@@ -4,6 +4,8 @@
  */
 package org.geoserver.params.extractor.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Optional;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -116,7 +118,7 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
 
     private static class EditButtonPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParamsExtractorConfigPage.EditButtonPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -149,7 +151,8 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
 
     private static class ActivateButtonPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(ParamsExtractorConfigPage.ActivateButtonPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

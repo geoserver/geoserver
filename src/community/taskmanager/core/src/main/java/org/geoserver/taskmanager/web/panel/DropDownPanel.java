@@ -4,6 +4,8 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class DropDownPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DropDownPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

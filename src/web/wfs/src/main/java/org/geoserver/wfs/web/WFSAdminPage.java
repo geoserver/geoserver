@@ -5,6 +5,8 @@
  */
 package org.geoserver.wfs.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -192,7 +194,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
     static class GMLPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WFSAdminPage.GMLPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

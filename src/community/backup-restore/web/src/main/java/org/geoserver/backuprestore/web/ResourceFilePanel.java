@@ -4,6 +4,8 @@
  */
 package org.geoserver.backuprestore.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +52,7 @@ import org.jdom2.input.SAXBuilder;
 @SuppressWarnings("serial")
 public class ResourceFilePanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ResourceFilePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

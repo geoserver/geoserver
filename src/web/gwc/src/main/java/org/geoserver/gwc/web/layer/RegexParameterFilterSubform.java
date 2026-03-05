@@ -6,6 +6,8 @@
 
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -25,7 +27,7 @@ import org.geowebcache.filter.parameters.RegexParameterFilter;
  */
 public class RegexParameterFilterSubform extends AbstractParameterFilterSubform<RegexParameterFilter> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RegexParameterFilterSubform.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

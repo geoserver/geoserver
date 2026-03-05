@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.admin;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Comparator;
 import java.util.List;
@@ -29,7 +31,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class ModuleStatusPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ModuleStatusPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -119,7 +121,7 @@ public class ModuleStatusPanel extends Panel {
 
     static class MessagePanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ModuleStatusPanel.MessagePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

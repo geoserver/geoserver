@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.admin;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.GraphicsEnvironment;
 import java.io.Serial;
 import java.text.NumberFormat;
@@ -44,7 +46,7 @@ import org.geotools.util.logging.Logging;
 
 public class StatusPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(StatusPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

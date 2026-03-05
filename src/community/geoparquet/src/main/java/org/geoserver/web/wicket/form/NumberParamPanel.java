@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.wicket.form;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -37,7 +39,7 @@ import org.geoserver.web.data.store.panel.ParamPanel;
 @SuppressWarnings("serial")
 public class NumberParamPanel<N extends Number & Comparable<N>> extends Panel implements ParamPanel<N> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NumberParamPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

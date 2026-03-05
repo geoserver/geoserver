@@ -4,6 +4,8 @@
  */
 package org.geoserver.inspire.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +23,7 @@ import org.apache.wicket.model.Model;
 // TODO WICKET8 - Verify this page works OK
 public class LanguagesEditor extends FormComponentPanel<String> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LanguagesEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

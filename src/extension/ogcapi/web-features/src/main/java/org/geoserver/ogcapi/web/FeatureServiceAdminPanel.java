@@ -4,6 +4,8 @@
  */
 package org.geoserver.ogcapi.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.model.IModel;
 import org.geoserver.ogcapi.v1.features.CQL2Conformance;
 import org.geoserver.ogcapi.v1.features.ECQLConformance;
@@ -13,7 +15,7 @@ import org.geoserver.wfs.WFSInfo;
 
 public class FeatureServiceAdminPanel extends AdminPagePanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FeatureServiceAdminPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -5,6 +5,8 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -17,7 +19,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 
 public class StatusBar extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(StatusBar.class);
 
     @Serial
     private static final long serialVersionUID = 1L;

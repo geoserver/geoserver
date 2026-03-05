@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,7 +35,7 @@ import org.geoserver.web.wicket.browser.ExtensionFileFilter;
 /** A Raster Panel supporting COG settings. */
 public class CogRasterEditPanel extends StoreEditPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CogRasterEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

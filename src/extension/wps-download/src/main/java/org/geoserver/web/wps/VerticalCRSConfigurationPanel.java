@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.wps;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +27,7 @@ import org.geotools.api.coverage.SampleDimensionType;
  */
 public class VerticalCRSConfigurationPanel extends ResourceConfigurationPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(VerticalCRSConfigurationPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

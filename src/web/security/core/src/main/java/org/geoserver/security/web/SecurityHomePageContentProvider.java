@@ -7,6 +7,7 @@ package org.geoserver.security.web;
 
 import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
 import static org.geoserver.security.impl.GeoServerUser.DEFAULT_ADMIN_PASSWD;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,7 +70,8 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
     // PasswordChangeWarningPanel
     static class SecurityWarningsPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(SecurityHomePageContentProvider.SecurityWarningsPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.netcdf;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +41,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponentPanel<T> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NetCDFPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

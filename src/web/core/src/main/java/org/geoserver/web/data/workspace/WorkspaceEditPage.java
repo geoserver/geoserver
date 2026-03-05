@@ -6,6 +6,7 @@
 package org.geoserver.web.data.workspace;
 
 import static org.geoserver.web.services.BaseServiceAdminPage.WORKSPACE_ADMIN_SERVICE_ACCESS;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -366,7 +367,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     class WsEditInfoPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WorkspaceEditPage.WsEditInfoPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -422,7 +423,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     class SettingsPanel extends FormComponentPanel<Serializable> {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WorkspaceEditPage.SettingsPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -592,7 +593,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     class ServicesPanel extends FormComponentPanel<Serializable> {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WorkspaceEditPage.ServicesPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

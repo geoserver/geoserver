@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.data.oracle.OracleNGDataStoreFactory.DATABASE;
 import static org.geotools.data.oracle.OracleNGDataStoreFactory.HOST;
 import static org.geotools.data.oracle.OracleNGOCIDataStoreFactory.ALIAS;
@@ -105,7 +106,7 @@ public class OraclePanel extends AbstractDbPanel {
 
     static class OCIParamPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(OraclePanel.OCIParamPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

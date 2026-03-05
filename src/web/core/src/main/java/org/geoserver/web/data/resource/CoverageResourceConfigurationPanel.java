@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +49,7 @@ import org.geotools.parameter.DefaultParameterDescriptor;
 @SuppressWarnings("serial")
 public class CoverageResourceConfigurationPanel extends ResourceConfigurationPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CoverageResourceConfigurationPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

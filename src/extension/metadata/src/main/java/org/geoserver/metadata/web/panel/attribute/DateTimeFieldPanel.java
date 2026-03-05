@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Date;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -12,7 +14,7 @@ import org.geoserver.web.wicket.DateField;
 
 public class DateTimeFieldPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DateTimeFieldPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

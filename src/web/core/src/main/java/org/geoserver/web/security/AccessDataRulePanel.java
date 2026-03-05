@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.security;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.util.List;
@@ -24,7 +26,7 @@ import org.geoserver.security.impl.DataAccessRule;
 
 public class AccessDataRulePanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AccessDataRulePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

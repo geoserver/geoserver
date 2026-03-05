@@ -4,6 +4,8 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.text.ParseException;
 import java.time.DayOfWeek;
@@ -31,7 +33,7 @@ import org.quartz.CronExpression;
 
 public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FrequencyPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

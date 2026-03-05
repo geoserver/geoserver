@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +34,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 // TODO WICKET8 - Verify this page works OK
 public class RepeatableAttributesTablePanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RepeatableAttributesTablePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

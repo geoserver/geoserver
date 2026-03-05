@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.simulator;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +34,7 @@ import org.geoserver.acl.plugin.web.support.SerializablePredicate;
 @SuppressWarnings("serial")
 public class AccessInfoFiltersTabbedPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AccessInfoFiltersTabbedPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

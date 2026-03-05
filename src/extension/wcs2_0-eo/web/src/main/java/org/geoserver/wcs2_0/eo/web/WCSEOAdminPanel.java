@@ -4,6 +4,8 @@
  */
 package org.geoserver.wcs2_0.eo.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
@@ -17,7 +19,7 @@ import org.geoserver.web.util.MapModel;
 
 public class WCSEOAdminPanel extends AdminPagePanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(WCSEOAdminPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

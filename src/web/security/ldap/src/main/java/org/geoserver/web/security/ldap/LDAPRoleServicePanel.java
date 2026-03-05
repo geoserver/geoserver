@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.security.ldap;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -31,7 +33,8 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
 
     static class LDAPAuthenticationPanel extends FormComponentPanel<String> {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(LDAPRoleServicePanel.LDAPAuthenticationPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

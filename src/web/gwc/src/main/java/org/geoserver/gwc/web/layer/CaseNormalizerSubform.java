@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +26,7 @@ import org.geowebcache.filter.parameters.CaseNormalizer.Case;
  */
 public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CaseNormalizerSubform.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

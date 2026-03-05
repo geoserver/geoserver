@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.blob.gcs.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -17,7 +19,7 @@ import org.geowebcache.storage.blobstore.gcs.GoogleCloudStorageBlobStoreInfo;
 /** Panel for GoogleCloudStorageBlobStore */
 public class GcsBlobStorePanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GcsBlobStorePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

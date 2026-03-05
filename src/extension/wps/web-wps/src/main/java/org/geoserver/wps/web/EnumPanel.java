@@ -5,6 +5,8 @@
  */
 package org.geoserver.wps.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -18,7 +20,7 @@ import org.apache.wicket.model.IModel;
  */
 public class EnumPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(EnumPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

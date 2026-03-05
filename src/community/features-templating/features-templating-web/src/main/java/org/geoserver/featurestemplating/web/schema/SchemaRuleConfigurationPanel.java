@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.web.schema;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +39,7 @@ import org.geotools.filter.text.cql2.CQLException;
 
 public class SchemaRuleConfigurationPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SchemaRuleConfigurationPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

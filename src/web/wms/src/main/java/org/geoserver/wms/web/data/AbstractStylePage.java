@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -93,7 +95,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     static class ChooseColorPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(AbstractStylePage.ChooseColorPanel.class);
 
         final TextField<String> chooser;
         final String initialColor;

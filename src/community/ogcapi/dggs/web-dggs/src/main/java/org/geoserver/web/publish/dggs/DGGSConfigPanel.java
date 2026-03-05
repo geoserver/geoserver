@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.publish.dggs;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_MAXRES_KEY;
 import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_MINRES_KEY;
 import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_OFFSET_KEY;
@@ -33,7 +34,7 @@ import org.geotools.util.decorate.Wrapper;
 /** Configures a layer DGGS related attributes */
 public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DGGSConfigPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

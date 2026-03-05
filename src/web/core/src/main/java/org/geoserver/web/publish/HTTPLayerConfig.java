@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
@@ -18,7 +20,7 @@ import org.geoserver.web.util.MapModel;
 /** Configures the HTTP caching parameters */
 public class HTTPLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(HTTPLayerConfig.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

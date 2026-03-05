@@ -6,6 +6,8 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.layerdetails;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import com.google.common.collect.Streams;
 import java.util.Iterator;
 import java.util.List;
@@ -80,7 +82,7 @@ import org.wicketstuff.select2.StringTextChoiceProvider;
 @SuppressWarnings("serial")
 public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetails> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerDetailsEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

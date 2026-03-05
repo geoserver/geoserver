@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +29,7 @@ import org.geoserver.catalog.KeywordInfo;
 // TODO WICKET8 - Verify this page works OK
 public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(KeywordsEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

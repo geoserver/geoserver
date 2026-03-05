@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import org.apache.wicket.Component;
@@ -25,7 +27,7 @@ import org.apache.wicket.model.Model;
 @SuppressWarnings("serial")
 public class GeoServerDialog extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerDialog.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -154,7 +156,7 @@ public class GeoServerDialog extends Panel {
      */
     protected class ContentsPage extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerDialog.ContentsPage.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -181,7 +183,7 @@ public class GeoServerDialog extends Panel {
 
     protected static class InfoPage extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerDialog.InfoPage.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

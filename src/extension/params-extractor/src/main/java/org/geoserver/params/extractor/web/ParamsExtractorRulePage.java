@@ -4,6 +4,8 @@
  */
 package org.geoserver.params.extractor.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -91,7 +93,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
 
     public static class SimpleRulePanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParamsExtractorRulePage.SimpleRulePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -115,7 +117,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
 
     public static class ComplexRulePanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParamsExtractorRulePage.ComplexRulePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -143,7 +145,8 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
 
     public static class EchoParameterPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(ParamsExtractorRulePage.EchoParameterPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

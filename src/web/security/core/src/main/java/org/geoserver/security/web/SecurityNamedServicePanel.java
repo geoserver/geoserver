@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.logging.Logger;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;
@@ -26,7 +28,7 @@ import org.geotools.util.logging.Logging;
  */
 public abstract class SecurityNamedServicePanel<T extends SecurityNamedServiceConfig> extends FormComponentPanel<T> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityNamedServicePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -4,6 +4,8 @@
  */
 package org.geoserver.proxybase.ext.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -134,7 +136,8 @@ public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
 
     private static class ActivateButtonPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(ProxyBaseExtensionConfigPage.ActivateButtonPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

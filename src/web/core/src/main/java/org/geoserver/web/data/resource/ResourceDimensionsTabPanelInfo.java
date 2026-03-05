@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
@@ -42,7 +44,7 @@ import org.geotools.util.logging.Logging;
  */
 public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerInfo> implements MetadataMapValidator {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ResourceDimensionsTabPanelInfo.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -14,7 +16,7 @@ import org.geoserver.web.publish.PublishedConfigurationPanel;
 /** Configures {@link LayerGroupInfo} WMS specific attributes */
 public class LayerAuthoritiesAndIdentifiersConfigPanel extends PublishedConfigurationPanel<PublishedInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerAuthoritiesAndIdentifiersConfigPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

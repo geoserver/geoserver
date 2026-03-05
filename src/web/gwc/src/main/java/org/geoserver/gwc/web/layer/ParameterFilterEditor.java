@@ -6,6 +6,8 @@
 
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ import org.geowebcache.filter.parameters.StringParameterFilter;
 // TODO WICKET8 - Verify this page works OK
 class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParameterFilterEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

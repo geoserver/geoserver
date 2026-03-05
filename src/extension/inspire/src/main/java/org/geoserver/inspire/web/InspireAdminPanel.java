@@ -11,6 +11,7 @@ import static org.geoserver.inspire.InspireMetadata.OTHER_LANGUAGES;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.net.URL;
@@ -43,7 +44,7 @@ import org.geoserver.wfs.WFSInfo;
 /** Panel for the service admin page to set the service INSPIRE extension preferences. */
 public class InspireAdminPanel extends AdminPagePanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(InspireAdminPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

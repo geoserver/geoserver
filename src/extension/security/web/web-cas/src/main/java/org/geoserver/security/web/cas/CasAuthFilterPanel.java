@@ -6,6 +6,7 @@
 package org.geoserver.security.web.cas;
 
 import static org.geoserver.security.cas.CasAuthenticationFilterConfig.CasSpecificRoleSource.CustomAttribute;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.net.HttpURLConnection;
@@ -146,7 +147,7 @@ public class CasAuthFilterPanel extends PreAuthenticatedUserNameFilterPanel<CasA
 
     static class CustomAttributePanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(CasAuthFilterPanel.CustomAttributePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

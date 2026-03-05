@@ -5,6 +5,7 @@
 package org.geoserver.wms.web.data;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -79,7 +80,7 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 public class StyleAdminPanel extends StyleEditTabPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(StyleAdminPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

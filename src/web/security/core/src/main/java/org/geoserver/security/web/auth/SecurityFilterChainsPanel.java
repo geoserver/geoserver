@@ -6,6 +6,7 @@
 package org.geoserver.security.web.auth;
 
 import static org.geoserver.security.web.auth.SecurityFilterChainProvider.NAME;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -47,7 +48,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
  */
 public class SecurityFilterChainsPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityFilterChainsPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -237,7 +238,7 @@ public class SecurityFilterChainsPanel extends Panel {
 
     class PositionPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityFilterChainsPanel.PositionPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

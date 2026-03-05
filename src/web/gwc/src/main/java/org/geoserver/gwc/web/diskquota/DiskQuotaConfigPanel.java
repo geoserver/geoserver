@@ -5,6 +5,8 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -54,7 +56,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class DiskQuotaConfigPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DiskQuotaConfigPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

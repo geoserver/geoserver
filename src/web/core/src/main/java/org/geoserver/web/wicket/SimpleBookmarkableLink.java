@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,7 +23,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
  */
 public class SimpleBookmarkableLink extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SimpleBookmarkableLink.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -5,6 +5,8 @@
  */
 package org.geoserver.inspire.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -39,7 +41,7 @@ import org.geoserver.wfs.WFSInfo;
 @SuppressWarnings("serial")
 public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueResourceIdentifiers> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(UniqueResourceIdentifiersEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -6,6 +6,8 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import lombok.NonNull;
 import lombok.Setter;
@@ -129,7 +131,7 @@ public final class RulesTablePanel<R extends Serializable> extends GeoServerTabl
 
     static class TableData extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(RulesTablePanel.TableData.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -155,7 +157,7 @@ public final class RulesTablePanel<R extends Serializable> extends GeoServerTabl
 
     public class UpDownButtonsPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(RulesTablePanel.UpDownButtonsPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

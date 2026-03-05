@@ -5,6 +5,8 @@
 
 package org.geoserver.metadata.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -19,7 +21,7 @@ import org.wicketstuff.progressbar.ProgressionModel;
 
 public class ProgressPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ProgressPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

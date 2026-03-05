@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.system.status;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Duration;
@@ -35,7 +37,7 @@ import org.geotools.util.logging.Logging;
 /** Panel displaying system resources monitoring values that is refreshed periodically. */
 public class RefreshedPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RefreshedPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

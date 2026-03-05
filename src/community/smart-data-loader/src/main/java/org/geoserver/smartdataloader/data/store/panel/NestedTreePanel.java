@@ -4,6 +4,8 @@
  */
 package org.geoserver.smartdataloader.data.store.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -25,7 +27,7 @@ import org.apache.wicket.model.util.SetModel;
 /** Panel that includes a NestedTree wicket component and a label. */
 public class NestedTreePanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NestedTreePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

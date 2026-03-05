@@ -4,6 +4,8 @@
  */
 package org.geoserver.smartdataloader.data.store.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +57,7 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 @SuppressWarnings("serial")
 public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SmartDataLoaderStoreEditPanel.class);
 
     // resources
     private Model<DataStoreSummary> datastoreModel;

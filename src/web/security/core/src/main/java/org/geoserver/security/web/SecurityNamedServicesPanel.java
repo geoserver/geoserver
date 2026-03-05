@@ -6,6 +6,7 @@
 package org.geoserver.security.web;
 
 import static org.geoserver.security.web.SecurityNamedServiceProvider.NAME;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
  */
 public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceConfig> extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityNamedServicesPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

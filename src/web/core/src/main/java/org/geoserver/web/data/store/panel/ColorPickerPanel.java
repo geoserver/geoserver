@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Locale;
 import org.apache.wicket.markup.html.basic.Label;
@@ -22,7 +24,7 @@ import org.geoserver.web.wicket.ColorPickerField;
  */
 public class ColorPickerPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ColorPickerPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

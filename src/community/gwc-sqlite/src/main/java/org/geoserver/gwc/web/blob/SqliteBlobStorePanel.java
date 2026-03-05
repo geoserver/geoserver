@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -20,7 +22,7 @@ import org.geowebcache.sqlite.SqliteInfo;
 /** Properties that will be common to all SQLite based blob stores. */
 abstract class SqliteBlobStorePanel<T extends SqliteInfo> extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SqliteBlobStorePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

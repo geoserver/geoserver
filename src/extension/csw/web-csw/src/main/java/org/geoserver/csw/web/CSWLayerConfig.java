@@ -4,6 +4,8 @@
  */
 package org.geoserver.csw.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
@@ -22,7 +24,7 @@ import org.geoserver.web.util.MetadataMapModel;
 /** A configuration panel for CoverageInfo properties that related to CSW publication */
 public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CSWLayerConfig.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

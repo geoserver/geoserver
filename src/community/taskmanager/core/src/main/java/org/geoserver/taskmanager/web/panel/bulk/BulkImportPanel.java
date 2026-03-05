@@ -4,6 +4,8 @@
  */
 package org.geoserver.taskmanager.web.panel.bulk;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 // TODO WICKET8 - Verify this page works OK
 public class BulkImportPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(BulkImportPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

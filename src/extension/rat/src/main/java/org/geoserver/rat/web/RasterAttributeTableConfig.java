@@ -4,6 +4,8 @@
  */
 package org.geoserver.rat.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import it.geosolutions.imageio.pam.PAMDataset;
 import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.Row;
 import java.io.IOException;
@@ -42,7 +44,7 @@ import org.geotools.util.logging.Logging;
 
 public class RasterAttributeTableConfig extends PublishedConfigurationPanel<LayerInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RasterAttributeTableConfig.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

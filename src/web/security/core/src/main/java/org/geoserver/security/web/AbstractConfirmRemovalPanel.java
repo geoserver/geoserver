@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ import org.apache.wicket.model.Model;
 
 public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AbstractConfirmRemovalPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

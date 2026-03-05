@@ -6,6 +6,7 @@
 package org.geoserver.web.data.layer;
 
 import static org.geoserver.catalog.CoverageView.BAND_SEPARATOR;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.SampleModel;
@@ -55,7 +56,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
  */
 public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CoverageViewEditor.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

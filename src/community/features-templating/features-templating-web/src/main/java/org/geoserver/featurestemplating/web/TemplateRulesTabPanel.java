@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +23,7 @@ import org.geoserver.web.publish.PublishedEditTabPanel;
 
 public class TemplateRulesTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TemplateRulesTabPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.Serial;
@@ -35,7 +37,7 @@ import org.geotools.util.logging.Logging;
 
 public class GenerateDomainPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GenerateDomainPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

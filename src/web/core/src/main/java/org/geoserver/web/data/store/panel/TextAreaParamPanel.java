@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -21,7 +23,7 @@ import org.apache.wicket.validation.IValidator;
 @SuppressWarnings("serial")
 public class TextAreaParamPanel extends Panel implements ParamPanel<String> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TextAreaParamPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -5,6 +5,7 @@
 package org.geoserver.mapml;
 
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -57,7 +58,7 @@ import org.geowebcache.layer.TileLayer;
  */
 public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MapMLLayerConfigurationPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

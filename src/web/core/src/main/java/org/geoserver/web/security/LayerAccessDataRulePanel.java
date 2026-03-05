@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.security;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +17,7 @@ import org.geoserver.web.publish.PublishedEditTabPanel;
 
 public class LayerAccessDataRulePanel extends PublishedEditTabPanel<PublishedInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerAccessDataRulePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.services;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -364,7 +366,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
     class GlobalWorkspacePanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.GlobalWorkspacePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -404,7 +406,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
     class LocalWorkspacePanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.LocalWorkspacePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

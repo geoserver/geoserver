@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.security.ldap;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Optional;
@@ -101,7 +103,8 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
     static class UserGroupAuthorizationPanel extends AuthorizationPanel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(LDAPAuthProviderPanel.UserGroupAuthorizationPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -131,7 +134,8 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
     class LDAPAuthorizationPanel extends AuthorizationPanel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(LDAPAuthProviderPanel.LDAPAuthorizationPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -228,7 +232,8 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
     class TestLDAPConnectionPanel extends FormComponentPanel<HashMap<String, Object>> {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(LDAPAuthProviderPanel.TestLDAPConnectionPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

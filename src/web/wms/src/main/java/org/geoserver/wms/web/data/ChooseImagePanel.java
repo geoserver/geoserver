@@ -4,6 +4,8 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serial;
@@ -35,7 +37,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 class ChooseImagePanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ChooseImagePanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

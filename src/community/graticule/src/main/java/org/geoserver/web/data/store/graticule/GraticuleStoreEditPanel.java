@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.store.graticule;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -12,7 +14,7 @@ import org.geoserver.web.data.store.StoreEditPanel;
 
 public final class GraticuleStoreEditPanel extends StoreEditPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GraticuleStoreEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

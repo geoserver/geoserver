@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.layerdetails;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
@@ -40,7 +42,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 @SuppressWarnings("serial")
 class LayerAttributesEditPanel extends FormComponentPanel<List<MutableLayerAttribute>> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerAttributesEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

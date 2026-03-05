@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +34,7 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  */
 public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGroupInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerGroupStyleConfig.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

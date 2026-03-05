@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.auth;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Arrays;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -95,7 +97,8 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
 
     static class HeaderPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(PreAuthenticatedUserNameFilterPanel.HeaderPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -116,7 +119,8 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
 
     static class UserGroupServicePanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(PreAuthenticatedUserNameFilterPanel.UserGroupServicePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -137,7 +141,8 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
 
     static class RoleServicePanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(PreAuthenticatedUserNameFilterPanel.RoleServicePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

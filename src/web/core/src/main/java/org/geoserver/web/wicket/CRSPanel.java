@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +52,7 @@ import org.geotools.util.logging.Logging;
 @SuppressWarnings("serial")
 public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CRSPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -389,7 +391,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
      */
     public static class WKTPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(CRSPanel.WKTPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

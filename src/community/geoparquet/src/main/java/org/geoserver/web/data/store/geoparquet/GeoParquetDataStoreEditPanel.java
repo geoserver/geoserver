@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.store.geoparquet;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.AWS_PROFILE;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.AWS_REGION;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.MAX_HIVE_DEPTH;
@@ -47,7 +48,7 @@ import org.geotools.api.data.DataAccessFactory.Param;
 @SuppressWarnings("serial")
 public class GeoParquetDataStoreEditPanel extends StoreEditPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoParquetDataStoreEditPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

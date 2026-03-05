@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -15,7 +17,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 
 public class LinkedLayersPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LinkedLayersPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

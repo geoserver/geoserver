@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket.browser;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.File;
 import java.io.Serial;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ import org.apache.wicket.model.IModel;
 // TODO WICKET8 - Verify this page works OK
 public abstract class FileBreadcrumbs extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FileBreadcrumbs.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

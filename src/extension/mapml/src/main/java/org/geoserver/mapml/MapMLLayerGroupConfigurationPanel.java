@@ -8,6 +8,7 @@ package org.geoserver.mapml;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_MULTIEXTENTS;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLLayerConfigurationPanel.getAvailableMimeTypes;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.util.logging.Logger;
@@ -30,7 +31,7 @@ import org.geotools.util.logging.Logging;
  */
 public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPanel<LayerGroupInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MapMLLayerGroupConfigurationPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

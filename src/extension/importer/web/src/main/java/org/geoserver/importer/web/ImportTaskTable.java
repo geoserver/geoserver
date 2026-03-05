@@ -5,6 +5,8 @@
  */
 package org.geoserver.importer.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.ByteArrayOutputStream;
@@ -339,7 +341,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     //
     class NoCRSPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ImportTaskTable.NoCRSPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -396,7 +398,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     static class LayerLinkPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ImportTaskTable.LayerLinkPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -442,7 +444,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     }
 
     class LayerPreviewPanel extends Panel {
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ImportTaskTable.LayerPreviewPanel.class);
 
         public LayerPreviewPanel(String id, IModel<ImportTask> model) {
             super(id);
@@ -506,7 +508,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     static class AdvancedOptionPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ImportTaskTable.AdvancedOptionPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -533,7 +535,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     static class ErrorPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ImportTaskTable.ErrorPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -565,7 +567,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     static class ExceptionPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ImportTaskTable.ExceptionPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

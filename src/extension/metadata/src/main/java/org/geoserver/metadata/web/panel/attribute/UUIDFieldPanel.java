@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.UUID;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -14,7 +16,7 @@ import org.apache.wicket.model.IModel;
 
 public class UUIDFieldPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(UUIDFieldPanel.class);
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

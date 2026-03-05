@@ -205,6 +205,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Remove doc/en/build.xml (Ant build script)
     - Update doc/en/pom.xml to remove Sphinx build profiles
     - Remove .github/workflows/docs.yml (old Sphinx workflow)
+    - **Remove doc/en/themes/geoserver/ directory (temporary Sphinx theme - see README-TODO.md)**
     - Commit removals with message: "Remove RST infrastructure after migration to Markdown"
     - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7_
 
@@ -381,6 +382,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
 
   - [ ] 5.6 Remove RST infrastructure for 3.0 after validation
     - Remove all RST source directories and Sphinx configuration
+    - **Remove doc/en/themes/geoserver/ directory (temporary Sphinx theme - see README-TODO.md)**
     - Commit removals with message: "Remove RST infrastructure after migration to Markdown"
     - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7_
 

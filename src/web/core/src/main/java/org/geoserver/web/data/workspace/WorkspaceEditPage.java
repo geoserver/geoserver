@@ -536,6 +536,11 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             // initialize from global service
             ServiceInfo global = gs.getService(serviceClass);
             OwsUtils.copy(global, newService, serviceClass);
+            // deep-copy disabledVersions so workspace service has its own independent list
+            ServiceInfoImpl newServiceImpl = (ServiceInfoImpl) newService;
+            if (newServiceImpl.getDisabledVersions() != null) {
+                newServiceImpl.setDisabledVersions(new ArrayList<>(newServiceImpl.getDisabledVersions()));
+            }
             newService.setWorkspace(wsModel.getObject());
 
             // hack, but need id to be null so its considered unattached

@@ -8,14 +8,16 @@ package org.geoserver.ows;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.ServiceVersionUtils;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
@@ -29,7 +31,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Justin Deoliveira, OpenGEO
  */
-public class DisabledServiceCheck implements DispatcherCallback {
+public class DisabledServiceCheck implements DispatcherCallback, ServiceVersionFilter {
 
     static final Logger LOGGER = Logging.getLogger(DisabledServiceCheck.class);
     /** GeoServer configuration */
@@ -73,19 +75,27 @@ public class DisabledServiceCheck implements DispatcherCallback {
     }
 
     @Override
+    public List<String> filterVersions(Service service, List<String> versions) {
+        if (service == null || versions == null || versions.isEmpty()) {
+            return versions;
+        }
+
+        try {
+            ServiceInfo serviceInfo = lookupWorkspaceAwareServiceInfo(service);
+            if (serviceInfo == null) {
+                return versions;
+            }
+            return ServiceVersionUtils.getEnabledVersions(service.getId(), serviceInfo);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception during version filtering", e);
+            return versions;
+        }
+    }
+
+    @Override
     public Service serviceDispatched(Request request, Service service) {
         try {
-            ServiceInfo cachedInfo = lookupServiceInfo(service);
-            ServiceInfo info = null;
-            if (cachedInfo != null) {
-                GeoServer geoServer = GeoServerExtensions.bean(GeoServer.class);
-                if (geoServer != null && cachedInfo.getId() != null) {
-                    info = geoServer.getService(cachedInfo.getId(), ServiceInfo.class);
-                }
-                if (info == null) {
-                    info = cachedInfo;
-                }
-            }
+            ServiceInfo info = lookupWorkspaceAwareServiceInfo(service);
 
             if (info == null) {
                 // log a warning, we could not perform an important check
@@ -140,6 +150,44 @@ public class DisabledServiceCheck implements DispatcherCallback {
             throw new ServiceException(e);
         }
         return service;
+    }
+
+    /**
+     * Looks up the workspace-aware ServiceInfo for the given service. Checks LocalWorkspace first, then falls back to
+     * the Dispatcher request context, then to the global service.
+     */
+    private ServiceInfo lookupWorkspaceAwareServiceInfo(Service service) throws Exception {
+        ServiceInfo cachedInfo = lookupServiceInfo(service);
+        if (cachedInfo == null) {
+            return null;
+        }
+
+        // determine workspace context
+        WorkspaceInfo workspace = LocalWorkspace.get();
+        if (workspace == null) {
+            Request owsRequest = Dispatcher.REQUEST.get();
+            if (owsRequest != null && owsRequest.getContext() != null) {
+                String ctx = owsRequest.getContext();
+                String wsName = ctx.contains("/") ? ctx.substring(0, ctx.indexOf('/')) : ctx;
+                workspace = geoServer.getCatalog().getWorkspaceByName(wsName);
+            }
+        }
+
+        // look up workspace-specific service first
+        ServiceInfo info = null;
+        if (workspace != null) {
+            info = geoServer.getServices(workspace).stream()
+                    .filter(si -> si.getName().equalsIgnoreCase(cachedInfo.getName()))
+                    .findFirst()
+                    .orElse(null);
+        }
+        if (info == null && cachedInfo.getId() != null) {
+            info = geoServer.getService(cachedInfo.getId(), ServiceInfo.class);
+        }
+        if (info == null) {
+            info = cachedInfo;
+        }
+        return info;
     }
 
     /**

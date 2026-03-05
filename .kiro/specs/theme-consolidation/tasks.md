@@ -75,7 +75,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
     - Canonical file remains at `doc/themes/geoserver/stylesheets/extra.css`
     - Changes committed to git
 
-- [-] 2.2 Evaluate doc/en/themes/geoserver/
+- [x] 2.2 Evaluate doc/en/themes/geoserver/
   - Priority: medium
   - Estimated effort: 20 minutes
   - Description: Determine if `doc/en/themes/geoserver/` is needed or should be removed
@@ -91,7 +91,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
     - If removed, directory deleted and committed
     - If kept, purpose documented
 
-- [~] 2.3 Handle Doc-Specific Customizations
+- [x] 2.3 Handle Doc-Specific Customizations
   - Priority: medium
   - Estimated effort: 30 minutes
   - Description: Properly handle any documentation-specific theme files (like docguide's pagelogo.png)
@@ -111,7 +111,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
 
 ### Phase 3: Testing and Verification
 
-- [~] 3.1 Build and Test All Documentation Types
+- [x] 3.1 Build and Test All Documentation Types
   - Priority: high
   - Estimated effort: 45 minutes
   - Description: Build all three documentation types and verify everything works correctly
@@ -129,7 +129,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
     - Build output sizes are reasonable
     - No missing file errors
 
-- [~] 3.2 Visual Regression Testing
+- [x] 3.2 Visual Regression Testing
   - Priority: high
   - Estimated effort: 30 minutes
   - Description: Verify that all visual elements render correctly after consolidation
@@ -150,7 +150,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
     - No visual regressions from baseline
     - Dark mode works
 
-- [~] 3.3 Test Local Development Workflow
+- [-] 3.3 Test Local Development Workflow
   - Priority: medium
   - Estimated effort: 20 minutes
   - Description: Verify that local development with `mkdocs serve` works correctly
@@ -169,7 +169,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
 
 ### Phase 4: Documentation and Cleanup
 
-- [~] 4.1 Update Build Documentation
+- [ ] 4.1 Update Build Documentation
   - Priority: medium
   - Estimated effort: 30 minutes
   - Description: Document the theme structure and build process
@@ -188,7 +188,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
     - Override mechanism explained
     - Troubleshooting guide included
 
-- [~] 4.2 Create Verification Script
+- [ ] 4.2 Create Verification Script
   - Priority: low
   - Estimated effort: 45 minutes
   - Description: Create a script to verify theme files are not duplicated
@@ -206,7 +206,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
     - Script provides clear error messages
     - Script documented
 
-- [~] 4.3 Test on GitHub Pages
+- [ ] 4.3 Test on GitHub Pages
   - Priority: high
   - Estimated effort: 30 minutes
   - Description: Verify that GitHub Pages deployment works correctly with consolidated theme
@@ -228,7 +228,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
 
 ### Phase 5: Finalization
 
-- [~] 5.1 Code Review and Testing
+- [ ] 5.1 Code Review and Testing
   - Priority: high
   - Estimated effort: 30 minutes
   - Description: Final review and testing before merging
@@ -246,7 +246,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
     - Full build test passes
     - Clean checkout test passes
 
-- [~] 5.2 Merge and Monitor
+- [ ] 5.2 Merge and Monitor
   - Priority: high
   - Estimated effort: 20 minutes
   - Description: Merge changes and monitor for issues

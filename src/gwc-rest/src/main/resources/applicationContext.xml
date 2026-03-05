@@ -24,7 +24,7 @@
     <constructor-arg ref="catalog" />
     <constructor-arg type="java.lang.String" value="/gwc/rest/wmts" />
     <property name="alwaysUseFullPath" value="true" />
-    <property name="order" value="10" />
+    <property name="order" value="-50" />
   </bean>
 
   <context:component-scan base-package="org.geowebcache.rest, org.geowebcache.diskquota.rest.controller" />

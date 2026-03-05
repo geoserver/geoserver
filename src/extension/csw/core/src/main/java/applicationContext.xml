@@ -188,9 +188,10 @@
     <bean id="cswRecordDescriptor" class="org.geoserver.csw.records.CSWRecordDescriptor"/>
     
     <!-- http url mapping -->
-    <bean id="cswURLMapping" 
+    <bean id="cswURLMapping"
       class="org.geoserver.ows.OWSHandlerMapping">
       <constructor-arg ref="catalog"/>
+      <property name="order" value="-100"/>
       <property name="alwaysUseFullPath" value="true"/>
       <property name="interceptors">
         <list>

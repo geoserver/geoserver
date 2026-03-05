@@ -50,16 +50,16 @@ extra:
   doc_type: "user"
   doc_switcher:
     - label: "User Manual"
-      url: "/en/user/"
+      url: "../user/"
       type: "user"
     - label: "Developer Manual"
-      url: "/en/developer/"
+      url: "../developer/"
       type: "developer"
     - label: "Documentation Guide"
-      url: "/en/docguide/"
+      url: "../docguide/"
       type: "docguide"
     - label: "Swagger APIs"
-      url: "/en/api/"
+      url: "../api/"
       type: "swagger"
   version_selector:
     - version: latest

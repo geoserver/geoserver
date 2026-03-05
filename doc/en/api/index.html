@@ -1,61 +1,199 @@
-<!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GeoServer API Docs</title>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="./swagger-ui.css" >
+  <title>GeoServer API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
   <style>
-    html
-    {
-        box-sizing: border-box;
-        overflow: -moz-scrollbars-vertical;
-        overflow-y: scroll;
+    html {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
     }
-    *,
-    *:before,
-    *:after
-    {
-        box-sizing: inherit;
+    
+    *, *:before, *:after {
+      box-sizing: inherit;
     }
 
     body {
-      margin:0;
+      margin: 0;
+      padding: 0;
       background: #fafafa;
+    }
+    
+    .info-banner {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 9999;
+      background-color: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: help;
+      color: #856404;
+      transition: all 0.3s ease;
+    }
+    
+    .info-banner .warning-icon {
+      display: block;
+      font-size: 22px;
+      line-height: 40px;
+      text-align: center;
+    }
+    
+    .info-banner:hover {
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      padding: 15px;
+    }
+    
+    .info-banner .warning-icon {
+      display: block;
+    }
+    
+    .info-banner .warning-text {
+      display: none;
+      max-width: 400px;
+    }
+    
+    .info-banner:hover .warning-icon {
+      display: none;
+    }
+    
+    .info-banner:hover .warning-text {
+      display: block;
+    }
+    
+    .info-banner h3 {
+      margin: 0 0 10px 0;
+      color: #856404;
+      font-size: 16px;
+    }
+    
+    .info-banner p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #856404;
     }
   </style>
 </head>
 
 <body>
-<div id="swagger-ui"></div>
+  <div class="info-banner" title="Click for important information">
+    <span class="warning-icon">⚠️</span>
+    <div class="warning-text">
+      <h3>⚠️ Warning</h3>
+      <p>The API is documented as Swagger 2.0 files. However, these files have been written by hand back in 2017, and have not always been kept up to date with the evolution of the GeoServer configuration object structure. Also, they have not been tested for proper client generation, and will likely not work for that purpose. Take them only as a form of documentation.</p>
+    </div>
+  </div>
+  
+  <div id="swagger-ui"></div>
 
-<script src="./swagger-ui-bundle.js"> </script>
-<script src="./swagger-ui-standalone-preset.js"> </script>
-<script>
-window.onload = function() {
-  var url = window.location.href.split('#')[1];
-  // Build a system
-  const ui = SwaggerUIBundle({
-    url: url,
-    dom_id: '#swagger-ui',
-    presets: [
-      SwaggerUIBundle.presets.apis,
-      SwaggerUIStandalonePreset
-    ],
-    plugins: [
-      SwaggerUIBundle.plugins.DownloadUrl
-    ],
-    layout: "StandaloneLayout"
-  });
+  <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js" crossorigin></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js" crossorigin></script>
+  <script>
+    window.onload = function() {
+      // Check if a specific spec is requested via hash
+      var hashUrl = window.location.hash.substring(1);
+      
+      // Define all available API specifications
+      const specs = [
+        { name: "About: Manifests", url: "1.0.0/manifests.yaml" },
+        { name: "About: System Status", url: "1.0.0/system-status.yaml" },
+        { name: "Datastores", url: "1.0.0/datastores.yaml" },
+        { name: "Coverages", url: "1.0.0/coverages.yaml" },
+        { name: "Coverage Stores", url: "1.0.0/coveragestores.yaml" },
+        { name: "Feature Types", url: "1.0.0/featuretypes.yaml" },
+        { name: "Fonts", url: "1.0.0/fonts.yaml" },
+        { name: "Layer Groups", url: "1.0.0/layergroups.yaml" },
+        { name: "Layers", url: "1.0.0/layers.yaml" },
+        { name: "Logging", url: "1.0.0/logging.yaml" },
+        { name: "Monitoring", url: "1.0.0/monitoring.yaml" },
+        { name: "Namespaces", url: "1.0.0/namespaces.yaml" },
+        { name: "OWS Services (WMS/WFS/WCS/WMTS)", url: "1.0.0/owsservices.yaml" },
+        { name: "Reload", url: "1.0.0/reload.yaml" },
+        { name: "Resource", url: "1.0.0/resource.yaml" },
+        { name: "Security", url: "1.0.0/security.yaml" },
+        { name: "Settings", url: "1.0.0/settings.yaml" },
+        { name: "Structured Coverages", url: "1.0.0/structuredcoverages.yaml" },
+        { name: "Styles", url: "1.0.0/styles.yaml" },
+        { name: "Templates", url: "1.0.0/templates.yaml" },
+        { name: "Transforms", url: "1.0.0/transforms.yaml" },
+        { name: "WMS Layers", url: "1.0.0/wmslayers.yaml" },
+        { name: "WMS Stores", url: "1.0.0/wmsstores.yaml" },
+        { name: "WMTS Layers", url: "1.0.0/wmtslayers.yaml" },
+        { name: "WMTS Stores", url: "1.0.0/wmtsstores.yaml" },
+        { name: "Workspaces", url: "1.0.0/workspaces.yaml" },
+        { name: "URL Checks", url: "1.0.0/urlchecks.yaml" },
+        { name: "User Groups", url: "1.0.0/usergroup.yaml" },
+        { name: "Roles", url: "1.0.0/roles.yaml" },
+        { name: "Filter Chains", url: "1.0.0/filterchains.yaml" },
+        { name: "Authentication Filters", url: "1.0.0/authenticationfilterconfiguration.yaml" },
+        { name: "Authentication Providers", url: "1.0.0/authenticationproviders.yaml" },
+        { name: "User Group Services", url: "1.0.0/usergroupservices.yaml" },
+        { name: "GWC: Blob Stores", url: "1.0.0/gwcblobstores.yaml" },
+        { name: "GWC: Bounds", url: "1.0.0/gwcbounds.yaml" },
+        { name: "GWC: Disk Quota", url: "1.0.0/gwcdiskquota.yaml" },
+        { name: "GWC: Filter Update", url: "1.0.0/gwcfilterupdate.yaml" },
+        { name: "GWC: Global", url: "1.0.0/gwcglobal.yaml" },
+        { name: "GWC: Gridsets", url: "1.0.0/gwcgridsets.yaml" },
+        { name: "GWC: Index", url: "1.0.0/gwcindex.yaml" },
+        { name: "GWC: Layers", url: "1.0.0/gwclayers.yaml" },
+        { name: "GWC: Mass Truncate", url: "1.0.0/gwcmasstruncate.yaml" },
+        { name: "GWC: Reload", url: "1.0.0/gwcreload.yaml" },
+        { name: "GWC: Seed", url: "1.0.0/gwcseed.yaml" },
+        { name: "Importer: Imports", url: "1.0.0/importer.yaml" },
+        { name: "Importer: Tasks", url: "1.0.0/importerTasks.yaml" },
+        { name: "Importer: Transforms", url: "1.0.0/importerTransforms.yaml" },
+        { name: "Importer: Data", url: "1.0.0/importerData.yaml" },
+        { name: "Metadata Extension", url: "1.0.0/metadata.yaml" },
+        { name: "Monitor Extension", url: "1.0.0/monitoring.yaml" },
+        { name: "OpenSearch EO Extension", url: "1.0.0/opensearch-eo.yaml" },
+        { name: "Params Extractor Extension", url: "1.0.0/params-extractor.yaml" },
+        { name: "Proxy Base Extension", url: "1.0.0/proxy-base-ext.yaml" },
+        { name: "RAT Extension", url: "1.0.0/rat.yaml" },
+        { name: "WPS Download Extension", url: "1.0.0/wpsdownload.yaml" },
+        { name: "XSLT Extension", url: "1.0.0/transforms.yaml" }
+      ];
+      
+      // Initialize Swagger UI
+      const ui = SwaggerUIBundle({
+        urls: specs,
+        "urls.primaryName": specs[0].name,
+        url: hashUrl || specs[0].url,
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        onComplete: function() {
+          // Update hash when spec changes
+          const selectElement = document.querySelector('.download-url-wrapper select');
+          if (selectElement) {
+            selectElement.addEventListener('change', function(e) {
+              const selectedSpec = specs.find(s => s.name === e.target.value);
+              if (selectedSpec) {
+                window.location.hash = selectedSpec.url;
+              }
+            });
+          }
+        }
+      });
 
-
-
-  window.ui = ui;
-  window.ui.expandAll();
-}
-console.log(window.location.href.split('#')[1]);
-</script>
+      window.ui = ui;
+    }
+  </script>
 </body>
-
 </html>

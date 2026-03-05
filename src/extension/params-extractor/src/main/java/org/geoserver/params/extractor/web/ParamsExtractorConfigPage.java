@@ -151,7 +151,8 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
 
     private static class ActivateButtonPanel extends Panel {
 
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParamsExtractorConfigPage.ActivateButtonPanel.class);
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(ParamsExtractorConfigPage.ActivateButtonPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

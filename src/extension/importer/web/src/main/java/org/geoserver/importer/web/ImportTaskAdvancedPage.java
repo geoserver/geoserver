@@ -153,7 +153,8 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
 
     static class AttributeRemappingPanel extends Panel {
 
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ImportTaskAdvancedPage.AttributeRemappingPanel.class);
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(ImportTaskAdvancedPage.AttributeRemappingPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

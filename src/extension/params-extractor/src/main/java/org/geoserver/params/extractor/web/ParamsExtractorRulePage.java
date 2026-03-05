@@ -145,7 +145,8 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
 
     public static class EchoParameterPanel extends Panel {
 
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParamsExtractorRulePage.EchoParameterPanel.class);
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(ParamsExtractorRulePage.EchoParameterPanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

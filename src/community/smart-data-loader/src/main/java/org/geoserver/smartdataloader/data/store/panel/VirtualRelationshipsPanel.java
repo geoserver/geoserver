@@ -336,7 +336,8 @@ public class VirtualRelationshipsPanel extends Panel {
 
     private class RelationshipFormPanel extends Panel {
 
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(VirtualRelationshipsPanel.RelationshipFormPanel.class);
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(VirtualRelationshipsPanel.RelationshipFormPanel.class);
 
         private final CompoundPropertyModel<VirtualRelationshipBean> formModel;
         private final FeedbackPanel modalFeedback;

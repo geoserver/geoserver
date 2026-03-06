@@ -22,153 +22,185 @@
     }
     
     /* Documentation switcher styles - integrated into Swagger UI topbar */
+    /* Reset Swagger UI inherited styles to prevent interference */
     .swagger-ui .topbar-wrapper {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       width: 100%;
+      gap: 1rem;
     }
     
     .md-doc-switcher-integrated {
       position: relative;
-      margin-left: 2rem;
       z-index: 3;
+      /* Reset any inherited Swagger UI styles */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+      font-size: 16px !important;
+      line-height: normal !important;
+    }
+    
+    .md-doc-switcher-integrated * {
+      box-sizing: border-box !important;
     }
     
     .md-doc-switcher-integrated__button {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.5rem 0.75rem;
-      background: transparent;
-      border: none;
-      color: white;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      line-height: 1.2;
-      white-space: nowrap;
-      transition: opacity 0.2s ease;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      color: white !important;
+      font-size: 1.17rem !important; /* ~18.7px at 16px base */
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      line-height: 1.2 !important;
+      white-space: nowrap !important;
+      transition: opacity 0.2s ease !important;
+      font-family: inherit !important;
     }
     
     .md-doc-switcher-integrated__button:hover {
-      opacity: 0.85;
+      opacity: 0.85 !important;
     }
     
     .md-doc-switcher-integrated__button:focus {
-      outline: 2px solid rgba(255, 255, 255, 0.5);
-      outline-offset: 2px;
-      border-radius: 2px;
+      outline: 2px solid rgba(255, 255, 255, 0.5) !important;
+      outline-offset: 2px !important;
+      border-radius: 2px !important;
     }
     
     .md-doc-switcher-integrated__text {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.4rem !important;
     }
     
     .md-doc-switcher-integrated__prefix {
-      font-weight: 700;
+      font-weight: 700 !important;
     }
     
     .md-doc-switcher-integrated__label {
-      font-weight: 400;
+      font-weight: 400 !important;
     }
     
     .md-doc-switcher-integrated__icon {
-      width: 1rem;
-      height: 1rem;
-      opacity: 0.7;
-      transition: transform 0.2s ease;
-      flex-shrink: 0;
+      width: 1.2rem !important;
+      height: 1.2rem !important;
+      opacity: 0.7 !important;
+      transition: transform 0.2s ease !important;
+      flex-shrink: 0 !important;
     }
     
     .md-doc-switcher-integrated:hover .md-doc-switcher-integrated__icon {
-      transform: rotate(180deg);
+      transform: rotate(180deg) !important;
     }
     
     .md-doc-switcher-integrated__dropdown {
-      position: absolute;
-      top: calc(100% + 0.5rem);
-      left: 0;
-      min-width: 220px;
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 0.25rem;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-0.5rem);
-      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
-      z-index: 1001;
-      pointer-events: none;
+      position: absolute !important;
+      top: calc(100% + 0.5rem) !important;
+      left: 0 !important;
+      min-width: 280px !important;
+      background: white !important;
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 0.25rem !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      transform: translateY(-0.5rem) !important;
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s !important;
+      z-index: 1001 !important;
+      pointer-events: none !important;
+      white-space: nowrap !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
     
     .md-doc-switcher-integrated:hover .md-doc-switcher-integrated__dropdown,
     .md-doc-switcher-integrated__button:focus + .md-doc-switcher-integrated__dropdown,
     .md-doc-switcher-integrated:focus-within .md-doc-switcher-integrated__dropdown {
-      pointer-events: auto;
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-      transition: opacity 0.2s ease 0.3s, transform 0.2s ease 0.3s, visibility 0s linear 0s;
+      pointer-events: auto !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: translateY(0) !important;
+      transition: opacity 0.2s ease 0.3s, transform 0.2s ease 0.3s, visibility 0s linear 0s !important;
     }
     
     .md-doc-switcher-integrated__dropdown:hover {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: translateY(0) !important;
     }
     
     .md-doc-switcher-integrated__link {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      padding: 0.75rem 1rem;
-      color: #333;
-      text-decoration: none;
-      font-size: 0.85rem;
-      transition: background 0.15s ease, color 0.15s ease;
-      border-bottom: 1px solid #f0f0f0;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.3rem !important;
+      padding: 15px 20px !important; /* Match MkDocs exactly */
+      margin: 0 !important;
+      color: #333 !important;
+      text-decoration: none !important;
+      font-size: 17px !important; /* Match MkDocs computed value */
+      line-height: 48px !important; /* Match MkDocs computed value */
+      height: 79px !important; /* Match MkDocs computed value */
+      min-height: 0 !important;
+      transition: background 0.15s ease, color 0.15s ease !important;
+      border-bottom: 1px solid #f0f0f0 !important;
+      font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+      font-weight: 700 !important; /* Match MkDocs computed value */
+      background: transparent !important;
+    }
+    
+    .md-doc-switcher-integrated__link-prefix,
+    .md-doc-switcher-integrated__link-label {
+      color: inherit !important;
+      font-size: inherit !important;
+      line-height: inherit !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-weight: inherit !important;
     }
     
     .md-doc-switcher-integrated__link:last-child {
-      border-bottom: none;
+      border-bottom: none !important;
     }
     
     .md-doc-switcher-integrated__link-prefix {
-      font-weight: 600;
+      font-weight: 700 !important; /* Match MkDocs */
     }
     
     .md-doc-switcher-integrated__link-label {
-      font-weight: 400;
+      font-weight: 700 !important; /* Match MkDocs - both parts are bold */
     }
     
     .md-doc-switcher-integrated__link:hover {
-      background: #f5f5f5;
-      color: #2196F3;
+      background: #f5f5f5 !important;
+      color: #2196F3 !important;
     }
     
     .md-doc-switcher-integrated__link:focus {
-      outline: 2px solid #2196F3;
-      outline-offset: -2px;
-      background: #f5f5f5;
+      outline: 2px solid #2196F3 !important;
+      outline-offset: -2px !important;
+      background: #f5f5f5 !important;
     }
     
     .md-doc-switcher-integrated__link--active {
-      background: #2196F3;
-      color: white;
-      font-weight: 600;
+      background: #2196F3 !important;
+      color: white !important;
+      font-weight: 600 !important;
     }
     
     .md-doc-switcher-integrated__link--active .md-doc-switcher-integrated__link-prefix,
     .md-doc-switcher-integrated__link--active .md-doc-switcher-integrated__link-label {
-      font-weight: 600;
+      font-weight: 600 !important;
+      color: white !important;
     }
     
     .md-doc-switcher-integrated__link--active:hover {
-      background: #2196F3;
-      color: white;
+      background: #2196F3 !important;
+      color: white !important;
     }
     
     /* Custom blue theme to match GeoServer docs */
@@ -398,15 +430,15 @@
                   </svg>
                 </button>
                 <div class="md-doc-switcher-integrated__dropdown" role="menu">
-                  <a href="../user/" class="md-doc-switcher-integrated__link" role="menuitem">
+                  <a href="../../user/" class="md-doc-switcher-integrated__link" role="menuitem">
                     <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
                     <span class="md-doc-switcher-integrated__link-label">User Manual</span>
                   </a>
-                  <a href="../developer/" class="md-doc-switcher-integrated__link" role="menuitem">
+                  <a href="../../developer/" class="md-doc-switcher-integrated__link" role="menuitem">
                     <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
                     <span class="md-doc-switcher-integrated__link-label">Developer Manual</span>
                   </a>
-                  <a href="../docguide/" class="md-doc-switcher-integrated__link" role="menuitem">
+                  <a href="../../docguide/" class="md-doc-switcher-integrated__link" role="menuitem">
                     <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
                     <span class="md-doc-switcher-integrated__link-label">Documentation Guide</span>
                   </a>
@@ -417,8 +449,14 @@
                 </div>
               `;
               
-              // Add switcher to wrapper
-              wrapper.appendChild(switcher);
+              // Find the download-url-wrapper inside the wrapper and insert switcher before it
+              const downloadUrlWrapperInWrapper = wrapper.querySelector('.download-url-wrapper');
+              if (downloadUrlWrapperInWrapper) {
+                downloadUrlWrapperInWrapper.parentNode.insertBefore(switcher, downloadUrlWrapperInWrapper);
+              } else {
+                // Fallback: add switcher to wrapper if download-url-wrapper not found
+                wrapper.appendChild(switcher);
+              }
               
               // Add wrapper back to topbar
               topbar.appendChild(wrapper);

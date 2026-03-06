@@ -150,7 +150,7 @@ Consolidate duplicated GeoServer documentation theme files into a single source 
     - No visual regressions from baseline
     - Dark mode works
 
-- [-] 3.3 Test Local Development Workflow
+- [ ] 3.3 Test Local Development Workflow
   - Priority: medium
   - Estimated effort: 20 minutes
   - Description: Verify that local development with `mkdocs serve` works correctly

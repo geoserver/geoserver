@@ -1,0 +1,25 @@
+Migration Summary for Branch: 2.28.x
+============================================================
+Start Time: 2026-03-02 17:17:22
+End Time: 2026-03-02 17:21:28
+Duration: 246.12 seconds
+
+Conversion Results:
+  Total directories: 3
+  Total RST files: 793
+
+  ✓ D:\DATA\Projects\Geoserver\ALL-SOURCE-CODE\gs-mkdocs\doc\en\docguide\source: 10 files (7.92s)
+  ✓ D:\DATA\Projects\Geoserver\ALL-SOURCE-CODE\gs-mkdocs\doc\en\developer\source: 56 files (28.82s)
+  ✓ D:\DATA\Projects\Geoserver\ALL-SOURCE-CODE\gs-mkdocs\doc\en\user\source: 727 files (209.38s)
+
+Validation Results:
+  Status: passed
+  Successful: 3
+  Failed: 0
+
+Next Steps:
+  1. Review generated Markdown files in docs/ directories
+  2. Merge nav_generated.yml into mkdocs.yml for each manual
+  3. Test builds with: mkdocs build
+  4. Validate links and images
+  5. Commit converted files

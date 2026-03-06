@@ -1,0 +1,4 @@
+../../../sld/cookbook/artifacts/sld_cookbook_raster.zip
+../../../sld/cookbook/artifacts/sld_cookbook_line.zip
+../../../sld/cookbook/artifacts/sld_cookbook_point.zip
+../../../sld/cookbook/artifacts/sld_cookbook_polygon.zip

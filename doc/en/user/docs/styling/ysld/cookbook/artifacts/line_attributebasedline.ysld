@@ -1,0 +1,26 @@
+title: 'YSLD Cook Book: Attribute-based line'
+feature-styles:
+- name: name
+  rules:
+  - name: local-road
+    filter: ${type = 'local-road'}
+    symbolizers:
+    - line:
+        stroke-color: '#009933'
+        stroke-width: 2
+- name: name
+  rules:
+  - name: secondary
+    filter: ${type = 'secondary'}
+    symbolizers:
+    - line:
+        stroke-color: '#0055CC'
+        stroke-width: 3
+- name: name
+  rules:
+  - name: highway
+    filter: ${type = 'highway'}
+    symbolizers:
+    - line:
+        stroke-color: '#FF0000'
+        stroke-width: 6

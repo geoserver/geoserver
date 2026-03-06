@@ -1,0 +1,17 @@
+Broken Anchor Links by File
+================================================================================
+
+Total broken anchor links: 5
+Files with broken anchors: 3
+
+
+community\opensearch-eo\upgrading\index.html (2 broken anchors):
+  - #oseo-html-templates
+  - #oseo-metadata-templates
+
+services\wcs\reference\index.html (2 broken anchors):
+  - #wcs_describecov
+  - #wcs_getcov
+
+services\wps\operations\index.html (1 broken anchors):
+  - #wps_getcap

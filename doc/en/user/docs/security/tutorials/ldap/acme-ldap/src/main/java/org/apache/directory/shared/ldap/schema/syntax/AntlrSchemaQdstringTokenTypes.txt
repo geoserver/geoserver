@@ -1,0 +1,7 @@
+// $ANTLR 2.7.4: schema-qdstring.g -> AntlrSchemaQdstringTokenTypes.txt$
+AntlrSchemaQdstring    // output token vocab name
+WHSP=4
+LPAR=5
+RPAR=6
+QUOTE=7
+QDSTRING=8

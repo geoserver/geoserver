@@ -1,0 +1,15 @@
+# OpenSearch for EO
+
+<div class="grid cards" markdown>
+
+- [Introduction to OpenSearch for EO](intro.md)
+- [Installing the OpenSearch for EO module](installation.md)
+- [Configuring the OpenSearch module](configuration.md)
+- [OpenSearch/STAC security](security.md)
+- [The JDBC store database structure](database.md)
+- [Automation with the administration REST API](automation.md)
+- [The STAC extension](STAC.md)
+- [OpenSearch/STAC JSON templates](templates.md)
+- [Upgrading from previous version](upgrading.md)
+
+</div>

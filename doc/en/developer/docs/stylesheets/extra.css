@@ -1,0 +1,332 @@
+/* 
+ * GeoServer Documentation - Mobile Navigation Fixes
+ * 
+ * Fixes horizontal navigation tab overflow on mobile/narrow screens
+ * by converting tabs to a vertical scrollable menu on smaller viewports.
+ */
+
+/* Mobile navigation fix: Hide horizontal tabs on mobile, use hamburger menu instead */
+@media screen and (max-width: 76.1875em) {
+  /* Hide the horizontal navigation tabs on mobile/tablet */
+  .md-tabs {
+    display: none;
+  }
+  
+  /* Ensure the navigation drawer (hamburger menu) is available */
+  .md-nav--primary .md-nav__title {
+    display: block;
+  }
+  
+  /* Make sure all navigation items are accessible in the drawer */
+  .md-nav--primary .md-nav__list {
+    display: block;
+  }
+}
+
+/* Tablet-specific adjustments (768px - 1220px) */
+@media screen and (min-width: 48em) and (max-width: 76.1875em) {
+  /* On tablets, we can show tabs but with better wrapping */
+  .md-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .md-tabs__list {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  .md-tabs__item {
+    flex-shrink: 0;
+    min-width: auto;
+  }
+}
+
+/* Mobile-specific (< 768px): Force hamburger menu */
+@media screen and (max-width: 47.9375em) {
+  /* Completely hide tabs on mobile */
+  .md-tabs {
+    display: none !important;
+  }
+  
+  /* Ensure header doesn't reserve space for tabs */
+  .md-header {
+    height: auto;
+  }
+  
+  /* Make navigation drawer full-width on mobile */
+  .md-nav--primary {
+    width: 100%;
+  }
+}
+
+/* Desktop: Keep tabs but ensure they don't overflow */
+@media screen and (min-width: 76.25em) {
+  .md-tabs__list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  
+  .md-tabs__list::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .md-tabs__list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+  
+  .md-tabs__item {
+    flex-shrink: 0;
+  }
+}
+
+/* Ensure navigation is accessible on all screen sizes */
+.md-nav__item {
+  padding: 0;
+}
+
+.md-nav__link {
+  display: block;
+  padding: 0.625em 0.8em;
+}
+
+/* Improve touch targets on mobile */
+@media screen and (max-width: 47.9375em) {
+  .md-nav__link {
+    padding: 0.875em 1em;
+    font-size: 0.9rem;
+  }
+  
+  .md-nav__item--nested > .md-nav__link {
+    font-weight: 600;
+  }
+}
+
+/* 
+ * Documentation Switcher Component - Integrated with Header Title
+ * 
+ * Replaces the standard header title with an integrated dropdown
+ * that displays "GeoServer [Doc Type]" and allows switching between documentation types
+ */
+
+/* Integrated switcher container - replaces md-header__title */
+.md-doc-switcher-integrated {
+  position: relative;
+  padding-top: 0.6rem;
+}
+
+/* Button styled to look like header title */
+.md-doc-switcher-integrated__button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.md-doc-switcher-integrated__button:hover {
+  opacity: 0.9;
+}
+
+.md-doc-switcher-integrated__button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Text layout */
+.md-doc-switcher-integrated__text {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.md-doc-switcher-integrated__prefix {
+  font-weight: 700;
+}
+
+.md-doc-switcher-integrated__label {
+  font-weight: 400;
+}
+
+/* Dropdown icon */
+.md-doc-switcher-integrated__icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.md-doc-switcher-integrated:hover .md-doc-switcher-integrated__icon {
+  transform: rotate(180deg);
+}
+
+/* Dropdown menu container */
+.md-doc-switcher-integrated__dropdown {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  left: 0;
+  min-width: 220px;
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-0.5rem);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+  z-index: 1000;
+}
+
+/* Show dropdown on hover - with delay only on show */
+.md-doc-switcher-integrated:hover .md-doc-switcher-integrated__dropdown,
+.md-doc-switcher-integrated__button:focus + .md-doc-switcher-integrated__dropdown,
+.md-doc-switcher-integrated:focus-within .md-doc-switcher-integrated__dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.2s ease 0.8s, transform 0.2s ease 0.8s, visibility 0s linear 0s;
+}
+
+/* Dropdown links */
+.md-doc-switcher-integrated__link {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 1rem;
+  color: var(--md-default-fg-color);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: background 0.15s ease, color 0.15s ease;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-doc-switcher-integrated__link:last-child {
+  border-bottom: none;
+}
+
+.md-doc-switcher-integrated__link-prefix {
+  font-weight: 600;
+}
+
+.md-doc-switcher-integrated__link-label {
+  font-weight: 400;
+}
+
+/* Link hover state */
+.md-doc-switcher-integrated__link:hover {
+  background: var(--md-default-fg-color--lightest);
+  color: var(--md-primary-fg-color);
+}
+
+/* Link focus state */
+.md-doc-switcher-integrated__link:focus {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -2px;
+  background: var(--md-default-fg-color--lightest);
+}
+
+/* Active documentation type */
+.md-doc-switcher-integrated__link--active {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  font-weight: 600;
+}
+
+.md-doc-switcher-integrated__link--active .md-doc-switcher-integrated__link-prefix,
+.md-doc-switcher-integrated__link--active .md-doc-switcher-integrated__link-label {
+  font-weight: 600;
+}
+
+.md-doc-switcher-integrated__link--active:hover {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+/* Tablet responsive behavior (768px - 1220px) */
+@media screen and (min-width: 48em) and (max-width: 76.1875em) {
+  .md-doc-switcher-integrated__button {
+    font-size: 0.9rem;
+  }
+  
+  .md-doc-switcher-integrated__dropdown {
+    min-width: 240px;
+  }
+  
+  .md-doc-switcher-integrated__link {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Mobile responsive behavior (< 768px) */
+@media screen and (max-width: 47.9375em) {
+  .md-doc-switcher-integrated__button {
+    font-size: 0.9rem;
+  }
+  
+  .md-doc-switcher-integrated__text {
+    gap: 0.3rem;
+  }
+  
+  .md-doc-switcher-integrated__dropdown {
+    position: fixed;
+    top: 3.5rem;
+    left: 0;
+    right: 0;
+    min-width: 100%;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .md-doc-switcher-integrated__link {
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Dark mode adjustments */
+[data-md-color-scheme="slate"] .md-doc-switcher-integrated__dropdown {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+[data-md-color-scheme="slate"] .md-doc-switcher-integrated__button:focus {
+  outline-color: rgba(255, 255, 255, 0.3);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .md-doc-switcher-integrated__link {
+    border-bottom-width: 2px;
+  }
+  
+  .md-doc-switcher-integrated__link:focus,
+  .md-doc-switcher-integrated__button:focus {
+    outline-width: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .md-doc-switcher-integrated__button,
+  .md-doc-switcher-integrated__dropdown,
+  .md-doc-switcher-integrated__link,
+  .md-doc-switcher-integrated__icon {
+    transition: none;
+  }
+}

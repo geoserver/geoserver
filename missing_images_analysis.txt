@@ -1,0 +1,43 @@
+Missing Images Detailed Analysis
+======================================================================
+
+1. Images in source/ but not copied to docs/
+----------------------------------------------------------------------
+
+2. Images with wrong path
+----------------------------------------------------------------------
+
+3. Wildcard references
+----------------------------------------------------------------------
+styling\ysld\reference\featurestyles.md: ../../../img/feature-style.*
+styling\ysld\reference\featurestyles.md: ../../../img/feature-style-order.*
+styling\ysld\reference\featurestyles.md: ../../../img/draw-order-buffer1.*
+styling\ysld\reference\featurestyles.md: ../../../img/draw-order-buffer2.*
+styling\ysld\reference\featurestyles.md: ../../../img/draw-order-map.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-source.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-destination.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-source-over.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-destination-over.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-source-in.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-destination-in.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-source-out.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-destination-out.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-source-atop.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-destination-atop.*
+styling\ysld\reference\featurestyles.md: ../../../img/composite-xor.*
+styling\ysld\reference\featurestyles.md: ../../../img/line-casing-buffers.*
+styling\ysld\reference\featurestyles.md: ../../../img/line-casing-map.*
+styling\ysld\reference\featurestyles.md: ../../../img/fs_roadcasing.*
+styling\ysld\reference\structure.md: ../../../img/structure_header.*
+styling\ysld\reference\structure.md: ../../../img/structure_feature_style.*
+styling\ysld\reference\structure.md: ../../../img/structure_rule_all.*
+styling\ysld\reference\structure.md: ../../../img/structure_rule.*
+styling\ysld\reference\structure.md: ../../../img/structure_example.*
+styling\ysld\reference\symbolizers\index.md: ../../../../img/symbolizers.*
+styling\ysld\reference\symbolizers\index.md: ../../../../img/symbolizer-order1.*
+styling\ysld\reference\symbolizers\index.md: ../../../../img/symbolizer-order2.*
+styling\ysld\reference\symbolizers\index.md: ../../../../img/symbolizer-order3.*
+styling\ysld\reference\symbolizers\index.md: ../../../../img/symbolizer-order4.*
+
+4. Truly missing
+----------------------------------------------------------------------

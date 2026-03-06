@@ -1,0 +1,224 @@
+{
+  "overall_status": "FAIL",
+  "validation_timestamp": "D:\\DATA\\Projects\\Geoserver\\ALL-SOURCE-CODE\\gs-mkdocs",
+  "results": [
+    {
+      "doc_type": "User Manual",
+      "html_dir": "doc/en/user/target/html",
+      "navigation_tabs": [
+        {
+          "text": "GeoServer User Manual",
+          "href": "."
+        },
+        {
+          "text": "Introduction",
+          "href": "introduction/"
+        },
+        {
+          "text": "Installation",
+          "href": "installation/"
+        },
+        {
+          "text": "Gettingstarted",
+          "href": "gettingstarted/"
+        },
+        {
+          "text": "Webadmin",
+          "href": "webadmin/"
+        },
+        {
+          "text": "Data",
+          "href": "data/"
+        },
+        {
+          "text": "Styling",
+          "href": "styling/"
+        },
+        {
+          "text": "Services",
+          "href": "services/"
+        },
+        {
+          "text": "Filter",
+          "href": "filter/"
+        },
+        {
+          "text": "Configuration",
+          "href": "configuration/"
+        },
+        {
+          "text": "Datadirectory",
+          "href": "datadirectory/"
+        },
+        {
+          "text": "Production",
+          "href": "production/"
+        },
+        {
+          "text": "Rest",
+          "href": "rest/"
+        },
+        {
+          "text": "Security",
+          "href": "security/"
+        },
+        {
+          "text": "Geowebcache",
+          "href": "geowebcache/"
+        },
+        {
+          "text": "Extensions",
+          "href": "extensions/"
+        },
+        {
+          "text": "Community",
+          "href": "community/"
+        },
+        {
+          "text": "Tutorials",
+          "href": "tutorials/"
+        }
+      ],
+      "navigation_hierarchy": {
+        "0": 1,
+        "1": 17,
+        "2": 79,
+        "3": 19,
+        "4": 4
+      },
+      "theme_features": [],
+      "issues": [
+        "Back to top functionality not configured"
+      ],
+      "status": "PARTIAL"
+    },
+    {
+      "doc_type": "Developer Manual",
+      "html_dir": "doc/en/developer/target/html",
+      "navigation_tabs": [
+        {
+          "text": "GeoServer Developer Manual",
+          "href": "."
+        },
+        {
+          "text": "Introduction",
+          "href": "introduction/"
+        },
+        {
+          "text": "Tools",
+          "href": "tools/"
+        },
+        {
+          "text": "Source Code",
+          "href": "source/"
+        },
+        {
+          "text": "Quickstart",
+          "href": "quickstart/"
+        },
+        {
+          "text": "Maven Guide",
+          "href": "maven-guide/"
+        },
+        {
+          "text": "Eclipse Guide",
+          "href": "eclipse-guide/"
+        },
+        {
+          "text": "Automatic Quality Assurance checks",
+          "href": "qa-guide/"
+        },
+        {
+          "text": "Programming Guide",
+          "href": "programming-guide/"
+        },
+        {
+          "text": "Release",
+          "href": "release/"
+        },
+        {
+          "text": "CITE Test Guide",
+          "href": "cite-test-guide/"
+        },
+        {
+          "text": "Translating GeoServer",
+          "href": "translation/"
+        },
+        {
+          "text": "Policies",
+          "href": "policies/"
+        },
+        {
+          "text": "Build Windows installer",
+          "href": "installer/"
+        }
+      ],
+      "navigation_hierarchy": {
+        "0": 1,
+        "1": 4,
+        "2": 5
+      },
+      "theme_features": [],
+      "issues": [
+        "Missing expected tabs: ['Source']",
+        "Back to top functionality not configured"
+      ],
+      "status": "PARTIAL"
+    },
+    {
+      "doc_type": "Documentation Guide",
+      "html_dir": "doc/en/docguide/target/html",
+      "navigation_tabs": [
+        {
+          "text": "Home",
+          "href": "."
+        },
+        {
+          "text": "Background",
+          "href": "background/"
+        },
+        {
+          "text": "Quickfix",
+          "href": "quickfix/"
+        },
+        {
+          "text": "Contributing",
+          "href": "contributing/"
+        },
+        {
+          "text": "Workflow",
+          "href": "workflow/"
+        },
+        {
+          "text": "Installing Sphinx",
+          "href": "install/"
+        },
+        {
+          "text": "Installing LaTeX",
+          "href": "installlatex/"
+        },
+        {
+          "text": "Sphinx Syntax",
+          "href": "sphinx/"
+        },
+        {
+          "text": "Style Guidelines",
+          "href": "style/"
+        },
+        {
+          "text": "Writing a Tutorial",
+          "href": "tutorial/"
+        }
+      ],
+      "navigation_hierarchy": {
+        "0": 1
+      },
+      "theme_features": [],
+      "issues": [
+        "Missing expected tabs: ['GeoServer Documentation Guide', 'Install']",
+        "Back to top functionality not configured"
+      ],
+      "status": "PARTIAL"
+    }
+  ]
+}

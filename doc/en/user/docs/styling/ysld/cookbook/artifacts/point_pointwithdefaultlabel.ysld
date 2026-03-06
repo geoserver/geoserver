@@ -1,0 +1,19 @@
+title: 'YSLD Cook Book: Point with default label'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - point:
+        size: 6
+        symbols:
+        - mark:
+            shape: circle
+            fill-color: '#FF0000'
+    - text:
+        label: ${name}
+        fill-color: '#000000'
+        font-family: Serif
+        font-size: 10
+        font-style: normal
+        font-weight: normal
+        placement: point

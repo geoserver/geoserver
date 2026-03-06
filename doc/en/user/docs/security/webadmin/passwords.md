@@ -1,0 +1,71 @@
+# Passwords
+
+This page configures the various options related to [Passwords](../passwd.md), the [Keystore password](../passwd.md#security_master_passwd), and [Password policies](../passwd.md#security_passwd_policy).
+
+!!! note
+
+    User passwords may be changed in the Users dialog box accessed from the [Users, Groups, Roles](ugr.md) page.
+
+## Keystore passwords {: #security_webadmin_masterpasswordprovider }
+
+In GeoServer, encrypting and decrypting passwords involves the generation of secret shared keys, stored in a Java *keystore*. For more information see [Secret keys and the keystore](../passwd.md#security_passwd_keystore).
+
+### Active keystore password provider
+
+This option sets the active keystore password provider, via a list of all available keystore password providers.
+
+![](images/passwd_activemaster.png)
+*Active keystore password provider*
+
+To change the keystore password click the **Change password** link.
+
+![](images/passwd_changemaster.png)
+*Changing the keystore password*
+
+To view the current keystore password use the link **Keystore password forgotten?**. This link requires access to the REST API which is used to [view the current value](../../rest/security.md#rest_security_keystore) in your browser.
+
+!!! warning
+
+    The file `security/masterpw.info` may be present from a GeoServer 2.27 or earlier update. This file is a security risk and shows up as a warning on the welcome page for administrators to address.
+    
+    The administrator should read this file, verify the [keystore password](../../rest/security.md#rest_security_keystore), and then this file should be removed.
+
+### Keystore Password Providers {: #security_webadmin_passwd_keystore }
+
+This section provides the options for adding, removing, and editing keystore password providers.
+
+![](images/passwd_masterprovider.png)
+*Keystore password provider list*
+
+Use **Add new** and **Remove selected** to manage the list of keystore passowrd providers.
+
+When creating or editing a **URL Keystore password Provider** the following settings are available.
+
+![](images/keystore-provider.png)
+*URL Keystore password Provider*
+
+The **Read-only** setting is used to indicate the URL location is used as the source only, and disables the ability to change the keystore password from GeoServer.
+
+The **URL** indicates the location of the URL source used to obtain the Keystore password.
+
+The **Enable encryption** setting offers the option to encrypt the password to/from the URL source.
+
+The **Allow "root" user to login as Admin** setting is used to enable the [root account](../root.md).
+
+!!! note
+
+    By default the login to Admin GUI and REST APIs with Keystore Password is disabled, this setting is only recommended as a temporary measure when adjusting the security subsystem (in case an administrator inadvertently disrupting normal authentication).
+
+## Password policies
+
+This section configures the various [Password policies](../passwd.md#security_passwd_policy) available to users in GeoServer. New password policies can be added or renamed, and existing policies edited or removed.
+
+By default there are two password policies in effect, `default` and `root`. The `default` password policy, intended for most GeoServer users, does not have any active password constraints. The `keystore` password policy, intended for the [Root account](../root.md), specifies a **minimum password length of eight characters**. Password policies are applied to users via the user/group service.
+
+![](images/passwd_policies.png)
+*List of password policies*
+
+Clicking an existing policy enables editing, while clicking the **Add new** button will create a new password policy.
+
+![](images/passwd_newpolicy.png)
+*Creating a new password policy*

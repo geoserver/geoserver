@@ -1,0 +1,157 @@
+site_name: GeoServer Developer Manual
+site_url: https://docs.geoserver.org/3.0/en/developer/
+repo_url: https://github.com/geoserver/geoserver
+repo_name: geoserver/geoserver
+edit_uri: edit/main/doc/en/developer/docs/
+
+docs_dir: docs
+site_dir: target/html
+
+theme:
+  name: material
+  custom_dir: ../themes/geoserver
+  logo: img/geoserver-logo.png
+  favicon: img/geoserver.ico
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+
+extra:
+  version_selector:
+    - version: latest
+      title: Latest (3.0)
+      aliases: []
+    - version: "3.0"
+      title: "3.0"
+      aliases: []
+    - version: "2.28.x"
+      title: "2.28.x"
+      aliases: []
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/geoserver/geoserver
+    - icon: fontawesome/solid/globe
+      link: https://geoserver.org
+
+plugins:
+  - search:
+      lang: en
+  - macros:
+      render_by_default: true
+      include_dir: docs
+      module_name: ../../version
+
+hooks:
+  - hooks/download_files.py
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+- index.md
+- introduction.md
+- tools.md
+- source.md
+- Quickstart:
+  - quickstart/index.md
+  - quickstart/maven.md
+  - quickstart/intellij.md
+  - quickstart/eclipse.md
+  - quickstart/eclipse_m2.md
+- maven-guide/index.md
+- eclipse-guide/index.md
+- qa-guide/index.md
+- Programming Guide:
+  - programming-guide/index.md
+  - Config:
+    - programming-guide/config/index.md
+    - programming-guide/config/geoserver.md
+    - programming-guide/config/catalog.md
+    - programming-guide/config/resource.md
+  - Ows Services:
+    - programming-guide/ows-services/index.md
+    - programming-guide/ows-services/overview.md
+    - programming-guide/ows-services/implementing.md
+  - Rest Services:
+    - programming-guide/rest-services/index.md
+    - programming-guide/rest-services/overview.md
+    - programming-guide/rest-services/implementing.md
+    - programming-guide/rest-services/implementing-map.md
+    - programming-guide/rest-services/implementing-reflection.md
+    - programming-guide/rest-services/implementing-mapper.md
+  - Web Ui:
+    - programming-guide/web-ui/index.md
+    - programming-guide/web-ui/overview.md
+    - programming-guide/web-ui/implementing.md
+  - programming-guide/wicket-pages/index.md
+  - programming-guide/extension-points/index.md
+  - Wps Services:
+    - programming-guide/wps-services/index.md
+    - programming-guide/wps-services/design-guide.md
+    - programming-guide/wps-services/implementing.md
+    - programming-guide/wps-services/implement-rendertrans.md
+  - programming-guide/testing/index.md
+  - programming-guide/security/index.md
+  - programming-guide/app-schema/index.md
+- Release:
+  - release/index.md
+  - release/schedule/index.md
+  - release/guide/index.md
+  - release/testing/index.md
+  - release/guide/old.md
+- cite-test-guide/index.md
+- translation.md
+- Policies:
+  - policies/index.md
+  - policies/community-process.md
+  - policies/psc.md
+  - policies/gsip.md
+  - policies/committing.md
+  - policies/pull_request.md
+  - policies/review.md
+  - policies/community-modules.md
+  - policies/service_providers.md
+  - policies/security.md
+- installer/index.md
+

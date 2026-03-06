@@ -1,0 +1,34 @@
+title: 'YSLD Cook Book: Attribute-based point'
+feature-styles:
+- name: name
+  rules:
+  - name: SmallPop
+    title: 1 to 50000
+    filter: ${pop < '50000'}
+    symbolizers:
+    - point:
+        size: 8
+        symbols:
+        - mark:
+            shape: circle
+            fill-color: '#0033CC'
+  - name: MediumPop
+    title: 50000 to 100000
+    filter: ${pop >= '50000' AND pop < '100000'}
+    symbolizers:
+    - point:
+        size: 12
+        symbols:
+        - mark:
+            shape: circle
+            fill-color: '#0033CC'
+  - name: LargePop
+    title: Greater than 100000
+    filter: ${pop >= '100000'}
+    symbolizers:
+    - point:
+        size: 16
+        symbols:
+        - mark:
+            shape: circle
+            fill-color: '#0033CC'

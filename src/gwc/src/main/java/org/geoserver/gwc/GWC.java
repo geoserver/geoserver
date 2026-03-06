@@ -1356,7 +1356,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         // get the param map and force service to be WMS if missing
         Map<String, String> parameterMap = new HashMap<>();
         Map<String, String[]> params = actualRequest.getParameterMap();
-        boolean hasService = false;
         for (Map.Entry<String, String[]> param : params.entrySet()) {
             String key = param.getKey();
             String value = param.getValue()[0];
@@ -1367,9 +1366,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                         "Failed to cascade request, service should be WMS but it was: '" + value + "'");
             }
         }
-        if (!hasService) {
-            parameterMap.put("service", "WMS");
-        }
+        parameterMap.put("service", "WMS");
 
         // cascade
         Cookie[] cookies = actualRequest.getCookies();

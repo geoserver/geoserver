@@ -149,7 +149,7 @@
       transition: background 0.15s ease, color 0.15s ease !important;
       border-bottom: 1px solid #f0f0f0 !important;
       font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
-      font-weight: 700 !important; /* Match MkDocs computed value */
+      font-weight: 400 !important; /* Regular weight - children override */
       background: transparent !important;
     }
     
@@ -160,7 +160,6 @@
       line-height: inherit !important;
       margin: 0 !important;
       padding: 0 !important;
-      font-weight: inherit !important;
     }
     
     .md-doc-switcher-integrated__link:last-child {
@@ -168,11 +167,11 @@
     }
     
     .md-doc-switcher-integrated__link-prefix {
-      font-weight: 700 !important; /* Match MkDocs */
+      font-weight: 700 !important; /* Bold - "GeoServer" */
     }
     
     .md-doc-switcher-integrated__link-label {
-      font-weight: 700 !important; /* Match MkDocs - both parts are bold */
+      font-weight: 400 !important; /* Regular - "User Manual", etc. */
     }
     
     .md-doc-switcher-integrated__link:hover {

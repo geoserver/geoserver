@@ -16,7 +16,7 @@
   - Mark task complete when test is written, run, and failures are documented
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
-- [-] 2. Write preservation property tests (BEFORE implementing fix)
+- [x] 2. Write preservation property tests (BEFORE implementing fix)
   - **Property 2: Preservation** - Non-Download Link Behavior
   - **IMPORTANT**: Follow observation-first methodology
   - Observe behavior on UNFIXED code for non-buggy inputs (links that don't match bug condition)
@@ -32,9 +32,9 @@
   - Mark task complete when tests are written, run, and passing on unfixed code
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 3. Fix for broken download links across documentation
+- [-] 3. Fix for broken download links across documentation
 
-  - [ ] 3.1 Create Python fix script
+  - [x] 3.1 Create Python fix script
     - Create `scripts/fix_download_links.py`
     - Implement regex patterns to detect buggy download links matching `{{ (release|version|snapshot) }} [plugin-name](URL)` where URL contains download paths
     - Implement link type classification logic (extensions, community modules, WAR, bin, database connectors)
@@ -50,14 +50,14 @@
     - _Preservation: All links where NOT isBugCondition(link) remain completely unchanged_
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 3.2, 3.3, 3.4, 3.5_
 
-  - [ ] 3.2 Add unit tests for fix script
+  - [x] 3.2 Add unit tests for fix script
     - Test regex pattern matching for each download link type
     - Test link text reconstruction for extensions, community modules, WAR, and bin downloads
     - Test that non-matching links are ignored by fix logic
     - Test edge cases (links with special characters, multi-line links)
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [ ] 3.3 Run fix script on documentation
+  - [-] 3.3 Run fix script on documentation
     - Activate Python virtual environment: `source .venv/Scripts/activate`
     - Create git commit or backup before running script
     - Execute: `python scripts/fix_download_links.py`

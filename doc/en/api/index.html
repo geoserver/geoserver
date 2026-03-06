@@ -21,67 +21,50 @@
       background: #fafafa;
     }
     
-    /* Header bar to match MkDocs theme */
-    .geoserver-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3rem;
-      background-color: #2196F3;
-      color: white;
+    /* Documentation switcher styles - integrated into Swagger UI topbar */
+    .swagger-ui .topbar-wrapper {
       display: flex;
       align-items: center;
-      padding: 0 1rem;
-      box-shadow: 0 0 0.2rem rgba(0,0,0,.1), 0 0.2rem 0.4rem rgba(0,0,0,.2);
-      z-index: 1000;
+      justify-content: space-between;
+      width: 100%;
     }
     
-    /* Documentation switcher styles - adapted from extra.css */
     .md-doc-switcher-integrated {
       position: relative;
-      padding-top: 0.6rem;
-      z-index: 3;
-    }
-    
-    .md-doc-switcher-integrated .md-header__ellipsis {
-      position: relative;
-      z-index: 3;
-    }
-    
-    .md-doc-switcher-integrated .md-header__topic {
-      position: relative;
+      margin-left: 2rem;
       z-index: 3;
     }
     
     .md-doc-switcher-integrated__button {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0;
+      gap: 0.4rem;
+      padding: 0.5rem 0.75rem;
       background: transparent;
       border: none;
-      color: inherit;
-      font-size: 1rem;
+      color: white;
+      font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
       line-height: 1.2;
       white-space: nowrap;
+      transition: opacity 0.2s ease;
     }
     
     .md-doc-switcher-integrated__button:hover {
-      opacity: 0.9;
+      opacity: 0.85;
     }
     
     .md-doc-switcher-integrated__button:focus {
       outline: 2px solid rgba(255, 255, 255, 0.5);
       outline-offset: 2px;
+      border-radius: 2px;
     }
     
     .md-doc-switcher-integrated__text {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.3rem;
     }
     
     .md-doc-switcher-integrated__prefix {
@@ -93,8 +76,8 @@
     }
     
     .md-doc-switcher-integrated__icon {
-      width: 1.2rem;
-      height: 1.2rem;
+      width: 1rem;
+      height: 1rem;
       opacity: 0.7;
       transition: transform 0.2s ease;
       flex-shrink: 0;
@@ -186,11 +169,6 @@
     .md-doc-switcher-integrated__link--active:hover {
       background: #2196F3;
       color: white;
-    }
-    
-    /* Adjust Swagger UI to account for fixed header */
-    #swagger-ui {
-      margin-top: 3rem;
     }
     
     /* Custom blue theme to match GeoServer docs */
@@ -289,42 +267,6 @@
 </head>
 
 <body>
-  <!-- GeoServer Header with Documentation Switcher -->
-  <header class="geoserver-header">
-    <div class="md-doc-switcher-integrated">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <button class="md-doc-switcher-integrated__button" aria-label="Switch documentation type" aria-haspopup="true" aria-expanded="false">
-            <span class="md-doc-switcher-integrated__text">
-              <span class="md-doc-switcher-integrated__prefix">GeoServer</span>
-              <span class="md-doc-switcher-integrated__label">Swagger APIs</span>
-            </span>
-            <svg class="md-doc-switcher-integrated__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
-              <path d="M7 10l5 5 5-5z" fill="currentColor"/>
-            </svg>
-          </button>
-          <div class="md-doc-switcher-integrated__dropdown" role="menu">
-            <a href="../user/" class="md-doc-switcher-integrated__link" role="menuitem">
-              <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
-              <span class="md-doc-switcher-integrated__link-label">User Manual</span>
-            </a>
-            <a href="../developer/" class="md-doc-switcher-integrated__link" role="menuitem">
-              <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
-              <span class="md-doc-switcher-integrated__link-label">Developer Manual</span>
-            </a>
-            <a href="../docguide/" class="md-doc-switcher-integrated__link" role="menuitem">
-              <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
-              <span class="md-doc-switcher-integrated__link-label">Documentation Guide</span>
-            </a>
-            <a href="../api/" class="md-doc-switcher-integrated__link md-doc-switcher-integrated__link--active" role="menuitem">
-              <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
-              <span class="md-doc-switcher-integrated__link-label">Swagger APIs</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
   <div class="info-banner" title="Click for important information">
     <span class="warning-icon">⚠️</span>
     <div class="warning-text">
@@ -428,6 +370,60 @@
               }
             });
           }
+          
+          // Inject documentation switcher into Swagger UI topbar
+          setTimeout(function() {
+            const topbar = document.querySelector('.swagger-ui .topbar');
+            if (topbar) {
+              // Create wrapper for topbar content
+              const wrapper = document.createElement('div');
+              wrapper.className = 'topbar-wrapper';
+              
+              // Move existing topbar content into wrapper
+              while (topbar.firstChild) {
+                wrapper.appendChild(topbar.firstChild);
+              }
+              
+              // Create documentation switcher
+              const switcher = document.createElement('div');
+              switcher.className = 'md-doc-switcher-integrated';
+              switcher.innerHTML = `
+                <button class="md-doc-switcher-integrated__button" aria-label="Switch documentation type" aria-haspopup="true" aria-expanded="false">
+                  <span class="md-doc-switcher-integrated__text">
+                    <span class="md-doc-switcher-integrated__prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__label">Swagger APIs</span>
+                  </span>
+                  <svg class="md-doc-switcher-integrated__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M7 10l5 5 5-5z" fill="currentColor"/>
+                  </svg>
+                </button>
+                <div class="md-doc-switcher-integrated__dropdown" role="menu">
+                  <a href="../user/" class="md-doc-switcher-integrated__link" role="menuitem">
+                    <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__link-label">User Manual</span>
+                  </a>
+                  <a href="../developer/" class="md-doc-switcher-integrated__link" role="menuitem">
+                    <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__link-label">Developer Manual</span>
+                  </a>
+                  <a href="../docguide/" class="md-doc-switcher-integrated__link" role="menuitem">
+                    <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__link-label">Documentation Guide</span>
+                  </a>
+                  <a href="../api/" class="md-doc-switcher-integrated__link md-doc-switcher-integrated__link--active" role="menuitem">
+                    <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__link-label">Swagger APIs</span>
+                  </a>
+                </div>
+              `;
+              
+              // Add switcher to wrapper
+              wrapper.appendChild(switcher);
+              
+              // Add wrapper back to topbar
+              topbar.appendChild(wrapper);
+            }
+          }, 100);
         }
       });
 

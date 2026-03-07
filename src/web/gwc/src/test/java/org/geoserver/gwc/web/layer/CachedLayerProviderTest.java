@@ -18,14 +18,14 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.GWCSynchEnv;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.DiskQuotaMonitor;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Test;
 
-public class CachedLayerProviderTest extends GeoServerTestSupport {
+public class CachedLayerProviderTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testQuotaDisabledWithSystemVariable() throws IllegalAccessException {

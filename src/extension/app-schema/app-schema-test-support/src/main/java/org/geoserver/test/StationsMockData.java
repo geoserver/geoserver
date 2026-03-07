@@ -161,7 +161,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
 
     /** Helper method the reads a resource content to a string. */
     protected static String resourceToString(String resourceName) {
-        try (InputStream input = NamespacesWfsTest.class.getResourceAsStream(resourceName)) {
+        try (InputStream input = StationsMockData.class.getResourceAsStream(resourceName)) {
             return IOUtils.toString(input);
         } catch (Exception exception) {
             throw new RuntimeException("Error reading resource '%s' content.".formatted(resourceName), exception);

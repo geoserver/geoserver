@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.security.xml.AuthProviderCollection;
 import org.geoserver.rest.security.xml.AuthProviderOrder;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -35,7 +36,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +64,7 @@ import tools.jackson.databind.ObjectMapper;
  *       (enabled/disabled semantics).
  * </ul>
  */
-public class AuthenticationProviderRestControllerTest extends GeoServerTestSupport {
+public class AuthenticationProviderRestControllerTest extends GeoServerSystemTestSupport {
 
     private static final String TEST_PROVIDER_PREFIX = "TEST-";
 
@@ -76,12 +77,8 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     private final ObjectMapper MAPPER = new ObjectMapper();
 
     @Override
-    @Before
-    public void oneTimeSetUp() throws Exception {
-        setValidating(true);
-        super.oneTimeSetUp();
-        controller = applicationContext.getBean(AuthenticationProviderRestController.class);
-        authenticationProviderHelper = new AuthenticationProviderHelper(getSecurityManager());
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no test data needed
     }
 
     /**
@@ -90,6 +87,9 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
      */
     @Before
     public void resetProviders() throws Exception {
+        controller = applicationContext.getBean(AuthenticationProviderRestController.class);
+        authenticationProviderHelper = new AuthenticationProviderHelper(getSecurityManager());
+
         GeoServerSecurityManager secMgr = getSecurityManager();
 
         // 1) Remove any test providers from enabled order
@@ -117,7 +117,6 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     }
 
     /** Safe teardown: restore order to ["default"], delete created providers, clear auth. */
-    @Override
     @After
     public void tearDownInternal() throws Exception {
         try {

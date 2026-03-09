@@ -12,7 +12,7 @@ render_macros: true
     From the list of **Output Formats** extensions download **MapML**.
 
     - {{ release }} example: [mapml](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-mapml-plugin.zip)
-    - {{ version }} example: [mapml](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-mapml-plugin.zip)
+    - {{ snapshot }} example: [mapml](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-mapml-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

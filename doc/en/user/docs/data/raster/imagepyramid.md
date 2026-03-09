@@ -15,8 +15,8 @@ An image pyramid is several layers of an image rendered at various image sizes, 
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download:
 
-    - {{ release }} [pyramid](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-pyramid-plugin.zip)
-    - {{ version }} [pyramid](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-pyramid-plugin.zip)
+    - {{ release }} [geoserver-{{ release }}-pyramid-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-pyramid-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-pyramid-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-pyramid-plugin.zip)
 
     !!! warning
 

@@ -23,7 +23,7 @@ GeoServer implementation is based on an ealier specification draft (the specific
 
     Follow the **Community Modules** link and download `ogcapi-tiles` zip archive.
 
-    - {{ version }} example: [ogcapi-tiles](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-ogcapi-tiles-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-tiles](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-tiles-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -31,7 +31,7 @@ GeoServer implementation is based on an ealier specification draft (the specific
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-ogcapi-tiles-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-ogcapi-tiles-plugin.zip above).
 
 4.  Restart GeoServer.
 

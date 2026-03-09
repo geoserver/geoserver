@@ -14,7 +14,7 @@ The IAU authority is an official extension:
     From the list of **Miscellaneous** extensions download **IAU**.
 
     - {{ release }} example: [iau](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-iau-plugin.zip)
-    - {{ version }} example: [iau](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-iau-plugin.zip)
+    - {{ snapshot }} example: [iau](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-iau-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

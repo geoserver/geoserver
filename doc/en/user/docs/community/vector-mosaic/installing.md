@@ -13,7 +13,7 @@ To install the Vector Mosaic datastore:
 
     Follow the **Community Modules** link and download `vector-mosaic` zip archive.
 
-    - {{ version }} example: [vector-mosaic](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-vector-mosaic-plugin.zip)
+    - {{ snapshot }} example: [vector-mosaic](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-vector-mosaic-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -21,6 +21,6 @@ To install the Vector Mosaic datastore:
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-vector-mosaic-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-vector-mosaic-plugin.zip above).
 
 4.  Perform any configuration required by your servlet container, and then restart.

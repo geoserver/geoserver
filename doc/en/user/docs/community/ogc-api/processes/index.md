@@ -34,7 +34,7 @@ Missing functionality at the time of writing, and known issues:
 
     Follow the **Community Modules** link and download `ogcapi-processes` zip archive.
 
-    - {{ version }} example: [ogcapi-processes](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-ogcapi-processes-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-processes](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-processes-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -42,7 +42,7 @@ Missing functionality at the time of writing, and known issues:
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-ogcapi-processes-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-ogcapi-processes-plugin.zip above).
 
 4.  Restart GeoServer.
 

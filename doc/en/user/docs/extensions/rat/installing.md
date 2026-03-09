@@ -14,7 +14,7 @@ To install the Raster Attribute Table support:
     From the list of **Coverage Formats** extensions download **Raster Attribute Table**.
 
     - {{ release }} example: [rat](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-rat-plugin.zip)
-    - {{ version }} example: [rat](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-rat-plugin.zip)
+    - {{ snapshot }} example: [rat](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-rat-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

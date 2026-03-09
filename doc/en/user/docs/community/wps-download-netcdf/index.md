@@ -24,23 +24,23 @@ To install:
     From the list of **OGC Services** extensions download **WPS**.
 
     - {{ release }} example: [wps](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wps-plugin.zip)
-    - {{ version }} example: [wps](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-wps-plugin.zip)
+    - {{ snapshot }} example: [wps](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-wps-plugin.zip)
 
     From the list of **OGC Services** extensions download **WPS Download**.
 
     - {{ release }} example: [wps-download](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wps-download-plugin.zip)
-    - {{ version }} example: [wps-download](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-wps-download-plugin.zip)
+    - {{ snapshot }} example: [wps-download](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-wps-download-plugin.zip)
 
 3.  From the list of **Output Formats** extensions download **NetCDF**.
 
     - {{ release }} example: [netcdf-out](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-netcdf-out-plugin.zip)
-    - {{ version }} example: [netcdf-out](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-netcdf-out-plugin.zip)
+    - {{ snapshot }} example: [netcdf-out](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-netcdf-out-plugin.zip)
 
 4.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
     Following the **Community Modules** link and download **wps-download-netcdf** zip archive.
 
-    - {{ version }} example: [wps-download-netcdf](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-wps-download-netcdf-plugin.zip)
+    - {{ snapshot }} example: [wps-download-netcdf](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-wps-download-netcdf-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

@@ -16,7 +16,7 @@ The installation process is similar to other GeoServer extensions:
     From the list of **Miscellaneous** extensions download **Request parameters extractor**.
 
     - {{ release }} example: [params-extractor](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-params-extractor-plugin.zip)
-    - {{ version }} example: [params-extractor](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-params-extractor-plugin.zip)
+    - {{ snapshot }} example: [params-extractor](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-params-extractor-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

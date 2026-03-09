@@ -24,7 +24,7 @@ Where `authkey=ef18d7e7-963b-470f-9230-c7f9de166888` is associated to a specific
     From the list of **Security** extensions download **Key authentication**.
 
     - {{ release }} example: [authkey](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-authkey-plugin.zip)
-    - {{ version }} example: [authkey](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-authkey-plugin.zip)
+    - {{ snapshot }} example: [authkey](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-authkey-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

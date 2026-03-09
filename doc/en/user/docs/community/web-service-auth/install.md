@@ -11,7 +11,7 @@ render_macros: true
 
     Follow the **Community Modules** link and download `web-service-auth` zip archive.
 
-    - {{ version }} example: [web-service-auth](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-web-service-auth-plugin.zip)
+    - {{ snapshot }} example: [web-service-auth](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-web-service-auth-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -19,6 +19,6 @@ render_macros: true
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-web-service-auth-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-web-service-auth-plugin.zip above).
 
 4.  Restart GeoServer.

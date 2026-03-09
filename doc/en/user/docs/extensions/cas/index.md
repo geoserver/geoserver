@@ -18,7 +18,7 @@ To install the CAS module:
     From the list of **Security** extensions download **CAS**.
 
     - {{ release }} example: [cas](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-cas-plugin.zip)
-    - {{ version }} example: [cas](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-cas-plugin.zip)
+    - {{ snapshot }} example: [cas](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-cas-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

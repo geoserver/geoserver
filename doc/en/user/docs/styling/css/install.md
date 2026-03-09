@@ -11,8 +11,8 @@ The installation process is similar to other GeoServer extensions:
 
 1.  Download:
 
-    - {{ release }} [css](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-css-plugin.zip)
-    - {{ version }} [css](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-css-plugin.zip)
+    - {{ release }} [geoserver-{{ release }}-css-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-css-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-css-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-css-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

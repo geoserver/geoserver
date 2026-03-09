@@ -22,7 +22,7 @@ The steps to install the EO extension as the same as most other extensions:
     From the list of **OGC Servcies** extensions download **WCS 2.0 EO**.
 
     - {{ release }} example: [wcs2_0-eo](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wcs2_0-eo-plugin.zip)
-    - {{ version }} example: [wcs2_0-eo](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-wcs2_0-eo-plugin.zip)
+    - {{ snapshot }} example: [wcs2_0-eo](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-wcs2_0-eo-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

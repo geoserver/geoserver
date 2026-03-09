@@ -27,7 +27,7 @@ A free of charge copy of Db2 can be downloaded from <https://www.ibm.com/analyti
 
     Follow the **Community Modules** link and download `db2` zip archive.
 
-    - {{ version }} example: [db2](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-db2-plugin.zip)
+    - {{ snapshot }} example: [db2](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-db2-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -35,7 +35,7 @@ A free of charge copy of Db2 can be downloaded from <https://www.ibm.com/analyti
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-loader-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-db2-plugin.zip above).
 
 4.  Restart GeoServer.
 

@@ -9,8 +9,8 @@ render_macros: true
 
 1.  Download the OGC API Features zip:
 
-    - {{ release }} [ogcapi-features](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-ogcapi-features-plugin.zip)
-    - {{ version }} [ogcapi-features](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-ogcapi-features-plugin.zip)
+    - {{ release }} [geoserver-{{ release }}-ogcapi-features-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-ogcapi-features-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-ogcapi-features-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-ogcapi-features-plugin.zip)
 
     !!! warning
 

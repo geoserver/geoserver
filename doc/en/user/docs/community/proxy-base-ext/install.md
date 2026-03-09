@@ -15,7 +15,7 @@ The installation process is similar to other GeoServer extensions:
 
     Follow the **Community Modules** link and download `proxy-base-ext` zip archive.
 
-    - {{ version }} example: [proxy-base-ext](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-proxy-base-ext-plugin.zip)
+    - {{ snapshot }} example: [proxy-base-ext](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-proxy-base-ext-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -23,7 +23,7 @@ The installation process is similar to other GeoServer extensions:
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-proxy-base-ext-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-proxy-base-ext-plugin.zip above).
 
 4.  Restart GeoServer.
 

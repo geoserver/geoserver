@@ -32,7 +32,7 @@
   - Mark task complete when tests are written, run, and passing on unfixed code
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [-] 3. Fix for broken download links across documentation
+- [x] 3. Fix for broken download links across documentation
 
   - [x] 3.1 Create Python fix script
     - Create `scripts/fix_download_links.py`
@@ -57,14 +57,14 @@
     - Test edge cases (links with special characters, multi-line links)
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [-] 3.3 Run fix script on documentation
+  - [x] 3.3 Run fix script on documentation
     - Activate Python virtual environment: `source .venv/Scripts/activate`
     - Create git commit or backup before running script
     - Execute: `python scripts/fix_download_links.py`
     - Review script output for number of files processed and links fixed
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [ ] 3.4 Verify bug condition exploration test now passes
+  - [x] 3.4 Verify bug condition exploration test now passes
     - **Property 1: Expected Behavior** - Download Links Display Full Filenames
     - **IMPORTANT**: Re-run the SAME test from task 1 - do NOT write a new test
     - The test from task 1 encodes the expected behavior
@@ -74,7 +74,7 @@
     - **EXPECTED OUTCOME**: Test PASSES (confirms bug is fixed)
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [ ] 3.5 Verify preservation tests still pass
+  - [x] 3.5 Verify preservation tests still pass
     - **Property 2: Preservation** - Non-Download Link Behavior
     - **IMPORTANT**: Re-run the SAME tests from task 2 - do NOT write new tests
     - Use `git diff` to examine all changes
@@ -86,21 +86,21 @@
     - **EXPECTED OUTCOME**: Tests PASS (confirms no regressions)
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 4. Checkpoint - Ensure all tests pass and documentation builds correctly
+- [x] 4. Checkpoint - Ensure all tests pass and documentation builds correctly
   - Build documentation with MkDocs to verify links render correctly
   - Verify macro variables are properly substituted in built documentation
   - Manually test several fixed download links to verify they work
   - Ensure all tests pass, ask the user if questions arise
 
 - [ ] 5. Apply fix to 2.28.x branch
-  - [ ] 5.1 Commit the fix on main branch
+  - [x] 5.1 Commit the fix on migration/v3 branch
     - Stage all changes: `git add scripts/fix_download_links.py doc/`
     - Commit with clear message: `git commit -m "Fix broken download links in documentation"`
     - Note the commit hash for cherry-picking
     - _Requirements: All_
 
-  - [ ] 5.2 Cherry-pick fix to 2.28.x branch
-    - Switch to 2.28.x branch: `git checkout 2.28.x`
+  - [ ] 5.2 Cherry-pick fix to migration/2.28.x branch
+    - Switch to migration/2.28.x branch: `git checkout migration/2.28.x`
     - Cherry-pick the fix commit: `git cherry-pick <commit-hash>`
     - If cherry-pick succeeds without conflicts, proceed to task 5.3
     - If merge conflicts occur, proceed to task 5.2.1

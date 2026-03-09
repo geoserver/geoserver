@@ -19,7 +19,7 @@ To install this module:
 
     Follow the **Community Modules** link and download `ogcapi-images` zip archive.
 
-    - {{ version }} example: [ogcapi-images](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-ogcapi-images-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-images](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-images-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -27,7 +27,7 @@ To install this module:
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-loader-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-loader-plugin.zip above).
 
 4.  Restart GeoServer.
 
@@ -47,7 +47,7 @@ To install these modules:
 
     Follow the **Community Modules** link and download `ogcapi-dggs` zip archive.
 
-    - {{ version }} example: [ogcapi-dggs](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-ogcapi-dggs-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-dggs](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-dggs-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -55,7 +55,7 @@ To install these modules:
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-ogcapi-dggs-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-ogcapi-dggs-plugin.zip above).
 
 4.  Restart GeoServer.
 

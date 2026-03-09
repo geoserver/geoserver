@@ -23,8 +23,8 @@ To install the Image extension:
 
 3.  Download the Image extension:
 
-    - {{ release }} [image](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-image-plugin.zip)
-    - {{ version }} [image](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-image-plugin.zip)
+    - {{ release }} [geoserver-{{ release }}-image-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-image-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-image-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-image-plugin.zip)
 
     The download link for **Image** will be in the **Extensions** section.
 

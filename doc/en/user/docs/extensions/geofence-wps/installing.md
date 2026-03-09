@@ -12,7 +12,7 @@ render_macros: true
     From the list of **Security** extensions download **GeoFence WPS**.
 
     - {{ release }} example: [geofence-wps](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-geofence-wps-plugin.zip)
-    - {{ version }} example: [geofence-wps](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-geofence-wps-plugin.zip)
+    - {{ snapshot }} example: [geofence-wps](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-geofence-wps-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

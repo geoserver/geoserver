@@ -15,7 +15,7 @@ The installation process is similar to other GeoServer community modules:
 
     Follow the **Community Modules** link and download `stac-datastore` zip archive.
 
-    - {{ version }} example: [stac-datastore](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-stac-datastore-plugin.zip)
+    - {{ snapshot }} example: [stac-datastore](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-stac-datastore-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -23,7 +23,7 @@ The installation process is similar to other GeoServer community modules:
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-stac-datastore-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-stac-datastore-plugin.zip above).
 
 4.  Restart GeoServer.
 

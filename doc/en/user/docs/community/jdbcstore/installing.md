@@ -13,7 +13,7 @@ To install the JDBCStore module:
 
     Follow the **Community Modules** link and download ``jdbcstore`` zip archive.
 
-    - {{ version }} example: [jdbcstore](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-jdbcstore-plugin.zip)
+    - {{ snapshot }} example: [jdbcstore](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-jdbcstore-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

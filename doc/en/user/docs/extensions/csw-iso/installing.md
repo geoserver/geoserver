@@ -14,12 +14,12 @@ To install the CSW ISO extension:
     If you do not have the CSW extension yet, get it first. From the list of **OGC Services** extensions download **CSW**.
 
     - {{ release }} example: [csw](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-csw-plugin.zip)
-    - {{ version }} example: [csw](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-csw-plugin.zip)
+    - {{ snapshot }} example: [csw](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-csw-plugin.zip)
 
     From the list of **OGC Services** extensions download **CSW ISO Metadata Profile**.
 
     - {{ release }} example: [csw-iso](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-csw-iso-plugin.zip)
-    - {{ version }} example: [csw-iso](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-csw-iso-plugin.zip)
+    - {{ snapshot }} example: [csw-iso](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-csw-iso-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

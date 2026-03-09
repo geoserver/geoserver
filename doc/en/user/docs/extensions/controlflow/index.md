@@ -22,7 +22,7 @@ The control flow method does not normally reject requests, it just queues up tho
     From the list of **Miscellaneous** extensions download **Control Flow**.
 
     - {{ release }} example: [control-flow](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-control-flow-plugin.zip)
-    - {{ version }} example: [control-flow](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-control-flow-plugin.zip)
+    - {{ snapshot }} example: [control-flow](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-control-flow-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

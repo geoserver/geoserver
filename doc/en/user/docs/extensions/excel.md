@@ -16,7 +16,7 @@ The GeoServer Excel plugin adds the ability to output WFS responses in either Ex
     From the list of **Output formats** extensions download **Excel**.
 
     - {{ release }} example: [excel](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-excel-plugin.zip)
-    - {{ version }} example: [excel](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-excel-plugin.zip)
+    - {{ snapshot }} example: [excel](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-excel-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

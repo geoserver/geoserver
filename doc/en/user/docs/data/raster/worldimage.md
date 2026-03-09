@@ -15,8 +15,8 @@ A world file is a plain text file used to georeference raster map images. This f
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download:
 
-    - {{ release }} [image](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-image-plugin.zip)
-    - {{ version }} [image](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-image-plugin.zip)
+    - {{ release }} [geoserver-{{ release }}-image-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-image-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-image-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-image-plugin.zip)
 
     !!! warning
 

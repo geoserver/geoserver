@@ -24,7 +24,7 @@ The WPS PPIO adds dxf as an on output format option for WPS processes. The WPS P
     From the list of **Output Formats** extensions download **DXF**.
 
     - {{ release }} example: [dxf](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-dxf-plugin.zip)
-    - {{ version }} example: [dxf](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-dxf-plugin.zip)
+    - {{ snapshot }} example: [dxf](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-dxf-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

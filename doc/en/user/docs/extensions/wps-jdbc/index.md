@@ -19,7 +19,7 @@ The WPS JDBC extension is a WPS status storage for asynchronous requests. Main a
     From the list of **OGC Services** extensions download **WPS Clustering (JDBC)**.
 
     - {{ release }} example: [wps-jdbc](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wps-jdbc-plugin.zip)
-    - {{ version }} example: [wps-jdbc](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-wps-jdbc-plugin.zip)
+    - {{ snapshot }} example: [wps-jdbc](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-wps-jdbc-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

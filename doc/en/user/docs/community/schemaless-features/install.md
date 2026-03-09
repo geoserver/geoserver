@@ -11,7 +11,7 @@ render_macros: true
 
     Follow the **Community Modules** link and download `mongodb-schemaless` zip archive.
 
-    - {{ version }} example: [mongodb-schemaless](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-mongodb-schemaless-plugin.zip)
+    - {{ snapshot }} example: [mongodb-schemaless](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-mongodb-schemaless-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -19,7 +19,7 @@ render_macros: true
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-mongodb-schemaless-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-mongodb-schemaless-plugin.zip above).
 
 4.  Restart GeoServer.
 

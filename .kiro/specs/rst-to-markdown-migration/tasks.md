@@ -360,6 +360,64 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Test locally that macros render correctly in built documentation
     - _Requirements: 1.3, 1.4, 5.5, 5.6_
 
+  - [ ] 5.5.2.1 Research and design automated version management system
+    - **PROBLEM**: Current hardcoded version approach requires manual updates after each release
+    - **HISTORY**: 
+      - Commit e6a2b6c660 (Oct 27, 2025) changed from environment variable to hardcoded approach
+      - Previous method: `project_version = os.getenv("project.version")` read from build system
+      - Current method: `release = '2.28.0'` hardcoded, with comment "This should be updated after each release"
+      - Multiple releases since 2.28.0 (2.28.1, 2.28.2, 2.27.3, 2.27.4, 2.27.5, 3.0.0) where this was NOT updated
+    - **RESEARCH TASKS**:
+      - Investigate GeoServer release process and branching strategy
+      - Understand how version numbers are managed across branches (main, 2.28.x, 2.27.x)
+      - Research how src/pom.xml version is updated during releases
+      - Investigate GitHub Actions environment variables available during documentation builds
+      - Research if Maven version can be read at MkDocs build time
+      - Check if git tags can be used to determine release versions
+      - Review how other projects handle version management in documentation (e.g., GeoTools, GeoWebCache)
+    - **DESIGN OPTIONS TO EVALUATE**:
+      - Option 1: Read version from src/pom.xml at build time (like original Sphinx)
+      - Option 2: Use git tags to determine current release version
+      - Option 3: Use GitHub Actions environment variables (GITHUB_REF, GITHUB_SHA)
+      - Option 4: Create a version.txt file updated by release automation
+      - Option 5: Use branch name to infer version (main → 3.0, 2.28.x → 2.28)
+      - Option 6: Hybrid approach - read from POM for snapshot, use git tags for release
+    - **DELIVERABLES**:
+      - Document current release process and version management
+      - Document findings on available version sources (POM, git tags, env vars)
+      - Propose recommended solution with pros/cons analysis
+      - Create implementation plan for chosen solution
+      - Ensure solution works for both local builds and CI/CD (GitHub Actions)
+    - **GOAL**: Eliminate manual version updates, make version management automatic and maintainable
+    - _Requirements: 1.3, 1.4, 4.2_
+
+  - [ ] 5.5.3 Verify and document version macro configuration
+    - **CRITICAL**: Ensure version/release/snapshot macros match original Sphinx conf.py configuration
+    - **Original Sphinx configuration** (from doc/en/user/source/conf.py):
+      - `version`: Read from src/pom.xml (e.g., "3.0-SNAPSHOT" or "3.0.0")
+      - `release`: Hardcoded stable release version (e.g., "2.28.0" for 2.28.x, "3.0.0" for 3.0)
+      - `community`: Snapshot version for community modules (e.g., "3.0-SNAPSHOT")
+      - `branch`: Git branch name (e.g., "main", "2.28.x")
+      - `series`: Version series (e.g., "3.x", "2.28.x")
+    - **MkDocs configuration** (doc/version.py):
+      - Verify `version` variable matches Sphinx `version` (major.minor without patch, e.g., "3.0")
+      - Verify `release` variable matches Sphinx `release` (full version with patch, e.g., "3.0.0")
+      - Verify `snapshot` variable matches Sphinx `community` (snapshot version, e.g., "3.0-SNAPSHOT")
+    - **Validation steps**:
+      - Compare doc/version.py values with doc/en/user/source/conf.py values
+      - Verify download link patterns match original Sphinx patterns:
+        - Release extensions: `https://sourceforge.net/.../extensions/geoserver-{{ release }}-...-plugin.zip`
+        - Snapshot extensions: `https://build.geoserver.org/.../ext-latest/geoserver-{{ snapshot }}-...-plugin.zip`
+        - Community modules: `https://build.geoserver.org/.../community-latest/geoserver-{{ snapshot }}-...-plugin.zip`
+      - Test macro substitution in built documentation (verify macros render as actual version numbers)
+      - Document any differences between Sphinx and MkDocs macro behavior
+    - **Documentation**:
+      - Add comments to doc/version.py explaining each variable and its purpose
+      - Document the relationship between Sphinx variables and MkDocs variables
+      - Add examples of how macros are used in download links
+      - Document when to update version.py (after each release)
+    - _Requirements: 1.3, 1.4, 4.2, 5.5, 5.6_
+
   - [-] 5.5.3 Configure Swagger API spec deployment (CRITICAL BLOCKER)
     - **CRITICAL BLOCKER**: REST API Swagger/OpenAPI YAML specs are not being deployed with MkDocs build
     - **Issue**: Documentation links to API specs (e.g., `api/styles.yaml`, `api/layergroups.yaml`) but these files are not packaged or deployed

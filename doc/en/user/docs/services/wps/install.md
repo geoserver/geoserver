@@ -17,8 +17,8 @@ The WPS module is not a part of GeoServer core, but instead must be installed as
 
 3.  Download the WPS extension:
 
-    - {{ release }} [wps](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wps-plugin.zip)
-    - {{ version }} [wps](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-wps-plugin.zip)
+    - {{ release }} [geoserver-{{ release }}-wps-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wps-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-wps-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-wps-plugin.zip)
 
     The download link for **WPS** will be in the **Extensions** section under **Other**.
 

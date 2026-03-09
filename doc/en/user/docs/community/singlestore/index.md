@@ -19,7 +19,7 @@ render_macros: true
 
     Follow the **Community Modules** link and download ``singlestore`` zip archive.
 
-    - {{ version }} example: [singlestore](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-singlestore-plugin.zip)
+    - {{ snapshot }} example: [singlestore](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-singlestore-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

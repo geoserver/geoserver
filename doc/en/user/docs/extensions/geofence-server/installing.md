@@ -35,13 +35,13 @@ GeoFence Server extension is provided as two mutually exclusive packages, to be 
 
     Recommended: From the list of **Security** extensions download **GeoFence Server (Postgres)**:
 
-    - {{ release }} [geofence-server-postgres](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-geofence-server-postgres-plugin.zip)
-    - {{ version }} [geofence-server-postgres](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-geofence-server-postgres-plugin.zip)
+    - {{ release }} [geoserver-{{ release }}-geofence-server-postgres-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-geofence-server-postgres-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-geofence-server-postgres-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-geofence-server-postgres-plugin.zip)
 
     Quick Demo: From the list of **Security** extensions download **GeoFence Server (H2)**:
 
-    - {{ release }} [geofence-server-h2](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-geofence-server-h2-plugin.zip)
-    - {{ version }} [geofence-server-h2](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-geofence-server-h2-plugin.zip)
+    - {{ release }} [geoserver-{{ release }}-geofence-server-h2-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-geofence-server-h2-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-geofence-server-h2-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-geofence-server-h2-plugin.zip)
 
     Make sure to match the plugin version (e.g. {{ release }} above) to the version of the GeoServer instance.
 

@@ -17,7 +17,7 @@ This module is not required to use vector tiles, it's also possible to use OGC A
 
     Follow the **Community Modules** link and download `ogcapi-tiled-features` zip archive.
 
-    - {{ version }} example: [ogcapi-tiled-features](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-ogcapi-tiled-features-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-tiled-features](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-tiled-features-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -25,7 +25,7 @@ This module is not required to use vector tiles, it's also possible to use OGC A
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-ogcapi-tiled-features-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-ogcapi-tiled-features-plugin.zip above).
 
 4.  Restart GeoServer.
 

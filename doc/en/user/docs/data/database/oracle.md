@@ -15,8 +15,8 @@ render_macros: true
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download:
 
-    - {{ release }} [oracle](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-oracle-plugin.zip)
-    - {{ version }} [oracle](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-oracle-plugin.zip)
+    - {{ release }} [geoserver-{{ release }}-oracle-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-oracle-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-oracle-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-oracle-plugin.zip)
 
     !!! warning
 

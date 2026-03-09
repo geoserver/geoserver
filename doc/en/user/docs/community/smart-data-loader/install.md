@@ -18,7 +18,7 @@ The installation process is similar to other GeoServer community modules:
     From the list of **Vector Formats** extensions download **App Schema**.
 
     - {{ release }} example: [app-schema](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-app-schema-plugin.zip)
-    - {{ version }} example: [app-schema](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-app-schema-plugin.zip)
+    - {{ snapshot }} example: [app-schema](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-app-schema-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 
@@ -26,7 +26,7 @@ The installation process is similar to other GeoServer community modules:
 
     Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    - {{ version }} example: [smart-data-loader](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-smart-data-loader-plugin.zip)
+    - {{ snapshot }} example: [smart-data-loader](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-smart-data-loader-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also ``browse <https://build.geoserver.org/geoserver/>`` for earlier branches.
 

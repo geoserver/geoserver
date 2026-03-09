@@ -16,7 +16,7 @@ The installation process is similar to other GeoServer extensions:
     From the list of **OGC Services** extensions download **WMTS multi-dimensional**.
 
     - {{ release }} example: [wmts-multi-dimensional](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wmts-multi-dimensional-plugin.zip)
-    - {{ version }} example: [wmts-multi-dimensional](https://build.geoserver.org/geoserver/main/extensions/geoserver-{{ snapshot }}-wmts-multi-dimensional-plugin.zip)
+    - {{ snapshot }} example: [wmts-multi-dimensional](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-wmts-multi-dimensional-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

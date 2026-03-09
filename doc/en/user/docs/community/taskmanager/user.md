@@ -15,11 +15,11 @@ To install the GeoServer Task Manager extension:
 
     Follow the **Community Modules** link and download ``taskmanager-core`` zip archive.
 
-    - {{ version }} example: [taskmanager-core](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-taskmanager-core-plugin.zip)
+    - {{ snapshot }} example: [taskmanager-core](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-taskmanager-core-plugin.zip)
 
     For [S3 support](#s3-file-service), also install the ``taskmanager-s3`` zip archive:
 
-    - {{ version }} example: [taskmanager-s3](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-taskmanager-s3-plugin.zip)
+    - {{ snapshot }} example: [taskmanager-s3](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-taskmanager-s3-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

@@ -33,13 +33,13 @@ Missing functionality at the time of writing, and known issues:
 
     Follow the **Community Modules** link and download ``ogcapi-coverages`` zip archive.
 
-    - {{ version }} example: [ogcapi-coverages](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ version }}-SNAPSHOT-ogcapi-coverages-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-coverages](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-coverages-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
     !!! warning
 
-        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ version }}-ogcapi-coverages-plugin.zip above).
+        Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ snapshot }}-ogcapi-coverages-plugin.zip above).
 
 3.  Extract the contents of the archive into the **`WEB-INF/lib`** directory in GeoServer.
 

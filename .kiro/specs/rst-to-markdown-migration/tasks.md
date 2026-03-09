@@ -536,43 +536,206 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - _Requirements: 12.1, 12.2, 12.5, 12.6, 12.7_
 
 - [ ] 9. Phase 7: Navigation Simplification (Post-Migration Enhancement)
-  - [ ] 9.1 Simplify documentation navigation confusion
-    - **GOAL**: Improve navigation UX by reducing clutter and improving clarity
-    - **Current issues**:
-      - Top navigation bar has too many elements (manual switcher + all first-level pages)
-      - Breadcrumb navigation is missing
-      - Left sidebar navigation could be improved
-      - Right sidebar "on this page" navigation needs refinement
-    - **Proposed improvements**:
-      1. **Top navigation bar** (horizontal):
-         - Keep user/dev/docguide manual switcher (existing)
-         - Add space for mike version/series switcher (future)
-         - Replace first-level page tabs with breadcrumb navigation
-         - Result: Cleaner top bar with manual switcher + breadcrumbs only
-      2. **Breadcrumb navigation** (below top bar):
-         - Show current page path: Home > Section > Subsection > Current Page
-         - Make breadcrumbs clickable for easy navigation up the hierarchy
-         - Use Material for MkDocs breadcrumb feature or custom implementation
-      3. **Left sidebar navigation** (second+ level pages):
-         - Improve section organization and grouping
-         - Add next/previous page navigation at bottom of sidebar
-         - Ensure proper expand/collapse behavior for nested sections
-         - Highlight current page clearly
-      4. **Right sidebar navigation** (on this page):
-         - Show table of contents for current page (headings)
-         - Add "Edit this page" link at top or bottom
-         - Ensure smooth scrolling to anchors
-         - Keep "Back to top" functionality
-    - **Implementation approach**:
-      - Review Material for MkDocs navigation features and configuration options
-      - Test navigation changes on sample pages before full rollout
-      - Ensure mobile responsiveness for all navigation changes
-      - Document navigation configuration in mkdocs.yml
+  - [ ] 9.1 Redesign top navigation bar (horizontal navigation)
+    - **GOAL**: Simplify top navigation bar by removing clutter and preparing for version switcher
+    - **Current state**:
+      - Top bar shows manual switcher (User Manual | Developer Guide | Documentation Guide)
+      - Top bar also shows all first-level page tabs (17+ tabs in user manual)
+      - Result: Overcrowded, confusing, overflows on mobile
+    - **Target state**:
+      - Keep manual switcher on left side
+      - Reserve space for mike version/series switcher on right side (future)
+      - Remove first-level page tabs (will be replaced by breadcrumbs in task 9.2)
+      - Result: Clean top bar with manual switcher + version switcher only
+    - **Implementation steps**:
+      1. Review Material for MkDocs theme configuration for navigation.tabs
+      2. Disable navigation.tabs feature in mkdocs.yml (removes first-level tabs)
+      3. Test that manual switcher still works correctly
+      4. Add placeholder/styling for future version switcher position
+      5. Test on desktop (1920px), tablet (768px), and mobile (375px) screens
+      6. Verify no horizontal overflow on any screen size
+    - **Configuration changes**:
+      ```yaml
+      # mkdocs.yml
+      theme:
+        features:
+          # - navigation.tabs  # REMOVE THIS - causes overflow
+          - navigation.sections  # Use sections instead
+          - navigation.expand
+      ```
     - **Deliverables**:
-      - Updated mkdocs.yml with improved navigation configuration
-      - Custom CSS/JavaScript if needed for breadcrumbs or navigation enhancements
-      - Documentation of navigation structure and configuration
-      - Testing on desktop and mobile browsers
+      - Updated mkdocs.yml with navigation.tabs disabled
+      - Custom CSS for manual switcher positioning (if needed)
+      - Testing on multiple screen sizes
+      - Documentation of changes
+    - _Requirements: 14.1, 14.2, 14.7_
+
+  - [ ] 9.2 Add breadcrumb navigation
+    - **GOAL**: Add breadcrumb navigation to show current page location in hierarchy
+    - **Current state**: No breadcrumbs - users don't know where they are in the documentation structure
+    - **Target state**: Breadcrumb trail below top bar showing: Home > Section > Subsection > Current Page
+    - **Implementation steps**:
+      1. Research Material for MkDocs breadcrumb options:
+         - Check if Material theme has built-in breadcrumb support
+         - Review mkdocs-material documentation for breadcrumb configuration
+         - Check community plugins (mkdocs-breadcrumbs-plugin, etc.)
+      2. Choose implementation approach:
+         - Option A: Use Material theme built-in breadcrumbs (if available)
+         - Option B: Use mkdocs-breadcrumbs-plugin
+         - Option C: Custom implementation with Jinja2 templates
+      3. Implement breadcrumbs:
+         - Configure plugin or theme feature in mkdocs.yml
+         - Customize breadcrumb styling to match GeoServer theme
+         - Ensure breadcrumbs are clickable and navigate correctly
+      4. Test breadcrumb navigation:
+         - Verify breadcrumbs show correct path for all pages
+         - Test clicking breadcrumb links navigates correctly
+         - Verify breadcrumbs work on mobile (may need to truncate on small screens)
+      5. Style breadcrumbs:
+         - Position below top navigation bar
+         - Use appropriate separator (> or / or •)
+         - Ensure good contrast and readability
+    - **Example breadcrumb**:
+      ```
+      Home > Services > WMS > Google Earth > Features > KML Placemarks
+      ```
+    - **Deliverables**:
+      - Breadcrumb navigation implemented and styled
+      - Updated mkdocs.yml with breadcrumb configuration
+      - Custom CSS for breadcrumb styling
+      - Testing on desktop and mobile
+      - Documentation of breadcrumb implementation
+    - _Requirements: 14.3, 14.7_
+
+  - [ ] 9.3 Enhance left sidebar navigation (second+ level pages)
+    - **GOAL**: Improve left sidebar navigation with better organization and next/prev links
+    - **Current state**:
+      - Left sidebar shows navigation tree
+      - No next/previous page navigation
+      - Expand/collapse behavior could be improved
+    - **Target state**:
+      - Well-organized navigation tree with clear hierarchy
+      - Next/Previous page links at bottom of sidebar
+      - Smooth expand/collapse behavior
+      - Current page clearly highlighted
+    - **Implementation steps**:
+      1. Review current navigation structure:
+         - Analyze navigation hierarchy in mkdocs.yml
+         - Identify sections that could be better organized
+         - Look for opportunities to group related pages
+      2. Configure Material theme navigation features:
+         ```yaml
+         theme:
+           features:
+             - navigation.sections  # Group pages into sections
+             - navigation.expand    # Auto-expand current section
+             - navigation.indexes   # Enable section index pages
+             - navigation.top       # Back to top button
+             - navigation.tracking  # Update URL with current heading
+         ```
+      3. Add next/previous page navigation:
+         - Check if Material theme has built-in prev/next support
+         - If not, add custom template override for prev/next links
+         - Style prev/next links to match theme
+      4. Improve current page highlighting:
+         - Ensure current page is clearly highlighted in sidebar
+         - Use bold, color, or background to make it stand out
+      5. Test navigation behavior:
+         - Verify sections expand/collapse correctly
+         - Test next/prev links navigate correctly
+         - Verify current page highlighting works
+         - Test on mobile (sidebar becomes hamburger menu)
+    - **Deliverables**:
+      - Updated mkdocs.yml with navigation features configured
+      - Custom templates for prev/next links (if needed)
+      - Custom CSS for navigation styling
+      - Testing on desktop and mobile
+      - Documentation of navigation configuration
+    - _Requirements: 14.4, 14.5, 14.7_
+
+  - [ ] 9.4 Refine right sidebar "on this page" navigation
+    - **GOAL**: Improve right sidebar table of contents and add edit link
+    - **Current state**:
+      - Right sidebar shows table of contents (headings on current page)
+      - No "Edit this page" link
+      - May need better styling or behavior
+    - **Target state**:
+      - Clean table of contents showing page headings
+      - "Edit this page" link at top or bottom
+      - Smooth scrolling to anchors when clicking TOC links
+      - Active heading highlighted as user scrolls
+    - **Implementation steps**:
+      1. Review Material theme TOC configuration:
+         ```yaml
+         theme:
+           features:
+             - toc.follow    # TOC follows scroll position
+             - toc.integrate # Integrate TOC into navigation (optional)
+         ```
+      2. Configure TOC depth:
+         ```yaml
+         markdown_extensions:
+           - toc:
+               permalink: true
+               toc_depth: 3  # Show h1, h2, h3 in TOC
+         ```
+      3. Add "Edit this page" link:
+         - Configure repo_url and edit_uri in mkdocs.yml
+         - Material theme will automatically add edit link
+         - Customize edit link text/position if needed
+      4. Improve TOC styling:
+         - Ensure active heading is highlighted
+         - Add smooth scrolling to anchor links
+         - Ensure TOC is responsive on mobile
+      5. Test TOC behavior:
+         - Verify TOC updates as user scrolls
+         - Test clicking TOC links scrolls smoothly to headings
+         - Verify edit link opens correct GitHub page
+         - Test on mobile (TOC may be hidden or in hamburger menu)
+    - **Deliverables**:
+      - Updated mkdocs.yml with TOC configuration
+      - Edit link configured and working
+      - Custom CSS for TOC styling (if needed)
+      - Testing on desktop and mobile
+      - Documentation of TOC configuration
+    - _Requirements: 14.6, 14.7_
+
+  - [ ] 9.5 Test and validate all navigation improvements
+    - **GOAL**: Comprehensive testing of all navigation changes across all manuals
+    - **Testing scope**:
+      - Test all navigation improvements together (tasks 9.1-9.4)
+      - Test on all three manuals (user, developer, docguide)
+      - Test on multiple browsers (Chrome, Firefox, Safari, Edge)
+      - Test on multiple screen sizes (desktop, tablet, mobile)
+    - **Test cases**:
+      1. Top navigation bar:
+         - Manual switcher works correctly
+         - No horizontal overflow on any screen size
+         - Version switcher placeholder visible (if implemented)
+      2. Breadcrumb navigation:
+         - Breadcrumbs show correct path for all pages
+         - Clicking breadcrumbs navigates correctly
+         - Breadcrumbs responsive on mobile
+      3. Left sidebar navigation:
+         - Sections expand/collapse correctly
+         - Next/prev links work correctly
+         - Current page highlighted clearly
+         - Navigation works on mobile (hamburger menu)
+      4. Right sidebar TOC:
+         - TOC shows correct headings
+         - Active heading highlighted as user scrolls
+         - Clicking TOC links scrolls smoothly
+         - Edit link opens correct GitHub page
+      5. Overall UX:
+         - Navigation is intuitive and easy to use
+         - No confusion about current location
+         - Easy to navigate between pages and sections
+         - Mobile experience is good
+    - **Deliverables**:
+      - Test report documenting all test cases and results
+      - Screenshots of navigation on different screen sizes
+      - List of any issues found and fixes applied
+      - Final validation that all navigation improvements work correctly
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.6, 14.7_
 
 - [ ] 10. Phase 8: GitHub Actions Migration (Replace Jenkins)

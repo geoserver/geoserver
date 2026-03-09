@@ -535,7 +535,144 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Explain Phase 2 must complete before 15 April release
     - _Requirements: 12.1, 12.2, 12.5, 12.6, 12.7_
 
-- [ ] 9. Final Checkpoint - Migration Complete
+- [ ] 9. Phase 7: Navigation Simplification (Post-Migration Enhancement)
+  - [ ] 9.1 Simplify documentation navigation confusion
+    - **GOAL**: Improve navigation UX by reducing clutter and improving clarity
+    - **Current issues**:
+      - Top navigation bar has too many elements (manual switcher + all first-level pages)
+      - Breadcrumb navigation is missing
+      - Left sidebar navigation could be improved
+      - Right sidebar "on this page" navigation needs refinement
+    - **Proposed improvements**:
+      1. **Top navigation bar** (horizontal):
+         - Keep user/dev/docguide manual switcher (existing)
+         - Add space for mike version/series switcher (future)
+         - Replace first-level page tabs with breadcrumb navigation
+         - Result: Cleaner top bar with manual switcher + breadcrumbs only
+      2. **Breadcrumb navigation** (below top bar):
+         - Show current page path: Home > Section > Subsection > Current Page
+         - Make breadcrumbs clickable for easy navigation up the hierarchy
+         - Use Material for MkDocs breadcrumb feature or custom implementation
+      3. **Left sidebar navigation** (second+ level pages):
+         - Improve section organization and grouping
+         - Add next/previous page navigation at bottom of sidebar
+         - Ensure proper expand/collapse behavior for nested sections
+         - Highlight current page clearly
+      4. **Right sidebar navigation** (on this page):
+         - Show table of contents for current page (headings)
+         - Add "Edit this page" link at top or bottom
+         - Ensure smooth scrolling to anchors
+         - Keep "Back to top" functionality
+    - **Implementation approach**:
+      - Review Material for MkDocs navigation features and configuration options
+      - Test navigation changes on sample pages before full rollout
+      - Ensure mobile responsiveness for all navigation changes
+      - Document navigation configuration in mkdocs.yml
+    - **Deliverables**:
+      - Updated mkdocs.yml with improved navigation configuration
+      - Custom CSS/JavaScript if needed for breadcrumbs or navigation enhancements
+      - Documentation of navigation structure and configuration
+      - Testing on desktop and mobile browsers
+    - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.6, 14.7_
+
+- [ ] 10. Phase 8: GitHub Actions Migration (Replace Jenkins)
+  - [ ] 10.1 Create combined monorepo mkdocs.yml configuration
+    - **GOAL**: Combine user, developer, and docguide manuals into single MkDocs site for simpler deployment
+    - **Current structure** (3 separate sites):
+      - doc/en/user/mkdocs.yml → builds user manual
+      - doc/en/developer/mkdocs.yml → builds developer guide
+      - doc/en/docguide/mkdocs.yml → builds docguide
+      - Each manual deployed separately with mike
+    - **Proposed monorepo structure** (1 combined site):
+      - doc/en/mkdocs.yml → builds all 3 manuals in one site
+      - Navigation tabs switch between manuals (User Manual | Developer Guide | Documentation Guide)
+      - Single deployment with mike per version
+      - Simpler GitHub Actions workflow
+    - **Implementation steps**:
+      1. Create new doc/en/mkdocs.yml with combined navigation:
+         ```yaml
+         nav:
+           - User Manual:
+             - user/index.md
+             - user/introduction/index.md
+             - ...
+           - Developer Guide:
+             - developer/index.md
+             - developer/introduction.md
+             - ...
+           - Documentation Guide:
+             - docguide/index.md
+             - docguide/background.md
+             - ...
+         ```
+      2. Configure docs_dir to include all three manual directories
+      3. Update theme configuration for navigation tabs
+      4. Test combined build locally with `mkdocs serve`
+      5. Verify all cross-manual links work correctly
+      6. Update manual switcher to use navigation tabs instead of separate sites
+    - **Benefits**:
+      - Single deployment per version (simpler)
+      - Unified search across all manuals
+      - Easier cross-manual linking
+      - Reduced GitHub Actions complexity
+    - **Trade-offs**:
+      - Larger build output per version (~50 MB vs 3x ~17 MB)
+      - All manuals rebuild together (can't rebuild just one)
+      - Navigation structure more complex
+    - **Deliverables**:
+      - New doc/en/mkdocs.yml with combined configuration
+      - Updated navigation structure
+      - Testing and validation of combined build
+      - Documentation of monorepo structure
+    - _Requirements: 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
+
+  - [ ] 10.2 Switch Jenkins docs build to GitHub Actions
+    - **GOAL**: Replace Jenkins documentation builds with GitHub Actions for new versions (2.28.x+)
+    - **Current state**:
+      - Jenkins builds and deploys docs to OSGeo server
+      - Triggered by SCM polling every 5 minutes
+      - Deploys to /var/www/geoserverdocs/$VERSION/
+    - **Target state**:
+      - GitHub Actions builds and deploys docs to GitHub Pages
+      - Triggered by push to main/2.28.x branches
+      - Uses mike for version management
+      - Archive versions (2.27.x and earlier) remain on OSGeo with Jenkins
+    - **Implementation steps**:
+      1. Create .github/workflows/docs-deploy.yml:
+         - Trigger on push to main, 2.28.x branches (doc/** paths)
+         - Build combined MkDocs site (from task 10.1)
+         - Deploy with mike to gh-pages branch
+         - Configure version aliases (latest, stable)
+      2. Configure GitHub Pages:
+         - Enable GitHub Pages on gh-pages branch
+         - Configure custom domain: docs.geoserver.org
+         - Add CNAME file to gh-pages branch
+      3. Configure version selector:
+         - Add links to archive versions on OSGeo (docs-archive.geoserver.org)
+         - Implement one-way navigation (new → archive, not reverse)
+      4. Test deployment:
+         - Deploy to test path first
+         - Verify URLs match existing structure
+         - Test version switching
+         - Verify all content accessible
+      5. Cutover:
+         - Disable Jenkins jobs for 2.28.x and main
+         - Keep Jenkins jobs for archive versions (2.27.x and earlier)
+         - Monitor GitHub Pages deployment
+         - Update documentation
+    - **Deliverables**:
+      - .github/workflows/docs-deploy.yml workflow
+      - GitHub Pages configuration
+      - Version selector with archive links
+      - Documentation of deployment process
+      - Cutover plan and rollback procedure
+    - **References**:
+      - See .kiro/specs/rst-to-markdown-migration/github-pages-solution.md for detailed strategy
+      - See .kiro/specs/rst-to-markdown-migration/multi-version-strategy.md for hybrid approach
+      - See .kiro/specs/rst-to-markdown-migration/jenkins-analysis.md for Jenkins details
+    - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7_
+
+- [ ] 11. Final Checkpoint - Migration Complete
   - Ensure all PRs are created, all documentation is updated, all validation passes. Ask the user if questions arise.
 
 ## Notes
@@ -549,7 +686,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
 - 3.0 branch is converted first, then 2.28.x branch
 - Total timeline: 14 days across 6 phases
 
-- [ ] 10. Backport version/release macro fixes to 2.28.x branch (Optional)
+- [ ] 12. Backport version/release macro fixes to 2.28.x branch (Optional)
   - **OPTIONAL TASK**: After 3.0 branch macro fixes are complete and verified
   - Review the automated fix script created for 3.0 branch (task 5.5.2)
   - Adapt script for 2.28.x branch if needed (version numbers differ)

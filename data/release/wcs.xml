@@ -1,11 +1,11 @@
 <wcs>
   <id>wcs</id>
   <enabled>true</enabled>
-  <name>WCS</name>
-  <title>Web Coverage Service</title>
+  <name>Raster</name>
+  <title>Raster data and imagery</title>
   <internationalTitle/>
-  <maintainer>http://geoserver.org/comm</maintainer>
-  <abstrct>This server implements the WCS specification 1.0 and 1.1.1, it&apos;s reference implementation of WCS 1.1.1. All layers published by this service are available on WMS also.</abstrct>
+  <maintainer>https://geoserver.org/comm</maintainer>
+  <abstrct>Direct access to referenced raster data and imagery.</abstrct>
   <internationalAbstract/>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
@@ -21,6 +21,8 @@
     </org.geotools.util.Version>
   </versions>
   <keywords>
+    <string>RASTER</string>
+    <string>IMAGERY</string>
     <string>WCS</string>
     <string>GEOSERVER</string>
   </keywords>
@@ -30,7 +32,7 @@
     <metadataType>other</metadataType>
   </metadataLink>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.org</onlineResource>
+  <onlineResource>https://geoserver.org</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gmlPrefixing>false</gmlPrefixing>

@@ -10,10 +10,9 @@ theme:
       primary: blue
       accent: blue
   features:
-    - navigation.tabs
-    - navigation.sections
-    - navigation.expand
+    # - navigation.tabs  # Disabled: Causes horizontal overflow on mobile/tablet
     - navigation.top
+    - navigation.path  # Enable breadcrumb navigation
     - search.highlight
     - search.share
   # Disable syntax highlighting to avoid Pygments issues

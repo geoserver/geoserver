@@ -35,13 +35,12 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.sections
-    - navigation.expand
+    # - navigation.tabs  # Disabled: Causes horizontal overflow on mobile/tablet
+    # - navigation.tabs.sticky  # Disabled: Not needed without navigation.tabs
     - navigation.top
     - navigation.tracking
     - navigation.indexes
+    - navigation.path  # Enable breadcrumb navigation
     - search.suggest
     - search.highlight
     - content.code.copy

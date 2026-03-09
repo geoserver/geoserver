@@ -536,7 +536,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - _Requirements: 12.1, 12.2, 12.5, 12.6, 12.7_
 
 - [ ] 9. Phase 7: Navigation Simplification (Post-Migration Enhancement)
-  - [ ] 9.1 Redesign top navigation bar (horizontal navigation)
+  - [x] 9.1 Redesign top navigation bar (horizontal navigation)
     - **GOAL**: Simplify top navigation bar by removing clutter and preparing for version switcher
     - **Current state**:
       - Top bar shows manual switcher (User Manual | Developer Guide | Documentation Guide)
@@ -570,7 +570,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
       - Documentation of changes
     - _Requirements: 14.1, 14.2, 14.7_
 
-  - [ ] 9.2 Add breadcrumb navigation
+  - [x] 9.2 Add breadcrumb navigation
     - **GOAL**: Add breadcrumb navigation to show current page location in hierarchy
     - **Current state**: No breadcrumbs - users don't know where they are in the documentation structure
     - **Target state**: Breadcrumb trail below top bar showing: Home > Section > Subsection > Current Page

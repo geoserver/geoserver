@@ -1,110 +1,221 @@
 /* 
- * GeoServer Documentation - Mobile Navigation Fixes
+ * GeoServer Documentation - Navigation Styles
  * 
- * Fixes horizontal navigation tab overflow on mobile/narrow screens
- * by converting tabs to a vertical scrollable menu on smaller viewports.
+ * Navigation.tabs feature is disabled to prevent horizontal overflow.
+ * All navigation is now accessible through the sidebar (hamburger menu on mobile).
  */
-
-/* Mobile navigation fix: Hide horizontal tabs on mobile, use hamburger menu instead */
-@media screen and (max-width: 76.1875em) {
-  /* Hide the horizontal navigation tabs on mobile/tablet */
-  .md-tabs {
-    display: none;
-  }
-  
-  /* Ensure the navigation drawer (hamburger menu) is available */
-  .md-nav--primary .md-nav__title {
-    display: block;
-  }
-  
-  /* Make sure all navigation items are accessible in the drawer */
-  .md-nav--primary .md-nav__list {
-    display: block;
-  }
-}
-
-/* Tablet-specific adjustments (768px - 1220px) */
-@media screen and (min-width: 48em) and (max-width: 76.1875em) {
-  /* On tablets, we can show tabs but with better wrapping */
-  .md-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .md-tabs__list {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-  
-  .md-tabs__item {
-    flex-shrink: 0;
-    min-width: auto;
-  }
-}
-
-/* Mobile-specific (< 768px): Force hamburger menu */
-@media screen and (max-width: 47.9375em) {
-  /* Completely hide tabs on mobile */
-  .md-tabs {
-    display: none !important;
-  }
-  
-  /* Ensure header doesn't reserve space for tabs */
-  .md-header {
-    height: auto;
-  }
-  
-  /* Make navigation drawer full-width on mobile */
-  .md-nav--primary {
-    width: 100%;
-  }
-}
-
-/* Desktop: Keep tabs but ensure they don't overflow */
-@media screen and (min-width: 76.25em) {
-  .md-tabs__list {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-  }
-  
-  .md-tabs__list::-webkit-scrollbar {
-    height: 4px;
-  }
-  
-  .md-tabs__list::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 2px;
-  }
-  
-  .md-tabs__item {
-    flex-shrink: 0;
-  }
-}
 
 /* Ensure navigation is accessible on all screen sizes */
 .md-nav__item {
-  padding: 0;
+  padding: 0 !important;
 }
 
+/* Target all navigation links with maximum specificity */
+.md-sidebar .md-nav--primary .md-nav__link,
+.md-nav--primary .md-nav__link,
 .md-nav__link {
   display: block;
-  padding: 0.625em 0.8em;
+  padding: 0.25rem 0.8rem !important;  /* Reduced from 0.625em to match right TOC spacing */
+}
+
+/* Override for simple (non-container) links in active path - remove extra padding */
+.md-nav--primary .md-nav__item:not(.md-nav__item--nested) > .md-nav__link {
+  padding: 0.25rem 0.8rem !important;
 }
 
 /* Improve touch targets on mobile */
 @media screen and (max-width: 47.9375em) {
   .md-nav__link {
-    padding: 0.875em 1em;
+    padding: 0.875em 1em !important;
     font-size: 0.9rem;
   }
   
   .md-nav__item--nested > .md-nav__link {
     font-weight: 600;
+  }
+}
+
+/* 
+ * Breadcrumb Navigation Styles
+ * 
+ * Customizes the Material for MkDocs navigation.path feature
+ * to match GeoServer branding and improve readability.
+ * Breadcrumbs use sticky positioning and stop at the header.
+ */
+
+/* Breadcrumb container - sticky positioning that stops at header */
+.md-path {
+  position: sticky;
+  top: 2.4rem;  /* Adjusted to stick directly below header with no gap */
+  z-index: 1;  /* Lower z-index so hamburger menu (z-index: 4) appears above */
+  margin: -1.5rem 0rem 1rem 0rem;  /* No negative top margin - let it flow naturally */
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  background-color: var(--md-primary-fg-color);  /* Blue background matching header */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.25s ease, box-shadow 0.2s ease;
+}
+
+/* Darker blue when mobile menu is open */
+[data-md-toggle="drawer"]:checked ~ .md-container .md-path {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Enhanced shadow when scrolled */
+.md-path.scrolled {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Breadcrumb list */
+.md-path__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Breadcrumb items */
+.md-path__item {
+  display: flex;
+  align-items: center;
+}
+
+/* Breadcrumb links */
+.md-path__link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.md-path__link:hover {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: underline;
+}
+
+.md-path__link:focus {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Current page (last breadcrumb) */
+.md-path__item:last-child .md-path__link {
+  color: rgba(255, 255, 255, 1);
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* Breadcrumb separator - Material for MkDocs provides default separator */
+/* We keep the default separator and only customize spacing if needed */
+
+/* Mobile responsive behavior (< 768px) */
+@media screen and (max-width: 47.9375em) {
+  .md-path {
+    font-size: 0.75rem;
+    margin: -0.5rem -1rem 0.75rem -1rem;
+    padding: 0.4rem 1rem;
+    /* Sticky position adjusted for mobile header */
+    top: 2.4rem;
+  }
+  
+  .md-path__list {
+    gap: 0.2rem;
+  }
+  
+  /* Truncate long breadcrumb text on mobile */
+  .md-path__link {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  
+  /* Always show full text for current page */
+  .md-path__item:last-child .md-path__link {
+    max-width: none;
+    white-space: normal;
+  }
+}
+
+/* Tablet responsive behavior (768px - 1220px) */
+@media screen and (min-width: 48em) and (max-width: 76.1875em) {
+  .md-path {
+    font-size: 0.8rem;
+  }
+  
+  .md-path__link {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  
+  .md-path__item:last-child .md-path__link {
+    max-width: none;
+    white-space: normal;
+  }
+}
+
+/* Dark mode adjustments */
+[data-md-color-scheme="slate"] .md-path {
+  background-color: var(--md-primary-fg-color);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-md-color-scheme="slate"] .md-path__link {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-md-color-scheme="slate"] .md-path__link:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+[data-md-color-scheme="slate"] .md-path__item:last-child .md-path__link {
+  color: rgba(255, 255, 255, 1);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .md-path__link {
+    font-weight: 600;
+  }
+  
+  .md-path__link:focus {
+    outline-width: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .md-path__link {
+    transition: none;
+  }
+}
+
+/* 
+ * Version Switcher Placeholder
+ * 
+ * Reserved space in header for future mike version/series switcher.
+ * This will be implemented in a future task (task 9.3+).
+ */
+.md-header__option--version {
+  display: none; /* Hidden until version switcher is implemented */
+  margin-left: auto;
+  padding: 0 0.8rem;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-header__option--version {
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -329,4 +440,159 @@
   .md-doc-switcher-integrated__icon {
     transition: none;
   }
+}
+
+
+/* 
+ * Table of Contents Customization
+ * 
+ * Change title to "Page Contents" and reduce spacing between items
+ */
+
+/* Change "Table of contents" to "Page Contents" */
+.md-sidebar--secondary .md-sidebar__scrollwrap .md-sidebar__inner::before {
+  content: "Page Contents";
+  display: block;
+  font-weight: 700;
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--md-default-fg-color--light);
+  margin-bottom: 0.5rem;
+}
+
+/* Hide the original title */
+.md-sidebar--secondary .md-nav__title {
+  display: none;
+}
+
+/* Reduce spacing between TOC items */
+.md-nav--secondary .md-nav__item {
+  padding: 0;
+  margin: 0;
+}
+
+.md-nav--secondary .md-nav__link {
+  padding: 0.25rem 0;  /* Reduced from default 0.625rem */
+  font-size: 0.75rem;
+}
+
+/* Reduce spacing for nested items */
+.md-nav--secondary .md-nav__item .md-nav__item {
+  padding-left: 0.8rem;
+}
+
+.md-nav--secondary .md-nav__item .md-nav__item .md-nav__link {
+  padding: 0.2rem 0;  /* Even tighter for nested items */
+}
+
+
+/* 
+ * Simple Tree View Connectors
+ * 
+ * Adds a subtle vertical line to show hierarchy in navigation
+ */
+
+/* Left sidebar - add vertical line for nested sections */
+.md-nav--primary .md-nav__item--nested > .md-nav {
+  border-left: 1px solid var(--md-default-fg-color--lightest);
+  margin-left: 0.6rem;
+  padding-left: 0.6rem;
+}
+
+/* Right sidebar (TOC) - add vertical line for nested items */
+.md-nav--secondary .md-nav__list {
+  border-left: 1px solid var(--md-default-fg-color--lightest);
+  padding-left: 0.8rem;
+  margin-left: 0.2rem;
+}
+
+/* Dark mode - slightly brighter line */
+[data-md-color-scheme="slate"] .md-nav--primary .md-nav__item--nested > .md-nav,
+[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__list {
+  border-left-color: var(--md-default-fg-color--lighter);
+}
+
+
+/* 
+ * Reduce spacing for collapsed navigation sections
+ */
+
+/* CRITICAL: Target the <li> elements directly - they're the source of spacing */
+.md-nav--primary > .md-nav__list > .md-nav__item {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;  /* Force line-height to 0 on the container */
+  font-size: 0 !important;    /* Collapse any text node spacing */
+}
+
+/* Also target nested list items */
+.md-nav--primary .md-nav__item {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+}
+
+/* Target active breadcrumb items specifically */
+.md-nav--primary .md-nav__item--active {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+}
+
+/* Target simple (non-nested) nav items */
+.md-nav--primary .md-nav__item:not(.md-nav__item--nested) {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+}
+
+/* The container div inside nested items */
+.md-nav__item--nested > .md-nav__link.md-nav__container {
+  display: flex !important;  /* Use flex to control child spacing */
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+/* The actual link inside the container */
+.md-nav__link.md-nav__container > .md-nav__link {
+  display: block !important;
+  padding: 0.25rem 0.8rem !important;
+  margin: 0 !important;
+  line-height: normal !important;  /* Restore normal line-height for the actual link */
+  font-size: 0.8rem !important;    /* Restore font-size for the actual link */
+}
+
+/* The label (expand/collapse button) */
+.md-nav__link.md-nav__container > label.md-nav__link {
+  padding: 0.25rem 0.8rem !important;
+  margin: 0 !important;
+  line-height: normal !important;
+  font-size: 0.8rem !important;
+}
+
+/* CRITICAL: Reduce row-gap between navigation items */
+.md-nav__list {
+  row-gap: 0 !important;
+  gap: 0 !important;
+  padding: 0 !important;  /* Remove all padding from lists */
+  margin: 0 !important;   /* Remove all margin from lists */
+}
+
+/* Remove any default spacing from the nav container */
+.md-nav__container {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Hide empty navigation items that are just breadcrumb placeholders */
+.md-nav--primary .md-nav__item:not(.md-nav__item--nested):not(.md-nav__item--active) {
+  display: none !important;
 }

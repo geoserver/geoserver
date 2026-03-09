@@ -114,7 +114,7 @@
     <property name="titleKey" value="StatusPage.title" />
     <property name="descriptionKey" value="StatusPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.StatusPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="settingsCategory" />
     <property name="icon" value="../img/icons/silk/server_error.png" />
     <property name="order" value="10" />
   </bean>
@@ -123,7 +123,7 @@
     <property name="titleKey" value="LogPage.title" />
     <property name="descriptionKey" value="LogPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.LogPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="settingsCategory" />
     <property name="icon" value="../img/icons/silk/page_white_text.png" />
     <property name="order" value="15" />
   </bean>
@@ -132,9 +132,9 @@
     <property name="titleKey" value="ContactPage.title" />
     <property name="descriptionKey" value="ContactPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.ContactPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="dataCategory" />
     <property name="icon" value="../img/icons/silk/vcard.png" />
-    <property name="order" value="20" />
+    <property name="order" value="5" />
   </bean>
   <bean id="aboutMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="server.about" />
@@ -225,7 +225,7 @@
     <property name="titleKey" value="demo.title" />
     <property name="descriptionKey" value="demo.description" />
     <property name="componentClass" value="org.geoserver.web.DemoPage" />
-    <property name="category" ref="utilitiesCategory" />
+    <property name="category" ref="aboutStatusCategory" />
     <property name="icon" value="img/icons/silk/picture_empty.png" />
     <property name="order" value="10" />
     <property name="authorizer">

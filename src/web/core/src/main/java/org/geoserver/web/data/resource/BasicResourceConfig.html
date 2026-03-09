@@ -14,40 +14,38 @@
                 <wicket:message key="basicResourceInfo">Basic Resource Info</wicket:message>
               </span>
             </legend>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class info-link">
+            <div class="gs-form">
+              <div class="info-link">
                 <em>
                   <b><wicket:message key="storeName">Store Name</wicket:message>:</b>
                   <span wicket:id="storeName"/>
                 </em>
               </div>
-              <div class="gs-list-item-class info-link">
+              <div class="info-link">
                 <em>
                   <b><wicket:message key="nativeName">Native Name</wicket:message>:</b>
                   <span wicket:id="nativeName"/>
                 </em>
               </div>
-              <div class="gs-list-item-class">
-                <label for="name">
-                  <wicket:message key="name">Name</wicket:message>
-                </label>
-                <input id="name" type="text" wicket:id="name"/>
-              </div>
-              <div class="gs-list-item-class choiceItem">
+              <div class="choiceItem">
                 <input id="basic-enabled" wicket:id="enabled" type="checkbox"/>
                 <label for="basic-enabled">
                   <wicket:message key="enabled">Enabled</wicket:message>
                 </label>
               </div>
-              <div class="gs-list-item-class choiceItem">
+              <div class="choiceItem">
                 <input id="basic-advertised" wicket:id="advertised" type="checkbox"/>
                 <label for="basic-advertised">
                   <wicket:message key="advertised">Advertised</wicket:message>
                 </label>
               </div>
-              <div class="gs-list-item-class">
-                <div wicket:id="titleAndAbstract"/>
+              <div class="gs-form-group">
+                <label for="name">
+                  <wicket:message key="name">Name</wicket:message>
+                </label>
+                <input id="name" type="text" wicket:id="name"/>
               </div>
+              <div wicket:id="titleAndAbstract"/>
             </div>
           </fieldset>
           <fieldset>
@@ -64,11 +62,7 @@
                 <wicket:message key="metadataLinks">Metadata links</wicket:message>
               </span>
             </legend>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
-                <div wicket:id="metadataLinks"/>
-              </div>
-            </div>
+            <div wicket:id="metadataLinks"/>
           </fieldset>
           <fieldset>
             <legend>
@@ -76,11 +70,7 @@
                 <wicket:message key="dataLinks">Data links</wicket:message>
               </span>
             </legend>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
-                <div wicket:id="dataLinks"/>
-              </div>
-            </div>
+            <div wicket:id="dataLinks"/>
           </fieldset>
           <form wicket:id="referencingForm">
             <fieldset>
@@ -89,20 +79,20 @@
                   <wicket:message key="coordinateReferenceSystems">Coordinate Reference Systems</wicket:message>
                 </span>
               </legend>
-              <div class="gs-unordered-list-class">
-                <div class="gs-list-item-class">
+              <div class="gs-form">
+                <div class="gs-form-group">
                   <label for="nativeSRS">
                     <wicket:message key="nativeSRS">Native SRS</wicket:message>
                   </label>
                   <span id="nativeSRS" wicket:id="nativeSRS"/>
                 </div>
-                <div class="gs-list-item-class">
+                <div class="gs-form-group">
                   <label for="declaredSRS">
                     <wicket:message key="declaredSRS">Declared SRS</wicket:message>
                   </label>
                   <span id="declaredSRS" wicket:id="declaredSRS"/>
                 </div>
-                <div class="gs-list-item-class">
+                <div class="gs-form-group">
                   <label for="srsHandling">
                     <wicket:message key="srsHandling">SRS handling</wicket:message>
                   </label>

@@ -96,9 +96,9 @@ def extract_base_path(env):
         # Ensure leading slash
         if not env_base_path.startswith('/'):
             env_base_path = '/' + env_base_path
-        # Add /en/ if not present (language directory)
-        if not env_base_path.endswith('/en/'):
-            env_base_path = env_base_path.rstrip('/') + '/en/'
+        # Ensure trailing slash
+        if not env_base_path.endswith('/'):
+            env_base_path = env_base_path + '/'
         return env_base_path
     
     # Parse from site_url

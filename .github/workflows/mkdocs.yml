@@ -35,21 +35,21 @@ jobs:
       - name: Build User Manual
         working-directory: doc/en/user
         env:
-          DOCS_BASE_PATH: ${{ startsWith(github.ref, 'refs/heads/migration/') && format('/{0}/en', github.ref_name) || '' }}
+          DOCS_BASE_PATH: ${{ startsWith(github.ref, 'refs/heads/migration/') && format('/geoserver/{0}/en', github.ref_name) || '' }}
         run: |
           mkdocs build
       
       - name: Build Developer Manual
         working-directory: doc/en/developer
         env:
-          DOCS_BASE_PATH: ${{ startsWith(github.ref, 'refs/heads/migration/') && format('/{0}/en', github.ref_name) || '' }}
+          DOCS_BASE_PATH: ${{ startsWith(github.ref, 'refs/heads/migration/') && format('/geoserver/{0}/en', github.ref_name) || '' }}
         run: |
           mkdocs build
       
       - name: Build Documentation Guide
         working-directory: doc/en/docguide
         env:
-          DOCS_BASE_PATH: ${{ startsWith(github.ref, 'refs/heads/migration/') && format('/{0}/en', github.ref_name) || '' }}
+          DOCS_BASE_PATH: ${{ startsWith(github.ref, 'refs/heads/migration/') && format('/geoserver/{0}/en', github.ref_name) || '' }}
         run: |
           mkdocs build
       

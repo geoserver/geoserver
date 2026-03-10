@@ -7,30 +7,30 @@
   <form wicket:id="form">
 
     <fieldset>
-
-      <div class="choiceItem py-1">
-        <input id="globalGroupRule" wicket:id="globalGroupRule" type="checkbox"/>
-        <label for="globalGroupRule">
-          <wicket:message key="globalGroupRule">GlobalGroupRule</wicket:message>
-        </label>
-      </div>
-      <div class="py-1">
-        <label for="root"><span wicket:id="rootLabel"></span></label>
-        <select wicket:id="root" id="root"/>
-      </div>
-      <div class="py-1" wicket:id="layerContainer">
-            <span wicket:id="layerAndLabel">
+      <div class="gs-form">
+        <div class="choiceItem">
+          <input id="globalGroupRule" wicket:id="globalGroupRule" type="checkbox"/>
+          <label for="globalGroupRule">
+            <wicket:message key="globalGroupRule">GlobalGroupRule</wicket:message>
+          </label>
+        </div>
+        <div class="gs-form-group">
+          <label for="root"><span wicket:id="rootLabel"></span></label>
+          <select wicket:id="root" id="root"/>
+        </div>
+        <div wicket:id="layerContainer">
+          <span wicket:id="layerAndLabel" class="gs-form-group" >
             <label for="layer"><wicket:message key="layerGroup">layerAndGroup</wicket:message></label>
             <select wicket:id="layer" id="layer"/>
-            </span>
+          </span>
+        </div>
+        <div class="gs-form-group">
+          <label for="accessMode">
+            <wicket:message key="accessMode">mode</wicket:message>
+          </label>
+          <select wicket:id="accessMode" id="accessMode"/>
+        </div>
       </div>
-      <div class="py-1">
-        <label for="accessMode">
-          <wicket:message key="accessMode">mode</wicket:message>
-        </label>
-        <select wicket:id="accessMode" id="accessMode"/>
-      </div>
-
     </fieldset>
 
     <div wicket:id="roles"></div>

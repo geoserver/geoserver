@@ -9,8 +9,8 @@
               <wicket:message key="GWCSettingsPage.defaultCacheOptions">Default Caching Options</wicket:message>
             </span>
           </legend>
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class choiceItem">
+          <div class="gs-form">
+            <div class="choiceItem">
               <input id="cacheLayersByDefault" type="checkbox" wicket:id="cacheLayersByDefault"/>
               <label for="cacheLayersByDefault">
                 <wicket:message key="GWCSettingsPage.cacheLayersByDefault">Automatically cache newly added layers</wicket:message>
@@ -18,30 +18,23 @@
             </div>
             <div class="gs-list-item-class" wicket:id="container">
               <div wicket:id="configs">
-                <div class="gs-unordered-list-class">
-                  <div class="gs-list-item-class">
-                    <div class="w-50">
-                      <label>
-                        <wicket:message key="GWCSettingsPage.lockProvider">lockProvider:</wicket:message>
-                      </label>
-                    </div>
-                    <div>
-                      <select class="select" id="lockProvider" wicket:id="lockProvider"/>
-                    </div>
-                    <br/>
+                <div>
+                  <div class="gs-form-group">
+                    <label>
+                      <wicket:message key="GWCSettingsPage.lockProvider">lockProvider:</wicket:message>
+                    </label>
+                    <select class="select" id="lockProvider" wicket:id="lockProvider"/>
                   </div>
-                  <div class="gs-list-item-class choiceItem">
+                  <div class="choiceItem">
                     <input id="cacheNonDefaultStyles" type="checkbox" wicket:id="cacheNonDefaultStyles"/>
                     <label for="cacheNonDefaultStyles">
                       <wicket:message key="GWCSettingsPage.cacheNonDefaultStyles">Automatically cache non default styles</wicket:message>
                     </label>
                   </div>
-                  <div class="gs-list-item-class">
-                    <div class="w-50">
-                      <label>
-                        <wicket:message key="GWCSettingsPage.metaTiling">Default meta tiling factors:</wicket:message>
-                      </label>
-                    </div>
+                  <div class="gs-form-group">
+                    <label>
+                      <wicket:message key="GWCSettingsPage.metaTiling">Default meta tiling factors:</wicket:message>
+                    </label>
                     <div>
                       <select class="select" id="metaTilingX" wicket:id="metaTilingX"/>
                       <wicket:message key="GWCSettingsPage.metaTilingX">Tiles wide by </wicket:message>
@@ -49,16 +42,11 @@
                       <wicket:message key="GWCSettingsPage.metaTilingY">Tiles high</wicket:message>
                     </div>
                   </div>
-                  <div class="gs-list-item-class">
-                    <div class="w-50">
-                      <label>
-                        <wicket:message key="GWCSettingsPage.gutter">Default gutter size:</wicket:message>
-                      </label>
-                    </div>
-                    <div>
-                      <select class="select" id="gutter" wicket:id="gutter"/>
-                    </div>
-                    <br/>
+                  <div class="gs-form-group">
+                    <label>
+                      <wicket:message key="GWCSettingsPage.gutter">Default gutter size:</wicket:message>
+                    </label>
+                    <select class="select" id="gutter" wicket:id="gutter"/>
                   </div>
                   <div class="gs-list-item-class">
                     <label>

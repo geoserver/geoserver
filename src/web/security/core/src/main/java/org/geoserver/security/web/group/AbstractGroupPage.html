@@ -7,17 +7,19 @@
   <form wicket:id="form">
 
     <fieldset>
-      <div class="py-1">
-        <label for="groupname">
-          <wicket:message key="groupname">groupname</wicket:message>
-        </label>
-        <input type="text" wicket:id="groupname" id="groupname"/>
-      </div>
-      <div class="choiceItem py-1">
-        <input type="checkbox" wicket:id="enabled" id="enabled"/>
-        <label for="enabled">
-          <wicket:message key="enabled">enabled</wicket:message>
-        </label>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label for="groupname">
+            <wicket:message key="groupname">groupname</wicket:message>
+          </label>
+          <input type="text" wicket:id="groupname" id="groupname"/>
+        </div>
+        <div class="choiceItem">
+          <input type="checkbox" wicket:id="enabled" id="enabled"/>
+          <label for="enabled">
+            <wicket:message key="enabled">enabled</wicket:message>
+          </label>
+        </div>
       </div>
     </fieldset>
 

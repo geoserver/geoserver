@@ -31,11 +31,13 @@
               </div>
             </div>
             <div class="gs-unordered-list-class" wicket:id="styles">
-              <div class="gs-list-item-class">
-                <label for="defaultStyle">
-                  <wicket:message key="defaultStyle">Default Style</wicket:message>
-                </label>
-                <select id="defaultStyle" class="select" wicket:id="defaultStyle"/>
+              <div class="gs-form">
+                <div class="gs-form-group">
+                  <label for="defaultStyle">
+                    <wicket:message key="defaultStyle">Default Style</wicket:message>
+                  </label>
+                  <select id="defaultStyle" class="select" wicket:id="defaultStyle"/>
+                </div>
               </div>
               <div class="gs-list-item-class">
                 <img wicket:id="defaultStyleLegendGraphic"/>
@@ -46,23 +48,25 @@
                 </label>
                 <span wicket:id="extraStyles"/>
               </div>
-              <div class="gs-list-item-class">
-                <label for="buffer">
-                  <wicket:message key="defaultRenderingBuffer">def. rendering buffer</wicket:message>
-                </label>
-                <input id="buffer" wicket:id="renderingBuffer" type="text"/>
+              <div class="gs-form">
+                <div class="gs-form-group">
+                  <label for="buffer">
+                    <wicket:message key="defaultRenderingBuffer">def. rendering buffer</wicket:message>
+                  </label>
+                  <input id="buffer" wicket:id="renderingBuffer" type="text"/>
+                </div>
               </div>
             </div>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
+            <div class="gs-form">
+              <div class="gs-form-group">
                 <label for="wmsPath">
                   <wicket:message key="defaultWmsPath">Default WMS Path</wicket:message>
                 </label>
                 <input id="wmsPath" wicket:id="wmsPath" type="text"/>
               </div>
             </div>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
+            <div class="gs-form">
+              <div class="gs-form-group">
                 <label for="defaultInterpolationMethod">
                   <wicket:message key="interpolationLabel">Default Interpolation Method</wicket:message>
                 </label>

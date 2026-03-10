@@ -9,26 +9,26 @@
     <legend>
       <span><wicket:message key="settings"></wicket:message></span>
     </legend>
-
-    <div class="py-1">
-      <label for="fileName">
-        <wicket:message key="fileName"></wicket:message>
-      </label>
-      <input wicket:id="fileName" type="text" class="field"></input>
+    <div class="gs-form">
+      <div class="gs-form-group">
+        <label for="fileName">
+          <wicket:message key="fileName"></wicket:message>
+        </label>
+        <input wicket:id="fileName" type="text" class="field"></input>
+      </div>
+      <div class="choiceItem">
+        <input wicket:id="validating" type="checkbox"></input>
+        <label for="validating">
+          <wicket:message key="validating"></wicket:message>
+        </label>
+      </div>
+      <div class="gs-form-group">
+        <label for="checkInterval">
+          <wicket:message key="checkInterval"></wicket:message>
+        </label>
+        <input wicket:id="checkInterval" type="text" class="field"></input>
+      </div>
     </div>
-    <div class="choiceItem py-1">
-      <input wicket:id="validating" type="checkbox"></input>
-      <label for="validating">
-        <wicket:message key="validating"></wicket:message>
-      </label>
-    </div>
-    <div class="py-1">
-      <label for="checkInterval">
-        <wicket:message key="checkInterval"></wicket:message>
-      </label>
-      <input wicket:id="checkInterval" type="text" class="field"></input>
-    </div>
-
   </fieldset>
 
 </wicket:extend>

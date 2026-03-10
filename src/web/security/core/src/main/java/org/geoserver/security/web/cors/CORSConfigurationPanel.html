@@ -9,44 +9,44 @@
               <wicket:message key="settings"/>
             </span>
           </legend>
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class choiceItem">
+          <div class="gs-form">
+            <div class="choiceItem">
               <input id="enabled" wicket:id="enabled" type="checkbox"/>
               <label for="enabled">
                 <wicket:message key="enabled">Enabled</wicket:message>
               </label>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <label wicket:for="allowedOriginPatterns">
                 <wicket:message key="allowedOriginPatterns">Allowed Origin Patterns</wicket:message>
               </label>
               <input wicket:id="allowedOriginPatterns" type="text"/>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <label wicket:for="allowedMethods">
                 <wicket:message key="allowedMethods">Allowed Methods</wicket:message>
               </label>
               <select wicket:id="allowedMethods" multiple="multiple" size="4"/>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <label wicket:for="allowedHeaders">
                 <wicket:message key="allowedHeaders">Allowed Headers</wicket:message>
               </label>
               <select wicket:id="allowedHeaders" multiple="multiple" size="4"/>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <label wicket:for="maxAge">
                 <wicket:message key="maxAge">Max Age (seconds)</wicket:message>
               </label>
               <input type="number" wicket:id="maxAge" rows="1"/>
             </div>
-            <div class="gs-list-item-class choiceItem">
+            <div class="choiceItem">
               <input id="supportsCredentials" wicket:id="supportsCredentials" type="checkbox"/>
               <label for="supportsCredentials">
                 <wicket:message key="supportsCredentials">Supports Credentials</wicket:message>
               </label>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <p class="warning">
                 <wicket:message key="restartNotice">Note: GeoServer must be restarted for these changes to take
                         effect.

@@ -3,23 +3,19 @@
   <head/>
   <body>
     <wicket:panel>
-      <div class="gs-panel-StringAndInternationalStringPanel">
-        <div class="gs-unordered-list-class i18n-text">
-          <div class="gs-list-item-class">
-            <span wicket:id="labelContainer" class="selfclear">
-              <label class="float-start" wicket:id="stringLabel"/>
-              <div class="float-start choiceItem">
-                <input type="checkbox" wicket:id="labelContainer_i18nCheckbox"/>
-                <label wicket:for="labelContainer_i18nCheckbox">
-                  <wicket:message key="i18nCheckBox">i18n</wicket:message>
-                </label>
-              </div>
-            </span>
-          </div>
-          <div class="gs-list-item-class">
+      <div class="gs-panel-StringAndInternationalStringPanel gs-form">
+        <div class="gs-form-group i18n-text">
+          <span wicket:id="labelContainer" class="selfclear">
+            <label class="float-start" wicket:id="stringLabel"/>
+            <div class="float-start choiceItem">
+              <input type="checkbox" wicket:id="labelContainer_i18nCheckbox"/>
+              <label wicket:for="labelContainer_i18nCheckbox">
+                <wicket:message key="i18nCheckBox">i18n</wicket:message>
+              </label>
+            </div>
+          </span>
+          <div>
             <input type="text" wicket:id="stringField"/>
-          </div>
-          <div class="gs-list-item-class">
             <div wicket:id="internationalField"/>
           </div>
         </div>

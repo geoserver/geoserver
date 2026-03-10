@@ -7,29 +7,31 @@
   <form wicket:id="form">
 
     <fieldset>
-      <div class="py-1">
-        <label for="username">
-          <wicket:message key="username">username</wicket:message>
-        </label>
-        <input type="text" wicket:id="username" id="username"/>
-      </div>
-      <div class="choiceItem py-1">
-        <input type="checkbox" wicket:id="enabled" id="enabled"/>
-        <label for="enabled">
-          <wicket:message key="enabled">enabled</wicket:message>
-        </label>
-      </div>
-      <div class="py-1">
-        <label for="password">
-          <wicket:message key="password">password</wicket:message>
-        </label>
-        <input type="password" wicket:id="password" id="password"/>
-      </div>
-      <div class="py-1">
-        <label for="confirmPassword">
-          <wicket:message key="confirmPassword">confirmPassword</wicket:message>
-        </label>
-        <input type="password" wicket:id="confirmPassword" id="confirmPassword"/>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label for="username">
+            <wicket:message key="username">username</wicket:message>
+          </label>
+          <input type="text" wicket:id="username" id="username"/>
+        </div>
+        <div class="choiceItem">
+          <input type="checkbox" wicket:id="enabled" id="enabled"/>
+          <label for="enabled">
+            <wicket:message key="enabled">enabled</wicket:message>
+          </label>
+        </div>
+        <div class="gs-form-group">
+          <label for="password">
+            <wicket:message key="password">password</wicket:message>
+          </label>
+          <input type="password" wicket:id="password" id="password"/>
+        </div>
+        <div class="gs-form-group">
+          <label for="confirmPassword">
+            <wicket:message key="confirmPassword">confirmPassword</wicket:message>
+          </label>
+          <input type="password" wicket:id="confirmPassword" id="confirmPassword"/>
+        </div>
       </div>
     </fieldset>
 
@@ -49,11 +51,13 @@
     </fieldset>
     <div wicket:id="roles"/>
     <fieldset>
-      <div class="py-1">
-        <label>
-          <wicket:message key="adminGroups"></wicket:message>
-        </label>
-        <select class="select choicesSelect w-md" wicket:id="adminGroups" multiple="multiple"></select>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label>
+            <wicket:message key="adminGroups"></wicket:message>
+          </label>
+          <select class="select choicesSelect w-md" wicket:id="adminGroups" multiple="multiple"></select>
+        </div>
       </div>
     </fieldset>
 

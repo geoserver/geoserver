@@ -3,17 +3,17 @@
 <wicket:extend>
   <form wicket:id="gridSetForm">
     <fieldset>
-      <div class="gs-unordered-list-class">
-        <div class="gs-list-item-class">
+      <div class="gs-form">
+        <div class="gs-form-group">
           <div class="seflclear">
             <span wicket:id="name">Name</span>
           </div>
         </div>
-        <div class="gs-list-item-class">
- 	      <label for="description"><wicket:message key="descriptionField">Description</wicket:message></label>
+        <div class="gs-form-group">
+ 	        <label for="description"><wicket:message key="descriptionField">Description</wicket:message></label>
           <textarea wicket:id="description" class="field w-100 h-md"></textarea>
         </div>
-        <div class="gs-list-item-class">
+        <div class="gs-form-group">
           <label for="crs"><wicket:message key="crs">CRS</wicket:message></label>
           <span id="crs" wicket:id="crs"></span>
         </div>
@@ -22,10 +22,10 @@
           <span id="bounds" wicket:id="bounds"></span>
           <a href="#" wicket:id="computeBounds"><wicket:message key="computeBounds">Compute from CRS</wicket:message></a>
         </div>
-        <div class="gs-list-item-class">
+        <div class="gs-form-group">
           <div><span wicket:id="tileWidth">Tile width</span></div>
         </div>
-        <div class="gs-list-item-class">
+        <div class="gs-form-group">
           <div><span wicket:id="tileHeight">Tile Height</span></div>
         </div>
       </div>

@@ -370,7 +370,11 @@ fieldset > * {
 fieldset {
   border: 1px solid var(--gs-border-color);
   border-radius: var(--gs-border-radius);
-  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+fieldset:empty,
+fieldset:not(:has(*)) {
+  display: none;
 }
 
 fieldset > legend {
@@ -2134,20 +2138,78 @@ div.value-wide {
   flex-direction: column;
   gap: 0.5rem;
 }
-
 .gs-form-group {
   display: flex;
   align-items: flex-start;
   gap: 2rem;
 }
-
 .gs-form-group > *:first-child {
   flex-basis: 300px;
   flex-shrink: 0;
   padding-top: 0.375rem;
 }
-
 .gs-form-group > *:last-child {
   flex-grow: 1;
   max-width: 100ch;
+}
+.gs-form-group:empty,
+.gs-form-group:not(:has(*)) {
+  display: none;
+}
+.gs-form-group .gs-input-group {
+  padding-bottom: 0;
+}
+.instruct {
+  font-size: 0.875rem;
+  font-style: italic;
+}
+@media (max-width: 768px) {
+  .gs-form {
+    gap: 0.25rem;
+  }
+  .gs-form-group {
+    flex-direction: column;
+    gap: 0;
+  }
+  .gs-form-group > *:first-child {
+    flex-basis: 0;
+  }
+  .gs-form-group > *:last-child {
+    width: -webkit-fill-available;
+  }
+  .gs-form-group-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    position: relative;
+  }
+  .gs-form-group-label::after {
+    content: "";
+    width: 1rem;
+    height: 1rem;
+    background-image: url(../img/icons/silk/information.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    cursor: help;
+  }
+  .gs-form-group-label .instruct {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    z-index: 10;
+    display: none;
+    max-width: 15rem;
+    width: max-content;
+    padding: 0.5rem;
+    background-color: var(--gs-body-bg);
+    border: 1px solid var(--gs-border-color);
+    border-radius: var(--gs-border-radius);
+    box-shadow: var(--gs-box-shadow-sm);
+    font-size: 0.75rem;
+  }
+  .gs-form-group-label:hover .instruct,
+  .gs-form-group-label:focus-within .instruct {
+    display: block;
+  }
 }

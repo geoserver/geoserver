@@ -9,7 +9,7 @@
  * Its very simple - there is a data entry form (where the user types in the MinX, MaxX, etc...) and
  * a diagram (which shows it in a more user-friendly manner).  The diagram is non-editable.
  *
- * This is very simple process - it moves the information from the user "<input>" to the corresponding place
+ * This is very simple process - it copies the information from the user "<input>" to the corresponding place
  * in the diagram.
  *
  * The process for finding the elements is a bit more complex than you might expect because there

@@ -19,17 +19,18 @@ Your css selectors should look like this to avoid modifying styles outside the p
 .gs-panel-EnvelopePanel .dataentry {
     display: grid;
     grid-template-columns: 50px 110px;
+    row-gap: 5px;
     align-items: center;
     margin-top: 10px;
-    margin-left: 10px;
+
     border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);;
     width: fit-content;
-    padding: 15px 20px 15px 10px;
+    padding: 7px 10px 7px 10px;;
 }
 
 .gs-panel-EnvelopePanel .diagram {
     width: fit-content;
-    padding: 15px 20px 15px 10px;
+    padding: 7px 10px 0px 10px;
     border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);
     margin-top: 10px;
     margin-left: 10px;
@@ -40,12 +41,15 @@ Your css selectors should look like this to avoid modifying styles outside the p
     min-width:70px;
 }
 
+.gs-panel-EnvelopePanel .diagram .moveup {
+    margin-top: -10px;
+}
+
 
 .gs-panel-EnvelopePanel .data {
     display: grid;
     grid-template-columns: auto auto;
     width: fit-content;
-    padding: 15px 20px 15px 10px;
 }
 
 
@@ -54,12 +58,9 @@ Your css selectors should look like this to avoid modifying styles outside the p
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     max-width: 300px;
-    padding-top: 0.5rem;
-    margin-top: 0.5rem;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+
 }
 
 .gs-panel-EnvelopePanel .xy .gs-list-item-class {
@@ -75,7 +76,7 @@ Your css selectors should look like this to avoid modifying styles outside the p
 .gs-panel-EnvelopePanel .z {
     padding-top: 0.5rem;
     display: flex;
-    gap: 10px;
+    gap: 40px;
     max-width: 300px;
     margin-top: 0.5rem;
     margin-left: 0.5rem;

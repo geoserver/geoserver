@@ -167,6 +167,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                             new CatalogBuilder(GeoServerApplication.get().getCatalog());
                     ReferencedEnvelope bounds = cb.getNativeBounds(resource);
                     resource.setNativeBoundingBox(bounds);
+                    nativeBBox.clearInput();
                     nativeBBox.setModelObject(bounds);
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "Error computing the native BBOX", e);
@@ -244,6 +245,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
                     CatalogBuilder cb =
                             new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                    latLonPanel.clearInput();
                     latLonPanel.setModelObject(cb.getLatLonBounds(nativeBounds, declaredCRS.getCRS()));
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "Error computing the geographic BBOX", e);

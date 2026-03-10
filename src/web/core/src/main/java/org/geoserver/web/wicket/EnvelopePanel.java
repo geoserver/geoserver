@@ -104,7 +104,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
     }
 
     public boolean is3D() {
-        return crs != null && crs.getCoordinateSystem().getDimension() >= 3;
+        return true || crs != null && crs.getCoordinateSystem().getDimension() >= 3;
     }
 
     public void setLabelsVisibility(boolean visible) {
@@ -145,6 +145,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
         crsPanel = new CRSPanel("crs", new PropertyModel<>(this, "crs"));
         crsContainer.add(crsPanel);
         add(crsContainer);
+        setOutputMarkupId(true);
     }
 
     private void addBoundingBoxValidators() {

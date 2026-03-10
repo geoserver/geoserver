@@ -48,29 +48,34 @@ theme:
 
 extra:
   doc_type: "developer"
-  doc_switcher:
-    - label: "User Manual"
-      url: "../user/"
-      type: "user"
-    - label: "Developer Manual"
-      url: "../developer/"
-      type: "developer"
-    - label: "Documentation Guide"
-      url: "../docguide/"
-      type: "docguide"
-    - label: "Swagger APIs"
-      url: "../user/api/"
-      type: "swagger"
+  # doc_switcher is loaded from shared config by macros plugin (see version.py)
   version_selector:
+    # GitHub Pages versions (new versions)
     - version: latest
       title: Latest (3.0)
       aliases: []
+      archive: false
     - version: "3.0"
       title: "3.0"
       aliases: []
+      archive: false
     - version: "2.28.x"
       title: "2.28.x"
       aliases: []
+      archive: false
+    # Archive versions (OSGeo server)
+    - version: "2.27.x"
+      title: "2.27.x (archive)"
+      url: "https://docs-archive.geoserver.org/2.27.x/en/developer/"
+      archive: true
+    - version: "2.26.x"
+      title: "2.26.x (archive)"
+      url: "https://docs-archive.geoserver.org/2.26.x/en/developer/"
+      archive: true
+    - version: "2.25.x"
+      title: "2.25.x (archive)"
+      url: "https://docs-archive.geoserver.org/2.25.x/en/developer/"
+      archive: true
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/geoserver/geoserver

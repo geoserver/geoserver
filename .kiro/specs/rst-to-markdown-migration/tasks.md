@@ -739,101 +739,365 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.6, 14.7_
 
 - [ ] 10. Phase 8: GitHub Actions Migration (Replace Jenkins)
-  - [ ] 10.1 Create combined monorepo mkdocs.yml configuration
-    - **GOAL**: Combine user, developer, and docguide manuals into single MkDocs site for simpler deployment
-    - **Current structure** (3 separate sites):
-      - doc/en/user/mkdocs.yml → builds user manual
-      - doc/en/developer/mkdocs.yml → builds developer guide
-      - doc/en/docguide/mkdocs.yml → builds docguide
-      - Each manual deployed separately with mike
-    - **Proposed monorepo structure** (1 combined site):
-      - doc/en/mkdocs.yml → builds all 3 manuals in one site
-      - Navigation tabs switch between manuals (User Manual | Developer Guide | Documentation Guide)
-      - Single deployment with mike per version
-      - Simpler GitHub Actions workflow
-    - **Implementation steps**:
-      1. Create new doc/en/mkdocs.yml with combined navigation:
-         ```yaml
-         nav:
-           - User Manual:
-             - user/index.md
-             - user/introduction/index.md
-             - ...
-           - Developer Guide:
-             - developer/index.md
-             - developer/introduction.md
-             - ...
-           - Documentation Guide:
-             - docguide/index.md
-             - docguide/background.md
-             - ...
-         ```
-      2. Configure docs_dir to include all three manual directories
-      3. Update theme configuration for navigation tabs
-      4. Test combined build locally with `mkdocs serve`
-      5. Verify all cross-manual links work correctly
-      6. Update manual switcher to use navigation tabs instead of separate sites
-    - **Benefits**:
-      - Single deployment per version (simpler)
-      - Unified search across all manuals
-      - Easier cross-manual linking
-      - Reduced GitHub Actions complexity
-    - **Trade-offs**:
-      - Larger build output per version (~50 MB vs 3x ~17 MB)
-      - All manuals rebuild together (can't rebuild just one)
-      - Navigation structure more complex
-    - **Deliverables**:
-      - New doc/en/mkdocs.yml with combined configuration
-      - Updated navigation structure
-      - Testing and validation of combined build
-      - Documentation of monorepo structure
+  - [ ]* 10.1 Create combined monorepo mkdocs.yml configuration (OPTIONAL - NOT RECOMMENDED)
+    - **STATUS**: OPTIONAL - NOT RECOMMENDED
+    - **RECOMMENDATION**: Skip this task and proceed with separate-site deployment (current approach)
+    - **WHY NOT RECOMMENDED**:
+      - Navigation structure is already working well with separate sites (tasks 3.5.1, 9.1-9.5)
+      - Monorepo would require reworking all navigation improvements already completed
+      - Deployment complexity is manageable with current approach (3 simple mike deployments)
+      - Risk of introducing new issues at final stage of migration
+      - Archive versions (2.27.x and earlier) remain separate anyway (hybrid strategy)
+      - Inconsistency: new versions = monorepo, old versions = separate sites
+    - **IF YOU CHOOSE TO IMPLEMENT** (not recommended):
+      - **GOAL**: Combine user, developer, and docguide manuals into single MkDocs site for simpler deployment
+      - **Current structure** (3 separate sites):
+        - doc/en/user/mkdocs.yml → builds user manual
+        - doc/en/developer/mkdocs.yml → builds developer guide
+        - doc/en/docguide/mkdocs.yml → builds docguide
+        - Each manual deployed separately with mike
+      - **Proposed monorepo structure** (1 combined site):
+        - doc/en/mkdocs.yml → builds all 3 manuals in one site
+        - Navigation tabs switch between manuals (User Manual | Developer Guide | Documentation Guide)
+        - Single deployment with mike per version
+        - Simpler GitHub Actions workflow
+      - **Implementation steps**:
+        1. Create new doc/en/mkdocs.yml with combined navigation:
+           ```yaml
+           nav:
+             - User Manual:
+               - user/index.md
+               - user/introduction/index.md
+               - ...
+             - Developer Guide:
+               - developer/index.md
+               - developer/introduction.md
+               - ...
+             - Documentation Guide:
+               - docguide/index.md
+               - docguide/background.md
+               - ...
+           ```
+        2. Configure docs_dir to include all three manual directories
+        3. Update theme configuration for navigation tabs
+        4. Test combined build locally with `mkdocs serve`
+        5. Verify all cross-manual links work correctly
+        6. Update manual switcher to use navigation tabs instead of separate sites
+        7. **CRITICAL**: Rework all navigation improvements from tasks 9.1-9.5 for monorepo structure
+      - **Benefits**:
+        - Single deployment per version (simpler)
+        - Unified search across all manuals
+        - Easier cross-manual linking
+        - Reduced GitHub Actions complexity
+      - **Trade-offs**:
+        - Larger build output per version (~50 MB vs 3x ~17 MB)
+        - All manuals rebuild together (can't rebuild just one)
+        - Navigation structure more complex
+        - **MAJOR**: Requires reworking all navigation improvements (tasks 9.1-9.5)
+        - **RISK**: Introducing new complexity after stabilization
+      - **Deliverables**:
+        - New doc/en/mkdocs.yml with combined configuration
+        - Updated navigation structure
+        - Testing and validation of combined build
+        - Documentation of monorepo structure
     - _Requirements: 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
 
-  - [ ] 10.2 Switch Jenkins docs build to GitHub Actions
+  - [-] 10.2 Switch Jenkins docs build to GitHub Actions
     - **GOAL**: Replace Jenkins documentation builds with GitHub Actions for new versions (2.28.x+)
-    - **Current state**:
-      - Jenkins builds and deploys docs to OSGeo server
-      - Triggered by SCM polling every 5 minutes
-      - Deploys to /var/www/geoserverdocs/$VERSION/
-    - **Target state**:
-      - GitHub Actions builds and deploys docs to GitHub Pages
-      - Triggered by push to main/2.28.x branches
-      - Uses mike for version management
-      - Archive versions (2.27.x and earlier) remain on OSGeo with Jenkins
-    - **Implementation steps**:
-      1. Create .github/workflows/docs-deploy.yml:
-         - Trigger on push to main, 2.28.x branches (doc/** paths)
-         - Build combined MkDocs site (from task 10.1)
-         - Deploy with mike to gh-pages branch
-         - Configure version aliases (latest, stable)
-      2. Configure GitHub Pages:
-         - Enable GitHub Pages on gh-pages branch
-         - Configure custom domain: docs.geoserver.org
-         - Add CNAME file to gh-pages branch
-      3. Configure version selector:
-         - Add links to archive versions on OSGeo (docs-archive.geoserver.org)
-         - Implement one-way navigation (new → archive, not reverse)
-      4. Test deployment:
-         - Deploy to test path first
-         - Verify URLs match existing structure
-         - Test version switching
-         - Verify all content accessible
-      5. Cutover:
-         - Disable Jenkins jobs for 2.28.x and main
-         - Keep Jenkins jobs for archive versions (2.27.x and earlier)
-         - Monitor GitHub Pages deployment
-         - Update documentation
-    - **Deliverables**:
-      - .github/workflows/docs-deploy.yml workflow
-      - GitHub Pages configuration
-      - Version selector with archive links
-      - Documentation of deployment process
-      - Cutover plan and rollback procedure
+    - **APPROACH**: Use separate-site deployment (NOT monorepo - see task 10.1)
+    - **STRATEGY**: Hybrid approach - GitHub Pages for new versions (2.28.x+), OSGeo for archives (2.27.x and earlier)
     - **References**:
       - See .kiro/specs/rst-to-markdown-migration/github-pages-solution.md for detailed strategy
       - See .kiro/specs/rst-to-markdown-migration/multi-version-strategy.md for hybrid approach
       - See .kiro/specs/rst-to-markdown-migration/jenkins-analysis.md for Jenkins details
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7_
+
+  - [x] 10.2.1 Create GitHub Actions workflow for documentation deployment
+    - **GOAL**: Create .github/workflows/docs-deploy.yml to build and deploy docs to GitHub Pages
+    - **Workflow configuration**:
+      - Trigger on push to main, 2.28.x branches
+      - Path filter: `doc/**` and `.github/workflows/docs-deploy.yml`
+      - Permissions: `contents: write` (required for mike to push to gh-pages)
+    - **Build steps**:
+      1. Checkout code with full history (`fetch-depth: 0` for mike)
+      2. Setup Python 3.x with pip cache
+      3. Install MkDocs dependencies: mkdocs, mkdocs-material, mkdocs-macros-plugin, pymdown-extensions, mike
+      4. Configure Git for mike (user.name, user.email)
+      5. Determine version from branch name (main → latest, 2.28.x → stable)
+    - **Deployment steps** (separate deployments per manual):
+      - Deploy User Manual:
+        ```bash
+        cd doc/en/user
+        mike deploy --deploy-prefix "$VERSION/en/user" $VERSION \
+          --title "$TITLE" --push --update-aliases
+        ```
+      - Deploy Developer Guide:
+        ```bash
+        cd doc/en/developer
+        mike deploy --deploy-prefix "$VERSION/en/developer" $VERSION \
+          --push --update-aliases
+        ```
+      - Deploy Documentation Guide:
+        ```bash
+        cd doc/en/docguide
+        mike deploy --deploy-prefix "$VERSION/en/docguide" $VERSION \
+          --push --update-aliases
+        ```
+      - Copy API docs (static files):
+        ```bash
+        git checkout gh-pages
+        mkdir -p $VERSION/en/api
+        cp -r doc/en/api/* $VERSION/en/api/
+        git add $VERSION/en/api
+        git commit -m "Update API docs for $VERSION"
+        git push origin gh-pages
+        ```
+      - Set default version (stable only):
+        ```bash
+        mike set-default stable --push
+        ```
+      - Add CNAME file (main branch only):
+        ```bash
+        git checkout gh-pages
+        echo "docs.geoserver.org" > CNAME
+        git add CNAME
+        git commit -m "Add CNAME"
+        git push origin gh-pages
+        ```
+    - **Deliverables**:
+      - .github/workflows/docs-deploy.yml with complete workflow
+      - Workflow tested on migration branch
+    - **Testing**:
+      - Test workflow on migration branch first
+      - Verify all three manuals deploy correctly
+      - Check that URLs match expected structure
+    - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 9.1, 9.2, 9.3_
+
+  - [x] 10.2.2 Configure GitHub Pages settings
+    - **GOAL**: Enable and configure GitHub Pages for docs.geoserver.org
+    - **GitHub Pages configuration**:
+      1. Go to repository Settings → Pages
+      2. Source: Deploy from a branch
+      3. Branch: gh-pages, folder: / (root)
+      4. Save settings
+    - **Custom domain configuration**:
+      1. CNAME file will be added by workflow (task 10.2.1)
+      2. DNS configuration (coordinate with infrastructure team):
+         - Primary domain: `docs.geoserver.org CNAME geoserver.github.io`
+         - Archive domain: `docs-archive.geoserver.org A <OSGeo-server-IP>`
+      3. Wait for DNS propagation (24-48 hours)
+      4. Enable "Enforce HTTPS" in GitHub Pages settings
+    - **Verification**:
+      - Check that GitHub Pages is enabled
+      - Verify custom domain is configured
+      - Test DNS resolution: `nslookup docs.geoserver.org`
+      - Verify HTTPS certificate is issued
+    - **Deliverables**:
+      - GitHub Pages enabled on gh-pages branch
+      - Custom domain configured
+      - DNS records updated
+      - HTTPS enabled
+    - _Requirements: 9.4, 9.5, 9.6_
+
+  - [x] 10.2.3 Update version selector for archive links
+    - **GOAL**: Add links to archive versions (2.27.x and earlier) in version selector
+    - **Implementation**:
+      1. Update mkdocs.yml extra.versions configuration in all three manuals:
+         ```yaml
+         extra:
+           version:
+             provider: mike
+             default: stable
+           versions:
+             # GitHub Pages versions
+             - version: latest
+               title: "Latest (3.0 dev)"
+               url: "/latest/"
+               archive: false
+             - version: stable
+               title: "Stable (2.28.x)"
+               url: "/stable/"
+               archive: false
+             # Archive versions (OSGeo server)
+             - version: 2.27.x
+               title: "2.27.x (archive)"
+               url: "https://docs-archive.geoserver.org/2.27.x/"
+               archive: true
+             - version: 2.26.x
+               title: "2.26.x (archive)"
+               url: "https://docs-archive.geoserver.org/2.26.x/"
+               archive: true
+         ```
+      2. Add JavaScript handler for archive links (if needed):
+         - Create custom theme override for version selector
+         - Handle external links to archive domain
+         - Ensure one-way navigation (new → archive only)
+      3. Test version selector:
+         - Verify dropdown shows all versions
+         - Test switching between GitHub Pages versions
+         - Test clicking archive links (should go to OSGeo)
+    - **Files to update**:
+      - doc/en/user/mkdocs.yml
+      - doc/en/developer/mkdocs.yml
+      - doc/en/docguide/mkdocs.yml
+    - **Deliverables**:
+      - Version selector with archive links
+      - Custom JavaScript handler (if needed)
+      - Testing on all three manuals
+    - **Note**: Archive versions on OSGeo remain unchanged (no updates needed)
+    - _Requirements: 9.6, 9.7_
+
+  - [-] 10.2.4 Test deployment on migration branch
+    - **GOAL**: Test complete GitHub Actions deployment before production cutover
+    - **Test deployment**:
+      1. Push migration branch to GitHub
+      2. Trigger GitHub Actions workflow
+      3. Monitor workflow execution:
+         - Check all build steps succeed
+         - Verify mike deployments complete
+         - Check gh-pages branch is updated
+      4. Verify deployed documentation:
+         - Access via GitHub Pages URL (before custom domain)
+         - Test all three manuals (user, developer, docguide)
+         - Verify API docs are accessible
+         - Test version selector
+         - Check navigation works correctly
+      5. Test on multiple browsers:
+         - Chrome, Firefox, Safari, Edge
+         - Desktop and mobile
+      6. Verify URL structure:
+         - Check URLs match existing structure
+         - Test deep links work correctly
+         - Verify backward compatibility
+    - **URL structure verification**:
+      - `https://<username>.github.io/geoserver/latest/en/user/` → works
+      - `https://<username>.github.io/geoserver/stable/en/user/` → works
+      - `https://<username>.github.io/geoserver/latest/en/developer/` → works
+      - `https://<username>.github.io/geoserver/latest/en/api/` → works
+    - **Issues to check**:
+      - All images display correctly
+      - All links work (internal and external)
+      - Search functionality works
+      - Version selector works
+      - Navigation is responsive on mobile
+    - **Deliverables**:
+      - Test report documenting all checks
+      - List of any issues found and fixes applied
+      - Confirmation that deployment is ready for production
+    - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 9.7_
+
+  - [ ] 10.2.5 Parallel running period (Jenkins + GitHub Actions)
+    - **GOAL**: Run both Jenkins and GitHub Actions in parallel to validate consistency
+    - **Parallel running setup**:
+      1. Keep Jenkins jobs active for 2.28.x and main branches
+      2. Enable GitHub Actions workflow for same branches
+      3. Both systems deploy to their respective targets:
+         - Jenkins → OSGeo server (existing URLs)
+         - GitHub Actions → GitHub Pages (new URLs)
+    - **Monitoring and comparison**:
+      1. Monitor both deployments for 1-2 weeks
+      2. Compare outputs:
+         - Check HTML content is equivalent
+         - Verify all pages render correctly
+         - Compare navigation structure
+         - Check search functionality
+      3. Gather feedback:
+         - Announce new GitHub Pages deployment to community
+         - Ask for testing and feedback
+         - Monitor for any issues or complaints
+      4. Performance comparison:
+         - Measure build times (Jenkins vs GitHub Actions)
+         - Measure deployment times
+         - Check page load times (OSGeo vs GitHub Pages CDN)
+    - **Success criteria**:
+      - No major issues reported with GitHub Pages deployment
+      - Content is equivalent between both systems
+      - Performance is acceptable or better
+      - Community feedback is positive
+    - **Deliverables**:
+      - Parallel running report
+      - Comparison of outputs
+      - Community feedback summary
+      - Decision to proceed with cutover
+    - _Requirements: 8.7, 9.7_
+
+  - [ ] 10.2.6 Production cutover
+    - **GOAL**: Switch production traffic to GitHub Pages and disable Jenkins
+    - **Cutover steps**:
+      1. **Final verification**:
+         - Confirm GitHub Pages deployment is stable
+         - Verify custom domain is working
+         - Check HTTPS certificate is valid
+         - Test all functionality one more time
+      2. **DNS cutover** (coordinate with infrastructure team):
+         - Update DNS: `docs.geoserver.org CNAME geoserver.github.io`
+         - Wait for DNS propagation (24-48 hours)
+         - Monitor DNS propagation: `nslookup docs.geoserver.org`
+      3. **Disable Jenkins jobs for new versions**:
+         - Disable `geoserver-main-docs` job
+         - Disable `geoserver-2.28.x-docs` job
+         - Keep as backup for 1 month (don't delete)
+      4. **Keep Jenkins jobs for archive versions**:
+         - Keep `geoserver-2.27.x-docs` active
+         - Keep `geoserver-2.26.x-docs` active
+         - These continue deploying to OSGeo server
+      5. **Monitor production**:
+         - Watch GitHub Actions workflow executions
+         - Monitor for any deployment failures
+         - Check for any user-reported issues
+         - Monitor page load times and CDN performance
+      6. **Update documentation**:
+         - Update README.md with new build process
+         - Document GitHub Actions deployment
+         - Update contributor guide
+         - Document how to trigger manual deployments
+    - **Rollback plan** (if issues arise):
+      1. Re-enable Jenkins jobs
+      2. Revert DNS changes
+      3. Investigate and fix issues
+      4. Retry cutover when ready
+    - **Success criteria**:
+      - docs.geoserver.org serves from GitHub Pages
+      - All URLs work correctly
+      - No major issues reported
+      - Jenkins jobs disabled for new versions
+      - Archive versions still work on OSGeo
+    - **Deliverables**:
+      - Production cutover complete
+      - Jenkins jobs disabled (but kept as backup)
+      - Documentation updated
+      - Monitoring in place
+    - _Requirements: 8.7, 9.7_
+
+  - [ ] 10.2.7 Post-cutover cleanup (after 1 month)
+    - **GOAL**: Clean up Jenkins jobs and finalize migration
+    - **Cleanup steps**:
+      1. **Verify stability** (after 1 month of production):
+         - Confirm no major issues with GitHub Pages
+         - Verify all deployments working correctly
+         - Check community feedback is positive
+      2. **Delete disabled Jenkins jobs**:
+         - Delete `geoserver-main-docs` job configuration
+         - Delete `geoserver-2.28.x-docs` job configuration
+         - Keep archive version jobs (2.27.x, 2.26.x)
+      3. **Archive Jenkins configuration**:
+         - Export job configurations to Git for reference
+         - Document Jenkins setup for historical record
+         - Store in .kiro/specs/rst-to-markdown-migration/jenkins-backup/
+      4. **Final documentation update**:
+         - Remove references to Jenkins from README
+         - Update all documentation to reflect GitHub Actions only
+         - Document lessons learned
+      5. **Announce completion**:
+         - Announce migration completion to community
+         - Thank contributors and testers
+         - Document benefits achieved (faster deployments, better CDN, etc.)
+    - **Deliverables**:
+      - Jenkins jobs deleted (new versions only)
+      - Jenkins configuration archived
+      - Documentation finalized
+      - Migration complete announcement
+    - _Requirements: 8.7_
 
 - [ ] 11. Final Checkpoint - Migration Complete
   - Ensure all PRs are created, all documentation is updated, all validation passes. Ask the user if questions arise.

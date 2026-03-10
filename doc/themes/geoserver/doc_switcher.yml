@@ -1,0 +1,30 @@
+# Shared doc_switcher configuration for all GeoServer documentation manuals
+# This file is loaded by the macros plugin (version.py) and injected into
+# the 'extra' section of each mkdocs.yml configuration.
+#
+# DO NOT modify the individual mkdocs.yml files - update this file instead.
+#
+# The doc_switcher provides navigation links between different documentation types:
+# - User Manual: End-user documentation for GeoServer features and usage
+# - Developer Manual: Technical documentation for GeoServer developers
+# - Documentation Guide: Guidelines for contributing to GeoServer documentation
+# - Swagger APIs: Interactive API documentation
+#
+# Each entry requires:
+# - label: Display name shown in the navigation menu
+# - url: Relative URL path to the documentation (relative to current manual)
+# - type: Unique identifier for the documentation type
+
+doc_switcher:
+  - label: "User Manual"
+    url: "../user/"
+    type: "user"
+  - label: "Developer Manual"
+    url: "../developer/"
+    type: "developer"
+  - label: "Documentation Guide"
+    url: "../docguide/"
+    type: "docguide"
+  - label: "Swagger APIs"
+    url: "../user/api/"
+    type: "swagger"

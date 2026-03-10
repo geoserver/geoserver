@@ -22,7 +22,7 @@ application directory.
         <property name="titleKey" value="ParamsExtractorConfigPage.page.title"/>
         <property name="descriptionKey" value="ParamsExtractorConfigPage.page.description"/>
         <property name="componentClass" value="org.geoserver.params.extractor.web.ParamsExtractorConfigPage"/>
-        <property name="category" ref="settingsCategory" />
+        <property name="category" ref="serverCategory" />
         <property name="order" value="100" />
         <property name="icon" value="img/direction-pencil.png" />
     </bean>

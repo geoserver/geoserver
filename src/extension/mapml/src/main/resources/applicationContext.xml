@@ -87,7 +87,7 @@
         <property name="titleKey" value="MapMLTCRSSettingsPage.title"/>
         <property name="descriptionKey" value="MapMLTCRSSettingsPage.description"/>
         <property name="componentClass" value="org.geoserver.mapml.web.MapMLTCRSSettingsPage" />
-        <property name="category" ref="settingsCategory" />
+        <property name="category" ref="serverCategory" />
         <property name="icon" value="img/icons/crs.png"/>
         <property name="order" value="20"/>
     </bean>

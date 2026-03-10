@@ -167,7 +167,7 @@
         <module>singlestore</module>
         <module>pmtiles-store</module>
         <module>wps-openai</module>
-		<module>png-wind</module>
+        <module>png-wind</module>
       </modules>
     </profile>
     <profile>
@@ -555,7 +555,7 @@
         <module>wps-openai</module>
       </modules>
     </profile>
-	<profile>
+    <profile>
       <id>png-wind</id>
       <modules>
         <module>png-wind</module>

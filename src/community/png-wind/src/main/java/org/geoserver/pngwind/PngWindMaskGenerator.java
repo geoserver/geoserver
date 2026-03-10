@@ -4,47 +4,42 @@
  */
 package org.geoserver.pngwind;
 
+import java.awt.image.DataBuffer;
+import java.awt.image.RenderedImage;
 import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.ParameterBlockImageN;
+import org.eclipse.imagen.RenderedOp;
 import org.eclipse.imagen.media.range.Range;
 import org.eclipse.imagen.media.range.RangeFactory;
 import org.eclipse.imagen.media.rlookup.RangeLookupTable;
 import org.geotools.image.ImageWorker;
 
-import java.awt.image.DataBuffer;
-import java.awt.image.RenderedImage;
-
 /**
- * Utility class to generate a mask image from the UV bands,
- * by using noData values (if provided) or NaN (if noData is null) to identify invalid pixels.
- * The resulting mask is a BYTE image where valid pixels are 255 and invalid (noData/NaN) are 0.
+ * Utility class to generate a mask image from the UV bands, by using noData values (if provided) or NaN (if noData is
+ * null) to identify invalid pixels. The resulting mask is a BYTE image where valid pixels are 255 and invalid
+ * (noData/NaN) are 0.
  */
-public final class MaskGenerator {
+public final class PngWindMaskGenerator {
 
-    private static final Byte INVALID = (byte) 0;
-    private static final Byte VALID = (byte) 255;
+    private static final Integer INVALID = 0;
+    private static final Integer VALID = 255;
 
-    private MaskGenerator() {
-        // utility class
-    }
+    private PngWindMaskGenerator() {}
 
     /**
-     * Creates a mask image from the UV bands, using noData values (if provided) or NaN (if noData is null) to identify invalid pixels.
+     * Creates a mask image from the UV bands, using noData values (if provided) or NaN (if noData is null) to identify
+     * invalid pixels.
      */
-    public static RenderedImage createMask(
-            RenderedImage uv,
-            Double uNoData,
-            Double vNoData
-    ) {
+    public static RenderedImage createMask(RenderedImage uv, Double uNoData, Double vNoData) {
         if (uv == null) {
             throw new IllegalArgumentException("source must not be null");
         }
         if (uNoData == null && vNoData == null) {
-            // Fast path: all valid
+            // Fast path: all pixels are valid
             return createConstantMask(uv);
         }
 
-        //Build per-band masks: nodata/NaN -> 0, valid -> 255
+        // Build per-band masks: nodata/NaN -> 0, valid -> 255
         RenderedImage uMask = createValidMask(uv, 0, uNoData);
         RenderedImage vMask = createValidMask(uv, 1, vNoData);
         // if one mask is null, return the other, no need to combine
@@ -56,40 +51,45 @@ public final class MaskGenerator {
         }
 
         // Combine: MIN is equivalent to logical AND for 0/255 masks
-        return new ImageWorker().min(new RenderedImage[]{uMask, vMask}).getRenderedImage();
+        return new ImageWorker().min(new RenderedImage[] {uMask, vMask}).getRenderedImage();
     }
 
-        private static RenderedImage createValidMask(RenderedImage src, int band, Double noData) {
-            if (noData == null)  {
-                // Fast path: no specific mask needed for this band, all valid
-                return null;
-            }
-            ImageWorker iw = new ImageWorker(src);
-
-            // BandSelect
-            RenderedImage singleBand = iw.retainBands(new int[] { band }).getRenderedImage();
-            Range noDataRange = singleValueRangeForType(noData, singleBand.getSampleModel().getDataType());
-
-            // Create a RangeLookupTable mapping noDataRange to 0, and everything else to 255 (default)
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            RangeLookupTable table = new RangeLookupTable.Builder()
-                    .add(noDataRange, INVALID).build();
-            ParameterBlockImageN pb = new ParameterBlockImageN("RLookup");
-            pb.addSource(singleBand);
-            pb.setParameter("table", table);
-            pb.setParameter("default", VALID);
-            return ImageN.create("RLookup", pb);
+    private static RenderedImage createValidMask(RenderedImage src, int band, Double noData) {
+        if (noData == null) {
+            // Fast path: no specific mask needed for this band, all valid
+            return null;
         }
+        ImageWorker iw = new ImageWorker(src);
 
-        /** Returns a BYTE image same size as src filled with 255. */
-        private static RenderedImage createConstantMask(RenderedImage src) {
-            ParameterBlockImageN pb = new ParameterBlockImageN("Constant");
-            pb.setParameter("width", src.getWidth());
-            pb.setParameter("height", src.getHeight());
-            pb.setParameter("bandValues", new byte[]{VALID});
-            return ImageN.create("Constant", pb);
-        }
+        RenderedImage singleBand = iw.retainBands(new int[] {band}).getRenderedImage();
+        Range noDataRange =
+                singleValueRangeForType(noData, singleBand.getSampleModel().getDataType());
 
+        // Create a RangeLookupTable mapping noDataRange to 0 and everything else to 255 (default)
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        RangeLookupTable table =
+                new RangeLookupTable.Builder().add(noDataRange, INVALID).build();
+        ParameterBlockImageN pb = new ParameterBlockImageN("RLookup");
+        pb.addSource(singleBand);
+        pb.setParameter("table", table);
+        pb.setParameter("default", VALID);
+        RenderedOp mask = ImageN.create("RLookup", pb);
+
+        // Convert to BYTE since the RLookup output will be
+        // the same data type as the input (usually float/double) and we need a BYTE mask
+        iw = new ImageWorker(mask);
+        iw.format(DataBuffer.TYPE_BYTE);
+        return iw.getRenderedImage();
+    }
+
+    /** Returns a BYTE image same size as src filled with 255. */
+    private static RenderedImage createConstantMask(RenderedImage src) {
+        ParameterBlockImageN pb = new ParameterBlockImageN("Constant");
+        pb.setParameter("width", src.getWidth());
+        pb.setParameter("height", src.getHeight());
+        pb.setParameter("bandValues", new byte[] {VALID.byteValue()});
+        return ImageN.create("Constant", pb);
+    }
 
     // this will be invoked only if a noData is not null.
     private static Range singleValueRangeForType(Double noData, int dataType) {

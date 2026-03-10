@@ -323,7 +323,7 @@
           <!-- daemon parameter removed in Jetty 10 -->
           <!-- uncomment following to set a GEOSERVER_DATA_DIR -->
           <!--
-            <systemProperties> <systemProperty> <name>GEOSERVER_DATA_DIR</name>
+            <systemProperties> <systemProperty> <getName>GEOSERVER_DATA_DIR</getName>
             <value>/home/ak/geoserver_data</value> </systemProperty> </systemProperties>
           -->
           <!-- Make sure it's not looking for annotations everywhere -->
@@ -1963,15 +1963,15 @@
         </dependency>
       </dependencies>
     </profile>
-      <profile>
-          <id>png-wind</id>
-          <dependencies>
-              <dependency>
-                  <groupId>org.geoserver.community</groupId>
-                  <artifactId>gs-png-wind</artifactId>
-                  <version>${project.version}</version>
-              </dependency>
-          </dependencies>
-      </profile>
+    <profile>
+      <id>png-wind</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-png-wind</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

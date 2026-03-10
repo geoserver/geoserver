@@ -1,109 +1,228 @@
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.pngwind;
 
+import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
 import java.util.Locale;
-import java.util.Set;
 import java.util.logging.Logger;
-
+import org.eclipse.imagen.media.jiffleop.JiffleDescriptor;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.media.range.RangeFactory;
+import org.geoserver.pngwind.config.PngWindConfig;
+import org.geoserver.pngwind.config.PngWindConfig.DirectionConvention;
+import org.geoserver.pngwind.config.PngWindConfig.DirectionUnit;
+import org.geoserver.pngwind.PngWindConstants.BandType;
 import org.geotools.image.ImageWorker;
 import org.geotools.util.logging.Logging;
 
+/**
+ * Utility class to transform a 2-band image containing wind data in various forms (U/V, speed/direction) into a
+ * standard U/V form. The transformation is based on heuristics applied to the band names, and can handle a variety of
+ * common naming conventions. If the bands cannot be classified, the original image is returned as-is, with a warning
+ * logged, assuming it is already in U/V form in the order of the bands.
+ */
 public final class PngWindTransform {
+
+    private static class BandPair {
+        BandType b1;
+
+        BandType b2;
+
+        public BandPair(BandType b1, BandType b2) {
+            this.b1 = b1;
+            this.b2 = b2;
+        }
+
+        public static BandPair toKind(Kind kind) {
+            return switch (kind) {
+                case UV -> new BandPair(BandType.U, BandType.V);
+                case VU -> new BandPair(BandType.V, BandType.U);
+                case SPEED_DIR -> new BandPair(BandType.SPEED, BandType.DIR);
+            };
+        }
+
+        public boolean isUnknown() {
+            return b1 == BandType.UNKNOWN && b2 == BandType.UNKNOWN;
+        }
+
+        public boolean isVectorial() {
+            return (b1 == BandType.U && b2 == BandType.V) || (b1 == BandType.V && b2 == BandType.U);
+        }
+
+        public Kind getVectorialKind() {
+            return b1 == BandType.U ? Kind.UV : Kind.VU;
+        }
+
+        public boolean isPolar() {
+            return (b1 == BandType.SPEED && b2 == BandType.DIR) || (b1 == BandType.DIR && b2 == BandType.SPEED);
+        }
+    }
+
+    private final PngWindConfig config;
+
+    public PngWindTransform(PngWindConfig config) {
+        this.config = config;
+    }
+
+    public boolean isSpeed(String n) {
+        return config.getBandMatching().getSpeed().matches(n);
+    }
+
+    public boolean isDir(String n) {
+        return config.getBandMatching().getDirection().matches(n);
+    }
+
+    public boolean isU(String n) {
+        return config.getBandMatching().getU().matches(n);
+    }
+
+    public boolean isV(String n) {
+        return config.getBandMatching().getV().matches(n);
+    }
 
     private static final Logger LOGGER = Logging.getLogger(PngWindTransform.class);
 
-    public enum Kind { UV, VU, SPEED_DIR }
-
-    public static class PngWindTransformResult {
-
-
-        private final RenderedImage uv;
-        private final Kind kind;
-        private final String uName;
-        private final String vName;
-
-        public PngWindTransformResult(RenderedImage uv, Kind kind, String uName, String vName) {
-            this.uv = uv;
-            this.kind = kind;
-            this.uName = uName;
-            this.vName = vName;
-        }
-
-        public RenderedImage getUv() { return uv; }
-        public Kind getKind() { return kind; }
-        public String getUName() { return uName; }
-        public String getVName() { return vName; }
+    public enum Kind {
+        UV,
+        VU,
+        SPEED_DIR
     }
 
-    public enum DirConvention { FROM, TO }
-    public enum DirUnit { DEG, RAD }
+    /**
+     * Container for the result of the transformation, including the resulting image and the kind of transformation
+     * applied (if any).
+     */
+    public static class PngWindTransformResult {
+        private final RenderedImage uv;
+        private final Kind kind;
 
-    private static final Set<String> SPEED_EXACT = Set.of("speed", "wind_speed", "windspeed", "ws");
-    private static final Set<String> DIR_EXACT   = Set.of("direction", "wind_direction", "winddir", "wd");
+        public PngWindTransformResult(RenderedImage uv, Kind kind) {
+            this.uv = uv;
+            this.kind = kind;
+        }
 
-    public PngWindTransformResult toUvIfNeeded(RenderedImage twoBands, String band1Name, String band2Name) {
-        String n1 = norm(band1Name);
-        String n2 = norm(band2Name);
+        public RenderedImage getUv() {
+            return uv;
+        }
+
+        public Kind getKind() {
+            return kind;
+        }
+    }
+
+    /**
+     * Transforms the given 2-band image containing wind data into U/V form if needed, based on heuristics applied to the
+     * band names in the provided request context. The heuristics can classify the bands as U/V or speed/direction.
+     *
+     * @param twoBands
+     * @param ctx
+     * @return
+     */
+    public PngWindTransformResult toUV(RenderedImage twoBands, PngWindRequestContext ctx) {
+        String n1 = normalize(ctx.getBand1().getName());
+        String n2 = normalize(ctx.getBand2().getName());
         Kind defaultKind = Kind.UV;
 
-        WindBandType r1 = classify(n1);
-        WindBandType r2 = classify(n2);
+        BandPair pair = new BandPair(classify(n1), classify(n2));
+
+        // If both bands are unknown, try the heuristic of finding
+        // a single position where they differ only by 'u' vs 'v'
+        if (pair.isUnknown()) {
+            int pos = findUvPosition(n1, n2);
+            if (pos >= 0) {
+                if (n1.charAt(pos) == 'u' && n2.charAt(pos) == 'v') {
+                    pair = BandPair.toKind(Kind.UV);
+                } else if (n1.charAt(pos) == 'v' && n2.charAt(pos) == 'u') {
+                    pair = BandPair.toKind(Kind.VU);
+                }
+            }
+        }
 
         // Case A: already U/V (any order)
-        if ((r1 == WindBandType.U && r2 == WindBandType.V) || (r1 == WindBandType.V && r2 == WindBandType.U)) {
-            Kind kind = r1 == WindBandType.U ? defaultKind : Kind.VU;
-            return new PngWindTransformResult(twoBands, kind, PngWindConstants.U, PngWindConstants.V);
+        if (pair.isVectorial()) {
+            // Note that in case of V/U order we keep the original order
+            // and just mark it in the kind for downstream to handle
+            return new PngWindTransformResult(twoBands, pair.getVectorialKind());
         }
 
         // Case B: speed/direction (any order)
-        if ((r1 == WindBandType.SPEED && r2 == WindBandType.DIR) || (r1 == WindBandType.DIR && r2 == WindBandType.SPEED)) {
-            RenderedImage speed = new ImageWorker(twoBands).retainBands(new int[]{ r1 == WindBandType.SPEED ? 0 : 1 }).getRenderedImage();
-            RenderedImage dir   = new ImageWorker(twoBands).retainBands(new int[]{ r1 == WindBandType.DIR   ? 0 : 1 }).getRenderedImage();
-
-            DirConvention conv = PngWindConstants.DIR_CONVENTION;
-            DirUnit unit = PngWindConstants.DIR_UNIT;
-
-            RenderedImage uv = speedDirToUv(speed, dir, conv, unit);
-            return new PngWindTransformResult(uv, Kind.SPEED_DIR, PngWindConstants.U, PngWindConstants.V);
+        if (pair.isPolar()) {
+            RenderedImage uv = transformToUV(twoBands, ctx, pair.b1);
+            return new PngWindTransformResult(uv, Kind.SPEED_DIR);
         }
 
-        LOGGER.warning("PNG-WIND: unable to classify bands [" + band1Name + ", " + band2Name + "], got types [" + r1 + ", " + r2 + "], assuming they are U/V in that order");
-        return new PngWindTransformResult(twoBands, defaultKind, PngWindConstants.U, PngWindConstants.V);
+        LOGGER.warning("PNG-WIND: unable to classify bands [" + n1 + ", " + n2 + "], got types [" + pair.b1 + ", " + pair.b2
+                + "], assuming they are U/V in that order");
+        return new PngWindTransformResult(twoBands, defaultKind);
     }
 
-    private enum WindBandType { U, V, SPEED, DIR, UNKNOWN }
+    private RenderedImage transformToUV(RenderedImage twoBands, PngWindRequestContext ctx, BandType r1) {
+        boolean isSpeedFirst = r1 == BandType.SPEED;
+        // Get Nodata
+        Double b1Nodata = ctx.getBand1().getNodata();
+        Double b2Nodata = ctx.getBand2().getNodata();
+        Double speedNodata = isSpeedFirst ? b1Nodata : b2Nodata;
+        Double dirNodata = isSpeedFirst ? b2Nodata : b1Nodata;
 
-    private WindBandType classify(String n) {
+        RenderedImage speed = new ImageWorker(twoBands)
+                .retainBands(new int[] {isSpeedFirst ? 0 : 1})
+                .getRenderedImage();
+        RenderedImage dir = new ImageWorker(twoBands)
+                .retainBands(new int[] {isSpeedFirst ? 1 : 0})
+                .getRenderedImage();
+        return polarToVectorial(
+                speed, dir, config.getDirectionConvention(), config.getDirectionUnit(), speedNodata, dirNodata);
+    }
+
+    /**
+     * Heuristic to find a single position where the two band names differ only by 'u' vs 'v', to help classify them as
+     * U/V when other heuristics fail. i.e. hourly_u10m vs hourly_v10m, etc.
+     *
+     * @param b1
+     * @param b2
+     * @return
+     */
+    private int findUvPosition(String b1, String b2) {
+        if (b1.length() != b2.length()) {
+            return -1;
+        }
+
+        int uvPos = -1;
+
+        for (int i = 0; i < b1.length(); i++) {
+            char cb1 = b1.charAt(i);
+            char cb2 = b2.charAt(i);
+
+            if (cb1 == cb2) {
+                continue;
+            }
+
+            if ((cb1 == 'u' && cb2 == 'v') || (cb1 == 'v' && cb2 == 'u')) {
+                if (uvPos != -1) {
+                    return -1;
+                }
+                uvPos = i;
+            } else {
+                return -1;
+            }
+        }
+
+        return uvPos;
+    }
+
+    private BandType classify(String n) {
         // exact-ish checks
-        if (isU(n)) return WindBandType.U;
-        if (isV(n)) return WindBandType.V;
-        if (isSpeed(n)) return WindBandType.SPEED;
-        if (isDir(n)) return WindBandType.DIR;
-        return WindBandType.UNKNOWN;
+        if (isU(n)) return BandType.U;
+        if (isV(n)) return BandType.V;
+        if (isSpeed(n)) return BandType.SPEED;
+        if (isDir(n)) return BandType.DIR;
+        return BandType.UNKNOWN;
     }
 
-    private boolean isSpeed(String n) {
-        if (SPEED_EXACT.contains(n)) return true;
-        return n.contains("spd") || n.contains("wspd") || n.contains("wind_spd") || n.contains("wind_speed");
-    }
-
-    private boolean isDir(String n) {
-        if (DIR_EXACT.contains(n)) return true;
-        return n.contains("dir") || n.contains("wdir") || n.contains("wind_dir") || n.contains("wind_direction");
-    }
-
-    private boolean isU(String n) {
-        // Keep these conservative to avoid “u” in “humidity” etc.
-        if (n.equals("u") || n.equals("uwnd") || n.equals("ugrd")) return true;
-        return n.contains("eastward_wind") || n.contains("u_component") || n.contains("_u_");
-    }
-
-    private boolean isV(String n) {
-        if (n.equals("v") || n.equals("vwnd") || n.equals("vgrd")) return true;
-        return n.contains("northward_wind") || n.contains("v_component") || n.contains("_v_");
-    }
-
-    private static String norm(String s) {
+    public static String normalize(String s) {
         if (s == null) return "";
         String t = s.toLowerCase(Locale.ROOT).trim();
         t = t.replaceAll("[^a-z0-9]+", "_");
@@ -113,31 +232,40 @@ public final class PngWindTransform {
         return t;
     }
 
-    /**
-     * Convert speed + direction to a 2-band image [U, V].
-     *
-     * Convention:
-     * - FROM: meteorological (direction wind comes FROM, clockwise from North)
-     * - TO: direction wind blows TO
-     *
-     * Units:
-     * - DEG or RAD
-     *
-     * You’ll implement this with JAI/JAI-ext algebra ops (preferred) or a tiny custom OpImage.
-     */
-    private RenderedImage speedDirToUv(RenderedImage speed, RenderedImage dir, DirConvention conv, DirUnit unit) {
-        // Pseudocode math (theta in radians)
-        // theta = (unit==DEG) ? dir * PI/180 : dir
-        // if conv==FROM:
-        //   u = -speed * sin(theta)
-        //   v = -speed * cos(theta)
-        // else (TO):
-        //   u =  speed * sin(theta)
-        //   v =  speed * cos(theta)
+    private static RenderedImage polarToVectorial(
+            RenderedImage speed,
+            RenderedImage dir,
+            DirectionConvention dirConvention,
+            DirectionUnit dirUnit,
+            Double speedNoData,
+            Double dirNoData) {
+        // Sources visible to the script as "spd" and "dir"
+        RenderedImage[] sources = new RenderedImage[] {speed, dir};
+        String[] sourceNames = new String[] {"spd", "dir"};
 
-        // IMPORTANT: keep the output as float (or double) because you’ll later rescale to byte.
-        // Also: propagate NoData (mask later already checks U/V nodata).
+        String destName = "dest";
 
-        return null;
+        // NOTE: write to dest[0] and dest[1] for multi-band output
+        // theta in radians
+        // FROM: u = -spd*sin(theta), v = -spd*cos(theta)
+        // TO:   u =  spd*sin(theta), v =  spd*cos(theta)
+        String thetaExpr = dirUnit == DirectionUnit.DEG ? "(dir * 3.141592653589793) / 180.0" : "dir";
+
+        String sign = dirConvention == DirectionConvention.FROM ? "-" : "";
+
+        String script = "theta = " + thetaExpr + ";\n" + "dest[0] = "
+                + sign + "spd * sin(theta);\n" + "dest[1] = "
+                + sign + "spd * cos(theta);\n";
+
+        // Optional per-source nodata ranges (same order as sources[])
+        Range[] noData = (speedNoData != null && dirNoData != null)
+                ? new Range[] {
+                    RangeFactory.create(speedNoData, true, speedNoData, true, true),
+                    RangeFactory.create(dirNoData, true, dirNoData, true, true)
+                }
+                : null;
+
+        return JiffleDescriptor.create(
+                sources, sourceNames, destName, script, null, DataBuffer.TYPE_FLOAT, 2, null, null, noData, null);
     }
 }

@@ -19,4 +19,8 @@
     <bean id="pngWindMapResponse" class="org.geoserver.pngwind.PngWindMapResponse">
         <constructor-arg ref="wms"/>
     </bean>
+
+    <bean id="pngWindInitializer" class="org.geoserver.pngwind.PngWindConfigInitializer">
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
 </beans>

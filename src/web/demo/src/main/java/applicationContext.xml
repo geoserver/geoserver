@@ -18,7 +18,7 @@
     <property name="id" value="layerListDemo"/>
     <property name="titleKey" value="MapPreviewPage.title"/>
     <property name="icon" value="../img/icons/geosilk/map.png"/>
-    <property name="category" ref="aboutStatusCategory"/>
+    <property name="category" ref="geoserverCategory"/>
     <property name="order" value="5"/>
     <property name="descriptionKey" value="MapPreviewPage.description"/>
     <property name="componentClass" value="org.geoserver.web.demo.MapPreviewPage"/>

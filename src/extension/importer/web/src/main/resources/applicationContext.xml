@@ -25,7 +25,7 @@
     <property name="titleKey" value="ImporterConfigPage.title"/>
     <property name="descriptionKey" value="ImporterConfigPage.description"/>
     <property name="componentClass" value="org.geoserver.importer.web.ImporterConfigPage"/>
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="order" value="50" />
     <property name="icon" value="map_cog.png" />
   </bean>

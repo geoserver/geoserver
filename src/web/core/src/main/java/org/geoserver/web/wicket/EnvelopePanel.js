@@ -121,4 +121,8 @@ function EnvelopePanel_valueChanged(elementId) {
         diagram_minZ.val(input_minZ.val());
         diagram_maxZ.val(input_maxZ.val());
     }
+    else {
+        diagram_minZ.hide();
+        diagram_maxZ.hide();
+    }
 }

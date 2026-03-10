@@ -40,6 +40,9 @@ jobs:
         run: |
           BRANCH=${GITHUB_REF##refs/heads/}
           
+          # Set docs_base_path using branch name
+          echo "docs_base_path=/geoserver/$BRANCH" >> $GITHUB_OUTPUT
+          
           if [ "$BRANCH" = "main" ]; then
             echo "version=latest" >> $GITHUB_OUTPUT
             echo "title=Latest (3.0 dev)" >> $GITHUB_OUTPUT
@@ -57,6 +60,8 @@ jobs:
       # Deploy User Manual
       - name: Deploy User Manual
         working-directory: doc/en/user
+        env:
+          DOCS_BASE_PATH: ${{ steps.version.outputs.docs_base_path }}
         run: |
           VERSION=${{ steps.version.outputs.version }}
           mike deploy --deploy-prefix "$VERSION/en/user" \
@@ -68,6 +73,8 @@ jobs:
       # Deploy Developer Guide
       - name: Deploy Developer Guide
         working-directory: doc/en/developer
+        env:
+          DOCS_BASE_PATH: ${{ steps.version.outputs.docs_base_path }}
         run: |
           VERSION=${{ steps.version.outputs.version }}
           mike deploy --deploy-prefix "$VERSION/en/developer" \
@@ -78,6 +85,8 @@ jobs:
       # Deploy Documentation Guide
       - name: Deploy Documentation Guide
         working-directory: doc/en/docguide
+        env:
+          DOCS_BASE_PATH: ${{ steps.version.outputs.docs_base_path }}
         run: |
           VERSION=${{ steps.version.outputs.version }}
           mike deploy --deploy-prefix "$VERSION/en/docguide" \

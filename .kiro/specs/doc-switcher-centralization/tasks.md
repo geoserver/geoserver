@@ -46,7 +46,7 @@ Centralize the duplicated `doc_switcher` configuration from three MkDocs configu
   - Compare rendered output before and after to ensure consistency
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 6.1, 6.2, 6.3, 6.5_
 
-- [ ]* 5. Write unit tests for configuration loading
+- [x] 5. Write unit tests for configuration loading
   - Test that doc_switcher.yml can be loaded successfully
   - Test that loaded data has expected structure (list with label, url, type fields)
   - Test error handling for missing file or invalid YAML

@@ -10,9 +10,15 @@
 # - Documentation Guide: Guidelines for contributing to GeoServer documentation
 # - Swagger APIs: Interactive API documentation
 #
+# Path Resolution:
+# The relative paths defined below (e.g., "../user/") are automatically converted
+# to absolute paths by the macros plugin (version.py) during the build process.
+# This ensures correct navigation regardless of the current page's nesting level.
+# The relative paths serve as templates indicating the target documentation type.
+#
 # Each entry requires:
 # - label: Display name shown in the navigation menu
-# - url: Relative URL path to the documentation (relative to current manual)
+# - url: Relative URL path template (will be converted to absolute path by macros plugin)
 # - type: Unique identifier for the documentation type
 
 doc_switcher:

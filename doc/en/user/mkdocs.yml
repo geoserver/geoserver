@@ -1,5 +1,5 @@
 site_name: GeoServer User Manual
-site_url: https://docs.geoserver.org/3.0/en/user/
+site_url: https://docs.geoserver.org/3.0.x/en/user/
 repo_url: https://github.com/geoserver/geoserver
 repo_name: geoserver/geoserver
 edit_uri: edit/main/doc/en/user/docs/

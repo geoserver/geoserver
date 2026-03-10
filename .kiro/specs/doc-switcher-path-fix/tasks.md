@@ -1,0 +1,144 @@
+# Implementation Plan
+
+- [x] 1. Write bug condition exploration test
+  - **Property 1: Bug Condition** - Doc Switcher Navigation at Nesting Level 2+
+  - **CRITICAL**: This test MUST FAIL on unfixed code - failure confirms the bug exists
+  - **DO NOT attempt to fix the test or the code when it fails**
+  - **NOTE**: This test encodes the expected behavior - it will validate the fix when it passes after implementation
+  - **GOAL**: Surface counterexamples that demonstrate the bug exists
+  - **Scoped PBT Approach**: Test concrete failing cases at nesting levels 2 and 3 with different doc types
+  - Test that doc_switcher URLs at nesting level 2+ navigate to correct absolute paths (from Bug Condition in design)
+  - Test cases:
+    - From `/en/user/introduction/` (level 2), clicking "Developer Manual" should navigate to `/en/developer/` (not `/en/user/developer/`)
+    - From `/en/user/introduction/overview/` (level 3), clicking "Documentation Guide" should navigate to `/en/docguide/` (not `/en/user/introduction/docguide/`)
+    - From `/en/developer/core/` (level 2), clicking "User Manual" should navigate to `/en/user/` (not `/en/developer/user/`)
+  - The test assertions should match the Expected Behavior Properties from design (absolute paths with correct doc type at root level)
+  - Run test on UNFIXED code by building documentation and manually testing navigation
+  - **EXPECTED OUTCOME**: Test FAILS (this is correct - it proves the bug exists)
+  - Document counterexamples found to understand root cause (e.g., "From /en/user/introduction/, Developer Manual link navigates to /en/user/developer/ instead of /en/developer/")
+  - Mark task complete when test is written, run, and failure is documented
+  - _Requirements: 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5_
+
+- [x] 2. Write preservation property tests (BEFORE implementing fix)
+  - **Property 2: Preservation** - Level 1 Navigation and Configuration
+  - **IMPORTANT**: Follow observation-first methodology
+  - Observe behavior on UNFIXED code for non-buggy inputs (nesting level 1)
+  - Test cases to observe:
+    - From `/en/user/` (level 1), clicking "Developer Manual" navigates to correct destination
+    - From `/en/developer/` (level 1), clicking "User Manual" navigates to correct destination
+    - doc_switcher.yml is loaded by version.py without errors
+    - Templates receive doc_switcher array with label, url, type fields
+    - `mkdocs build` and `mkdocs serve` work without additional arguments
+  - Write property-based tests capturing observed behavior patterns from Preservation Requirements
+  - Property-based testing generates many test cases for stronger guarantees
+  - Run tests on UNFIXED code
+  - **EXPECTED OUTCOME**: Tests PASS (this confirms baseline behavior to preserve)
+  - Mark task complete when tests are written, run, and passing on unfixed code
+  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
+
+- [ ] 3. Fix for doc_switcher relative path navigation at deep nesting levels
+
+  - [x] 3.1 Add helper function to extract base path from site_url
+    - Create `extract_base_path(env)` function in `doc/version.py`
+    - Priority: 1) DOCS_BASE_PATH environment variable (for migration branch), 2) site_url (for production/local)
+    - Parse site_url to extract base path including version/branch prefixes
+    - Examples:
+      - `https://docs.geoserver.org/3.0/en/user/` → `/3.0/en/`
+      - `https://petersmythe.github.io/geoserver/migration/3.0-rst-to-md/en/user/` with DOCS_BASE_PATH → `/geoserver/migration/3.0-rst-to-md/en/`
+    - Remove current doc type from the end of the path
+    - Ensure leading and trailing slashes
+    - Fallback to `/en/` if site_url is not configured
+    - _Bug_Condition: isBugCondition(input) where input.currentPageNestingLevel >= 2 AND input.clickedElement IN doc_switcher_links_
+    - _Expected_Behavior: Extract correct base path for absolute URL construction from design_
+    - _Preservation: Preserve existing configuration loading mechanism from design_
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
+
+  - [x] 3.2 Add helper function to construct absolute paths
+    - Create `construct_absolute_path(base_path, relative_url, target_doc_type)` function in `doc/version.py`
+    - Remove `../` prefix from relative_url (we're constructing from base_path)
+    - Combine base_path with target path
+    - Ensure leading slash for root-relative URLs
+    - Examples:
+      - base_path=`/3.0/en/`, relative_url=`../developer/` → `/3.0/en/developer/`
+      - base_path=`/geoserver/migration/3.0-rst-to-md/en/`, relative_url=`../developer/` → `/geoserver/migration/3.0-rst-to-md/en/developer/`
+    - _Bug_Condition: isBugCondition(input) where input.currentPageNestingLevel >= 2 AND input.clickedElement IN doc_switcher_links_
+    - _Expected_Behavior: Construct absolute paths that work at any nesting level from design_
+    - _Preservation: Preserve URL structure and trailing slash convention from design_
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
+
+  - [x] 3.3 Modify define_env to convert relative paths to absolute paths
+    - In `doc/version.py`, update `define_env` function
+    - Import `os` and `urlparse` from `urllib.parse`
+    - After loading doc_switcher.yml, call `extract_base_path(env)` to get base path
+    - Iterate through doc_switcher entries and convert relative URLs to absolute URLs using `construct_absolute_path`
+    - Skip entries that already start with `http` (external URLs)
+    - Inject converted doc_switcher into `env.conf['extra']['doc_switcher']`
+    - _Bug_Condition: isBugCondition(input) where input.currentPageNestingLevel >= 2 AND input.clickedElement IN doc_switcher_links_
+    - _Expected_Behavior: Generate absolute paths for all doc_switcher URLs from design_
+    - _Preservation: Preserve existing doc_switcher data structure (label, url, type fields) from design_
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 3.3, 3.4_
+
+  - [x] 3.4 Update GitHub Actions workflow for migration branch testing
+    - In `.github/workflows/docs-deploy.yml`, add DOCS_BASE_PATH environment variable
+    - Set `DOCS_BASE_PATH: /geoserver/migration/3.0-rst-to-md` for migration branch deployments
+    - Apply to all mkdocs build steps (user, developer, docguide)
+    - _Bug_Condition: isBugCondition(input) where deployment is on migration branch_
+    - _Expected_Behavior: Support multi-branch deployment structure with correct base path from design_
+    - _Preservation: Preserve existing build process from design_
+    - _Requirements: 2.5_
+
+  - [x] 3.5 Update doc_switcher.yml documentation comments
+    - In `doc/themes/geoserver/doc_switcher.yml`, update comments
+    - Document that paths will be dynamically converted to absolute paths by the macros plugin
+    - Note that relative paths in the file serve as templates indicating target doc type
+    - _Preservation: Preserve YAML structure and configuration approach from design_
+    - _Requirements: 3.3_
+
+  - [x] 3.6 Verify bug condition exploration test now passes
+    - **Property 1: Expected Behavior** - Doc Switcher Navigation at Any Depth
+    - **IMPORTANT**: Re-run the SAME test from task 1 - do NOT write a new test
+    - The test from task 1 encodes the expected behavior
+    - When this test passes, it confirms the expected behavior is satisfied
+    - Build documentation with the fix and test navigation from pages at levels 2 and 3
+    - Test cases:
+      - From `/en/user/introduction/` (level 2), clicking "Developer Manual" navigates to correct absolute path
+      - From `/en/user/introduction/overview/` (level 3), clicking "Documentation Guide" navigates to correct absolute path
+      - From `/en/developer/core/` (level 2), clicking "User Manual" navigates to correct absolute path
+    - **EXPECTED OUTCOME**: Test PASSES (confirms bug is fixed)
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
+
+  - [x] 3.7 Verify preservation tests still pass
+    - **Property 2: Preservation** - Level 1 Navigation and Configuration
+    - **IMPORTANT**: Re-run the SAME tests from task 2 - do NOT write new tests
+    - Run preservation property tests from step 2
+    - Verify level 1 navigation still works correctly
+    - Verify doc_switcher.yml loading and template data structure unchanged
+    - Verify build process works without additional arguments
+    - **EXPECTED OUTCOME**: Tests PASS (confirms no regressions)
+    - Confirm all tests still pass after fix (no regressions)
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
+
+- [x] 4. Checkpoint - Ensure all tests pass
+  - Verify bug condition test passes (doc_switcher navigation works at all nesting levels)
+  - Verify preservation tests pass (level 1 navigation and configuration unchanged)
+  - Build all three documentation types (user, developer, docguide) and test navigation
+  - Test in both local development (`mkdocs serve`) and production build (`mkdocs build`)
+  - Test with multi-branch deployment structure (migration branch with DOCS_BASE_PATH)
+  - Ask the user if questions arise
+
+- [ ] 5. Deploy and test on GitHub Pages
+  - Push changes to the migration/3.0-rst-to-md branch
+  - Verify GitHub Actions workflow deploys successfully
+  - Test doc_switcher navigation on deployed site at:
+    - `https://petersmythe.github.io/geoserver/migration/3.0-rst-to-md/en/user/introduction/` (level 2)
+    - `https://petersmythe.github.io/geoserver/migration/3.0-rst-to-md/en/user/introduction/overview/` (level 3)
+    - `https://petersmythe.github.io/geoserver/migration/3.0-rst-to-md/en/developer/core/` (level 2)
+  - Verify doc_switcher URLs navigate to correct absolute paths with branch prefix
+  - Expected URLs: `/geoserver/migration/3.0-rst-to-md/en/developer/`, `/geoserver/migration/3.0-rst-to-md/en/docguide/`, etc.
+  - Test on 3.0.x branch (if available) to verify version-based URLs work correctly
+  - Expected URLs on 3.0.x: `/3.0.x/en/developer/`, `/3.0.x/en/docguide/`, etc.
+  - **Note**: To force deployment while working on migration branch, push to migration/3.0-rst-to-md branch and let GitHub Actions handle deployment
+  - For testing 3.0.x branch URLs, you would need to either:
+    - Create a 3.0.x branch with the fix and push it
+    - Or manually test locally by setting site_url to use 3.0.x and building
+  - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_

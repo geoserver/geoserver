@@ -8,6 +8,8 @@ package org.geoserver.web.wicket;
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
+import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -43,6 +45,14 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
                     new org.apache.wicket.request.resource.PackageResourceReference(
                             getClass(), getClass().getSimpleName() + ".css")));
         }
+        String oDomReadyScript = "\n";
+        oDomReadyScript += "\nEnvelopePanel_setup('" + this.getMarkupId() + "');";
+
+        response.render(OnDomReadyHeaderItem.forScript(oDomReadyScript));
+
+        response.render(JavaScriptContentHeaderItem.forReference(
+                new org.apache.wicket.request.resource.PackageResourceReference(
+                        getClass(), getClass().getSimpleName() + ".js")));
     }
 
     @Serial

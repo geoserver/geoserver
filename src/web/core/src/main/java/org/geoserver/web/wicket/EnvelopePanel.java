@@ -104,7 +104,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
     }
 
     public boolean is3D() {
-        return true || crs != null && crs.getCoordinateSystem().getDimension() >= 3;
+        return crs != null && crs.getCoordinateSystem().getDimension() >= 3;
     }
 
     public void setLabelsVisibility(boolean visible) {

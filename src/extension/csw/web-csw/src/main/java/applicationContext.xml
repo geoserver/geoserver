@@ -22,14 +22,29 @@
     <property name="category" ref="servicesCategory"/>
     <property name="serviceClass" value="org.geoserver.csw.CSWInfo"/>
   </bean>
+
+  <!-- records -->
+  <bean id="recordHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="recordHeading" />
+    <property name="order" value="1100" />
+    <property name="titleKey" value="HeadingConfigurationPanel.record.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.record.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
+  <!-- wms config panels -->
+  <bean id="cswHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="cswHeading" />
+    <property name="order" value="1050" />
+    <property name="titleKey" value="HeadingConfigurationPanel.csw.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.csw.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
   <bean id="cswLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="cswConfig"/>
+    <property name="order" value="1040"/>
     <property name="titleKey" value="DirectDownloadTabPanel.title"/>
     <property name="componentClass" value="org.geoserver.csw.web.CSWLayerConfig"/>
-    <property name="supportedTypes">
-      <list>  
-        <value>org.geoserver.catalog.CoverageInfo</value>
-      </list>
-    </property>
   </bean>
 </beans>

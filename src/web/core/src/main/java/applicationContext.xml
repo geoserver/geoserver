@@ -302,15 +302,83 @@
     </property>
   </bean>
 
-  <!-- Layer configuration panels -->
+  <!-- heading configuration panels -->
+
+  <!-- record heading is order: 1100 -->
+  <!-- web-csw heading is order: 1050 -->
+
+  <bean id="mapHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="mapHeading" />
+    <property name="order" value="1000" />
+    <property name="titleKey" value="HeadingConfigurationPanel.map.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.map.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
+  <!-- web-wms sub-heading is order: 950 -->
+
+  <bean id="vectorHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="vectorHeading" />
+    <property name="order" value="800" />
+    <property name="titleKey" value="HeadingConfigurationPanel.vector.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.vector.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.FeatureTypeInfo</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- web-wfs sub-heading is order: 750 -->
+
+  <bean id="rasterHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="rasterHeading" />
+    <property name="order" value="600" />
+    <property name="titleKey" value="publish.layer.raster.title" />
+    <property name="descriptionKey" value="publish.layer.raster.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.CoverageTypeInfo</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- web-wcs sub-heading is order: 550 -->
+
+  <!-- process heading is order: 400 -->
+  <!-- process heading is order: 350 -->
+
+  <bean id="formatHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="formatHeading" />
+    <property name="order" value="300" />
+    <property name="titleKey" value="HeadingConfigurationPanel.format.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.format.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
+  <!-- ogcapi heading is order: 200 -->
+
+  <bean id="settingsHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="settingsHeading" />
+    <property name="order" value="100" />
+    <property name="titleKey" value="HeadingConfigurationPanel.settings.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.settings.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
   <bean id="httpLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="http" />
+    <property name="order" value="90" />
     <property name="titleKey" value="publish.layer.config.http" />
     <property name="componentClass" value="org.geoserver.web.publish.LayerHTTPLayerConfig" />
   </bean>
-  
+
+  <!-- wms configuration panel -->
   <bean id="rootLayerConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
-    <property name="id" value="http" />
+    <property name="id" value="rootLayer" />
+    <property name="order" value="940"/>
     <property name="titleKey" value="publish.layer.config.rootLayer" />
     <property name="componentClass" value="org.geoserver.web.publish.RootLayerConfig" />
   </bean>
@@ -318,6 +386,7 @@
   <!-- LayerGroup configuration panels -->
   <bean id="httpLayerGroupConfigPanel" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
     <property name="id" value="http" />
+    <property name="order" value="90"/>
     <property name="titleKey" value="publish.layer.config.http" />
     <property name="componentClass" value="org.geoserver.web.publish.LayerGroupHTTPLayerConfig" />
   </bean>
@@ -467,9 +536,10 @@
 		<property name="include" value="include_login_form.html" />
 		<property name="loginPath" value="j_spring_security_check" />
 	</bean>
-	
- 	<bean id="serviceLayerConfigurationPanelInfo" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+
+    <bean id="serviceLayerConfigurationPanelInfo" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
 		<property name="id" value="serviceLayerConfigurationPanel"/>
+        <property name="order" value="95"/>
 		<property name="titleKey" value="publish.layer.config"/>
 		<property name="componentClass" value="org.geoserver.web.publish.ServiceLayerConfigurationPanel"/>
 	</bean>

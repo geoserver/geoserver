@@ -9,8 +9,17 @@
 
 <beans>
 
+    <bean id="ogcapiHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+        <property name="id" value="ogcapiHeading" />
+        <property name="order" value="200" />
+        <property name="titleKey" value="publish.ogcapi.settings.title" />
+        <property name="descriptionKey" value="publish.ogcapi.settings.description" />
+        <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    </bean>
+
     <bean id="ogcapiLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
         <property name="id" value="ogcapiLayerConfig"/>
+        <property name="order" value="150"/>
         <property name="titleKey" value="data.resource.config.ogcapi"/>
         <property name="componentClass" value="org.geoserver.web.ogcapi.OGCAPILayerConfig"/>
     </bean>

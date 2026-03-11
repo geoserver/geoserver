@@ -28,16 +28,26 @@
 
   <dependencies>
     <dependency>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <artifactId>imageio-ext-cog-reader</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.imagen</groupId>
+      <artifactId>imagen-core</artifactId>
+      <!-- already provided by gs-platform -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geotiff</artifactId>
+      <!-- already provided by gs-main -->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>it.geosolutions.imageio-ext</groupId>
-      <artifactId>imageio-ext-cog-reader</artifactId>
+      <!-- already provided by gs-web-app -->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -60,4 +70,27 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <!--
+         Skip copy-dependencies for cog plugins during assembly,
+         the assembly.xml descriptors use dependencySets instead of a fileSet
+         to include the compile and runtime scoped dependencies
+        -->
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

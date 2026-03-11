@@ -103,6 +103,7 @@ public class ProgressPanel extends Panel {
             }
         });
         window.show(target);
+        progressBar.getParent().setOutputMarkupId(true);
         progressBar.start(target);
     }
 

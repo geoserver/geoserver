@@ -43,6 +43,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -696,6 +697,54 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPutNullifyTitleAbstract() throws Exception {
+        LayerGroupInfo lg = catalog.getLayerGroupByName("sfLayerGroup");
+        lg.setAbstract("the abstract");
+        lg.setTitle("the title");
+        catalog.save(lg);
+
+        String xml =
+                """
+                <layerGroup>
+                  <name>sfLayerGroup</name>
+                  <abstract xsi:nil="true"/>
+                  <title xsi:nil="true"/>
+                </layerGroup>""";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups/sfLayerGroup", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        lg = catalog.getLayerGroupByName("sfLayerGroup");
+        assertNull(lg.getTitle());
+        assertNull(lg.getAbstract());
+    }
+
+    @Test
+    public void testPutNullifyAbstractI18N() throws Exception {
+        LayerGroupInfo lg = catalog.getLayerGroupByName("sfLayerGroup");
+        GrowableInternationalString abstractI18N = new GrowableInternationalString();
+        abstractI18N.add(Locale.ENGLISH, "The abstract");
+        abstractI18N.add(Locale.ITALIAN, "Il riassunto");
+        lg.setInternationalAbstract(abstractI18N);
+        catalog.save(lg);
+
+        String xml =
+                """
+                <layerGroup>
+                  <name>sfLayerGroup</name>
+                  <internationalAbstract xsi:nil="true"/>
+                </layerGroup>""";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups/sfLayerGroup", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        lg = catalog.getLayerGroupByName("sfLayerGroup");
+        assertNull(lg.getInternationalAbstract());
+    }
+
+    @Test
     public void testPutToWorkspace() throws Exception {
         testPostToWorkspace();
 
@@ -920,23 +969,24 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
             styleName.setName("theGroupStyleName");
             String xml =
                     """
-                    <layerGroup>\
-                    <layerGroupStyles>
-                        <LayerGroupStyle>
-                          <name>theGroupStyle</name>
-                          <internationalTitle/>
-                          <internationalAbstract/>
-                          <layers>
-                            <published type="layer">Ponds</published>\
-                            <published type="layer">Forests</published>\
-                          </layers>
-                          <styles>
-                            <style>polygon</style>
-                            <style/>
-                          </styles>
-                        </LayerGroupStyle>
-                      </layerGroupStyles>\
-                    </layerGroup>""";
+                <layerGroup>\
+                <layerGroupStyles>
+                    <LayerGroupStyle>
+                      <name>theGroupStyle</name>
+                      <internationalTitle/>
+                      <internationalAbstract/>
+                      <layers>
+                        <published type="layer">Ponds</published>\
+                        <published type="layer">Forests</published>\
+                      </layers>
+                      <styles>
+                        <style>polygon</style>
+                        <style/>
+                      </styles>
+                    </LayerGroupStyle>
+                  </layerGroupStyles>\
+                </layerGroup>\
+                """;
 
             MockHttpServletResponse response =
                     putAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups/citeLayerGroup", xml, "text/xml");
@@ -967,25 +1017,25 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         try {
             String json =
                     """
+                {
+                  "layerGroup": {
+                    "name": "layerGroupNullStyle",
+                    "publishables": {
+                  "published": [
                     {
-                      "layerGroup": {
-                        "name": "layerGroupNullStyle",
-                        "publishables": {
-                      "published": [
-                        {
-                          "name": "sfLayerGroup",
-                          "@type": "layerGroup"
-                        },\
-                        {
-                          "name": "citeLayerGroup",
-                          "@type": "layerGroup"
-                        }\
-                      ]
-                    },
-                        "styles": null\
-                      }
+                      "name": "sfLayerGroup",
+                      "@type": "layerGroup"
+                    },\
+                    {
+                      "name": "citeLayerGroup",
+                      "@type": "layerGroup"
                     }\
-                    """;
+                  ]
+                },
+                    "styles": null\
+                  }
+                }\
+                """;
             MockHttpServletResponse response =
                     postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", json, "application/json");
             assertEquals(201, response.getStatus());

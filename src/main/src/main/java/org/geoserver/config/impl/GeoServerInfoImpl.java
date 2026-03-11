@@ -18,6 +18,7 @@ import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.UserDetailsDisplaySettingsInfo;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geoserver.filters.LoggingFilter;
 
 public class GeoServerInfoImpl implements GeoServerInfo {
@@ -45,6 +46,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected Boolean globalServices = true;
 
+    @PatchProperty("useHeadersProxyURLRaw")
     protected Boolean useHeadersProxyURL = false;
 
     protected transient GeoServer geoServer;
@@ -57,6 +59,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected WebUIMode webUIMode = WebUIMode.DEFAULT;
 
+    @PatchProperty("userDetailsDisplaySettings")
     protected UserDetailsDisplaySettingsInfo userDetailsDisplaySettingsInfo = new UserDetailsDisplaySettingsInfoImpl();
 
     protected Boolean allowStoredQueriesPerWorkspace = true;

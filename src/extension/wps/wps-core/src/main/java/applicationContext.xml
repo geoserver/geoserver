@@ -145,6 +145,7 @@
     <!-- HTTP URL Mapping -->
 	<bean id="wpsURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
 		<constructor-arg ref="catalog"/>
+        <property name="order" value="-100"/>
         <property name="alwaysUseFullPath" value="true" />
         <property name="mappings">
             <props>
@@ -273,6 +274,7 @@
     <bean id="wpsTempDirDispatcherMapping"
       		class="org.geoserver.ows.OWSHandlerMapping">
   	  <constructor-arg ref="catalog"/>
+      <property name="order" value="-100"/>
       <property name="alwaysUseFullPath" value="true" />
       <property name="mappings">
         <props>

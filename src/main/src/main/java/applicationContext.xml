@@ -196,9 +196,10 @@
   <!-- service version filter for disabled versions -->
   <bean id="disabledServiceVersionFilter" class="org.geoserver.ows.DisabledServiceVersionFilter"/>
 
-  <bean id="dispatcherMapping" 
+  <bean id="dispatcherMapping"
     class="org.geoserver.ows.OWSHandlerMapping">
     <constructor-arg ref="catalog"/>
+	 <property name="order" value="-100"/>
 	 <property name="alwaysUseFullPath" value="true"/>
 	 <property name="mappings">
       <props>
@@ -210,6 +211,7 @@
   
   <bean id="filePublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="order" value="-100"/>
      <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
@@ -222,6 +224,7 @@
   
   <bean id="stylePublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="order" value="-100"/>
      <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
@@ -233,6 +236,7 @@
   
   <bean id="classpathPublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="order" value="-100"/>
      <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">

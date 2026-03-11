@@ -100,7 +100,7 @@
     <constructor-arg ref="catalog" />
     <constructor-arg value="/gwc/demo"/>
     <property name="alwaysUseFullPath" value="true" />
-    <property name="order" value="10" />
+    <property name="order" value="-50" />
   </bean>
 
   <!-- Used for workspace-based web requests (i.e. for rest/web/openlayer/ol.js) -->
@@ -108,7 +108,7 @@
     <constructor-arg ref="catalog" />
     <constructor-arg type="java.lang.String"  value="/gwc/rest/web"/>
     <property name="alwaysUseFullPath" value="true" />
-    <property name="order" value="10" />
+    <property name="order" value="-50" />
   </bean>
 
 </beans>

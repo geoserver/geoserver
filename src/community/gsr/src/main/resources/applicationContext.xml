@@ -44,7 +44,7 @@
     <bean id="gsrURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
         <constructor-arg ref="catalog"/>
         <property name="alwaysUseFullPath" value="true"/>
-        <property name="order" value="0"/>
+        <property name="order" value="-100"/>
     
         <property name="mappings">
             <props>

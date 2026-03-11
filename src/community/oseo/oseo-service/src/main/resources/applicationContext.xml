@@ -72,6 +72,7 @@
   <!-- http url mapping -->
   <bean id="oseoURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
     <constructor-arg ref="catalog" />
+    <property name="order" value="-100"/>
     <property name="alwaysUseFullPath" value="true" />
     <property name="mappings">
       <props>
@@ -112,6 +113,7 @@
 
   <bean id="classpathDocPublisherMapping"
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="order" value="-100"/>
     <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
     <property name="alwaysUseFullPath" value="true"/>
     <property name="mappings">

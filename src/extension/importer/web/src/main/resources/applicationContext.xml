@@ -13,7 +13,7 @@
    -->
   <bean id="importDataMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="importData" />
-    <property name="category" ref="dataCategory"/>
+    <property name="category" ref="utilitiesCategory"/>
     <property name="titleKey" value="ImportDataPage.menu" />
     <property name="descriptionKey" value="ImportDataPage.description" />
     <property name="componentClass" value="org.geoserver.importer.web.ImportDataPage" />

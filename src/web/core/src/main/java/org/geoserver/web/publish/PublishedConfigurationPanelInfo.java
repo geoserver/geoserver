@@ -21,9 +21,36 @@ public abstract class PublishedConfigurationPanelInfo<T extends PublishedInfo>
     @Serial
     private static final long serialVersionUID = 6115999990499640707L;
 
+    /** order of the panel with respect to other panels. */
+    int order = -1;
+
+    /** Returns the order of the panel. */
+    public int getOrder() {
+        return order;
+    }
+
+    /** Sets the order of the panel. */
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
     public abstract Class<T> getPublishedInfoClass();
 
     public boolean canHandle(PublishedInfo pi) {
         return getPublishedInfoClass().isAssignableFrom(pi.getClass());
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder(getClass().getSimpleName());
+        sb.append("{");
+        sb.append("id='").append(getId()).append('\'');
+        sb.append(", componentClass=").append(getComponentClass().getSimpleName());
+        sb.append(", order=").append(order);
+        sb.append(", title='").append(getTitleKey()).append('\'');
+        sb.append(", description='").append(getDescriptionKey()).append('\'');
+        sb.append(", authorizer=").append(getAuthorizer());
+        sb.append('}');
+        return sb.toString();
     }
 }

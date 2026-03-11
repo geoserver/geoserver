@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-WMSRemoteLayerConfig">
+          <fieldset>
+            <legend>
+                  <span>
+                    <wicket:message key="remoteDefaultTitle">Cascaded WMS Settings</wicket:message>
+                  </span>
+            </legend>
+            <div class="gs-unordered-list-class" id="remotestyles" wicket:id="remotestyles">
+              <div class="gs-list-item-class">
+                <label for="remoteStylesDropDown">
+                  <wicket:message key="remoteStylesLabel">Default Remote Style</wicket:message>
+                </label>
+                <select id="remoteStylesDropDown" wicket:id="remoteStylesDropDown"/>
+              </div>
+              <div class="gs-list-item-class">
+                <label for="extraRemoteStyles">
+                  <wicket:message key="extraRemoteStylesLabel">Additional Remote Styles</wicket:message>
+                </label>
+                <span id="extraRemoteStyles" wicket:id="extraRemoteStyles"/>
+              </div>
+            </div>
+            <div class="gs-unordered-list-class" id="remoteformats" wicket:id="remoteformats">
+              <div class="gs-list-item-class">
+                <label for="remoteFormatsDropDown">
+                  <wicket:message key="remoteFormatsDropDownLabel">Default Remote Format</wicket:message>
+                </label>
+                <select id="remoteFormatsDropDown" wicket:id="remoteFormatsDropDown" class="text"/>
+              </div>
+              <div class="gs-list-item-class">
+                <label for="remoteFormatsPalette">
+                  <wicket:message key="remoteFormatsPaeletteLabel">Additional Remote Formats</wicket:message>
+                </label>
+                <span id="remoteFormatsPalette" wicket:id="remoteFormatsPalette"/>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <div class="gs-unordered-list-class" id="scaleDenominatorContainer" wicket:id="scaleDenominatorContainer">
+              <legend>
+                    <span>
+                      <wicket:message key="MinMaxTitle">Minimum and Maximum Scale Denominators</wicket:message>
+                    </span>
+              </legend>
+              <div class="gs-list-item-class">
+                <label for="minScale">
+                  <wicket:message key="minScaleLabel">Minimum</wicket:message>
+                </label>
+                <input id="minScale" type="text" wicket:id="minScale"/>
+              </div>
+              <div class="gs-list-item-class">
+                <label for="maxScale">
+                  <wicket:message key="maxScaleLabel">Maximum</wicket:message>
+                </label>
+                <input id="maxScale" type="text" wicket:id="maxScale"/>
+              </div>
+            </div>
+            <div class="gs-unordered-list-class choiceList" id="metaDataCheckBoxContainer" wicket:id="metaDataCheckBoxContainer">
+              <div class="gs-list-item-class">
+                <input id="respectMetadataBBoxChkBox" type="checkbox" wicket:id="respectMetadataBBoxChkBox"/>
+                <label for="respectMetadataBBoxChkBox">
+                  <wicket:message key="respectMetadataBBoxLabel"> Do not send requests if requested map area is outside of the layer bounds</wicket:message>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <div class="gs-unordered-list-class" id="vendorParametersContainer" wicket:id="vendorParametersContainer">
+              <h3>
+                    <span>
+                      <wicket:message key="vendorParametersTitle">Vendor Properties</wicket:message>
+                    </span>
+              </h3>
+              <div class="gs-list-item-class">
+                <label for="vendorParameters">
+                  <wicket:message key="vendorParametersLabel">Enter Key Value Pairs</wicket:message>
+                </label>
+                <textarea wicket:id="vendorParameters" id="vendorParameters" class="input" rows="10" cols="30"/>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </wicket:panel>
+    </form>
+  </body>
+</html>

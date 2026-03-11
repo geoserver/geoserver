@@ -72,12 +72,10 @@
   </bean>
   
   <!-- Menu categories -->
-  <bean id="aboutStatusCategory" class="org.geoserver.web.Category">
-    <property name="nameKey" value="category.about" />
+  <bean id="geoserverCategory" class="org.geoserver.web.Category">
+    <property name="nameKey" value="category.geoserver" />
     <property name="order" value="100" />
   </bean>
-  <!-- alias for backward compatability -->
-  <alias name="aboutStatusCategory" alias="serverCategory" />
 
   <bean id="dataCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.data" />
@@ -89,10 +87,13 @@
     <property name="order" value="150" />
   </bean>
 
-  <bean id="settingsCategory" class="org.geoserver.web.Category">
+  <bean id="serverCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.settings" />
     <property name="order" value="175" />
   </bean>
+  <!-- alias for backward compatability -->
+  <alias name="serverCategory" alias="settingsCategory" />
+  <alias name="serverCategory" alias="aboutStatusCategory" />
 
   <bean id="utilitiesCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.utilities" />
@@ -105,7 +106,7 @@
     <property name="titleKey" value="GeoServerHomePage.title" />
     <property name="descriptionKey" value="GeoServerHomePage.description" />
     <property name="componentClass" value="org.geoserver.web.GeoServerHomePage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="geoserverCategory" />
     <property name="icon" value="/img/logo-icon.svg" />
     <property name="order" value="5" />
   </bean>
@@ -114,7 +115,7 @@
     <property name="titleKey" value="StatusPage.title" />
     <property name="descriptionKey" value="StatusPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.StatusPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/server_error.png" />
     <property name="order" value="10" />
   </bean>
@@ -123,7 +124,7 @@
     <property name="titleKey" value="LogPage.title" />
     <property name="descriptionKey" value="LogPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.LogPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/page_white_text.png" />
     <property name="order" value="15" />
   </bean>
@@ -132,16 +133,16 @@
     <property name="titleKey" value="ContactPage.title" />
     <property name="descriptionKey" value="ContactPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.ContactPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="dataCategory" />
     <property name="icon" value="../img/icons/silk/vcard.png" />
-    <property name="order" value="20" />
+    <property name="order" value="5" />
   </bean>
   <bean id="aboutMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="server.about" />
     <property name="titleKey" value="AboutGeoServerPage.title" />
     <property name="descriptionKey" value="AboutGeoServerPage.description" />
     <property name="componentClass" value="org.geoserver.web.AboutGeoServerPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="geoserverCategory" />
     <property name="icon" value="/img/icons/silk/help.png" />
     <property name="order" value="25" />
   </bean>
@@ -150,7 +151,7 @@
     <property name="titleKey" value="global.title" />
     <property name="descriptionKey" value="GlobalSettingsPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.GlobalSettingsPage" />
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/server.png" />
     <property name="order" value="30" />
   </bean>
@@ -159,7 +160,7 @@
     <property name="titleKey" value="jai.title" />
     <property name="descriptionKey" value="JAIPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.JAIPage" />
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/cog_photo.png" />
     <property name="order" value="40" />
   </bean>
@@ -225,7 +226,7 @@
     <property name="titleKey" value="demo.title" />
     <property name="descriptionKey" value="demo.description" />
     <property name="componentClass" value="org.geoserver.web.DemoPage" />
-    <property name="category" ref="utilitiesCategory" />
+    <property name="category" ref="geoserverCategory" />
     <property name="icon" value="img/icons/silk/picture_empty.png" />
     <property name="order" value="10" />
     <property name="authorizer">

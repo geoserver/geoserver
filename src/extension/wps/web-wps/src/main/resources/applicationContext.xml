@@ -36,7 +36,7 @@
     <property name="titleKey" value="ProcessStatusPage.title" />
     <property name="descriptionKey" value="ProcessStatusPage.description" />
     <property name="componentClass" value="org.geoserver.wps.web.ProcessStatusPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../../web/img/icons/silk/cog.png" />
     <property name="order" value="30" />
   </bean>

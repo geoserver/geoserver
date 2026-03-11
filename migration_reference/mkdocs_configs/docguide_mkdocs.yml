@@ -1,0 +1,102 @@
+site_name: GeoServer Documentation Guide
+site_url: https://docs.geoserver.org/3.0/en/docguide/
+repo_url: https://github.com/geoserver/geoserver
+repo_name: geoserver/geoserver
+edit_uri: edit/main/doc/en/docguide/docs/
+
+docs_dir: docs
+site_dir: target/html
+
+theme:
+  name: material
+  custom_dir: ../themes/geoserver
+  logo: img/geoserver-logo.png
+  favicon: img/geoserver.ico
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+
+extra:
+  version_selector:
+    - version: latest
+      title: Latest (3.0)
+      aliases: []
+    - version: "3.0"
+      title: "3.0"
+      aliases: []
+    - version: "2.28.x"
+      title: "2.28.x"
+      aliases: []
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/geoserver/geoserver
+    - icon: fontawesome/solid/globe
+      link: https://geoserver.org
+
+plugins:
+  - search:
+      lang: en
+  - macros:
+      render_by_default: true
+      include_dir: docs
+      module_name: ../../version
+
+hooks:
+  - hooks/download_files.py
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+- index.md
+- background.md
+- quickfix.md
+- contributing.md
+- workflow.md
+- install.md
+- installlatex.md
+- sphinx.md
+- style.md
+- tutorial.md
+

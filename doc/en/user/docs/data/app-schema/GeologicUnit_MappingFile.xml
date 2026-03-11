@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- 
+  Geologic Unit mapping file
+-->
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+	xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd
+                      http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/expr.xsd">
+	<namespaces>
+		<!--
+			declare here the namespaces and prefixes used by the parser to
+			resolve <type> elements.
+		-->
+		<Namespace>
+			<prefix>gsml</prefix>
+			<uri>http://www.cgi-iugs.org/xml/GeoSciML/2</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>gml</prefix>
+			<uri>http://www.opengis.net/gml</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>xlink</prefix>
+			<uri>http://www.w3.org/1999/xlink</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>sa</prefix>
+			<uri>http://www.opengis.net/sampling/1.0</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>om</prefix>
+			<uri>http://www.opengis.net/om/1.0</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>cv</prefix>
+			<uri>http://www.opengis.net/cv/0.2.1</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>swe</prefix>
+			<uri>http://www.opengis.net/swe/1.0.1</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>sml</prefix>
+			<uri>http://www.opengis.net/sensorML/1.0.1</uri>
+		</Namespace>
+	</namespaces>
+	<includedTypes>	
+        <Include>CGITermValue_MappingFile.xml</Include>
+        <Include>CompositionPart_MappingFile.xml</Include>
+    </includedTypes>
+	<sourceDataStores>
+		<DataStore>
+			<id>GeologicUnit</id>
+			<parameters>
+				<Parameter>
+					<name>directory</name>
+					<!-- path can be relative to this file if starts with "file: -->
+					<value>file:./</value>
+				</Parameter>
+			</parameters>
+		</DataStore>
+	</sourceDataStores>
+	<catalog>mappedPolygons.oasis.xml</catalog>
+	<targetTypes>
+		<FeatureType>
+			<!--
+				State the needed xsd schemas to be loaded in order to make the
+				schema-to-FeatureModel parse. Paths are relative to this file, or
+				may be absolute URL's. Imports and includes at the schemas will be
+				followed as long as they're relative paths.
+			-->
+			<schemaUri>commonSchemas_new/GeoSciML/geologicUnit.xsd</schemaUri>
+		</FeatureType>
+	</targetTypes>
+	<typeMappings>
+		<FeatureTypeMapping>
+			<sourceDataStore>GeologicUnit</sourceDataStore>
+			<sourceType>GeologicUnit</sourceType>
+			<targetElement>gsml:GeologicUnit</targetElement>
+			<attributeMappings>
+				<AttributeMapping>
+					<targetAttribute>gsml:GeologicUnit</targetAttribute>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gml:description</targetAttribute>
+					<sourceExpression>
+						<OCQL>TEXTDESCRIPTION</OCQL>
+					</sourceExpression>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gml:name[1]</targetAttribute>
+					<sourceExpression>
+						<OCQL>ABBREVIATION</OCQL>
+					</sourceExpression>
+					<ClientProperty>
+						<name>codeSpace</name>
+						<value>'urn:cgi:classifierScheme:GSV:GeologicalUnitCode'</value>
+					</ClientProperty>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gml:name[2]</targetAttribute>
+					<sourceExpression>
+						<OCQL>NAME</OCQL>
+					</sourceExpression>
+					<ClientProperty>
+						<name>codeSpace</name>
+						<value>'urn:cgi:classifierScheme:GSV:GeologicalUnitName'</value>
+					</ClientProperty>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gml:name[3]</targetAttribute>
+					<sourceExpression>
+						<OCQL>id</OCQL>
+					</sourceExpression>
+					<ClientProperty>
+						<name>codeSpace</name>
+						<value>'urn:cgi:classifierScheme:GSV:MappedFeatureReference'</value>
+					</ClientProperty>
+				</AttributeMapping>
+				<!-- Feature chaining for non feature type using FEATURE_LINK -->
+				<AttributeMapping>
+					<targetAttribute>gsml:composition</targetAttribute>
+					<sourceExpression>
+						<OCQL>id</OCQL>
+						<linkElement>gsml:CompositionPart</linkElement>
+						<linkField>FEATURE_LINK</linkField>
+					</sourceExpression>
+					<isMultiple>true</isMultiple>
+				</AttributeMapping>
+				<!-- Feature chaining of geologic event type -->
+				<AttributeMapping>
+					<targetAttribute>gsml:geologicHistory</targetAttribute>
+					<sourceExpression>
+						<OCQL>id</OCQL>
+						<linkElement>gsml:GeologicEvent</linkElement>
+						<linkField>gml:name</linkField>
+					</sourceExpression>
+					<isMultiple>true</isMultiple>
+				</AttributeMapping>
+			</attributeMappings>
+		</FeatureTypeMapping>
+	</typeMappings>
+</as:AppSchemaDataAccess>

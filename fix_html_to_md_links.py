@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+"""
+Fix links that reference .html files instead of .md files.
+Also fix self-referencing links like configuration.html#anchor to #anchor.
+"""
+
+import re
+from pathlib import Path
+
+def fix_html_links(file_path):
+    """Fix .html links in a single file."""
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    original_content = content
+    
+    # Fix links to .html files that should be .md
+    # Pattern: [text](file.html) or [text](file.html#anchor)
+    content = re.sub(r'\[([^\]]+)\]\(([^)]+)\.html(#[^)]+)?\)', r'[\1](\2.md\3)', content)
+    
+    # Fix self-referencing links: configuration.html#anchor → #anchor
+    # Get the filename without extension
+    filename = file_path.stem
+    pattern = rf'\[([^\]]+)\]\({filename}\.md(#[^)]+)\)'
+    content = re.sub(pattern, r'[\1](\2)', content)
+    
+    if content != original_content:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return True
+    return False
+
+def main():
+    """Process all markdown files in doc directories."""
+    doc_dirs = [
+        Path('doc/en/user/docs'),
+        Path('doc/en/developer/docs'),
+        Path('doc/en/docguide/docs')
+    ]
+    
+    fixed_files = []
+    
+    for doc_dir in doc_dirs:
+        if not doc_dir.exists():
+            continue
+        
+        for md_file in doc_dir.rglob('*.md'):
+            if fix_html_links(md_file):
+                fixed_files.append(md_file)
+                print(f'Fixed: {md_file}')
+    
+    print(f'\nTotal files fixed: {len(fixed_files)}')
+    
+    if fixed_files:
+        print('\nFixed files:')
+        for f in fixed_files:
+            print(f'  - {f}')
+
+if __name__ == '__main__':
+    main()

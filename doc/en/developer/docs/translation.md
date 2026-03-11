@@ -1,0 +1,56 @@
+# Translating GeoServer
+
+We would like GeoServer available in as many languages as possible, so we want your help to add localizations / translations, specifically the GeoServer UI and documentation.
+
+## Translating the UI
+
+The GeoServer UI stores text strings inside properties files. The default (English) files are named **`GeoServerApplication.properties`** and are located in the following directories:
+
+    /src/web/core/src/main/resources/
+    /src/web/demo/src/main/resources/
+    /src/web/gwc/src/main/resources/
+    /src/web/security/src/main/resources/
+    /src/web/wcs/src/main/resources/
+    /src/web/wfs/src/main/resources/
+    /src/web/wms/src/main/resources/
+
+To translate the GeoServer UI to another language, copy and rename each of these files to be **`GeoServerApplication_[LANG].properties`** where [LANG] is the language code as defined in [RFC 3066](http://www.ietf.org/rfc/rfc3066.txt) For example, the language code for German is `de` and for Brazilian Portuguese is `pt-BR`.
+
+Once created, each line in the files represents a string that will need to be translated. When finished, you will need to commit these files or submit a JIRA issue with attached patch. See the section on [Source Code](source.md) for more information on how to commit.
+
+!!! warning
+
+    property files must always be encoded in ISO-8859 (or something equivalent like us-ascii or latin1). If you need a whole unicode file, the extension of the file must be ``utf8.properties``.
+
+### Translating in WebLate
+
+A GeoServer project is maintained on the WebLate website hosted by OSGEO to allow people to participate to the translation of the UI without going into the source code of GeoServer. WebLate requires an OSGEO account to log in (accounts can be created at <https://id.osgeo.org/ldap/create>).
+
+The project is available here : <https://weblate.osgeo.org/projects/geoserver/>.
+
+The WebLate project is automatically synchronized with the GitHub repository of GeoServer. The administrators of the WebLate projects are responsible for pushing translations from WebLate to GitHub.
+
+### Editing in Eclipse
+
+If you are using [Eclipse](http://www.eclipse.org/), you can install the [Eclipse ResourceBundle Editor](http://sourceforge.net/projects/eclipse-rbe/). Once installed, you can edit the **`src/main/resources/GeoServerApplication.properties`** files in all `web-*` projects (`web-core`, `web-demo`, etc.) with the ResourceBundle editor.
+
+## Translating documentation
+
+The GeoServer User Manual contains a wealth of information from the novice to the experienced GeoServer user. It is written using the [Sphinx Documentation Generator](https://www.sphinx-doc.org/). The stable branch version of the User Manual exists as the following URL:
+
+> <http://docs.geoserver.org/stable/en/user/>
+
+Built from the following source files:
+
+> /doc/en/user/
+
+To create a User Manual in a different language, first create a directory called **`/doc/[LANG]/`**, where [LANG] is the language code as defined in [RFC 3066](http://www.ietf.org/rfc/rfc3066.txt). The you can copy the contents of **`/doc/en/user/`** to **`/doc/[LANG]/user`** and edit accordingly, or generate a new Sphinx project in **`/doc/[LANG]/user`**. (See the ``Sphinx Quickstart <http://sphinx.pocoo.org/tutorial.html>`` for more information about creating a new project.)
+
+The GeoServer Sphinx theme exists at **`/doc/en/user/themes`**, so that can be copied (and modified if desired) to **`/doc/[LANG]/user/themes`**.
+
+When finished, you will need to commit the content (if you have commit rights) or submit a JIRA issue with attached patch. See the section on [Source Code](source.md) for more information on how to commit. Setting up the documentation to be hosted on docs.geoserver.org will require a project administrator; please send an email to the mailing list for more details.
+
+### Tips
+
+- See the [GeoServer Documentation Manual](http://docs.geoserver.org/latest/en/docguide/) for more information about writing documentation.
+- The Developer Manual exists at **`/doc/en/developer`**. The same procedures for editing the User Manual apply to the Developer Manual.

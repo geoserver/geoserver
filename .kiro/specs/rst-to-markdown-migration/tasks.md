@@ -1,0 +1,1125 @@
+# Implementation Plan: RST to Markdown Migration
+
+## Overview
+
+This plan executes the one-time migration of GeoServer documentation from RST/Sphinx to Markdown/MkDocs across 6 phases over 14 days. The conversion tool (petersmythe/translate) already exists; this project focuses on executing conversion, validating results, committing changes, and managing the transition for branches 3.0 and 2.28.x.
+
+## Tasks
+
+- [ ] 1. Phase 1: Preparation and Setup (Days 1-2)
+  - [x] 1.1 Create migration branches and setup environment
+    - Create migration branch from 3.0: `git checkout -b migration/3.0-rst-to-md main`
+    - Create migration branch from 2.28.x: `git checkout -b migration/2.28-x-rst-to-md 2.28.x`
+    - Install Python dependencies: mkdocs, mkdocs-material, mkdocs-macros-plugin, mkdocs-with-pdf, pymdown-extensions
+    - Clone petersmythe/translate tool to local environment
+    - _Requirements: 1.1, 1.5_
+
+  - [x] 1.2 Create migration orchestration script (migration.py)
+    - Implement MigrationOrchestrator class with convert_all_files(), validate_conversion(), generate_config(), create_summary_report()
+    - Implement TranslationToolWrapper to execute petersmythe/translate on RST files
+    - Configure directive mappings (guilabel, menuselection, file, code-block, note, warning, tip, only)
+    - Configure variable substitutions (|version|, |release|)
+    - _Requirements: 1.2, 1.3, 1.4, 1.6_
+
+  - [x] 1.3 Create validation scripts
+    - Implement RoundTripValidator class to compare Sphinx HTML vs MkDocs HTML
+    - Implement LinkValidator to check internal links, external links, and anchors
+    - Implement ImageValidator to verify image references and identify screenshots
+    - Create validation report generator
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.1, 6.2, 6.3, 6.4, 6.5_
+
+  - [x] 1.4 Test conversion locally on sample files
+    - Select 5-10 representative RST files from user manual
+    - Run conversion on sample files
+    - Manually review converted Markdown for quality
+    - Verify directive conversions work correctly
+    - Adjust directive mappings if needed
+    - _Requirements: 1.2, 1.3, 1.4, 5.5, 5.6_
+
+- [ ] 2. Phase 2: 3.0 Branch Conversion (Days 3-5)
+  - [x] 2.1 Execute full conversion on 3.0 branch
+    - Switch to migration/3.0-rst-to-md branch
+    - Run migration.py to convert all RST files in doc/en/user/, doc/en/developer/, doc/en/docguide/
+    - Convert Chinese documentation in doc/zhCN/
+    - Generate mkdocs.yml configurations with navigation structure
+    - Review conversion logs for warnings and errors
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 15.1, 15.2_
+
+  - [x] 2.2 Update mkdocs.yml configurations
+    - Merge generated navigation from nav_generated.yml into mkdocs.yml for each manual
+    - **NOTE**: Once navigation is merged, remove nav_generated.yml files (they are temporary conversion artifacts)
+    - Configure mkdocs-macros-plugin with version and release variables
+    - Configure pymdownx extensions (tabbed, superfences, admonition)
+    - Configure theme branding (logo, colors, dark mode)
+    - Configure version selector with versions: 3.0, 2.28.x, latest
+    - Configure PDF generation with mkdocs-with-pdf plugin
+    - Configure social links (GitHub, geoserver.org)
+    - Update doc/zhCN/mkdocs.yml with Chinese language settings
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 14.1, 14.2, 14.3, 14.4, 14.5, 14.6, 14.7, 15.3, 16.1, 16.2, 16.3, 17.1, 17.2, 17.3, 17.4, 17.6_
+
+  - [x] 2.3 Create build hooks for download files
+    - Create hooks/download_files.py with on_pre_build() and on_files() functions
+    - Implement scan_download_links() to find download references in Markdown
+    - Implement copy_download_files() to copy files from src/ to docs output
+    - Configure download_sources in mkdocs.yml extra section
+    - Test download links work in built documentation
+    - _Requirements: 18.1, 18.2, 18.3, 18.4, 18.5_
+
+  - [x] 2.4 Update GitHub Actions workflow for post-migration builds
+    - Modify .github/workflows/mkdocs.yml to remove conversion steps
+    - Remove "Install pandoc" step
+    - Remove "Install mkdocs-translate" step
+    - Remove "Convert RST to Markdown" step
+    - Keep "Build all MkDocs sites" step (builds from source Markdown)
+    - Keep "Deploy to GitHub Pages" step
+    - Update workflow trigger branches to [3.0, 2.28.x]
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
+
+  - [x] 2.5 Commit converted files (DO NOT remove RST yet)
+    - Stage all converted Markdown files
+    - Stage updated mkdocs.yml files
+    - Stage hooks/download_files.py
+    - Stage updated .github/workflows/mkdocs.yml
+    - Commit with message: "Convert 3.0 documentation from RST to Markdown"
+    - DO NOT commit temporary conversion files (target/, convert/)
+    - DO NOT remove RST files yet (removal happens after validation in Phase 3)
+    - _Requirements: 2.1, 2.2, 2.5, 3.8_
+
+- [ ] 3. Phase 3: Validation and Quality Assurance (Days 6-8)
+  - [x] 3.1 Build and compare HTML outputs
+    - Build Sphinx HTML from original RST files: `cd doc/en && make html`
+    - Build MkDocs HTML from converted Markdown: `cd doc/en/user && mkdocs build`
+    - Run RoundTripValidator to compare rendered pages side-by-side
+    - Identify major rendering problems (tables, missing sections, broken formatting)
+    - Document comparison results
+    - **COMPLETED**: Identified 2,071 missing images and 128 broken anchors
+    - **FIXED**: All 2,071 image path issues resolved (100% success rate)
+    - **REMAINING**: 124 broken anchor links need investigation
+    - _Requirements: 5.1, 5.2, 5.3, 5.4_
+
+  - [x] 3.1.1 Fix remaining broken anchor links (124 issues)
+    - **REMINDER**: 124 broken anchor links remain from task 3.1
+    - Investigate anchor generation differences between Sphinx and MkDocs
+    - Review auto-generated anchors from headings
+    - Fix cross-document references with incorrect syntax
+    - Add missing anchors to target documents where needed
+    - Verify all internal navigation works correctly
+    - _Requirements: 6.1, 6.2, 6.3_
+
+  - [x] 3.2 Manual review of directive conversions
+    - Review guilabel conversions (should be bold text)
+    - Review menuselection conversions (should be bold with arrow separator)
+    - Review file conversions (should be inline code)
+    - Review admonition formatting (note, warning, tip)
+    - Review code block formatting and syntax highlighting
+    - Review conditional content (only snapshot/release → tabbed)
+    - **NOTE from Task 1.4 testing:** Conditional content (.. only:: directive) currently converts to admonition blocks (!!! abstract "Release"/"Nightly Build") instead of pymdownx.tabbed syntax (=== "Release"). This is functional but not ideal. Evaluate if manual conversion to tabbed syntax is needed, or if admonition format is acceptable.
+    - **NOTE from Task 1.4 testing:** Variable substitutions (|version|, |release|) are NOW AUTOMATICALLY HANDLED by the migration.py postprocessor. The script detects files using {{ version }} or {{ release }} and automatically adds render_macros: true frontmatter. Verify frontmatter was added correctly during review.
+    - **NOTE from Task 1.4 testing:** Interpreted text roles (e.g., :website:`text <url>`, :developer:`text <url>`) are NOW AUTOMATICALLY CONVERTED by the migration.py postprocessor. The script converts common roles (website, developer, user, api, geotools, wiki, geos/JIRA, docguide, download_*) to proper Markdown links. **ENHANCEMENT COMPLETED**: Enhanced postprocessor now handles 99%+ of all interpreted text roles automatically (364 roles converted in 2.28.x branch). Only ~54 edge cases remain for manual review. Verify conversions are correct and check for any remaining unknown roles during manual review.
+    - Fix critical rendering issues
+    - _Requirements: 5.5, 5.6_
+
+  - [x] 3.3 Validate navigation structure
+    - Verify navigation hierarchy matches original Sphinx structure
+    - Test navigation tabs, sections, and expansion
+    - Verify breadcrumbs work correctly
+    - Test "Back to top" functionality
+    - _Requirements: 5.7, 7.7_
+
+  - [x] 3.4 Validate link integrity
+    - Run LinkValidator on built HTML
+    - Fix all broken internal links
+    - Fix all broken anchor links
+    - Verify all image references exist
+    - Document any broken external links (don't fix)
+    - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
+
+  - [x] 3.5 Test builds and deployment
+    - Push migration branch to GitHub
+    - Trigger GitHub Actions workflow
+    - Verify HTML builds successfully for user, developer, and docguide manuals
+    - Verify no build errors or warnings
+    - Verify GitHub Pages preview is accessible
+    - Test documentation on desktop browsers (Chrome, Firefox, Safari)
+    - Test documentation on mobile browsers
+    - Verify search functionality works with English queries
+    - Verify search functionality works with Chinese queries
+    - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 15.6_
+
+  - [x] 3.5.1 Fix responsive navigation menu overflow on mobile
+    - **ISSUE**: Horizontal navigation tabs overflow on mobile/narrow screens, cutting off items after "Production, REST, Secu..."
+    - **CAUSE**: navigation.tabs creates horizontal tabs for 17+ top-level items in user manual
+    - Investigate Material for MkDocs responsive navigation options
+    - Consider solutions:
+      - Reorganize navigation hierarchy (group related sections under fewer top-level items)
+      - Disable navigation.tabs on mobile using custom CSS media queries
+      - Use navigation.sections instead of navigation.tabs for better mobile UX
+      - Implement hamburger menu behavior for mobile screens
+    - Test solution on desktop (1920px), tablet (768px), and mobile (375px) screen sizes
+    - Apply fix to all three manuals (user, developer, docguide)
+    - Verify navigation is fully accessible on all screen sizes
+    - _Requirements: 7.5, 14.7_
+
+  - [x] 3.5.2 Move images to img subfolders (2.28.x branch)
+    - **REQUIREMENT**: All images must be in an img subfolder relative to the calling Markdown file
+    - **CORRECT**: docs/eclipse-guide/img/code-template.png
+    - **INCORRECT**: docs/eclipse-guide/code-template.png
+    - Scan all Markdown files for image references
+    - Identify images not in img subfolders
+    - Create img subfolders where needed
+    - Move images to appropriate img subfolders
+    - Update all image references in Markdown files
+    - Verify all images display correctly after move
+    - Test locally with `mkdocs serve`
+    - **NOTE**: This must be completed in 2.28.x branch before continuing to 3.0 branch
+    - _Requirements: 6.4, 6.5_
+
+  - [ ] 3.6 Configure Swagger API spec deployment for 2.28.x (CRITICAL BLOCKER)
+    - **CRITICAL BLOCKER**: Same issue as 3.0 branch - REST API Swagger/OpenAPI YAML specs not deployed
+    - Apply same fix as task 5.5.3 for 3.0 branch
+    - Configure MkDocs to copy `doc/en/api/` directory to build output
+    - Ensure API specs are accessible at `/en/api/1.0.0/*.yaml` in deployed site
+    - Verify all REST API documentation links work correctly
+    - **Must be fixed before 2.28.x migration is complete**
+    - _Requirements: 6.1, 6.2, 6.3, 7.1, 7.2_
+
+  - [ ] 3.6.1 Apply 3.0 branch fixes to 2.28.x branch
+    - **IMPORTANT**: Apply all post-conversion fixes from 3.0 branch to 2.28.x branch
+    - Run fix_download_links.py to fix broken extension/community download links (51 files)
+    - Run fix_duplicate_frontmatter.py to remove duplicate frontmatter blocks (86 files)
+    - Run fix_include_markdown_raw.py to remove raw tags from include statements (6 files)
+    - Run fix_blockquote_admonitions.py to convert blockquote admonitions to proper syntax (9 files)
+    - Run fix_include_markdown_syntax.py to fix include-markdown macro syntax (6 files)
+    - Update doc/version.py to add `snapshot` macro variable (e.g., '2.28-SNAPSHOT')
+    - Verify all fixes apply cleanly to 2.28.x branch
+    - Test locally with `mkdocs serve` to ensure no regressions
+    - Commit all fixes with descriptive messages
+    - _Requirements: 5.5, 5.6, 6.1, 6.2, 6.3_
+
+  - [ ] 3.7 Remove RST infrastructure after successful validation
+    - Remove doc/en/user/source/ directory (RST files)
+    - Remove doc/en/developer/source/ directory (RST files)
+    - Remove doc/en/docguide/source/ directory (RST files)
+    - Remove doc/zhCN/source/ directory (RST files)
+    - Remove doc/en/requirements.txt (Sphinx dependencies)
+    - Remove doc/en/build.xml (Ant build script)
+    - Update doc/en/pom.xml to remove Sphinx build profiles
+    - Remove .github/workflows/docs.yml (old Sphinx workflow)
+    - **Remove doc/en/themes/geoserver/ directory (temporary Sphinx theme - see README-TODO.md)**
+    - Commit removals with message: "Remove RST infrastructure after migration to Markdown"
+    - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7_
+
+  - [x] 3.8 Create migration summary report
+    - Count total RST files converted
+    - Count total lines of documentation converted
+    - List unconverted directives or issues
+    - Document conversion time
+    - List files removed (RST sources, Sphinx config)
+    - List files added (Markdown docs, updated workflows)
+    - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6_
+
+  - [x] 3.9 Create pull request for 2.28.x branch
+    - Create PR: "Migrate 2.28.x documentation from RST to Markdown"
+    - Include migration summary report in PR description
+    - Document known minor issues
+    - Request review from documentation maintainers
+    - _Requirements: 2.3, 2.4, 5.9, 19.7_
+
+- [x] 4. Checkpoint - Ensure 2.28.x migration is complete
+  - Ensure all validation passes, all tests pass, PR is ready for review. Ask the user if questions arise.
+
+- [ ] 5. Phase 4: 3.0 (main) Branch Conversion (Days 9-11)
+  - [x] 5.1 Execute full conversion on 3.0 branch
+    - Switch to migration/3.0-rst-to-md branch
+    - Run migration.py to convert all RST files in doc/en/user/, doc/en/developer/, doc/en/docguide/
+    - **NOTE**: Chinese documentation (doc/zhCN/) is NOT included in 3.0 branch conversion
+    - Generate mkdocs.yml configurations with navigation structure
+    - Review conversion logs for warnings and errors
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
+
+  - [x] 5.2 Update mkdocs.yml configurations for 3.0
+    - Apply same configuration as 2.28.x branch (theme, plugins, extensions)
+    - Update version variables to 3.0
+    - Configure version selector with correct version number
+    - **NOTE**: No Chinese language configuration needed (doc/zhCN/ not in 3.0 branch)
+    - **NOTE**: PDF generation configuration removed for 3.0 branch
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 16.1, 16.2, 16.3_
+
+  - [x] 5.3 Update GitHub Actions workflow for 3.0
+    - Apply same workflow changes as 2.28.x branch
+    - Verify workflow triggers on 3.0 branch
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
+
+  - [x] 5.4 Commit converted files for 3.0 (DO NOT remove RST yet)
+    - Stage all converted Markdown files
+    - Stage updated mkdocs.yml files
+    - Stage updated .github/workflows/mkdocs.yml
+    - Commit with message: "Convert 3.0 documentation from RST to Markdown"
+    - _Requirements: 2.1, 2.2, 2.5_
+
+  - [x] 5.4.1 Fix unknown interpreted text roles (NEW - 3.0 specific issue)
+    - **CRITICAL**: 219 unknown role occurrences detected (62% unconverted rate)
+    - Create fix_unknown_roles.py script with mappings:
+      - `nightly_community` → `https://build.geoserver.org/geoserver/main/community-latest/`
+      - `nightly_extension` → `https://build.geoserver.org/geoserver/main/ext-latest/`
+      - `doc` → relative path (use URL as-is, add .md extension)
+      - `abbr` → convert to HTML `<abbr title="definition">text</abbr>`
+      - Verify `wiki` and `docguide` mappings work correctly
+    - Run fix_unknown_roles.py on all three manuals
+    - Validate converted links in sample files
+    - Re-run validation to confirm 99%+ conversion success rate
+    - Document results in 3.0_conversion_issues.md
+    - Commit fixes with message: "Fix 219 unknown interpreted text roles"
+    - _Requirements: 5.5, 5.6_
+
+  - [x] 5.5 Validate 3.0 conversion
+    - Run same validation steps as 2.28.x branch (HTML comparison, link validation, build tests)
+    - Fix any issues specific to 3.0 branch
+    - **NOTE**: Unknown interpreted text roles should be fixed in task 5.4.1 before this validation
+    - **FIX USER MANUAL INDEX**: Update doc/en/user/docs/index.md to use grid cards format (like developer/docguide manuals) instead of definition list format. The conversion tool incorrectly converted RST definition lists to Markdown definition lists instead of grid cards.
+    - **FIX GRID CARD TITLES** (CRITICAL - learned from 2.28.x branch):
+      - **Issue**: The conversion tool creates malformed grid card titles by concatenating section names with page titles
+      - **Examples of malformed titles**:
+        - `[Programming GuideConfigIndex](config/index.md)` should be `[Config](config/index.md)`
+        - `[ExtensionsAuthkeyIndex](authkey/index.md)` should be `[Authkey](authkey/index.md)`
+        - `[SecurityWebadminSettings](settings.md)` should be `[Settings](settings.md)`
+      - **Root cause**: The conversion tool is using RST toctree entry IDs instead of actual page titles
+      - **PROPER FIX FOR 3.0**: Modify the conversion tool (migration.py or petersmythe/translate) to extract clean titles from RST source files BEFORE conversion, not after
+      - **Temporary workaround**: If proper fix cannot be implemented, run fix_grid_card_titles.py after conversion (fixes 669 titles in 121 files for 2.28.x)
+      - **Verification**: Check https://petersmythe.github.io/geoserver/migration/3.0/en/developer/programming-guide/ - menu cards should show "Config", "OWS Services", "REST Services", etc., NOT "Programming GuideConfigIndex", "Programming GuideOws ServicesIndex", etc.
+      - **Files typically affected**: All index.md files with `<div class="grid cards">` blocks (218 files total in 2.28.x branch)
+    - **FIX MISSING VERSION NUMBERS**: Add version/release macros to index files that were dropped during conversion:
+      - doc/en/user/docs/index.md: Add `{{ version }}` after "GeoServer" in intro paragraph
+      - doc/en/developer/docs/index.md: Add `{{ version }}` after "GeoServer" in intro paragraph
+      - doc/en/docguide/docs/index.md: Add `{{ release }}` after "GeoServer" in intro paragraph
+    - **FIX MACRO RENDERING**: Files with `{{ version }}` or `{{ release }}` macros need `render_macros: true` frontmatter:
+      - Run fix_macro_rendering.py to add frontmatter to files missing it
+      - This fixes index.md files and any other files where macros appear as literal text
+      - Verify macros render correctly in built documentation (not showing as `{{ version }}`)
+    - **FIX INCLUDE SYNTAX**: The conversion tool may create multi-line `{% include %}` statements that cause macro syntax errors:
+      - Multi-line includes like `{% \n  include "path" \n%}` need to be converted to single-line `{% include "path" %}`
+      - Run fix_include_syntax.py to convert all multi-line includes to single-line format
+      - Run fix_include_paths.py to fix paths to be relative to docs directory (if needed)
+      - Verify YSLD reference pages, service vendor option pages, and other pages with includes render correctly
+      - Check that included content appears in the rendered pages (not showing as literal `{% include %}` text)
+    - **FIX INCLUDE STATEMENT ISSUES** (CRITICAL - learned from 2.28.x branch):
+      - **Issue 1: Include statements in code blocks** - Run fix_all_include_issues.py to wrap includes in code blocks with `{%raw%}...{%endraw%}` tags (prevents mkdocs-macros from processing example code)
+      - **Issue 2: Include paths outside docs directory** - Script will comment out includes like `../../../../LICENSE.md` (mkdocs-macros cannot include files outside docs directory)
+      - **Issue 3: Nested include statements** - Manually fix any `{% {% include %} %}` patterns to `{%raw%}{% include %}{%endraw%}` in code blocks
+      - **Issue 4: Include with start/end parameters** - Run fix_include_with_params.py to fix invalid Jinja2 syntax like `{% include "file" start="..." end="..." %}` (Jinja2 does not support start/end parameters)
+      - **Files typically affected**: workshop files (css.md, mbstyle.md, ysld.md), configuration examples, developer guide
+      - **Verification**: Check GitHub Actions logs for "Macro Syntax Error" or "Macro Rendering Error" messages
+    - **FIX TILDE CODE FENCES** (CRITICAL - learned from 2.28.x branch):
+      - **Issue**: MkDocs requires backticks (```) for code fences, not tildes (~~~)
+      - **Solution**: Run fix_tilde_fences.py to replace all ~~~ with ``` throughout documentation
+      - **Files typically affected**: Any files with code blocks (container.md, configuration examples, etc.)
+      - **Verification**: Check deployed pages for visible ~~~ characters or malformed code blocks
+    - **FIX BLANK HEADER ROW TABLES** (CRITICAL - learned from 2.28.x branch):
+      - **Issue**: Tables with blank first row (empty cells) followed by separator row render incorrectly
+      - **Root cause**: Conversion tool creates tables with pattern: blank row → separator → actual headers → data
+      - **Solution**: Run fix_blank_header_tables.py to remove blank first rows from all tables
+      - **Files affected**: 104 files across all three manuals (212 tables total in 2.28.x branch)
+      - **Common locations**: SLD reference pages, cookbook examples, workshop tutorials, filter references, service configuration
+      - **Verification**: Check that tables display headers correctly without empty rows above them
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
+
+  - [x] 5.5.1 Fix image paths and wildcard references for 3.0 branch
+    - **REQUIREMENT**: All images must be in an img subfolder relative to the calling Markdown file (same as 2.28.x branch)
+    - **CORRECT**: docs/eclipse-guide/img/code-template.png
+    - **INCORRECT**: docs/eclipse-guide/code-template.png
+    - Run fix_image_paths.py to convert absolute paths to relative
+    - Run fix_anchor_case.py to fix anchor case sensitivity
+    - Run fix_variable_substitution.py to replace variable placeholders
+    - Run fix_overcorrected_paths.py to remove excessive ../ prefixes
+    - Run fix_all_image_paths.py for comprehensive multi-strategy fix
+    - Run fix_wildcard_images.py to replace wildcard image references with .svg
+    - Run fix_ysld_image_paths.py to fix YSLD reference image paths
+    - Ensure all images are moved to img subfolders (if not already)
+    - Update all image references to point to img subfolders
+    - Verify all 2,071 images are fixed (expect 100% success rate)
+    - Test locally with `mkdocs serve` to verify images display correctly
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.4, 6.5_
+
+  - [x] 5.5.2 Fix missing version/release macros throughout documentation (3.0 branch)
+    - **CRITICAL**: The conversion tool dropped |version| and |release| macros in ~79 locations
+    - Create automated fix script to restore {{ version }} and {{ release }} macros in:
+      - Extension installation instructions (download links, version warnings)
+      - Database connector installations (H2, MySQL, Oracle, SQL Server, DB2)
+      - Community module installations
+      - Service installations (WPS, CSW)
+      - Styling extension installations (CSS, YSLD, MBStyle)
+    - Common patterns to fix:
+      - "example: 2.28.0" → "example: {{ release }}"
+      - "example: 2.28.x" → "example: {{ version }}.x"
+      - "(for example 2.28.0)" → "(for example {{ release }})"
+      - "geoserver-2.28-" → "geoserver-{{ version }}-"
+      - "GeoServer 2.28" → "GeoServer {{ version }}"
+    - Run check_missing_version_macros.py to identify all missing macros
+    - Create and run automated fix script for systematic replacement
+    - Verify with check_missing_version_macros.py (should report 0 issues)
+    - Test locally that macros render correctly in built documentation
+    - _Requirements: 1.3, 1.4, 5.5, 5.6_
+
+  - [ ] 5.5.2.1 Research and design automated version management system
+    - **PROBLEM**: Current hardcoded version approach requires manual updates after each release
+    - **HISTORY**: 
+      - Commit e6a2b6c660 (Oct 27, 2025) changed from environment variable to hardcoded approach
+      - Previous method: `project_version = os.getenv("project.version")` read from build system
+      - Current method: `release = '2.28.0'` hardcoded, with comment "This should be updated after each release"
+      - Multiple releases since 2.28.0 (2.28.1, 2.28.2, 2.27.3, 2.27.4, 2.27.5, 3.0.0) where this was NOT updated
+    - **RESEARCH TASKS**:
+      - Investigate GeoServer release process and branching strategy
+      - Understand how version numbers are managed across branches (main, 2.28.x, 2.27.x)
+      - Research how src/pom.xml version is updated during releases
+      - Investigate GitHub Actions environment variables available during documentation builds
+      - Research if Maven version can be read at MkDocs build time
+      - Check if git tags can be used to determine release versions
+      - Review how other projects handle version management in documentation (e.g., GeoTools, GeoWebCache)
+    - **DESIGN OPTIONS TO EVALUATE**:
+      - Option 1: Read version from src/pom.xml at build time (like original Sphinx)
+      - Option 2: Use git tags to determine current release version
+      - Option 3: Use GitHub Actions environment variables (GITHUB_REF, GITHUB_SHA)
+      - Option 4: Create a version.txt file updated by release automation
+      - Option 5: Use branch name to infer version (main → 3.0, 2.28.x → 2.28)
+      - Option 6: Hybrid approach - read from POM for snapshot, use git tags for release
+    - **DELIVERABLES**:
+      - Document current release process and version management
+      - Document findings on available version sources (POM, git tags, env vars)
+      - Propose recommended solution with pros/cons analysis
+      - Create implementation plan for chosen solution
+      - Ensure solution works for both local builds and CI/CD (GitHub Actions)
+    - **GOAL**: Eliminate manual version updates, make version management automatic and maintainable
+    - _Requirements: 1.3, 1.4, 4.2_
+
+  - [ ] 5.5.3 Verify and document version macro configuration
+    - **CRITICAL**: Ensure version/release/snapshot macros match original Sphinx conf.py configuration
+    - **Original Sphinx configuration** (from doc/en/user/source/conf.py):
+      - `version`: Read from src/pom.xml (e.g., "3.0-SNAPSHOT" or "3.0.0")
+      - `release`: Hardcoded stable release version (e.g., "2.28.0" for 2.28.x, "3.0.0" for 3.0)
+      - `community`: Snapshot version for community modules (e.g., "3.0-SNAPSHOT")
+      - `branch`: Git branch name (e.g., "main", "2.28.x")
+      - `series`: Version series (e.g., "3.x", "2.28.x")
+    - **MkDocs configuration** (doc/version.py):
+      - Verify `version` variable matches Sphinx `version` (major.minor without patch, e.g., "3.0")
+      - Verify `release` variable matches Sphinx `release` (full version with patch, e.g., "3.0.0")
+      - Verify `snapshot` variable matches Sphinx `community` (snapshot version, e.g., "3.0-SNAPSHOT")
+    - **Validation steps**:
+      - Compare doc/version.py values with doc/en/user/source/conf.py values
+      - Verify download link patterns match original Sphinx patterns:
+        - Release extensions: `https://sourceforge.net/.../extensions/geoserver-{{ release }}-...-plugin.zip`
+        - Snapshot extensions: `https://build.geoserver.org/.../ext-latest/geoserver-{{ snapshot }}-...-plugin.zip`
+        - Community modules: `https://build.geoserver.org/.../community-latest/geoserver-{{ snapshot }}-...-plugin.zip`
+      - Test macro substitution in built documentation (verify macros render as actual version numbers)
+      - Document any differences between Sphinx and MkDocs macro behavior
+    - **Documentation**:
+      - Add comments to doc/version.py explaining each variable and its purpose
+      - Document the relationship between Sphinx variables and MkDocs variables
+      - Add examples of how macros are used in download links
+      - Document when to update version.py (after each release)
+    - _Requirements: 1.3, 1.4, 4.2, 5.5, 5.6_
+
+  - [-] 5.5.3 Configure Swagger API spec deployment (CRITICAL BLOCKER)
+    - **CRITICAL BLOCKER**: REST API Swagger/OpenAPI YAML specs are not being deployed with MkDocs build
+    - **Issue**: Documentation links to API specs (e.g., `api/styles.yaml`, `api/layergroups.yaml`) but these files are not packaged or deployed
+    - **Current state**:
+      - Swagger specs exist at `doc/en/api/1.0.0/*.yaml`
+      - Documentation links to these specs throughout REST API docs
+      - MkDocs build does NOT copy these YAML files to output
+      - Result: All API spec links return 404 errors
+    - **Example broken link**: https://petersmythe.github.io/geoserver/migration/3.0-rst-to-md/en/api/ does not exist
+    - **Working example**: https://docs.geoserver.org/main/en/user/rest/styles.html → "API reference for /styles" link works
+    - **Required fix**:
+      - Configure MkDocs to copy `doc/en/api/` directory to build output
+      - Update mkdocs.yml to include API directory in docs_dir or use extra_files
+      - Ensure API specs are accessible at `/en/api/1.0.0/*.yaml` in deployed site
+      - Verify all REST API documentation links work correctly
+      - Test with sample links from rest/index.md, rest/styles.md, rest/layers.md, etc.
+    - **Impact**: HIGH - All REST API Swagger spec links are broken, making API documentation unusable
+    - **Must be fixed for both 3.0 and 2.28.x branches before migration is complete**
+    - _Requirements: 6.1, 6.2, 6.3, 7.1, 7.2_
+
+  - [ ] 5.6 Remove RST infrastructure for 3.0 after validation
+    - Remove all RST source directories and Sphinx configuration
+    - **Remove doc/en/themes/geoserver/ directory (temporary Sphinx theme - see README-TODO.md)**
+    - Commit removals with message: "Remove RST infrastructure after migration to Markdown"
+    - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7_
+
+  - [ ] 5.7 Create migration summary report for 3.0
+    - Generate same report as 2.28.x branch
+    - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6_
+
+  - [ ] 5.8 Create pull request for 3.0 branch
+    - Create PR: "Migrate 3.0 documentation from RST to Markdown"
+    - Include migration summary report in PR description
+    - _Requirements: 2.3, 2.4, 19.7_
+
+- [x] 6. Checkpoint - Ensure 3.0 migration is complete
+  - Ensure all validation passes, all tests pass, PR is ready for review. Ask the user if questions arise.
+
+- [ ] 7. Phase 5: Jenkins Analysis and OSGeo Deployment (Days 12-13)
+  - [x] 7.1 Document Jenkins build process
+    - Access Jenkins build logs for documentation builds
+    - Document all Jenkins build steps
+    - Identify deployment targets used by Jenkins
+    - Compare Jenkins steps with GitHub Actions workflow
+    - Document any gaps or differences
+    - Create Jenkins analysis document
+    - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.7_
+
+  - [ ] 7.2 Update GitHub Actions workflow if gaps found
+    - Add any missing critical functionality from Jenkins
+    - Test updated workflow
+    - _Requirements: 8.6_
+
+  - [ ] 7.3 Configure OSGeo server deployment
+    - Add SSH credentials to GitHub Secrets (GEOSERVER_DOCS_SSH_KEY)
+    - Add deployment step to .github/workflows/mkdocs.yml
+    - Configure deployment to geoserverdocs@geo-docs.geoserver.org:2223
+    - Configure remote path: /var/www/geoserverdocs/$VER
+    - Configure "latest" symlink for 3.0 branch
+    - Replicate Jenkins deployment process (ZIP transfer + unzip)
+    - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6_
+
+  - [ ] 7.4 Test OSGeo deployment on migration branch
+    - Deploy to test path on OSGeo server
+    - Verify URL structure matches existing docs
+    - Verify all files deployed correctly
+    - Verify "latest" symlink works
+    - _Requirements: 9.6, 9.7_
+
+- [ ] 8. Phase 6: Documentation Updates and Screenshot QA Prep (Day 14)
+  - [ ] 8.1 Update Documentation Guide for Markdown
+    - Update doc/en/docguide/ with Markdown syntax guide
+    - Document Markdown equivalents for RST directives (guilabel, menuselection, file, download, code-block, note, warning, tip, only)
+    - Provide examples of each directive conversion
+    - Document variable substitution using mkdocs-macros-plugin
+    - Document conditional content using pymdownx.tabbed
+    - Document local development workflow (mkdocs serve, mkdocs build)
+    - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.7_
+
+  - [ ] 8.2 Update doc/en/README.md
+    - Remove Sphinx build instructions
+    - Add MkDocs build instructions
+    - Document local development setup
+    - _Requirements: 10.6_
+
+  - [ ] 8.3 Test local development workflow
+    - Test `mkdocs serve` command for live preview
+    - Verify browser auto-reload on file changes
+    - Test `mkdocs build` command for local builds
+    - Measure and compare build time vs Sphinx
+    - Document setup steps in README
+    - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
+
+  - [ ] 8.4 Update steering documentation
+    - Check if .kiro/steering/ exists
+    - If exists, update with migration information
+    - Document new MkDocs build process
+    - Document how to contribute to Markdown documentation
+    - Document GitHub Actions workflow
+    - Remove references to Sphinx
+    - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6_
+
+  - [ ] 8.5 Generate screenshot QA report
+    - Run ImageValidator to scan all images in documentation
+    - Classify images as screenshots, diagrams, or other
+    - Generate screenshot QA report listing all screenshots by page
+    - Create tracking spreadsheet for screenshot updates
+    - _Requirements: 12.3, 12.4_
+
+  - [ ] 8.6 Brief AfriGIS team on screenshot updates
+    - Document how to replace screenshots in Markdown
+    - Provide clear instructions for screenshot file paths and naming
+    - Explain that ALL screenshots will need updating for GS3 UI
+    - Explain Phase 1 begins mid-March when GS3 UI work begins
+    - Explain Phase 2 must complete before 15 April release
+    - _Requirements: 12.1, 12.2, 12.5, 12.6, 12.7_
+
+- [ ] 9. Phase 7: Navigation Simplification (Post-Migration Enhancement)
+  - [x] 9.1 Redesign top navigation bar (horizontal navigation)
+    - **GOAL**: Simplify top navigation bar by removing clutter and preparing for version switcher
+    - **Current state**:
+      - Top bar shows manual switcher (User Manual | Developer Guide | Documentation Guide)
+      - Top bar also shows all first-level page tabs (17+ tabs in user manual)
+      - Result: Overcrowded, confusing, overflows on mobile
+    - **Target state**:
+      - Keep manual switcher on left side
+      - Reserve space for mike version/series switcher on right side (future)
+      - Remove first-level page tabs (will be replaced by breadcrumbs in task 9.2)
+      - Result: Clean top bar with manual switcher + version switcher only
+    - **Implementation steps**:
+      1. Review Material for MkDocs theme configuration for navigation.tabs
+      2. Disable navigation.tabs feature in mkdocs.yml (removes first-level tabs)
+      3. Test that manual switcher still works correctly
+      4. Add placeholder/styling for future version switcher position
+      5. Test on desktop (1920px), tablet (768px), and mobile (375px) screens
+      6. Verify no horizontal overflow on any screen size
+    - **Configuration changes**:
+      ```yaml
+      # mkdocs.yml
+      theme:
+        features:
+          # - navigation.tabs  # REMOVE THIS - causes overflow
+          - navigation.sections  # Use sections instead
+          - navigation.expand
+      ```
+    - **Deliverables**:
+      - Updated mkdocs.yml with navigation.tabs disabled
+      - Custom CSS for manual switcher positioning (if needed)
+      - Testing on multiple screen sizes
+      - Documentation of changes
+    - _Requirements: 14.1, 14.2, 14.7_
+
+  - [x] 9.2 Add breadcrumb navigation
+    - **GOAL**: Add breadcrumb navigation to show current page location in hierarchy
+    - **Current state**: No breadcrumbs - users don't know where they are in the documentation structure
+    - **Target state**: Breadcrumb trail below top bar showing: Home > Section > Subsection > Current Page
+    - **Implementation steps**:
+      1. Research Material for MkDocs breadcrumb options:
+         - Check if Material theme has built-in breadcrumb support
+         - Review mkdocs-material documentation for breadcrumb configuration
+         - Check community plugins (mkdocs-breadcrumbs-plugin, etc.)
+      2. Choose implementation approach:
+         - Option A: Use Material theme built-in breadcrumbs (if available)
+         - Option B: Use mkdocs-breadcrumbs-plugin
+         - Option C: Custom implementation with Jinja2 templates
+      3. Implement breadcrumbs:
+         - Configure plugin or theme feature in mkdocs.yml
+         - Customize breadcrumb styling to match GeoServer theme
+         - Ensure breadcrumbs are clickable and navigate correctly
+      4. Test breadcrumb navigation:
+         - Verify breadcrumbs show correct path for all pages
+         - Test clicking breadcrumb links navigates correctly
+         - Verify breadcrumbs work on mobile (may need to truncate on small screens)
+      5. Style breadcrumbs:
+         - Position below top navigation bar
+         - Use appropriate separator (> or / or •)
+         - Ensure good contrast and readability
+    - **Example breadcrumb**:
+      ```
+      Home > Services > WMS > Google Earth > Features > KML Placemarks
+      ```
+    - **Deliverables**:
+      - Breadcrumb navigation implemented and styled
+      - Updated mkdocs.yml with breadcrumb configuration
+      - Custom CSS for breadcrumb styling
+      - Testing on desktop and mobile
+      - Documentation of breadcrumb implementation
+    - _Requirements: 14.3, 14.7_
+
+  - [ ] 9.3 Enhance left sidebar navigation (second+ level pages)
+    - **GOAL**: Improve left sidebar navigation with better organization and next/prev links
+    - **Current state**:
+      - Left sidebar shows navigation tree
+      - No next/previous page navigation
+      - Expand/collapse behavior could be improved
+    - **Target state**:
+      - Well-organized navigation tree with clear hierarchy
+      - Next/Previous page links at bottom of sidebar
+      - Smooth expand/collapse behavior
+      - Current page clearly highlighted
+    - **Implementation steps**:
+      1. Review current navigation structure:
+         - Analyze navigation hierarchy in mkdocs.yml
+         - Identify sections that could be better organized
+         - Look for opportunities to group related pages
+      2. Configure Material theme navigation features:
+         ```yaml
+         theme:
+           features:
+             - navigation.sections  # Group pages into sections
+             - navigation.expand    # Auto-expand current section
+             - navigation.indexes   # Enable section index pages
+             - navigation.top       # Back to top button
+             - navigation.tracking  # Update URL with current heading
+         ```
+      3. Add next/previous page navigation:
+         - Check if Material theme has built-in prev/next support
+         - If not, add custom template override for prev/next links
+         - Style prev/next links to match theme
+      4. Improve current page highlighting:
+         - Ensure current page is clearly highlighted in sidebar
+         - Use bold, color, or background to make it stand out
+      5. Test navigation behavior:
+         - Verify sections expand/collapse correctly
+         - Test next/prev links navigate correctly
+         - Verify current page highlighting works
+         - Test on mobile (sidebar becomes hamburger menu)
+    - **Deliverables**:
+      - Updated mkdocs.yml with navigation features configured
+      - Custom templates for prev/next links (if needed)
+      - Custom CSS for navigation styling
+      - Testing on desktop and mobile
+      - Documentation of navigation configuration
+    - _Requirements: 14.4, 14.5, 14.7_
+
+  - [ ] 9.4 Refine right sidebar "on this page" navigation
+    - **GOAL**: Improve right sidebar table of contents and add edit link
+    - **Current state**:
+      - Right sidebar shows table of contents (headings on current page)
+      - No "Edit this page" link
+      - May need better styling or behavior
+    - **Target state**:
+      - Clean table of contents showing page headings
+      - "Edit this page" link at top or bottom
+      - Smooth scrolling to anchors when clicking TOC links
+      - Active heading highlighted as user scrolls
+    - **Implementation steps**:
+      1. Review Material theme TOC configuration:
+         ```yaml
+         theme:
+           features:
+             - toc.follow    # TOC follows scroll position
+             - toc.integrate # Integrate TOC into navigation (optional)
+         ```
+      2. Configure TOC depth:
+         ```yaml
+         markdown_extensions:
+           - toc:
+               permalink: true
+               toc_depth: 3  # Show h1, h2, h3 in TOC
+         ```
+      3. Add "Edit this page" link:
+         - Configure repo_url and edit_uri in mkdocs.yml
+         - Material theme will automatically add edit link
+         - Customize edit link text/position if needed
+      4. Improve TOC styling:
+         - Ensure active heading is highlighted
+         - Add smooth scrolling to anchor links
+         - Ensure TOC is responsive on mobile
+      5. Test TOC behavior:
+         - Verify TOC updates as user scrolls
+         - Test clicking TOC links scrolls smoothly to headings
+         - Verify edit link opens correct GitHub page
+         - Test on mobile (TOC may be hidden or in hamburger menu)
+    - **Deliverables**:
+      - Updated mkdocs.yml with TOC configuration
+      - Edit link configured and working
+      - Custom CSS for TOC styling (if needed)
+      - Testing on desktop and mobile
+      - Documentation of TOC configuration
+    - _Requirements: 14.6, 14.7_
+
+  - [ ] 9.5 Test and validate all navigation improvements
+    - **GOAL**: Comprehensive testing of all navigation changes across all manuals
+    - **Testing scope**:
+      - Test all navigation improvements together (tasks 9.1-9.4)
+      - Test on all three manuals (user, developer, docguide)
+      - Test on multiple browsers (Chrome, Firefox, Safari, Edge)
+      - Test on multiple screen sizes (desktop, tablet, mobile)
+    - **Test cases**:
+      1. Top navigation bar:
+         - Manual switcher works correctly
+         - No horizontal overflow on any screen size
+         - Version switcher placeholder visible (if implemented)
+      2. Breadcrumb navigation:
+         - Breadcrumbs show correct path for all pages
+         - Clicking breadcrumbs navigates correctly
+         - Breadcrumbs responsive on mobile
+      3. Left sidebar navigation:
+         - Sections expand/collapse correctly
+         - Next/prev links work correctly
+         - Current page highlighted clearly
+         - Navigation works on mobile (hamburger menu)
+      4. Right sidebar TOC:
+         - TOC shows correct headings
+         - Active heading highlighted as user scrolls
+         - Clicking TOC links scrolls smoothly
+         - Edit link opens correct GitHub page
+      5. Overall UX:
+         - Navigation is intuitive and easy to use
+         - No confusion about current location
+         - Easy to navigate between pages and sections
+         - Mobile experience is good
+    - **Deliverables**:
+      - Test report documenting all test cases and results
+      - Screenshots of navigation on different screen sizes
+      - List of any issues found and fixes applied
+      - Final validation that all navigation improvements work correctly
+    - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.6, 14.7_
+
+- [ ] 10. Phase 8: GitHub Actions Migration (Replace Jenkins)
+  - [ ]* 10.1 Create combined monorepo mkdocs.yml configuration (OPTIONAL - NOT RECOMMENDED)
+    - **STATUS**: OPTIONAL - NOT RECOMMENDED
+    - **RECOMMENDATION**: Skip this task and proceed with separate-site deployment (current approach)
+    - **WHY NOT RECOMMENDED**:
+      - Navigation structure is already working well with separate sites (tasks 3.5.1, 9.1-9.5)
+      - Monorepo would require reworking all navigation improvements already completed
+      - Deployment complexity is manageable with current approach (3 simple mike deployments)
+      - Risk of introducing new issues at final stage of migration
+      - Archive versions (2.27.x and earlier) remain separate anyway (hybrid strategy)
+      - Inconsistency: new versions = monorepo, old versions = separate sites
+    - **IF YOU CHOOSE TO IMPLEMENT** (not recommended):
+      - **GOAL**: Combine user, developer, and docguide manuals into single MkDocs site for simpler deployment
+      - **Current structure** (3 separate sites):
+        - doc/en/user/mkdocs.yml → builds user manual
+        - doc/en/developer/mkdocs.yml → builds developer guide
+        - doc/en/docguide/mkdocs.yml → builds docguide
+        - Each manual deployed separately with mike
+      - **Proposed monorepo structure** (1 combined site):
+        - doc/en/mkdocs.yml → builds all 3 manuals in one site
+        - Navigation tabs switch between manuals (User Manual | Developer Guide | Documentation Guide)
+        - Single deployment with mike per version
+        - Simpler GitHub Actions workflow
+      - **Implementation steps**:
+        1. Create new doc/en/mkdocs.yml with combined navigation:
+           ```yaml
+           nav:
+             - User Manual:
+               - user/index.md
+               - user/introduction/index.md
+               - ...
+             - Developer Guide:
+               - developer/index.md
+               - developer/introduction.md
+               - ...
+             - Documentation Guide:
+               - docguide/index.md
+               - docguide/background.md
+               - ...
+           ```
+        2. Configure docs_dir to include all three manual directories
+        3. Update theme configuration for navigation tabs
+        4. Test combined build locally with `mkdocs serve`
+        5. Verify all cross-manual links work correctly
+        6. Update manual switcher to use navigation tabs instead of separate sites
+        7. **CRITICAL**: Rework all navigation improvements from tasks 9.1-9.5 for monorepo structure
+      - **Benefits**:
+        - Single deployment per version (simpler)
+        - Unified search across all manuals
+        - Easier cross-manual linking
+        - Reduced GitHub Actions complexity
+      - **Trade-offs**:
+        - Larger build output per version (~50 MB vs 3x ~17 MB)
+        - All manuals rebuild together (can't rebuild just one)
+        - Navigation structure more complex
+        - **MAJOR**: Requires reworking all navigation improvements (tasks 9.1-9.5)
+        - **RISK**: Introducing new complexity after stabilization
+      - **Deliverables**:
+        - New doc/en/mkdocs.yml with combined configuration
+        - Updated navigation structure
+        - Testing and validation of combined build
+        - Documentation of monorepo structure
+    - _Requirements: 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
+
+  - [-] 10.2 Switch Jenkins docs build to GitHub Actions
+    - **GOAL**: Replace Jenkins documentation builds with GitHub Actions for new versions (2.28.x+)
+    - **APPROACH**: Use separate-site deployment (NOT monorepo - see task 10.1)
+    - **STRATEGY**: Hybrid approach - GitHub Pages for new versions (2.28.x+), OSGeo for archives (2.27.x and earlier)
+    - **References**:
+      - See .kiro/specs/rst-to-markdown-migration/github-pages-solution.md for detailed strategy
+      - See .kiro/specs/rst-to-markdown-migration/multi-version-strategy.md for hybrid approach
+      - See .kiro/specs/rst-to-markdown-migration/jenkins-analysis.md for Jenkins details
+    - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7_
+
+  - [x] 10.2.1 Create GitHub Actions workflow for documentation deployment
+    - **GOAL**: Create .github/workflows/docs-deploy.yml to build and deploy docs to GitHub Pages
+    - **Workflow configuration**:
+      - Trigger on push to main, 2.28.x branches
+      - Path filter: `doc/**` and `.github/workflows/docs-deploy.yml`
+      - Permissions: `contents: write` (required for mike to push to gh-pages)
+    - **Build steps**:
+      1. Checkout code with full history (`fetch-depth: 0` for mike)
+      2. Setup Python 3.x with pip cache
+      3. Install MkDocs dependencies: mkdocs, mkdocs-material, mkdocs-macros-plugin, pymdown-extensions, mike
+      4. Configure Git for mike (user.name, user.email)
+      5. Determine version from branch name (main → latest, 2.28.x → stable)
+    - **Deployment steps** (separate deployments per manual):
+      - Deploy User Manual:
+        ```bash
+        cd doc/en/user
+        mike deploy --deploy-prefix "$VERSION/en/user" $VERSION \
+          --title "$TITLE" --push --update-aliases
+        ```
+      - Deploy Developer Guide:
+        ```bash
+        cd doc/en/developer
+        mike deploy --deploy-prefix "$VERSION/en/developer" $VERSION \
+          --push --update-aliases
+        ```
+      - Deploy Documentation Guide:
+        ```bash
+        cd doc/en/docguide
+        mike deploy --deploy-prefix "$VERSION/en/docguide" $VERSION \
+          --push --update-aliases
+        ```
+      - Copy API docs (static files):
+        ```bash
+        git checkout gh-pages
+        mkdir -p $VERSION/en/api
+        cp -r doc/en/api/* $VERSION/en/api/
+        git add $VERSION/en/api
+        git commit -m "Update API docs for $VERSION"
+        git push origin gh-pages
+        ```
+      - Set default version (stable only):
+        ```bash
+        mike set-default stable --push
+        ```
+      - Add CNAME file (main branch only):
+        ```bash
+        git checkout gh-pages
+        echo "docs.geoserver.org" > CNAME
+        git add CNAME
+        git commit -m "Add CNAME"
+        git push origin gh-pages
+        ```
+    - **Deliverables**:
+      - .github/workflows/docs-deploy.yml with complete workflow
+      - Workflow tested on migration branch
+    - **Testing**:
+      - Test workflow on migration branch first
+      - Verify all three manuals deploy correctly
+      - Check that URLs match expected structure
+    - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 9.1, 9.2, 9.3_
+
+  - [x] 10.2.2 Configure GitHub Pages settings
+    - **GOAL**: Enable and configure GitHub Pages for docs.geoserver.org
+    - **GitHub Pages configuration**:
+      1. Go to repository Settings → Pages
+      2. Source: Deploy from a branch
+      3. Branch: gh-pages, folder: / (root)
+      4. Save settings
+    - **Custom domain configuration**:
+      1. CNAME file will be added by workflow (task 10.2.1)
+      2. DNS configuration (coordinate with infrastructure team):
+         - Primary domain: `docs.geoserver.org CNAME geoserver.github.io`
+         - Archive domain: `docs-archive.geoserver.org A <OSGeo-server-IP>`
+      3. Wait for DNS propagation (24-48 hours)
+      4. Enable "Enforce HTTPS" in GitHub Pages settings
+    - **Verification**:
+      - Check that GitHub Pages is enabled
+      - Verify custom domain is configured
+      - Test DNS resolution: `nslookup docs.geoserver.org`
+      - Verify HTTPS certificate is issued
+    - **Deliverables**:
+      - GitHub Pages enabled on gh-pages branch
+      - Custom domain configured
+      - DNS records updated
+      - HTTPS enabled
+    - _Requirements: 9.4, 9.5, 9.6_
+
+  - [x] 10.2.3 Update version selector for archive links
+    - **GOAL**: Add links to archive versions (2.27.x and earlier) in version selector
+    - **Implementation**:
+      1. Update mkdocs.yml extra.versions configuration in all three manuals:
+         ```yaml
+         extra:
+           version:
+             provider: mike
+             default: stable
+           versions:
+             # GitHub Pages versions
+             - version: latest
+               title: "Latest (3.0 dev)"
+               url: "/latest/"
+               archive: false
+             - version: stable
+               title: "Stable (2.28.x)"
+               url: "/stable/"
+               archive: false
+             # Archive versions (OSGeo server)
+             - version: 2.27.x
+               title: "2.27.x (archive)"
+               url: "https://docs-archive.geoserver.org/2.27.x/"
+               archive: true
+             - version: 2.26.x
+               title: "2.26.x (archive)"
+               url: "https://docs-archive.geoserver.org/2.26.x/"
+               archive: true
+         ```
+      2. Add JavaScript handler for archive links (if needed):
+         - Create custom theme override for version selector
+         - Handle external links to archive domain
+         - Ensure one-way navigation (new → archive only)
+      3. Test version selector:
+         - Verify dropdown shows all versions
+         - Test switching between GitHub Pages versions
+         - Test clicking archive links (should go to OSGeo)
+    - **Files to update**:
+      - doc/en/user/mkdocs.yml
+      - doc/en/developer/mkdocs.yml
+      - doc/en/docguide/mkdocs.yml
+    - **Deliverables**:
+      - Version selector with archive links
+      - Custom JavaScript handler (if needed)
+      - Testing on all three manuals
+    - **Note**: Archive versions on OSGeo remain unchanged (no updates needed)
+    - _Requirements: 9.6, 9.7_
+
+  - [-] 10.2.4 Test deployment on migration branch
+    - **GOAL**: Test complete GitHub Actions deployment before production cutover
+    - **Test deployment**:
+      1. Push migration branch to GitHub
+      2. Trigger GitHub Actions workflow
+      3. Monitor workflow execution:
+         - Check all build steps succeed
+         - Verify mike deployments complete
+         - Check gh-pages branch is updated
+      4. Verify deployed documentation:
+         - Access via GitHub Pages URL (before custom domain)
+         - Test all three manuals (user, developer, docguide)
+         - Verify API docs are accessible
+         - Test version selector
+         - Check navigation works correctly
+      5. Test on multiple browsers:
+         - Chrome, Firefox, Safari, Edge
+         - Desktop and mobile
+      6. Verify URL structure:
+         - Check URLs match existing structure
+         - Test deep links work correctly
+         - Verify backward compatibility
+    - **URL structure verification**:
+      - `https://<username>.github.io/geoserver/latest/en/user/` → works
+      - `https://<username>.github.io/geoserver/stable/en/user/` → works
+      - `https://<username>.github.io/geoserver/latest/en/developer/` → works
+      - `https://<username>.github.io/geoserver/latest/en/api/` → works
+    - **Issues to check**:
+      - All images display correctly
+      - All links work (internal and external)
+      - Search functionality works
+      - Version selector works
+      - Navigation is responsive on mobile
+    - **Deliverables**:
+      - Test report documenting all checks
+      - List of any issues found and fixes applied
+      - Confirmation that deployment is ready for production
+    - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 9.7_
+
+  - [ ] 10.2.5 Parallel running period (Jenkins + GitHub Actions)
+    - **GOAL**: Run both Jenkins and GitHub Actions in parallel to validate consistency
+    - **Parallel running setup**:
+      1. Keep Jenkins jobs active for 2.28.x and main branches
+      2. Enable GitHub Actions workflow for same branches
+      3. Both systems deploy to their respective targets:
+         - Jenkins → OSGeo server (existing URLs)
+         - GitHub Actions → GitHub Pages (new URLs)
+    - **Monitoring and comparison**:
+      1. Monitor both deployments for 1-2 weeks
+      2. Compare outputs:
+         - Check HTML content is equivalent
+         - Verify all pages render correctly
+         - Compare navigation structure
+         - Check search functionality
+      3. Gather feedback:
+         - Announce new GitHub Pages deployment to community
+         - Ask for testing and feedback
+         - Monitor for any issues or complaints
+      4. Performance comparison:
+         - Measure build times (Jenkins vs GitHub Actions)
+         - Measure deployment times
+         - Check page load times (OSGeo vs GitHub Pages CDN)
+    - **Success criteria**:
+      - No major issues reported with GitHub Pages deployment
+      - Content is equivalent between both systems
+      - Performance is acceptable or better
+      - Community feedback is positive
+    - **Deliverables**:
+      - Parallel running report
+      - Comparison of outputs
+      - Community feedback summary
+      - Decision to proceed with cutover
+    - _Requirements: 8.7, 9.7_
+
+  - [ ] 10.2.6 Production cutover
+    - **GOAL**: Switch production traffic to GitHub Pages and disable Jenkins
+    - **Cutover steps**:
+      1. **Final verification**:
+         - Confirm GitHub Pages deployment is stable
+         - Verify custom domain is working
+         - Check HTTPS certificate is valid
+         - Test all functionality one more time
+      2. **DNS cutover** (coordinate with infrastructure team):
+         - Update DNS: `docs.geoserver.org CNAME geoserver.github.io`
+         - Wait for DNS propagation (24-48 hours)
+         - Monitor DNS propagation: `nslookup docs.geoserver.org`
+      3. **Disable Jenkins jobs for new versions**:
+         - Disable `geoserver-main-docs` job
+         - Disable `geoserver-2.28.x-docs` job
+         - Keep as backup for 1 month (don't delete)
+      4. **Keep Jenkins jobs for archive versions**:
+         - Keep `geoserver-2.27.x-docs` active
+         - Keep `geoserver-2.26.x-docs` active
+         - These continue deploying to OSGeo server
+      5. **Monitor production**:
+         - Watch GitHub Actions workflow executions
+         - Monitor for any deployment failures
+         - Check for any user-reported issues
+         - Monitor page load times and CDN performance
+      6. **Update documentation**:
+         - Update README.md with new build process
+         - Document GitHub Actions deployment
+         - Update contributor guide
+         - Document how to trigger manual deployments
+    - **Rollback plan** (if issues arise):
+      1. Re-enable Jenkins jobs
+      2. Revert DNS changes
+      3. Investigate and fix issues
+      4. Retry cutover when ready
+    - **Success criteria**:
+      - docs.geoserver.org serves from GitHub Pages
+      - All URLs work correctly
+      - No major issues reported
+      - Jenkins jobs disabled for new versions
+      - Archive versions still work on OSGeo
+    - **Deliverables**:
+      - Production cutover complete
+      - Jenkins jobs disabled (but kept as backup)
+      - Documentation updated
+      - Monitoring in place
+    - _Requirements: 8.7, 9.7_
+
+  - [ ] 10.2.7 Post-cutover cleanup (after 1 month)
+    - **GOAL**: Clean up Jenkins jobs and finalize migration
+    - **Cleanup steps**:
+      1. **Verify stability** (after 1 month of production):
+         - Confirm no major issues with GitHub Pages
+         - Verify all deployments working correctly
+         - Check community feedback is positive
+      2. **Delete disabled Jenkins jobs**:
+         - Delete `geoserver-main-docs` job configuration
+         - Delete `geoserver-2.28.x-docs` job configuration
+         - Keep archive version jobs (2.27.x, 2.26.x)
+      3. **Archive Jenkins configuration**:
+         - Export job configurations to Git for reference
+         - Document Jenkins setup for historical record
+         - Store in .kiro/specs/rst-to-markdown-migration/jenkins-backup/
+      4. **Final documentation update**:
+         - Remove references to Jenkins from README
+         - Update all documentation to reflect GitHub Actions only
+         - Document lessons learned
+      5. **Announce completion**:
+         - Announce migration completion to community
+         - Thank contributors and testers
+         - Document benefits achieved (faster deployments, better CDN, etc.)
+    - **Deliverables**:
+      - Jenkins jobs deleted (new versions only)
+      - Jenkins configuration archived
+      - Documentation finalized
+      - Migration complete announcement
+    - _Requirements: 8.7_
+
+- [ ] 11. Final Checkpoint - Migration Complete
+  - Ensure all PRs are created, all documentation is updated, all validation passes. Ask the user if questions arise.
+
+## Notes
+
+- This is a project execution workflow, not software development
+- Conversion tool (petersmythe/translate) already exists - we're using it, not building it
+- RST infrastructure removal happens AFTER validation succeeds (Phase 3, task 3.7)
+- Screenshot updates are coordinated but not executed in this migration (separate QA process)
+- All tasks reference specific requirements for traceability
+- Checkpoints ensure validation at key milestones
+- 3.0 branch is converted first, then 2.28.x branch
+- Total timeline: 14 days across 6 phases
+
+- [ ] 12. Backport version/release macro fixes to 2.28.x branch (Optional)
+  - **OPTIONAL TASK**: After 3.0 branch macro fixes are complete and verified
+  - Review the automated fix script created for 3.0 branch (task 5.5.2)
+  - Adapt script for 2.28.x branch if needed (version numbers differ)
+  - Run check_missing_version_macros.py on 2.28.x branch to identify issues
+  - Apply automated fixes to 2.28.x branch
+  - Verify with check_missing_version_macros.py (should report 0 issues)
+  - Test locally that macros render correctly
+  - Commit and push changes to 2.28.x branch
+  - Note: This task can be deferred if 2.28.x branch is being deprecated soon

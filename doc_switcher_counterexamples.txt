@@ -1,0 +1,127 @@
+DOC SWITCHER NAVIGATION BUG - COUNTEREXAMPLES
+================================================================================
+
+Total failures: 20
+Failures at level 2+: 20
+Failures at level 1: 0
+
+From: /en/user/introduction/ (level 2)
+Clicking: 'User Manual'
+Relative URL: ../user/
+Resolves to: /en/user/user/
+Problem: Incorrect: URL has unexpected segments after user: ['user']
+--------------------------------------------------------------------------------
+From: /en/user/introduction/ (level 2)
+Clicking: 'Developer Manual'
+Relative URL: ../developer/
+Resolves to: /en/user/developer/
+Problem: Incorrect: URL has unexpected segments between en and developer: ['user']
+--------------------------------------------------------------------------------
+From: /en/user/introduction/ (level 2)
+Clicking: 'Documentation Guide'
+Relative URL: ../docguide/
+Resolves to: /en/user/docguide/
+Problem: Incorrect: URL has unexpected segments between en and docguide: ['user']
+--------------------------------------------------------------------------------
+From: /en/user/introduction/ (level 2)
+Clicking: 'Swagger APIs'
+Relative URL: ../user/api/
+Resolves to: /en/user/user/api/
+Problem: Incorrect: Swagger URL has unexpected segments: /en/user/user/api/
+--------------------------------------------------------------------------------
+From: /en/user/introduction/overview/ (level 3)
+Clicking: 'User Manual'
+Relative URL: ../user/
+Resolves to: /en/user/introduction/user/
+Problem: Incorrect: URL has unexpected segments after user: ['introduction', 'user']
+--------------------------------------------------------------------------------
+From: /en/user/introduction/overview/ (level 3)
+Clicking: 'Developer Manual'
+Relative URL: ../developer/
+Resolves to: /en/user/introduction/developer/
+Problem: Incorrect: URL has unexpected segments between en and developer: ['user', 'introduction']
+--------------------------------------------------------------------------------
+From: /en/user/introduction/overview/ (level 3)
+Clicking: 'Documentation Guide'
+Relative URL: ../docguide/
+Resolves to: /en/user/introduction/docguide/
+Problem: Incorrect: URL has unexpected segments between en and docguide: ['user', 'introduction']
+--------------------------------------------------------------------------------
+From: /en/user/introduction/overview/ (level 3)
+Clicking: 'Swagger APIs'
+Relative URL: ../user/api/
+Resolves to: /en/user/introduction/user/api/
+Problem: Incorrect: Swagger URL has unexpected segments: /en/user/introduction/user/api/
+--------------------------------------------------------------------------------
+From: /en/developer/core/ (level 2)
+Clicking: 'User Manual'
+Relative URL: ../user/
+Resolves to: /en/developer/user/
+Problem: Incorrect: URL has unexpected segments between en and user: ['developer']
+--------------------------------------------------------------------------------
+From: /en/developer/core/ (level 2)
+Clicking: 'Developer Manual'
+Relative URL: ../developer/
+Resolves to: /en/developer/developer/
+Problem: Incorrect: URL has unexpected segments after developer: ['developer']
+--------------------------------------------------------------------------------
+From: /en/developer/core/ (level 2)
+Clicking: 'Documentation Guide'
+Relative URL: ../docguide/
+Resolves to: /en/developer/docguide/
+Problem: Incorrect: URL has unexpected segments between en and docguide: ['developer']
+--------------------------------------------------------------------------------
+From: /en/developer/core/ (level 2)
+Clicking: 'Swagger APIs'
+Relative URL: ../user/api/
+Resolves to: /en/developer/user/api/
+Problem: Incorrect: Swagger URL has unexpected segments between en and user: ['developer']
+--------------------------------------------------------------------------------
+From: /en/developer/core/architecture/ (level 3)
+Clicking: 'User Manual'
+Relative URL: ../user/
+Resolves to: /en/developer/core/user/
+Problem: Incorrect: URL has unexpected segments between en and user: ['developer', 'core']
+--------------------------------------------------------------------------------
+From: /en/developer/core/architecture/ (level 3)
+Clicking: 'Developer Manual'
+Relative URL: ../developer/
+Resolves to: /en/developer/core/developer/
+Problem: Incorrect: URL has unexpected segments after developer: ['core', 'developer']
+--------------------------------------------------------------------------------
+From: /en/developer/core/architecture/ (level 3)
+Clicking: 'Documentation Guide'
+Relative URL: ../docguide/
+Resolves to: /en/developer/core/docguide/
+Problem: Incorrect: URL has unexpected segments between en and docguide: ['developer', 'core']
+--------------------------------------------------------------------------------
+From: /en/developer/core/architecture/ (level 3)
+Clicking: 'Swagger APIs'
+Relative URL: ../user/api/
+Resolves to: /en/developer/core/user/api/
+Problem: Incorrect: Swagger URL has unexpected segments between en and user: ['developer', 'core']
+--------------------------------------------------------------------------------
+From: /en/docguide/contributing/ (level 2)
+Clicking: 'User Manual'
+Relative URL: ../user/
+Resolves to: /en/docguide/user/
+Problem: Incorrect: URL has unexpected segments between en and user: ['docguide']
+--------------------------------------------------------------------------------
+From: /en/docguide/contributing/ (level 2)
+Clicking: 'Developer Manual'
+Relative URL: ../developer/
+Resolves to: /en/docguide/developer/
+Problem: Incorrect: URL has unexpected segments between en and developer: ['docguide']
+--------------------------------------------------------------------------------
+From: /en/docguide/contributing/ (level 2)
+Clicking: 'Documentation Guide'
+Relative URL: ../docguide/
+Resolves to: /en/docguide/docguide/
+Problem: Incorrect: URL has unexpected segments after docguide: ['docguide']
+--------------------------------------------------------------------------------
+From: /en/docguide/contributing/ (level 2)
+Clicking: 'Swagger APIs'
+Relative URL: ../user/api/
+Resolves to: /en/docguide/user/api/
+Problem: Incorrect: Swagger URL has unexpected segments between en and user: ['docguide']
+--------------------------------------------------------------------------------

@@ -1,0 +1,25 @@
+Download an OpenJDK release for MacOS:
+
+* https://adoptium.net/temurin/releases/?version=17 Temurin 17 (LTS) - Recommended
+* https://adoptium.net/temurin/releases/?version=21 Temurin 21 (LTS)
+
+`Homebrew <https://brew.sh/>`__ package manager provides a “formula” to install OpenJDK:
+
+.. code-block:: bash
+   
+   brew install openjdk@17
+
+The developer tool `SDKMan <https://sdkman.io/>` may be used to manage several versions:
+
+.. code-block:: bash
+
+   # list to determine latest Temurin JDK 17
+   sdk list java | grep "17.*-tem"
+   sdk install java 21.0.8-tem
+   
+   # list to determine latest Temurin JDK 21
+   sdk list java | grep "21.*-tem"
+   sdk install java 17.0.16-tem
+   
+   # change between versions 17.0.16-tem and 21.0.8-tem locally
+   sdk install use 17.0.16-tem

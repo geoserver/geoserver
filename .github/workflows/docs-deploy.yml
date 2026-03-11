@@ -1,0 +1,147 @@
+name: Documentation Deployment
+
+on:
+  push:
+    branches: [main, 2.28.x]
+    paths:
+      - 'doc/**'
+      - '.github/workflows/docs-deploy.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for mike
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Install MkDocs and mike
+        run: |
+          pip install mkdocs mkdocs-material mkdocs-macros-plugin \
+                      pymdown-extensions mike
+      
+      - name: Configure Git for mike
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      
+      - name: Determine version and aliases
+        id: version
+        run: |
+          BRANCH=${GITHUB_REF##refs/heads/}
+          
+          # Set docs_base_path using branch name
+          echo "docs_base_path=/geoserver/$BRANCH" >> $GITHUB_OUTPUT
+          
+          if [ "$BRANCH" = "main" ]; then
+            echo "version=latest" >> $GITHUB_OUTPUT
+            echo "title=Latest (3.0 dev)" >> $GITHUB_OUTPUT
+            echo "is_default=false" >> $GITHUB_OUTPUT
+          elif [ "$BRANCH" = "2.28.x" ]; then
+            echo "version=stable" >> $GITHUB_OUTPUT
+            echo "title=Stable (2.28.x)" >> $GITHUB_OUTPUT
+            echo "is_default=true" >> $GITHUB_OUTPUT
+          else
+            echo "version=$BRANCH" >> $GITHUB_OUTPUT
+            echo "title=$BRANCH" >> $GITHUB_OUTPUT
+            echo "is_default=false" >> $GITHUB_OUTPUT
+          fi
+      
+      # Deploy User Manual
+      - name: Deploy User Manual
+        working-directory: doc/en/user
+        env:
+          DOCS_BASE_PATH: ${{ steps.version.outputs.docs_base_path }}
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          mike deploy --deploy-prefix "$VERSION/en/user" \
+            $VERSION \
+            --title "${{ steps.version.outputs.title }}" \
+            --push \
+            --update-aliases
+      
+      # Deploy Developer Guide
+      - name: Deploy Developer Guide
+        working-directory: doc/en/developer
+        env:
+          DOCS_BASE_PATH: ${{ steps.version.outputs.docs_base_path }}
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          mike deploy --deploy-prefix "$VERSION/en/developer" \
+            $VERSION \
+            --push \
+            --update-aliases
+      
+      # Deploy Documentation Guide
+      - name: Deploy Documentation Guide
+        working-directory: doc/en/docguide
+        env:
+          DOCS_BASE_PATH: ${{ steps.version.outputs.docs_base_path }}
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          mike deploy --deploy-prefix "$VERSION/en/docguide" \
+            $VERSION \
+            --push \
+            --update-aliases
+      
+      # Build API documentation
+      - name: Setup Java for API docs
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+      
+      - name: Build API documentation
+        run: |
+          mvn -B -ntp -f doc/en process-resources
+      
+      # Deploy API docs to gh-pages
+      - name: Deploy API documentation
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          
+          # Checkout gh-pages branch
+          git fetch origin gh-pages
+          git checkout gh-pages
+          
+          # Create API directory
+          mkdir -p $VERSION/en/api
+          
+          # Copy API docs
+          cp -r doc/en/target/api/* $VERSION/en/api/
+          
+          # Commit and push
+          git add $VERSION/en/api
+          git commit -m "Update API docs for $VERSION" || echo "No changes"
+          git push origin gh-pages
+          
+          # Return to source branch
+          git checkout ${GITHUB_REF##refs/heads/}
+      
+      # Set default version (stable only)
+      - name: Set default version
+        if: steps.version.outputs.is_default == 'true'
+        working-directory: doc/en/user
+        run: |
+          mike set-default ${{ steps.version.outputs.version }} --push
+      
+      # Create CNAME file (main branch only)
+      - name: Configure custom domain
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+          echo "docs.geoserver.org" > CNAME
+          git add CNAME
+          git commit -m "Add CNAME for custom domain" || echo "CNAME exists"
+          git push origin gh-pages

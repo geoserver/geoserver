@@ -1,50 +1,119 @@
-site_name: GeoServer Documentation (docguide - en)
-site_description: GeoServer docguide documentation in en
-site_author: GeoServer Team
-site_url: https://docs.geoserver.org/
+site_name: GeoServer Documentation Guide
+site_url: https://docs.geoserver.org/3.0.x/en/docguide/
+repo_url: https://github.com/geoserver/geoserver
+repo_name: geoserver/geoserver
+edit_uri: edit/main/doc/en/docguide/docs/
+
+docs_dir: docs
+site_dir: target/html
 
 theme:
   name: material
+  custom_dir: ../../themes/geoserver
+  logo: img/geoserver-logo.png
+  favicon: img/geoserver.ico
   palette:
-    - scheme: default
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: blue
-      accent: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
   features:
-    - navigation.tabs
-    - navigation.sections
-    - navigation.expand
+    # - navigation.tabs  # Disabled: Causes horizontal overflow on mobile/tablet
+    # - navigation.tabs.sticky  # Disabled: Not needed without navigation.tabs
     - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.path  # Enable breadcrumb navigation
+    - search.suggest
     - search.highlight
-    - search.share
-  # Disable syntax highlighting to avoid Pygments issues
-  hljs: false
+    - content.code.copy
+    - content.action.edit
+
+extra:
+  doc_type: "docguide"
+  # doc_switcher is loaded from shared config by macros plugin (see version.py)
+  version_selector:
+    # GitHub Pages versions (new versions)
+    - version: latest
+      title: Latest (3.0)
+      aliases: []
+      archive: false
+    - version: "3.0"
+      title: "3.0"
+      aliases: []
+      archive: false
+    - version: "2.28.x"
+      title: "2.28.x"
+      aliases: []
+      archive: false
+    # Archive versions (OSGeo server)
+    - version: "2.27.x"
+      title: "2.27.x (archive)"
+      url: "https://docs-archive.geoserver.org/2.27.x/en/docguide/"
+      archive: true
+    - version: "2.26.x"
+      title: "2.26.x (archive)"
+      url: "https://docs-archive.geoserver.org/2.26.x/en/docguide/"
+      archive: true
+    - version: "2.25.x"
+      title: "2.25.x (archive)"
+      url: "https://docs-archive.geoserver.org/2.25.x/en/docguide/"
+      archive: true
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/geoserver/geoserver
+    - icon: fontawesome/solid/globe
+      link: https://geoserver.org
 
 plugins:
-  - search
-  # Minify plugin disabled - causes htmlmin.parser.OpenTagNotFoundError with HTML code examples
-  # - minify:
-  #     minify_html: true
+  - search:
+      lang: en
+  - macros:
+      render_by_default: true
+      include_dir: docs
+      module_name: ../../version
 
-nav:
-  - Home: index.md
-  - Background: background.md
-  - Quick Fix: quickfix.md
-  - Contributing: contributing.md
-  - Workflow: workflow.md
-  - Installing Sphinx: install.md
-  - Installing LaTeX: installlatex.md
-  - Sphinx Syntax: sphinx.md
-  - Style Guidelines: style.md
-  - Writing a Tutorial: tutorial.md
+hooks:
+  - ../../download_files.py
 
 markdown_extensions:
   - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
   - attr_list
   - md_in_html
   - toc:
       permalink: true
 
 extra_css:
-  - css/extra.css
+  - stylesheets/extra.css
 
-site_dir: ../../../gh-pages-output/en/docguide
+nav:
+- index.md
+- background.md
+- quickfix.md
+- contributing.md
+- workflow.md
+- install.md
+- installlatex.md
+- sphinx.md
+- style.md
+- tutorial.md

@@ -8,32 +8,70 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-EnvelopePanel">
-        <div class="gs-unordered-list-class">
-          <div class="gs-list-item-class">
-            <label for="minX" wicket:id="minXL">minX</label>
-            <input wicket:id="minX" id="minX" type="text" class="w-md"/>
+          <div class="data">
+          <div class="dataentry">
+                  <label for="minX" wicket:id="minXL">minX</label>
+                  <input wicket:id="minX" id="minX" type="text" class="w-md"/>
+
+
+                  <label for="maxX" wicket:id="maxXL">Max X</label>
+                  <input wicket:id="maxX" id="maxX" type="text" class="w-md"/>
+
+
+                  <label for="minY" wicket:id="minYL">Min Y</label>
+                  <input wicket:id="minY" id="minY" type="text" class="w-md"/>
+
+
+                  <label for="maxY" wicket:id="maxYL">Max Y</label>
+                  <input wicket:id="maxY" id="maxY" type="text" class="w-md"/>
+
+
+                  <label for="minZ" wicket:id="minZL">Min Z</label>
+                  <input wicket:id="minZ" id="minZ" type="text" class="w-md"/>
+
+
+                  <label for="maxZ" wicket:id="maxZL">Max Z</label>
+                  <input wicket:id="maxZ" id="maxZ" type="text" class="w-md"/>
+
           </div>
-          <div class="gs-list-item-class">
-            <label for="minY" wicket:id="minYL">Min Y</label>
-            <input wicket:id="minY" id="minY" type="text" class="w-md"/>
+          <div class="diagram">
+
+          <div class="xy">
+              <div></div>
+              <div class="gs-list-item-class">
+                 <label for="maxY" wicket:id="maxYL">Max Y</label>
+                 <input type="text" tabindex="-1" valueref="maxY"/>
+              </div>
+              <div></div>
+              <div class="gs-list-item-class moveup">
+                <label for="minX" wicket:id="minXL">minX</label>
+                  <input type="text" tabindex="-1" valueref="minX"/>
+              </div>
+              <div class="moveup"></div>
+              <div class="gs-list-item-class moveup">
+                <label for="maxX" wicket:id="maxXL">Max X</label>
+                  <input type="text" tabindex="-1" valueref="maxX"/>
+              </div>
+              <div class="moveup"></div>
+              <div class="gs-list-item-class moveup">
+                <label for="minY" wicket:id="minYL">Min Y</label>
+                  <input type="text" tabindex="-1" valueref="minY"/>
+              </div>
+              <div class="moveup"></div>
           </div>
-          <div class="gs-list-item-class">
-            <label for="minZ" wicket:id="minZL">Min Z</label>
-            <input wicket:id="minZ" id="minZ" type="text" class="w-md"/>
-          </div>
-          <div class="gs-list-item-class">
-            <label for="maxX" wicket:id="maxXL">Max X</label>
-            <input wicket:id="maxX" id="maxX" type="text" class="w-md"/>
-          </div>
-          <div class="gs-list-item-class">
-            <label for="maxY" wicket:id="maxYL">Max Y</label>
-            <input wicket:id="maxY" id="maxY" type="text" class="w-md"/>
-          </div>
-          <div class="gs-list-item-class">
-            <label for="maxZ" wicket:id="maxZL">Max Z</label>
-            <input wicket:id="maxZ" id="maxZ" type="text" class="w-md"/>
-          </div>
+            <div class="z">
+                <div class="gs-list-item-class">
+                    <label for="minZ" wicket:id="minZL">Min Z</label>
+                    <input type="text" tabindex="-1" valueref="minZ"/>
+                </div>
+                <div class="gs-list-item-class">
+                    <label for="maxZ" wicket:id="maxZL">Max Z</label>
+                    <input type="text" tabindex="-1" valueref="maxZ"/>
+                </div>
+            </div>
         </div>
+          </div>
+
         <div class="clearfix" wicket:id="crsContainer">
           <label for="crs">
             <wicket:message key="crs">Coordinate Reference System</wicket:message>

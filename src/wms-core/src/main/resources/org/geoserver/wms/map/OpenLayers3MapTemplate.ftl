@@ -2,23 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="${relBaseUrl}/openlayers3/ol.css" type="text/css">
+    <link rel="stylesheet" href="${baseUrl}/css/geoserver.css" type="text/css">
     <link rel="stylesheet" href="${relBaseUrl}/openlayers3/layout.css" type="text/css">
+    <script src="${baseUrl}/js/geoserver.js" type="text/javascript"></script>
     <script src="${relBaseUrl}/openlayers3/ol.js" type="text/javascript"></script>
     <script src="${relBaseUrl}/webresources/wms/OpenLayers3Map.js" type="text/javascript"></script>
     <title>OpenLayers map preview</title>
   </head>
   <body>
+  <div id="header" class="gs-header">
+    <div class="gs-header-bar">
+      <div class="gs-header-left">
+        <a class="logo" href="${baseUrl}"></a>
+      </div>
+      <div class="gs-header-right">
+      </div>
+    </div>
+  </div>
   <div id="main">
     <div id="sidebar">
-      <div id="brand">
-        <a wicket:id="home" id="logo" href="#"></a>
-        <button id="navigation-menu">
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'>
-            <path stroke='currentColor' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22' />
-          </svg>
-        </button>
-      </div>
+      <button id="sidebar-menu">
+        <svg class="open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" aria-hidden="true">
+          <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"/>
+        </svg>
+        <svg class="close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" aria-hidden="true">
+          <path fill="currentColor" d="M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414"/>
+        </svg>
+      </button>
       <div id="sidebar-content">
         <div id="toolbar" class="preview-form">
           <label>WMS version:</label>
@@ -53,53 +65,28 @@
                 <option value="${style}">${style}</option>  
             </#list>   
           </select>
-          <label>Width/Height:</label>
-          <select id="widthSelector">
-              <!--
-              These values come from a statistics of the viewable area given a certain screen area
-              (but have been adapted a litte, simplified numbers, added some resolutions for wide screen)
-              You can find them here: http://www.evolt.org/article/Real_World_Browser_Size_Stats_Part_II/20/2297/
-              --><option value="auto">Auto</option>
-                <option value="600">600</option>
-                <option value="750">750</option>
-                <option value="950">950</option>
-                <option value="1000">1000</option>
-                <option value="1200">1200</option>
-                <option value="1400">1400</option>
-                <option value="1600">1600</option>
-                <option value="1900">1900</option>
-            </select>
-            <select id="heightSelector">
-                <option value="auto">Auto</option>
-                <option value="300">300</option>
-                <option value="400">400</option>
-                <option value="500">500</option>
-                <option value="600">600</option>
-                <option value="700">700</option>
-                <option value="800">800</option>
-                <option value="900">900</option>
-                <option value="1000">1000</option>
-            </select>
-            <label>Filter:</label>
+          <label>Filter:</label>
+          <div class="gs-input-group">
             <select id="filterType">
                 <option value="cql">CQL</option>
                 <option value="ogc">OGC</option>
                 <option value="fid">FeatureID</option>
             </select>
-            <input type="text" size="80" id="filter"/>
-            <a id="updateFilterButton" class="button" href="#" title="Apply filter">Apply</a>
-            <a id="resetFilterButton" class="button outline-primary" href="#" title="Reset filter">Reset</a>
+            <button id="updateFilterButton" href="#" title="Apply filter">Apply</button>
+            <button id="resetFilterButton" href="#" title="Reset filter">Reset</button>
+          </div>
+          <textarea id="filter"></textarea>
         </div>
       </div>
     </div>
     <div id="page">
       <div id="map"></div>
       <div id="wrapper">
-          <div id="location"></div>
-          <div id="scale"></div>
+        <div id="location"></div>
+        <div id="scale"></div>
       </div>
       <div id="nodelist">
-          <em>Click on the map to get feature info</em>
+        <em>Click on the map to get feature info</em>
       </div>
       <input type="hidden" id="pureCoverage" value="${pureCoverage}"/>
       <input type="hidden" id="supportsFiltering" value="${supportsFiltering}"/>

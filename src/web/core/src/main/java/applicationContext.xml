@@ -335,12 +335,12 @@
   <bean id="rasterHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="rasterHeading" />
     <property name="order" value="600" />
-    <property name="titleKey" value="publish.layer.raster.title" />
-    <property name="descriptionKey" value="publish.layer.raster.description" />
+    <property name="titleKey" value="HeadingConfigurationPanel.raster.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.raster.description" />
     <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
     <property name="supportedTypes">
       <list>
-        <value>org.geoserver.catalog.CoverageTypeInfo</value>
+        <value>org.geoserver.catalog.CoverageInfo</value>
       </list>
     </property>
   </bean>

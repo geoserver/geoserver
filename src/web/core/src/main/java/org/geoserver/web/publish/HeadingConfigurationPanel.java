@@ -38,8 +38,6 @@ public class HeadingConfigurationPanel extends PublishedConfigurationPanel<Layer
     public HeadingConfigurationPanel(String id, IModel<LayerInfo> model, PublishedConfigurationPanelInfo panelInfo) {
         super(id, model);
 
-        Localizer localizer = GeoServerApplication.get().getResourceSettings().getLocalizer();
-
         Label title;
         if (panelInfo != null && panelInfo.getTitleKey() != null) {
             title = new Label("title", new StringResourceModel(panelInfo.getTitleKey(), null, null));

@@ -4,29 +4,31 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-LDAPAuthProviderPanel_TestLDAPConnectionPanel">
-        <div class="gs-unordered-list-class">
-          <div class="gs-list-item-class">
-            <label for="username">
-              <wicket:message key="username"></wicket:message>
-            </label>
-            <input id="username" wicket:id="username" type="text" />
-          </div>
-          <div class="gs-list-item-class">
-            <label for="password">
-              <wicket:message key="password"></wicket:message>
-            </label>
-            <input id="password" wicket:id="password" type="password" />
-          </div>
-          <div class="gs-list-item-class">
-            <div class="button-group">
-              <a href="#" wicket:id="test">
-                <span>
-                  <wicket:message key="testConnection"></wicket:message>
-                </span>
-              </a>
+        <fieldset>
+          <div class="gs-form">
+            <div class="gs-form-group">
+              <label for="username">
+                <wicket:message key="username"></wicket:message>
+              </label>
+              <input id="username" wicket:id="username" type="text" />
+            </div>
+            <div class="gs-form-group">
+              <label for="password">
+                <wicket:message key="password"></wicket:message>
+              </label>
+              <input id="password" wicket:id="password" type="password" />
+            </div>
+            <div class="gs-form-group">
+              <div class="button-group">
+                <a href="#" wicket:id="test">
+                  <span>
+                    <wicket:message key="testConnection"></wicket:message>
+                  </span>
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        </fieldset>
       </div>
     </wicket:panel>
   </body>

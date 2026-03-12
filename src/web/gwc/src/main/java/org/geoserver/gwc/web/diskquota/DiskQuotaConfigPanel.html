@@ -9,14 +9,14 @@
               <wicket:message key="diskQuota">Disk Quota</wicket:message>
             </span>
           </legend>
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class choiceItem">
+          <div class="gs-form">
+            <div class="choiceItem">
               <input id="enableDiskQuota" type="checkbox" wicket:id="enableDiskQuota"/>
               <label for="enableDiskQuota">
                 <wicket:message key="enableDiskQuota">Enable Disk Quota</wicket:message>
               </label>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <label for="cleanUpFreq">
                 <wicket:message key="cleanUpFreq">Force cache disk quota is exceeded every:</wicket:message>
               </label>
@@ -24,7 +24,7 @@
               <wicket:message key="cleanUpFreqUnits">minutes</wicket:message>
               <div wicket:id="cleanUpLastRun">(Last run: X minutes ago.)</div>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <label for="globalQuota">
                 <wicket:message key="setGlobalQuota">Set cache disk quota to:</wicket:message>
               </label>
@@ -34,7 +34,7 @@
               </div>
               <div wicket:id="globalQuotaProgressBar"/>
             </div>
-            <div class="gs-list-item-class">
+            <div class="">
               <label>
                 <wicket:message key="globalQuotaTitle">When forcing quota limits, remove tiles that are:</wicket:message>
               </label>
@@ -55,25 +55,27 @@
                 </div>
               </div>
             </div>
-            <div class="gs-list-item-class" wicket:id="quotaStoreContainer">
-              <label for="diskQuotaStore">
-                <wicket:message key="diskQuotaStore">quotastore:</wicket:message>
-              </label>
-              <select class="text" id="diskQuotaStore" wicket:id="diskQuotaStore"/>
-              <div class="gs-unordered-list-class" wicket:id="jdbcQuotaStoreContainer">
-                <div class="gs-list-item-class">
+            <div class="gs-form" wicket:id="quotaStoreContainer">
+              <div class="gs-form-group">
+                <label for="diskQuotaStore">
+                  <wicket:message key="diskQuotaStore">quotastore:</wicket:message>
+                </label>
+                <select class="text" id="diskQuotaStore" wicket:id="diskQuotaStore"/>
+              </div>
+              <div class="gs-form" wicket:id="jdbcQuotaStoreContainer">
+                <div class="gs-form-group">
                   <label for="dialectChooser">
                     <wicket:message key="jdbcQuotaDialect">dialect:</wicket:message>
                   </label>
                   <select class="text" id="dialectChooser" wicket:id="dialectChooser"/>
                 </div>
-                <div class="gs-list-item-class">
+                <div class="gs-form-group">
                   <label for="connectionTypeChooser">
                     <wicket:message key="connectionTypeChooser">connectionType:</wicket:message>
                   </label>
                   <select class="text" id="connectionTypeChooser" wicket:id="connectionTypeChooser"/>
                 </div>
-                <div class="gs-list-item-class" wicket:id="connectionTypeContainer">
+                <div class="gs-form-group" wicket:id="connectionTypeContainer">
                   <div class="gs-unordered-list-class">
                     <div class="gs-list-item-class" wicket:id="jndiLocationContainer">
                       <label for="jndiLocation">

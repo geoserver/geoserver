@@ -10,62 +10,63 @@
 
     <fieldset class="pt-3">
       <legend><span><wicket:message key="logoutSettings"></wicket:message></span></legend>
-
-      <div class="py-1">
-        <label for="redirectURL">
-          <wicket:message key="redirectURL"></wicket:message>
-        </label>
-        <input id="redirectURL" wicket:id="redirectURL" type="text"/>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label for="redirectURL">
+            <wicket:message key="redirectURL"></wicket:message>
+          </label>
+          <input id="redirectURL" wicket:id="redirectURL" type="text"/>
+        </div>
       </div>
-
     </fieldset>
 
     <fieldset>
       <legend><span><wicket:message key="sslSettings"></wicket:message></span></legend>
-
-      <div class="py-1">
-        <label for="sslPort">
-          <wicket:message key="sslPort"></wicket:message>
-        </label>
-        <input id="sslPort" wicket:id="sslPort" type="text"/>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label for="sslPort">
+            <wicket:message key="sslPort"></wicket:message>
+          </label>
+          <input id="sslPort" wicket:id="sslPort" type="text"/>
       </div>
+    </div>
 
     </fieldset>
 
     <fieldset>
       <legend><span><wicket:message key="bruteForceSettings"></wicket:message></span></legend>
-
-      <div class="choiceItem py-1">
-        <input id="bfEnabled" wicket:id="bfEnabled" type="checkbox" class="field"/>
-        <label for="bfEnabled">
-          <wicket:message key="bfEnabled"></wicket:message>
-        </label>
+      <div class="gs-form">
+        <div class="choiceItem">
+          <input id="bfEnabled" wicket:id="bfEnabled" type="checkbox" class="field"/>
+          <label for="bfEnabled">
+            <wicket:message key="bfEnabled"></wicket:message>
+          </label>
+        </div>
+        <div class="gs-form-group">
+          <label for="bfMinDelaySeconds">
+            <wicket:message key="bfMinDelaySeconds"></wicket:message>
+          </label>
+          <input id="bfMinDelaySeconds" wicket:id="bfMinDelaySeconds" type="text"/>
+        </div>
+        <div class="gs-form-group">
+          <label for="bfMaxDelaySeconds">
+            <wicket:message key="bfMaxDelaySeconds"></wicket:message>
+          </label>
+          <input id="bfMaxDelaySeconds" wicket:id="bfMaxDelaySeconds" type="text"/>
+        </div>
+        <div class="gs-form-group">
+          <label for="bfWhitelistedNetmasks">
+            <wicket:message key="bfWhitelistedNetmasks"></wicket:message>
+          </label>
+          <input id="bfWhitelistedNetmasks" wicket:id="bfWhitelistedNetmasks" type="text"/>
+        </div>
+        <div class="gs-form-group">
+          <label for="bfMaxBlockedThreads">
+            <wicket:message key="bfMaxBlockedThreads"></wicket:message>
+          </label>
+          <input id="bfMaxBlockedThreads" wicket:id="bfMaxBlockedThreads" type="text"/>
+        </div>
       </div>
-      <div class="py-1">
-        <label for="bfMinDelaySeconds">
-          <wicket:message key="bfMinDelaySeconds"></wicket:message>
-        </label>
-        <input id="bfMinDelaySeconds" wicket:id="bfMinDelaySeconds" type="text"/>
-      </div>
-      <div class="py-1">
-        <label for="bfMaxDelaySeconds">
-          <wicket:message key="bfMaxDelaySeconds"></wicket:message>
-        </label>
-        <input id="bfMaxDelaySeconds" wicket:id="bfMaxDelaySeconds" type="text"/>
-      </div>
-      <div class="py-1">
-        <label for="bfWhitelistedNetmasks">
-          <wicket:message key="bfWhitelistedNetmasks"></wicket:message>
-        </label>
-        <input id="bfWhitelistedNetmasks" wicket:id="bfWhitelistedNetmasks" type="text"/>
-      </div>
-      <div class="py-1">
-        <label for="bfMaxBlockedThreads">
-          <wicket:message key="bfMaxBlockedThreads"></wicket:message>
-        </label>
-        <input id="bfMaxBlockedThreads" wicket:id="bfMaxBlockedThreads" type="text"/>
-      </div>
-
     </fieldset>
 
     <fieldset>

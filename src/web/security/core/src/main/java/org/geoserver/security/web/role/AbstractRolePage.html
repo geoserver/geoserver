@@ -10,19 +10,21 @@
       <legend>
         <span wicket:id="description"></span>
       </legend>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label for="name">
+            <wicket:message key="name"></wicket:message>
+          </label>
+          <input type="text" wicket:id="name" id="name" class="field"/>
+        </div>
+        <div class="gs-form-group">
+          <label for="parent">
+            <wicket:message key="parent"></wicket:message>
+          </label>
+          <select wicket:id="parent" id="parent" class="w-md"/>
+        </div>
+      </div>
 
-      <div class="py-1">
-        <label for="name">
-          <wicket:message key="name"></wicket:message>
-        </label>
-        <input type="text" wicket:id="name" id="name" class="field"/>
-      </div>
-      <div class="py-1">
-        <label for="parent">
-          <wicket:message key="parent"></wicket:message>
-        </label>
-        <select wicket:id="parent" id="parent" class="w-md"/>
-      </div>
 
     </fieldset>
 

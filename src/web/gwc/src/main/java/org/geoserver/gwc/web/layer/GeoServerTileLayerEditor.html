@@ -17,34 +17,35 @@
             </div>
             <div class="gs-list-item-class" wicket:id="container">
               <div wicket:id="configs">
-                <div class="gs-unordered-list-class">
-                  <div class="gs-list-item-class choiceItem">
+                <div class="gs-form">
+                  <div class="choiceItem">
                     <input id="tileCacheEnabled" wicket:id="enabled" type="checkbox"/>
                     <label for="enabled">
                       <wicket:message key="enabled">Enable tile caching</wicket:message>
                     </label>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="blobStoreId">
                       <wicket:message key="blobStoreId"/>
                     </label>
                     <select wicket:id="blobStoreId" id="blobStoreId"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label>
                       <wicket:message key="metaTiling">Meta tiling factors</wicket:message>
                     </label>
-                    <select class="select" id="metaTilingX" wicket:id="metaTilingX"/>
-                    <wicket:message key="metaTilingX">Tiles wide by </wicket:message>
-                    <select class="select" id="metaTilingY" wicket:id="metaTilingY"/>
-                    <wicket:message key="metaTilingY">Tiles high</wicket:message>
+                    <div>
+                      <select class="select" id="metaTilingX" wicket:id="metaTilingX"/>
+                      <wicket:message key="metaTilingX">Tiles wide by </wicket:message>
+                      <select class="select" id="metaTilingY" wicket:id="metaTilingY"/>
+                      <wicket:message key="metaTilingY">Tiles high</wicket:message>
+                    </div>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label>
                       <wicket:message key="gutter">Gutter size:</wicket:message>
                     </label>
                     <select class="select" id="gutter" wicket:id="gutter"/>
-                    <br/>
                   </div>
                   <div class="gs-list-item-class choiceItem">
                     <span class="fieldname">
@@ -57,13 +58,13 @@
                       </div>
                     </div>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="expireCache">
                       <wicket:message key="expireCache">Expire server cache after n seconds (set to 0 to use source setting)</wicket:message>
                     </label>
                     <input id="tileExpireCache" wicket:id="expireCache" class="field w-md" type="text"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="expireClients">
                       <wicket:message key="expireClients">Expire client cache after n seconds (set to 0 to use server setting)</wicket:message>
                     </label>

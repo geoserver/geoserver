@@ -7,19 +7,20 @@
 	<form wicket:id="form">
 
 		<fieldset>
-
-			<div class="py-1">
-				<label for="service">
-					<wicket:message key="service">service</wicket:message>
-				</label>
-				<select wicket:id="service" id="service"/>
-			</div>
-
-			<div class="py-1">
-				<label for="method">
-					<wicket:message key="method">method</wicket:message>
-				</label>
-				<select wicket:id="method" id="method"/>
+			<div class="gs-form">
+				<div class="gs-form-group">
+					<label for="service">
+						<wicket:message key="service">service</wicket:message>
+					</label>
+					<select wicket:id="service" id="service"/>
+				</div>
+	
+				<div class="gs-form-group">
+					<label for="method">
+						<wicket:message key="method">method</wicket:message>
+					</label>
+					<select wicket:id="method" id="method"/>
+				</div>
 			</div>
 		</fieldset>
 

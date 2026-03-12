@@ -8,18 +8,18 @@
           <legend>
             <wicket:message key="curves">curves</wicket:message>
           </legend>
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class choiceItem">
+          <div class="gs-form">
+            <div class="choiceItem">
               <input id="linestrings-are-curves" wicket:id="circularArcPresent" type="checkbox"/>
               <label for="linestrings-are-curves">
                 <wicket:message key="linestrings-are-curves">Enabled</wicket:message>
               </label>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <label for="tolerance">
                 <wicket:message key="tolerance">tolerance</wicket:message>
               </label>
-              <input type="text" wicket:id="linearizationTolerance" class="field"/>
+              <input type="text" wicket:id="linearizationTolerance" class="w-sm"/>
             </div>
           </div>
         </fieldset>
@@ -78,10 +78,16 @@
           </fieldset>
         </div>
         <div wicket:id="reloadWarningDialog"/>
-        <label for="cqlFilter">
-          <wicket:message key="cqlFilter">cqlFilter</wicket:message>
-        </label>
-        <textarea wicket:id="cqlFilter" class="field mb-2" cols="40" rows="10"/>
+        <fieldset>
+            <div class="gs-form">
+              <div class="gs-form-group">
+                <label for="cqlFilter">
+                  <wicket:message key="cqlFilter">cqlFilter</wicket:message>
+                </label>
+                <textarea wicket:id="cqlFilter" cols="40" rows="10"/>
+              </div>
+            </div>
+        </fieldset> 
       </div>
     </wicket:panel>
   </body>

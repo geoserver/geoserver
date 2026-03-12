@@ -16,18 +16,18 @@
             <div class="gs-list-item-class">
               <div wicket:id="onlineResource"/>
             </div>
-            <div class="gs-list-item-class">
-              <span wicket:id="welcomeLabel">
-                <label class="leftwise" for="welcome" wicket:id="welcomeLabel"/>
-                <input class="leftwise" type="checkbox" wicket:id="welcomeLabel_i18nCheckbox"/>
-                <wicket:message key="i18nCheckBox">i18n</wicket:message>
-              </span>
-            </div>
-            <div class="gs-list-item-class">
-              <textarea wicket:id="welcome" class="field" rows="10" cols="30"/>
-            </div>
-            <div class="gs-list-item-class">
-              <div wicket:id="internationalWelcome"/>
+            <div class="gs-form">
+              <div class="gs-form-group">
+                <span wicket:id="welcomeLabel">
+                  <label class="leftwise" for="welcome" wicket:id="welcomeLabel"/>
+                  <input class="leftwise" type="checkbox" wicket:id="welcomeLabel_i18nCheckbox"/>
+                  <wicket:message key="i18nCheckBox">i18n</wicket:message>
+                </span>
+                <div class="gs-list-item-class">
+                  <textarea wicket:id="welcome" class="field" rows="10" cols="30"/>
+                  <div wicket:id="internationalWelcome"/>
+                </div>
+              </div>
             </div>
           </div>
         </fieldset>

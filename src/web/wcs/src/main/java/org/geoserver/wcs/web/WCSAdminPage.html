@@ -7,14 +7,22 @@
 			<span><wicket:message
 		key="processing">processing</wicket:message></span>
 		</legend>
-		<div class="gs-unordered-list-class">
-			<div class="gs-list-item-class choiceItem"><input class="field" type="checkbox"
-				wicket:id="subsamplingEnabled"></input> <label for="subsamplingEnabled"><wicket:message
-				key="subsampling">subsampling</wicket:message></label></div>
-			<div class="gs-list-item-class"> <label><wicket:message key="overviewPolicy">overview</wicket:message></label>
-			<select wicket:id="overviewPolicy" class="field"></select></div>
-			<div class="gs-list-item-class choiceItem"><input wicket:id="latLon" type="checkbox"></input> <label for="latLon"><wicket:message
-				key="latLonOrder">subsampling</wicket:message></label></div>
+		<div class="gs-form">
+			<div class="choiceItem">
+				<input class="field" type="checkbox"
+				wicket:id="subsamplingEnabled"></input> 
+				<label for="subsamplingEnabled"><wicket:message
+				key="subsampling">subsampling</wicket:message></label>
+			</div>
+			<div class="gs-form-group"> 
+				<label><wicket:message key="overviewPolicy">overview</wicket:message></label>
+				<select wicket:id="overviewPolicy" class="field"></select>
+			</div>
+			<div class="choiceItem">
+				<input wicket:id="latLon" type="checkbox"></input> 
+				<label for="latLon"><wicket:message
+				key="latLonOrder">subsampling</wicket:message></label>
+			</div>
 		</div>
 	</fieldset>
 
@@ -23,13 +31,16 @@
 			<span><wicket:message
 		key="resourceLimits">ResourceConsumptionLimits</wicket:message></span>
 		</legend>
-		<div class="gs-unordered-list-class">
-			<div class="gs-list-item-class"> <label><wicket:message key="maxInputMemory">maxinput</wicket:message></label>
-			<input type="text" wicket:id="maxInputMemory" class="field" /></div>
-			<div class="gs-list-item-class"> <label><wicket:message key="maxOutputMemory">maxoutput</wicket:message></label>
-			<input type="text" wicket:id="maxOutputMemory" class="field" />
+		<div class="gs-form">
+			<div class="gs-form-group">
+				<label><wicket:message key="maxInputMemory">maxinput</wicket:message></label>
+				<input type="text" wicket:id="maxInputMemory" class="field" />
 			</div>
-			<div class="gs-list-item-class">
+			<div class="gs-form-group">
+				<label><wicket:message key="maxOutputMemory">maxoutput</wicket:message></label>
+				<input type="text" wicket:id="maxOutputMemory" class="field" />
+			</div>
+			<div class="gs-form-group">
 				<label><wicket:message key="maxRequestedDimensionValues">Max requested dimension values</wicket:message></label>
 				<input type="text" wicket:id="maxRequestedDimensionValues" class="field"/>
 			</div>
@@ -49,15 +60,21 @@
 
 	<fieldset>
 		<legend><span><wicket:message key="i18nSettings">i18n Settings</wicket:message></span></legend>
-		<label for="defaultLocale"><wicket:message key="defaultLocale">Default Language</wicket:message></label>
-		<select wicket:id="defaultLocale"/>
+		<div class="gs-form">
+			<div class="gs-form-group">
+				<label for="defaultLocale"><wicket:message key="defaultLocale">Default Language</wicket:message></label>
+				<select wicket:id="defaultLocale"/>
+			</div>
+		</div>
 	</fieldset>
 
 	<fieldset>
 		<legend><span><wicket:message key="compressionSettings">Compression Settings</wicket:message></span></legend>
-		<div class="gs-unordered-list-class">
-			<div class="gs-list-item-class"> <label><wicket:message key="defaultDeflateCompressionLevel">defaultDeflateCompressionLevel</wicket:message></label>
-			<input type="text" wicket:id="defaultDeflateCompressionLevel" class="field" /></div>
+		<div class="gs-form">
+			<div class="gs-form-group">
+				<label><wicket:message key="defaultDeflateCompressionLevel">defaultDeflateCompressionLevel</wicket:message></label>
+				<input type="text" wicket:id="defaultDeflateCompressionLevel" class="field" />
+			</div>
 		</div>
 	</fieldset>
 

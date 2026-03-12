@@ -14,39 +14,41 @@
                 <wicket:message key="featureSettings">Feature Settings</wicket:message>
               </span>
             </legend>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
+            <div class="gs-form">
+              <div class="gs-form-group">
                 <label for="perReqFeatureLimit">
                   <wicket:message key="perReqFeatureLimit">Per-Request feature limit</wicket:message>
                 </label>
                 <div wicket:id="perReqFeaturesBorder">
                   <input id="perReqFeatureLimit" wicket:id="perReqFeatureLimit" type="text"/>
                 </div>
+              </div>
+              <div class="gs-form-group">
                 <label for="maxDecimals">
                   <wicket:message key="maxDecimals">Maximum number of decimals</wicket:message>
                 </label>
                 <div wicket:id="maxDecimalsBorder">
                   <input id="maxDecimals" wicket:id="maxDecimals" type="text"/>
                 </div>
-                <div class="choiceList">
-                  <div wicket:id="padWithZerosBorder">
-                    <input id="padWithZeros" wicket:id="padWithZeros" type="checkbox"/>
-                    <label for="padWithZeros">
-                      <wicket:message key="padWithZeros">Right-pad decimals with zeros</wicket:message>
-                    </label>
-                  </div>
-                  <div wicket:id="forcedDecimalBorder">
-                    <input id="forcedDecimal" wicket:id="forcedDecimal" type="checkbox"/>
-                    <label for="forcedDecimal">
-                      <wicket:message key="forcedDecimal">Force decimals, don't use scientific notation</wicket:message>
-                    </label>
-                  </div>
-                  <div wicket:id="complexToSimpleBorder">
-                    <input id="complexToSimple" wicket:id="complexToSimple" type="checkbox"/>
-                    <label for="complexToSimple">
-                      <wicket:message key="complexToSimple">Activate complex to simple features conversion</wicket:message>
-                    </label>
-                  </div>
+              </div>
+              <div class="gs-form choiceList">
+                <div wicket:id="padWithZerosBorder">
+                  <input id="padWithZeros" wicket:id="padWithZeros" type="checkbox"/>
+                  <label for="padWithZeros">
+                    <wicket:message key="padWithZeros">Right-pad decimals with zeros</wicket:message>
+                  </label>
+                </div>
+                <div wicket:id="forcedDecimalBorder">
+                  <input id="forcedDecimal" wicket:id="forcedDecimal" type="checkbox"/>
+                  <label for="forcedDecimal">
+                    <wicket:message key="forcedDecimal">Force decimals, don't use scientific notation</wicket:message>
+                  </label>
+                </div>
+                <div wicket:id="complexToSimpleBorder">
+                  <input id="complexToSimple" wicket:id="complexToSimple" type="checkbox"/>
+                  <label for="complexToSimple">
+                    <wicket:message key="complexToSimple">Activate complex to simple features conversion</wicket:message>
+                  </label>
                 </div>
               </div>
             </div>

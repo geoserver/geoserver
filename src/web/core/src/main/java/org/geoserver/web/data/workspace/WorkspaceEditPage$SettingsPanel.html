@@ -10,11 +10,13 @@
             </span>
             <a href="#" wicket:id="settingsHelp" class="help-link"/>
           </legend>
-          <div class="choiceItem">
-            <input name="enabled" type="checkbox" wicket:id="enabled"/>
-            <label for="enabled">
-              <wicket:message key="enabled">Enabled</wicket:message>
-            </label>
+          <div class="choiceList">
+            <div>
+              <input name="enabled" type="checkbox" wicket:id="enabled"/>
+              <label for="enabled">
+                <wicket:message key="enabled">Enabled</wicket:message>
+              </label>
+            </div>
           </div>
         </fieldset>
         <div wicket:id="settingsContainer" class="mt-5">
@@ -28,50 +30,52 @@
                   <wicket:message key="GlobalSettingsPage.otherSettings">Other Settings</wicket:message>
                 </span>
               </legend>
-              <div class="choiceItem">
-                <input id="localWorkspaceIncludesPrefix" type="checkbox" wicket:id="localWorkspaceIncludesPrefix"/>
-                <label for="localWorkspaceIncludesPrefix">
-                  <wicket:message key="localWorkspaceIncludesPrefix">Remove Layer Prefix from Local Workspace Capabilities</wicket:message>
-                </label>
-              </div>
-              <div class="choiceItem">
-                <input id="verbose" type="checkbox" wicket:id="verbose"/>
-                <label for="verbose">
-                  <wicket:message key="GlobalSettingsPage.verboseMessaging">Enable Verbose Messaging</wicket:message>
-                </label>
-              </div>
-              <div class="choiceItem">
-                <input id="verboseExceptions" type="checkbox" wicket:id="verboseExceptions"/>
-                <label for="verboseExceptions">
-                  <wicket:message key="GlobalSettingsPage.verboseExceptions">Enable Verbose Exceptions</wicket:message>
-                </label>
-              </div>
-              <div>
-                <label for="numDecimals">
-                  <wicket:message key="GlobalSettingsPage.numDecimals">Number of Decimals</wicket:message>
-                </label>
-                <input id="numDecimals" class="field" type="text" wicket:id="numDecimals"/>
-              </div>
-              <div>
-                <label for="charset">
-                  <wicket:message key="GlobalSettingsPage.charset">Character Set</wicket:message>
-                </label>
-                <select id="charset" class="field" wicket:id="charset"/>
-              </div>
-              <div>
-                <label for="proxyBaseUrl">
-                  <wicket:message key="GlobalSettingsPage.proxyBaseUrl">Proxy Base URL</wicket:message>
-                </label>
-                <input id="proxyBaseUrl" class="field" type="text" wicket:id="proxyBaseUrl"/>
-              </div>
-              <div class="choiceItem">
-                <input id="useHeadersProxyURL" type="checkbox" wicket:id="useHeadersProxyURL"/>
-                <label for="useHeadersProxyURL">
-                  <wicket:message key="GlobalSettingsPage.useHeadersProxyURL">Use headers for Proxy URL</wicket:message>
-                </label>
-              </div>
-              <div wicket:id="extensions">
-                <div wicket:id="content"/>
+              <div class="gs-form">
+                <div class="choiceItem">
+                  <input id="localWorkspaceIncludesPrefix" type="checkbox" wicket:id="localWorkspaceIncludesPrefix"/>
+                  <label for="localWorkspaceIncludesPrefix">
+                    <wicket:message key="localWorkspaceIncludesPrefix">Remove Layer Prefix from Local Workspace Capabilities</wicket:message>
+                  </label>
+                </div>
+                <div class="choiceItem">
+                  <input id="verbose" type="checkbox" wicket:id="verbose"/>
+                  <label for="verbose">
+                    <wicket:message key="GlobalSettingsPage.verboseMessaging">Enable Verbose Messaging</wicket:message>
+                  </label>
+                </div>
+                <div class="choiceItem">
+                  <input id="verboseExceptions" type="checkbox" wicket:id="verboseExceptions"/>
+                  <label for="verboseExceptions">
+                    <wicket:message key="GlobalSettingsPage.verboseExceptions">Enable Verbose Exceptions</wicket:message>
+                  </label>
+                </div>
+                <div class="gs-form-group">
+                  <label for="numDecimals">
+                    <wicket:message key="GlobalSettingsPage.numDecimals">Number of Decimals</wicket:message>
+                  </label>
+                  <input id="numDecimals" class="field" type="text" wicket:id="numDecimals"/>
+                </div>
+                <div class="gs-form-group">
+                  <label for="charset">
+                    <wicket:message key="GlobalSettingsPage.charset">Character Set</wicket:message>
+                  </label>
+                  <select id="charset" class="field" wicket:id="charset"/>
+                </div>
+                <div class="gs-form-group">
+                  <label for="proxyBaseUrl">
+                    <wicket:message key="GlobalSettingsPage.proxyBaseUrl">Proxy Base URL</wicket:message>
+                  </label>
+                  <input id="proxyBaseUrl" class="field" type="text" wicket:id="proxyBaseUrl"/>
+                </div>
+                <div class="choiceItem">
+                  <input id="useHeadersProxyURL" type="checkbox" wicket:id="useHeadersProxyURL"/>
+                  <label for="useHeadersProxyURL">
+                    <wicket:message key="GlobalSettingsPage.useHeadersProxyURL">Use headers for Proxy URL</wicket:message>
+                  </label>
+                </div>
+                <div wicket:id="extensions">
+                  <div wicket:id="content"/>
+                </div>
               </div>
             </fieldset>
           </div>

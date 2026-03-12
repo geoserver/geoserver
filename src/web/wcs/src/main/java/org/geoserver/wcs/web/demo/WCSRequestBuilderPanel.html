@@ -3,14 +3,14 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-WCSRequestBuilderPanel">
-        <div class="gs-unordered-list-class">
-          <div class="gs-list-item-class">
+        <div class="gs-form">
+          <div class="gs-form-group">
             <label for="version">
               <wicket:message key="version">wcs_version</wicket:message>
             </label>
             <select wicket:id="version"/>
           </div>
-          <div class="gs-list-item-class">
+          <div class="gs-form-group">
             <label for="name"><wicket:message key="name">coverage</wicket:message></label>
             <select wicket:id="coverage"/>
           </div>
@@ -23,18 +23,18 @@
             </label>
             <div wicket:id="envelope"/>
           </div>
-          <div class="gs-list-item-class" wicket:id="sourceGridContainer">
+          <div class="gs-form-group" wicket:id="sourceGridContainer">
             <label for="grid">
               <wicket:message key="grid">grid</wicket:message>
             </label>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class choiceItem">
+            <div class="gs-form">
+              <div class="choiceItem">
                 <input id="manualGrid" type="checkbox" wicket:id="manualGrid"/>
                 <label for="manualGrid">
                   <wicket:message key="manualGrid">manualGrid</wicket:message>
                 </label>
               </div>
-              <div class="gs-list-item-class">
+              <div class="gs-form-group">
                 <div wicket:id="sourceGrid"/>
               </div>
             </div>
@@ -52,13 +52,13 @@
               </div>
             </div>
           </div>
-          <div class="gs-list-item-class">
+          <div class="gs-form-group">
             <label for="targetCRS">
               <wicket:message key="targetCRS">targetCRS</wicket:message>
             </label>
             <span wicket:id="targetCRS"/>
           </div>
-          <div class="gs-list-item-class">
+          <div class="gs-form-group">
             <label for="format">
               <wicket:message key="format">output_format</wicket:message>
             </label>

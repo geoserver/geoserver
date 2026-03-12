@@ -12,12 +12,14 @@
             <wicket:message key="encryptingUrlParams"/>
           </label>
         </div>
-        <div class="py-1">
-          <label for="passwordEncryption">
-            <wicket:message key="passwordEncryption"/>
-          </label>
+        <div class="gs-form-group">
+          <div class="gs-form-group-label">
+            <label for="passwordEncryption">
+              <wicket:message key="passwordEncryption"/>
+            </label>
+            <span class="instruct" wicket:id="strongEncryptionMsg"/>
+          </div>
           <select id="passwordEncryption" wicket:id="configPasswordEncrypterName"/>
-          <span wicket:id="strongEncryptionMsg"/>
         </div>
       </div>
     </wicket:panel>

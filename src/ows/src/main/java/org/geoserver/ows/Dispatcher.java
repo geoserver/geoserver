@@ -318,8 +318,17 @@ public class Dispatcher extends AbstractController {
         // figure out method
         request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()) || isForm(reqContentType));
 
-        // create the kvp map
-        parseKVP(request);
+        // parse workspace context first so version negotiation can use it
+        initRequestContext(request);
+
+        // so DisabledServiceCheck can read workspace context for version filtering
+        REQUEST.set(request);
+        try {
+            // create the kvp map
+            parseKVP(request);
+        } finally {
+            REQUEST.remove();
+        }
 
         if (!request.isGet()) { // && httpRequest.getInputStream().available() > 0) {
             // check for a SOAP request, if so we need to unwrap the SOAP stuff
@@ -388,7 +397,6 @@ public class Dispatcher extends AbstractController {
                 request.getInput().reset();
             }
         }
-        initRequestContext(request);
 
         return fireInitCallback(request);
     }
@@ -676,6 +684,9 @@ public class Dispatcher extends AbstractController {
 
             if (service == null) {
                 service = normalize((String) map.get("service"));
+                if (service != null) {
+                    service = service.toUpperCase();
+                }
 
                 if ((service != null) && !citeCompliant) {
                     req.setService(service);

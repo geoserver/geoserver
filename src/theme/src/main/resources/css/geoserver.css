@@ -2032,17 +2032,6 @@ label.gs-switch-label {
   }
 }
 
-.gs-panel-EnvelopePanel .gs-unordered-list-class {
-    display: flex;
-    flex-direction: row;
-}
-
-.bounding-box-controls {
-    display:flex;
-    flex-direction: column;
-}
-
-
 .gs-grid-table {
     display: grid;
     width: 100%;

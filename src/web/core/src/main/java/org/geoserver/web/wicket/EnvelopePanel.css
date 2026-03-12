@@ -15,10 +15,14 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+.gs-panel-EnvelopePanel .gs-unordered-list-class {
+    display: flex;
+    flex-direction: row;
+}
 
 .gs-panel-EnvelopePanel .dataentry {
     display: grid;
-    grid-template-columns: 50px 110px;
+    grid-template-columns: 50px max-content;
     row-gap: 5px;
     align-items: center;
     margin-top: 10px;
@@ -26,6 +30,7 @@ Your css selectors should look like this to avoid modifying styles outside the p
     border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);;
     width: fit-content;
     padding: 7px 10px 7px 10px;;
+    border-radius: var(--gs-border-radius);
 }
 
 .gs-panel-EnvelopePanel .diagram {
@@ -34,6 +39,7 @@ Your css selectors should look like this to avoid modifying styles outside the p
     border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);
     margin-top: 10px;
     margin-left: 10px;
+    border-radius: var(--gs-border-radius);
 }
 .gs-panel-EnvelopePanel .diagram .gs-list-item-class div {
     border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);
@@ -92,3 +98,8 @@ Your css selectors should look like this to avoid modifying styles outside the p
     margin-left: auto;
 }
 
+@media (max-width: 768px) {
+    .gs-panel-EnvelopePanel .dataentry {
+        grid-template-columns: auto;
+    }
+}

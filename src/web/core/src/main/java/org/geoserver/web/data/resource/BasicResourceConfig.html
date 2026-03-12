@@ -112,11 +112,11 @@
                     <wicket:message key="nativeBbox">Native BBox</wicket:message>
                   </label>
                   <div id="nativeBoundingBox" wicket:id="nativeBoundingBox"/>
-                  <div id="nativeBBoxControls" class="bounding-box-controls">
-                    <a href="#" wicket:id="computeNative">
+                  <div id="nativeBBoxControls" class="button-group">
+                    <a href="#" wicket:id="computeNative" class="button">
                       <wicket:message key="computeFromData">Compute from data</wicket:message>
                     </a>
-                    <a href="#" wicket:id="computeLatLonFromNativeSRS">
+                    <a href="#" wicket:id="computeLatLonFromNativeSRS" class="button">
                       <wicket:message key="computeFromSRS">Compute from SRS bounds</wicket:message>
                     </a>
                   </div>
@@ -126,9 +126,11 @@
                     <wicket:message key="latLonBbox">Lat/Lon BBOX</wicket:message>
                   </label>
                   <div id="latLonBoundingBox" wicket:id="latLonBoundingBox"/>
-                  <a href="#" wicket:id="computeLatLon" class="computeLink">
-                    <wicket:message key="computeFromNativeBounds">Compute from native bounds</wicket:message>
-                  </a>
+                  <div class="button-group">
+                    <a href="#" wicket:id="computeLatLon" class="computeLink button">
+                      <wicket:message key="computeFromNativeBounds">Compute from native bounds</wicket:message>
+                    </a>
+                  </div>
                 </div>
               </div>
             </fieldset>

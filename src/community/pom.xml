@@ -163,6 +163,7 @@
         <module>stac-datastore</module>
         <module>acl</module>
         <module>geoparquet</module>
+        <module>duckdb</module>
         <module>wps-download-netcdf</module>
         <module>singlestore</module>
         <module>pmtiles-store</module>
@@ -528,6 +529,12 @@
       <id>geoparquet</id>
       <modules>
         <module>geoparquet</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>duckdb</id>
+      <modules>
+        <module>duckdb</module>
       </modules>
     </profile>
     <profile>

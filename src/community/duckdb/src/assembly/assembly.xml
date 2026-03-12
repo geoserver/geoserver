@@ -1,0 +1,28 @@
+<assembly>
+  <id>duckdb-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!--
+        Deliberately package only module-specific runtime jars.
+        Commons DBCP/pool are provided by core GeoServer webapp libraries.
+      -->
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gt-duckdb*.jar</include>
+        <include>duckdb_jdbc*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

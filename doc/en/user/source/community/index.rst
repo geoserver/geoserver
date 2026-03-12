@@ -28,6 +28,7 @@ officially part of the GeoServer releases. They are however built along with the
    colormap/index
    cov-json/index
    dds/index
+   duckdb/index
    elasticsearch/index
    features-autopopulate/index
    features-templating/index
@@ -82,4 +83,3 @@ officially part of the GeoServer releases. They are however built along with the
    wfs-freemarker/index
    wps-download-netcdf/index
    wps-longitudinal-profile/index
-

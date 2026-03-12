@@ -22,6 +22,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.util.InternationalString;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -38,6 +39,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected String title;
 
     /** This property in 2.2.x series is stored under the metadata map with key 'abstract'. */
+    @PatchProperty("abstract")
     protected String abstractTxt;
 
     protected Boolean enabled;
@@ -49,6 +51,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected LayerInfo rootLayer;
     protected StyleInfo rootLayerStyle;
 
+    @PatchProperty("title")
     protected GrowableInternationalString internationalTitle;
 
     protected GrowableInternationalString internationalAbstract;
@@ -56,7 +59,9 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     /** This property is here for compatibility purpose, in 2.3.x series it has been replaced by 'publishables' */
     protected List<LayerInfo> layers = new ArrayList<>();
 
+    @PatchProperty("layers")
     protected List<PublishedInfo> publishables = new ArrayList<>();
+
     protected List<StyleInfo> styles = new ArrayList<>();
     protected List<MetadataLinkInfo> metadataLinks = new ArrayList<>();
 

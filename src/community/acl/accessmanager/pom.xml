@@ -79,13 +79,11 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms1_1</artifactId>
-      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms1_3</artifactId>
-      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>

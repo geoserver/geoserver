@@ -44,6 +44,7 @@
 
   <modules>
     <module>app-schema-core</module>
+    <module>app-schema-test-support</module>
     <module>app-schema-test</module>
     <module>sample-data-access-test</module>
   </modules>

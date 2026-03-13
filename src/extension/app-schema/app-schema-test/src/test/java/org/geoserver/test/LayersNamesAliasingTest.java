@@ -40,7 +40,7 @@ public final class LayersNamesAliasingTest extends AbstractAppSchemaTestSupport 
     @BeforeClass
     public static void prepare() throws IOException {
         testFolderPath = Files.createTempDirectory(Path.of("target/test-classes"), "layernames");
-        File srcDir = new File("target/test-classes/test-data/stations/layerNamesTest");
+        File srcDir = new File("../app-schema-test-support/target/classes/test-data/stations/layerNamesTest");
         File destDir = Path.of(testFolderPath.toString(), "layerNamesTest").toFile();
         destDir.deleteOnExit();
         FileUtils.copyDirectory(srcDir, destDir);

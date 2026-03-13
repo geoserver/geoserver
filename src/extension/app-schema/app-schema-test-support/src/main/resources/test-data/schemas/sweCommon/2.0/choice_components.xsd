@@ -1,0 +1,55 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:swe="http://www.opengis.net/swe/2.0" targetNamespace="http://www.opengis.net/swe/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0.0">
+    <annotation>
+        <documentation>SWE Common Data Model schema for choice data components (i.e. disjoint unions). See requirements class http://www.opengis.net/spec/SWE/2.0/req/xsd-choice-components/
+        
+        SWE Common is an OGC Standard.
+        Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved. 
+        To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+        </documentation>
+    </annotation>
+    <include schemaLocation="simple_components.xsd"/>
+    <!-- ================================================= -->
+    <element name="DataChoice" substitutionGroup="swe:AbstractDataComponent" type="swe:DataChoiceType">
+        <annotation>
+            <documentation>Implementation of a choice of two or more Data Components (also called disjoint union)</documentation>
+        </annotation>
+    </element>
+    <complexType name="DataChoiceType">
+        <complexContent>
+            <extension base="swe:AbstractDataComponentType">
+                <sequence>
+                    <element minOccurs="0" name="choiceValue">
+                        <annotation>
+                            <documentation>This category component marks the data stream element that will indicate the actual choice made. Possible choices are listed in the Category constraint section as an enumeration and should map to item names.</documentation>
+                        </annotation>
+                        <complexType>
+                            <sequence>
+                                <element ref="swe:Category"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element maxOccurs="unbounded" minOccurs="2" name="item">
+                        <complexType>
+                            <complexContent>
+                                <extension base="swe:AbstractDataComponentPropertyType">
+                                    <attribute name="name" type="NCName" use="required"/>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="DataChoicePropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:DataChoice"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="DataChoicePropertyByValueType">
+        <sequence>
+            <element ref="swe:DataChoice"/>
+        </sequence>
+    </complexType>
+</schema>

@@ -223,28 +223,50 @@ window.onload = function() {
     updateFilter();
   }
 
-  // shows/hide the control panel
-  function toggleControlPanel(){
-    var toolbar = document.getElementById("toolbar");
-    if (toolbar.style.display == "none") {
-      toolbar.style.display = "block";
-    }
-    else {
-      toolbar.style.display = "none";
-    }
-    map.updateSize()
-  }
-
   // set event handlers
   document.getElementById('wmsVersionSelector').onchange = function(event) { setWMSVersion(event.target.value); };
   document.getElementById('tilingModeSelector').onchange = function(event) { setTileMode(event.target.value); };
   document.getElementById('antialiasSelector').onchange = function(event) { setAntialiasMode(event.target.value); };
   document.getElementById('imageFormatSelector').onchange = function(event) { setImageFormat(event.target.value); };
   document.getElementById('styleSelector').onchange = function(event) { setStyle(event.target.value); };
-  document.getElementById('widthSelector').onchange = function(event) { setWidth(event.target.value); };
-  document.getElementById('heightSelector').onchange = function(event) { setHeight(event.target.value); };
   document.getElementById('updateFilterButton').onclick = updateFilter;
   document.getElementById('resetFilterButton').onclick = resetFilter;
-  document.getElementById('options').onclick = toggleControlPanel;
+
+  // update the map size every time the map container resizes
+  const mapNode = document.querySelector('#map');
+  if (mapNode) {
+    const resizeObserver = new ResizeObserver(() => {
+      map.updateSize();
+    });
+    resizeObserver.observe(mapNode);
+  }
+
+  // open/close the sidebar
+  function initializeSidebarMenu() {
+    const sidebarToggle = document.querySelector('#sidebar-menu');
+    const sidebar = document.querySelector('#sidebar-content');
+    function openSidebar() {
+      if (sidebar) sidebar.classList.add('is-open');
+      if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      if (sidebar) sidebar.classList.remove('is-open');
+      if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+    function isSidebarOpen() {
+      return sidebar && sidebar.classList.contains('is-open');
+    }
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', function() {
+          isSidebarOpen() ? closeSidebar() : openSidebar();
+      });
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && isSidebarOpen()) closeSidebar();
+    });
+  }
+  initializeSidebarMenu();
 
 };

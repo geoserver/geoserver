@@ -8,17 +8,25 @@ package org.geoserver.system.status;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
 
     @Rule
     public ErrorCollector collector = new ErrorCollector();
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no test data needed
+    }
 
     @Test
     public void testMetricCollector() {
@@ -42,14 +50,12 @@ public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
         systemInfoCollector.setStatisticsStatus(true);
 
         // leave it working some time.
-        Thread.sleep(3 * OSHISystemInfoCollector.INTERVAL);
+        Awaitility.await().atMost(3, TimeUnit.SECONDS).until(() -> {
+            final Metrics collected = systemInfoCollector.retrieveAllSystemInfo();
+            final List<MetricValue> metrics = collected.getMetrics();
 
-        final Metrics collected = systemInfoCollector.retrieveAllSystemInfo();
-        final List<MetricValue> metrics = collected.getMetrics();
-
-        // check operating system name is not a default value
-        Assert.assertNotEquals(
-                BaseSystemInfoCollector.DEFAULT_VALUE, metrics.get(0).getValue());
+            return !BaseSystemInfoCollector.DEFAULT_VALUE.equals(metrics.get(0).getValue());
+        });
     }
 
     @Test

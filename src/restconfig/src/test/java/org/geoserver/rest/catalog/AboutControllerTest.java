@@ -80,6 +80,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         JSONObject json = (JSONObject) getAsJSON(BASEPATH + "/about/version.json");
         // print(json);
         checkJSONModel(json);
+        assertTrue(json.has("about"));
     }
 
     @Test

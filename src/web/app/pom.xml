@@ -1904,6 +1904,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>duckdb</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-duckdb</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>pmtiles-store</id>
       <dependencies>
         <dependency>

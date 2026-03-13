@@ -4,6 +4,8 @@
  */
 package org.geoserver.params.extractor.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Optional;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -116,6 +118,19 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
 
     private static class EditButtonPanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParamsExtractorConfigPage.EditButtonPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public EditButtonPanel(String id, final RuleModel ruleModel) {
             super(id);
             this.setOutputMarkupId(true);
@@ -135,6 +150,20 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
     }
 
     private static class ActivateButtonPanel extends Panel {
+
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(ParamsExtractorConfigPage.ActivateButtonPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public ActivateButtonPanel(String id, final RuleModel ruleModel) {
             super(id);

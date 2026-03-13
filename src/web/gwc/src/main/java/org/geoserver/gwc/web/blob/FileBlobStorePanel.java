@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Arrays;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -26,6 +28,19 @@ import org.geowebcache.config.FileBlobStoreInfo;
  * @author Niels Charlier
  */
 public class FileBlobStorePanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FileBlobStorePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = -8237328668463257329L;

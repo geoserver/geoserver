@@ -4,6 +4,8 @@
  */
 package org.geoserver.smartdataloader.data.store.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +56,8 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 /** Implementation od StoreEditPanel for PostgisSmartAppSchemaDataAccessFactory. */
 @SuppressWarnings("serial")
 public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SmartDataLoaderStoreEditPanel.class);
 
     // resources
     private Model<DataStoreSummary> datastoreModel;
@@ -177,6 +181,12 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         super.renderHead(response);
         String css = ".qos-panel { " + "border: 1px solid #c6e09b; " + "padding: 5px; " + " }";
         response.render(CssHeaderItem.forCSS(css, "qosPanelCss"));
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
     }
 
     /** Helper method that creates dropdown for postgis datastore selection. */

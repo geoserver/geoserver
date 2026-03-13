@@ -19,6 +19,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
@@ -254,8 +255,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
             upDown.add(new PlaceholderLink("up"));
         } else {
             ImageAjaxLink<Void> upLink =
-                    new ImageAjaxLink<>(
-                            "up", new PackageResourceReference(getClass(), "../../img/icons/silk/arrow_up.png")) {
+                    new ImageAjaxLink<>("up", new ContextRelativeResourceReference("img/icons/silk/arrow_up.png")) {
                         @Override
                         protected void onClick(AjaxRequestTarget target) {
                             attributesProvider.moveUp(attribute);
@@ -269,8 +269,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
             upDown.add(new PlaceholderLink("down"));
         } else {
             ImageAjaxLink<Void> downLink =
-                    new ImageAjaxLink<>(
-                            "down", new PackageResourceReference(getClass(), "../../img/icons/silk/arrow_down.png")) {
+                    new ImageAjaxLink<>("down", new ContextRelativeResourceReference("img/icons/silk/arrow_down.png")) {
                         @Override
                         protected void onClick(AjaxRequestTarget target) {
                             attributesProvider.moveDown(attribute);

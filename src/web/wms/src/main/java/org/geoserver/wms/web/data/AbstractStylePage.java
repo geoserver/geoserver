@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -93,6 +95,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     static class ChooseColorPanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(AbstractStylePage.ChooseColorPanel.class);
+
         final TextField<String> chooser;
         final String initialColor;
 
@@ -140,6 +144,12 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     + "    }\n"
                     + "});";
             response.render(new OnDomReadyHeaderItem(enableSpectrum));
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
         }
     }
 

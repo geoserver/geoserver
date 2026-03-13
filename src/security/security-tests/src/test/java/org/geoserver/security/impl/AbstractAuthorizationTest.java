@@ -57,7 +57,7 @@ import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.filter.sort.SortOrder;
 import org.junit.After;
 import org.junit.Before;
-import org.springframework.beans.support.PropertyComparator;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -586,10 +586,14 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                     }
                     SortBy sortBy = (SortBy) EasyMock.getCurrentArguments()[4];
                     if (sortBy != null) {
-                        Comparator<LayerGroupInfo> comparator = new PropertyComparator<>(
-                                sortBy.getPropertyName().getPropertyName(),
-                                false,
-                                sortBy.getSortOrder() == SortOrder.ASCENDING);
+                        String propName = sortBy.getPropertyName().getPropertyName();
+                        boolean ascending = sortBy.getSortOrder() == SortOrder.ASCENDING;
+                        @SuppressWarnings({"unchecked", "rawtypes"})
+                        Comparator<LayerGroupInfo> comparator = (o1, o2) -> {
+                            Comparable v1 = (Comparable) new BeanWrapperImpl(o1).getPropertyValue(propName);
+                            Comparable v2 = (Comparable) new BeanWrapperImpl(o2).getPropertyValue(propName);
+                            return ascending ? v1.compareTo(v2) : v2.compareTo(v1);
+                        };
                         stream = stream.sorted(comparator);
                     }
                     Iterator<LayerGroupInfo> it = stream.iterator();

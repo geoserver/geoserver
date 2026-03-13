@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.util.Arrays;
@@ -49,6 +51,19 @@ import org.vfny.geoserver.util.DataStoreUtils;
 /** A generic configuration panel for all basic ResourceInfo properties */
 // TODO WICKET8 - Verify this page works OK
 public class BasicResourceConfig extends ResourceConfigurationPanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(BasicResourceConfig.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = -552158739086379566L;
@@ -152,6 +167,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                             new CatalogBuilder(GeoServerApplication.get().getCatalog());
                     ReferencedEnvelope bounds = cb.getNativeBounds(resource);
                     resource.setNativeBoundingBox(bounds);
+                    nativeBBox.clearInput();
                     nativeBBox.setModelObject(bounds);
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "Error computing the native BBOX", e);
@@ -229,6 +245,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
                     CatalogBuilder cb =
                             new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                    latLonPanel.clearInput();
                     latLonPanel.setModelObject(cb.getLatLonBounds(nativeBounds, declaredCRS.getCRS()));
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "Error computing the geographic BBOX", e);

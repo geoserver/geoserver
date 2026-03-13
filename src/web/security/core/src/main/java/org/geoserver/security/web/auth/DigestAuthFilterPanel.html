@@ -5,14 +5,16 @@
 <body>
 <wicket:extend>
 
-  <div class="py-1">
-    <label ><wicket:message key="userGroupService"></wicket:message></label>
-    <select wicket:id="userGroupServiceName"></select>
-  </div>
-  <div class="py-1">
-    <label><wicket:message key="nonceValidityDuration"></wicket:message></label>
-    <input wicket:id="nonceValiditySeconds" class="field" type="text"/>
-  </div>
+  <fieldset>
+    <div class="gs-form-group">
+      <label ><wicket:message key="userGroupService"></wicket:message></label>
+      <select wicket:id="userGroupServiceName"></select>
+    </div>
+    <div class="gs-form-group">
+      <label><wicket:message key="nonceValidityDuration"></wicket:message></label>
+      <input wicket:id="nonceValiditySeconds" class="field" type="text"/>
+    </div>
+  </fieldset>
 
 </wicket:extend>
 </body>

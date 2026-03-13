@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.model.IModel;
@@ -13,6 +15,20 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.util.MetadataMapModel;
 
 public class RootLayerConfig extends PublishedConfigurationPanel<PublishedInfo> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RootLayerConfig.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     public static final long serialVersionUID = -1l;
 
     public RootLayerConfig(String id, IModel<? extends PublishedInfo> model) {

@@ -22,7 +22,7 @@ import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServiceLinkDescription;
 import org.geotools.util.Version;
 
-/** Provide description of WMS services for welcome page. */
+/** Provide description of WCS services for welcome page. */
 public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     /** Service type to cross-link between service description and service link description. */

@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
@@ -13,7 +15,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 
 /**
  * A panel with two arrows, up and down, supposed to reorder items in a container (a table)
@@ -22,6 +24,19 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  * @param <T>
  */
 public class UpDownPanel<T> extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(UpDownPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = -5964561496724645286L;
@@ -47,7 +62,7 @@ public class UpDownPanel<T> extends Panel {
 
         upLink =
                 new ImageAjaxLink<Void>(
-                        "up", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_up.png")) {
+                        "up", new ContextRelativeResourceReference("/img/icons/silk/arrow_up.png", false)) {
                     @Serial
                     private static final long serialVersionUID = 2377129539852597050L;
 
@@ -78,7 +93,7 @@ public class UpDownPanel<T> extends Panel {
 
         downLink =
                 new ImageAjaxLink<Void>(
-                        "down", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_down.png")) {
+                        "down", new ContextRelativeResourceReference("/img/icons/silk/arrow_down.png", false)) {
                     @Serial
                     private static final long serialVersionUID = -1770135905138092575L;
 

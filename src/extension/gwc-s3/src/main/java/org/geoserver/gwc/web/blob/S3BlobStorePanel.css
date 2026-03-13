@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class S3BlobStorePanel
+
+The panel's html will be contained in a <div class='gs-panel-S3BlobStorePanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-S3BlobStorePanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

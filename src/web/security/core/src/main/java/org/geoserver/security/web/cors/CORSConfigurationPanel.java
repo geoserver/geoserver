@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.cors;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -20,6 +22,19 @@ import org.geoserver.security.cors.CORSConfiguration;
 import org.geoserver.web.util.MetadataMapModel;
 
 public class CORSConfigurationPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CORSConfigurationPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     public CORSConfigurationPanel(String id, IModel<SettingsInfo> settingsInfoIModel) {
         super(id, settingsInfoIModel);

@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class VirtualRelationshipsPanel$RelationshipFormPanel
+
+The panel's html will be contained in a <div class='gs-panel-VirtualRelationshipsPanel_RelationshipFormPanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-VirtualRelationshipsPanel_RelationshipFormPanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

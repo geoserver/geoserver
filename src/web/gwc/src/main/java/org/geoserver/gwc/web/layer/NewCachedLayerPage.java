@@ -20,15 +20,15 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.web.GWCIconFactory;
+import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -70,22 +70,22 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
                     TileLayer layer = itemModel.getObject();
-                    PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
-                    f.add(new CachingImage("layerIcon", layerIcon));
+                    ResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
+                    f.add(CatalogIconFactory.get().getIcon("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
                     return nameLink(id, itemModel);
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = itemModel.getObject();
                     boolean enabled = layerInfo.isEnabled();
-                    PackageResourceReference icon;
+                    ResourceReference icon;
                     if (enabled) {
                         icon = GWCIconFactory.getEnabledIcon();
                     } else {
                         icon = GWCIconFactory.getDisabledIcon();
                     }
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
-                    f.add(new CachingImage("layerIcon", icon));
+                    f.add(CatalogIconFactory.get().getIcon("layerIcon", icon));
                     return f;
                 }
                 throw new IllegalArgumentException("Don't know a property named " + property.getName());

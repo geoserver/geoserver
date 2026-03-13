@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class OutputTypesFormComponent
+
+The panel's html will be contained in a <div class='gs-panel-OutputTypesFormComponent'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-OutputTypesFormComponent ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

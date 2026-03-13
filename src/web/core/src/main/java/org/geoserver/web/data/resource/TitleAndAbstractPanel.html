@@ -4,10 +4,10 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-TitleAndAbstractPanel">
-        <div class="gn-unordered-list-class i18n-tile-and-abstract">
-          <div class="gn-list-item-class">
+        <div class="i18n-tile-and-abstract gs-form">
+          <div class="gs-form-group">
             <span wicket:id="titleLabel">
-              <label for="title" wicket:id="titleLabel"/>
+            <label for="title" wicket:id="titleLabel"/>
               <div class="choiceItem">
                 <input type="checkbox" wicket:id="titleLabel_i18nCheckbox"/>
                 <label>
@@ -15,14 +15,12 @@
                 </label>
               </div>
             </span>
+            <div>
+              <input type="text" wicket:id="title"/>
+              <div wicket:id="internationalTitle"/>
+            </div>
           </div>
-          <div class="gn-list-item-class">
-            <input type="text" wicket:id="title"/>
-          </div>
-          <div class="gn-list-item-class">
-            <div wicket:id="internationalTitle"/>
-          </div>
-          <div class="gn-list-item-class">
+          <div class="gs-form-group">
             <span wicket:id="abstractLabel">
               <label for="abstract" wicket:id="abstractLabel"/>
               <div class="choiceItem">
@@ -32,12 +30,10 @@
                 </label>
               </div>
             </span>
-          </div>
-          <div class="gn-list-item-class">
-            <textarea wicket:id="abstract" class="field" rows="10" cols="30"/>
-          </div>
-          <div class="gn-list-item-class">
-            <div wicket:id="internationalAbstract"/>
+            <div>
+              <textarea wicket:id="abstract" class="field" rows="10" cols="30"/>
+              <div wicket:id="internationalAbstract"/>
+            </div>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web.gridset;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.text.NumberFormat;
@@ -43,6 +44,19 @@ import org.geowebcache.grid.GridSetFactory;
 import org.geowebcache.grid.SRS;
 
 public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TileMatrixSetEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = 5098470663723800345L;

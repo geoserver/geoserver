@@ -10,7 +10,9 @@ import java.util.Collections;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.util.patch.PatchContext;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.ows.util.PropertyCopyPolicy;
 import org.geoserver.rest.AbstractGeoServerController;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RestException;
@@ -67,7 +69,8 @@ public abstract class ServiceSettingsController<T extends ServiceInfo> extends A
             originalInfo = geoServer.getService(clazz);
         }
         if (originalInfo != null) {
-            OwsUtils.copy(info, originalInfo, clazz);
+            PropertyCopyPolicy policy = PatchContext.getCopyPolicy();
+            OwsUtils.copy(info, originalInfo, clazz, policy);
             geoServer.save(originalInfo);
         } else {
             if (ws != null) {

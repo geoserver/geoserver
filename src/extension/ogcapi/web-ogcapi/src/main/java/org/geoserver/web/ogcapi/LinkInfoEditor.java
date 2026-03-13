@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.ogcapi;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +23,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIService;
@@ -37,6 +39,19 @@ import org.springframework.context.ApplicationContext;
 
 /** Component editing a list of {@link AttributeTypeInfo} */
 class LinkInfoEditor extends FormComponentPanel<List<LinkInfo>> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LinkInfoEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     static final Logger LOGGER = Logging.getLogger(LinkInfoEditor.class);
 
@@ -129,8 +144,8 @@ class LinkInfoEditor extends FormComponentPanel<List<LinkInfo>> {
                 return f;
             } else if (property == REMOVE) {
                 final LinkInfo entry = itemModel.getObject();
-                PackageResourceReference icon =
-                        new PackageResourceReference(getClass(), "../img/icons/silk/delete.png");
+                ContextRelativeResourceReference icon =
+                        new ContextRelativeResourceReference("img/icons/silk/delete.png");
                 ImageAjaxLink<Object> link = new ImageAjaxLink<>(id, icon) {
 
                     @Override

@@ -4,6 +4,8 @@
  */
 package org.geoserver.rat.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import it.geosolutions.imageio.pam.PAMDataset;
 import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.Row;
 import java.io.IOException;
@@ -41,6 +43,19 @@ import org.geotools.api.style.Style;
 import org.geotools.util.logging.Logging;
 
 public class RasterAttributeTableConfig extends PublishedConfigurationPanel<LayerInfo> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RasterAttributeTableConfig.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     static final Logger LOGGER = Logging.getLogger(RasterAttributeTableConfig.class);
     private final CoverageRATs rats;

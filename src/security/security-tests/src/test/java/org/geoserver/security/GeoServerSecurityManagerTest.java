@@ -6,6 +6,9 @@
 package org.geoserver.security;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -14,6 +17,7 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.test.SystemTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -88,6 +92,52 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         RequestFilterChain chain =
                 config.getFilterChain().getRequestChainByName(GeoServerSecurityFilterChain.WEB_LOGIN_CHAIN_NAME);
         assertTrue(chain.isAllowSessionCreation());
+    }
+
+    @Test
+    public void testReloadClearsCaches() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+
+        // populate caches by loading default services
+        secMgr.loadRoleService("default");
+        secMgr.loadUserGroupService("default");
+        secMgr.loadPasswordValidator("default");
+
+        // verify caches are populated (precondition)
+        assertFalse("roleServices cache should not be empty", secMgr.roleServices.isEmpty());
+        assertFalse("userGroupServices cache should not be empty", secMgr.userGroupServices.isEmpty());
+        assertFalse("passwordValidators cache should not be empty", secMgr.passwordValidators.isEmpty());
+
+        // capture cached instances by identity
+        GeoServerRoleService oldRoleService = secMgr.roleServices.get("default");
+        GeoServerUserGroupService oldUgService = secMgr.userGroupServices.get("default");
+        PasswordValidator oldPwValidator = secMgr.passwordValidators.get("default");
+
+        assertNotNull(oldRoleService);
+        assertNotNull(oldUgService);
+        assertNotNull(oldPwValidator);
+
+        // reload calls init() which calls clearCaches(), then re-initializes
+        secMgr.reload();
+
+        // after reload, loading services again must produce fresh instances
+        secMgr.loadRoleService("default");
+        secMgr.loadUserGroupService("default");
+        secMgr.loadPasswordValidator("default");
+
+        // check the cache maps directly to avoid wrapper interference from the public load methods
+        assertNotSame(
+                "roleService should be a fresh instance after reload",
+                oldRoleService,
+                secMgr.roleServices.get("default"));
+        assertNotSame(
+                "userGroupService should be a fresh instance after reload",
+                oldUgService,
+                secMgr.userGroupServices.get("default"));
+        assertNotSame(
+                "passwordValidator should be a fresh instance after reload",
+                oldPwValidator,
+                secMgr.passwordValidators.get("default"));
     }
 
     @Test

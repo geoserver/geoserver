@@ -13,7 +13,6 @@
     <version>3.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.community</groupId>
   <artifactId>gs-cog-s3</artifactId>
   <packaging>jar</packaging>
   <name>COG support module - Amazon S3</name>

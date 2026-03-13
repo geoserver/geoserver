@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.web.schema;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +22,19 @@ import org.geoserver.featurestemplating.configuration.schema.SchemaTypeTemplateD
 import org.geoserver.web.publish.PublishedEditTabPanel;
 
 public class SchemaRulesTabPanel extends PublishedEditTabPanel<LayerInfo> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SchemaRulesTabPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     public SchemaRuleConfigurationPanel configurationPanel;
     /**

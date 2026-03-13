@@ -12,16 +12,18 @@
           </legend>
           <div wicket:id="mainDiv">
             <form wicket:id="form">
-              <div wicket:id="addVectorCustomDimensionPanel">
+              <div wicket:id="addVectorCustomDimensionPanel" class="gs-form">
                 <div wicket:id="feedback"/>
-                <label for="nameInput">
-                  <wicket:message key="nameInput"/>
-                </label>
-                <div class="gs-input-group">
-                  <input wicket:id="nameInput" id="nameInput" type="text" size="40"/>
-                  <button type="submit" wicket:id="addButton">
-                    <wicket:message key="addButton">Add new dimension</wicket:message>
-                  </button>
+                <div class="gs-form-group">
+                  <label for="nameInput">
+                    <wicket:message key="nameInput"/>
+                  </label>
+                  <div class="gs-input-group">
+                    <input wicket:id="nameInput" id="nameInput" type="text" size="40"/>
+                    <button type="submit" wicket:id="addButton">
+                      <wicket:message key="addButton">Add new dimension</wicket:message>
+                    </button>
+                  </div>
                 </div>
               </div>
               <br/>

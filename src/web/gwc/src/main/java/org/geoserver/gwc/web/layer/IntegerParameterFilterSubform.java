@@ -6,6 +6,8 @@
 
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,6 +29,19 @@ import org.geowebcache.filter.parameters.IntegerParameterFilter;
  * @author Kevin Smith, OpenGeo
  */
 public class IntegerParameterFilterSubform extends AbstractParameterFilterSubform<IntegerParameterFilter> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(IntegerParameterFilterSubform.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = 4625052381807389891L;

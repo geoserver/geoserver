@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class SmartDataLoaderStoreEditPanel
+
+The panel's html will be contained in a <div class='gs-panel-SmartDataLoaderStoreEditPanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-SmartDataLoaderStoreEditPanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

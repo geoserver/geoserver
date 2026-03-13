@@ -1,0 +1,33 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class GridSubsetsEditor
+
+The panel's html will be contained in a <div class='gs-panel-GridSubsetsEditor'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-GridSubsetsEditor ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/
+
+.gs-panel-GridSubsetsEditor .minmax {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.gs-panel-GridSubsetsEditor .minmax select {
+    max-width: 100px;
+    min-width: 70px;
+}
+
+
+.gs-panel-GridSubsetsEditor td {
+    vertical-align: middle;
+}

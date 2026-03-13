@@ -4,6 +4,8 @@
  */
 package org.geoserver.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -19,6 +21,19 @@ import org.geoserver.libdeflate.LibdeflateSettingsInitializer;
 /** Basic Panel to configure LibdeflateSettings. */
 @SuppressWarnings("unchecked")
 public class LibdeflateSettingsPanel<T extends LibdeflateSettings> extends FormComponentPanel<T> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LibdeflateSettingsPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     protected final WebMarkupContainer container;
     private final TextField<Integer> compressionPriority;

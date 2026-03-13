@@ -8,8 +8,8 @@
     <form>
         <fieldset>
             <legend><span><wicket:message key="checksControl"></wicket:message></span></legend>
-            <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class choiceItem">
+            <div class="gs-unordered-list-class">
+                <div class="gs-list-item-class choiceItem">
                     <input type="checkbox" id="checksEnabled" wicket:id="checksEnabled"></input>
                     <label for="checksEnabled" wicket:id="statusLabel"></label>
                 </div>
@@ -18,13 +18,15 @@
 
         <fieldset>
             <legend><span><wicket:message key="urlChecks"></wicket:message></span></legend>
-            <div class="gn-unordered-list-class action-group">
-                <div class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew">
-                    <wicket:message key="addNew"/>
-                </a></div>
-                <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected">
-                    <wicket:message key="removeSelected"/>
-                </a></div>
+            <div>
+                <div class="gs-unordered-list-class action-group">
+                    <div class="gs-list-item-class"> <a class="add-link" href="#" wicket:id="addNew">
+                        <wicket:message key="addNew"/>
+                    </a></div>
+                    <div class="gs-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected">
+                        <wicket:message key="removeSelected"/>
+                    </a></div>
+                </div>
             </div>
             <div wicket:id="table"></div>
         </fieldset>
@@ -33,8 +35,8 @@
     <form wicket:id="testForm">
         <fieldset>
             <legend><span><wicket:message key="testChecks"></wicket:message></span></legend>
-            <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class">
+            <div class="gs-form">
+                <div class="gs-form-group">
                     <label for="input">
                         <wicket:message key="testInput"></wicket:message>
                     </label>

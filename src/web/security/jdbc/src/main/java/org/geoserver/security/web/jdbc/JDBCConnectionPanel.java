@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.jdbc;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -36,6 +38,19 @@ import org.geotools.util.logging.Logging;
  */
 // TODO WICKET8 - Verify this page works OK
 public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends FormComponentPanel<T> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(JDBCConnectionPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -107,6 +122,19 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
 
     static class BasicConnectionPanel extends ConnectionPanel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(JDBCConnectionPanel.BasicConnectionPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public BasicConnectionPanel(String id) {
             super(id);
 
@@ -149,6 +177,19 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
     }
 
     static class JNDIConnectionPanel extends ConnectionPanel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(JDBCConnectionPanel.JNDIConnectionPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public JNDIConnectionPanel(String id) {
             super(id);

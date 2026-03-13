@@ -4,6 +4,8 @@
  */
 package org.geoserver.params.extractor.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -91,6 +93,19 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
 
     public static class SimpleRulePanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParamsExtractorRulePage.SimpleRulePanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public SimpleRulePanel(String panelId, IModel<RuleModel> model) {
             super(panelId, model);
             add(new NumberTextField<Integer>("position").setMinimum(1).setRequired(true));
@@ -101,6 +116,19 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
     }
 
     public static class ComplexRulePanel extends Panel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParamsExtractorRulePage.ComplexRulePanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public ComplexRulePanel(String panelId, IModel<RuleModel> model) {
             super(panelId, model);
@@ -116,6 +144,20 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
     }
 
     public static class EchoParameterPanel extends Panel {
+
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(ParamsExtractorRulePage.EchoParameterPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public EchoParameterPanel(String panelId, IModel<RuleModel> model) {
             super(panelId, model);

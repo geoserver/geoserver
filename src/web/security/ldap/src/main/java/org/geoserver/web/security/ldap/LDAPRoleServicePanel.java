@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.security.ldap;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -30,6 +32,20 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
     private static final String NESTED_SEARCH_FIELDS_CONTAINER = "nestedSearchFieldsContainer";
 
     static class LDAPAuthenticationPanel extends FormComponentPanel<String> {
+
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(LDAPRoleServicePanel.LDAPAuthenticationPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         /** serialVersionUID */
         @Serial

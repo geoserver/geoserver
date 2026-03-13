@@ -21,9 +21,24 @@
     <property name="category" ref="servicesCategory"/>
     <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
   </bean>
-    
+
+  <!-- wms config panels -->
+  <bean id="wfsHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="wfsHeading" />
+    <property name="order" value="750" />
+    <property name="titleKey" value="HeadingConfigurationPanel.wfs.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.wfs.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.FeatureTypeInfo</value>
+      </list>
+    </property>
+  </bean>
+
   <bean id="wfsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="wfsLayerConfig"/>
+    <property name="order" value="590"/>
     <property name="titleKey" value="data.resource.config.wfs"/>
     <property name="componentClass" value="org.geoserver.wfs.web.publish.WFSLayerConfig"/>
     <property name="supportedTypes">

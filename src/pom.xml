@@ -48,6 +48,7 @@
     <module>restconfig-wfs</module>
     <module>restconfig-wms</module>
     <module>restconfig-wmts</module>
+    <module>theme</module>
     <module>web</module>
     <module>community</module>
     <module>extension</module>
@@ -96,11 +97,11 @@
     <gs.version>3.0-SNAPSHOT</gs.version>
     <gt.version>35-SNAPSHOT</gt.version>
     <gwc.version>2.0-SNAPSHOT</gwc.version>
-    <spring.version>7.0.2</spring.version>
-    <spring.security.version>7.0.2</spring.security.version>
+    <spring.version>7.0.5</spring.version>
+    <spring.security.version>7.0.3</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring.ldap.version>4.0.1</spring.ldap.version>
-    <spring-integration.version>5.5.18</spring-integration.version>
+    <spring-integration.version>7.0.3</spring-integration.version>
     <wicket.version>10.7.0</wicket.version>
 
     <!-- ================================ -->
@@ -226,6 +227,14 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>org.springframework.integration</groupId>
+        <artifactId>spring-integration-bom</artifactId>
+        <version>${spring-integration.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-bom</artifactId>
         <version>${jetty.version}</version>
@@ -272,6 +281,11 @@
         <artifactId>gs-main</artifactId>
         <version>${gs.version}</version>
         <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-theme</artifactId>
+        <version>${gs.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>

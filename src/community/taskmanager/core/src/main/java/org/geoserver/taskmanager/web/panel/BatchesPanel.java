@@ -4,6 +4,8 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
@@ -22,12 +24,11 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.util.FrequencyUtil;
@@ -49,6 +50,20 @@ import org.geotools.util.logging.Logging;
 
 // TODO WICKET8 - Verify this page works OK
 public class BatchesPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(BatchesPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
@@ -288,12 +303,13 @@ public class BatchesPanel extends Panel {
                                     }
 
                                 } else if (property == BatchesModel.ENABLED) {
-                                    PackageResourceReference icon =
+                                    CatalogIconFactory icons = CatalogIconFactory.get();
+                                    ResourceReference icon =
                                             itemModel.getObject().isEnabled()
-                                                    ? CatalogIconFactory.get().getEnabledIcon()
-                                                    : CatalogIconFactory.get().getDisabledIcon();
+                                                    ? icons.getEnabledIcon()
+                                                    : icons.getDisabledIcon();
                                     Fragment f = new Fragment(id, "iconFragment", BatchesPanel.this);
-                                    f.add(new Image("enabledIcon", icon));
+                                    f.add(icons.getIcon("enabledIcon", icon));
                                     return f;
                                 } else if (property == BatchesModel.FREQUENCY) {
                                     return new Label(

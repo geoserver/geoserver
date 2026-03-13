@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.data;
 
 import static freemarker.ext.beans.BeansWrapper.EXPOSE_NOTHING;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -62,6 +63,8 @@ import org.geotools.util.logging.Logging;
  */
 // TODO: WICKET 9 test this page
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(OpenLayersPreviewPanel.class);
 
     @Serial
     private static final long serialVersionUID = -8742721113748106000L;
@@ -145,13 +148,19 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     }
 
     @Override
-    public void renderHead(IHeaderResponse header) {
-        super.renderHead(header);
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
         try {
-            renderHeaderCss(header);
-            renderHeaderScript(header);
+            renderHeaderCss(response);
+            renderHeaderScript(response);
         } catch (IOException | TemplateException e) {
             throw new WicketRuntimeException(e);
+        }
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
         }
     }
 

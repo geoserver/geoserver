@@ -22,7 +22,7 @@
         <property name="titleKey" value="LlmSettingsPage.title"/>
         <property name="descriptionKey" value="LlmSettingsPage.description"/>
         <property name="componentClass" value="org.geoserver.llm.web.LlmSettingsPage"/>
-        <property name="category" ref="settingsCategory"/>
+        <property name="category" ref="serverCategory"/>
         <property name="icon" value="openai.png"/>
         <property name="order" value="20"/>
     </bean>

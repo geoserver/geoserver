@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket.property;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,6 +35,19 @@ import org.springframework.util.StringUtils;
  * @author Justin Deoliveira, OpenGeo
  */
 public class PropertyEditorFormComponent extends FormComponentPanel<Properties> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(PropertyEditorFormComponent.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = -1960584178014140068L;

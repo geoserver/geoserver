@@ -8,9 +8,9 @@
 <wicket:extend>
 
      <wicket:fragment wicket:id="header">
-      <div class="gn-unordered-list-class action-group">
-        <div class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></div>
-        <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></div>
+      <div class="gs-unordered-list-class action-group">
+        <div class="gs-list-item-class"> <a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></div>
+        <div class="gs-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></div>
       </div>
     </wicket:fragment>
     
@@ -23,8 +23,10 @@
         <span>Catalog Mode</span>
         <a href="#" wicket:id="catalogModeHelp" class="help-link"></a>
       </legend>
-      <span id="catalogMode" class="choiceList" wicket:id="catalogMode">
-        <input type="radio"/>mode 1</span>
+      <div class="gs-form">
+        <span id="catalogMode" class="choiceList" wicket:id="catalogMode">
+          <input type="radio"/>mode 1</span>
+      </div>
     </fieldset>
 
     <fieldset wicket:id="sandboxContainer">

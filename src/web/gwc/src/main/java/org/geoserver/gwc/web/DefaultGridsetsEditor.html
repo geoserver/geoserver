@@ -9,9 +9,11 @@
     <wicket:panel>
       <div class="gs-panel-DefaultGridsetsEditor">
         <div wicket:id="table"/>
-        <div>
-          <span>
-            <wicket:message key="addDefaultGridSet">Add default GridSet</wicket:message>
+        <div class="gs-form">
+          <span class="gs-form-group">
+            <label>
+              <wicket:message key="addDefaultGridSet">Add default GridSet</wicket:message>
+            </label>
             <div class="gs-input-group">
               <select class="select mw-100" id="availableGridsets" wicket:id="availableGridsets"/>
               <a class="button add-selected-btn" href="#" wicket:id="addGridset">

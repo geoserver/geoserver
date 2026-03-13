@@ -3,14 +3,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
   <body>
     <wicket:panel>
-      <div class="gs-panel-AuthenticationPage_AuthFilterChainPanel">
-        <div class="py-1">
+      <div class="gs-panel-AuthenticationPage_AuthFilterChainPanel gs-form">
+        <div class="gs-form-group">
           <label>
             <wicket:message key="httpMethod"></wicket:message>
           </label>
           <select wicket:id="httpMethod"></select>
         </div>
-        <div class="py-1">
+        <div class="gs-form-group">
           <label for="urlPath">
             <wicket:message key="urlPath"></wicket:message>
           </label>
@@ -23,7 +23,7 @@
             </span>
           </a>
         </div>
-        <div class="py-1">
+        <div class="gs-form-group">
           <label for="chainTestResult">
             <wicket:message key="chainTestResult"></wicket:message>
           </label>

@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.store.geoparquet;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.AWS_PROFILE;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.AWS_REGION;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.MAX_HIVE_DEPTH;
@@ -46,6 +47,19 @@ import org.geotools.api.data.DataAccessFactory.Param;
  */
 @SuppressWarnings("serial")
 public class GeoParquetDataStoreEditPanel extends StoreEditPanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoParquetDataStoreEditPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     /**
      * Creates a new GeoParquet-specific parameters panel with a list of input fields matching the {@link Param}s for

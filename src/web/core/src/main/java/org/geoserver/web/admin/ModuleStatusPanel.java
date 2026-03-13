@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.admin;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Comparator;
 import java.util.List;
@@ -19,16 +21,28 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.ModuleStatusImpl;
 import org.geoserver.web.CatalogIconFactory;
-import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 public class ModuleStatusPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ModuleStatusPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = 3892224318224575781L;
@@ -99,13 +113,26 @@ public class ModuleStatusPanel extends Panel {
     }
 
     final Fragment getIcons(String id, boolean status) {
-        PackageResourceReference icon = status ? icons.getEnabledIcon() : icons.getDisabledIcon();
+        ResourceReference iconReference = status ? icons.getEnabledIcon() : icons.getDisabledIcon();
         Fragment f = new Fragment(id, "iconFragment", this);
-        f.add(new CachingImage("statusIcon", icon));
+        f.add(icons.getIcon("statusIcon", iconReference));
         return f;
     }
 
     static class MessagePanel extends Panel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ModuleStatusPanel.MessagePanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         @Serial
         private static final long serialVersionUID = -3200098674603724915L;

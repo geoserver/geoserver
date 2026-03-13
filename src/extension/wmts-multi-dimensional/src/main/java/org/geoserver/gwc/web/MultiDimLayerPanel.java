@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +47,19 @@ import org.geotools.util.logging.Logging;
  * tab, but there are no extension points there.
  */
 public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MultiDimLayerPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     static final Logger LOGGER = Logging.getLogger(MultiDimLayerPanel.class);
     private final DropDownChoice<String> sidecarStore;

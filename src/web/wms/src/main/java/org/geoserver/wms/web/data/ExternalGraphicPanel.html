@@ -5,45 +5,41 @@
     <wicket:panel>
       <div class="gs-panel-ExternalGraphicPanel">
         <div wicket:id="externalGraphicContainer">
-          <div class="gn-unordered-list-class" wicket:id="list">
-            <div class="gn-list-item-class">
-              <label for="onlineResource">
-                <wicket:message key="onlineResource">URL:</wicket:message>
-              </label>
-            </div>
-            <div class="gn-list-item-class">
-              <input wicket:id="onlineResource" type="text"/>
-              <a href="#" wicket:id="chooseImage">
-                <wicket:message key="chooseImage">Choose ...</wicket:message>
-              </a>
-              <br/>
-              <a href="#" wicket:id="autoFill">
-                <wicket:message key="autoFill">Auto-detect image size and type</wicket:message>
-              </a>
-            </div>
-            <div class="gn-list-item-class">
-              <label for="width">
-                <wicket:message key="width">Width</wicket:message>
-              </label>
-            </div>
-            <div class="gn-list-item-class">
-              <input wicket:id="width" type="text"/>
-            </div>
-            <div class="gn-list-item-class">
-              <label for="height">
-                <wicket:message key="height">Height</wicket:message>
-              </label>
-            </div>
-            <div class="gn-list-item-class">
-              <input wicket:id="height" type="text"/>
-            </div>
-            <div class="gn-list-item-class">
-              <label for="format">
-                <wicket:message key="format">format</wicket:message>
-              </label>
-            </div>
-            <div class="gn-list-item-class">
-              <input wicket:id="format" type="text"/>
+          <div wicket:id="list">
+            <div class="gs-form">
+              <div class="gs-form-group">
+                <label for="onlineResource">
+                  <wicket:message key="onlineResource">URL:</wicket:message>
+                </label>
+                <div class="gs-input-group">
+                  <input wicket:id="onlineResource" type="text"/>
+                  <a class="button" href="#" wicket:id="chooseImage">
+                    <wicket:message key="chooseImage">Choose ...</wicket:message>
+                  </a>
+                  <br/>
+                  <a class="button" href="#" wicket:id="autoFill">
+                    <wicket:message key="autoFill">Auto-detect image size and type</wicket:message>
+                  </a>
+                </div>
+              </div>
+              <div class="gs-form-group">
+                <label for="width">
+                  <wicket:message key="width">Width</wicket:message>
+                </label>
+                <input wicket:id="width" type="text"/>
+              </div>
+              <div class="gs-form-group">
+                <label for="height">
+                  <wicket:message key="height">Height</wicket:message>
+                </label>
+                <input wicket:id="height" type="text"/>
+              </div>
+              <div class="gs-form-group">
+                <label for="format">
+                  <wicket:message key="format">format</wicket:message>
+                </label>
+                <input wicket:id="format" type="text"/>
+              </div>
             </div>
           </div>
           <form wicket:id="showhide" id="showhideForm">

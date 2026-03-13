@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class ImportPage$TextAreaPanel
+
+The panel's html will be contained in a <div class='gs-panel-ImportPage_TextAreaPanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-ImportPage_TextAreaPanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

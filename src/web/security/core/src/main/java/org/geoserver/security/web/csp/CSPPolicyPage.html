@@ -3,20 +3,20 @@
   <body>
     <wicket:extend>
       <form id="form" wicket:id="form">
-        <div class="gn-unordered-list-class">
-          <div class="gn-list-item-class">
+        <div class="gs-unordered-list-class">
+          <div class="gs-list-item-class">
             <fieldset>
               <legend><span><wicket:message key="settings"></wicket:message></span></legend>
-              <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class">
+              <div class="gs-form">
+                <div class="gs-form-group">
                   <label for="name"><wicket:message key="name"></wicket:message></label>
                   <input id="name" wicket:id="name" type="text"/>
                 </div>
-                <div class="gn-list-item-class">
+                <div class="gs-form-group">
                   <label for="description"><wicket:message key="descriptionLabel"></wicket:message></label>
                   <textarea wicket:id="description" id="description" class="textarea"></textarea>
                 </div>
-                <div class="gn-list-item-class choiceItem">
+                <div class="choiceItem">
                   <input id="enabled" wicket:id="enabled" type="checkbox"/>
                   <label for="enabled"><wicket:message key="enabled"></wicket:message></label>
                 </div>

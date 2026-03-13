@@ -135,6 +135,7 @@
 
         function applyResponsiveTableCards() {
             var tables = document.querySelectorAll('table');
+            if (tables.length === 0) return;
         
             tables.forEach(function (table) {
                 if (table.classList.contains('gs-mobile-card-table')) return;
@@ -198,13 +199,16 @@
         }
 
         function syncResponsiveTableCards() {
-            if (window.innerWidth < 768) {
-                applyResponsiveTableCards();
-                return;
-            }
-            resetResponsiveTableCards();
+            window.addEventListener('resize', function() {
+                if (window.innerWidth < 768) {
+                    applyResponsiveTableCards();
+                } else {
+                    resetResponsiveTableCards();
+                }
+            });
         }
 
+        // Initialize responsive table cards
         syncResponsiveTableCards();
     });
 })();

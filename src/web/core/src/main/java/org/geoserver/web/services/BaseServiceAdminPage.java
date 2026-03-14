@@ -104,16 +104,6 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         Form<T> form = new Form<>("form", new CompoundPropertyModel<>(infoModel));
         add(form);
 
-        List<ITab> tabs = new ArrayList<>();
-        tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
-            @Override
-            public Panel getPanel(String panelId) {
-                return createServiceTab(panelId, infoModel);
-            }
-        });
-        TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs);
-
-
         boolean allowAccess = Boolean.parseBoolean(GeoServerExtensions.getProperty(WORKSPACE_ADMIN_SERVICE_ACCESS));
         if (service.getWorkspace() == null || !allowAccess) {
             // check it's really a full admin (to make sure the page cannot be accessed by workspace admins using
@@ -131,10 +121,21 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
         form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
+        List<ITab> tabs = new ArrayList<>();
+        tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
+            @Override
+            public Panel getPanel(String panelId) {
+                return new GeneralTabPanel(panelId, infoModel);
+            }
+        });
+        tabs.add(new AbstractTab(this::getServiceType) {
+            @Override
+            public Panel getPanel(String panelId) {
+                return new ServiceTabPanel(panelId, infoModel, form);
+            }
+        });
+        TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs);
         form.add(tabbedPanel);
-
-        form.add(new DisabledVersionsPanel(
-                "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), getServiceType()));
 
         build(infoModel, form);
 
@@ -167,11 +168,6 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         };
         form.add(cancel);
         cancel.setDefaultFormProcessing(false);
-    }
-
-    /** Initial service tab. */
-    private Panel createServiceTab(String panelId, IModel<T> infoModel) {
-        return new GeneralTabPanel(panelId, infoModel);
     }
 
     protected void onSave(IModel<T> infoModel, boolean doReturn) {
@@ -447,7 +443,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 
-    private class GeneralTabPanel extends AdminPagePanel {
+    protected class GeneralTabPanel extends AdminPagePanel {
         @Serial
         private static final long serialVersionUID = -1;
 
@@ -498,6 +494,32 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
             add(new TextField<>("fees"));
             add(new TextField<>("accessConstraints"));
+        }
+    }
+
+    protected class ServiceTabPanel extends AdminPagePanel {
+        @Serial
+        private static final long serialVersionUID = -1;
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.ServiceTabPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        public ServiceTabPanel(String panelId, IModel<T> infoModel, Form form) {
+            super(panelId, infoModel);
+            T service = infoModel.getObject();
+
+            add(new DisabledVersionsPanel(
+                    "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), getServiceType()));
         }
     }
 }

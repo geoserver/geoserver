@@ -35,6 +35,7 @@
     <property name="titleKey" value="inspire"/>
     <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
     <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
+    <property name="specificServiceType" value="WFS"/>
   </bean>
   <bean id="inspireWcsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
       <description>This bean adds the necessary form fields to Geoserver admin interface</description>

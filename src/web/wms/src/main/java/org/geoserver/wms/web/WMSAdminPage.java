@@ -33,6 +33,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -47,6 +48,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.data.resource.LocalesDropdown;
 import org.geoserver.web.data.resource.TitleAndAbstractPanel;
 import org.geoserver.web.data.store.panel.FileModel;
+import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
@@ -111,222 +113,18 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     }
 
     @Override
+    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+        return new WMSAdminPanel(id, info);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     protected void build(IModel info, Form form) {
 
-        // popups support
-        form.add(modal = new GSModalWindow("modal"));
-
-        // new text field for the title of the root node
-        form.add(new TitleAndAbstractPanel(
-                "rootLayerTitleAndAbstract",
-                info,
-                "rootLayerTitle",
-                "internationalRootLayerTitle",
-                "rootLayerAbstract",
-                "internationalRootLayerAbstract",
-                "rootLayerTitle",
-                "rootLayerAbstract",
-                this));
-        PropertyModel<Map<String, ?>> metadataModel = new PropertyModel<>(info, "metadata");
-        MapModel rootLayerEnabled = defaultedModel(
-                metadataModel, WMS.ROOT_LAYER_IN_CAPABILITIES_KEY, WMS.ROOT_LAYER_IN_CAPABILITIES_DEFAULT);
-        CheckBox rootLayerEnabledField = new CheckBox("rootLayerEnabled", rootLayerEnabled);
-        form.add(rootLayerEnabledField);
-
-        // authority URLs and Identifiers for the root layer
-        LayerAuthoritiesAndIdentifiersPanel authAndIds =
-                new LayerAuthoritiesAndIdentifiersPanel("authoritiesAndIds", true, info);
-        form.add(authAndIds);
-
-        // limited srs list
-        TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
-        form.add(srsList);
-
-        form.add(new CheckBox("bBOXForEachCRS"));
-        form.add(new AjaxLink<>("bBOXForEachCRSHelp") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                dialog.showInfo(
-                        target,
-                        new StringResourceModel("bboxForEachCRSHelp.title", WMSAdminPage.this, null),
-                        new StringResourceModel("bboxForEachCRSHelp.message", WMSAdminPage.this, null));
-            }
-        });
-        // advanced projection handling
-        MapModel aphEnabled =
-                defaultedModel(metadataModel, WMS.ADVANCED_PROJECTION_KEY, WMS.ENABLE_ADVANCED_PROJECTION);
-        CheckBox aphEnabledField = new CheckBox("aph.enabled", aphEnabled);
-        form.add(aphEnabledField);
-        MapModel aphWrap = defaultedModel(metadataModel, WMS.MAP_WRAPPING_KEY, WMS.ENABLE_MAP_WRAPPING);
-        CheckBox aphWrapField = new CheckBox("aph.wrap", aphWrap);
-        form.add(aphWrapField);
-        MapModel aphDensify = defaultedModel(
-                metadataModel, WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY, WMS.ENABLE_ADVANCED_PROJECTION_DENSIFICATION);
-        CheckBox aphDensifyField = new CheckBox("aph.densify", aphDensify);
-        form.add(aphDensifyField);
-        MapModel aphHeuristic = defaultedModel(
-                metadataModel, WMS.DATELINE_WRAPPING_HEURISTIC_KEY, WMS.DISABLE_DATELINE_WRAPPING_HEURISTIC);
-        CheckBox aphHeuristicField = new CheckBox("aph.dlh", aphHeuristic);
-        form.add(aphHeuristicField);
-
-        // general
-        form.add(new DropDownChoice<>(
-                "interpolation", Arrays.asList(WMSInfo.WMSInterpolation.values()), new InterpolationRenderer()));
-        // resource limits
-        TextField<Integer> maxMemory = new TextField<>("maxRequestMemory");
-        maxMemory.add(RangeValidator.minimum(0));
-        form.add(maxMemory);
-        TextField<Integer> maxTime = new TextField<>("maxRenderingTime");
-        maxTime.add(RangeValidator.minimum(0));
-        form.add(maxTime);
-        TextField<Integer> maxErrors = new TextField<>("maxRenderingErrors");
-        maxErrors.add(RangeValidator.minimum(0));
-        form.add(maxErrors);
-        // max buffer
-        TextField<Integer> maxBuffer = new TextField<>("maxBuffer");
-        maxBuffer.add(RangeValidator.minimum(0));
-        form.add(maxBuffer);
-        // throwing exceptions on invalid dimension
-        List<Boolean> exceptionValues = Arrays.asList(Boolean.TRUE, Boolean.FALSE);
-        DropDownChoice<Boolean> invalidDimensionThrow =
-                new DropDownChoice<>("exceptionOnInvalidDimension", exceptionValues);
-        invalidDimensionThrow.setChoiceRenderer(new ExceptionChoiceRenderer());
-        invalidDimensionThrow.setNullValid(true);
-        form.add(invalidDimensionThrow);
-        // max dimension values
-        TextField<Integer> maxRequestedDimensionValues = new TextField<>("maxRequestedDimensionValues");
-        maxRequestedDimensionValues.add(RangeValidator.minimum(0));
-        form.add(maxRequestedDimensionValues);
-        // watermark
-        form.add(new CheckBox("watermark.enabled"));
-        TextField watermarkUrlField =
-                new TextField<>("watermark.uRL", new FileModel(new PropertyModel<>(form.getModel(), "watermark.URL")));
-        watermarkUrlField.add(new FileExistsValidator(true));
-        watermarkUrlField.setOutputMarkupId(true);
-        form.add(watermarkUrlField);
-        form.add(chooserButton(
-                "chooser", new ParamResourceModel("chooseWatermark", this).getString(), watermarkUrlField));
-        TextField<Integer> transparency = new TextField<>("watermark.transparency");
-        transparency.add(new RangeValidator<>(0, 100));
-        form.add(transparency);
-        form.add(new DropDownChoice<>(
-                "watermark.position", Arrays.asList(Position.values()), new WatermarkPositionRenderer()));
-        // svg
-        form.add(new CheckBox("svg.antialias", new MapModel<>(metadataModel, "svgAntiAlias")));
-        form.add(new DropDownChoice<>(
-                "svg.producer", new MapModel<>(metadataModel, "svgRenderer"), SVG_RENDERERS, new SVGMethodRenderer()));
-        // png compression levels
-        MapModel pngCompression = defaultedModel(metadataModel, WMS.PNG_COMPRESSION, WMS.PNG_COMPRESSION_DEFAULT);
-        TextField<Integer> pngCompressionField = new TextField<>("png.compression", pngCompression, Integer.class);
-        pngCompressionField.add(new RangeValidator<>(0, 100));
-        form.add(pngCompressionField);
-        // jpeg compression levels
-        MapModel jpegCompression = defaultedModel(metadataModel, WMS.JPEG_COMPRESSION, WMS.JPEG_COMPRESSION_DEFAULT);
-        TextField<Integer> jpegCompressionField = new TextField<>("jpeg.compression", jpegCompression, Integer.class);
-        jpegCompressionField.add(new RangeValidator<>(0, 100));
-        form.add(jpegCompressionField);
-
-        // kml handling
-        MapModel kmlReflectorMode =
-                defaultedModel(metadataModel, WMS.KML_REFLECTOR_MODE, WMS.KML_REFLECTOR_MODE_DEFAULT);
-        form.add(new DropDownChoice<>("kml.defaultReflectorMode", kmlReflectorMode, KML_REFLECTOR_MODES));
-
-        MapModel kmlSuperoverlayMode =
-                defaultedModel(metadataModel, WMS.KML_SUPEROVERLAY_MODE, WMS.KML_SUPEROVERLAY_MODE_DEFAULT);
-        form.add(new DropDownChoice<>("kml.superoverlayMode", kmlSuperoverlayMode, KML_SUPEROVERLAY_MODES));
-
-        form.add(new CheckBox("kml.kmattr", defaultedModel(metadataModel, WMS.KML_KMLATTR, WMS.KML_KMLATTR_DEFAULT)));
-        form.add(new CheckBox(
-                "kml.kmlplacemark", defaultedModel(metadataModel, WMS.KML_KMLPLACEMARK, WMS.KML_KMLPLACEMARK_DEFAULT)));
-
-        MapModel kmScore = defaultedModel(metadataModel, WMS.KML_KMSCORE, WMS.KML_KMSCORE_DEFAULT);
-        TextField<Integer> kmScoreField = new TextField<>("kml.kmscore", kmScore, Integer.class);
-        kmScoreField.add(new RangeValidator<>(0, 100));
-        form.add(kmScoreField);
-
-        // scalehint
-        form.add(new CheckBox(
-                "scalehint.mapunitsPixel",
-                defaultedModel(metadataModel, WMS.SCALEHINT_MAPUNITS_PIXEL, WMS.SCALEHINT_MAPUNITS_PIXEL_DEFAULT)));
-
-        // mime types for GetMap
-        getMapAvailable = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (GetMapOutputFormat format : GeoServerExtensions.extensions(GetMapOutputFormat.class)) {
-            getMapAvailable.add(format.getMimeType());
-        }
-
-        List<String> getMapSelected = new ArrayList<>();
-        getMapSelected.addAll(new PropertyModel<Set<String>>(info, "getMapMimeTypes").getObject());
-        List<String> getMapChoices = new ArrayList<>();
-        getMapChoices.addAll(getMapAvailable);
-
-        form.add(
-                getMapMimeTypesComponent = new MimeTypesFormComponent(
-                        "getMapMimeTypes",
-                        new ListModel<>(getMapSelected),
-                        new CollectionModel<>(getMapChoices),
-                        new PropertyModel<Boolean>(info, "getMapMimeTypeCheckingEnabled").getObject()));
-
-        // mime types for GetFeatueInfo
-        getFeatureInfoAvailable = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (GetFeatureInfoOutputFormat format : GeoServerExtensions.extensions(GetFeatureInfoOutputFormat.class)) {
-            getFeatureInfoAvailable.add(format.getContentType());
-        }
-
-        List<String> getFeatureInfoSelected = new ArrayList<>();
-        getFeatureInfoSelected.addAll(new PropertyModel<Set<String>>(info, "getFeatureInfoMimeTypes").getObject());
-        List<String> getFeatureInfoChoices = new ArrayList<>();
-        getFeatureInfoChoices.addAll(getFeatureInfoAvailable);
-
-        form.add(
-                getFeatureInfoMimeTypesComponent = new MimeTypesFormComponent(
-                        "getFeatureInfoMimeTypes",
-                        new ListModel<>(getFeatureInfoSelected),
-                        new CollectionModel<>(getFeatureInfoChoices),
-                        new PropertyModel<Boolean>(info, "getFeatureInfoMimeTypeCheckingEnabled").getObject()));
-
-        // dynamicStylingDisabled
-        form.add(new CheckBox("dynamicStyling.disabled", new PropertyModel<>(info, WMS.DYNAMIC_STYLING_DISABLED)));
-
-        // disable the reprojection of GetFeatureInfo results
-        form.add(new CheckBox(
-                "disableFeaturesReproject", new PropertyModel<>(info, WMS.FEATURES_REPROJECTION_DISABLED)));
-        form.add(
-                new CheckBox("disableTransformFeatureInfo", new PropertyModel<>(info, "transformFeatureInfoDisabled")));
-        form.add(new CheckBox("autoEscapeTemplateValues", new PropertyModel<>(info, "autoEscapeTemplateValues")));
-        TextField<Integer> cacheMaxExtries = new TextField<>("cacheConfiguration.maxEntries");
-        cacheMaxExtries.add(RangeValidator.minimum(1));
-        form.add(cacheMaxExtries);
-
-        TextField<Long> cacheEntrySize = new TextField<>("cacheConfiguration.maxEntrySize");
-        cacheEntrySize.add(new RangeValidator<>(1L, Long.MAX_VALUE));
-        form.add(cacheEntrySize);
-
-        form.add(new CheckBox("cacheConfiguration.enabled"));
-
-        // Remote style time settings
-        TextField<Integer> remoteStylesTimeout = new TextField<>("remoteStyleTimeout");
-        remoteStylesTimeout.add(RangeValidator.minimum(1));
-        form.add(remoteStylesTimeout);
-        TextField<Integer> remoteStylesMaxRequestTime = new TextField<>("remoteStyleMaxRequestTime");
-        remoteStylesMaxRequestTime.add(RangeValidator.minimum(1));
-        form.add(remoteStylesMaxRequestTime);
-
-        // limited srs list
-        TextArea allowedRemoteSLDUrlsForAuthorizationForwarding = new HTTPURLsListTextArea(
-                "allowedURLsForAuthForwarding",
-                LiveCollectionModel.list(new PropertyModel<>(info, "allowedURLsForAuthForwarding")));
-        form.add(allowedRemoteSLDUrlsForAuthorizationForwarding);
-
-        form.add(new CheckBox("defaultGroupStyleEnabled"));
-        form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
-        // add mark factory optimization
-        addMarkFactoryLoadOptimizationPanel(metadataModel, form);
     }
 
     /** Adds the MarkFactory performance optimization panel. */
-    private void addMarkFactoryLoadOptimizationPanel(PropertyModel<Map<String, ?>> metadataModel, Form<?> form) {
+    private void addMarkFactoryLoadOptimizationPanel(PropertyModel<Map<String, ?>> metadataModel, Panel panel) {
         checkAndInitializeMapData(metadataModel);
         final MapModel<String> mapMarkFactoryList =
                 new MapModel<>(metadataModel, MarkFactoryHintsInjector.MARK_FACTORY_LIST);
@@ -352,7 +150,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         Palette<String> factoriesSetupPallete = buildMarkFactoryPalleteComponent(markFactoriesLiveCollectionModel);
         factoriesSetupPallete.setOutputMarkupPlaceholderTag(true);
         factoriesSetupPallete.add(new DefaultTheme());
-        form.add(factoriesSetupPallete);
+        panel.add(factoriesSetupPallete);
         // add the boolean activator
         IModel<Boolean> enableModel = buildEnableModel(markFactoriesLiveCollectionModel);
         // add the label
@@ -365,11 +163,11 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 };
         label.setOutputMarkupId(true);
         label.setOutputMarkupPlaceholderTag(true);
-        form.add(label);
+        panel.add(label);
 
         AjaxCheckBox enableCheckBox = buildMarkFactoryEnableCheck(label, factoriesSetupPallete, enableModel);
         enableCheckBox.setOutputMarkupId(true);
-        form.add(enableCheckBox);
+        panel.add(enableCheckBox);
     }
 
     private IModel<List<String>> buildMarkFactoryListModel(MapModel<String> mapMarkFactoryList) {
@@ -622,6 +420,221 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         @Override
         public String getIdValue(Boolean object, int index) {
             return String.valueOf(object);
+        }
+    }
+
+    private class WMSAdminPanel extends AdminPagePanel {
+        public WMSAdminPanel(String id, IModel info) {
+            super(id,info);
+            // popups support
+            add(modal = new GSModalWindow("modal"));
+
+            // new text field for the title of the root node
+            add(new TitleAndAbstractPanel(
+                    "rootLayerTitleAndAbstract",
+                    info,
+                    "rootLayerTitle",
+                    "internationalRootLayerTitle",
+                    "rootLayerAbstract",
+                    "internationalRootLayerAbstract",
+                    "rootLayerTitle",
+                    "rootLayerAbstract",
+                    this));
+            PropertyModel<Map<String, ?>> metadataModel = new PropertyModel<>(info, "metadata");
+            MapModel rootLayerEnabled = defaultedModel(
+                    metadataModel, WMS.ROOT_LAYER_IN_CAPABILITIES_KEY, WMS.ROOT_LAYER_IN_CAPABILITIES_DEFAULT);
+            CheckBox rootLayerEnabledField = new CheckBox("rootLayerEnabled", rootLayerEnabled);
+            add(rootLayerEnabledField);
+
+            // authority URLs and Identifiers for the root layer
+            LayerAuthoritiesAndIdentifiersPanel authAndIds =
+                    new LayerAuthoritiesAndIdentifiersPanel("authoritiesAndIds", true, info);
+            add(authAndIds);
+
+            // limited srs list
+            TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
+            add(srsList);
+
+            add(new CheckBox("bBOXForEachCRS"));
+            add(new AjaxLink<>("bBOXForEachCRSHelp") {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    dialog.showInfo(
+                            target,
+                            new StringResourceModel("bboxForEachCRSHelp.title", WMSAdminPage.this, null),
+                            new StringResourceModel("bboxForEachCRSHelp.message", WMSAdminPage.this, null));
+                }
+            });
+            // advanced projection handling
+            MapModel aphEnabled =
+                    defaultedModel(metadataModel, WMS.ADVANCED_PROJECTION_KEY, WMS.ENABLE_ADVANCED_PROJECTION);
+            CheckBox aphEnabledField = new CheckBox("aph.enabled", aphEnabled);
+            add(aphEnabledField);
+            MapModel aphWrap = defaultedModel(metadataModel, WMS.MAP_WRAPPING_KEY, WMS.ENABLE_MAP_WRAPPING);
+            CheckBox aphWrapField = new CheckBox("aph.wrap", aphWrap);
+            add(aphWrapField);
+            MapModel aphDensify = defaultedModel(
+                    metadataModel, WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY, WMS.ENABLE_ADVANCED_PROJECTION_DENSIFICATION);
+            CheckBox aphDensifyField = new CheckBox("aph.densify", aphDensify);
+            add(aphDensifyField);
+            MapModel aphHeuristic = defaultedModel(
+                    metadataModel, WMS.DATELINE_WRAPPING_HEURISTIC_KEY, WMS.DISABLE_DATELINE_WRAPPING_HEURISTIC);
+            CheckBox aphHeuristicField = new CheckBox("aph.dlh", aphHeuristic);
+            add(aphHeuristicField);
+
+            // general
+            add(new DropDownChoice<>(
+                    "interpolation", Arrays.asList(WMSInfo.WMSInterpolation.values()), new InterpolationRenderer()));
+            // resource limits
+            TextField<Integer> maxMemory = new TextField<>("maxRequestMemory");
+            maxMemory.add(RangeValidator.minimum(0));
+            add(maxMemory);
+            TextField<Integer> maxTime = new TextField<>("maxRenderingTime");
+            maxTime.add(RangeValidator.minimum(0));
+            add(maxTime);
+            TextField<Integer> maxErrors = new TextField<>("maxRenderingErrors");
+            maxErrors.add(RangeValidator.minimum(0));
+            add(maxErrors);
+            // max buffer
+            TextField<Integer> maxBuffer = new TextField<>("maxBuffer");
+            maxBuffer.add(RangeValidator.minimum(0));
+            add(maxBuffer);
+            // throwing exceptions on invalid dimension
+            List<Boolean> exceptionValues = Arrays.asList(Boolean.TRUE, Boolean.FALSE);
+            DropDownChoice<Boolean> invalidDimensionThrow =
+                    new DropDownChoice<>("exceptionOnInvalidDimension", exceptionValues);
+            invalidDimensionThrow.setChoiceRenderer(new ExceptionChoiceRenderer());
+            invalidDimensionThrow.setNullValid(true);
+            add(invalidDimensionThrow);
+            // max dimension values
+            TextField<Integer> maxRequestedDimensionValues = new TextField<>("maxRequestedDimensionValues");
+            maxRequestedDimensionValues.add(RangeValidator.minimum(0));
+            add(maxRequestedDimensionValues);
+            // watermark
+            add(new CheckBox("watermark.enabled"));
+            TextField watermarkUrlField =
+                    new TextField<>("watermark.uRL", new FileModel(new PropertyModel<>(info, "watermark.URL")));
+            watermarkUrlField.add(new FileExistsValidator(true));
+            watermarkUrlField.setOutputMarkupId(true);
+            add(watermarkUrlField);
+            add(chooserButton(
+                    "chooser", new ParamResourceModel("chooseWatermark", WMSAdminPage.this).getString(), watermarkUrlField));
+            TextField<Integer> transparency = new TextField<>("watermark.transparency");
+            transparency.add(new RangeValidator<>(0, 100));
+            add(transparency);
+            add(new DropDownChoice<>(
+                    "watermark.position", Arrays.asList(Position.values()), new WatermarkPositionRenderer()));
+            // svg
+            add(new CheckBox("svg.antialias", new MapModel<>(metadataModel, "svgAntiAlias")));
+            add(new DropDownChoice<>(
+                    "svg.producer", new MapModel<>(metadataModel, "svgRenderer"), SVG_RENDERERS, new SVGMethodRenderer()));
+            // png compression levels
+            MapModel pngCompression = defaultedModel(metadataModel, WMS.PNG_COMPRESSION, WMS.PNG_COMPRESSION_DEFAULT);
+            TextField<Integer> pngCompressionField = new TextField<>("png.compression", pngCompression, Integer.class);
+            pngCompressionField.add(new RangeValidator<>(0, 100));
+            add(pngCompressionField);
+            // jpeg compression levels
+            MapModel jpegCompression = defaultedModel(metadataModel, WMS.JPEG_COMPRESSION, WMS.JPEG_COMPRESSION_DEFAULT);
+            TextField<Integer> jpegCompressionField = new TextField<>("jpeg.compression", jpegCompression, Integer.class);
+            jpegCompressionField.add(new RangeValidator<>(0, 100));
+            add(jpegCompressionField);
+
+            // kml handling
+            MapModel kmlReflectorMode =
+                    defaultedModel(metadataModel, WMS.KML_REFLECTOR_MODE, WMS.KML_REFLECTOR_MODE_DEFAULT);
+            add(new DropDownChoice<>("kml.defaultReflectorMode", kmlReflectorMode, KML_REFLECTOR_MODES));
+
+            MapModel kmlSuperoverlayMode =
+                    defaultedModel(metadataModel, WMS.KML_SUPEROVERLAY_MODE, WMS.KML_SUPEROVERLAY_MODE_DEFAULT);
+            add(new DropDownChoice<>("kml.superoverlayMode", kmlSuperoverlayMode, KML_SUPEROVERLAY_MODES));
+
+            add(new CheckBox("kml.kmattr", defaultedModel(metadataModel, WMS.KML_KMLATTR, WMS.KML_KMLATTR_DEFAULT)));
+            add(new CheckBox(
+                    "kml.kmlplacemark", defaultedModel(metadataModel, WMS.KML_KMLPLACEMARK, WMS.KML_KMLPLACEMARK_DEFAULT)));
+
+            MapModel kmScore = defaultedModel(metadataModel, WMS.KML_KMSCORE, WMS.KML_KMSCORE_DEFAULT);
+            TextField<Integer> kmScoreField = new TextField<>("kml.kmscore", kmScore, Integer.class);
+            kmScoreField.add(new RangeValidator<>(0, 100));
+            add(kmScoreField);
+
+            // scalehint
+            add(new CheckBox(
+                    "scalehint.mapunitsPixel",
+                    defaultedModel(metadataModel, WMS.SCALEHINT_MAPUNITS_PIXEL, WMS.SCALEHINT_MAPUNITS_PIXEL_DEFAULT)));
+
+            // mime types for GetMap
+            getMapAvailable = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            for (GetMapOutputFormat format : GeoServerExtensions.extensions(GetMapOutputFormat.class)) {
+                getMapAvailable.add(format.getMimeType());
+            }
+
+            List<String> getMapSelected = new ArrayList<>();
+            getMapSelected.addAll(new PropertyModel<Set<String>>(info, "getMapMimeTypes").getObject());
+            List<String> getMapChoices = new ArrayList<>();
+            getMapChoices.addAll(getMapAvailable);
+
+            add(
+                    getMapMimeTypesComponent = new MimeTypesFormComponent(
+                            "getMapMimeTypes",
+                            new ListModel<>(getMapSelected),
+                            new CollectionModel<>(getMapChoices),
+                            new PropertyModel<Boolean>(info, "getMapMimeTypeCheckingEnabled").getObject()));
+
+            // mime types for GetFeatueInfo
+            getFeatureInfoAvailable = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            for (GetFeatureInfoOutputFormat format : GeoServerExtensions.extensions(GetFeatureInfoOutputFormat.class)) {
+                getFeatureInfoAvailable.add(format.getContentType());
+            }
+
+            List<String> getFeatureInfoSelected = new ArrayList<>();
+            getFeatureInfoSelected.addAll(new PropertyModel<Set<String>>(info, "getFeatureInfoMimeTypes").getObject());
+            List<String> getFeatureInfoChoices = new ArrayList<>();
+            getFeatureInfoChoices.addAll(getFeatureInfoAvailable);
+
+            add(
+                    getFeatureInfoMimeTypesComponent = new MimeTypesFormComponent(
+                            "getFeatureInfoMimeTypes",
+                            new ListModel<>(getFeatureInfoSelected),
+                            new CollectionModel<>(getFeatureInfoChoices),
+                            new PropertyModel<Boolean>(info, "getFeatureInfoMimeTypeCheckingEnabled").getObject()));
+
+            // dynamicStylingDisabled
+            add(new CheckBox("dynamicStyling.disabled", new PropertyModel<>(info, WMS.DYNAMIC_STYLING_DISABLED)));
+
+            // disable the reprojection of GetFeatureInfo results
+            add(new CheckBox(
+                    "disableFeaturesReproject", new PropertyModel<>(info, WMS.FEATURES_REPROJECTION_DISABLED)));
+            add(
+                    new CheckBox("disableTransformFeatureInfo", new PropertyModel<>(info, "transformFeatureInfoDisabled")));
+            add(new CheckBox("autoEscapeTemplateValues", new PropertyModel<>(info, "autoEscapeTemplateValues")));
+            TextField<Integer> cacheMaxExtries = new TextField<>("cacheConfiguration.maxEntries");
+            cacheMaxExtries.add(RangeValidator.minimum(1));
+            add(cacheMaxExtries);
+
+            TextField<Long> cacheEntrySize = new TextField<>("cacheConfiguration.maxEntrySize");
+            cacheEntrySize.add(new RangeValidator<>(1L, Long.MAX_VALUE));
+            add(cacheEntrySize);
+
+            add(new CheckBox("cacheConfiguration.enabled"));
+
+            // Remote style time settings
+            TextField<Integer> remoteStylesTimeout = new TextField<>("remoteStyleTimeout");
+            remoteStylesTimeout.add(RangeValidator.minimum(1));
+            add(remoteStylesTimeout);
+            TextField<Integer> remoteStylesMaxRequestTime = new TextField<>("remoteStyleMaxRequestTime");
+            remoteStylesMaxRequestTime.add(RangeValidator.minimum(1));
+            add(remoteStylesMaxRequestTime);
+
+            // limited srs list
+            TextArea allowedRemoteSLDUrlsForAuthorizationForwarding = new HTTPURLsListTextArea(
+                    "allowedURLsForAuthForwarding",
+                    LiveCollectionModel.list(new PropertyModel<>(info, "allowedURLsForAuthForwarding")));
+            add(allowedRemoteSLDUrlsForAuthorizationForwarding);
+
+            add(new CheckBox("defaultGroupStyleEnabled"));
+            add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
+            // add mark factory optimization
+            addMarkFactoryLoadOptimizationPanel(metadataModel, this);
         }
     }
 }

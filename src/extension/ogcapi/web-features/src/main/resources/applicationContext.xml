@@ -23,6 +23,7 @@
       <property name="titleKey" value="features"/>
       <property name="componentClass" value="org.geoserver.ogcapi.web.FeatureServiceAdminPanel"/>
       <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
+      <property name="specificServiceType" value="Features"/>
    </bean>
 
    <bean id="featuresServiceDescriptor" class="org.geoserver.ogcapi.v1.features.FeaturesServiceDescriptionProvider">

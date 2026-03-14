@@ -39,7 +39,7 @@ import org.geotools.util.factory.GeoTools;
  * <p>The page is completely pluggable, the UI will be made up by scanning the Spring context for implementations of
  * {@link ResourceConfigurationPanel} and {@link PublishedConfigurationPanel}.
  *
- * <p>WARNING: one crucial aspect of this page is its ability to not loose edits when one switches from one tab to the
+ * <p>WARNING: one crucial aspect of this page is its ability to not lose edits when one switches from one tab to the
  * other. I did not find any effective way to unit test this, so _please_, if you do modify anything in this class
  * (especially the models), manually retest that the edits are not lost on tab switch.
  */

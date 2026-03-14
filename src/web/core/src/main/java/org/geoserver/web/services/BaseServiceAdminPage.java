@@ -9,8 +9,11 @@ import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -121,28 +124,62 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
         form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
+        // add the extension panels
+        Map<String,List<AdminPagePanelInfo>> panels = createExtensionPanelList("extensions", infoModel);
+        List<AdminPagePanelInfo> servicePanels = panels.get(getServiceType());
         List<ITab> tabs = new ArrayList<>();
+
+        // general tab
         tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
             @Override
             public Panel getPanel(String panelId) {
                 return new GeneralTabPanel(panelId, infoModel);
             }
         });
+        // service tab
         tabs.add(new AbstractTab(this::getServiceType) {
             @Override
             public Panel getPanel(String panelId) {
-                return new ServiceTabPanel(panelId, infoModel, form);
+                return new ServiceTabPanel(panelId, infoModel, form, panels.get(getServiceType()));
             }
         });
+        panels.remove(getServiceType());
+
+        // remaining content on their own tabs
+        /*
+        if(!panels.isEmpty()){
+            for (String specificServiceType : panels.keySet()) {
+                IModel<String> tabTile = new IModel<String>() {
+                    @Override
+                    public String getObject() {
+                        return specificServiceType;
+                    }
+                };
+                List<AdminPagePanelInfo> tabPanels = panels.get(specificServiceType);
+
+                tabs.add(new AbstractTab(tabTile) {
+                    @Override
+                    public Panel getPanel(String panelId) {
+                        Panel panel = new Panel(panelId,infoModel);
+
+                        return new ServiceTabPanel(panelId, infoModel, form, panels.get(type));
+                    }
+                });
+            }
+            AbstractTab extensionsTab = new AbstractTab() {
+                @Override
+                public Panel getPanel(String panelId) {
+                    return new ServiceTabPanel(panelId, infoModel, form, panels.get(getServiceType()));
+                }
+            };
+        }
+        */
+
         TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs);
         form.add(tabbedPanel);
 
+        // deprecated page build adds content to bottom of page, rather than tabs
         build(infoModel, form);
-
-        // add the extension panels
-        ListView extensionPanels = createExtensionPanelList("extensions", infoModel);
-        extensionPanels.setReuseItems(true);
-        form.add(extensionPanels);
 
         SubmitLink submit = new SubmitLink("submit", new StringResourceModel("save", null, null)) {
             @Override
@@ -202,7 +239,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         };
     }
 
-    protected ListView createExtensionPanelList(String id, final IModel infoModel) {
+    protected Map<String,List<AdminPagePanelInfo>> createExtensionPanelList(String id, final IModel infoModel) {
         List<AdminPagePanelInfo> panels = getGeoServerApplication().getBeansOfType(AdminPagePanelInfo.class);
         for (Iterator<AdminPagePanelInfo> it = panels.iterator(); it.hasNext(); ) {
             AdminPagePanelInfo panel = it.next();
@@ -210,28 +247,15 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 it.remove();
             }
         }
-
-        return new ListView<>(id, panels) {
-
-            @Override
-            protected void populateItem(ListItem<AdminPagePanelInfo> item) {
-                AdminPagePanelInfo info = item.getModelObject();
-                try {
-                    AdminPagePanel panel = info.getComponentClass()
-                            .getConstructor(String.class, IModel.class)
-                            .newInstance("content", infoModel);
-                    item.add(panel);
-                    // add onMainFormSubmit to hooks
-                    onSubmitHooks.add(x -> panel.onMainFormSubmit());
-                } catch (Exception e) {
-                    throw new WicketRuntimeException(
-                            "Failed to create admin extension panel of "
-                                    + "type "
-                                    + info.getComponentClass().getSimpleName(),
-                            e);
-                }
+        Map<String,List<AdminPagePanelInfo>> panelsByTab = new HashMap<>();
+        for (AdminPagePanelInfo panel : panels) {
+            String type = panel.getSpecificServiceType();
+            if (type == null ) {
+                type = getServiceType();
             }
-        };
+            panelsByTab.computeIfAbsent(type, k -> new ArrayList<>()).add(panel);
+        }
+        return panelsByTab;
     }
 
     /**
@@ -249,10 +273,19 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
      *
      * @param info The service info object.
      * @param form The page form.
+     *
+     * @deprecated use {@link #buildPanel(IModel, Form)} instead to build the main tab panel for the page.
      */
-    protected abstract void build(IModel info, Form form); // {
+    protected  void build(IModel info, Form form) {
+    }
 
-    // }
+    /**
+     * Callback for building the main AdminPanel for the page.
+     *
+     */
+    protected AdminPagePanel buildPanel( IModel info, Form form) {
+        return null;
+    }
 
     /**
      * Callback for submit.
@@ -514,12 +547,46 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         }
 
-        public ServiceTabPanel(String panelId, IModel<T> infoModel, Form form) {
+        public ServiceTabPanel(String panelId, IModel<T> infoModel, Form form, List<AdminPagePanelInfo> adminPagePanelInfos) {
             super(panelId, infoModel);
             T service = infoModel.getObject();
 
             add(new DisabledVersionsPanel(
                     "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), getServiceType()));
+
+            ListView extensionPanels = new AdminPagePanelInfoListView("extensions", adminPagePanelInfos, infoModel);
+            extensionPanels.setReuseItems(true);
+
+            add(extensionPanels);
+        }
+    }
+
+    private class AdminPagePanelInfoListView extends ListView<AdminPagePanelInfo> {
+
+        private final IModel infoModel;
+
+        public AdminPagePanelInfoListView(String id, List<AdminPagePanelInfo> panels, IModel infoModel) {
+            super(id, panels);
+            this.infoModel = infoModel;
+        }
+
+        @Override
+        protected void populateItem(ListItem<AdminPagePanelInfo> item) {
+            AdminPagePanelInfo info = item.getModelObject();
+            try {
+                AdminPagePanel panel = info.getComponentClass()
+                        .getConstructor(String.class, IModel.class)
+                        .newInstance("content", infoModel);
+                item.add(panel);
+                // add onMainFormSubmit to hooks
+                onSubmitHooks.add(x -> panel.onMainFormSubmit());
+            } catch (Exception e) {
+                throw new WicketRuntimeException(
+                        "Failed to create admin extension panel of "
+                                + "type "
+                                + info.getComponentClass().getSimpleName(),
+                        e);
+            }
         }
     }
 }

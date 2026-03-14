@@ -126,7 +126,6 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
         // add the extension panels
         Map<String,List<AdminPagePanelInfo>> panels = createExtensionPanelList("extensions", infoModel);
-        List<AdminPagePanelInfo> servicePanels = panels.get(getServiceType());
         List<ITab> tabs = new ArrayList<>();
 
         // general tab
@@ -140,7 +139,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         tabs.add(new AbstractTab(this::getServiceType) {
             @Override
             public Panel getPanel(String panelId) {
-                return new ServiceTabPanel(panelId, infoModel, form, getServiceType(), panels.get(getServiceType()));
+                List servicePanels = panels.get(getServiceType());
+                return new ServiceTabPanel(panelId, infoModel, form, getServiceType(), servicePanels);
             }
         });
         panels.remove(getServiceType());
@@ -170,7 +170,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         form.add(tabbedPanel);
 
         // deprecated page build adds content to bottom of page, rather than tabs
-        build(infoModel, form);
+        // build(infoModel, form);
 
         SubmitLink submit = new SubmitLink("submit", new StringResourceModel("save", null, null)) {
             @Override
@@ -272,9 +272,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
     /**
      * Callback for building the main AdminPanel for the page.
-     *
      */
-    protected AdminPagePanel buildPanel( IModel info, Form form) {
+    protected AdminPagePanel buildPanel( String id, IModel info, Form form) {
         return null;
     }
 
@@ -544,7 +543,15 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
             add(new DisabledVersionsPanel(
                     "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), specificServiceType));
-
+            if (specificServiceType == getServiceType()) {
+                AdminPagePanel defaultAdminPanel = buildPanel("default-panel", infoModel, form);
+                add(defaultAdminPanel);
+            }
+            else {
+                Label placeHolder = new Label("default-panel");
+                placeHolder.setVisible(false);
+                add(placeHolder);
+            }
             ListView extensionPanels = new AdminPagePanelInfoListView("extensions", adminPagePanelInfos, infoModel);
             extensionPanels.setReuseItems(true);
 

@@ -133,7 +133,7 @@
     <property name="titleKey" value="ContactPage.title" />
     <property name="descriptionKey" value="ContactPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.ContactPage" />
-    <property name="category" ref="dataCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/vcard.png" />
     <property name="order" value="5" />
   </bean>
@@ -317,9 +317,12 @@
 
   <!-- web-wms sub-heading is order: 950 -->
 
+  <!-- tiling sub-heading is order: 800 -->
+  <!-- web-wmts sub-heading is order: 750 -->
+
   <bean id="vectorHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="vectorHeading" />
-    <property name="order" value="800" />
+    <property name="order" value="700" />
     <property name="titleKey" value="HeadingConfigurationPanel.vector.title" />
     <property name="descriptionKey" value="HeadingConfigurationPanel.vector.description" />
     <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
@@ -330,7 +333,7 @@
     </property>
   </bean>
 
-  <!-- web-wfs sub-heading is order: 750 -->
+  <!-- web-wfs sub-heading is order: 650 -->
 
   <bean id="rasterHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="rasterHeading" />

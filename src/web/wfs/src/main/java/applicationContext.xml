@@ -25,7 +25,7 @@
   <!-- wms config panels -->
   <bean id="wfsHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="wfsHeading" />
-    <property name="order" value="750" />
+    <property name="order" value="650" />
     <property name="titleKey" value="HeadingConfigurationPanel.wfs.title" />
     <property name="descriptionKey" value="HeadingConfigurationPanel.wfs.description" />
     <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
@@ -38,7 +38,7 @@
 
   <bean id="wfsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="wfsLayerConfig"/>
-    <property name="order" value="590"/>
+    <property name="order" value="640"/>
     <property name="titleKey" value="data.resource.config.wfs"/>
     <property name="componentClass" value="org.geoserver.wfs.web.publish.WFSLayerConfig"/>
     <property name="supportedTypes">

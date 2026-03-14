@@ -24,28 +24,61 @@
     <property name="icon" value="server_map.png"/>
     <property name="category" ref="servicesCategory"/>
     <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
-  </bean> 
-    
+  </bean>
+
+  <!-- map config panels -->
+  <bean id="cartogrpahyLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="cartogrpahyLayerConfig"/>
+    <property name="order" value="990"/>
+    <property name="titleKey" value="publish.layer.config.wms"/>
+    <property name="componentClass" value="org.geoserver.wms.web.publish.CartographyConfigPanel"/>
+  </bean>
+
+  <bean id="wmsRemoteLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="wmsRemoteLayerConfig"/>
+    <property name="order" value="980"/>
+    <property name="titleKey" value="publish.layer.config.wms"/>
+    <property name="componentClass" value="org.geoserver.wms.web.publish.WMSRemoteLayerConfig"/>
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.WMSLayerInfo</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- wms config panels -->
+  <bean id="wmsHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="wmsHeading" />
+    <property name="order" value="950" />
+    <property name="titleKey" value="HeadingConfigurationPanel.wms.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.wms.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
   <bean id="wmsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="wmsLayerConfig"/>
+    <property name="order" value="940"/>
     <property name="titleKey" value="publish.layer.config.wms"/>
     <property name="componentClass" value="org.geoserver.wms.web.publish.WMSLayerConfig"/>
   </bean>
 
   <bean id="wmsLayerGroupConfig" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
     <property name="id" value="authoritiesAndIdentifiersConfig"/>
+    <property name="order" value="920"/>
     <property name="titleKey" value="publish.layergroup.config.wms"/>
     <property name="componentClass" value="org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersConfigPanel"/>
   </bean>
 
   <bean id="attributionLayerConfig" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
     <property name="id" value="attributionLayerConfig"/>
+    <property name="order" value="920"/>
     <property name="titleKey" value="publish.layer.config.attribution"/>
     <property name="componentClass" value="org.geoserver.wms.web.publish.AttributionLayerConfigPanel"/>
   </bean>
 
   <bean id="kmlLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="kmlLayerConfig"/>
+    <property name="order" value="280"/>
     <property name="titleKey" value="publish.layer.config.kml"/>
     <property name="componentClass" value="org.geoserver.wms.web.publish.KMLLayerConfigPanel"/>
     <property name="supportedTypes">

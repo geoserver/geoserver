@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +43,20 @@ import org.geoserver.web.GeoServerApplication;
  */
 // TODO WICKET8 - Verify this page works OK
 public class MetadataLinkEditor extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MetadataLinkEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     @Serial
     private static final long serialVersionUID = -5721941745847988670L;
     /**

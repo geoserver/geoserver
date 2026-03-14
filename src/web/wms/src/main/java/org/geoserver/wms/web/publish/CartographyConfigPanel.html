@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-CartographyConfigPanel">
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="cartographySettings">Cartography</wicket:message>
+              </span>
+            </legend>
+            <div class="gs-unordered-list-class" wicket:id="styles">
+              <div class="gs-form">
+                <div class="gs-form-group">
+                  <label for="defaultStyle">
+                    <wicket:message key="defaultStyle">Default Style</wicket:message>
+                  </label>
+                  <select id="defaultStyle" class="select" wicket:id="defaultStyle"/>
+                </div>
+                <div class="gs-form-group">
+                  <label for="defaultStyleLegendGraphic">
+                    <wicket:message key="legendGraphic">Default Style</wicket:message>
+                  </label>
+                  <span>
+                    <img id="defaultStyleLegendGraphic" wicket:id="defaultStyleLegendGraphic"/>
+                  </span>
+                </div>
+                <div class="gs-list-item-class">
+                  <label>
+                    <wicket:message key="additionalStyles">Additional Styles</wicket:message>
+                  </label>
+                  <span wicket:id="extraStyles"/>
+                </div>
+              </div>
+            </div>
+            <div class="gs-unordered-list-class choiceList">
+              <div class="gs-list-item-class">
+                <input id="opaqueEnabled" type="checkbox" wicket:id="opaqueEnabled"/>
+                <label for="opaqueEnabled">
+                  <wicket:message key="opaque">Opaque</wicket:message>
+                </label>
+              </div>
+            </div>
+
+            <div class="gs-form">
+              <div class="gs-form-group">
+                <label for="buffer">
+                  <wicket:message key="defaultRenderingBuffer">def. rendering buffer</wicket:message>
+                </label>
+                <input id="buffer" wicket:id="renderingBuffer" type="text"/>
+              </div>
+            </div>
+            <div class="gs-form">
+              <div class="gs-form-group">
+                <label for="defaultInterpolationMethod">
+                  <wicket:message key="interpolationLabel">Default Interpolation Method</wicket:message>
+                </label>
+                <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod"/>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </wicket:panel>
+    </form>
+  </body>
+</html>

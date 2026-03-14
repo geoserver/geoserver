@@ -1,13 +1,16 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <div wicket:id="feedback"></div>
-  <ul class="mb-1">
-  <li><label for="workspace"><wicket:message key="workspace">workspace</wicket:message>*</label>
-  <input class="text"
-    wicket:id="workspace"
-    id="workspace"></input></li>
-    </ul>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-NewWorkspacePanel">
+        <div wicket:id="feedback"/>
+        <div class="gs-unordered-list-class mb-1">
+          <div class="gs-list-item-class">
+            <label for="workspace"><wicket:message key="workspace">workspace</wicket:message>*</label>
+            <input wicket:id="workspace" id="workspace" type="text"/>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

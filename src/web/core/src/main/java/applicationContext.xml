@@ -72,12 +72,10 @@
   </bean>
   
   <!-- Menu categories -->
-  <bean id="aboutStatusCategory" class="org.geoserver.web.Category">
-    <property name="nameKey" value="category.about" />
+  <bean id="geoserverCategory" class="org.geoserver.web.Category">
+    <property name="nameKey" value="category.geoserver" />
     <property name="order" value="100" />
   </bean>
-  <!-- alias for backward compatability -->
-  <alias name="aboutStatusCategory" alias="serverCategory" />
 
   <bean id="dataCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.data" />
@@ -89,18 +87,35 @@
     <property name="order" value="150" />
   </bean>
 
-  <bean id="settingsCategory" class="org.geoserver.web.Category">
+  <bean id="serverCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.settings" />
     <property name="order" value="175" />
   </bean>
+  <!-- alias for backward compatability -->
+  <alias name="serverCategory" alias="settingsCategory" />
+  <alias name="serverCategory" alias="aboutStatusCategory" />
+
+  <bean id="utilitiesCategory" class="org.geoserver.web.Category">
+    <property name="nameKey" value="category.utilities" />
+    <property name="order" value="310" />
+  </bean>
 
   <!-- Server menu items -->
+  <bean id="welcomeMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="welcome" />
+    <property name="titleKey" value="GeoServerHomePage.title" />
+    <property name="descriptionKey" value="GeoServerHomePage.description" />
+    <property name="componentClass" value="org.geoserver.web.GeoServerHomePage" />
+    <property name="category" ref="geoserverCategory" />
+    <property name="icon" value="/img/logo-icon.svg" />
+    <property name="order" value="5" />
+  </bean>
   <bean id="statusMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="server.admin.status" />
     <property name="titleKey" value="StatusPage.title" />
     <property name="descriptionKey" value="StatusPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.StatusPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/server_error.png" />
     <property name="order" value="10" />
   </bean>
@@ -109,7 +124,7 @@
     <property name="titleKey" value="LogPage.title" />
     <property name="descriptionKey" value="LogPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.LogPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/page_white_text.png" />
     <property name="order" value="15" />
   </bean>
@@ -118,17 +133,17 @@
     <property name="titleKey" value="ContactPage.title" />
     <property name="descriptionKey" value="ContactPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.ContactPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/vcard.png" />
-    <property name="order" value="20" />
+    <property name="order" value="5" />
   </bean>
   <bean id="aboutMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="server.about" />
     <property name="titleKey" value="AboutGeoServerPage.title" />
     <property name="descriptionKey" value="AboutGeoServerPage.description" />
     <property name="componentClass" value="org.geoserver.web.AboutGeoServerPage" />
-    <property name="category" ref="aboutStatusCategory" />
-    <property name="icon" value="img/icons/silk/help.png" />
+    <property name="category" ref="geoserverCategory" />
+    <property name="icon" value="/img/icons/silk/help.png" />
     <property name="order" value="25" />
   </bean>
   <bean id="globalSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -136,7 +151,7 @@
     <property name="titleKey" value="global.title" />
     <property name="descriptionKey" value="GlobalSettingsPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.GlobalSettingsPage" />
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/server.png" />
     <property name="order" value="30" />
   </bean>
@@ -145,7 +160,7 @@
     <property name="titleKey" value="jai.title" />
     <property name="descriptionKey" value="JAIPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.JAIPage" />
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/cog_photo.png" />
     <property name="order" value="40" />
   </bean>
@@ -211,12 +226,14 @@
     <property name="titleKey" value="demo.title" />
     <property name="descriptionKey" value="demo.description" />
     <property name="componentClass" value="org.geoserver.web.DemoPage" />
+    <property name="category" ref="geoserverCategory" />
+    <property name="icon" value="img/icons/silk/picture_empty.png" />
+    <property name="order" value="10" />
     <property name="authorizer">
       <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
         <property name="linkClasses" value="org.geoserver.web.DemoLinkInfo" />
       </bean>
     </property>
-
   </bean>
 
   <!-- Tool menu item -->
@@ -225,6 +242,9 @@
     <property name="titleKey" value="tools.title" />
     <property name="descriptionKey" value="tools.description" />
     <property name="componentClass" value="org.geoserver.web.ToolPage" />
+    <property name="category" ref="utilitiesCategory" />
+    <property name="icon" value="img/icons/silk/wrench.png" />
+    <property name="order" value="15" />
     <property name="authorizer">
       <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
         <property name="linkClasses">
@@ -282,15 +302,86 @@
     </property>
   </bean>
 
-  <!-- Layer configuration panels -->
+  <!-- heading configuration panels -->
+
+  <!-- record heading is order: 1100 -->
+  <!-- web-csw heading is order: 1050 -->
+
+  <bean id="mapHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="mapHeading" />
+    <property name="order" value="1000" />
+    <property name="titleKey" value="HeadingConfigurationPanel.map.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.map.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
+  <!-- web-wms sub-heading is order: 950 -->
+
+  <!-- tiling sub-heading is order: 800 -->
+  <!-- web-wmts sub-heading is order: 750 -->
+
+  <bean id="vectorHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="vectorHeading" />
+    <property name="order" value="700" />
+    <property name="titleKey" value="HeadingConfigurationPanel.vector.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.vector.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.FeatureTypeInfo</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- web-wfs sub-heading is order: 650 -->
+
+  <bean id="rasterHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="rasterHeading" />
+    <property name="order" value="600" />
+    <property name="titleKey" value="HeadingConfigurationPanel.raster.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.raster.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.CoverageInfo</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- web-wcs sub-heading is order: 550 -->
+
+  <!-- process heading is order: 400 -->
+  <!-- process heading is order: 350 -->
+
+  <bean id="formatHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="formatHeading" />
+    <property name="order" value="300" />
+    <property name="titleKey" value="HeadingConfigurationPanel.format.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.format.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
+  <!-- ogcapi heading is order: 200 -->
+
+  <bean id="settingsHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="settingsHeading" />
+    <property name="order" value="100" />
+    <property name="titleKey" value="HeadingConfigurationPanel.settings.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.settings.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
   <bean id="httpLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="http" />
+    <property name="order" value="90" />
     <property name="titleKey" value="publish.layer.config.http" />
     <property name="componentClass" value="org.geoserver.web.publish.LayerHTTPLayerConfig" />
   </bean>
-  
+
+  <!-- wms configuration panel -->
   <bean id="rootLayerConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
-    <property name="id" value="http" />
+    <property name="id" value="rootLayer" />
+    <property name="order" value="940"/>
     <property name="titleKey" value="publish.layer.config.rootLayer" />
     <property name="componentClass" value="org.geoserver.web.publish.RootLayerConfig" />
   </bean>
@@ -298,6 +389,7 @@
   <!-- LayerGroup configuration panels -->
   <bean id="httpLayerGroupConfigPanel" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
     <property name="id" value="http" />
+    <property name="order" value="90"/>
     <property name="titleKey" value="publish.layer.config.http" />
     <property name="componentClass" value="org.geoserver.web.publish.LayerGroupHTTPLayerConfig" />
   </bean>
@@ -447,9 +539,10 @@
 		<property name="include" value="include_login_form.html" />
 		<property name="loginPath" value="j_spring_security_check" />
 	</bean>
-	
- 	<bean id="serviceLayerConfigurationPanelInfo" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+
+    <bean id="serviceLayerConfigurationPanelInfo" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
 		<property name="id" value="serviceLayerConfigurationPanel"/>
+        <property name="order" value="95"/>
 		<property name="titleKey" value="publish.layer.config"/>
 		<property name="componentClass" value="org.geoserver.web.publish.ServiceLayerConfigurationPanel"/>
 	</bean>

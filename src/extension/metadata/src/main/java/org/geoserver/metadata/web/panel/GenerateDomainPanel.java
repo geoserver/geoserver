@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.Serial;
@@ -34,6 +36,19 @@ import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.util.logging.Logging;
 
 public class GenerateDomainPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GenerateDomainPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = -4252512711183089841L;

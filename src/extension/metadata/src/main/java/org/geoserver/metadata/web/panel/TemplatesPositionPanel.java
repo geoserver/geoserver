@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
@@ -12,15 +14,28 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.web.MetadataTemplateTracker;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 public class TemplatesPositionPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TemplatesPositionPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     @Serial
     private static final long serialVersionUID = -4645368967597125299L;
 
@@ -32,8 +47,7 @@ public class TemplatesPositionPanel extends Panel {
             GeoServerTablePanel<MetadataTemplate> tablePanel) {
         super(id, model);
         ImageAjaxLink<Object> upLink =
-                new ImageAjaxLink<>(
-                        "up", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
+                new ImageAjaxLink<>("up", new ContextRelativeResourceReference("img/icons/silk/arrow_up.png")) {
                     @Serial
                     private static final long serialVersionUID = -4165434301439054175L;
 
@@ -63,9 +77,7 @@ public class TemplatesPositionPanel extends Panel {
         add(upLink);
 
         ImageAjaxLink<Object> downLink =
-                new ImageAjaxLink<>(
-                        "down",
-                        new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
+                new ImageAjaxLink<>("down", new ContextRelativeResourceReference("img/icons/silk/arrow_down.png")) {
                     @Serial
                     private static final long serialVersionUID = -8005026702401617344L;
 

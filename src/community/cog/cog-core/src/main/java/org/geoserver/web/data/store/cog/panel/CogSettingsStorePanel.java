@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -18,6 +20,19 @@ import org.geoserver.web.util.MapModel;
 /** Store specific CogSettings panel, containing therefore eventual authentication info */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class CogSettingsStorePanel<T extends CogSettingsStore> extends CogSettingsPanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CogSettingsStorePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     FormComponent user;
 

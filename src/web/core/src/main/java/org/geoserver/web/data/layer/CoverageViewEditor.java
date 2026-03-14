@@ -6,6 +6,7 @@
 package org.geoserver.web.data.layer;
 
 import static org.geoserver.catalog.CoverageView.BAND_SEPARATOR;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.SampleModel;
@@ -54,6 +55,19 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
  * <p>It allows to select the input coverages and the output bands.
  */
 public class CoverageViewEditor extends FormComponentPanel<List<String>> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CoverageViewEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     private static final List<CompositionType> SUPPORTED_MODES = Arrays.stream(CompositionType.values())
             .filter(v -> v != CompositionType.UNSUPPORTED)

@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -20,6 +22,19 @@ import org.geoserver.catalog.ResourceInfo;
  */
 // TODO WICKET8 - Verify this page works OK
 public class VectorCustomDimensionEditor extends DimensionEditorBase<VectorCustomDimensionEntry> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(VectorCustomDimensionEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     private TextField<String> nameInput;
 

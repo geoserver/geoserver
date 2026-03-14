@@ -1,33 +1,35 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-    <ul>
-        <li>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-NcWmsAdminPanel">
+        <div class="gs-unordered-list-class">
+          <div class="gs-list-item-class">
             <fieldset>
-                <legend><span><wicket:message key="ncwms">ncwms</wicket:message></span></legend>
-                <ul>
-
-                    <li>
-                        <label for="timeSeriesPoolSize">
-                            <wicket:message key="timeSeriesPoolSize">poolSize</wicket:message>
-                        </label>
-                        <input type="text" wicket:id="timeSeriesPoolSize"
-                               id="timeSeriesPoolSize"></input>
-                        
-                    </li>
-                    <li>
-                        <label for="maxTimeSeriesValues">
-                            <wicket:message key="maxTimeSeriesValues">maxTimeSeriesValues</wicket:message>
-                        </label>
-                        <input type="text" wicket:id="maxTimeSeriesValues" id="maxTimeSeriesValues" >
-
-                    </li>
-
-                </ul>
+              <legend>
+                <span>
+                  <wicket:message key="ncwms">ncwms</wicket:message>
+                </span>
+              </legend>
+              <div class="gs-unordered-list-class">
+                <div class="gs-list-item-class">
+                  <label for="timeSeriesPoolSize">
+                    <wicket:message key="timeSeriesPoolSize">poolSize</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="timeSeriesPoolSize" id="timeSeriesPoolSize"/>
+                </div>
+                <div class="gs-list-item-class">
+                  <label for="maxTimeSeriesValues">
+                    <wicket:message key="maxTimeSeriesValues">maxTimeSeriesValues</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="maxTimeSeriesValues" id="maxTimeSeriesValues"/>
+                </div>
+              </div>
             </fieldset>
-        </li>
-    </ul>
-</wicket:panel>
-</body>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

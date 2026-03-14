@@ -5,6 +5,8 @@
  */
 package org.geoserver.wcs.web.demo;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.Rectangle;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -20,6 +22,19 @@ import org.geotools.coverage.grid.GridEnvelope2D;
  * @author Andrea Aime, OpenGeo
  */
 public class GridPanel extends FormComponentPanel<GridEnvelope2D> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GridPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     Integer minX, minY, maxX, maxY;
 

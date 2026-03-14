@@ -113,7 +113,7 @@
         <script src="${relBaseUrl}/webresources/wms/OpenLayers2Map.js" type="text/javascript"></script>
     </head>
     <body>
-        <div id="toolbar" class="d-none">
+        <div id="toolbar" class="hidden">
             <ul>
                 <li>
                     <a>WMS version:</a>

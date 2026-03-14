@@ -1,15 +1,22 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-	<fieldset>
-	  <legend><span><wicket:message key="connectionParameters">Connection Parameters</wicket:message></span></legend>
-	  <div wicket:id="url"></div>
-	  <div wicket:id="charset"></div>
-	  <div wicket:id="spatialIndex"></div>
-	  <div wicket:id="memoryMapped"></div>
-	  <div wicket:id="cacheMemoryMaps"></div>
-		<wicket:child></wicket:child>
-	</fieldset>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ShapefileStoreEditPanel">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="connectionParameters">Connection Parameters</wicket:message>
+            </span>
+          </legend>
+          <div wicket:id="url"/>
+          <div wicket:id="charset"/>
+          <div wicket:id="spatialIndex"/>
+          <div wicket:id="memoryMapped"/>
+          <div wicket:id="cacheMemoryMaps"/>
+          <wicket:child/>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

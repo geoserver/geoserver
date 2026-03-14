@@ -11,35 +11,35 @@
         <fieldset>
             <legend><span><wicket:message key="collectionSecurity">EO Collection security</wicket:message></span>
             </legend>
-            <ul class="action-group">
-                <li><a class="add-link" href="#" wicket:id="addCollectionRule"><wicket:message key="addNew" /></a></li>
-            </ul>
-            <ul wicket:id="collectionLimitsContainer">
-                <li>
+            <div class="gs-unordered-list-class action-group">
+                <div class="gs-list-item-class"> <a class="add-link" href="#" wicket:id="addCollectionRule"><wicket:message key="addNew" /></a></div>
+            </div>
+            <div class="gs-unordered-list-class" wicket:id="collectionLimitsContainer">
+                <div class="gs-list-item-class">
                     <div wicket:id="collectionLimits"></div>
-                </li>
-            </ul>
+                </div>
+            </div>
         </fieldset>
         <fieldset>
             <legend><span><wicket:message key="productSecurity">EO Product security</wicket:message></span>
             </legend>
-            <ul class="action-group">
-                <li><a class="add-link" href="#" wicket:id="addProductRule"><wicket:message key="addNew" /></a></li>
-            </ul>
-            <ul wicket:id="productLimitsContainer">
-                <li>
+            <div class="gs-unordered-list-class action-group">
+                <div class="gs-list-item-class"> <a class="add-link" href="#" wicket:id="addProductRule"><wicket:message key="addNew" /></a></div>
+            </div>
+            <div class="gs-unordered-list-class" wicket:id="productLimitsContainer">
+                <div class="gs-list-item-class">
                     <div wicket:id="productLimits"></div>
-                </li>
-            </ul>
+                </div>
+            </div>
         </fieldset>
         <div class="button-group toolbar-sticky selfclear">
-            <button wicket:id="submit" class="form-button-save" type="submit">
+            <button wicket:id="submit" class="form-button-save primary" type="submit">
                 <wicket:message key="save"/>
             </button>
-            <button wicket:id="apply" class="form-button-apply" type="submit">
+            <button wicket:id="apply" class="form-button-apply outline-primary" type="submit">
                 <wicket:message key="apply"/>
             </button>
-            <button wicket:id="cancel" class="form-button-cancel" type="submit">
+            <button wicket:id="cancel" class="form-button-cancel outline-danger" type="submit">
                 <wicket:message key="cancel"/>
             </button>
         </div>

@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import org.apache.wicket.Component;
@@ -24,6 +26,19 @@ import org.apache.wicket.model.Model;
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class GeoServerDialog extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerDialog.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     GSModalWindow window;
     Component userPanel;
@@ -141,6 +156,19 @@ public class GeoServerDialog extends Panel {
      */
     protected class ContentsPage extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerDialog.ContentsPage.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public ContentsPage(Component contents) {
             super("content");
             Form<?> form = new Form<>("form");
@@ -154,6 +182,20 @@ public class GeoServerDialog extends Panel {
     }
 
     protected static class InfoPage extends Panel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerDialog.InfoPage.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         @SafeVarargs
         public InfoPage(String id, IModel<String> title, IModel<String>... messages) {
             super(id);

@@ -8,25 +8,26 @@
     <form>
         <fieldset>
             <legend><span><wicket:message key="checksControl"></wicket:message></span></legend>
-            <ul>
-                <li class="choiceItem">
-                    <input type="checkbox" id="checksEnabled" wicket:id="checksEnabled"
-                           class="input.checkbox"></input>
+            <div class="gs-unordered-list-class">
+                <div class="gs-list-item-class choiceItem">
+                    <input type="checkbox" id="checksEnabled" wicket:id="checksEnabled"></input>
                     <label for="checksEnabled" wicket:id="statusLabel"></label>
-                </li>
-            </ul>
+                </div>
+            </div>
         </fieldset>
 
         <fieldset>
             <legend><span><wicket:message key="urlChecks"></wicket:message></span></legend>
-            <ul class="action-group">
-                <li><a class="add-link" href="#" wicket:id="addNew">
-                    <wicket:message key="addNew"/>
-                </a></li>
-                <li><a class="remove-link" href="#" wicket:id="removeSelected">
-                    <wicket:message key="removeSelected"/>
-                </a></li>
-            </ul>
+            <div>
+                <div class="gs-unordered-list-class action-group">
+                    <div class="gs-list-item-class"> <a class="add-link" href="#" wicket:id="addNew">
+                        <wicket:message key="addNew"/>
+                    </a></div>
+                    <div class="gs-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected">
+                        <wicket:message key="removeSelected"/>
+                    </a></div>
+                </div>
+            </div>
             <div wicket:id="table"></div>
         </fieldset>
     </form>
@@ -34,24 +35,24 @@
     <form wicket:id="testForm">
         <fieldset>
             <legend><span><wicket:message key="testChecks"></wicket:message></span></legend>
-            <ul>
-                <li>
+            <div class="gs-form">
+                <div class="gs-form-group">
                     <label for="input">
                         <wicket:message key="testInput"></wicket:message>
                     </label>
-                    <textarea wicket:id="testInput" id="input" class="w-75 h-2-em"></textarea>
-                </li>
+                    <textarea wicket:id="testInput" id="input" class="w-75 h-sm"></textarea>
+                </div>
                 <!--li>
                     <label for="output"><wicket:message key="output"></wicket:message>
                     </label>
-                    <label wicket:id="output" id="output" class="w-75 h-5-em"></label>
+                    <label wicket:id="output" id="output" class="w-75 h-sm"></label>
                 </li-->
                 <div class="button-group selfclear">
-                    <a href="#" wicket:id="testURL">
+                    <a class="button outline-primary" href="#" wicket:id="testURL">
                         <wicket:message key="testURL"></wicket:message>
                     </a>
                 </div>
-            </ul>
+            </div>
         </fieldset>
     </form>
 

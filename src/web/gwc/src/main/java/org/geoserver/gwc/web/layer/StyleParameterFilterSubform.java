@@ -6,6 +6,8 @@
 
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,6 +26,19 @@ import org.geoserver.gwc.layer.StyleParameterFilter;
  * @author Kevin Smith, OpenGeo
  */
 public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<StyleParameterFilter> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(StyleParameterFilterSubform.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     /** Model Set<String> as a List<String> and optionally add a dummy element at the beginning. */
     static class SetAsListModel implements IModel<List<String>> {

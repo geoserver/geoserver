@@ -7,6 +7,7 @@ package org.geoserver.security.jwtheaders.web;
 
 import static org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JSON;
 import static org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JWT;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -143,6 +144,8 @@ public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPan
     }
 
     static class JsonClaimPanel extends Panel {
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(JwtHeadersAuthFilterPanel.JsonClaimPanel.class);
+
         public JsonClaimPanel(String id) {
             super(id, new Model<>());
             add(new TextField<String>("rolesJsonPath").setRequired(true));
@@ -171,6 +174,12 @@ public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPan
                     """;
             response.render(CssHeaderItem.forCSS(
                     css, "org-geoserver-security-web-data-JwtHeaderAuthFilterPanel-JsonClaimPanel"));
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
         }
     }
 }

@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class PropertyEditorFormComponent
+
+The panel's html will be contained in a <div class='gs-panel-PropertyEditorFormComponent'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-PropertyEditorFormComponent ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

@@ -56,4 +56,15 @@ public class LayerConfigurationPanelInfo extends PublishedConfigurationPanelInfo
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LayerConfigurationPanelInfo{");
+        sb.append("id='").append(getId()).append('\'');
+        sb.append(", componentClass=").append(getComponentClass().getSimpleName());
+        sb.append(", order=").append(order);
+        sb.append(", myHandleableClasses=").append(myHandleableClasses);
+        sb.append('}');
+        return sb.toString();
+    }
 }

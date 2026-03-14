@@ -8,6 +8,7 @@ import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConf
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.IdToken;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.MSGraphAPI;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.UserInfo;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import com.google.common.io.CharStreams;
 import java.io.IOException;
@@ -84,6 +85,21 @@ public class OAuth2LoginAuthProviderPanel
     }
 
     private class DiscoveryPanel extends Panel {
+
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(OAuth2LoginAuthProviderPanel.DiscoveryPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         @Serial
         private static final long serialVersionUID = 1L;
 
@@ -126,6 +142,9 @@ public class OAuth2LoginAuthProviderPanel
     }
 
     static class TokenClaimPanel extends Panel {
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(OAuth2LoginAuthProviderPanel.TokenClaimPanel.class);
+
         @Serial
         private static final long serialVersionUID = 1L;
 
@@ -146,6 +165,12 @@ public class OAuth2LoginAuthProviderPanel
 
             // add js script
             response.render(JavaScriptContentHeaderItem.forScript(oidcPanelJS, "oidcAuthFilterPanelJS"));
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
         }
 
         public TokenClaimPanel(String id, RoleSource model) {
@@ -157,6 +182,8 @@ public class OAuth2LoginAuthProviderPanel
     }
 
     static class MSGraphPanel extends Panel {
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(OAuth2LoginAuthProviderPanel.MSGraphPanel.class);
+
         @Serial
         private static final long serialVersionUID = 1L;
 
@@ -202,6 +229,12 @@ public class OAuth2LoginAuthProviderPanel
 
             script += "\n";
             response.render(OnDomReadyHeaderItem.forScript(script));
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
         }
 
         public MSGraphPanel(String id, RoleSource model) {

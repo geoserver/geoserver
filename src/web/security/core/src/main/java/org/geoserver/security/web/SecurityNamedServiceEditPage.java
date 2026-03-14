@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.ByteArrayOutputStream;
@@ -63,6 +65,19 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig> 
 
     class ContentPanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityNamedServiceEditPage.ContentPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public ContentPanel(String id, IModel<T> config) {
             super(id, new Model<>());
 
@@ -91,6 +106,20 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig> 
      */
     class BasicLayoutPanel extends Panel {
 
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(SecurityNamedServiceEditPage.BasicLayoutPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public BasicLayoutPanel(String id, IModel<T> config) {
             super(id, new Model<>());
 
@@ -103,6 +132,20 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig> 
      * tabs.
      */
     class TabbedLayoutPanel extends Panel {
+
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(SecurityNamedServiceEditPage.TabbedLayoutPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public TabbedLayoutPanel(String id, final IModel<T> config) {
             super(id, new Model<>());
@@ -140,6 +183,19 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig> 
     }
 
     class ErrorPanel extends Panel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityNamedServiceEditPage.ErrorPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public ErrorPanel(String id, final Exception error) {
             super(id, new Model<>());

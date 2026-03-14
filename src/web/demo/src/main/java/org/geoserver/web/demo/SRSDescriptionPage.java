@@ -7,6 +7,7 @@ package org.geoserver.web.demo;
 
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -63,8 +64,8 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
 
     /** Initializes the OpenLayers map when the page loads */
     @Override
-    public void renderHead(IHeaderResponse headerResponse) {
-        super.renderHead(headerResponse);
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
         String onLoadJsCall = "var map = null;\n"
                 + "            \n"
                 + "            function initMap(srs, units, bbox, resolution){\n"
@@ -115,7 +116,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                 + ", "
                 + jsMaxResolution
                 + ")";
-        headerResponse.render(new OnDomReadyHeaderItem(onLoadJsCall));
+        response.render(new OnDomReadyHeaderItem(onLoadJsCall));
     }
 
     public SRSDescriptionPage(PageParameters params) {
@@ -305,6 +306,19 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
      * Panel for displaying the well known text for the CRS
      */
     static class WKTPanel extends Panel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(SRSDescriptionPage.WKTPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public WKTPanel(String id, IModel<String> wktDescriptionModel, IModel<String> wktModel) {
             super(id);

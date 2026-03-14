@@ -243,9 +243,9 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                                 @Override
                                 public void onComponentTag(Component component, ComponentTag tag) {
                                     if (property == DEFAULT_VALUE_EXPRESSION) {
-                                        tag.put("class", "w-99pct");
+                                        tag.put("class", "w-wide");
                                     } else {
-                                        tag.put("class", "w-1pct");
+                                        tag.put("class", "w-edge");
                                     }
                                 }
                             });

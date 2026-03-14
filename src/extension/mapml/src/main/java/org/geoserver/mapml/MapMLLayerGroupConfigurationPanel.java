@@ -8,6 +8,7 @@ package org.geoserver.mapml;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_MULTIEXTENTS;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLLayerConfigurationPanel.getAvailableMimeTypes;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.util.logging.Logger;
@@ -29,6 +30,20 @@ import org.geotools.util.logging.Logging;
  * @author prushforth
  */
 public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPanel<LayerGroupInfo> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MapMLLayerGroupConfigurationPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     static final Logger LOGGER = Logging.getLogger(MapMLLayerGroupConfigurationPanel.class);
 
     @Serial

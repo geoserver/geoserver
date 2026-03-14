@@ -4,6 +4,7 @@
  */
 package org.geoserver.pmtiles.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.tileverse.rangereader.RangeReaderParams.MEMORY_CACHE_BLOCK_SIZE;
 import static org.geotools.tileverse.rangereader.RangeReaderParams.RANGEREADER_PROVIDER_ID;
 import static org.geotools.tileverse.rangereader.RangeReaderParams.S3_AWS_REGION;
@@ -39,6 +40,19 @@ import org.springframework.util.unit.DataSize;
  */
 @SuppressWarnings("serial")
 public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(PMTilesDataStoreEditPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     private Map<String, Panel> visiblePanelsPerProviderId = new HashMap<>();
 

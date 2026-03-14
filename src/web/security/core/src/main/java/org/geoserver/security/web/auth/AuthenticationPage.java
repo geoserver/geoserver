@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.auth;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.RequestDispatcher;
@@ -217,6 +219,20 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
     static class AuthenticationChainPanel extends FormComponentPanel<SecurityManagerConfig> {
 
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(AuthenticationPage.AuthenticationChainPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public AuthenticationChainPanel(String id) {
             super(id, new Model<>());
 
@@ -225,6 +241,19 @@ public class AuthenticationPage extends AbstractSecurityPage {
     }
 
     class AuthFilterChainPanel extends FormComponentPanel<GeoServerSecurityFilterChain> {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(AuthenticationPage.AuthFilterChainPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         DropDownChoice<HTTPMethod> httpMethodChoice;
         TextField<String> urlPathField, chainTestResultField;

@@ -5,6 +5,8 @@
 
 package org.geoserver.web.netcdf;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +24,19 @@ import org.geoserver.web.util.MetadataMapModel;
 
 /** Configuration panel for GHRSST settings */
 public class GHRSSTExtensionPanel extends NetCDFExtensionPanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GHRSSTExtensionPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     static final List<String> RDACS = Arrays.asList(
             "ABOM",

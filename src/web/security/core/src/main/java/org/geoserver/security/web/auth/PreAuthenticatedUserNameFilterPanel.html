@@ -2,9 +2,9 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:wicket="http://wicket.apache.org/">
-<body>
 <wicket:head>
 </wicket:head>
+<body>
 <wicket:extend>
   <div>
     <wicket:child></wicket:child>
@@ -15,17 +15,19 @@
       <span><wicket:message key="roleSource"></wicket:message></span>
       <a href="#" wicket:id="roleSourceHelp" class="help-link"></a>
     </legend>
-    <div id="roleSource" class="horizontal">
-      <div class="py-1">
+    <div id="roleSource">
+      <div class="gs-form-group">
         <label>
           <wicket:message key="roleSourceSelect"></wicket:message>
         </label>
-        <select class="select" wicket:id="roleSource"></select>
+        <div>
+          <select class="select" wicket:id="roleSource"></select>
+          <div wicket:id="container">
+            <div wicket:id="panel"/>
+          </div>
+        </div>
       </div>
 
-      <div wicket:id="container">
-        <div wicket:id="panel"/>
-      </div>
 
     </div>
   </fieldset>

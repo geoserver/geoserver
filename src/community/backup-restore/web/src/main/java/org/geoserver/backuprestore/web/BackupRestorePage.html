@@ -13,8 +13,8 @@
    <div wicket:id="header">
    </div>
 
-   <ul class="plain pt-5">
-    <li>
+   <div class="gs-unordered-list-class plain pt-5">
+    <div class="gs-list-item-class">
       <fieldset>
        <legend>
            <span class="border-0" wicket:id="icon"></span>
@@ -22,8 +22,8 @@
        </legend>
      </fieldset>
 
-    </li>
-    <li>
+    </div>
+    <div class="gs-list-item-class">
        <div class="button-group selfclear pt-3">
          <a href="" wicket:id="pause">
            <span><wicket:message key="pause"></wicket:message></span>
@@ -35,12 +35,12 @@
            <span><wicket:message key="abandon"></wicket:message></span>
          </a>
        </div>
-     </li>
-   </ul>
+     </div>
+   </div>
    
-   <div class="w-95">
+   <div class="w-wide">
        <form wicket:id="form" class="clearfix">
-         <div class="float-start"><wicket:message key="maxLines">details level</wicket:message>&nbsp;<input type="number" wicket:id="expand"/></div>
+         <div class="float-start"><wicket:message key="maxLines">details level</wicket:message>&#160;<input type="number" wicket:id="expand"/></div>
          <div class="float-end"><a href="#" wicket:id="refresh"><wicket:message key="refresh">refresh</wicket:message></a></div>
        </form>
        <div><textarea readonly="readonly" class="detailstext" wicket:id="details"></textarea></div>

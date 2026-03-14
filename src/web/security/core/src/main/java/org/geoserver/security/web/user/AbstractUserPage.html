@@ -7,29 +7,31 @@
   <form wicket:id="form">
 
     <fieldset>
-      <div class="py-1">
-        <label for="username">
-          <wicket:message key="username">username</wicket:message>
-        </label>
-        <input type="text" wicket:id="username" id="username" class="text"/>
-      </div>
-      <div class="choiceItem py-1">
-        <input type="checkbox" wicket:id="enabled" id="enabled"/>
-        <label for="enabled">
-          <wicket:message key="enabled">enabled</wicket:message>
-        </label>
-      </div>
-      <div class="py-1">
-        <label for="password">
-          <wicket:message key="password">password</wicket:message>
-        </label>
-        <input type="password" wicket:id="password" id="password" class="text"/>
-      </div>
-      <div class="py-1">
-        <label for="confirmPassword">
-          <wicket:message key="confirmPassword">confirmPassword</wicket:message>
-        </label>
-        <input type="password" wicket:id="confirmPassword" id="confirmPassword" class="text"/>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label for="username">
+            <wicket:message key="username">username</wicket:message>
+          </label>
+          <input type="text" wicket:id="username" id="username"/>
+        </div>
+        <div class="choiceItem">
+          <input type="checkbox" wicket:id="enabled" id="enabled"/>
+          <label for="enabled">
+            <wicket:message key="enabled">enabled</wicket:message>
+          </label>
+        </div>
+        <div class="gs-form-group">
+          <label for="password">
+            <wicket:message key="password">password</wicket:message>
+          </label>
+          <input type="password" wicket:id="password" id="password"/>
+        </div>
+        <div class="gs-form-group">
+          <label for="confirmPassword">
+            <wicket:message key="confirmPassword">confirmPassword</wicket:message>
+          </label>
+          <input type="password" wicket:id="confirmPassword" id="confirmPassword"/>
+        </div>
       </div>
     </fieldset>
 
@@ -49,11 +51,13 @@
     </fieldset>
     <div wicket:id="roles"/>
     <fieldset>
-      <div class="py-1">
-        <label>
-          <wicket:message key="adminGroups"></wicket:message>
-        </label>
-        <select class="select choicesSelect w-200px" wicket:id="adminGroups" multiple="multiple"></select>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label>
+            <wicket:message key="adminGroups"></wicket:message>
+          </label>
+          <select class="select choicesSelect w-md" wicket:id="adminGroups" multiple="multiple"></select>
+        </div>
       </div>
     </fieldset>
 
@@ -61,16 +65,16 @@
       <legend>
         <span><wicket:message key="calculatedRoles"></wicket:message></span>
       </legend>
-      <ul wicket:id="calculatedRolesContainer">
-        <li wicket:id="calculatedRoles">
+      <div class="gs-unordered-list-class" wicket:id="calculatedRolesContainer">
+        <div class="gs-list-item-class" wicket:id="calculatedRoles">
           <span wicket:id="role"></span>
-        </li>
-      </ul>
+        </div>
+      </div>
     </fieldset>
 
     <div class="button-group toolbar-sticky selfclear">
-      <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-      <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+      <a href="#" class="form-button-save button primary" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+      <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
     </div>
   </form>
 </wicket:extend>

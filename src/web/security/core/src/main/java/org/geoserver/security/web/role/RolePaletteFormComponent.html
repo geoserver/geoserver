@@ -1,27 +1,26 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-   xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-
-  <fieldset>
-    <legend><span wicket:id="roles"></span></legend>
-
-    <div class="py-1">
-      <wicket:child></wicket:child>
-    </div>
-    <div class="py-1">
-      <div wicket:id="palette"></div>
-    </div>
-    <div class="py-1">
-      <a class="add-link" href="#" wicket:id="addRole">
-        <wicket:message key="addRole">addRole</wicket:message>
-      </a>
-    </div>
-
-  </fieldset>
-
-</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-RolePaletteFormComponent">
+        <fieldset>
+          <legend>
+            <span wicket:id="roles"></span>
+          </legend>
+          <div class="py-1">
+            <wicket:child></wicket:child>
+          </div>
+          <div class="py-1">
+            <div wicket:id="palette"></div>
+          </div>
+          <div class="py-1">
+            <a class="add-link" href="#" wicket:id="addRole">
+              <wicket:message key="addRole">addRole</wicket:message>
+            </a>
+          </div>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

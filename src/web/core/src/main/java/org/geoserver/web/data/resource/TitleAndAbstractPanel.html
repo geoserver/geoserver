@@ -1,36 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head />
-<body>
-<wicket:panel>
-    <ul class="i18n-tile-and-abstract">
-        <li>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-TitleAndAbstractPanel">
+        <div class="i18n-tile-and-abstract gs-form">
+          <div class="gs-form-group">
             <span wicket:id="titleLabel">
-                  <label class="float-start" for="title" wicket:id="titleLabel" />
-                  <input class="float-start" type="checkbox" wicket:id="titleLabel_i18nCheckbox" />
+            <label for="title" wicket:id="titleLabel"/>
+              <div class="choiceItem">
+                <input type="checkbox" wicket:id="titleLabel_i18nCheckbox"/>
+                <label>
                   <wicket:message key="i18nCheckBox">i18n</wicket:message>
+                </label>
+              </div>
             </span>
-        </li>
-        <li>
-            <input class="text" type="text" wicket:id="title" />
-        </li>
-        <li>
-            <div wicket:id="internationalTitle" />
-        </li>
-        <li>
+            <div>
+              <input type="text" wicket:id="title"/>
+              <div wicket:id="internationalTitle"/>
+            </div>
+          </div>
+          <div class="gs-form-group">
             <span wicket:id="abstractLabel">
-               <label class="float-start" for="abstract" wicket:id="abstractLabel" />
-               <input class="float-start" type="checkbox" wicket:id="abstractLabel_i18nCheckbox" />
-               <wicket:message key="i18nCheckBox">i18n</wicket:message>
+              <label for="abstract" wicket:id="abstractLabel"/>
+              <div class="choiceItem">
+                <input type="checkbox" wicket:id="abstractLabel_i18nCheckbox"/>
+                <label>
+                  <wicket:message key="i18nCheckBox">i18n</wicket:message>
+                </label>
+              </div>
             </span>
-        </li>
-        <li>
-            <textarea wicket:id="abstract" class="field textarea" rows="10" cols="30" />
-        </li>
-        <li>
-            <div wicket:id="internationalAbstract" />
-        </li>
-    </ul>
-</wicket:panel>
-</body>
+            <div>
+              <textarea wicket:id="abstract" class="field" rows="10" cols="30"/>
+              <div wicket:id="internationalAbstract"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

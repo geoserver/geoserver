@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +51,20 @@ import org.geotools.util.logging.Logging;
  */
 @SuppressWarnings("serial")
 public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CRSPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     private static Logger LOGGER = Logging.getLogger(CRSPanel.class);
 
     @Serial
@@ -374,6 +390,19 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
      * Panel for displaying the well known text for a CRS.
      */
     public static class WKTPanel extends Panel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(CRSPanel.WKTPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public WKTPanel(String id, CoordinateReferenceSystem crs) {
             super(id);

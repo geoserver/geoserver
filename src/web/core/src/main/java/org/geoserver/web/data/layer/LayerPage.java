@@ -23,7 +23,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -38,7 +38,6 @@ import org.geoserver.web.data.store.CoverageStoreEditPage;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.WMSStoreEditPage;
 import org.geoserver.web.data.store.WMTSStoreEditPage;
-import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -64,7 +63,7 @@ public class LayerPage extends GeoServerSecuredPage {
                     String id, IModel<LayerInfo> itemModel, Property<LayerInfo> property) {
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
-                    f.add(new CachingImage("layerIcon", icons.getSpecificLayerIcon(itemModel.getObject())));
+                    f.add(icons.getIcon("layerIcon", icons.getSpecificLayerIcon(itemModel.getObject())));
                     return f;
                 } else if (property == STORE) {
                     return storeLink(id, itemModel);
@@ -75,9 +74,9 @@ public class LayerPage extends GeoServerSecuredPage {
                     // ask for enabled() instead of isEnabled() to account for disabled
                     // resource/store
                     boolean enabled = layerInfo.enabled();
-                    PackageResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
+                    ResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
-                    f.add(new CachingImage("layerIcon", icon));
+                    f.add(icons.getIcon("layerIcon", icon));
                     return f;
                 } else if (property == SRS) {
                     return new Label(id, SRS.getModel(itemModel));

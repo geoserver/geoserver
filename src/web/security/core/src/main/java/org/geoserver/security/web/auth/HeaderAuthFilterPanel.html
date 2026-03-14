@@ -2,13 +2,15 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:wicket="http://wicket.apache.org/">
-<body>
 <wicket:head>
 </wicket:head>
+<body>
 <wicket:extend>
    <fieldset>
-        <label><wicket:message key="principalHeaderAttribute"></wicket:message></label>
-        <input wicket:id="principalHeaderAttribute" class="field text"/>
+        <div class="gs-form-group">
+            <label><wicket:message key="principalHeaderAttribute"></wicket:message></label>
+            <input wicket:id="principalHeaderAttribute" class="field" type="text"/>
+        </div>
     </fieldset>
 </wicket:extend>
 </body>

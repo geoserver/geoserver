@@ -6,6 +6,8 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.Radio;
@@ -22,6 +24,19 @@ import org.geoserver.acl.domain.rules.SpatialFilterType;
  */
 @SuppressWarnings({"serial", "rawtypes"})
 public abstract class AllowedAreaEditPanel<T> extends FormComponentPanel<T> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AllowedAreaEditPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     protected final FormComponent<MultiPolygon> allowedArea;
     protected final FormComponent<SpatialFilterType> spatialFilterType;

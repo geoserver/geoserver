@@ -13,20 +13,12 @@
     <constructor-arg index="1" value="GeoServer Web Demos"/>
     <property name="category" value="CORE"/>
   </bean>
-<!-- 
-  <bean id="layerListDemo" class="org.geoserver.web.DemoLinkInfo">
-    <property name="id" value="layerListDemo"/>
-    <property name="titleKey" value="MapPreviewPage.page.title"/>
-    <property name="descriptionKey" value="MapPreviewPage.page.description"/>
-    <property name="componentClass" value="org.geoserver.web.demo.MapPreviewPage"/>
-  </bean>
-   -->
   
-  <bean id="layerListDemo2" class="org.geoserver.web.MenuPageInfo">
+  <bean id="layerListDemo" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="layerListDemo"/>
     <property name="titleKey" value="MapPreviewPage.title"/>
     <property name="icon" value="../img/icons/geosilk/map.png"/>
-    <property name="category" ref="dataCategory"/>
+    <property name="category" ref="geoserverCategory"/>
     <property name="order" value="5"/>
     <property name="descriptionKey" value="MapPreviewPage.description"/>
     <property name="componentClass" value="org.geoserver.web.demo.MapPreviewPage"/>

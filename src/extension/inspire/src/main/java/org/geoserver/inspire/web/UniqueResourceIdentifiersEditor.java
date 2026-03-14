@@ -5,6 +5,8 @@
  */
 package org.geoserver.inspire.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -38,6 +40,19 @@ import org.geoserver.wfs.WFSInfo;
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueResourceIdentifiers> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(UniqueResourceIdentifiersEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     private GeoServerTablePanel<UniqueResourceIdentifier> identifiers;
     private AjaxButton button;

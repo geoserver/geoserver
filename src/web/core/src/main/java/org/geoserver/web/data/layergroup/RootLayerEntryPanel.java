@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,19 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 /** Allows to edit the root layer of a layer group */
 public class RootLayerEntryPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RootLayerEntryPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = 3471204885852128002L;

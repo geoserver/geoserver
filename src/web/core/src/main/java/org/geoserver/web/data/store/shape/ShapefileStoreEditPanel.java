@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.shape;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.CACHE_MEMORY_MAPS;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.CREATE_SPATIAL_INDEX;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.DBFCHARSET;
@@ -33,6 +34,19 @@ import org.geoserver.web.wicket.browser.ExtensionFileFilter;
  */
 @SuppressWarnings("serial")
 public class ShapefileStoreEditPanel extends StoreEditPanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ShapefileStoreEditPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     public ShapefileStoreEditPanel(final String componentId, final Form storeEditForm) {
         super(componentId, storeEditForm);

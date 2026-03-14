@@ -5,6 +5,8 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +25,19 @@ import org.geoserver.web.data.store.PasswordTextFieldWriteOnlyModel;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfiguration;
 
 public class JDBCConnectionPoolPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(JDBCConnectionPoolPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = -1579697287836672528L;

@@ -1,29 +1,36 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <p>
-    <span class="warning-link" wicket:id="embeddedDataDir"></span>
-  </p>
-  <p>
-    <span class="warning-link" wicket:id="mpfile"></span>    
-  </p>
-  <p>
-    <span class="warning-link" wicket:id="userpropsold"></span>    
-  </p>
-  <p>
-    <span class="warning-link" wicket:id="digestEncoding"></span>    
-  </p>              
-  <p>
-    <span class="warning-link" wicket:id="mpmessage"></span>
-    <a wicket:id="mplink"><wicket:message key="changeIt"></wicket:message></a>
-  </p>
-  <p>
-    <span class="warning-link" wicket:id="adminmessage"></span>
-    <a wicket:id="adminlink"><wicket:message key="changeIt"></wicket:message></a>
-  </p>
-  <p>
-    <span  wicket:id="strongEncryptionMsg"></span>    
-  </p>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SecurityHomePageContentProvider_SecurityWarningsPanel">
+        <p>
+          <span class="warning-link" wicket:id="embeddedDataDir"/>
+        </p>
+        <p>
+          <span class="warning-link" wicket:id="mpfile"/>
+        </p>
+        <p>
+          <span class="warning-link" wicket:id="userpropsold"/>
+        </p>
+        <p>
+          <span class="warning-link" wicket:id="digestEncoding"/>
+        </p>
+        <p>
+          <span class="warning-link" wicket:id="mpmessage"/>
+          <a wicket:id="mplink">
+            <wicket:message key="changeIt"/>
+          </a>
+        </p>
+        <p>
+          <span class="warning-link" wicket:id="adminmessage"/>
+          <a wicket:id="adminlink">
+            <wicket:message key="changeIt"/>
+          </a>
+        </p>
+        <p>
+          <span wicket:id="strongEncryptionMsg"/>
+        </p>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

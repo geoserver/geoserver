@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -68,6 +70,19 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 public class TemplatePreviewPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TemplatePreviewPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     private CodeMirrorEditor previewEditor;
 

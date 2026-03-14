@@ -1,19 +1,22 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-  <div class="py-1 me-3 align-top d-inline-block">
-    <label>
-      <wicket:message key="defaultStyle">Default Style</wicket:message>
-    </label>
-    <select wicket:id="defaultValue"/>
-  </div>
-  <div class="py-1 align-top d-inline-block">
-    <label>
-      <wicket:message key="alternateStyles">Alternate Styles</wicket:message>
-    </label>
-    <ul wicket:id="styles" class="choiceList"></ul>
-  </div>
-</wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-form gs-panel-StyleParameterFilterSubform">
+        <div class="gs-form-group">
+          <label>
+            <wicket:message key="defaultStyle">Default Style</wicket:message>
+          </label>
+          <select wicket:id="defaultValue"/>
+        </div>
+        <div class="gs-list-item-class">
+          <label>
+            <wicket:message key="alternateStyles">Alternate Styles</wicket:message>
+          </label>
+          <div class="gs-unordered-list-class choiceList" wicket:id="styles"/>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

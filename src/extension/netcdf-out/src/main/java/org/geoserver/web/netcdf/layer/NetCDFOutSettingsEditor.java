@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.netcdf.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +40,19 @@ import tech.units.indriya.format.SimpleUnitFormat;
 
 /** Extension of the {@link NetCDFPanel} adding support for setting the Layer name and Unit of Measure */
 public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsContainer> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NetCDFOutSettingsEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     private static final NonSI NON_SI_INSTANCE = NonSI.getInstance();
 

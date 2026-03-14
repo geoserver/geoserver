@@ -1,30 +1,41 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <div wicket:id="remapsContainer">
-   <ul class="plain" wicket:id="remaps">
-     <li>
-       <ul class="plain horizontal">
-         <li>
-           <!--label for="att">Attribute</label-->
-           <select name="att" wicket:id="att"/>
-         </li>
-         <li>
-           <!--label for="type">Type</label-->
-           <select wicket:id="type"/>
-         </li>
-         <li>
-           <input wicket:id="dateFormat"/>
-         </li>
-         <li>
-           <a wicket:id="apply" href="" class="apply-link"><span><wicket:message key="apply">Apply</wicket:message></span></a>
-           <a wicket:id="cancel" href="" class="remove-link"><span><wicket:message key="cancel">Cancel</wicket:message></span></a>
-         </li>
-       </ul>
-    </li>
-   </ul>
-   </div>
-   <a href="" class="add-link" wicket:id="add">Add</a>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ImportTaskAdvancedPage_AttributeRemappingPanel">
+        <div wicket:id="remapsContainer">
+          <div class="gs-unordered-list-class plain" wicket:id="remaps">
+            <div class="gs-list-item-class">
+              <div class="gs-unordered-list-class plain horizontal">
+                <div class="gs-list-item-class">
+                  <!--label for="att">Attribute</label-->
+                  <select name="att" wicket:id="att"/>
+                </div>
+                <div class="gs-list-item-class">
+                  <!--label for="type">Type</label-->
+                  <select wicket:id="type"/>
+                </div>
+                <div class="gs-list-item-class">
+                  <input wicket:id="dateFormat" type="text"/>
+                </div>
+                <div class="gs-list-item-class">
+                  <a wicket:id="apply" href="" class="apply-link">
+                    <span>
+                      <wicket:message key="apply">Apply</wicket:message>
+                    </span>
+                  </a>
+                  <a wicket:id="cancel" href="" class="remove-link">
+                    <span>
+                      <wicket:message key="cancel">Cancel</wicket:message>
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <a href="" class="add-link" wicket:id="add">Add</a>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
@@ -15,19 +17,32 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.metadata.data.dto.AttributeConfiguration;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 // TODO WICKET8 - Verify this page works OK
 public class AttributePositionPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AttributePositionPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     @Serial
     private static final long serialVersionUID = -4645368967597125299L;
 
@@ -62,8 +77,7 @@ public class AttributePositionPanel extends Panel {
                 }
             }
         };
-        upLink.add(new Image(
-                        "upImage", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_up.png"))
+        upLink.add(new Image("upImage", new ContextRelativeResourceReference("img/icons/silk/arrow_up.png"))
                 .add(new AttributeModifier("alt", new ParamResourceModel("up", this))));
         add(upLink);
 
@@ -91,9 +105,7 @@ public class AttributePositionPanel extends Panel {
                 }
             }
         };
-        downLink.add(new Image(
-                        "downImage",
-                        new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_down.png"))
+        downLink.add(new Image("downImage", new ContextRelativeResourceReference("img/icons/silk/arrow_down.png"))
                 .add(new AttributeModifier("alt", new ParamResourceModel("down", this))));
         add(downLink);
     }

@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.util.ArrayList;
@@ -49,7 +51,7 @@ import org.geoserver.web.security.LayerAccessDataRulePanel;
  * <p>The page is completely pluggable, the UI will be made up by scanning the Spring context for implementations of
  * {@link ResourceConfigurationPanel} and {@link PublishedConfigurationPanel}.
  *
- * <p>WARNING: one crucial aspect of this page is its ability to not loose edits when one switches from one tab to the
+ * <p>WARNING: one crucial aspect of this page is its ability to not lose edits when one switches from one tab to the
  * other. I did not find any effective way to unit test this, so _please_, if you do modify anything in this class
  * (especially the models), manually retest that the edits are not lost on tab switch.
  *
@@ -72,9 +74,9 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
     protected TabbedPanel<ITab> tabbedPanel;
 
     /**
-     * {@link PublishedEditTabPanel} contributions may need to edit something different than the LayerInfo and
+     * {@link PublishedEditTabPanel} contributions may need to edit something different fron the LayerInfo and
      * ResourceInfo this page holds models to. In such cases {@link PublishedEditTabPanelInfo#createOwnModel} will
-     * return a non null model and well pass it back to the concrete LayerEditTabPanel constructor. This is so because
+     * return a non-null model and well pass it back to the concrete LayerEditTabPanel constructor. This is so because
      * LayerEditTabPanel are re-created everytime the user switches tabs.
      */
     private LinkedHashMap<Class<? extends PublishedEditTabPanel<T>>, IModel<?>> tabPanelCustomModels;
@@ -236,6 +238,15 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
         });
     }
 
+    private void sortPublishPanels(List<PublishedConfigurationPanelInfo<T>> configurationPanels) {
+        Collections.sort(configurationPanels, (o1, o2) -> {
+            Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
+            Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
+
+            return order1.compareTo(order2);
+        });
+    }
+
     private List<PublishedEditTabPanelInfo> tabPanelsExtensions() {
         return getGeoServerApplication().getBeansOfType(PublishedEditTabPanelInfo.class);
     }
@@ -384,6 +395,20 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
 
     protected abstract class ListEditTabPanel extends PublishedEditTabPanel<T> {
 
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(PublishedConfigurationPage.ListEditTabPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         @Serial
         private static final long serialVersionUID = -7279044666531992361L;
 
@@ -413,6 +438,9 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
         public ListView<PublishedConfigurationPanelInfo<T>> createList(String id) {
             List<PublishedConfigurationPanelInfo<T>> pubPanels = filterPublishedPanels(
                     getGeoServerApplication().getBeansOfType(PublishedConfigurationPanelInfo.class));
+            sortPublishPanels(pubPanels);
+            Collections.reverse(pubPanels);
+
             ListView<PublishedConfigurationPanelInfo<T>> pubPanelList = new ListView<>(id, pubPanels) {
                 @Serial
                 private static final long serialVersionUID = 1L;
@@ -420,16 +448,29 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
                 @Override
                 protected void populateItem(ListItem<PublishedConfigurationPanelInfo<T>> item) {
                     PublishedConfigurationPanelInfo<T> panelInfo = item.getModelObject();
+                    PublishedConfigurationPanel<T> panel;
                     try {
-                        PublishedConfigurationPanel<T> panel = panelInfo
+                        panel = panelInfo
                                 .getComponentClass()
                                 .getConstructor(String.class, IModel.class)
                                 .newInstance("content", myModel);
-                        panel.setOutputMarkupId(true); // allow cross panel ajax updates
-                        item.add(panel);
+                    } catch (NoSuchMethodException wrongConstructor) {
+                        try {
+                            panel = panelInfo
+                                    .getComponentClass()
+                                    .getConstructor(String.class, IModel.class, PublishedConfigurationPanelInfo.class)
+                                    .newInstance("content", myModel, panelInfo);
+                        } catch (NoSuchMethodException e) {
+                            throw new WicketRuntimeException(
+                                    "Failed to add pluggable layer configuration panels", wrongConstructor);
+                        } catch (Exception e) {
+                            throw new WicketRuntimeException("Failed to add pluggable layer configuration panels", e);
+                        }
                     } catch (Exception e) {
                         throw new WicketRuntimeException("Failed to add pluggable layer configuration panels", e);
                     }
+                    panel.setOutputMarkupId(true); // allow cross panel ajax updates
+                    item.add(panel);
                 }
             };
             return pubPanelList;

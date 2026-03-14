@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +44,19 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 
 /** Allows to edit the list of layers contained in a layer group */
 public abstract class LayerGroupEntryPanel<T> extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerGroupEntryPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Serial
     private static final long serialVersionUID = -5483938812185582866L;

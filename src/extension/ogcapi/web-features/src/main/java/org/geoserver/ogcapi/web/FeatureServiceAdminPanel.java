@@ -4,6 +4,8 @@
  */
 package org.geoserver.ogcapi.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.model.IModel;
 import org.geoserver.ogcapi.v1.features.CQL2Conformance;
 import org.geoserver.ogcapi.v1.features.ECQLConformance;
@@ -12,6 +14,19 @@ import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.wfs.WFSInfo;
 
 public class FeatureServiceAdminPanel extends AdminPagePanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FeatureServiceAdminPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     @Override
     public void onMainFormSubmit() {

@@ -1,10 +1,17 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-      <label><span wicket:id="paramName">bar</span></label>
-      <div wicket:id="border">
-        <textarea wicket:id="paramValue" rows="3" class="small"></textarea>
-      </div>     
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-TextAreaParamPanel gs-form">
+        <div class="gs-form-group">
+          <label>
+            <span wicket:id="paramName">bar</span>
+          </label>
+          <div wicket:id="border">
+            <textarea wicket:id="paramValue" rows="3" class="small"/>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

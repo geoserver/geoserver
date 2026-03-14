@@ -1,12 +1,15 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <ul wicket:id="warningSkipsGroup">
-    <li wicket:id="warningSkips" class="choiceItem">
-      <input wicket:id="warningSkip" type="checkbox"/>
-      <label wicket:id="warningSkipLabel"></label>
-    </li>
-  </ul>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-WarningSkipsPanel">
+        <div class="gs-unordered-list-class" wicket:id="warningSkipsGroup">
+          <div class="gs-list-item-class choiceItem" wicket:id="warningSkips">
+            <input wicket:id="warningSkip" type="checkbox"/>
+            <label wicket:id="warningSkipLabel"/>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

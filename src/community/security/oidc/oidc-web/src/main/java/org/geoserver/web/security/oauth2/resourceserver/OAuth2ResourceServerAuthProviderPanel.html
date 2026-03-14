@@ -5,34 +5,34 @@
   ~
   -->
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:wicket="http://wicket.apache.org/">
-<body>
+
 <wicket:head>
 
 </wicket:head>
+<body>
 <wicket:extend>
-     <ul>
-        <li>
+     <div class="gs-unordered-list-class">
+        <div class="gs-list-item-class">
             <fieldset>
                 <legend>
                     <span><wicket:message key="resourceServerParameters"></wicket:message></span>
                     <a href="#" wicket:id="resourceServerParametersHelp" class="help-link"></a>
                 </legend>
-                <ul>
+                <div class="gs-unordered-list-class">
                     
-                    <li>
+                    <div class="gs-list-item-class">
                         <label for="issuerUri"><span><wicket:message key="issuerUri"></wicket:message></span></label>
-                        <input id="issuerUri" wicket:id="issuerUri" type="text" class="field text"/>
+                        <input id="issuerUri" wicket:id="issuerUri" type="text" class="field"/>
                         <a href="#" wicket:id="issuerUriHelp" class="help-link"></a>
-                    </li>
+                    </div>
 
-                </ul>
+                </div>
             </fieldset>
-        </li>
-    </ul>
+        </div>
+    </div>
 </wicket:extend>
 </body>
 </html>

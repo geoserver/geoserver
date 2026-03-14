@@ -20,7 +20,7 @@ application directory.
         <property name="titleKey" value="ProxyBaseExtensionConfigPage.page.title"/>
         <property name="descriptionKey" value="ProxyBaseExtensionConfigPage.page.description"/>
         <property name="componentClass" value="org.geoserver.proxybase.ext.web.ProxyBaseExtensionConfigPage"/>
-        <property name="category" ref="settingsCategory" />
+        <property name="category" ref="serverCategory" />
         <property name="order" value="200" />
         <property name="icon" value="img/direction-pencil.png" />
     </bean>

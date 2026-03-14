@@ -4,7 +4,7 @@
   xmlns:wicket="http://wicket.apache.org/">
 <wicket:head>
    <wicket:link>
-      <link rel="stylesheet" href="styleTaskManager.css" type="text/css">
+      <link rel="stylesheet" href="styleTaskManager.css" type="text/css"/>
    </wicket:link>
 </wicket:head> 
 <body>
@@ -18,28 +18,28 @@
 
 		<form wicket:id="configurationForm">	  		  	  
 		  	 <fieldset>		
-		  	 	<ul>
-		  	 	 <li>
+		  	 	<div class="gs-unordered-list-class">
+		  	 	 <div class="gs-list-item-class">
 			  	 	 <label for="name"><wicket:message key="name"/></label>
-		             <input id="name" wicket:id="name" type="text" class="text" />
+		             <input id="name" wicket:id="name" type="text" />
 		             
 		             <label for="workspace"><wicket:message key="workspace"/></label>
 		             <select id="workspace" wicket:id="workspace"></select>
 		            		  			            	
 				  	 <label for="description"><wicket:message key="descriptionField"/></label>
-		             <input id="description" wicket:id="description" type="text" class="text" />             
-				 </li>
-				 <li>
+		             <input id="description" wicket:id="description" type="text" />             
+				 </div>
+				 <div class="gs-list-item-class">
 					 <h4><wicket:message key="attributes"/></h4> 
 					 <div wicket:id="attributesPanel"></div>
-				 </li>
-				 <li>
+				 </div>
+				 <div class="gs-list-item-class">
 					 <h4><wicket:message key="tasks"/></h4>
 					 
-					 <ul class="links-above-table">
-						<li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
-						<li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
-					 </ul>
+					 <div class="gs-unordered-list-class links-above-table">
+						<div class="gs-list-item-class"> <a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></div>
+						<div class="gs-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></div>
+					 </div>
 					
 					 <div wicket:id="tasksPanel"></div>
 					 
@@ -48,17 +48,17 @@
 					 <div wicket:id="batchesPanel"></div>
 					 
  						<div class="button-group toolbar-sticky selfclear">
- 							<a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save"/></a>
- 							<a href="#" class="form-button-apply" wicket:id="apply"><wicket:message key="apply"/></a>
- 							<a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel"/></a>
+ 							<a href="#" class="form-button-save button primary" wicket:id="save"><wicket:message key="save"/></a>
+ 							<a href="#" class="form-button-apply button outline-primary" wicket:id="apply"><wicket:message key="apply"/></a>
+ 							<a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel"><wicket:message key="cancel"/></a>
  						</div>
                    
                      
-				</li>
-				<li>				    
+				</div>
+				<div class="gs-list-item-class">
                      <a href="#" wicket:id="export"><wicket:message key="export"/></a>
-				</li>
-			</ul>     
+				</div>
+			</div>
 			</fieldset>
 		</form>
 

@@ -411,11 +411,11 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         form = tester.newFormTester("publishedinfo");
 
-        tester.assertComponent("publishedinfo:tabs:panel:theList:1:content:cacheAgeMax", TextField.class);
-        tester.assertComponent("publishedinfo:tabs:panel:theList:1:content:cachingEnabled", CheckBox.class);
+        tester.assertComponent("publishedinfo:tabs:panel:theList:4:content:cacheAgeMax", TextField.class);
+        tester.assertComponent("publishedinfo:tabs:panel:theList:4:content:cachingEnabled", CheckBox.class);
 
-        form.setValue("tabs:panel:theList:1:content:cachingEnabled", "on");
-        form.setValue("tabs:panel:theList:1:content:cacheAgeMax", "1234");
+        form.setValue("tabs:panel:theList:4:content:cachingEnabled", "on");
+        form.setValue("tabs:panel:theList:4:content:cacheAgeMax", "1234");
 
         // save the layer group
         form.submit("save");

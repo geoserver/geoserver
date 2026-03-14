@@ -1,6 +1,7 @@
+<?xml version="1.0"?>
 <!DOCTYPE html>
-<html>
-<wicket:head>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <wicket:head>
     <style>
         .form-group {
             display: flex;
@@ -22,26 +23,28 @@
             padding: 10px;
         }
     </style>
-</wicket:head>
-<body>
-<wicket:panel class="bordered-div">
-    <div class="qos-panel">
-        <h4>Add Override rule</h4>
-        <form wicket:id="addOverrideForm">
+  </wicket:head>
+  <body>
+    <wicket:panel class="bordered-div">
+      <div class="gs-panel-OverrideAddPanel">
+        <div class="qos-panel">
+          <h4>Add Override rule</h4>
+          <form wicket:id="addOverrideForm">
             <div class="form-group">
-                <label>Key:</label>
-                <input type="text" wicket:id="addOverrideKey" />
+              <label>Key:</label>
+              <input type="text" wicket:id="addOverrideKey"/>
             </div>
             <div class="form-group">
-                <label>Expression:</label>
-                <input type="text" wicket:id="addOverrideExpression" />
+              <label>Expression:</label>
+              <input type="text" wicket:id="addOverrideExpression"/>
             </div>
             <div class="form-group">
-                <button type="submit" wicket:id="addOverrideSubmitButton">Add Override expression</button>
+              <button type="submit" wicket:id="addOverrideSubmitButton">Add Override expression</button>
             </div>
-        </form>
-    </div>
-    <div wicket:id="addOverrideFeedback"></div>
-</wicket:panel>
-</body>
+          </form>
+        </div>
+        <div wicket:id="addOverrideFeedback"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

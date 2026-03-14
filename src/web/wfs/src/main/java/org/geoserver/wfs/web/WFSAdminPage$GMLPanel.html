@@ -1,27 +1,34 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<wicket:panel>
-<ul>
-  <li>
-    <label for="srsNameStyle"><wicket:message key="WFSAdminPage$GMLPanel.srsStyle">SRS Style</wicket:message></label>
-    <select class="select" wicket:id="srsNameStyle"></select>
-  </li>
-    <li>
-        <div class="choiceItem">
-            <input type="checkbox" wicket:id="overrideGMLAttributes"/>
-            <label for="overrideAbstractFeatureTypeAttributes">
-                <wicket:message key="WFSAdminPage$GMLPanel.overrideGMLAttributes">Override GML Attributes</wicket:message>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-WFSAdminPage_GMLPanel">
+        <div class="gs-form">
+          <div class="gs-form-group">
+            <label for="srsNameStyle">
+              <wicket:message key="WFSAdminPage$GMLPanel.srsStyle">SRS Style</wicket:message>
             </label>
+            <select class="select" wicket:id="srsNameStyle"/>
+          </div>
+          <div class="gs-form-group">
+            <div class="choiceItem">
+              <input type="checkbox" wicket:id="overrideGMLAttributes"/>
+              <label for="overrideAbstractFeatureTypeAttributes">
+                <wicket:message key="WFSAdminPage$GMLPanel.overrideGMLAttributes">Override GML Attributes</wicket:message>
+              </label>
+            </div>
+          </div>
+          <div class="gs-form-group">
+            <div class="choiceItem">
+              <input wicket:id="forceGmlMimeType" type="checkbox"/>
+              <label wicket:id="forceGmlMimeTypeLabel"/>
+            </div>
+          </div>
+          <div class="gs-form-group">
+            <select class="select" wicket:id="mimeTypeToForce"/>
+          </div>
         </div>
-    </li>
-    <li>
-        <div class="choiceItem">
-            <input wicket:id="forceGmlMimeType" type="checkbox"/>
-            <label wicket:id="forceGmlMimeTypeLabel"></label>
-        </div>
-    </li>
-    <li>
-        <select class="select" wicket:id="mimeTypeToForce"></select>
-    </li>
-</ul>
-</wicket:panel>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

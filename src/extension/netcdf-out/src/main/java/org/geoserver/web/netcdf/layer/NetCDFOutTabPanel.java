@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.netcdf.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -17,6 +19,19 @@ import org.geoserver.web.util.MetadataMapModel;
 
 /** {@link LayerEditTabPanel} implementation for configuring NetCDF output settings */
 public class NetCDFOutTabPanel extends PublishedEditTabPanel<LayerInfo> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NetCDFOutTabPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     /** serialVersionUID */
     @Serial

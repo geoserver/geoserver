@@ -140,13 +140,12 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         tabs.add(new AbstractTab(this::getServiceType) {
             @Override
             public Panel getPanel(String panelId) {
-                return new ServiceTabPanel(panelId, infoModel, form, panels.get(getServiceType()));
+                return new ServiceTabPanel(panelId, infoModel, form, getServiceType(), panels.get(getServiceType()));
             }
         });
         panels.remove(getServiceType());
 
         // remaining content on their own tabs
-        /*
         if(!panels.isEmpty()){
             for (String specificServiceType : panels.keySet()) {
                 IModel<String> tabTile = new IModel<String>() {
@@ -156,24 +155,16 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                     }
                 };
                 List<AdminPagePanelInfo> tabPanels = panels.get(specificServiceType);
-
-                tabs.add(new AbstractTab(tabTile) {
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        Panel panel = new Panel(panelId,infoModel);
-
-                        return new ServiceTabPanel(panelId, infoModel, form, panels.get(type));
-                    }
-                });
-            }
-            AbstractTab extensionsTab = new AbstractTab() {
-                @Override
-                public Panel getPanel(String panelId) {
-                    return new ServiceTabPanel(panelId, infoModel, form, panels.get(getServiceType()));
+                if( tabPanels != null && !tabPanels.isEmpty()) {
+                    tabs.add(new AbstractTab(tabTile) {
+                        @Override
+                        public Panel getPanel(String panelId) {
+                            return new ServiceTabPanel(panelId, infoModel, form, specificServiceType, tabPanels);
+                        }
+                    });
                 }
-            };
+            }
         }
-        */
 
         TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs);
         form.add(tabbedPanel);
@@ -547,12 +538,12 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         }
 
-        public ServiceTabPanel(String panelId, IModel<T> infoModel, Form form, List<AdminPagePanelInfo> adminPagePanelInfos) {
+        public ServiceTabPanel(String panelId, IModel<T> infoModel, Form form, String specificServiceType, List<AdminPagePanelInfo> adminPagePanelInfos) {
             super(panelId, infoModel);
             T service = infoModel.getObject();
 
             add(new DisabledVersionsPanel(
-                    "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), getServiceType()));
+                    "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), specificServiceType));
 
             ListView extensionPanels = new AdminPagePanelInfoListView("extensions", adminPagePanelInfos, infoModel);
             extensionPanels.setReuseItems(true);

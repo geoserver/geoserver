@@ -17,11 +17,38 @@ public class AdminPagePanelInfo extends ComponentInfo<AdminPagePanel> {
 
     protected Class<? extends ServiceInfo> serviceClass;
 
+    protected String specificServiceType;
+
+
+    /**
+     * ServiceInfo, example {@code WFSInfo}, used for configuration.
+     * @return ServiceInfo panel uses for configuration
+     */
     public Class<? extends ServiceInfo> getServiceClass() {
         return serviceClass;
     }
 
+    /**
+     * ServiceInfo, example {@code WFSInfo}, panel is designed to configure.
+     * @param serviceClass ServiceInfo panel uses for configuration
+     */
     public void setServiceClass(Class<? extends ServiceInfo> serviceClass) {
         this.serviceClass = serviceClass;
+    }
+
+    /**
+     * The specific service type, example {@code WFS} or {@code Features}, panel configures.
+     * @return The specific service type
+     */
+    public String getSpecificServiceType() {
+        return specificServiceType;
+    }
+
+    /**
+     * The specific service type, example {@code WFS} or {@code Features}, panel configures.
+     * @param specificServiceType The specific service type
+     */
+    public void setSpecificServiceType(String specificServiceType) {
+        this.specificServiceType = specificServiceType;
     }
 }

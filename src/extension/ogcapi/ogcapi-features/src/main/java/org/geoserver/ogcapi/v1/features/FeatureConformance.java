@@ -135,7 +135,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     public List<APIConformance> conformances(WFSInfo serviceInfo) {
         List<APIConformance> conformance = new ArrayList<>();
         if (isEnabled(serviceInfo)) {
-            // built-in rquired conformance classes
+            // built-in required conformance classes
             conformance.add(FeatureConformance.CORE);
             conformance.add(FeatureConformance.OAS30);
             conformance.add(FeatureConformance.HTML);

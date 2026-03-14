@@ -13,39 +13,10 @@
       </div>
     </div>
   </fieldset>
+  <div wicket:id="tabs" class="tabpanel"></div>
   <fieldset>
-    <legend><wicket:message key="serviceMetadata">Service Metadata</wicket:message></legend>
+    <legend><wicket:message key="serviceMetadata">WFS Metadata</wicket:message></legend>
     <div class="gs-form">
-      <div class="choiceItem">
-        <input wicket:id="enabled" type="checkbox"/>
-        <label for="enabled"><span wicket:id="service.enabled">enable</span></label>
-      </div>
-      <div class="choiceItem">
-        <input wicket:id="citeCompliant" type="checkbox"/>
-        <label for="citeCompliant"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
-      </div>
-      <div class="gs-form-group">
-        <label><wicket:message key="maintainer">Maintainer</wicket:message></label>
-        <input wicket:id="maintainer" class="field" type="text"/>
-      </div>
-      <div class="gs-form-group">
-        <label><wicket:message key="onlineResource">Online resource</wicket:message></label>
-        <input wicket:id="onlineResource" class="field" type="text"/>
-      </div>
-      <div class="gs-list-item-class">
-        <div wicket:id="serviceTitleAndAbstract"></div>
-      </div>
-      <div class="gs-form-group">
-         <label><wicket:message key="fees">Fees</wicket:message></label>
-         <input wicket:id="fees" class="field" type="text"/>
-      </div>
-      <div class="gs-form-group">
-         <label><wicket:message key="accessConstraints">Access Constraints</wicket:message></label>
-         <input wicket:id="accessConstraints" class="field" type="text"/>
-      </div>
-      <div class="gs-list-item-class">
-         <div wicket:id="keywords"></div>
-      </div>
       <div class="gs-list-item-class">
          <label><wicket:message key="disabledVersions">Disabled Versions</wicket:message></label>
          <div wicket:id="disabledVersions"></div>

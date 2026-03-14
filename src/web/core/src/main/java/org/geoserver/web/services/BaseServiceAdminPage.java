@@ -7,6 +7,7 @@ package org.geoserver.web.services;
 
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +15,9 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -57,25 +61,19 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  * <p>Subclasses of this page should contribute form components in the {@link #build(IModel, Form)} method. Each
  * component that is added to the form should have a corresponding markup entry of the following form:
  *
- * <pre>
- * &lt;wicket:extend&gt;
- *   &lt;li&gt;
- *       &lt;span&gt;
- *         &lt;label&gt;
- *            &lt;wicket:message key="maxFeatures.title"&gt;Maximum Features&lt;/wicket:message&gt;
- *         &lt;/label&gt;
- *         &lt;input wicket:id="maxFeatures" class="field text" type="text"&gt;
- *       &lt;/span&gt;
- *       &lt;p class="instruct"&gt;
- *       &lt;/p&gt;
- *     &lt;/li&gt;
- *
- * &lt;/wicket:extend&gt;
- * </pre>
+ * <pre>{@code
+ * <wicket:extend>
+ *   <div class="gs-form-group">
+ *     <label for="maxFeatures">
+ *       <wicket:message key="maxFeatures.title">Maximum Features</wicket:message>
+ *     </label>
+ *     <input class="field"  id="maxFeatures" wicket:id="maxFeatures" type="text">
+ *   </div>
+ * </wicket:extend>
+ * }</pre>
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-// TODO WICKET8 - Verify this page (and derived pages?) work OK
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
     /** Allows workspace admins access to the workspace service configuration too * */
     public static final String WORKSPACE_ADMIN_SERVICE_ACCESS = "WORKSPACE_ADMIN_SERVICE_ACCESS";
@@ -106,6 +104,16 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         Form<T> form = new Form<>("form", new CompoundPropertyModel<>(infoModel));
         add(form);
 
+        List<ITab> tabs = new ArrayList<>();
+        tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
+            @Override
+            public Panel getPanel(String panelId) {
+                return createServiceTab(panelId, infoModel);
+            }
+        });
+        TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs);
+
+
         boolean allowAccess = Boolean.parseBoolean(GeoServerExtensions.getProperty(WORKSPACE_ADMIN_SERVICE_ACCESS));
         if (service.getWorkspace() == null || !allowAccess) {
             // check it's really a full admin (to make sure the page cannot be accessed by workspace admins using
@@ -123,31 +131,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
         form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
-        form.add(new Label(
-                "service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
-        form.add(new TextField<>("maintainer"));
-        TextField<String> onlineResource = new TextField<>("onlineResource");
+        form.add(tabbedPanel);
 
-        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
-
-        // AF: Disable Binding if GeoServer Env Parametrization is enabled!
-        if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
-            onlineResource.add(new UrlValidator());
-        }
-
-        form.add(onlineResource);
-        CheckBox enabled = new CheckBox("enabled");
-        enabled.setOutputMarkupId(true);
-        enabled.setMarkupId("enabled");
-        form.add(enabled);
-        CheckBox citeCompliant = new CheckBox("citeCompliant");
-        citeCompliant.setOutputMarkupId(true);
-        citeCompliant.setMarkupId("citeCompliant");
-        form.add(citeCompliant);
-        form.add(getInternationalContentFragment(infoModel, "serviceTitleAndAbstract"));
-        form.add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
-        form.add(new TextField<>("fees"));
-        form.add(new TextField<>("accessConstraints"));
         form.add(new DisabledVersionsPanel(
                 "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), getServiceType()));
 
@@ -182,6 +167,11 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         };
         form.add(cancel);
         cancel.setDefaultFormProcessing(false);
+    }
+
+    /** Initial service tab. */
+    private Panel createServiceTab(String panelId, IModel<T> infoModel) {
+        return new GeneralTabPanel(panelId, infoModel);
     }
 
     protected void onSave(IModel<T> infoModel, boolean doReturn) {
@@ -455,5 +445,59 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         // but a check for full admin is performed in the constructor to verify access to global services
         // Rationale: this method is called when the page is constructed, and the workspace is not yet known
         return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
+
+    private class GeneralTabPanel extends AdminPagePanel {
+        @Serial
+        private static final long serialVersionUID = -1;
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.GeneralTabPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        public GeneralTabPanel(String panelId, IModel<T> infoModel) {
+            super(panelId, infoModel);
+
+            T service = infoModel.getObject();
+
+            // service control
+            add(new Label(
+                    "service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
+            CheckBox enabled = new CheckBox("enabled");
+            enabled.setOutputMarkupId(true);
+            enabled.setMarkupId("enabled");
+            add(enabled);
+
+            CheckBox citeCompliant = new CheckBox("citeCompliant");
+            citeCompliant.setOutputMarkupId(true);
+            citeCompliant.setMarkupId("citeCompliant");
+            add(citeCompliant);
+
+            // metadata
+            add(getInternationalContentFragment(infoModel, "serviceTitleAndAbstract"));
+
+            add(new TextField<>("maintainer"));
+            TextField<String> onlineResource = new TextField<>("onlineResource");
+
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+
+            // AF: Disable Binding if GeoServer Env Parametrization is enabled!
+            if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
+                onlineResource.add(new UrlValidator());
+            }
+            add(onlineResource);
+            add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
+            add(new TextField<>("fees"));
+            add(new TextField<>("accessConstraints"));
+        }
     }
 }

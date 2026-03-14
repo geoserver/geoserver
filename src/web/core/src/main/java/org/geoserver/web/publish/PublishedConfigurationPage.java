@@ -57,7 +57,6 @@ import org.geoserver.web.security.LayerAccessDataRulePanel;
  *
  * @author Niels Charlier
  */
-// TODO WICKET8 - Verify this page works OK
 public abstract class PublishedConfigurationPage<T extends PublishedInfo> extends GeoServerSecuredPage {
 
     @Serial

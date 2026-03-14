@@ -87,6 +87,7 @@
 
   <bean id="wmtsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wmts"/>
+    <property name="order" value="800"/>
     <property name="titleKey" value="wmts.title"/>
     <property name="descriptionKey" value="wmts.description"/>
     <property name="componentClass" value="org.geoserver.gwc.web.wmts.WMTSAdminPage"/>

@@ -46,6 +46,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.web.data.resource.LocalesDropdown;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
+import org.geoserver.web.services.DisabledVersionsPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SRSListTextArea;
@@ -174,7 +175,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
     @Override
     protected String getServiceName() {
-        return "WFS";
+        return "WFS"; // Features
     }
 
     @Override
@@ -205,6 +206,9 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     private class WFSAdminPanel extends AdminPagePanel {
         public WFSAdminPanel(String id, IModel info) {
             super(id,info);
+            // service control
+            add(new DisabledVersionsPanel(
+                    "disabledVersions", new PropertyModel<>(info, "disabledVersions"), getServiceType()));
             // max features
             add(new TextField<>("maxFeatures").add(RangeValidator.minimum(0)));
             add(new TextField<>("maxNumberOfFeaturesForPreview"));

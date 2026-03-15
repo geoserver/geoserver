@@ -50,6 +50,7 @@ import org.geoserver.web.data.resource.TitleAndAbstractPanel;
 import org.geoserver.web.data.store.panel.FileModel;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
+import org.geoserver.web.services.DisabledVersionsPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
 import org.geoserver.web.wicket.GSModalWindow;
@@ -428,6 +429,10 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             super(id,info);
             // popups support
             add(modal = new GSModalWindow("modal"));
+
+            // service control
+            add(new DisabledVersionsPanel(
+                    "disabledVersions", new PropertyModel<>(info, "disabledVersions"), getServiceType()));
 
             // new text field for the title of the root node
             add(new TitleAndAbstractPanel(

@@ -155,7 +155,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
                 @Override
                 public Panel getPanel(String panelId) {
-                    return new GeneralTabAdminPagePanel(panelId, infoModel);
+                    return new GeneralTabAdminPagePanel(panelId, infoModel,null);
                 }
             });
             // service tab
@@ -193,11 +193,11 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             form.add(createPlaceholder("extensions"));
         }
         else {
-            // SINGLE PAGE PRESENTATION
+            // SINGLE PAGE PRESENTATION: for specific service type
             form.add(createPlaceholder("tabs"));
-            form.add(new GeneralTabAdminPagePanel("general", infoModel));
+            form.add(new GeneralTabAdminPagePanel("general", infoModel, getServiceType()));
 
-            // Subclass build adds content to bottom of page, rather than tabs
+            // Subclass build adds content to bottom of page, rather than individual tabs
             build(infoModel, form);
 
             List<AdminPagePanelInfo> extensionPanels = panels.get(getServiceType());
@@ -341,13 +341,13 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     }
 
     /**
-     * The string to use when representing this service to users. Subclasses must override.
+     * The string to use when representing this service to users, subclasses must override.
      */
     protected abstract String getServiceName();
 
     /**
      * The specific service type identifier (e.g., "WMS", "WFS", "WCS", "Features")
-     * Used to retrieve available versions from the service registry.
+     * Used to retrieve available versions from the dispatcher service registry.
      *
      * Services can share a common {@link #getServiceClass()} for configuration.
      *
@@ -546,7 +546,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         }
 
-        public GeneralTabAdminPagePanel(String panelId, IModel<T> infoModel) {
+        public GeneralTabAdminPagePanel(String panelId, IModel<T> infoModel, String specificServiceType) {
             super(panelId, infoModel);
 
             T service = infoModel.getObject();
@@ -569,17 +569,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             add(new TextField<>("accessConstraints"));
 
             // service control
-            add(new Label(
-                    "service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
-            CheckBox enabled = new CheckBox("enabled");
-            enabled.setOutputMarkupId(true);
-            enabled.setMarkupId("enabled");
-            add(enabled);
-
-            CheckBox citeCompliant = new CheckBox("citeCompliant");
-            citeCompliant.setOutputMarkupId(true);
-            citeCompliant.setMarkupId("citeCompliant");
-            add(citeCompliant);
+            add(new ServiceControlAdminPanel("serviceControl",infoModel, specificServiceType));
         }
     }
 

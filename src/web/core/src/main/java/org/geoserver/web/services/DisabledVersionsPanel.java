@@ -34,15 +34,18 @@ public class DisabledVersionsPanel extends FormComponentPanel<List<Version>> {
     protected Palette<Version> palette;
     List<Behavior> toAdd = new ArrayList<>();
 
+    protected String serviceType;
     /**
-     * Creates a new DisabledVersionsPanel
+     * Creates a new DisabledVersionsPanel controlling which versions
+     * are available for specific service type ("WFS","WMS", "Features",...).
      *
      * @param id Component id
      * @param model Model holding the list of disabled versions
-     * @param serviceType The service type
+     * @param serviceType The specific service type
      */
     public DisabledVersionsPanel(String id, IModel<List<Version>> model, String serviceType) {
         super(id, model);
+        this.serviceType = serviceType;
 
         List<String> versionStrings = RequestUtils.getSupportedVersions(serviceType);
         if (versionStrings.isEmpty()) {
@@ -89,50 +92,7 @@ public class DisabledVersionsPanel extends FormComponentPanel<List<Version>> {
             }
         };
 
-        add(
-                palette =
-                        new Palette<>(
-                                "palette",
-                                safeModel,
-                                choicesModel,
-                                new SimpleChoiceRenderer<>() {
-                                    @Serial
-                                    private static final long serialVersionUID = 1L;
-
-                                    @Override
-                                    public Object getDisplayValue(Version object) {
-                                        return object.toString();
-                                    }
-
-                                    @Override
-                                    public String getIdValue(Version object, int index) {
-                                        return object.toString();
-                                    }
-                                },
-                                10,
-                                false) {
-                            @Serial
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            protected Recorder<Version> newRecorderComponent() {
-                                Recorder<Version> rec = super.newRecorderComponent();
-                                rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
-                                toAdd.clear();
-                                return rec;
-                            }
-
-                            @Override
-                            public Component newSelectedHeader(final String componentId) {
-                                return new Label(componentId, new ResourceModel(getSelectedHeaderPropertyKey()));
-                            }
-
-                            @Override
-                            public Component newAvailableHeader(final String componentId) {
-                                return new Label(componentId, new ResourceModel(getAvailableHeaderPropertyKey()));
-                            }
-                        });
-
+        add(palette = new VersionPalette(safeModel, choicesModel));
         palette.add(new DefaultTheme());
         palette.setOutputMarkupId(true);
     }
@@ -221,6 +181,49 @@ public class DisabledVersionsPanel extends FormComponentPanel<List<Version>> {
             if (newSelection != null) {
                 modelList.addAll(newSelection);
             }
+        }
+    }
+
+    /**
+     * Version palette for selected service.
+     */
+    private class VersionPalette extends Palette<Version> {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        public VersionPalette(IModel<Collection<Version>> safeModel, IModel<Collection<Version>> choicesModel) {
+            super("palette", safeModel, choicesModel, new SimpleChoiceRenderer<>() {
+                @Serial
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public Object getDisplayValue(Version object) {
+                    return "%s %s".formatted(DisabledVersionsPanel.this.serviceType, object.toString());
+                }
+
+                @Override
+                public String getIdValue(Version object, int index) {
+                    return object.toString();
+                }
+            }, 10, false);
+        }
+
+        @Override
+        protected Recorder<Version> newRecorderComponent() {
+            Recorder<Version> rec = super.newRecorderComponent();
+            rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
+            toAdd.clear();
+            return rec;
+        }
+
+        @Override
+        public Component newSelectedHeader(final String componentId) {
+            return new Label(componentId, new ResourceModel(getSelectedHeaderPropertyKey()));
+        }
+
+        @Override
+        public Component newAvailableHeader(final String componentId) {
+            return new Label(componentId, new ResourceModel(getAvailableHeaderPropertyKey()));
         }
     }
 }

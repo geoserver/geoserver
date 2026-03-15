@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -29,7 +28,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -91,10 +89,19 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
-    /** Allows workspace admins access to the workspace service configuration too * */
+    /**
+     * Application property allowing workspace admins access to the workspace service configuration too.
+     */
     public static final String WORKSPACE_ADMIN_SERVICE_ACCESS = "WORKSPACE_ADMIN_SERVICE_ACCESS";
 
+    /**
+     * Shared dialog used for feedback and confirmation.
+     */
     protected GeoServerDialog dialog;
+
+    /**
+     * Form on submit callbacks..
+     */
     protected List<SerializableConsumer<Void>> onSubmitHooks = new ArrayList<>();
 
     /** create a page */
@@ -148,7 +155,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
                 @Override
                 public Panel getPanel(String panelId) {
-                    return new GeneralTabPanel(panelId, infoModel);
+                    return new GeneralTabAdminPagePanel(panelId, infoModel);
                 }
             });
             // service tab
@@ -156,7 +163,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 @Override
                 public Panel getPanel(String panelId) {
                     List servicePanels = panels.get(getServiceType());
-                    return new ServicePanel(panelId, infoModel, initialAdminPanel, servicePanels);
+                    return new ServiceAdminTabPanel(panelId, infoModel, initialAdminPanel, servicePanels, onSubmitHooks);
                 }
             });
             panels.remove(getServiceType());
@@ -174,7 +181,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                         tabs.add(new AbstractTab(tabTile) {
                             @Override
                             public Panel getPanel(String panelId) {
-                                return new ServicePanel(panelId, infoModel, null, tabPanels );
+                                return new ServiceAdminTabPanel(panelId, infoModel, null, tabPanels, onSubmitHooks );
                             }
                         });
                     }
@@ -188,13 +195,13 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         else {
             // SINGLE PAGE PRESENTATION
             form.add(createPlaceholder("tabs"));
-            form.add(new GeneralTabPanel("general", infoModel));
+            form.add(new GeneralTabAdminPagePanel("general", infoModel));
 
             // Subclass build adds content to bottom of page, rather than tabs
             build(infoModel, form);
 
             List<AdminPagePanelInfo> extensionPanels = panels.get(getServiceType());
-            ListView extensionPanelView = new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel);
+            ListView extensionPanelView = new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel,onSubmitHooks);
             extensionPanelView.setReuseItems(true);
             form.add(extensionPanelView);
 
@@ -339,11 +346,22 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     protected abstract String getServiceName();
 
     /**
-     * The service type identifier (e.g., "WMS", "WFS", "WCS"). Used to retrieve available versions from the service
-     * registry. Subclasses must override.
+     * The specific service type identifier (e.g., "WMS", "WFS", "WCS", "Features")
+     * Used to retrieve available versions from the service registry.
+     *
+     * Services can share a common {@link #getServiceClass()} for configuration.
+     *
+     * Subclasses must override.
      */
     protected abstract String getServiceType();
 
+    /**
+     * Model used to establish the context (global or workspace) for this service admin page.
+     *
+     * Detached model that looks up ServiceInfo from GeoServer catalogue using optional workspaceName.
+     *
+     * @param <T>
+     */
     class ServiceModel<T extends ServiceInfo> extends LoadableDetachableModel<T> {
 
         /* id reference */
@@ -356,6 +374,10 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         /* direct reference */
         T service;
 
+        /**
+         * Create a ServiceModel using the provided ServiceInfo.
+         * @param service serivce info
+         */
         ServiceModel(T service) {
             this.id = service.getId();
             if (this.id == null) {
@@ -363,6 +385,11 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         }
 
+        /**
+         * Detached model looking up
+         * @param serviceClass ServiceInfo class
+         * @param workspaceName Wworkspace name
+         */
         ServiceModel(Class<T> serviceClass, String workspaceName) {
             this.serviceClass = serviceClass;
             this.workspaceName = workspaceName;
@@ -376,10 +403,11 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
             if (serviceClass != null) {
                 if (workspaceName != null) {
+                    // workspace service configuration override
                     WorkspaceInfo ws = getCatalog().getWorkspaceByName(workspaceName);
                     return (T) getGeoServer().getService(ws, getServiceClass());
                 }
-
+                // global service
                 return (T) getGeoServer().getService(getServiceClass());
             }
             return service;
@@ -489,19 +517,6 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         return false;
     }
 
-    private Fragment getInternationalContentFragment(IModel<T> infoModel, String id) {
-        Fragment fragment;
-        if (supportInternationalContent()) {
-            fragment = new Fragment(id, "internationalStringFragment", this);
-            fragment.add(new TitleAndAbstractPanel("titleAndAbstract", infoModel, "titleMsg", "abstract", this));
-        } else {
-            fragment = new Fragment(id, "stringFragment", this);
-            fragment.add(new TextField<>("title"));
-            fragment.add(new TextArea<>("abstract"));
-        }
-        return fragment;
-    }
-
     @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         // This page is used in two context, for global services and workspace services
@@ -511,11 +526,14 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 
-    protected class GeneralTabPanel extends AdminPagePanel {
+    /**
+     * AdminPagePanel for general configuration options.
+     */
+    public class GeneralTabAdminPagePanel extends AdminPagePanel {
         @Serial
         private static final long serialVersionUID = -1;
 
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.GeneralTabPanel.class);
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.GeneralTabAdminPagePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -528,7 +546,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         }
 
-        public GeneralTabPanel(String panelId, IModel<T> infoModel) {
+        public GeneralTabAdminPagePanel(String panelId, IModel<T> infoModel) {
             super(panelId, infoModel);
 
             T service = infoModel.getObject();
@@ -565,100 +583,18 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         }
     }
 
-    /**
-     * Panel used to manage service enabled/disabled versions.
-     */
-    protected class ServiceEnablePanel extends AdminPagePanel {
-        @Serial
-        private static final long serialVersionUID = -1;
-
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.ServiceEnablePanel.class);
-
-        @Override
-        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
-            super.renderHead(response);
-            // if the panel-specific CSS file contains actual css then have the browser load the css
-            if (!isCssEmpty) {
-                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                        new org.apache.wicket.request.resource.PackageResourceReference(
-                                getClass(), getClass().getSimpleName() + ".css")));
-            }
+    private Fragment getInternationalContentFragment(IModel<T> infoModel, String id) {
+        Fragment fragment;
+        if (supportInternationalContent()) {
+            fragment = new Fragment(id, "internationalStringFragment", this);
+            fragment.add(new TitleAndAbstractPanel("titleAndAbstract", infoModel, "titleMsg", "abstract", this));
+        } else {
+            fragment = new Fragment(id, "stringFragment", this);
+            fragment.add(new TextField<>("title"));
+            fragment.add(new TextArea<>("abstract"));
         }
-
-        public ServiceEnablePanel(String panelId, IModel<T> infoModel, String specificServiceType) {
-            super(panelId, infoModel);
-            T service = infoModel.getObject();
-
-            add(new DisabledVersionsPanel(
-                    "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), specificServiceType));
-        }
+        return fragment;
     }
 
-    /**
-     * Panel used for service configuration, built around an initial page, with
-     * AdminPagePanel extensions.
-     */
-    protected class ServicePanel extends AdminPagePanel {
-        @Serial
-        private static final long serialVersionUID = -1;
 
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.ServicePanel.class);
-
-        @Override
-        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
-            super.renderHead(response);
-            // if the panel-specific CSS file contains actual css then have the browser load the css
-            if (!isCssEmpty) {
-                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                        new org.apache.wicket.request.resource.PackageResourceReference(
-                                getClass(), getClass().getSimpleName() + ".css")));
-            }
-        }
-
-        public ServicePanel(String panelId, IModel<T> infoModel, AdminPagePanel initialPanel, List<AdminPagePanelInfo> extensionPanels) {
-            super(panelId, infoModel);
-            T service = infoModel.getObject();
-
-            if (initialPanel != null) {
-                add(initialPanel);
-            }
-            else {
-                Label placeHolder = new Label("initial");
-                placeHolder.setVisible(false);
-                add(placeHolder);
-            }
-            ListView extensionPanelView = new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel);
-            extensionPanelView.setReuseItems(true);
-            add(extensionPanelView);
-        }
-    }
-
-    private class AdminPagePanelInfoListView extends ListView<AdminPagePanelInfo> {
-
-        private final IModel infoModel;
-
-        public AdminPagePanelInfoListView(String id, List<AdminPagePanelInfo> panels, IModel infoModel) {
-            super(id, panels);
-            this.infoModel = infoModel;
-        }
-
-        @Override
-        protected void populateItem(ListItem<AdminPagePanelInfo> item) {
-            AdminPagePanelInfo info = item.getModelObject();
-            try {
-                AdminPagePanel panel = info.getComponentClass()
-                        .getConstructor(String.class, IModel.class)
-                        .newInstance("content", infoModel);
-                item.add(panel);
-                // add onMainFormSubmit to hooks
-                onSubmitHooks.add(x -> panel.onMainFormSubmit());
-            } catch (Exception e) {
-                throw new WicketRuntimeException(
-                        "Failed to create admin extension panel of "
-                                + "type "
-                                + info.getComponentClass().getSimpleName(),
-                        e);
-            }
-        }
-    }
 }

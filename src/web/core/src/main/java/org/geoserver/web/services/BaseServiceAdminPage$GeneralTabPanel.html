@@ -3,19 +3,6 @@
   <body>
     <wicket:panel>
       <fieldset>
-        <legend><wicket:message key="service">Service</wicket:message></legend>
-        <div class="gs-form">
-          <div class="choiceItem">
-            <input id="enabled" wicket:id="enabled" type="checkbox"/>
-            <label for="enabled"><span wicket:id="service.enabled">enable</span></label>
-          </div>
-          <div class="choiceItem">
-            <input id="citeCompliant" wicket:id="citeCompliant" type="checkbox"/>
-            <label for="citeCompliant"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
-          </div>
-        </div>
-      </fieldset>
-      <fieldset>
         <legend><wicket:message key="serviceMetadata">Service Metadata</wicket:message></legend>
         <div class="gs-form">
           <div class="gs-list-item-class">
@@ -39,6 +26,19 @@
           </div>
           <div class="gs-list-item-class">
             <div wicket:id="keywords"></div>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><wicket:message key="serviceControl">Service Control</wicket:message></legend>
+        <div class="gs-form">
+          <div class="choiceItem">
+            <input id="enabled" wicket:id="enabled" type="checkbox"/>
+            <label for="enabled"><span wicket:id="service.enabled">enable</span></label>
+          </div>
+          <div class="choiceItem">
+            <input id="citeCompliant" wicket:id="citeCompliant" type="checkbox"/>
+            <label for="citeCompliant"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
           </div>
         </div>
       </fieldset>

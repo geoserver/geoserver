@@ -61,8 +61,21 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 /**
  * Base page for service administration pages.
  *
- * <p>Subclasses of this page should contribute form components in the {@link #build(IModel, Form)} method. Each
- * component that is added to the form should have a corresponding markup entry of the following form:
+ * <ul>
+ *     <li>{@link #getServiceName()}}: The service being configured by {@code build} single page,
+ *     or {@code buildPanel} for tabbed presentation.
+ *     <li>{@link #getServiceClass()}: The {@link ServiceInfo}</li> used to store configuration.</li>
+ * </ul>
+ *
+ * There are two presentation options:
+ *
+ * <p>Recommended: Subclasses of this page can use {@link #buildPanel(String, IModel, Form)} contribute an {@link AdminPagePanel}.
+ * This panel is used as a starting point for a tabbed display of services associated with
+ * the {@link #getServiceClass()} configuration.</p>
+ *
+ * If {@code buildPanel} return {@code null} the subclass is assumed to {@code wicket:extend}
+ * BaseServiceAdmin page by contribute form components using {@link #build(IModel, Form)} method.
+ * Each component that is added to the form should have a corresponding markup entry of the following form:</p>
  *
  * <pre>{@code
  * <wicket:extend>
@@ -121,57 +134,71 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             // create just a panel with a label that signifies the workspace
             form.add(new LocalWorkspacePanel("workspace", service));
         }
-
         form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
-        // add the extension panels
-        Map<String,List<AdminPagePanelInfo>> panels = createExtensionPanelList("extensions", infoModel);
+        Map<String,List<AdminPagePanelInfo>> panels = extensionPanels();
         List<ITab> tabs = new ArrayList<>();
 
-        // general tab
-        tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
-            @Override
-            public Panel getPanel(String panelId) {
-                return new GeneralTabPanel(panelId, infoModel);
-            }
-        });
-        // service tab
-        tabs.add(new AbstractTab(this::getServiceType) {
-            @Override
-            public Panel getPanel(String panelId) {
-                List servicePanels = panels.get(getServiceType());
-                return new ServiceTabPanel(panelId, infoModel, form, getServiceType(), servicePanels);
-            }
-        });
-        panels.remove(getServiceType());
+        // initial panel used for tabbed presentation
+        final AdminPagePanel initialAdminPanel = buildPanel("initial", infoModel, form);
 
-        // remaining content on their own tabs
-        if(!panels.isEmpty()){
-            for (String specificServiceType : panels.keySet()) {
-                IModel<String> tabTile = new IModel<String>() {
-                    @Override
-                    public String getObject() {
-                        return specificServiceType;
+        if (initialAdminPanel != null ) {
+            // TABBED PRESENTATION
+            // general tab for common service configuration options
+            tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
+                @Override
+                public Panel getPanel(String panelId) {
+                    return new GeneralTabPanel(panelId, infoModel);
+                }
+            });
+            // service tab
+            tabs.add(new AbstractTab(this::getServiceType) {
+                @Override
+                public Panel getPanel(String panelId) {
+                    List servicePanels = panels.get(getServiceType());
+                    return new ServicePanel(panelId, infoModel, initialAdminPanel, servicePanels);
+                }
+            });
+            panels.remove(getServiceType());
+            // remaining content on their own tabs
+            if (!panels.isEmpty()) {
+                for (String specificServiceType : panels.keySet()) {
+                    List<AdminPagePanelInfo> tabPanels = panels.get(specificServiceType);
+                    if (tabPanels != null && !tabPanels.isEmpty()) {
+                        IModel<String> tabTile = new IModel<String>() {
+                            @Override
+                            public String getObject() {
+                                return specificServiceType;
+                            }
+                        };
+                        tabs.add(new AbstractTab(tabTile) {
+                            @Override
+                            public Panel getPanel(String panelId) {
+                                return new ServicePanel(panelId, infoModel, null, tabPanels );
+                            }
+                        });
                     }
-                };
-                List<AdminPagePanelInfo> tabPanels = panels.get(specificServiceType);
-                if( tabPanels != null && !tabPanels.isEmpty()) {
-                    tabs.add(new AbstractTab(tabTile) {
-                        @Override
-                        public Panel getPanel(String panelId) {
-                            return new ServiceTabPanel(panelId, infoModel, form, specificServiceType, tabPanels);
-                        }
-                    });
                 }
             }
+            TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs);
+            form.add(tabbedPanel);
+            form.add(createPlaceholder("general"));
+            form.add(createPlaceholder("extensions"));
         }
+        else {
+            // SINGLE PAGE PRESENTATION
+            form.add(createPlaceholder("tabs"));
+            form.add(new GeneralTabPanel("general", infoModel));
 
-        TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs);
-        form.add(tabbedPanel);
+            // Subclass build adds content to bottom of page, rather than tabs
+            build(infoModel, form);
 
-        // deprecated page build adds content to bottom of page, rather than tabs
-        // build(infoModel, form);
+            List<AdminPagePanelInfo> extensionPanels = panels.get(getServiceType());
+            ListView extensionPanelView = new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel);
+            extensionPanelView.setReuseItems(true);
+            form.add(extensionPanelView);
 
+        }
         SubmitLink submit = new SubmitLink("submit", new StringResourceModel("save", null, null)) {
             @Override
             public void onSubmit() {
@@ -230,7 +257,19 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         };
     }
 
-    protected Map<String,List<AdminPagePanelInfo>> createExtensionPanelList(String id, final IModel infoModel) {
+    /** Create an invisible placeholder */
+    Label createPlaceholder(String id){
+        Label placeholder = new Label(id);
+        placeholder.setVisible(false);
+
+        return placeholder;
+    }
+
+    /**
+     * Look up AdminPagePanels for {@link #getServiceClass()}.
+     * @return AdminPagePanelInfo, listed by specific service type.
+     */
+    protected Map<String,List<AdminPagePanelInfo>> extensionPanels() {
         List<AdminPagePanelInfo> panels = getGeoServerApplication().getBeansOfType(AdminPagePanelInfo.class);
         for (Iterator<AdminPagePanelInfo> it = panels.iterator(); it.hasNext(); ) {
             AdminPagePanelInfo panel = it.next();
@@ -250,14 +289,25 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     }
 
     /**
-     * The class of the service.
+     * The {@link ServiceInfo} storing configuration for this admin page.
      *
      * <p>This value is used to obtain a reference to the service info object via {@link GeoServer#getService(Class)}.
      */
     protected abstract Class<T> getServiceClass();
 
     /**
-     * Builds the form for the page.
+     * Callback for building an initial AdminPanel for tabbed ServiceAdminPage presentation.
+     *
+     * @param id Wicket id for created panel
+     * @return Initial AdminPagePanel, or {@code null} for single page presentation.
+     */
+    protected AdminPagePanel buildPanel( String id, IModel info, Form form) {
+        return null;
+    }
+
+    /**
+     * Extend the BaseServiceAdminPage by building adding additional components to the form for the page.
+     * This method is only called if {@link #buildPanel(String, IModel, Form)} returns {@code null}.
      *
      * <p>The form uses a {@link CompoundPropertyModel} so in the normal case components do not need a model as it's
      * inherited from the parent. This means that component id's should match the info bean property they correspond to.
@@ -268,13 +318,6 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
      * @deprecated use {@link #buildPanel(IModel, Form)} instead to build the main tab panel for the page.
      */
     protected  void build(IModel info, Form form) {
-    }
-
-    /**
-     * Callback for building the main AdminPanel for the page.
-     */
-    protected AdminPagePanel buildPanel( String id, IModel info, Form form) {
-        return null;
     }
 
     /**
@@ -290,7 +333,9 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         // to configuration
     }
 
-    /** The string to use when representing this service to users. Subclasses must override. */
+    /**
+     * The string to use when representing this service to users. Subclasses must override.
+     */
     protected abstract String getServiceName();
 
     /**
@@ -488,19 +533,6 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
             T service = infoModel.getObject();
 
-            // service control
-            add(new Label(
-                    "service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
-            CheckBox enabled = new CheckBox("enabled");
-            enabled.setOutputMarkupId(true);
-            enabled.setMarkupId("enabled");
-            add(enabled);
-
-            CheckBox citeCompliant = new CheckBox("citeCompliant");
-            citeCompliant.setOutputMarkupId(true);
-            citeCompliant.setMarkupId("citeCompliant");
-            add(citeCompliant);
-
             // metadata
             add(getInternationalContentFragment(infoModel, "serviceTitleAndAbstract"));
 
@@ -517,14 +549,30 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
             add(new TextField<>("fees"));
             add(new TextField<>("accessConstraints"));
+
+            // service control
+            add(new Label(
+                    "service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
+            CheckBox enabled = new CheckBox("enabled");
+            enabled.setOutputMarkupId(true);
+            enabled.setMarkupId("enabled");
+            add(enabled);
+
+            CheckBox citeCompliant = new CheckBox("citeCompliant");
+            citeCompliant.setOutputMarkupId(true);
+            citeCompliant.setMarkupId("citeCompliant");
+            add(citeCompliant);
         }
     }
 
-    protected class ServiceTabPanel extends AdminPagePanel {
+    /**
+     * Panel used to manage service enabled/disabled versions.
+     */
+    protected class ServiceEnablePanel extends AdminPagePanel {
         @Serial
         private static final long serialVersionUID = -1;
 
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.ServiceTabPanel.class);
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.ServiceEnablePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -537,25 +585,51 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         }
 
-        public ServiceTabPanel(String panelId, IModel<T> infoModel, Form form, String specificServiceType, List<AdminPagePanelInfo> adminPagePanelInfos) {
+        public ServiceEnablePanel(String panelId, IModel<T> infoModel, String specificServiceType) {
             super(panelId, infoModel);
             T service = infoModel.getObject();
 
             add(new DisabledVersionsPanel(
                     "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), specificServiceType));
-            if (specificServiceType == getServiceType()) {
-                AdminPagePanel defaultAdminPanel = buildPanel("default-panel", infoModel, form);
-                add(defaultAdminPanel);
+        }
+    }
+
+    /**
+     * Panel used for service configuration, built around an initial page, with
+     * AdminPagePanel extensions.
+     */
+    protected class ServicePanel extends AdminPagePanel {
+        @Serial
+        private static final long serialVersionUID = -1;
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.ServicePanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        public ServicePanel(String panelId, IModel<T> infoModel, AdminPagePanel initialPanel, List<AdminPagePanelInfo> extensionPanels) {
+            super(panelId, infoModel);
+            T service = infoModel.getObject();
+
+            if (initialPanel != null) {
+                add(initialPanel);
             }
             else {
-                Label placeHolder = new Label("default-panel");
+                Label placeHolder = new Label("initial");
                 placeHolder.setVisible(false);
                 add(placeHolder);
             }
-            ListView extensionPanels = new AdminPagePanelInfoListView("extensions", adminPagePanelInfos, infoModel);
-            extensionPanels.setReuseItems(true);
-
-            add(extensionPanels);
+            ListView extensionPanelView = new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel);
+            extensionPanelView.setReuseItems(true);
+            add(extensionPanelView);
         }
     }
 

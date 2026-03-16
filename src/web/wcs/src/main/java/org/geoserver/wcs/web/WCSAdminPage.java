@@ -27,6 +27,8 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SRSListTextArea;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
 
     public WCSAdminPage() {
@@ -67,14 +69,26 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
     }
 
     private class WCSAdminPanel extends AdminPagePanel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WCSAdminPage.WCSAdminPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public WCSAdminPanel(String id, IModel info) {
             super(id,info);
 
             // service control
             add(new DisabledVersionsPanel(
                     "disabledVersions", new PropertyModel<>(info, "disabledVersions"), getServiceType()));
-
-
 
             // overview policy
             add(new DropDownChoice<>(

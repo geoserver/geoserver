@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns:wicket="http://wicket.apache.org/">
    <body>
-      <wicket:extend>
+      <wicket:panel>
+         <fieldset>
+            <legend><wicket:message key="cswServiceControl">CSW Service Control</wicket:message></legend>
+            <div wicket:id="disabledVersions"></div>
+         </fieldset>
          <fieldset>
             <legend>
                <span>
@@ -23,7 +27,7 @@
                </div>
             </div>
          </fieldset>
-      </wicket:extend>
+      </wicket:panel>
    </body>
 </html>
 

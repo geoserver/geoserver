@@ -16,7 +16,9 @@ import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.csw.CSWInfo;
 import org.geoserver.csw.DirectDownloadSettings;
+import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
+import org.geoserver.web.services.DisabledVersionsPanel;
 import org.geoserver.web.util.MetadataMapModel;
 
 public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
@@ -42,27 +44,12 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     }
 
     @Override
+    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+        return new CSWAdminPanel(id, info);
+    }
+    @Override
     protected void build(final IModel info, Form form) {
-
-        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(info, "metadata");
-        if (metadata.getObject() == null) {
-            metadata.setObject(new MetadataMap());
-        }
-
-        DirectDownloadSettings settings = DirectDownloadSettings.getSettingsFromMetadata(metadata.getObject(), null);
-        if (settings == null) {
-            metadata.getObject().put(DirectDownloadSettings.DIRECTDOWNLOAD_KEY, new DirectDownloadSettings());
-        }
-
-        IModel<DirectDownloadSettings> directDownloadModel = new MetadataMapModel<>(
-                metadata, DirectDownloadSettings.DIRECTDOWNLOAD_KEY, DirectDownloadSettings.class);
-
-        form.add(new CheckBox(
-                "directDownloadEnabled", new PropertyModel<>(directDownloadModel, "directDownloadEnabled")));
-        TextField<Integer> maxDownloadSize =
-                new TextField<>("maxDownloadSize", new PropertyModel<>(directDownloadModel, "maxDownloadSize"));
-        maxDownloadSize.add(RangeValidator.minimum(0L));
-        form.add(maxDownloadSize);
+        // see CSWAdminPanel
     }
 
     @Override
@@ -73,5 +60,36 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     @Override
     protected String getServiceType() {
         return "CSW";
+    }
+
+    private class CSWAdminPanel extends AdminPagePanel {
+        public CSWAdminPanel(String id, IModel info) {
+            super(id,info);
+
+            // service control
+            add(new DisabledVersionsPanel(
+                    "disabledVersions", new PropertyModel<>(info, "disabledVersions"), getServiceType()));
+
+            // csw direct download settings
+            final PropertyModel<MetadataMap> metadata = new PropertyModel<>(info, "metadata");
+            if (metadata.getObject() == null) {
+                metadata.setObject(new MetadataMap());
+            }
+
+            DirectDownloadSettings settings = DirectDownloadSettings.getSettingsFromMetadata(metadata.getObject(), null);
+            if (settings == null) {
+                metadata.getObject().put(DirectDownloadSettings.DIRECTDOWNLOAD_KEY, new DirectDownloadSettings());
+            }
+
+            IModel<DirectDownloadSettings> directDownloadModel = new MetadataMapModel<>(
+                    metadata, DirectDownloadSettings.DIRECTDOWNLOAD_KEY, DirectDownloadSettings.class);
+
+            add(new CheckBox(
+                    "directDownloadEnabled", new PropertyModel<>(directDownloadModel, "directDownloadEnabled")));
+            TextField<Integer> maxDownloadSize =
+                    new TextField<>("maxDownloadSize", new PropertyModel<>(directDownloadModel, "maxDownloadSize"));
+            maxDownloadSize.add(RangeValidator.minimum(0L));
+            add(maxDownloadSize);
+        }
     }
 }

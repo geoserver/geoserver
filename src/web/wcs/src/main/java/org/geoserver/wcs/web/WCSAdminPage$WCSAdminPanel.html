@@ -1,7 +1,10 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
-<wicket:extend>
-
+  <wicket:panel>
+    <fieldset>
+	  <legend><wicket:message key="wcsServiceControl">WCS Service Control</wicket:message></legend>
+	  <div wicket:id="disabledVersions"></div>
+    </fieldset>
 	<fieldset>
 		<legend>
 			<span><wicket:message
@@ -9,7 +12,7 @@
 		</legend>
 		<div class="gs-form">
 			<div class="choiceItem">
-				<input class="field" type="checkbox"
+				<input class="field" type="checkbox" id="subsamplingEnabled"
 				wicket:id="subsamplingEnabled"></input> 
 				<label for="subsamplingEnabled"><wicket:message
 				key="subsampling">subsampling</wicket:message></label>
@@ -19,7 +22,7 @@
 				<select wicket:id="overviewPolicy" class="field"></select>
 			</div>
 			<div class="choiceItem">
-				<input wicket:id="latLon" type="checkbox"></input> 
+				<input id="latLon" wicket:id="latLon" type="checkbox"></input>
 				<label for="latLon"><wicket:message
 				key="latLonOrder">subsampling</wicket:message></label>
 			</div>
@@ -77,7 +80,6 @@
 			</div>
 		</div>
 	</fieldset>
-
-</wicket:extend>
+  </wicket:panel>
 </body>
 </html>

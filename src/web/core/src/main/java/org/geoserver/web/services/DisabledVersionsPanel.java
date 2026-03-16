@@ -36,8 +36,8 @@ public class DisabledVersionsPanel extends FormComponentPanel<List<Version>> {
 
     protected String serviceType;
     /**
-     * Creates a new DisabledVersionsPanel controlling which versions
-     * are available for specific service type ("WFS","WMS", "Features",...).
+     * Creates a new DisabledVersionsPanel controlling which versions are available for specific service type
+     * ("WFS","WMS", "Features",...).
      *
      * @param id Component id
      * @param model Model holding the list of disabled versions
@@ -184,28 +184,32 @@ public class DisabledVersionsPanel extends FormComponentPanel<List<Version>> {
         }
     }
 
-    /**
-     * Version palette for selected service.
-     */
+    /** Version palette for selected service. */
     private class VersionPalette extends Palette<Version> {
         @Serial
         private static final long serialVersionUID = 1L;
 
         public VersionPalette(IModel<Collection<Version>> safeModel, IModel<Collection<Version>> choicesModel) {
-            super("palette", safeModel, choicesModel, new SimpleChoiceRenderer<>() {
-                @Serial
-                private static final long serialVersionUID = 1L;
+            super(
+                    "palette",
+                    safeModel,
+                    choicesModel,
+                    new SimpleChoiceRenderer<>() {
+                        @Serial
+                        private static final long serialVersionUID = 1L;
 
-                @Override
-                public Object getDisplayValue(Version object) {
-                    return "%s %s".formatted(DisabledVersionsPanel.this.serviceType, object.toString());
-                }
+                        @Override
+                        public Object getDisplayValue(Version object) {
+                            return "%s %s".formatted(DisabledVersionsPanel.this.serviceType, object.toString());
+                        }
 
-                @Override
-                public String getIdValue(Version object, int index) {
-                    return object.toString();
-                }
-            }, 10, false);
+                        @Override
+                        public String getIdValue(Version object, int index) {
+                            return object.toString();
+                        }
+                    },
+                    10,
+                    false);
         }
 
         @Override

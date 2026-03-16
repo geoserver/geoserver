@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 
 /**
  * Serializable operation that accepts input with the intension of producing a side-effect rather than a result.
+ *
  * @param <T>
  */
 public interface SerializableConsumer<T> extends Consumer<T>, Serializable {}

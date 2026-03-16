@@ -47,6 +47,7 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
         return new CSWAdminPanel(id, info);
     }
+
     @Override
     protected void build(final IModel info, Form form) {
         // see CSWAdminPanel
@@ -64,7 +65,7 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
 
     private class CSWAdminPanel extends AdminPagePanel {
         public CSWAdminPanel(String id, IModel info) {
-            super(id,info);
+            super(id, info);
 
             // service control
             add(new DisabledVersionsPanel(
@@ -76,7 +77,8 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
                 metadata.setObject(new MetadataMap());
             }
 
-            DirectDownloadSettings settings = DirectDownloadSettings.getSettingsFromMetadata(metadata.getObject(), null);
+            DirectDownloadSettings settings =
+                    DirectDownloadSettings.getSettingsFromMetadata(metadata.getObject(), null);
             if (settings == null) {
                 metadata.getObject().put(DirectDownloadSettings.DIRECTDOWNLOAD_KEY, new DirectDownloadSettings());
             }

@@ -130,9 +130,7 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         }
     }
 
-    /**
-     * Validator that checks that the total time is greater than the execution time
-     */
+    /** Validator that checks that the total time is greater than the execution time */
     class TotalTimeValidator extends AbstractFormValidator {
 
         @Serial

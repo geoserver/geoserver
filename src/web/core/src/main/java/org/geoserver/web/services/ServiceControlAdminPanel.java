@@ -1,5 +1,8 @@
 package org.geoserver.web.services;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
@@ -7,15 +10,10 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.config.ServiceInfo;
 
-import java.io.Serial;
-
-import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
-
 /**
  * Panel used to manage service enabled, and modes such as strict.
  *
- * If a specific service type is provided, the ability to disable versions for
- * that service will be presented inline.
+ * <p>If a specific service type is provided, the ability to disable versions for that service will be presented inline.
  */
 class ServiceControlAdminPanel<T extends ServiceInfo> extends AdminPagePanel {
     @Serial
@@ -38,13 +36,12 @@ class ServiceControlAdminPanel<T extends ServiceInfo> extends AdminPagePanel {
         super(panelId, infoModel);
 
         // service control
-        if( specificServiceType != null ) {
+        if (specificServiceType != null) {
             add(new Label(
-                    "service.enabled", new StringResourceModel("service.enabled", this).setParameters(specificServiceType)));
-        }
-        else {
-            add(new Label(
-                    "service.enabled", new StringResourceModel("service.enabled", this).setParameters("")));
+                    "service.enabled",
+                    new StringResourceModel("service.enabled", this).setParameters(specificServiceType)));
+        } else {
+            add(new Label("service.enabled", new StringResourceModel("service.enabled", this).setParameters("")));
         }
         CheckBox enabled = new CheckBox("enabled");
         enabled.setOutputMarkupId(true);
@@ -56,7 +53,7 @@ class ServiceControlAdminPanel<T extends ServiceInfo> extends AdminPagePanel {
         citeCompliant.setMarkupId("citeCompliant");
         add(citeCompliant);
 
-        if (specificServiceType != null ) {
+        if (specificServiceType != null) {
             add(new DisabledVersionsPanel(
                     "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), specificServiceType));
         } else {

@@ -426,7 +426,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
     private class WMSAdminPanel extends AdminPagePanel {
         public WMSAdminPanel(String id, IModel info) {
-            super(id,info);
+            super(id, info);
             // popups support
             add(modal = new GSModalWindow("modal"));
 
@@ -479,7 +479,9 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             CheckBox aphWrapField = new CheckBox("aph.wrap", aphWrap);
             add(aphWrapField);
             MapModel aphDensify = defaultedModel(
-                    metadataModel, WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY, WMS.ENABLE_ADVANCED_PROJECTION_DENSIFICATION);
+                    metadataModel,
+                    WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY,
+                    WMS.ENABLE_ADVANCED_PROJECTION_DENSIFICATION);
             CheckBox aphDensifyField = new CheckBox("aph.densify", aphDensify);
             add(aphDensifyField);
             MapModel aphHeuristic = defaultedModel(
@@ -523,7 +525,9 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             watermarkUrlField.setOutputMarkupId(true);
             add(watermarkUrlField);
             add(chooserButton(
-                    "chooser", new ParamResourceModel("chooseWatermark", WMSAdminPage.this).getString(), watermarkUrlField));
+                    "chooser",
+                    new ParamResourceModel("chooseWatermark", WMSAdminPage.this).getString(),
+                    watermarkUrlField));
             TextField<Integer> transparency = new TextField<>("watermark.transparency");
             transparency.add(new RangeValidator<>(0, 100));
             add(transparency);
@@ -532,15 +536,20 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             // svg
             add(new CheckBox("svg.antialias", new MapModel<>(metadataModel, "svgAntiAlias")));
             add(new DropDownChoice<>(
-                    "svg.producer", new MapModel<>(metadataModel, "svgRenderer"), SVG_RENDERERS, new SVGMethodRenderer()));
+                    "svg.producer",
+                    new MapModel<>(metadataModel, "svgRenderer"),
+                    SVG_RENDERERS,
+                    new SVGMethodRenderer()));
             // png compression levels
             MapModel pngCompression = defaultedModel(metadataModel, WMS.PNG_COMPRESSION, WMS.PNG_COMPRESSION_DEFAULT);
             TextField<Integer> pngCompressionField = new TextField<>("png.compression", pngCompression, Integer.class);
             pngCompressionField.add(new RangeValidator<>(0, 100));
             add(pngCompressionField);
             // jpeg compression levels
-            MapModel jpegCompression = defaultedModel(metadataModel, WMS.JPEG_COMPRESSION, WMS.JPEG_COMPRESSION_DEFAULT);
-            TextField<Integer> jpegCompressionField = new TextField<>("jpeg.compression", jpegCompression, Integer.class);
+            MapModel jpegCompression =
+                    defaultedModel(metadataModel, WMS.JPEG_COMPRESSION, WMS.JPEG_COMPRESSION_DEFAULT);
+            TextField<Integer> jpegCompressionField =
+                    new TextField<>("jpeg.compression", jpegCompression, Integer.class);
             jpegCompressionField.add(new RangeValidator<>(0, 100));
             add(jpegCompressionField);
 
@@ -555,7 +564,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
             add(new CheckBox("kml.kmattr", defaultedModel(metadataModel, WMS.KML_KMLATTR, WMS.KML_KMLATTR_DEFAULT)));
             add(new CheckBox(
-                    "kml.kmlplacemark", defaultedModel(metadataModel, WMS.KML_KMLPLACEMARK, WMS.KML_KMLPLACEMARK_DEFAULT)));
+                    "kml.kmlplacemark",
+                    defaultedModel(metadataModel, WMS.KML_KMLPLACEMARK, WMS.KML_KMLPLACEMARK_DEFAULT)));
 
             MapModel kmScore = defaultedModel(metadataModel, WMS.KML_KMSCORE, WMS.KML_KMSCORE_DEFAULT);
             TextField<Integer> kmScoreField = new TextField<>("kml.kmscore", kmScore, Integer.class);
@@ -609,8 +619,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             // disable the reprojection of GetFeatureInfo results
             add(new CheckBox(
                     "disableFeaturesReproject", new PropertyModel<>(info, WMS.FEATURES_REPROJECTION_DISABLED)));
-            add(
-                    new CheckBox("disableTransformFeatureInfo", new PropertyModel<>(info, "transformFeatureInfoDisabled")));
+            add(new CheckBox("disableTransformFeatureInfo", new PropertyModel<>(info, "transformFeatureInfoDisabled")));
             add(new CheckBox("autoEscapeTemplateValues", new PropertyModel<>(info, "autoEscapeTemplateValues")));
             TextField<Integer> cacheMaxExtries = new TextField<>("cacheConfiguration.maxEntries");
             cacheMaxExtries.add(RangeValidator.minimum(1));

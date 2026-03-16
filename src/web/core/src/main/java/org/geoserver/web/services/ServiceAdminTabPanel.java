@@ -1,20 +1,15 @@
 package org.geoserver.web.services;
 
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.IModel;
-import org.geoserver.config.ServiceInfo;
-import org.geoserver.web.util.SerializableConsumer;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.util.List;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.IModel;
+import org.geoserver.web.util.SerializableConsumer;
 
-import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
-
-/**
- * Panel used for service configuration, built around an initial page, with
- * AdminPagePanel extensions.
- */
+/** Panel used for service configuration, built around an initial page, with AdminPagePanel extensions. */
 public class ServiceAdminTabPanel extends AdminPagePanel {
     @Serial
     private static final long serialVersionUID = -1;
@@ -32,7 +27,12 @@ public class ServiceAdminTabPanel extends AdminPagePanel {
         }
     }
 
-    public ServiceAdminTabPanel(String panelId, IModel infoModel, AdminPagePanel initialPanel, List<AdminPagePanelInfo> extensionPanels, List<SerializableConsumer<Void>> onSubmitHooks) {
+    public ServiceAdminTabPanel(
+            String panelId,
+            IModel infoModel,
+            AdminPagePanel initialPanel,
+            List<AdminPagePanelInfo> extensionPanels,
+            List<SerializableConsumer<Void>> onSubmitHooks) {
         super(panelId, infoModel);
 
         if (initialPanel != null) {
@@ -42,7 +42,8 @@ public class ServiceAdminTabPanel extends AdminPagePanel {
             placeHolder.setVisible(false);
             add(placeHolder);
         }
-        ListView extensionPanelView = new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel, onSubmitHooks);
+        ListView extensionPanelView =
+                new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel, onSubmitHooks);
         extensionPanelView.setReuseItems(true);
         add(extensionPanelView);
     }

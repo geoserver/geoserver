@@ -5,6 +5,8 @@
  */
 package org.geoserver.wcs.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -26,8 +28,6 @@ import org.geoserver.web.services.DisabledVersionsPanel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SRSListTextArea;
 import org.geotools.coverage.grid.io.OverviewPolicy;
-
-import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
 
@@ -84,7 +84,7 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         }
 
         public WCSAdminPanel(String id, IModel info) {
-            super(id,info);
+            super(id, info);
 
             // service control
             add(new DisabledVersionsPanel(
@@ -120,7 +120,6 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
             add(new CheckBox("latLon"));
             add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
         }
-
     }
 
     private class OverviewPolicyRenderer extends ChoiceRenderer<OverviewPolicy> {

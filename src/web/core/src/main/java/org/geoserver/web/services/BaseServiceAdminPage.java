@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -22,7 +21,6 @@ import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -60,20 +58,18 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  * Base page for service administration pages.
  *
  * <ul>
- *     <li>{@link #getServiceName()}}: The service being configured by {@code build} single page,
- *     or {@code buildPanel} for tabbed presentation.
- *     <li>{@link #getServiceClass()}: The {@link ServiceInfo}</li> used to store configuration.</li>
+ *   <li>{@link #getServiceName()}}: The service being configured by {@code build} single page, or {@code buildPanel}
+ *       for tabbed presentation.
+ *   <li>{@link #getServiceClass()}: The {@link ServiceInfo} used to store configuration.
  * </ul>
  *
  * There are two presentation options:
  *
- * <p>Recommended: Subclasses of this page can use {@link #buildPanel(String, IModel, Form)} contribute an {@link AdminPagePanel}.
- * This panel is used as a starting point for a tabbed display of services associated with
- * the {@link #getServiceClass()} configuration.</p>
- *
- * If {@code buildPanel} return {@code null} the subclass is assumed to {@code wicket:extend}
- * BaseServiceAdmin page by contribute form components using {@link #build(IModel, Form)} method.
- * Each component that is added to the form should have a corresponding markup entry of the following form:</p>
+ * <p>Recommended: Subclasses of this page can use {@link #buildPanel(String, IModel, Form)} contribute an
+ * {@link AdminPagePanel}. This panel is used as a starting point for a tabbed display of services associated with the
+ * {@link #getServiceClass()} configuration. If {@code buildPanel} return {@code null} the subclass is assumed to
+ * {@code wicket:extend} BaseServiceAdmin page by contribute form components using {@link #build(IModel, Form)} method.
+ * Each component that is added to the form should have a corresponding markup entry of the following form:
  *
  * <pre>{@code
  * <wicket:extend>
@@ -89,19 +85,13 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
-    /**
-     * Application property allowing workspace admins access to the workspace service configuration too.
-     */
+    /** Application property allowing workspace admins access to the workspace service configuration too. */
     public static final String WORKSPACE_ADMIN_SERVICE_ACCESS = "WORKSPACE_ADMIN_SERVICE_ACCESS";
 
-    /**
-     * Shared dialog used for feedback and confirmation.
-     */
+    /** Shared dialog used for feedback and confirmation. */
     protected GeoServerDialog dialog;
 
-    /**
-     * Form on submit callbacks..
-     */
+    /** Form on submit callbacks.. */
     protected List<SerializableConsumer<Void>> onSubmitHooks = new ArrayList<>();
 
     /** create a page */
@@ -143,19 +133,19 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         }
         form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
-        Map<String,List<AdminPagePanelInfo>> panels = extensionPanels();
+        Map<String, List<AdminPagePanelInfo>> panels = extensionPanels();
         List<ITab> tabs = new ArrayList<>();
 
         // initial panel used for tabbed presentation
         final AdminPagePanel initialAdminPanel = buildPanel("initial", infoModel, form);
 
-        if (initialAdminPanel != null ) {
+        if (initialAdminPanel != null) {
             // TABBED PRESENTATION
             // general tab for common service configuration options
             tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
                 @Override
                 public Panel getPanel(String panelId) {
-                    return new GeneralTabAdminPagePanel(panelId, infoModel,null);
+                    return new GeneralTabAdminPagePanel(panelId, infoModel, null);
                 }
             });
             // service tab
@@ -163,7 +153,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 @Override
                 public Panel getPanel(String panelId) {
                     List servicePanels = panels.get(getServiceType());
-                    return new ServiceAdminTabPanel(panelId, infoModel, initialAdminPanel, servicePanels, onSubmitHooks);
+                    return new ServiceAdminTabPanel(
+                            panelId, infoModel, initialAdminPanel, servicePanels, onSubmitHooks);
                 }
             });
             panels.remove(getServiceType());
@@ -181,7 +172,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                         tabs.add(new AbstractTab(tabTile) {
                             @Override
                             public Panel getPanel(String panelId) {
-                                return new ServiceAdminTabPanel(panelId, infoModel, null, tabPanels, onSubmitHooks );
+                                return new ServiceAdminTabPanel(panelId, infoModel, null, tabPanels, onSubmitHooks);
                             }
                         });
                     }
@@ -191,8 +182,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             form.add(tabbedPanel);
             form.add(createPlaceholder("general"));
             form.add(createPlaceholder("extensions"));
-        }
-        else {
+        } else {
             // SINGLE PAGE PRESENTATION: for specific service type
             form.add(createPlaceholder("tabs"));
             form.add(new GeneralTabAdminPagePanel("general", infoModel, getServiceType()));
@@ -201,10 +191,10 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             build(infoModel, form);
 
             List<AdminPagePanelInfo> extensionPanels = panels.get(getServiceType());
-            ListView extensionPanelView = new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel,onSubmitHooks);
+            ListView extensionPanelView =
+                    new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel, onSubmitHooks);
             extensionPanelView.setReuseItems(true);
             form.add(extensionPanelView);
-
         }
         SubmitLink submit = new SubmitLink("submit", new StringResourceModel("save", null, null)) {
             @Override
@@ -265,7 +255,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     }
 
     /** Create an invisible placeholder */
-    Label createPlaceholder(String id){
+    Label createPlaceholder(String id) {
         Label placeholder = new Label(id);
         placeholder.setVisible(false);
 
@@ -274,9 +264,10 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
     /**
      * Look up AdminPagePanels for {@link #getServiceClass()}.
+     *
      * @return AdminPagePanelInfo, listed by specific service type.
      */
-    protected Map<String,List<AdminPagePanelInfo>> extensionPanels() {
+    protected Map<String, List<AdminPagePanelInfo>> extensionPanels() {
         List<AdminPagePanelInfo> panels = getGeoServerApplication().getBeansOfType(AdminPagePanelInfo.class);
         for (Iterator<AdminPagePanelInfo> it = panels.iterator(); it.hasNext(); ) {
             AdminPagePanelInfo panel = it.next();
@@ -284,10 +275,10 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 it.remove();
             }
         }
-        Map<String,List<AdminPagePanelInfo>> panelsByTab = new HashMap<>();
+        Map<String, List<AdminPagePanelInfo>> panelsByTab = new HashMap<>();
         for (AdminPagePanelInfo panel : panels) {
             String type = panel.getSpecificServiceType();
-            if (type == null ) {
+            if (type == null) {
                 type = getServiceType();
             }
             panelsByTab.computeIfAbsent(type, k -> new ArrayList<>()).add(panel);
@@ -308,24 +299,22 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
      * @param id Wicket id for created panel
      * @return Initial AdminPagePanel, or {@code null} for single page presentation.
      */
-    protected AdminPagePanel buildPanel( String id, IModel info, Form form) {
+    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
         return null;
     }
 
     /**
-     * Extend the BaseServiceAdminPage by building adding additional components to the form for the page.
-     * This method is only called if {@link #buildPanel(String, IModel, Form)} returns {@code null}.
+     * Extend the BaseServiceAdminPage by building adding additional components to the form for the page. This method is
+     * only called if {@link #buildPanel(String, IModel, Form)} returns {@code null}.
      *
      * <p>The form uses a {@link CompoundPropertyModel} so in the normal case components do not need a model as it's
      * inherited from the parent. This means that component id's should match the info bean property they correspond to.
      *
      * @param info The service info object.
      * @param form The page form.
-     *
      * @deprecated use {@link #buildPanel(IModel, Form)} instead to build the main tab panel for the page.
      */
-    protected  void build(IModel info, Form form) {
-    }
+    protected void build(IModel info, Form form) {}
 
     /**
      * Callback for submit.
@@ -340,25 +329,23 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         // to configuration
     }
 
-    /**
-     * The string to use when representing this service to users, subclasses must override.
-     */
+    /** The string to use when representing this service to users, subclasses must override. */
     protected abstract String getServiceName();
 
     /**
-     * The specific service type identifier (e.g., "WMS", "WFS", "WCS", "Features")
-     * Used to retrieve available versions from the dispatcher service registry.
+     * The specific service type identifier (e.g., "WMS", "WFS", "WCS", "Features") Used to retrieve available versions
+     * from the dispatcher service registry.
      *
-     * Services can share a common {@link #getServiceClass()} for configuration.
+     * <p>Services can share a common {@link #getServiceClass()} for configuration.
      *
-     * Subclasses must override.
+     * <p>Subclasses must override.
      */
     protected abstract String getServiceType();
 
     /**
      * Model used to establish the context (global or workspace) for this service admin page.
      *
-     * Detached model that looks up ServiceInfo from GeoServer catalogue using optional workspaceName.
+     * <p>Detached model that looks up ServiceInfo from GeoServer catalogue using optional workspaceName.
      *
      * @param <T>
      */
@@ -376,6 +363,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
         /**
          * Create a ServiceModel using the provided ServiceInfo.
+         *
          * @param service serivce info
          */
         ServiceModel(T service) {
@@ -387,6 +375,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
         /**
          * Detached model looking up
+         *
          * @param serviceClass ServiceInfo class
          * @param workspaceName Wworkspace name
          */
@@ -526,14 +515,13 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 
-    /**
-     * AdminPagePanel for general configuration options.
-     */
+    /** AdminPagePanel for general configuration options. */
     public class GeneralTabAdminPagePanel extends AdminPagePanel {
         @Serial
         private static final long serialVersionUID = -1;
 
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.GeneralTabAdminPagePanel.class);
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(BaseServiceAdminPage.GeneralTabAdminPagePanel.class);
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -569,7 +557,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             add(new TextField<>("accessConstraints"));
 
             // service control
-            add(new ServiceControlAdminPanel("serviceControl",infoModel, specificServiceType));
+            add(new ServiceControlAdminPanel("serviceControl", infoModel, specificServiceType));
         }
     }
 
@@ -585,6 +573,4 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         }
         return fragment;
     }
-
-
 }

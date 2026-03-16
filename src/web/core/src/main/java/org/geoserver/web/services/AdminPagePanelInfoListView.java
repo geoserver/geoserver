@@ -1,17 +1,14 @@
 package org.geoserver.web.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.geoserver.web.util.SerializableConsumer;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * ListVIew used to include AdminPagePanelInfo in service admin page.
- */
+/** ListVIew used to include AdminPagePanelInfo in service admin page. */
 public class AdminPagePanelInfoListView extends ListView<AdminPagePanelInfo> {
 
     private final IModel infoModel;
@@ -25,7 +22,11 @@ public class AdminPagePanelInfoListView extends ListView<AdminPagePanelInfo> {
      * @param infoModel Shared service admin page model
      * @param onSubmitHooks Shared list of form submit hooks
      */
-    public AdminPagePanelInfoListView(String id, List<AdminPagePanelInfo> panels, IModel infoModel, List<SerializableConsumer<Void>> onSubmitHooks) {
+    public AdminPagePanelInfoListView(
+            String id,
+            List<AdminPagePanelInfo> panels,
+            IModel infoModel,
+            List<SerializableConsumer<Void>> onSubmitHooks) {
         super(id, panels);
         this.infoModel = infoModel;
         this.onSubmitHooks = onSubmitHooks;

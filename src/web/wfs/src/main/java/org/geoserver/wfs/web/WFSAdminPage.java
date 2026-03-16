@@ -81,13 +81,12 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
     @Override
     protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
-        return new WFSAdminPanel(id,info);
+        return new WFSAdminPanel(id, info);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void build(final IModel info, Form form) {
-    }
+    protected void build(final IModel info, Form form) {}
 
     static class GMLPanel extends Panel {
 
@@ -219,7 +218,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         }
 
         public WFSAdminPanel(String id, IModel info) {
-            super(id,info);
+            super(id, info);
             // service control
             add(new DisabledVersionsPanel(
                     "disabledVersions", new PropertyModel<>(info, "disabledVersions"), getServiceType()));

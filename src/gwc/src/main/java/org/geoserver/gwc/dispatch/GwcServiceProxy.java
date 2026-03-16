@@ -37,14 +37,9 @@ public class GwcServiceProxy {
     private final GeoWebCacheDispatcher gwcDispatcher;
 
     public GwcServiceProxy() {
-        serviceInfo = new ServiceInfoImpl() {
-            @Override
-            public String getType() {
-                return "WMTS";
-            }
-        };
+        serviceInfo = new WMTSServiceInfoImpl();
         serviceInfo.setId("gwc");
-        serviceInfo.setName("gwc");
+        serviceInfo.setName("wmts");
         serviceInfo.setEnabled(true);
         serviceInfo.setVersions(ImmutableList.of(new Version("1.0.0")));
         gwcDispatcher = GeoWebCacheExtensions.bean(GeoWebCacheDispatcher.class);

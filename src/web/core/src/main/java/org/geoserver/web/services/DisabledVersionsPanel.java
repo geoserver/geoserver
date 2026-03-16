@@ -6,6 +6,7 @@
 package org.geoserver.web.services;
 
 import java.io.Serial;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,6 +22,7 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
+import org.geoserver.catalog.impl.ProxyUtils;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
 import org.geotools.util.Version;
@@ -108,17 +110,23 @@ public class DisabledVersionsPanel extends FormComponentPanel<List<Version>> {
     }
 
     /**
-     * Get versions from ServiceInfo when they're not available via RequestUtils. This is needed for services like WMTS
-     * that don't register operation beans.
+     * Get versions from ServiceInfo when they're not available via RequestUtils.
+     *
+     * <p>This is needed for services like WMTSServiceInfo that don't register operation beans.
      */
     private List<String> getVersionsFromServiceInfo(String serviceType) {
         try {
             org.geoserver.platform.GeoServerExtensions extensions = new org.geoserver.platform.GeoServerExtensions();
             org.geoserver.config.GeoServer geoServer = extensions.bean(org.geoserver.config.GeoServer.class);
             if (geoServer != null) {
-                for (org.geoserver.config.ServiceInfo service : geoServer.getServices()) {
-                    if (serviceType.equalsIgnoreCase(service.getName())) {
-                        return service.getVersions().stream()
+                for (org.geoserver.config.ServiceInfo serviceInfo : geoServer.getServices()) {
+                    if (serviceInfo instanceof Proxy) {
+                        serviceInfo = ProxyUtils.unwrap(
+                                serviceInfo,
+                                Proxy.getInvocationHandler(serviceInfo).getClass());
+                    }
+                    if (serviceInfo.getType().equalsIgnoreCase(serviceType)) {
+                        return serviceInfo.getVersions().stream()
                                 .map(Version::toString)
                                 .collect(Collectors.toList());
                     }

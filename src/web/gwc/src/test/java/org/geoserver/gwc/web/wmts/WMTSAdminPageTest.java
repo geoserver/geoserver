@@ -15,6 +15,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class WMTSAdminPageTest extends GeoServerWicketTestSupport {
+    /** Location of general service panel within form */
+    final String SERVICE_ADMIN_PANEL = "tabs:panel";
+    /** Location of WMTSAdminPanel within form */
+    final String WMTS_ADMIN_PANEL = "tabs:panel:initial";
 
     private WMTSInfo wmts;
 
@@ -28,13 +32,14 @@ public class WMTSAdminPageTest extends GeoServerWicketTestSupport {
     public void testPageStarts() throws Exception {
         tester.startPage(WMTSAdminPage.class);
         // let's see if the page was properly filled
-        tester.assertModelValue("form:enabled", wmts.isEnabled());
-        tester.assertModelValue("form:serviceTitleAndAbstract:title", wmts.getTitle());
-        tester.assertModelValue("form:maintainer", wmts.getMaintainer());
-        tester.assertModelValue("form:serviceTitleAndAbstract:abstract", wmts.getAbstract());
-        tester.assertModelValue("form:accessConstraints", wmts.getAccessConstraints());
-        tester.assertModelValue("form:fees", wmts.getFees());
-        tester.assertModelValue("form:onlineResource", wmts.getOnlineResource());
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":serviceControl:enabled", wmts.isEnabled());
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":serviceTitleAndAbstract:title", wmts.getTitle());
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":maintainer", wmts.getMaintainer());
+        tester.assertModelValue(
+                "form:" + SERVICE_ADMIN_PANEL + ":serviceTitleAndAbstract:abstract", wmts.getAbstract());
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":accessConstraints", wmts.getAccessConstraints());
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":fees", wmts.getFees());
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":onlineResource", wmts.getOnlineResource());
     }
 
     @Test
@@ -43,11 +48,13 @@ public class WMTSAdminPageTest extends GeoServerWicketTestSupport {
         WMTSInfo wmtsInfo = getGeoServerApplication().getGeoServer().getService(WMTSInfo.class);
         // start WMTS administration page
         tester.startPage(WMTSAdminPage.class);
+
         // let's submit the form
         FormTester formTester = tester.newFormTester("form");
         // change cite compliance value
         boolean citeCompliant = wmtsInfo.isCiteCompliant();
-        formTester.setValue("citeCompliant", !citeCompliant);
+
+        formTester.setValue(SERVICE_ADMIN_PANEL + ":serviceControl:citeCompliant", !citeCompliant);
         // submit form
         formTester.submit("submit");
         tester.assertNoErrorMessage();

@@ -19,6 +19,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -178,7 +179,20 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                     }
                 }
             }
-            TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs);
+            TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs) {
+                @Override
+                protected WebMarkupContainer newLink(String linkId, int index) {
+                    return new SubmitLink(linkId) {
+                        @Serial
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        public void onSubmit() {
+                            setSelectedTab(index);
+                        }
+                    };
+                }
+            };
             form.add(tabbedPanel);
             form.add(createPlaceholder("general"));
             form.add(createPlaceholder("extensions"));

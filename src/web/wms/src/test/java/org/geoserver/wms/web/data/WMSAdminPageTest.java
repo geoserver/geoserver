@@ -29,6 +29,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class WMSAdminPageTest extends GeoServerWicketTestSupport {
+    /** Location of general service panel within form */
+    final String SERVICE_ADMIN_PANEL = "tabs:panel";
+
+    /** Location of WMSAdminPanel within form */
+    final String WMS_ADMIN_PANEL = "tabs:panel:initial";
 
     private WMSInfo wms;
 
@@ -41,15 +46,18 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testValues() throws Exception {
         tester.startPage(WMSAdminPage.class);
-        tester.assertModelValue("form:keywords", wms.getKeywords());
-        tester.assertModelValue("form:srs", new ArrayList<>());
+
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":keywords", wms.getKeywords());
+
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        tester.assertModelValue("form:" + WMS_ADMIN_PANEL + ":srs", new ArrayList<>());
     }
 
     @Test
     public void testFormSubmit() throws Exception {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.submit("submit");
+        FormTester form = tester.newFormTester("form");
+        form.submit("submit");
         tester.assertNoErrorMessage();
         tester.assertRenderedPage(GeoServerHomePage.class);
     }
@@ -58,9 +66,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testWatermarkLocalFile() throws Exception {
         File f = new File(getClass().getResource("GeoServer_75.png").toURI());
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("watermark.uRL", f.getAbsolutePath());
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":watermark.uRL", f.getAbsolutePath());
+        form.submit("submit");
         tester.assertNoErrorMessage();
         tester.assertRenderedPage(GeoServerHomePage.class);
     }
@@ -68,9 +78,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testFormInvalid() throws Exception {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("srs", "bla");
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":srs", "bla");
+        form.submit("submit");
         List errors = tester.getMessages(FeedbackMessage.ERROR);
         assertEquals(1, errors.size());
         assertTrue(((ValidationErrorFeedback) errors.get(0))
@@ -84,18 +96,22 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testBBOXForEachCRS() throws Exception {
         assertFalse(wms.isBBOXForEachCRS());
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("bBOXForEachCRS", true);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":bBOXForEachCRS", true);
+        form.submit("submit");
         assertTrue(wms.isBBOXForEachCRS());
     }
 
     @Test
     public void testRootLayerRemove() throws Exception {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("rootLayerEnabled", false);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":rootLayerEnabled", false);
+        form.submit("submit");
         tester.assertNoErrorMessage();
         assertFalse((Boolean) wms.getMetadata().get(WMS.ROOT_LAYER_IN_CAPABILITIES_KEY));
     }
@@ -103,10 +119,12 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testRootLayerTitle() throws Exception {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("rootLayerTitleAndAbstract:title", "test");
-        ft.setValue("rootLayerTitleAndAbstract:abstract", "abstract test");
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":rootLayerTitleAndAbstract:title", "test");
+        form.setValue(WMS_ADMIN_PANEL + ":rootLayerTitleAndAbstract:abstract", "abstract test");
+        form.submit("submit");
         tester.assertNoErrorMessage();
         assertEquals("test", wms.getRootLayerTitle());
         assertEquals("abstract test", wms.getRootLayerAbstract());
@@ -115,9 +133,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testDensification() throws Exception {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("aph.densify", true);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":aph.densify", true);
+        form.submit("submit");
         tester.assertNoErrorMessage();
         assertTrue((Boolean) wms.getMetadata().get(WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY));
     }
@@ -125,9 +145,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testDisableWrappingHeuristic() throws Exception {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("aph.dlh", true);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":aph.dlh", true);
+        form.submit("submit");
         tester.assertNoErrorMessage();
         assertTrue((Boolean) wms.getMetadata().get(WMS.DATELINE_WRAPPING_HEURISTIC_KEY));
     }
@@ -136,9 +158,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testDynamicStylingDisabled() throws Exception {
         assertFalse(wms.isDynamicStylingDisabled());
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("dynamicStyling.disabled", true);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":dynamicStyling.disabled", true);
+        form.submit("submit");
         assertTrue(wms.isDynamicStylingDisabled());
     }
 
@@ -146,9 +170,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testCacheConfiguration() throws Exception {
         assertFalse(wms.getCacheConfiguration().isEnabled());
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("cacheConfiguration.enabled", true);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":cacheConfiguration.enabled", true);
+        form.submit("submit");
         assertTrue(wms.getCacheConfiguration().isEnabled());
     }
 
@@ -156,9 +182,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testFeaturesReprojectionDisabled() throws Exception {
         assertFalse(wms.isFeaturesReprojectionDisabled());
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("disableFeaturesReproject", true);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":disableFeaturesReproject", true);
+        form.submit("submit");
         assertTrue(wms.isFeaturesReprojectionDisabled());
     }
 
@@ -166,9 +194,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testTransformFeatureInfoDisabled() throws Exception {
         assertFalse(wms.isTransformFeatureInfoDisabled());
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("disableTransformFeatureInfo", true);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":disableTransformFeatureInfo", true);
+        form.submit("submit");
         assertTrue(wms.isTransformFeatureInfoDisabled());
     }
 
@@ -176,96 +206,131 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testAutoEscapeTemplateValues() throws Exception {
         assertFalse(wms.isAutoEscapeTemplateValues());
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("autoEscapeTemplateValues", true);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":autoEscapeTemplateValues", true);
+        form.submit("submit");
         assertTrue(wms.isAutoEscapeTemplateValues());
     }
 
     @Test
     public void testIncludeDefaultGroupStyleInCapabilitiesDisabled() throws Exception {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("defaultGroupStyleEnabled", false);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":defaultGroupStyleEnabled", false);
+        form.submit("submit");
         assertFalse(wms.isDefaultGroupStyleEnabled());
     }
 
     @Test
     public void testIncludeDefaultGroupStyleInCapabilitiesEnabled() throws Exception {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("defaultGroupStyleEnabled", true);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":defaultGroupStyleEnabled", true);
+        form.submit("submit");
         assertTrue(wms.isDefaultGroupStyleEnabled());
     }
 
     @Test
     public void testInternationalContent() {
         tester.startPage(WMSAdminPage.class);
+
         FormTester form = tester.newFormTester("form");
         // enable i18n for title and add two entries
-        form.setValue("serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
+        form.setValue(
+                SERVICE_ADMIN_PANEL + ":serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", "change");
+                "form:" + SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
+                "form:" + SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
+                "form:" + SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
 
         // enable i18n for abstract and add two entries
-        form.setValue("serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
+        form.setValue(
+                SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
+                true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", "change");
+                "form:" + SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
+                "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
+                "form:" + SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
+                "form:" + SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
         // figure out the locales used in the test (might not be stable across JVMs)
         @SuppressWarnings("unchecked")
         DropDownChoice<Locale> select = (DropDownChoice)
                 tester.getComponentFromLastRenderedPage(
-                        "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
+                        "form:" + SERVICE_ADMIN_PANEL
+                                + ":serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
         Locale l10 = select.getChoices().get(10);
         Locale l20 = select.getChoices().get(20);
 
         // fill the form (don't do this in between ajax calls)
         form.select(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
         form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
                 "an international title for WMS");
         form.select(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
         form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
                 "another international title for WMS");
         form.select(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
         form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
                 "an international abstract for WMS");
         form.select(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
         form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                SERVICE_ADMIN_PANEL
+                        + ":serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
                 "another international abstract for WMS");
 
         // mandatory fields
-        form.setValue("maxRenderingTime", "999");
-        form.setValue("maxRequestMemory", "99999");
-        form.setValue("maxRenderingErrors", "1");
-        form.setValue("maxBuffer", "99");
-        form.setValue("maxRequestedDimensionValues", "2");
-        form.setValue("watermark.transparency", "5");
-        form.setValue("cacheConfiguration.maxEntries", "1000");
-        form.setValue("cacheConfiguration.maxEntrySize", "100000");
-        form.setValue("remoteStyleTimeout", "9999");
-        form.setValue("remoteStyleMaxRequestTime", "99");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":maxRenderingTime", "999");
+        form.setValue(WMS_ADMIN_PANEL + ":maxRequestMemory", "99999");
+        form.setValue(WMS_ADMIN_PANEL + ":maxRenderingErrors", "1");
+        form.setValue(WMS_ADMIN_PANEL + ":maxBuffer", "99");
+        form.setValue(WMS_ADMIN_PANEL + ":maxRequestedDimensionValues", "2");
+        form.setValue(WMS_ADMIN_PANEL + ":watermark.transparency", "5");
+        form.setValue(WMS_ADMIN_PANEL + ":cacheConfiguration.maxEntries", "1000");
+        form.setValue(WMS_ADMIN_PANEL + ":cacheConfiguration.maxEntrySize", "100000");
+        form.setValue(WMS_ADMIN_PANEL + ":remoteStyleTimeout", "9999");
+        form.setValue(WMS_ADMIN_PANEL + ":remoteStyleMaxRequestTime", "99");
 
         form.submit("submit");
         tester.assertNoErrorMessage();
@@ -281,20 +346,24 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testDefaultLocale() {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.select("defaultLocale", 11);
-        ft = tester.newFormTester("form");
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.select(WMS_ADMIN_PANEL + ":defaultLocale", 11);
+        form = tester.newFormTester("form");
+        form.submit("submit");
         assertNotNull(getGeoServer().getService(WMSInfo.class).getDefaultLocale());
     }
 
     @Test
     public void testAllowedUrlsAuth() {
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
         String allowedUrlForAuthForwarding = "http://localhost:8080/geoserver/rest/sldremote";
-        ft.setValue("allowedURLsForAuthForwarding", allowedUrlForAuthForwarding);
-        ft.submit("submit");
+        form.setValue(WMS_ADMIN_PANEL + ":allowedURLsForAuthForwarding", allowedUrlForAuthForwarding);
+        form.submit("submit");
         assertEquals(
                 allowedUrlForAuthForwarding,
                 getGeoServer()
@@ -303,11 +372,13 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
                         .get(0));
 
         tester.startPage(WMSAdminPage.class);
-        ft = tester.newFormTester("form");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        form = tester.newFormTester("form");
         allowedUrlForAuthForwarding = "invalid-remote-url\n" + "htPP://invalidhttpurl\n" + "http://validurl";
 
-        ft.setValue("allowedURLsForAuthForwarding", allowedUrlForAuthForwarding);
-        ft.submit("submit");
+        form.setValue(WMS_ADMIN_PANEL + ":allowedURLsForAuthForwarding", allowedUrlForAuthForwarding);
+        form.submit("submit");
         String reportedInvalidURLs = "invalid-remote-url, htPP://invalidhttpurl";
         tester.assertErrorMessages("The provided values are not valid HTTP urls: [%s]".formatted(reportedInvalidURLs));
     }
@@ -320,23 +391,28 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
 
         // set to false
         tester.startPage(WMSAdminPage.class);
-        FormTester ft = tester.newFormTester("form");
-        ft.select("exceptionOnInvalidDimension", 1);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+        form.select(WMS_ADMIN_PANEL + ":exceptionOnInvalidDimension", 1);
+        form.submit("submit");
+
         assertFalse(wms.isExceptionOnInvalidDimension());
 
         // reset to default
         tester.startPage(WMSAdminPage.class);
-        ft = tester.newFormTester("form");
-        ft.setValue("exceptionOnInvalidDimension", null);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        form = tester.newFormTester("form");
+        form.setValue(WMS_ADMIN_PANEL + ":exceptionOnInvalidDimension", null);
+        form.submit("submit");
         assertNull(wms.isExceptionOnInvalidDimension());
 
         // set to true
         tester.startPage(WMSAdminPage.class);
-        ft = tester.newFormTester("form");
-        ft.select("exceptionOnInvalidDimension", 0);
-        ft.submit("submit");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        form = tester.newFormTester("form");
+        form.select(WMS_ADMIN_PANEL + ":exceptionOnInvalidDimension", 0);
+        form.submit("submit");
         assertTrue(wms.isExceptionOnInvalidDimension());
     }
 }

@@ -11,17 +11,19 @@ import org.geoserver.web.wicket.KeywordsEditor;
 import org.junit.Test;
 
 public class CSWAdminPageTest extends GeoServerWicketTestSupport {
+    /** Location of general service panel within form */
+    final String SERVICE_ADMIN_PANEL = "tabs:panel";
+
     @Test
     public void testValues() throws Exception {
         CSWInfo csw = getGeoServerApplication().getGeoServer().getService(CSWInfo.class);
 
         login();
         tester.startPage(CSWAdminPage.class);
-
         tester.assertRenderedPage(CSWAdminPage.class);
 
         // test that components have been filled as expected
-        tester.assertComponent("form:keywords", KeywordsEditor.class);
-        tester.assertModelValue("form:keywords", csw.getKeywords());
+        tester.assertComponent("form:" + SERVICE_ADMIN_PANEL + ":keywords", KeywordsEditor.class);
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":keywords", csw.getKeywords());
     }
 }

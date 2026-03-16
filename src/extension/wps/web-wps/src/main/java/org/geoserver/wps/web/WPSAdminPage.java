@@ -15,12 +15,14 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.data.store.panel.DirectoryParamPanel;
+import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
+import org.geoserver.web.services.DisabledVersionsPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wps.WPSInfo;
 
 /**
- * Configure the WPS service global informations
+ * Configure the {@link WPSInfo} service settings.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -54,55 +56,13 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
     }
 
     @Override
+    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+        return new WPSAdminPanel(id, info, form);
+    }
+
+    @Override
     protected void build(IModel info, final Form form) {
-        TextField<Integer> connectionTimeout = new TextField<>("connectionTimeout", Integer.class);
-        connectionTimeout.add(RangeValidator.minimum(-1));
-        form.add(connectionTimeout);
-
-        TextField<Integer> maxSynchProcesses = new TextField<>("maxSynchronousProcesses", Integer.class);
-        maxSynchProcesses.add(RangeValidator.minimum(1));
-        form.add(maxSynchProcesses);
-
-        TextField<Integer> maxSynchExecutionTime = new TextField<>("maxSynchronousExecutionTime", Integer.class);
-        maxSynchExecutionTime.add(RangeValidator.minimum(-1));
-        form.add(maxSynchExecutionTime);
-
-        TextField<Integer> maxSynchTotalTime = new TextField<>("maxSynchronousTotalTime", Integer.class);
-        maxSynchTotalTime.add(RangeValidator.minimum(-1));
-        form.add(maxSynchTotalTime);
-
-        TextField<Integer> maxAsynchProcesses = new TextField<>("maxAsynchronousProcesses", Integer.class);
-        maxAsynchProcesses.add(RangeValidator.minimum(1));
-        form.add(maxAsynchProcesses);
-
-        TextField<Integer> maxAsynchExecutionTime = new TextField<>("maxAsynchronousExecutionTime", Integer.class);
-        maxAsynchExecutionTime.add(RangeValidator.minimum(-1));
-        form.add(maxAsynchExecutionTime);
-
-        TextField<Integer> maxAsynchTotalTime = new TextField<>("maxAsynchronousTotalTime", Integer.class);
-        maxAsynchTotalTime.add(RangeValidator.minimum(-1));
-        form.add(maxAsynchTotalTime);
-
-        TextField<Integer> resourceExpirationTimeout = new TextField<>("resourceExpirationTimeout", Integer.class);
-        resourceExpirationTimeout.add(RangeValidator.minimum(0));
-        form.add(resourceExpirationTimeout);
-
-        // GeoServerFileChooser chooser = new GeoServerFileChooser("storageDirectory",
-        // new PropertyModel<String>(info, "storageDirectory"));
-        DirectoryParamPanel chooser = new DirectoryParamPanel(
-                "storageDirectory",
-                new PropertyModel<>(info, "storageDirectory"),
-                new ParamResourceModel("storageDirectory", this),
-                false);
-        form.add(chooser);
-        form.add(new DirectoryParamPanel(
-                "externalOutputDirectory",
-                new PropertyModel<>(info, "externalOutputDirectory"),
-                new ParamResourceModel("externalOutputDirectory", this),
-                false));
-
-        form.add(new TotalTimeValidator(maxSynchTotalTime, maxSynchExecutionTime));
-        form.add(new TotalTimeValidator(maxAsynchTotalTime, maxAsynchExecutionTime));
+        // see WPSAdminPanel
     }
 
     @Override
@@ -110,7 +70,69 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         super.handleSubmit(info);
     }
 
-    /** Validator that checks that the total time is greater than the execution time */
+    private class WPSAdminPanel extends AdminPagePanel {
+        public WPSAdminPanel(String id, IModel info, Form form) {
+            super(id, info);
+
+            // service control
+            add(new DisabledVersionsPanel(
+                    "disabledVersions", new PropertyModel<>(info, "disabledVersions"), getServiceType()));
+
+            // service settings
+            TextField<Integer> connectionTimeout = new TextField<>("connectionTimeout", Integer.class);
+            connectionTimeout.add(RangeValidator.minimum(-1));
+            add(connectionTimeout);
+
+            TextField<Integer> maxSynchProcesses = new TextField<>("maxSynchronousProcesses", Integer.class);
+            maxSynchProcesses.add(RangeValidator.minimum(1));
+            add(maxSynchProcesses);
+
+            TextField<Integer> maxSynchExecutionTime = new TextField<>("maxSynchronousExecutionTime", Integer.class);
+            maxSynchExecutionTime.add(RangeValidator.minimum(-1));
+            add(maxSynchExecutionTime);
+
+            TextField<Integer> maxSynchTotalTime = new TextField<>("maxSynchronousTotalTime", Integer.class);
+            maxSynchTotalTime.add(RangeValidator.minimum(-1));
+            add(maxSynchTotalTime);
+
+            TextField<Integer> maxAsynchProcesses = new TextField<>("maxAsynchronousProcesses", Integer.class);
+            maxAsynchProcesses.add(RangeValidator.minimum(1));
+            add(maxAsynchProcesses);
+
+            TextField<Integer> maxAsynchExecutionTime = new TextField<>("maxAsynchronousExecutionTime", Integer.class);
+            maxAsynchExecutionTime.add(RangeValidator.minimum(-1));
+            add(maxAsynchExecutionTime);
+
+            TextField<Integer> maxAsynchTotalTime = new TextField<>("maxAsynchronousTotalTime", Integer.class);
+            maxAsynchTotalTime.add(RangeValidator.minimum(-1));
+            add(maxAsynchTotalTime);
+
+            TextField<Integer> resourceExpirationTimeout = new TextField<>("resourceExpirationTimeout", Integer.class);
+            resourceExpirationTimeout.add(RangeValidator.minimum(0));
+            add(resourceExpirationTimeout);
+
+            // GeoServerFileChooser chooser = new GeoServerFileChooser("storageDirectory",
+            // new PropertyModel<String>(info, "storageDirectory"));
+            DirectoryParamPanel chooser = new DirectoryParamPanel(
+                    "storageDirectory",
+                    new PropertyModel<>(info, "storageDirectory"),
+                    new ParamResourceModel("storageDirectory", WPSAdminPage.this),
+                    false);
+            add(chooser);
+            add(new DirectoryParamPanel(
+                    "externalOutputDirectory",
+                    new PropertyModel<>(info, "externalOutputDirectory"),
+                    new ParamResourceModel("externalOutputDirectory", WPSAdminPage.this),
+                    false));
+
+            form.add(new TotalTimeValidator(maxSynchTotalTime, maxSynchExecutionTime));
+            form.add(new TotalTimeValidator(maxAsynchTotalTime, maxAsynchExecutionTime));
+        }
+    }
+
+    /**
+     * Validator that checks that the total time is greater than the execution time
+     */
     class TotalTimeValidator extends AbstractFormValidator {
 
         @Serial

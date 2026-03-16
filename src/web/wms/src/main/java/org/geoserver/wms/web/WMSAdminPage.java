@@ -121,7 +121,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     @Override
     @SuppressWarnings("unchecked")
     protected void build(IModel info, Form form) {
-
+        // see WMSAdminPanel
     }
 
     /** Adds the MarkFactory performance optimization panel. */

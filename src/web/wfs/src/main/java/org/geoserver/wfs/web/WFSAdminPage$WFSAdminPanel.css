@@ -2,13 +2,13 @@
  ----------------------------------------------------------
 
 
-This is the panel-specific .css file for the panel defined in class WFSAdminPage$GMLPanel
+This is the panel-specific .css file for the panel defined in class WFSAdminPage$WFSAdminPanel
 
-The panel's html will be contained in a <div class='gs-panel-WFSAdminPage_GMLPanel'>
+The panel's html will be contained in a <div class='gs-panel-WFSAdminPage_WFSAdminPanel'>
 
 Your css selectors should look like this to avoid modifying styles outside the panel:
 
-.gs-panel-WFSAdminPage_GMLPanel ...specific css selector... {
+.gs-panel-WFSAdminPage_WFSAdminPanel ...specific css selector... {
       ... styling ...
 }
 

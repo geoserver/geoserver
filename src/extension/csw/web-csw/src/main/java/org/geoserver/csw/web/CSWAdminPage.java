@@ -44,12 +44,12 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     }
 
     @Override
-    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+    protected AdminPagePanel buildPanel(String id, IModel<CSWInfo> info, Form form) {
         return new CSWAdminPanel(id, info);
     }
 
     @Override
-    protected void build(final IModel info, Form form) {
+    protected void build(final IModel<CSWInfo> info, Form form) {
         // see CSWAdminPanel
     }
 

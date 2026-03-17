@@ -45,12 +45,12 @@ public class WMTSAdminPage extends BaseServiceAdminPage<WMTSInfo> {
     }
 
     @Override
-    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+    protected AdminPagePanel buildPanel(String id, IModel<WMTSInfo> info, Form form) {
         return new WMTSAdminPanel(id, info);
     }
 
     @Override
-    protected void build(IModel info, Form form) {
+    protected void build(IModel<WMTSInfo> info, Form form) {
         // See WMTSAdminPanel
     }
 

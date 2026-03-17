@@ -313,7 +313,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
      * @param id Wicket id for created panel
      * @return Initial AdminPagePanel, or {@code null} for single page presentation.
      */
-    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+    protected AdminPagePanel buildPanel(String id, IModel<T> info, Form form) {
         return null;
     }
 
@@ -326,9 +326,9 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
      *
      * @param info The service info object.
      * @param form The page form.
-     * @deprecated use {@link #buildPanel(IModel, Form)} instead to build the main tab panel for the page.
+     * @deprecated use {@link #buildPanel(String, IModel, Form)} instead to build the main tab panel for the page.
      */
-    protected void build(IModel info, Form form) {}
+    protected void build(IModel<T> info, Form form) {}
 
     /**
      * Callback for submit.

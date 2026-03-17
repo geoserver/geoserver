@@ -56,12 +56,12 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
     }
 
     @Override
-    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+    protected AdminPagePanel buildPanel(String id, IModel<WPSInfo> info, Form form) {
         return new WPSAdminPanel(id, info, form);
     }
 
     @Override
-    protected void build(IModel info, final Form form) {
+    protected void build(IModel<WPSInfo> info, final Form form) {
         // see WPSAdminPanel
     }
 

@@ -114,13 +114,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     }
 
     @Override
-    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+    protected AdminPagePanel buildPanel(String id, IModel<WMSInfo> info, Form form) {
         return new WMSAdminPanel(id, info);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void build(IModel info, Form form) {
+    protected void build(IModel<WMSInfo> info, Form form) {
         // see WMSAdminPanel
     }
 

@@ -49,12 +49,12 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
     }
 
     @Override
-    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+    protected AdminPagePanel buildPanel(String id, IModel<WCSInfo> info, Form form) {
         return new WCSAdminPanel(id, info);
     }
 
     @Override
-    protected void build(IModel info, Form form) {
+    protected void build(IModel<WCSInfo> info, Form form) {
         // see WCSAdminPanel
     }
 

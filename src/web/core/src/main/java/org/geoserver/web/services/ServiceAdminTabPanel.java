@@ -29,7 +29,7 @@ public class ServiceAdminTabPanel extends AdminPagePanel {
 
     public ServiceAdminTabPanel(
             String panelId,
-            IModel infoModel,
+            IModel<?> infoModel,
             AdminPagePanel initialPanel,
             List<AdminPagePanelInfo> extensionPanels,
             List<SerializableConsumer<Void>> onSubmitHooks) {

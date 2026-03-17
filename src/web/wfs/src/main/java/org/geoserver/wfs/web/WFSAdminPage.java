@@ -80,13 +80,13 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     TreeSet<String> getFeatureAvailable;
 
     @Override
-    protected AdminPagePanel buildPanel(String id, IModel info, Form form) {
+    protected AdminPagePanel buildPanel(String id, IModel<WFSInfo> info, Form form) {
         return new WFSAdminPanel(id, info);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void build(final IModel info, Form form) {}
+    protected void build(final IModel<WFSInfo> info, Form form) {}
 
     static class GMLPanel extends Panel {
 

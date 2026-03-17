@@ -86,9 +86,9 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
 
     @Override
     @SuppressWarnings({"unchecked", "serial"})
-    protected void build(final IModel info, Form form) {
+    protected void build(final IModel<OSEOInfo> info, Form form) {
         this.model = info;
-        OSEOInfo oseo = (OSEOInfo) info.getObject();
+        OSEOInfo oseo = info.getObject();
 
         TextField<String> attribution = new TextField<>("attribution");
         form.add(attribution);

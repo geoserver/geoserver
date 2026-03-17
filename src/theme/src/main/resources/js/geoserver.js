@@ -132,6 +132,84 @@
             }
         }
         initializeUserInitials();
+
+        function applyResponsiveTableCards() {
+            var tables = document.querySelectorAll('table');
+            if (tables.length === 0) return;
+        
+            tables.forEach(function (table) {
+                if (table.classList.contains('gs-mobile-card-table')) return;
+        
+                var thead = table.querySelector('thead');
+                var tbody = table.querySelector('tbody');
+                if (!thead || !tbody) return;
+                var headerRow = thead.querySelector('tr');
+                if (!headerRow) return;
+                var headers = Array.from(headerRow.children).map(function (th) {
+                    var headerText = th.textContent ? th.textContent.trim() : '';
+                    if (!headerText) return null;
+                    return headerText;
+                });
+        
+                table.classList.add('gs-mobile-card-table');
+        
+                tbody.querySelectorAll('tr').forEach(function (row) {
+                    Array.from(row.children).forEach(function (cell, index) {
+        
+                        var header = headers[index] || '';
+                        if (cell.dataset.gsMobileFieldReady === 'true') return;
+                        var field = document.createElement('div');
+                        field.className = 'gs-mobile-field';
+        
+                        var fieldName = document.createElement('span');
+                        fieldName.className = 'field-name';
+                        fieldName.textContent = header;
+                        var fieldValue = document.createElement('span');
+                        fieldValue.className = 'field-value';
+        
+                        while (cell.firstChild) {
+                            fieldValue.appendChild(cell.firstChild);
+                        }
+                        field.appendChild(fieldName);
+                        field.appendChild(fieldValue);
+                        cell.appendChild(field);
+                        cell.dataset.gsMobileFieldReady = 'true';
+                    });
+                });
+            });
+        }
+
+        function resetResponsiveTableCards() {
+            var tables = document.querySelectorAll('table.gs-mobile-card-table');
+            tables.forEach(function (table) {
+                table.classList.remove('gs-mobile-card-table');
+                table.querySelectorAll('tbody td[data-gs-mobile-field-ready="true"]').forEach(function (cell) {
+                    var field = cell.querySelector('.gs-mobile-field');
+                    if (!field) return;
+                    var fieldValue = field.querySelector('.field-value');
+                    if (fieldValue) {
+                        while (fieldValue.firstChild) {
+                            cell.insertBefore(fieldValue.firstChild, field);
+                        }
+                    }
+                    field.remove();
+                    delete cell.dataset.gsMobileFieldReady;
+                });
+            });
+        }
+
+        function syncResponsiveTableCards() {
+            window.addEventListener('resize', function() {
+                if (window.innerWidth < 768) {
+                    applyResponsiveTableCards();
+                } else {
+                    resetResponsiveTableCards();
+                }
+            });
+        }
+
+        // Initialize responsive table cards
+        syncResponsiveTableCards();
     });
 })();
 

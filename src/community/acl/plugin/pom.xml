@@ -26,15 +26,8 @@
       <artifactId>gs-acl-plugin-wps</artifactId>
     </dependency>
     <dependency>
-      <!--
-	     Optional, if present, the AuthorizationService will be a CachingAuthorizationService decorating the API client one,
-	     and gs-acl-spring-cloud-bus is recommended also if using spring-cloud-bus for inter-process communication to evict
-	     cached authorizations upon distributed rule events
-	    -->
       <groupId>org.geoserver.acl.infrastructure</groupId>
       <artifactId>gs-acl-spring-cache-adapter</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

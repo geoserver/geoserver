@@ -1868,7 +1868,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-acl</artifactId>
+          <artifactId>gs-acl-plugin</artifactId>
           <version>${gs.version}</version>
         </dependency>
       </dependencies>

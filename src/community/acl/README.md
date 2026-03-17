@@ -59,11 +59,11 @@ the appropriate values:
 
 #### Disabling the plugin
 
-The `geoserver.acl.enabled` config property defaults to `true` so it's not required for the plugin to run.
+The `geoserver.acl.client.enabled` config property defaults to `true` so it's not required for the plugin to run.
 In order to completely disabling the plugin, set it to `false`:
 
 ```
--Dgeoserver.acl.enabled=false
+-Dgeoserver.acl.client.enabled=false
 ```
 
 ### Environment variables
@@ -77,7 +77,7 @@ names to upper case and replacing dots by underscores:
 For example:
 
 ```
-export GEOSERVER_ACL_ENABLED=false
+export GEOSERVER_ACL_CLIENT_ENABLED=false
 export GEOSERVER_ACL_CLIENT_BASEPATH=https://example.com/acl/api
 export GEOSERVER_ACL_CLIENT_USERNAME=geoserver
 export GEOSERVER_ACL_CLIENT_PASSWORD=ch4ng3m3

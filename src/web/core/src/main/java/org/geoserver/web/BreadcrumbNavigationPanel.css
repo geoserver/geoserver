@@ -1,0 +1,131 @@
+.gs-breadcrumb-nav {
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.gs-breadcrumb {
+    list-style: none;
+    padding: 10px 15px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.gs-breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+}
+
+.gs-breadcrumb-item + .gs-breadcrumb-item::before {
+    content: "›";
+    padding: 0 10px;
+    color: #6c757d;
+    font-size: 16px;
+}
+
+.gs-breadcrumb-item a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.gs-breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+.gs-breadcrumb-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.gs-breadcrumb-dropdown-toggle {
+    cursor: pointer;
+    font-weight: bold;
+    color: #495057;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.gs-breadcrumb-dropdown-toggle:hover {
+    background-color: #e9ecef;
+}
+
+.gs-breadcrumb-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #ffffff;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1000;
+    list-style: none;
+    padding: 5px 0;
+    margin: 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.gs-breadcrumb-dropdown:hover .gs-breadcrumb-dropdown-menu {
+    display: block;
+}
+
+.gs-dropdown-item {
+    display: block;
+    padding: 8px 16px;
+    color: #333 !important;
+    text-decoration: none;
+}
+
+.gs-dropdown-item:hover {
+    background-color: #f1f1f1;
+    text-decoration: none !important;
+}
+
+.gs-breadcrumb-current-label {
+    font-weight: bold;
+    color: #495057;
+    padding: 4px 8px;
+}
+
+.gs-breadcrumb-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.gs-breadcrumb-main-link,
+.gs-breadcrumb-dropdown-toggle,
+.gs-breadcrumb-current-label {
+    display: inline-flex;
+    align-items: center;
+}
+
+.gs-dropdown-header {
+    display: block;
+    padding: 10px 16px 4px 16px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #6c757d;
+    text-transform: uppercase;
+    border-top: 1px solid #e9ecef;
+    cursor: default;
+}
+
+.gs-breadcrumb-dropdown-menu > :first-child .gs-dropdown-header,
+.gs-breadcrumb-dropdown-menu .gs-dropdown-header:first-of-type {
+    border-top: none;
+    padding-top: 6px;
+}
+
+.gs-dropdown-item-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+}

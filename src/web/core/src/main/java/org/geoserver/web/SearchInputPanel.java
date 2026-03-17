@@ -66,19 +66,17 @@ public class SearchInputPanel extends Panel {
         // --- 3. Initialize Search Input ---
         searchInput = new TextField<>("searchInput", Model.of(""));
         searchInput.setOutputMarkupId(true);
-        searchInput.add(new org.apache.wicket.AttributeModifier(
-                "placeholder",
-                new LoadableDetachableModel<String>() {
-                    @Override
-                    protected String load() {
-                        String selectedWorkspace =
-                                getPage().getPageParameters().get("workspace").toOptionalString();
-                        if (Strings.isEmpty(selectedWorkspace)) {
-                            return "Search...";
-                        }
-                        return "Search in " + selectedWorkspace + "...";
-                    }
-                }));
+        searchInput.add(new org.apache.wicket.AttributeModifier("placeholder", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                String selectedWorkspace =
+                        getPage().getPageParameters().get("workspace").toOptionalString();
+                if (Strings.isEmpty(selectedWorkspace)) {
+                    return "Search...";
+                }
+                return "Search in " + selectedWorkspace + "...";
+            }
+        }));
         add(searchInput);
 
         // --- 4. Initialize Results Container ---

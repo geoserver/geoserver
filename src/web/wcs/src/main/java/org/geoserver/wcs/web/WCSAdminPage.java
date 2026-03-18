@@ -54,11 +54,6 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
     }
 
     @Override
-    protected void build(IModel<WCSInfo> info, Form form) {
-        // see WCSAdminPanel
-    }
-
-    @Override
     protected String getServiceName() {
         return "WCS";
     }

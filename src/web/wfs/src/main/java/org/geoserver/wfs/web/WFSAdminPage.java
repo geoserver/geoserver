@@ -38,6 +38,7 @@ import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
@@ -83,10 +84,6 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     protected AdminPagePanel buildPanel(String id, IModel<WFSInfo> info, Form form) {
         return new WFSAdminPanel(id, info);
     }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void build(final IModel<WFSInfo> info, Form form) {}
 
     static class GMLPanel extends Panel {
 
@@ -256,23 +253,23 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
                             new CollectionModel<>(getFeatureChoices),
                             new PropertyModel<Boolean>(info, "getFeatureOutputTypeCheckingEnabled").getObject()));
 
-            IModel gml2Model = new LoadableDetachableModel() {
+            IModel<GMLInfo> gml2Model = new LoadableDetachableModel<>() {
                 @Override
-                public Object load() {
+                public GMLInfo load() {
                     return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_10);
                 }
             };
 
-            IModel gml3Model = new LoadableDetachableModel() {
+            IModel<GMLInfo> gml3Model = new LoadableDetachableModel<>() {
                 @Override
-                public Object load() {
+                public GMLInfo load() {
                     return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_11);
                 }
             };
 
-            IModel gml32Model = new LoadableDetachableModel() {
+            IModel<GMLInfo> gml32Model = new LoadableDetachableModel<>() {
                 @Override
-                protected Object load() {
+                protected GMLInfo load() {
                     return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_20);
                 }
             };
@@ -291,9 +288,9 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
             eo.add(new Radio<>("featureMembers", new Model<>(Boolean.FALSE)));
             eo.add(new Radio<>("featureMember", new Model<>(Boolean.TRUE)));
 
-            PropertyModel metadataModel = new PropertyModel<>(info, "metadata");
+            PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(info, "metadata");
             IModel<Boolean> prjFormatModel =
-                    new MapModel(metadataModel, ShapeZipOutputFormat.SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI);
+                    new MapModel<>(metadataModel, ShapeZipOutputFormat.SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI);
             CheckBox defaultPrjFormat = new CheckBox("shapeZipPrjFormat", prjFormatModel);
             add(defaultPrjFormat);
             add(new CheckBox("includeWFSRequestDumpFile"));

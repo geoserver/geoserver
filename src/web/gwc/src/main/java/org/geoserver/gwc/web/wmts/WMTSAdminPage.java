@@ -49,11 +49,6 @@ public class WMTSAdminPage extends BaseServiceAdminPage<WMTSInfo> {
         return new WMTSAdminPanel(id, info);
     }
 
-    @Override
-    protected void build(IModel<WMTSInfo> info, Form form) {
-        // See WMTSAdminPanel
-    }
-
     private class WMTSAdminPanel extends AdminPagePanel {
 
         private static final boolean isCssEmpty = IsWicketCssFileEmpty(WMTSAdminPage.WMTSAdminPanel.class);

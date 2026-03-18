@@ -118,12 +118,6 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         return new WMSAdminPanel(id, info);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void build(IModel<WMSInfo> info, Form form) {
-        // see WMSAdminPanel
-    }
-
     /** Adds the MarkFactory performance optimization panel. */
     private void addMarkFactoryLoadOptimizationPanel(PropertyModel<Map<String, ?>> metadataModel, Panel panel) {
         checkAndInitializeMapData(metadataModel);

@@ -49,11 +49,6 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     }
 
     @Override
-    protected void build(final IModel<CSWInfo> info, Form form) {
-        // see CSWAdminPanel
-    }
-
-    @Override
     protected String getServiceName() {
         return "CSW";
     }

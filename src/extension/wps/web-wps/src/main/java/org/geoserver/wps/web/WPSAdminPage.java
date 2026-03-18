@@ -61,11 +61,6 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
     }
 
     @Override
-    protected void build(IModel<WPSInfo> info, final Form form) {
-        // see WPSAdminPanel
-    }
-
-    @Override
     protected void handleSubmit(WPSInfo info) {
         super.handleSubmit(info);
     }

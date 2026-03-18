@@ -153,7 +153,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             tabs.add(new AbstractTab(this::getServiceType) {
                 @Override
                 public Panel getPanel(String panelId) {
-                    List servicePanels = panels.get(getServiceType());
+                    List<AdminPagePanelInfo> servicePanels = panels.get(getServiceType());
                     return new ServiceAdminTabPanel(
                             panelId, infoModel, initialAdminPanel, servicePanels, onSubmitHooks);
                 }
@@ -164,13 +164,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 for (String specificServiceType : panels.keySet()) {
                     List<AdminPagePanelInfo> tabPanels = panels.get(specificServiceType);
                     if (tabPanels != null && !tabPanels.isEmpty()) {
-                        IModel<String> tabTile = new IModel<String>() {
-                            @Override
-                            public String getObject() {
-                                return specificServiceType;
-                            }
-                        };
-                        tabs.add(new AbstractTab(tabTile) {
+                        tabs.add(new AbstractTab(() -> specificServiceType) {
                             @Override
                             public Panel getPanel(String panelId) {
                                 return new ServiceAdminTabPanel(panelId, infoModel, null, tabPanels, onSubmitHooks);
@@ -328,6 +322,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
      * @param form The page form.
      * @deprecated use {@link #buildPanel(String, IModel, Form)} instead to build the main tab panel for the page.
      */
+    @Deprecated(since = "3.0.0", forRemoval = true)
     protected void build(IModel<T> info, Form form) {}
 
     /**
@@ -551,8 +546,6 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         public GeneralTabAdminPagePanel(String panelId, IModel<T> infoModel, String specificServiceType) {
             super(panelId, infoModel);
 
-            T service = infoModel.getObject();
-
             // metadata
             add(getInternationalContentFragment(infoModel, "serviceTitleAndAbstract"));
 
@@ -571,7 +564,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             add(new TextField<>("accessConstraints"));
 
             // service control
-            add(new ServiceControlAdminPanel("serviceControl", infoModel, specificServiceType));
+            add(new ServiceControlAdminPanel<>("serviceControl", infoModel, specificServiceType));
         }
     }
 

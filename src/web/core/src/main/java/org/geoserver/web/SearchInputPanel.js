@@ -1,8 +1,9 @@
-function initSearchInputPanel(containerId, inputId, callbackUrl) {
+function initSearchInputPanel(containerId, inputId, callbackUrl, autocompleteEnabled) {
     var $ul = $('#' + containerId);
     var $input = $('#' + inputId);
     var $announcer = $('#search-announcer');
     var currentIndex = -1;
+    var isAutocompleteEnabled = autocompleteEnabled !== false;
 
     // Helper: Update accessibility and visibility state
     function toggleDropdown(show) {
@@ -21,6 +22,7 @@ function initSearchInputPanel(containerId, inputId, callbackUrl) {
 
     // --- Keyboard Navigation ---
     $input.on('keydown', function(e) {
+        if (!isAutocompleteEnabled) return;
         // Find all current items (re-queried in case Wicket appended more)
         var $items = $ul.find('li');
         var maxIndex = $items.length - 1;
@@ -93,12 +95,47 @@ function initSearchInputPanel(containerId, inputId, callbackUrl) {
         }
     });
 
+    // Broadcast query only when autocomplete is OFF (tree filtering mode).
+    $input.off('input.gsNavTreeFilter');
+    $input.on('input.gsNavTreeFilter', function () {
+        if (isAutocompleteEnabled) return;
+        $(document).trigger('gsNavTreeFilter', [$input.val() || '']);
+    });
+
     // --- Mouse Clicks ---
     $ul.on('click', 'li', function() {
-        var selectedText = $(this).find('.item-label').text();
+        var $item = $(this);
+        var selectedText = $item.find('.item-label').text();
+        var type = $item.data('type');
+        var workspace = $item.data('workspace');
+        var layer = $item.data('layer');
+
         $input.val(selectedText);
         toggleDropdown(false);
         $input.trigger('change'); // Sync the value back to Wicket's model
+
+        // Update URL parameters based on selection
+        try {
+            var url = new URL(window.location.href);
+
+            if (type === 'workspace') {
+                if (workspace) {
+                    url.searchParams.set('workspace', workspace);
+                }
+                url.searchParams.delete('layer');
+            } else if (type === 'layer' || type === 'layerGroup') {
+                if (workspace) {
+                    url.searchParams.set('workspace', workspace);
+                }
+                if (layer) {
+                    url.searchParams.set('layer', layer);
+                }
+            }
+
+            window.location.href = url.toString();
+        } catch (e) {
+            // Fallback: do nothing if URL API is not available
+        }
     });
 
     // Click outside to close

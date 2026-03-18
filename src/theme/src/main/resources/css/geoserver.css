@@ -2211,7 +2211,6 @@ div.value-wide {
   .table-header form {
     flex-direction: column;
   }
-
   /* Mobile card table */
   table.gs-mobile-card-table > thead {
     display: none;

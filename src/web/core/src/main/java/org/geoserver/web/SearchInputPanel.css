@@ -1,6 +1,7 @@
 .custom-search-wrapper {
     position: relative;
-    width: 300px; /* Adjust to match GeoServer's styling */
+    width: 100%; /* Adjust to match GeoServer's styling */
+    margin-bottom: 0.75rem;
 }
 
 .custom-search-input {

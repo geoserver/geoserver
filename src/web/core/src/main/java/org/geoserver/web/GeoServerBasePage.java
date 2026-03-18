@@ -376,8 +376,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // locale switcher
         add(localeSwitcher());
 
-        SearchInputPanel customSearch = new SearchInputPanel("myCustomSearch");
-        add(customSearch);
+        // sidebar
+        add(new NavigationTreePanel("sidebar"));
     }
 
     private Component localeSwitcher() {

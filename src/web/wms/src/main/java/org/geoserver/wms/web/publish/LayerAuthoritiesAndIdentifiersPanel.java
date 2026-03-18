@@ -40,10 +40,9 @@ public class LayerAuthoritiesAndIdentifiersPanel extends Panel {
     /**
      * Configure layer authority information.
      *
-     * This panel works with both PublishedInfo and WMSInfo models that contain
-     * the necessary {@code authorityURLs} and {@code identifiers} properties.
-     * While these do not have a common interface describing these methods,
-     * they do both extend {@code Info).
+     * <p>This panel works with both PublishedInfo and WMSInfo models that contain the necessary {@code authorityURLs}
+     * and {@code identifiers} properties. While these do not have a common interface describing these methods, they do
+     * both extend {@code Info}.
      *
      * @param id Panel wicket id
      * @param isRootLayer Indicates WMSInfo model should be looked up to configure settings for the root layer.

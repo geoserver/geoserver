@@ -150,15 +150,15 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 }
             });
             // service tab
+            final List<AdminPagePanelInfo> servicePanels = panels.remove(getServiceType());
             tabs.add(new AbstractTab(this::getServiceType) {
                 @Override
                 public Panel getPanel(String panelId) {
-                    List<AdminPagePanelInfo> servicePanels = panels.get(getServiceType());
                     return new ServiceAdminTabPanel(
                             panelId, infoModel, initialAdminPanel, servicePanels, onSubmitHooks);
                 }
             });
-            panels.remove(getServiceType());
+
             // remaining content on their own tabs
             if (!panels.isEmpty()) {
                 for (String specificServiceType : panels.keySet()) {

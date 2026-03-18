@@ -9,10 +9,13 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.util.string.StringValue;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.wicket.GeoServerDialog;
+import org.geotools.api.filter.Filter;
+import org.geoserver.catalog.Predicates;
 
 /**
  * Page listing all the available stores. Follows the usual filter/sort/page approach, provides ways to bulk delete
@@ -22,7 +25,20 @@ import org.geoserver.web.wicket.GeoServerDialog;
  */
 @SuppressWarnings("serial")
 public class StorePage extends GeoServerSecuredPage {
-    StoreProvider provider = new StoreProvider();
+    StoreProvider provider = new StoreProvider() {
+        @Override
+        protected Filter getFilter() {
+            Filter baseFilter = super.getFilter();
+            StringValue wsParam = getPageParameters().get("workspace");
+            if (wsParam.isNull() || wsParam.isEmpty()) {
+                return baseFilter;
+            }
+            String targetWs = wsParam.toString();
+            Filter workspaceFilter = Predicates.equal("workspace.name", targetWs);
+
+            return Predicates.and(baseFilter, workspaceFilter);
+        }
+    };
 
     StorePanel table;
 

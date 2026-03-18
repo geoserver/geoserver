@@ -15,6 +15,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
@@ -26,6 +27,8 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geotools.api.filter.Filter;
+import org.geoserver.catalog.Predicates;
 
 /** Lists layer groups, allows removal and editing */
 public class LayerGroupPage extends GeoServerSecuredPage {
@@ -39,7 +42,19 @@ public class LayerGroupPage extends GeoServerSecuredPage {
 
     public LayerGroupPage() {
         final CatalogIconFactory icons = CatalogIconFactory.get();
-        LayerGroupProvider provider = new LayerGroupProvider();
+        LayerGroupProvider provider = new LayerGroupProvider() {
+            @Override
+            protected Filter getFilter() {
+                Filter baseFilter = super.getFilter();
+                StringValue wsParam = getPageParameters().get("workspace");
+                if (wsParam.isNull() || wsParam.isEmpty()) {
+                    return baseFilter;
+                }
+                String targetWs = wsParam.toString();
+                Filter workspaceFilter = Predicates.equal("workspace.name", targetWs);
+                return Predicates.and(baseFilter, workspaceFilter);
+            }
+        };
         add(
                 table = new GeoServerTablePanel<>("table", provider, true) {
 

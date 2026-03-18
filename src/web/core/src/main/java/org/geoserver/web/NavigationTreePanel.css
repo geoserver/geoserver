@@ -5,6 +5,7 @@ aside.gs-sidebar {
     overflow-y: auto;
     font-size: 0.875rem;
     padding: 0.5rem;
+    border-right: 1px solid var(--gs-border-color);
 }
 .gs-sidebar ul,
 .gs-sidebar li {

@@ -8,6 +8,7 @@
     display: flex;
     align-items: center;
     background-color: var(--gs-tertiary-bg);
+    border-bottom: 1px solid var(--gs-border-color);
 }
 .gs-breadcrumb-item {
     display: inline-flex;

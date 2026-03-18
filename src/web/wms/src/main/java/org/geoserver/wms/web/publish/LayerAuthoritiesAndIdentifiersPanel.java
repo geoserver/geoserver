@@ -13,7 +13,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.AuthorityURLInfo;
-import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.wms.WMS;
@@ -37,8 +37,20 @@ public class LayerAuthoritiesAndIdentifiersPanel extends Panel {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Configure layer authority information.
+     *
+     * This panel works with both PublishedInfo and WMSInfo models that contain
+     * the necessary {@code authorityURLs} and {@code identifiers} properties.
+     * While these do not have a common interface describing these methods,
+     * they do both extend {@code Info).
+     *
+     * @param id Panel wicket id
+     * @param isRootLayer Indicates WMSInfo model should be looked up to configure settings for the root layer.
+     * @param layerModel Layer model, GroupLayer model, or WMSInfo model.
+     */
     public LayerAuthoritiesAndIdentifiersPanel(
-            final String id, final boolean isRootLayer, final IModel<? extends CatalogInfo> layerModel) {
+            final String id, final boolean isRootLayer, final IModel<? extends Info> layerModel) {
 
         super(id);
 

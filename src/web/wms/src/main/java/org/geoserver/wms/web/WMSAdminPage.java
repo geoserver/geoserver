@@ -361,42 +361,42 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         return "WMS";
     }
 
-    private class WatermarkPositionRenderer extends ChoiceRenderer {
+    private class WatermarkPositionRenderer extends ChoiceRenderer<Position> {
 
         @Override
-        public Object getDisplayValue(Object object) {
-            return new StringResourceModel(((Position) object).name(), WMSAdminPage.this, null).getString();
+        public Object getDisplayValue(Position object) {
+            return new StringResourceModel(object.name(), WMSAdminPage.this).getString();
         }
 
         @Override
-        public String getIdValue(Object object, int index) {
-            return ((Position) object).name();
-        }
-    }
-
-    private class InterpolationRenderer extends ChoiceRenderer {
-
-        @Override
-        public Object getDisplayValue(Object object) {
-            return new StringResourceModel(((WMSInterpolation) object).name(), WMSAdminPage.this, null).getString();
-        }
-
-        @Override
-        public String getIdValue(Object object, int index) {
-            return ((WMSInterpolation) object).name();
+        public String getIdValue(Position object, int index) {
+            return object.name();
         }
     }
 
-    private class SVGMethodRenderer extends ChoiceRenderer {
+    private class InterpolationRenderer extends ChoiceRenderer<WMSInterpolation> {
 
         @Override
-        public Object getDisplayValue(Object object) {
-            return new StringResourceModel("svg." + object, WMSAdminPage.this, null).getString();
+        public String getDisplayValue(WMSInterpolation object) {
+            return new StringResourceModel(object.name(), WMSAdminPage.this).getString();
         }
 
         @Override
-        public String getIdValue(Object object, int index) {
-            return (String) object;
+        public String getIdValue(WMSInterpolation object, int index) {
+            return object.name();
+        }
+    }
+
+    private class SVGMethodRenderer extends ChoiceRenderer<String> {
+
+        @Override
+        public Object getDisplayValue(String object) {
+            return new StringResourceModel("svg." + object, WMSAdminPage.this).getString();
+        }
+
+        @Override
+        public String getIdValue(String object, int index) {
+            return object;
         }
     }
 
@@ -419,7 +419,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     }
 
     private class WMSAdminPanel extends AdminPagePanel {
-        public WMSAdminPanel(String id, IModel info) {
+        public WMSAdminPanel(String id, IModel<WMSInfo> info) {
             super(id, info);
             // popups support
             add(modal = new GSModalWindow("modal"));
@@ -440,7 +440,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                     "rootLayerAbstract",
                     this));
             PropertyModel<Map<String, ?>> metadataModel = new PropertyModel<>(info, "metadata");
-            MapModel rootLayerEnabled = defaultedModel(
+            MapModel<Boolean> rootLayerEnabled = defaultedModel(
                     metadataModel, WMS.ROOT_LAYER_IN_CAPABILITIES_KEY, WMS.ROOT_LAYER_IN_CAPABILITIES_DEFAULT);
             CheckBox rootLayerEnabledField = new CheckBox("rootLayerEnabled", rootLayerEnabled);
             add(rootLayerEnabledField);
@@ -451,7 +451,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             add(authAndIds);
 
             // limited srs list
-            TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
+            SRSListTextArea srsList =
+                    new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
             add(srsList);
 
             add(new CheckBox("bBOXForEachCRS"));
@@ -465,20 +466,20 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 }
             });
             // advanced projection handling
-            MapModel aphEnabled =
+            MapModel<Boolean> aphEnabled =
                     defaultedModel(metadataModel, WMS.ADVANCED_PROJECTION_KEY, WMS.ENABLE_ADVANCED_PROJECTION);
             CheckBox aphEnabledField = new CheckBox("aph.enabled", aphEnabled);
             add(aphEnabledField);
-            MapModel aphWrap = defaultedModel(metadataModel, WMS.MAP_WRAPPING_KEY, WMS.ENABLE_MAP_WRAPPING);
+            MapModel<Boolean> aphWrap = defaultedModel(metadataModel, WMS.MAP_WRAPPING_KEY, WMS.ENABLE_MAP_WRAPPING);
             CheckBox aphWrapField = new CheckBox("aph.wrap", aphWrap);
             add(aphWrapField);
-            MapModel aphDensify = defaultedModel(
+            MapModel<Boolean> aphDensify = defaultedModel(
                     metadataModel,
                     WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY,
                     WMS.ENABLE_ADVANCED_PROJECTION_DENSIFICATION);
             CheckBox aphDensifyField = new CheckBox("aph.densify", aphDensify);
             add(aphDensifyField);
-            MapModel aphHeuristic = defaultedModel(
+            MapModel<Boolean> aphHeuristic = defaultedModel(
                     metadataModel, WMS.DATELINE_WRAPPING_HEURISTIC_KEY, WMS.DISABLE_DATELINE_WRAPPING_HEURISTIC);
             CheckBox aphHeuristicField = new CheckBox("aph.dlh", aphHeuristic);
             add(aphHeuristicField);
@@ -513,7 +514,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             add(maxRequestedDimensionValues);
             // watermark
             add(new CheckBox("watermark.enabled"));
-            TextField watermarkUrlField =
+            TextField<String> watermarkUrlField =
                     new TextField<>("watermark.uRL", new FileModel(new PropertyModel<>(info, "watermark.URL")));
             watermarkUrlField.add(new FileExistsValidator(true));
             watermarkUrlField.setOutputMarkupId(true);
@@ -535,12 +536,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                     SVG_RENDERERS,
                     new SVGMethodRenderer()));
             // png compression levels
-            MapModel pngCompression = defaultedModel(metadataModel, WMS.PNG_COMPRESSION, WMS.PNG_COMPRESSION_DEFAULT);
+            MapModel<Integer> pngCompression =
+                    defaultedModel(metadataModel, WMS.PNG_COMPRESSION, WMS.PNG_COMPRESSION_DEFAULT);
             TextField<Integer> pngCompressionField = new TextField<>("png.compression", pngCompression, Integer.class);
             pngCompressionField.add(new RangeValidator<>(0, 100));
             add(pngCompressionField);
             // jpeg compression levels
-            MapModel jpegCompression =
+            MapModel<Integer> jpegCompression =
                     defaultedModel(metadataModel, WMS.JPEG_COMPRESSION, WMS.JPEG_COMPRESSION_DEFAULT);
             TextField<Integer> jpegCompressionField =
                     new TextField<>("jpeg.compression", jpegCompression, Integer.class);
@@ -548,11 +550,11 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             add(jpegCompressionField);
 
             // kml handling
-            MapModel kmlReflectorMode =
+            MapModel<String> kmlReflectorMode =
                     defaultedModel(metadataModel, WMS.KML_REFLECTOR_MODE, WMS.KML_REFLECTOR_MODE_DEFAULT);
             add(new DropDownChoice<>("kml.defaultReflectorMode", kmlReflectorMode, KML_REFLECTOR_MODES));
 
-            MapModel kmlSuperoverlayMode =
+            MapModel<String> kmlSuperoverlayMode =
                     defaultedModel(metadataModel, WMS.KML_SUPEROVERLAY_MODE, WMS.KML_SUPEROVERLAY_MODE_DEFAULT);
             add(new DropDownChoice<>("kml.superoverlayMode", kmlSuperoverlayMode, KML_SUPEROVERLAY_MODES));
 
@@ -561,7 +563,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                     "kml.kmlplacemark",
                     defaultedModel(metadataModel, WMS.KML_KMLPLACEMARK, WMS.KML_KMLPLACEMARK_DEFAULT)));
 
-            MapModel kmScore = defaultedModel(metadataModel, WMS.KML_KMSCORE, WMS.KML_KMSCORE_DEFAULT);
+            MapModel<Integer> kmScore = defaultedModel(metadataModel, WMS.KML_KMSCORE, WMS.KML_KMSCORE_DEFAULT);
             TextField<Integer> kmScoreField = new TextField<>("kml.kmscore", kmScore, Integer.class);
             kmScoreField.add(new RangeValidator<>(0, 100));
             add(kmScoreField);

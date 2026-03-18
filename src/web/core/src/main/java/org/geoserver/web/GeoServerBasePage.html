@@ -21,12 +21,12 @@
           <div id="main-navigation" class="gs-header-nav-container">
             <div id="navigation-container" class="gs-header-nav" role="navigation" aria-label="Main navigation">
               <ul id="navigation">
-                <li class="navigation-tab" wicket:id="category">
-                  <div class="navigation-tab-header">
+                <li class="gs-dropdown" wicket:id="category">
+                  <div class="gs-dropdown-header">
                     <span wicket:id="category.header">[Category Header]</span>
                   </div>
-                  <ul class="navigation-tab-content plain">
-                    <li class="nav-administer-service" wicket:id="category.links">
+                  <ul class="gs-dropdown-menu">
+                    <li class="gs-dropdown-item" wicket:id="category.links">
                       <a wicket:id="link">
                         <img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span>
                       </a>
@@ -106,13 +106,14 @@
           </div>
         </div>
       </div>
+      <div class="gs-header-search-container"></div>
       <div class="gs-header-backdrop" id="header-backdrop" aria-hidden="true"></div>
-      <div wicket:id="breadcrumbPanel"></div>
     </div><!-- /#header -->
     <div id="main">
-      <!-- sidebar -->
-      <aside class="gs-sidebar" wicket:id="sidebar"></aside>
-      <div class="wrap selfclear">
+    <!-- sidebar -->
+    <aside class="gs-sidebar" wicket:id="sidebar"></aside>
+    <div class="wrap selfclear gs-page-wrapper">
+        <div wicket:id="breadcrumbPanel"></div>
         <div id="page" class="selfclear">
           <div class="page-header">
             <div id="topFeedback" wicket:id="topFeedback"></div>

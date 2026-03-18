@@ -1,3 +1,10 @@
+.gs-header-search-container {
+    display: none;
+    padding: 0 1rem 0.5rem;
+}
+.gs-header-search-container .custom-search-wrapper {
+    margin-bottom: 0;
+}
 .custom-search-wrapper {
     position: relative;
     width: 100%; /* Adjust to match GeoServer's styling */
@@ -48,4 +55,9 @@
     overflow: hidden;
     clip: rect(0,0,0,0);
     border: 0;
+}
+@media (max-width: 768px) {
+    .gs-header-search-container {
+        display: block;
+    }
 }

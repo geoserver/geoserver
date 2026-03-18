@@ -144,13 +144,11 @@ public class SearchInputPanel extends Panel {
 
                 // Re-initialize the JS state for the new dropdown list (visibility + ARIA)
                 String stateScript = "var $ul = $('#" + resultsContainer.getMarkupId() + "');"
+                        + "var isAutocompleteEnabled = " + autocompleteEnabled
+                        + " || window.matchMedia('(max-width: 768px)').matches;"
                         + "$('#" + searchInput.getMarkupId()
-                        + "').attr('aria-expanded', '"
-                        + (autocompleteEnabled ? "true" : "false")
-                        + "');"
-                        + "$ul."
-                        + (autocompleteEnabled ? "show()" : "hide()")
-                        + ".scrollTop(0);"
+                        + "').attr('aria-expanded', isAutocompleteEnabled ? 'true' : 'false');"
+                        + "$ul[isAutocompleteEnabled ? 'show' : 'hide']().scrollTop(0);"
                         + "$ul.data('hasMore', true);"
                         + "$('#search-announcer').text('Results updated.');";
 

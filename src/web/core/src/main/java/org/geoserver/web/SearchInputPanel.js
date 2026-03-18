@@ -3,7 +3,11 @@ function initSearchInputPanel(containerId, inputId, callbackUrl, autocompleteEna
     var $input = $('#' + inputId);
     var $announcer = $('#search-announcer');
     var currentIndex = -1;
-    var isAutocompleteEnabled = autocompleteEnabled !== false;
+    var baseAutocompleteEnabled = autocompleteEnabled !== false;
+
+    function isAutocompleteEnabled() {
+        return baseAutocompleteEnabled || window.matchMedia('(max-width: 768px)').matches;
+    }
 
     // Helper: Update accessibility and visibility state
     function toggleDropdown(show) {
@@ -22,7 +26,7 @@ function initSearchInputPanel(containerId, inputId, callbackUrl, autocompleteEna
 
     // --- Keyboard Navigation ---
     $input.on('keydown', function(e) {
-        if (!isAutocompleteEnabled) return;
+        if (!isAutocompleteEnabled()) return;
         // Find all current items (re-queried in case Wicket appended more)
         var $items = $ul.find('li');
         var maxIndex = $items.length - 1;
@@ -98,7 +102,7 @@ function initSearchInputPanel(containerId, inputId, callbackUrl, autocompleteEna
     // Broadcast query only when autocomplete is OFF (tree filtering mode).
     $input.off('input.gsNavTreeFilter');
     $input.on('input.gsNavTreeFilter', function () {
-        if (isAutocompleteEnabled) return;
+        if (isAutocompleteEnabled()) return;
         $(document).trigger('gsNavTreeFilter', [$input.val() || '']);
     });
 

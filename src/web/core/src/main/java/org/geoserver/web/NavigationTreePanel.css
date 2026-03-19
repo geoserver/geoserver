@@ -115,6 +115,7 @@ aside.gs-sidebar {
     top: calc(100% + 0.25rem);
     left: 0;
     right: 0;
+    z-index: 10;
     background: var(--gs-body-bg);
     border-radius: 0.25rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
@@ -141,4 +142,13 @@ aside.gs-sidebar {
 }
 .gs-sidebar mark {
     padding: 0;
+}
+[data-gs-theme=dark] .gs-toggle-button > img {
+    filter: brightness(0) invert(1);
+}
+
+.gs-no-data {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    color: var(--gs-secondary-color);
 }

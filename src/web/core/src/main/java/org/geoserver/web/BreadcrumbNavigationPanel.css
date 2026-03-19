@@ -17,8 +17,9 @@
 }
 .gs-breadcrumb-item + .gs-breadcrumb-item::before {
     content: "›";
-    padding: 0 0.5rem;
-    color: #6c757d;
+    padding: 0 0.25rem;
+    color: var(--gs-body-color);
+    font-size: 1rem;
 }
 .gs-breadcrumb-item a {
     color: var(--gs-link-color);
@@ -47,6 +48,11 @@
 .gs-breadcrumb-main-link:hover,
 .gs-dropdown > .gs-dropdown-header:hover {
     background-color: var(--gs-secondary-bg);
+}
+.gs-breadcrumb-main-link > span,
+.gs-breadcrumb-item .gs-dropdown > .gs-dropdown-header > span,
+.gs-breadcrumb-current-label > span {
+    margin-top: 2px;
 }
 .gs-dropdown-menu .gs-dropdown-header:hover {
     cursor: default;

@@ -33,6 +33,7 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geotools.util.GrowableInternationalString;
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,6 +43,12 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
     public void setupMode() {
         // avoid flip-flops due to timeouts in the testing environment
         HomePageSelection.MODE = HomePageSelection.SelectionMode.DROPDOWN;
+        System.setProperty(GeoServerHomePage.LEGACY_HOMEPAGE_SELECTOR, "true");
+    }
+
+    @After
+    public void clearLegacySelector() {
+        System.clearProperty(GeoServerHomePage.LEGACY_HOMEPAGE_SELECTOR);
     }
 
     @Override

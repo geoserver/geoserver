@@ -50,13 +50,18 @@ public class NavigationTreePanel extends Panel {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private boolean globalExpanded = true;
+    private boolean globalExpanded = false;
     private boolean workspacesExpanded = true;
 
     private WebMarkupContainer workspacesSectionBody;
     private WebMarkupContainer workspacesScroll;
     private ListView<Workspace> workspacesList;
     private WebMarkupContainer globalSectionBody;
+    private WebMarkupContainer globalToggle;
+    private WebMarkupContainer workspacesToggle;
+    private WebMarkupContainer globalSectionContainer;
+    private WebMarkupContainer workspacesSectionContainer;
+    private WebMarkupContainer noDataMessage;
     private ListView<WorkspaceChild> globalChildrenList;
 
     private AbstractDefaultAjaxBehavior loadWorkspacesBehavior;
@@ -99,16 +104,25 @@ public class NavigationTreePanel extends Panel {
         newMenu.add(new BookmarkablePageLink<>("addWorkspaceLink", WorkspaceNewPage.class));
 
         // --- Global Section ---
+        globalSectionContainer = new WebMarkupContainer("globalSectionContainer") {
+            @Override
+            public boolean isVisible() {
+                return !hasActiveTreeFilter() || hasFilteredGlobalResults();
+            }
+        };
+        globalSectionContainer.setOutputMarkupPlaceholderTag(true);
+        add(globalSectionContainer);
+
         globalSectionBody = new WebMarkupContainer("globalSectionBody") {
             @Override
             public boolean isVisible() {
-                return globalExpanded;
+                return isGlobalExpanded();
             }
         };
         globalSectionBody.setOutputMarkupPlaceholderTag(true);
-        add(globalSectionBody);
+        globalSectionContainer.add(globalSectionBody);
 
-        WebMarkupContainer globalToggle = new WebMarkupContainer("globalSectionToggle");
+        globalToggle = new WebMarkupContainer("globalSectionToggle");
         globalToggle.setOutputMarkupId(true);
         globalToggle.add(new AjaxEventBehavior("click") {
             @Override
@@ -119,9 +133,9 @@ public class NavigationTreePanel extends Panel {
                 target.appendJavaScript(initCall());
             }
         });
-        globalToggle.add(new ToggleIconImage("globalSectionToggleIcon", () -> globalExpanded));
-        add(globalToggle);
-        add(new Label("globalCount", new LoadableDetachableModel<String>() {
+        globalToggle.add(new ToggleIconImage("globalSectionToggleIcon", () -> isGlobalExpanded()));
+        globalSectionContainer.add(globalToggle);
+        globalSectionContainer.add(new Label("globalCount", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
                 return String.valueOf(getGlobalChildren(Integer.MAX_VALUE).size());
@@ -158,6 +172,15 @@ public class NavigationTreePanel extends Panel {
         globalSectionBody.add(globalChildrenList);
 
         // --- Workspaces Section ---
+        workspacesSectionContainer = new WebMarkupContainer("workspacesSectionContainer") {
+            @Override
+            public boolean isVisible() {
+                return !hasActiveTreeFilter() || hasFilteredWorkspacesResults();
+            }
+        };
+        workspacesSectionContainer.setOutputMarkupPlaceholderTag(true);
+        add(workspacesSectionContainer);
+
         workspacesSectionBody = new WebMarkupContainer("workspacesSectionBody") {
             @Override
             public boolean isVisible() {
@@ -165,9 +188,9 @@ public class NavigationTreePanel extends Panel {
             }
         };
         workspacesSectionBody.setOutputMarkupPlaceholderTag(true);
-        add(workspacesSectionBody);
+        workspacesSectionContainer.add(workspacesSectionBody);
 
-        WebMarkupContainer workspacesToggle = new WebMarkupContainer("workspacesSectionToggle");
+        workspacesToggle = new WebMarkupContainer("workspacesSectionToggle");
         workspacesToggle.setOutputMarkupId(true);
         workspacesToggle.add(new AjaxEventBehavior("click") {
             @Override
@@ -179,7 +202,7 @@ public class NavigationTreePanel extends Panel {
             }
         });
         workspacesToggle.add(new ToggleIconImage("workspacesSectionToggleIcon", () -> workspacesExpanded));
-        add(workspacesToggle);
+        workspacesSectionContainer.add(workspacesToggle);
 
         AjaxLink<Void> workspacesSectionSelect = new AjaxLink<>("workspacesSectionSelect") {
             @Override
@@ -188,8 +211,8 @@ public class NavigationTreePanel extends Panel {
                 navigateToHome(null, null);
             }
         };
-        add(workspacesSectionSelect);
-        add(new Label("workspacesCount", new LoadableDetachableModel<String>() {
+        workspacesSectionContainer.add(workspacesSectionSelect);
+        workspacesSectionContainer.add(new Label("workspacesCount", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
                 return String.valueOf(totalWorkspaces);
@@ -198,42 +221,26 @@ public class NavigationTreePanel extends Panel {
 
         workspacesScroll = new WebMarkupContainer("workspacesScroll");
         workspacesScroll.setOutputMarkupId(true);
-        workspacesScroll.add(new org.apache.wicket.AttributeModifier("style", "max-height: 60vh; overflow:auto;"));
         workspacesScroll.add(new org.apache.wicket.AttributeModifier(
                 "data-has-more", () -> String.valueOf(!hasActiveTreeFilter() && visibleWorkspaces < totalWorkspaces)));
         workspacesScroll.add(new org.apache.wicket.AttributeModifier(
                 "data-selected-workspace", () -> selectedWorkspaceName == null ? "" : selectedWorkspaceName));
         workspacesSectionBody.add(workspacesScroll);
 
+        noDataMessage = new WebMarkupContainer("noDataMessage") {
+            @Override
+            public boolean isVisible() {
+                return hasActiveTreeFilter() && !hasFilteredGlobalResults() && !hasFilteredWorkspacesResults();
+            }
+        };
+        noDataMessage.setOutputMarkupPlaceholderTag(true);
+        add(noDataMessage);
+
         workspacesList =
                 new ListView<>("workspaces", new LoadableDetachableModel<List<Workspace>>() {
                     @Override
                     protected List<Workspace> load() {
-                        if (selectedWorkspaceName != null) {
-                            List<Workspace> single = new ArrayList<>();
-                            WorkspaceInfo wsInfo = catalog.getWorkspaceByName(selectedWorkspaceName);
-                            if (wsInfo != null && matchesWorkspaceFilter(wsInfo.getName())) {
-                                WorkspaceState state =
-                                        workspaceStates.computeIfAbsent(wsInfo.getName(), n -> new WorkspaceState());
-                                single.add(new Workspace(wsInfo.getName(), isWorkspaceExpanded(state)));
-                            }
-                            return single;
-                        }
-                        int end = Math.min(visibleWorkspaces, totalWorkspaces);
-                        List<Workspace> result = new ArrayList<>();
-                        try (CloseableIterator<WorkspaceInfo> it =
-                                catalog.list(WorkspaceInfo.class, Filter.INCLUDE, null, end, null)) {
-                            while (it.hasNext()) {
-                                WorkspaceInfo wi = it.next();
-                                if (!matchesWorkspaceFilter(wi.getName())) {
-                                    continue;
-                                }
-                                WorkspaceState state =
-                                        workspaceStates.computeIfAbsent(wi.getName(), n -> new WorkspaceState());
-                                result.add(new Workspace(wi.getName(), isWorkspaceExpanded(state)));
-                            }
-                        }
-                        return result;
+                        return loadWorkspaces();
                     }
                 }) {
                     @Override
@@ -337,8 +344,10 @@ public class NavigationTreePanel extends Panel {
                     treeFilterQuery = query == null ? "" : query.trim();
                     visibleWorkspaces = PAGE_SIZE;
                     visibleLayersByWorkspace.clear();
-                    target.add(globalSectionBody);
-                    target.add(workspacesScroll);
+                    workspacesExpanded = true;
+                    target.add(globalSectionContainer);
+                    target.add(workspacesSectionContainer);
+                    target.add(noDataMessage);
                     target.appendJavaScript(initCall());
                     return;
                 }
@@ -425,6 +434,52 @@ public class NavigationTreePanel extends Panel {
 
     private boolean isWorkspaceExpanded(WorkspaceState state) {
         return hasActiveTreeFilter() || state.expanded;
+    }
+
+    private boolean isGlobalExpanded() {
+        return hasActiveTreeFilter() || globalExpanded;
+    }
+
+    private List<Workspace> loadWorkspaces() {
+        if (selectedWorkspaceName != null) {
+            List<Workspace> single = new ArrayList<>();
+            WorkspaceInfo wsInfo = catalog.getWorkspaceByName(selectedWorkspaceName);
+            if (wsInfo != null && matchesWorkspaceFilter(wsInfo.getName())) {
+                WorkspaceState state = workspaceStates.computeIfAbsent(wsInfo.getName(), n -> new WorkspaceState());
+                single.add(new Workspace(wsInfo.getName(), isWorkspaceExpanded(state)));
+            }
+            return single;
+        }
+
+        // When filtering, don't page the workspace list; otherwise we can incorrectly show "no data"
+        // just because the matching workspace appears beyond the current PAGE_SIZE window.
+        int end = hasActiveTreeFilter() ? totalWorkspaces : Math.min(visibleWorkspaces, totalWorkspaces);
+        List<Workspace> result = new ArrayList<>();
+        try (CloseableIterator<WorkspaceInfo> it = catalog.list(WorkspaceInfo.class, Filter.INCLUDE, null, end, null)) {
+            while (it.hasNext()) {
+                WorkspaceInfo wi = it.next();
+                if (!matchesWorkspaceFilter(wi.getName())) {
+                    continue;
+                }
+                WorkspaceState state = workspaceStates.computeIfAbsent(wi.getName(), n -> new WorkspaceState());
+                result.add(new Workspace(wi.getName(), isWorkspaceExpanded(state)));
+            }
+        }
+        return result;
+    }
+
+    private boolean hasFilteredGlobalResults() {
+        if (!hasActiveTreeFilter()) {
+            return true;
+        }
+        return !getGlobalChildren(Integer.MAX_VALUE).isEmpty();
+    }
+
+    private boolean hasFilteredWorkspacesResults() {
+        if (!hasActiveTreeFilter()) {
+            return true;
+        }
+        return !loadWorkspaces().isEmpty();
     }
 
     private static final class Workspace implements Serializable {

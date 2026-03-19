@@ -64,6 +64,7 @@ officially part of the GeoServer releases. They are however built along with the
    oidc/index
    opensearch-eo/index
    pmtiles-store/index
+   png-wind/index
    proxy-base-ext/index
    remote-wps/index
    s3-geotiff/index

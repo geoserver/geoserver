@@ -2032,5 +2032,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>png-wind</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-png-wind</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

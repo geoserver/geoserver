@@ -80,7 +80,80 @@ that when you have a style like this::
         fill: blue;
     }
 
-The legend entry for parcels will have the title ``'Parcels with Borders'``.
+The legend entry for parcels will have the title ``'Borders, Parcels'``.
 If you don't like this behavior, then only provide titles for the most specific
 rules in your style. (Or, suggest something better in an issue report!)  Rules
 that don't provide titles are simply omitted from title aggregation.
+
+Localized metadata (i18n)
+-------------------------
+
+Rule metadata can also be localized using a language suffix:
+
+* ``@title[lang]``
+* ``@abstract[lang]``
+
+The unqualified forms (``@title`` / ``@abstract``) remain the default values.
+
+Basic example
+^^^^^^^^^^^^^
+
+.. code-block:: css
+
+    /*
+     * @title Roads
+     * @title[en] Roads
+     * @title[it] Strade
+     * @abstract Main transportation network
+     * @abstract[fr] Réseau de transport principal
+     */
+    * {
+        stroke: #444;
+    }
+
+When translated to SLD, the localized values are emitted under ``<Localized>`` entries
+inside rule ``<Title>`` and ``<Abstract>``.
+
+Combined rules: language-by-language aggregation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When multiple CSS rules combine into a single SLD rule, aggregation is done per language.
+This means each language is combined independently.
+
+.. code-block:: css
+
+    /*
+     * @title Base
+     * @title[en] Base EN
+     * @abstract Base abstract
+     * @abstract[en] Base abstract EN
+     */
+    * { fill: #eee; }
+
+    /*
+     * @title Overlay
+     * @title[it] Sovrapposto
+     * @abstract Overlay abstract
+     * @abstract[it] Astratto sovrapposto
+     */
+    * { stroke: #333; }
+
+Resulting behavior:
+
+* default title: ``Base, Overlay``
+* ``en`` title: ``Base EN``
+* ``it`` title: ``Sovrapposto``
+* default abstract: lines are combined with a newline separator
+
+Language tag formats
+^^^^^^^^^^^^^^^^^^^^
+
+Both hyphen and underscore formats are accepted for language tags:
+
+.. code-block:: css
+
+    /*
+     * @title[en-US] Hyphen format
+     * @title[en_US] Underscore format
+     */
+    * { mark: symbol(circle); }

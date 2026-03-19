@@ -18,6 +18,7 @@
       <includes>
         <include>worldwind*</include>
         <include>gs-dds*</include>
+        <include>imageio-ext-raw*</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -169,7 +169,7 @@
     <property name="titleKey" value="coverageAccess.title" />
     <property name="descriptionKey" value="CoverageAccessPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.CoverageAccessPage" />
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/cog_photo.png" />
     <property name="order" value="45" />
   </bean>

@@ -17,6 +17,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -28,7 +29,6 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.geotools.api.filter.Filter;
-import org.geoserver.catalog.Predicates;
 
 /** Lists layer groups, allows removal and editing */
 public class LayerGroupPage extends GeoServerSecuredPage {
@@ -165,7 +165,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         IModel<?> wsNameModel = LayerGroupProvider.WORKSPACE.getModel(itemModel);
         String wsName = (String) wsNameModel.getObject();
         if (wsName != null) {
-            return new SimpleBookmarkableLink(id, WorkspaceEditPage.class, new Model<>(wsName), "name", wsName);
+            return new SimpleBookmarkableLink(id, WorkspaceEditPage.class, new Model<>(wsName), "workspace", wsName);
         } else {
             return new WebMarkupContainer(id);
         }

@@ -27,6 +27,7 @@ import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
@@ -45,7 +46,6 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.geotools.api.filter.Filter;
-import org.geoserver.catalog.Predicates;
 
 /**
  * Page listing all the available layers. Follows the usual filter/sort/page approach, provides ways to bulk delete
@@ -140,7 +140,7 @@ public class LayerPage extends GeoServerSecuredPage {
                 id,
                 ResourceConfigurationPage.class,
                 linkModel,
-                ResourceConfigurationPage.NAME,
+                ResourceConfigurationPage.LAYER,
                 layerName,
                 ResourceConfigurationPage.WORKSPACE,
                 wsName);
@@ -170,7 +170,7 @@ public class LayerPage extends GeoServerSecuredPage {
                 id,
                 ResourceConfigurationPage.class,
                 new Model<>(linkTitle),
-                ResourceConfigurationPage.NAME,
+                ResourceConfigurationPage.LAYER,
                 layerName,
                 ResourceConfigurationPage.WORKSPACE,
                 wsName);

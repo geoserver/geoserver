@@ -549,22 +549,22 @@
 
  
   <bean id="breadcrumbCatWorkspace" class="org.geoserver.web.Category">
-    <property name="nameKey" value="category.workspace" />
+    <property name="nameKey" value="BreadcrumbNavigationPanel.workspace" />
     <property name="order" value="10" />
   </bean>
 
   <bean id="breadcrumbCatData" class="org.geoserver.web.Category">
-    <property name="nameKey" value="category.data" />
+    <property name="nameKey" value="BreadcrumbNavigationPanel.data" />
     <property name="order" value="20" />
   </bean>
 
   <bean id="breadcrumbCatTileCaching" class="org.geoserver.web.Category">
-    <property name="nameKey" value="menu.category.tilecaching" />
+    <property name="nameKey" value="BreadcrumbNavigationPanel.tilecaching" />
     <property name="order" value="30" />
   </bean>
 
   <bean id="breadcrumbCatServiceOverrides" class="org.geoserver.web.Category">
-    <property name="nameKey" value="menu.category.serviceoverrides" />
+    <property name="nameKey" value="BreadcrumbNavigationPanel.serviceoverrides" />
     <property name="order" value="40" />
   </bean>
 
@@ -613,13 +613,18 @@
   </bean>
 
   <bean id="breadcrumbCatLayerMenu" class="org.geoserver.web.Category">
-    <property name="nameKey" value="menu.category.layer" />
+    <property name="nameKey" value="BreadcrumbNavigationPanel.layer" />
     <property name="order" value="10" />
+  </bean>
+
+  <bean id="breadcrumbCatLayerData" class="org.geoserver.web.Category">
+    <property name="nameKey" value="BreadcrumbNavigationPanel.data" />
+    <property name="order" value="20" />
   </bean>
 
   <bean id="breadcrumbItemLayerEdit" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
     <property name="id" value="breadcrumbItemLayerEdit" />
-    <property name="titleKey" value="LayerEditPage.title" /> 
+    <property name="titleKey" value="BreadcrumbNavigationPanel.editsettings" /> 
     <property name="componentClass" value="org.geoserver.web.data.resource.ResourceConfigurationPage" />
     <property name="targetLevel" value="LAYER" />
     <property name="category" ref="breadcrumbCatLayerMenu" />
@@ -628,20 +633,64 @@
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>
 
+  <bean id="breadcrumbItemLayerStores" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemLayerStores" />
+    <property name="titleKey" value="StorePage.title" /> 
+    <property name="componentClass" value="org.geoserver.web.data.store.StorePage" />
+    <property name="targetLevel" value="LAYER" />
+    <property name="category" ref="breadcrumbCatLayerData" />
+    <property name="order" value="10" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    <property name="icon" value="../../img/icons/silk/database.png"/>
+  </bean>
+
   <bean id="breadcrumbCatLayerGroupMenu" class="org.geoserver.web.Category">
-    <property name="nameKey" value="menu.category.layer" />
+    <property name="nameKey" value="BreadcrumbNavigationPanel.group" />
     <property name="order" value="10" />
   </bean>
 
   <bean id="breadcrumbItemLayerGroupEdit" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
     <property name="id" value="breadcrumbItemLayerEdit" />
-    <property name="titleKey" value="LayerEditPage.title" /> 
+    <property name="titleKey" value="BreadcrumbNavigationPanel.editsettings" /> 
     <property name="componentClass" value="org.geoserver.web.data.layergroup.LayerGroupEditPage" />
     <property name="targetLevel" value="LAYER_GROUP" />
     <property name="category" ref="breadcrumbCatLayerGroupMenu" />
     <property name="order" value="10" />
     <property name="icon" value="../../img/icons/silk/wrench.png"/>
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+  </bean>
+
+  <!-- Sidebar "New" menu items (used by NavigationTreePanel) -->
+  <bean id="sidebarNewLayer" class="org.geoserver.web.SidebarNewMenuItemInfo">
+    <property name="id" value="sidebarNewLayer" />
+    <property name="titleKey" value="addLayers" />
+    <property name="componentClass" value="org.geoserver.web.data.layer.NewLayerPage" />
+    <property name="order" value="10" />
+    <property name="icon" value="../../img/icons/silk/add_layer.png" />
+  </bean>
+
+  <bean id="sidebarNewLayerGroup" class="org.geoserver.web.SidebarNewMenuItemInfo">
+    <property name="id" value="sidebarNewLayerGroup" />
+    <property name="titleKey" value="addGroups" />
+    <property name="componentClass" value="org.geoserver.web.data.layergroup.LayerGroupEditPage" />
+    <property name="order" value="20" />
+    <property name="icon" value="../../img/icons/silk/add_layergroup.png" />
+  </bean>
+
+  <bean id="sidebarNewStore" class="org.geoserver.web.SidebarNewMenuItemInfo">
+    <property name="id" value="sidebarNewStore" />
+    <property name="titleKey" value="addStores" />
+    <property name="componentClass" value="org.geoserver.web.data.store.NewDataPage" />
+    <property name="order" value="30" />
+    <property name="icon" value="../../img/icons/silk/add_store.png" />
+  </bean>
+
+  <bean id="sidebarNewWorkspace" class="org.geoserver.web.SidebarNewMenuItemInfo">
+    <property name="id" value="sidebarNewWorkspace" />
+    <property name="titleKey" value="addWorkspaces" />
+    <property name="componentClass" value="org.geoserver.web.data.workspace.WorkspaceNewPage" />
+    <property name="order" value="40" />
+    <property name="icon" value="../../img/icons/silk/add_workspace.png" />
   </bean>
 
 </beans>

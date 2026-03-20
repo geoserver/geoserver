@@ -98,4 +98,37 @@
      <property name="order" value="30"/>
      <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>  
+
+  <!-- Sidebar "New" menu items of new styles -->
+  <bean id="sidebarNewStyle" class="org.geoserver.web.SidebarNewMenuItemInfo">
+    <property name="id" value="sidebarNewStyle" />
+    <property name="titleKey" value="StylePage.addNew" />
+    <property name="componentClass" value="org.geoserver.wms.web.data.StyleNewPage" />
+    <property name="order" value="50" />
+    <property name="icon" value="../../img/icons/silk/add_style.png" />
+  </bean>
+
+  <!-- Styles breadcrumb options for workspace -->
+  <bean id="breadcrumbItemWsStyles" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemWsStyles" />
+    <property name="titleKey" value="StylePage.title" /> 
+    <property name="componentClass" value="org.geoserver.wms.web.data.StylePage" />
+    <property name="targetLevel" value="WORKSPACE" />
+    <property name="category" ref="breadcrumbCatData" />
+    <property name="order" value="40" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    <property name="icon" value="palette.png"/>
+  </bean>
+
+  <!-- Styles breadcrumb options for layer -->
+  <bean id="breadcrumbItemLayerStyles" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemLayerStyles" />
+    <property name="titleKey" value="StylePage.title" /> 
+    <property name="componentClass" value="org.geoserver.wms.web.data.StylePage" />
+    <property name="targetLevel" value="LAYER" />
+    <property name="category" ref="breadcrumbCatLayerData" />
+    <property name="order" value="40" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    <property name="icon" value="palette.png"/>
+  </bean>
 </beans>

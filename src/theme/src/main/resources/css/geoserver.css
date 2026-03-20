@@ -1664,7 +1664,8 @@ form a.collapsed {
 .authentication-form .gs-authentication-form {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Nav container & dropdowns */

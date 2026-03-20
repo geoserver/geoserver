@@ -60,7 +60,7 @@ public class BreadcrumbContextMenuItemInfo extends ComponentInfo<Page>
         }
 
         if (resourceName != null && !resourceName.isEmpty()) {
-            params.add("name", resourceName);
+            params.add("layer", resourceName);
             params.add("group", resourceName);
         }
         return params;

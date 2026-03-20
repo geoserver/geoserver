@@ -55,6 +55,39 @@ aside.gs-sidebar {
 .gs-sidebar .gs-workspaces-list ul ul {
     padding-left: 1.125rem;
 }
+.gs-pagination {
+    margin-top: 0.25rem;
+    display: block;
+    font-size: 0.75rem;
+    padding-left: 1rem;
+}
+
+.gs-pagination-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.15rem;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+.gs-pagination .gs-page-btn {
+    border: 1px solid var(--gs-primary);
+    background: var(--gs-body-bg);
+    cursor: pointer;
+    height: 1.5rem;
+    width: 1rem;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+}
+
+.gs-pagination .gs-page-btn[disabled] {
+    opacity: 0.5;
+    cursor: default;
+}
+
 .gs-toggle-button {
     width: 12px;
     display: flex;
@@ -143,8 +176,9 @@ aside.gs-sidebar {
 .gs-sidebar mark {
     padding: 0;
 }
-[data-gs-theme=dark] .gs-toggle-button > img {
-    filter: brightness(0) invert(1);
+
+.gs-toggle-caret {
+    font-size: 1rem;
 }
 
 .gs-no-data {

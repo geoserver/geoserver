@@ -30,32 +30,6 @@ function initNavigationTreePanel(workspacesScrollId, callbackUrl) {
         }
     }
 
-    // Helper: check if there are more items to load
-    function hasMore($el) {
-        if (!$el || !$el.length) {
-            return false;
-        }
-        var value = $el.data('hasMore');
-        if (value === undefined) {
-            value = $el.attr('data-has-more') === 'true';
-            $el.data('hasMore', value);
-        }
-        return value !== false;
-    }
-
-    // Helper: element bottom reaches gs-sidebar bottom
-    function nearSidebarBottom($el, thresholdPx) {
-        if (!$el || !$el.length || !$sidebar.length) {
-            return false;
-        }
-        var threshold = thresholdPx || 20;
-        var sidebarBottom = $sidebar.scrollTop() + $sidebar.innerHeight();
-        var elTopInSidebar = $el.offset().top - $sidebar.offset().top + $sidebar.scrollTop();
-        var elBottom = elTopInSidebar + $el.outerHeight();
-        var distance = elBottom - sidebarBottom;
-        return distance <= threshold;
-    }
-
     function closeNewMenu() {
         $newMenu.attr('hidden', 'hidden');
         $newToggle.attr('aria-expanded', 'false');
@@ -94,50 +68,106 @@ function initNavigationTreePanel(workspacesScrollId, callbackUrl) {
         placeSearchByViewport();
     });
 
-    function requestWorkspacesPage() {
-        var $wsScroll = $('#' + workspacesScrollId);
-        if (!$wsScroll.length) return false;
-        if (!hasMore($wsScroll)) return false;
-        if (!nearSidebarBottom($wsScroll, 20)) return false;
-
-        $wsScroll.data('hasMore', false); // throttle until response updates attr
-        var ws = $wsScroll.attr('data-selected-workspace') || '';
-        var layer = $wsScroll.attr('data-selected-layer') || '';
-        var url = callbackUrl + '&kind=workspaces';
-        if (ws) url += '&workspace=' + encodeURIComponent(ws);
-        if (layer) url += '&layer=' + encodeURIComponent(layer);
-        Wicket.Ajax.get({ u: url });
-        return true;
-    }
-
-    function requestLayersPage() {
-        $('[data-kind="layers"][data-workspace]').each(function () {
-            var $el = $(this);
-            var workspaceName = $el.attr('data-workspace');
-            if (!hasMore($el)) return;
-            if (!nearSidebarBottom($el, 20)) return;
-
-            $el.data('hasMore', false); // throttle until response updates attr
-            var url = callbackUrl + '&kind=layers&workspace=' + encodeURIComponent(workspaceName);
-            Wicket.Ajax.get({ u: url });
-            return false; // break .each()
-        });
-    }
-
     var filterTimer = null;
 
-    // --- Sidebar-based Infinite Scroll (workspace + per-workspace layers) ---
-    if ($sidebar.length) {
-        $sidebar.off('scroll.gsNavTree');
-        $sidebar.on('scroll.gsNavTree', function () {
-            // SearchInputPanel-style trigger: check hasMore + bottom, then fetch
-            if (requestWorkspacesPage()) return;
-            requestLayersPage();
+    // --- Page-based pagination UI ---
+    function renderPagination($container) {
+        var totalItems = parseInt($container.attr('data-total-items') || '0', 10);
+        var totalPages = parseInt($container.attr('data-total-pages') || '1', 10);
+        var currentPage = parseInt($container.attr('data-current-page') || '1', 10);
+        var pageSize = parseInt($container.attr('data-page-size') || '20', 10);
+
+        if (!totalItems || totalItems <= 0) {
+            $container.empty();
+            return;
+        }
+
+        if (!Number.isFinite(totalPages) || totalPages < 1) totalPages = 1;
+        if (!Number.isFinite(currentPage) || currentPage < 1) currentPage = 1;
+        if (!Number.isFinite(pageSize) || pageSize < 1) pageSize = 20;
+
+        var prevPage = currentPage - 1;
+        var nextPage = currentPage + 1;
+
+        var prevDisabled = totalPages <= 1 || currentPage <= 1;
+        var nextDisabled = totalPages <= 1 || currentPage >= totalPages;
+        var firstDisabled = prevDisabled;
+        var lastDisabled = nextDisabled;
+        var firstPage = 1;
+        var lastPage = totalPages;
+
+        var html =
+            '<div class="gs-pagination-row">' +
+            '<button type="button" class="gs-page-btn" data-page="' +
+            firstPage +
+            '"' +
+            (firstDisabled ? ' disabled="disabled"' : '') +
+            '>&lsaquo;&lsaquo;</button>' +
+            '<button type="button" class="gs-page-btn" data-page="' +
+            prevPage +
+            '"' +
+            (prevDisabled ? ' disabled="disabled"' : '') +
+            '>&lsaquo;</button>' +
+            '<span class="gs-page-label">' +
+            currentPage +
+            '/' +
+            totalPages +
+            '</span>' +
+            '<button type="button" class="gs-page-btn" data-page="' +
+            nextPage +
+            '"' +
+            (nextDisabled ? ' disabled="disabled"' : '') +
+            '>&rsaquo;</button>' +
+            '<button type="button" class="gs-page-btn" data-page="' +
+            lastPage +
+            '"' +
+            (lastDisabled ? ' disabled="disabled"' : '') +
+            '>&rsaquo;&rsaquo;</button>' +
+            '</div>';
+
+        $container.empty().append(html);
+    }
+
+    function renderAllPaginations() {
+        $('.gs-pagination[data-section]').each(function () {
+            renderPagination($(this));
+        });
+    }
+
+    $(document)
+        .off('click.gsNavTreePagination')
+        .on('click.gsNavTreePagination', '.gs-pagination .gs-page-btn', function (e) {
+            e.preventDefault();
+            var $btn = $(this);
+            if ($btn.is('[disabled]')) return;
+
+            var $container = $btn.closest('.gs-pagination');
+            var section = $container.attr('data-section');
+            if (!section) return;
+
+            var page = parseInt($btn.attr('data-page'), 10);
+            if (!Number.isFinite(page) || page < 1) return;
+
+            var pageSize = parseInt($container.attr('data-page-size') || '20', 10);
+            if (!Number.isFinite(pageSize) || pageSize < 1) pageSize = 20;
+
+            var wsName = $container.attr('data-workspace');
+            var url =
+                callbackUrl +
+                '&kind=' +
+                encodeURIComponent(section) +
+                '&page=' +
+                encodeURIComponent(page) +
+                '&pageSize=' +
+                encodeURIComponent(pageSize);
+            if (section === 'layers' && wsName) {
+                url += '&workspace=' + encodeURIComponent(wsName);
+            }
+
+            Wicket.Ajax.get({ u: url });
         });
 
-        // Initial auto-pagination when list is short/no initial scroll yet.
-        $sidebar.triggerHandler('scroll.gsNavTree');
-    }
+    renderAllPaginations();
 
     // Listen to search input changes and refresh tree on server.
     $(document).off('gsNavTreeFilter.navTree');

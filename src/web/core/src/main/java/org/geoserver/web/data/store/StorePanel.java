@@ -152,7 +152,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     private Component workspaceLink(String id, IModel<StoreInfo> itemModel) {
         IModel nameModel = WORKSPACE.getModel(itemModel);
         return new SimpleBookmarkableLink(
-                id, WorkspaceEditPage.class, nameModel, "name", (String) nameModel.getObject());
+                id, WorkspaceEditPage.class, nameModel, "workspace", (String) nameModel.getObject());
     }
 
     protected Component removeLink(String id, final IModel itemModel) {

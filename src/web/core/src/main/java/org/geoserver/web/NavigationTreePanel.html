@@ -16,10 +16,11 @@
           <span>New</span>
         </button>
         <ul id="gs-sidebar-new-menu" class="gs-sidebar-new-menu" hidden="hidden">
-          <li><a wicket:id="addLayerLink">New layer</a></li>
-          <li><a wicket:id="addGroupLink">New layer group</a></li>
-          <li><a wicket:id="addStoreLink">New store</a></li>
-          <li><a wicket:id="addWorkspaceLink">New workspace</a></li>
+          <li wicket:id="newMenuItems">
+            <a wicket:id="link">
+              <span wicket:id="label">New item</span>
+            </a>
+          </li>
         </ul>
       </div>
     </div>
@@ -28,7 +29,7 @@
       <h6>
         <div class="gs-section-header">
           <div class="gs-toggle-button" wicket:id="globalSectionToggle">
-            <img wicket:id="globalSectionToggleIcon" alt="" />
+            <span wicket:id="globalSectionToggleIcon" class="gs-toggle-caret" aria-hidden="true"></span>
           </div>
           <a>
             <span>GLOBAL</span>
@@ -46,6 +47,7 @@
             </a>
           </li>
         </ul>
+        <div wicket:id="globalPagination" class="gs-pagination" data-section="global"></div>
       </div>
     </div>
   
@@ -53,7 +55,7 @@
       <h6>
         <div class="gs-section-header">
           <div class="gs-toggle-button" wicket:id="workspacesSectionToggle">
-            <img wicket:id="workspacesSectionToggleIcon" alt="" />
+            <span wicket:id="workspacesSectionToggleIcon" class="gs-toggle-caret" aria-hidden="true"></span>
           </div>
           <a href="#" wicket:id="workspacesSectionSelect">
             <span>WORKSPACES</span>
@@ -69,7 +71,7 @@
               <div class="gs-workspace-header">
                 <div>
                   <div class="gs-toggle-button" wicket:id="workspaceToggle">
-                    <img wicket:id="workspaceToggleIcon" alt="" />
+                    <span wicket:id="workspaceToggleIcon" class="gs-toggle-caret" aria-hidden="true"></span>
                   </div>
                   <img wicket:id="workspaceIcon" alt="" />
                   <a href="#" wicket:id="workspaceSelect">
@@ -90,9 +92,11 @@
                   </li>
                 </ul>
               </div>
+                <div wicket:id="layersPagination" class="gs-pagination" data-section="layers"></div>
             </li>
           </ul>
         </div>
+        <div wicket:id="workspacesPagination" class="gs-pagination" data-section="workspaces"></div>
       </div>
     </div>
 

@@ -41,14 +41,13 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
 
     @Before
     public void setupMode() {
-        // avoid flip-flops due to timeouts in the testing environment
-        HomePageSelection.MODE = HomePageSelection.SelectionMode.DROPDOWN;
         System.setProperty(GeoServerHomePage.LEGACY_HOMEPAGE_SELECTOR, "true");
+        HomePageSelection.MODE = HomePageSelection.SelectionMode.DROPDOWN;
     }
 
     @After
     public void clearLegacySelector() {
-        System.clearProperty(GeoServerHomePage.LEGACY_HOMEPAGE_SELECTOR);
+        System.setProperty(GeoServerHomePage.LEGACY_HOMEPAGE_SELECTOR, "false");
     }
 
     @Override

@@ -97,7 +97,10 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     public static final String LEGACY_HOMEPAGE_SELECTOR = "GeoServerHomePage.legacyHomepageSelector";
 
     static boolean isLegacyHomepageSelectorEnabled() {
-        String raw = GeoServerExtensions.getProperty(LEGACY_HOMEPAGE_SELECTOR);
+        String raw = System.getProperty(LEGACY_HOMEPAGE_SELECTOR);
+        if (Strings.isEmpty(raw)) {
+            raw = GeoServerExtensions.getProperty(LEGACY_HOMEPAGE_SELECTOR);
+        }
         return !Strings.isEmpty(raw) && Boolean.parseBoolean(raw);
     }
 

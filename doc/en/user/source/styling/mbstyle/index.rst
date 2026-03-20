@@ -30,5 +30,6 @@ Mapbox style document support is not a part of GeoServer by default, but is avai
 
    installing
    source
+   limitations
    reference/index
    cookbook/index

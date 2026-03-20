@@ -10,6 +10,11 @@ Mapbox Style Specification
 
 For an extended reference to these styles check out the `Mapbox Style Specifications <https://www.mapbox.com/mapbox-gl-js/style-spec/>`_.
 
+MapLibre Style Specification
+----------------------------
+
+Since MapboxGL JS switched to a proprietary license in December 2020 the latest OpenSource version was forked and is since developed under the name "MapLibre". For further information check out the `JS Library <https://maplibre.org/projects/gl-js/>`_ and the `MapLibre Style Spec <https://maplibre.org/maplibre-style-spec/>`_.
+
 GeoTools MBStyle extension
 --------------------------
 

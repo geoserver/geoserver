@@ -18,12 +18,14 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.springframework.security.core.Authentication;
 
@@ -63,11 +65,15 @@ public class BreadcrumbNavigationPanel extends Panel {
                         if (resourceName != null && !resourceName.isEmpty()) {
                             String level = "LAYER";
                             Catalog catalog = ((GeoServerApplication) getApplication()).getCatalog();
-                            if (wsName != null && catalog.getLayerGroupByName(wsName, resourceName) != null) {
-                                level = "LAYER_GROUP";
-                            } else if (wsName == null && catalog.getLayerGroupByName(resourceName) != null) {
+
+                            LayerGroupInfo group = (wsName != null)
+                                    ? catalog.getLayerGroupByName(wsName, resourceName)
+                                    : catalog.getLayerGroupByName(resourceName);
+
+                            if (group != null) {
                                 level = "LAYER_GROUP";
                             }
+
                             items.add(new BreadcrumbItem(resourceName, null, null, level));
                         }
 
@@ -101,17 +107,12 @@ public class BreadcrumbNavigationPanel extends Panel {
                                             String target =
                                                     bean.getTargetLevel() != null ? bean.getTargetLevel() : "LAYER";
                                             if (target.equalsIgnoreCase(bc.getLevel())) {
-                                                if (bean.getAuthorizer() == null
-                                                        || bean.getAuthorizer()
-                                                                .isAccessAllowed(bean.getComponentClass(), user)) {
-                                                    Category cat = bean.getCategory();
-                                                    if (cat == null) {
-                                                        standalone.add(bean);
-                                                    } else {
-                                                        if (!grouped.containsKey(cat))
-                                                            grouped.put(cat, new ArrayList<>());
-                                                        grouped.get(cat).add(bean);
-                                                    }
+                                                Category cat = bean.getCategory();
+                                                if (cat == null) {
+                                                    standalone.add(bean);
+                                                } else {
+                                                    grouped.computeIfAbsent(cat, k -> new ArrayList<>())
+                                                            .add(bean);
                                                 }
                                             }
                                         }
@@ -172,21 +173,17 @@ public class BreadcrumbNavigationPanel extends Panel {
                 plainLabelContainer.add(new Label("plainLabel", bc.getLabel()));
 
                 WebMarkupContainer contextMenuContainer = new WebMarkupContainer("contextMenuContainer");
+
+                contextMenuContainer.setDefaultModel(menuDataModel);
                 contextMenuContainer.setVisible(isLast && hasMenuItems);
                 item.add(contextMenuContainer);
 
                 contextMenuContainer.add(new Image("menuIcon", iconRef));
                 contextMenuContainer.add(new Label("currentLabel", bc.getLabel() + " ▾"));
 
-                LoadableDetachableModel<List<BreadcrumbContextMenuItemInfo>> standaloneModel =
-                        new LoadableDetachableModel<List<BreadcrumbContextMenuItemInfo>>() {
-                            @Override
-                            protected List<BreadcrumbContextMenuItemInfo> load() {
-                                return menuDataModel.getObject().standalone;
-                            }
-                        };
                 ListView<BreadcrumbContextMenuItemInfo> standaloneList =
-                        new ListView<BreadcrumbContextMenuItemInfo>("standaloneItems", standaloneModel) {
+                        new ListView<BreadcrumbContextMenuItemInfo>(
+                                "standaloneItems", new PropertyModel<>(menuDataModel, "standalone")) {
                             @Override
                             protected void populateItem(ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem) {
                                 populateMenuLink(menuItemListItem, getPage().getPageParameters());
@@ -194,15 +191,8 @@ public class BreadcrumbNavigationPanel extends Panel {
                         };
                 contextMenuContainer.add(standaloneList);
 
-                LoadableDetachableModel<List<CategoryGroup>> groupsModel =
-                        new LoadableDetachableModel<List<CategoryGroup>>() {
-                            @Override
-                            protected List<CategoryGroup> load() {
-                                return menuDataModel.getObject().groups;
-                            }
-                        };
                 ListView<CategoryGroup> categoryGroupsList =
-                        new ListView<CategoryGroup>("categoryGroups", groupsModel) {
+                        new ListView<CategoryGroup>("categoryGroups", new PropertyModel<>(menuDataModel, "groups")) {
                             @Override
                             protected void populateItem(ListItem<CategoryGroup> groupItem) {
                                 CategoryGroup group = groupItem.getModelObject();
@@ -263,7 +253,6 @@ public class BreadcrumbNavigationPanel extends Panel {
         }
 
         menuLink.add(iconComponent);
-
         menuLink.add(new Label("menuLabel", new ResourceModel(ctxMenu.getTitleKey(), ctxMenu.getTitleKey())));
         menuItemListItem.add(menuLink);
     }

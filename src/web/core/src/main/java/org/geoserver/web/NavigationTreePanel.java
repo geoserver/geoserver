@@ -5,8 +5,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -36,11 +38,14 @@ import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.sort.SortBy;
+import org.geotools.api.filter.sort.SortOrder;
+import org.geotools.factory.CommonFactoryFinder;
 import org.springframework.security.core.Authentication;
 
 public class NavigationTreePanel extends Panel {
@@ -66,18 +71,16 @@ public class NavigationTreePanel extends Panel {
     private AbstractDefaultAjaxBehavior loadWorkspacesBehavior;
 
     private static final int PAGE_SIZE = 50;
+    private static final int SEARCH_LIMIT = 250;
     private int globalPage = 1;
     private int globalPageSize = PAGE_SIZE;
     private int workspacesPage = 1;
     private int workspacesPageSize = PAGE_SIZE;
     private WebMarkupContainer workspacesPagination;
 
-    // Page-based pagination for layers. State is unique per workspace.
     private final Map<String, Integer> layerPageByWorkspace = new HashMap<>();
     private final Map<String, Integer> layerPageSizeByWorkspace = new HashMap<>();
 
-    private final Catalog catalog = GeoServerApplication.get().getCatalog();
-    private int totalWorkspaces;
     private final Map<String, WorkspaceState> workspaceStates = new HashMap<>();
     private String selectedWorkspaceName;
     private String selectedLayerName;
@@ -92,7 +95,6 @@ public class NavigationTreePanel extends Panel {
     public NavigationTreePanel(String id) {
         super(id);
 
-        totalWorkspaces = catalog.count(WorkspaceInfo.class, Filter.INCLUDE);
         add(new SearchInputPanel("myCustomSearch", false));
 
         WebMarkupContainer newMenu = new WebMarkupContainer("newMenu") {
@@ -116,7 +118,6 @@ public class NavigationTreePanel extends Panel {
                 String titleKey = info.getTitleKey();
                 Label label;
                 if (titleKey != null && !titleKey.isEmpty()) {
-                    // Use i18n key when available, but fall back to the key itself if missing
                     label = new Label("label", new ResourceModel(titleKey, titleKey));
                 } else {
                     label = new Label("label", "");
@@ -126,11 +127,10 @@ public class NavigationTreePanel extends Panel {
             }
         });
 
-        // --- Global Section ---
         globalSectionContainer = new WebMarkupContainer("globalSectionContainer") {
             @Override
             public boolean isVisible() {
-                return !hasActiveTreeFilter() || hasFilteredGlobalResults();
+                return getTotalGlobalItems() > 0;
             }
         };
         globalSectionContainer.setOutputMarkupPlaceholderTag(true);
@@ -156,12 +156,12 @@ public class NavigationTreePanel extends Panel {
                 target.appendJavaScript(initCall());
             }
         });
-        globalToggle.add(new ToggleCaretLabel("globalSectionToggleIcon", () -> isGlobalExpanded()));
+        globalToggle.add(new ToggleCaretIcon("globalSectionToggleIcon", () -> isGlobalExpanded()));
         globalSectionContainer.add(globalToggle);
         globalSectionContainer.add(new Label("globalCount", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return String.valueOf(getGlobalChildren(Integer.MAX_VALUE).size());
+                return String.valueOf(getTotalGlobalItems());
             }
         }));
 
@@ -169,9 +169,6 @@ public class NavigationTreePanel extends Panel {
                 new ListView<>("globalChildren", new LoadableDetachableModel<List<WorkspaceChild>>() {
                     @Override
                     protected List<WorkspaceChild> load() {
-                        if (hasActiveTreeFilter()) {
-                            return getGlobalChildren(Integer.MAX_VALUE);
-                        }
                         int offset = (globalPage - 1) * globalPageSize;
                         return getGlobalChildrenPage(offset, globalPageSize);
                     }
@@ -201,8 +198,7 @@ public class NavigationTreePanel extends Panel {
         globalPagination = new WebMarkupContainer("globalPagination") {
             @Override
             public boolean isVisible() {
-                return !hasActiveTreeFilter()
-                        && getGlobalChildren(Integer.MAX_VALUE).size() > PAGE_SIZE;
+                return getTotalGlobalItems() > PAGE_SIZE;
             }
         };
         globalPagination.setOutputMarkupId(true);
@@ -211,19 +207,17 @@ public class NavigationTreePanel extends Panel {
         globalPagination.add(
                 new org.apache.wicket.AttributeModifier("data-page-size", () -> String.valueOf(globalPageSize)));
         globalPagination.add(new org.apache.wicket.AttributeModifier(
-                "data-total-items",
-                () -> String.valueOf(getGlobalChildren(Integer.MAX_VALUE).size())));
+                "data-total-items", () -> String.valueOf(getTotalGlobalItems())));
         globalPagination.add(new org.apache.wicket.AttributeModifier("data-total-pages", () -> {
-            int total = getGlobalChildren(Integer.MAX_VALUE).size();
+            int total = getTotalGlobalItems();
             return String.valueOf((int) Math.ceil(total / (double) globalPageSize));
         }));
         globalSectionBody.add(globalPagination);
 
-        // --- Workspaces Section ---
         workspacesSectionContainer = new WebMarkupContainer("workspacesSectionContainer") {
             @Override
             public boolean isVisible() {
-                return !hasActiveTreeFilter() || hasFilteredWorkspacesResults();
+                return getTotalWorkspaceItems() > 0;
             }
         };
         workspacesSectionContainer.setOutputMarkupPlaceholderTag(true);
@@ -249,13 +243,12 @@ public class NavigationTreePanel extends Panel {
                 target.appendJavaScript(initCall());
             }
         });
-        workspacesToggle.add(new ToggleCaretLabel("workspacesSectionToggleIcon", () -> workspacesExpanded));
+        workspacesToggle.add(new ToggleCaretIcon("workspacesSectionToggleIcon", () -> workspacesExpanded));
         workspacesSectionContainer.add(workspacesToggle);
 
         AjaxLink<Void> workspacesSectionSelect = new AjaxLink<>("workspacesSectionSelect") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                // Navigate to global welcome page (no workspace/layer selection)
                 navigateToHome(null, null);
             }
         };
@@ -263,7 +256,7 @@ public class NavigationTreePanel extends Panel {
         workspacesSectionContainer.add(new Label("workspacesCount", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return String.valueOf(totalWorkspaces);
+                return String.valueOf(getTotalWorkspaceItems());
             }
         }));
 
@@ -274,7 +267,7 @@ public class NavigationTreePanel extends Panel {
         workspacesPagination = new WebMarkupContainer("workspacesPagination") {
             @Override
             public boolean isVisible() {
-                return !hasActiveTreeFilter() && selectedWorkspaceName == null && totalWorkspaces > PAGE_SIZE;
+                return selectedWorkspaceName == null && getTotalWorkspaceItems() > PAGE_SIZE;
             }
         };
         workspacesPagination.setOutputMarkupId(true);
@@ -282,17 +275,17 @@ public class NavigationTreePanel extends Panel {
                 new org.apache.wicket.AttributeModifier("data-current-page", () -> String.valueOf(workspacesPage)));
         workspacesPagination.add(
                 new org.apache.wicket.AttributeModifier("data-page-size", () -> String.valueOf(workspacesPageSize)));
-        workspacesPagination.add(
-                new org.apache.wicket.AttributeModifier("data-total-items", () -> String.valueOf(totalWorkspaces)));
+        workspacesPagination.add(new org.apache.wicket.AttributeModifier(
+                "data-total-items", () -> String.valueOf(getTotalWorkspaceItems())));
         workspacesPagination.add(new org.apache.wicket.AttributeModifier(
                 "data-total-pages",
-                () -> String.valueOf((int) Math.ceil(totalWorkspaces / (double) workspacesPageSize))));
+                () -> String.valueOf((int) Math.ceil(getTotalWorkspaceItems() / (double) workspacesPageSize))));
         workspacesSectionBody.add(workspacesPagination);
 
         noDataMessage = new WebMarkupContainer("noDataMessage") {
             @Override
             public boolean isVisible() {
-                return hasActiveTreeFilter() && !hasFilteredGlobalResults() && !hasFilteredWorkspacesResults();
+                return getTotalGlobalItems() == 0 && getTotalWorkspaceItems() == 0;
             }
         };
         noDataMessage.setOutputMarkupPlaceholderTag(true);
@@ -321,7 +314,7 @@ public class NavigationTreePanel extends Panel {
                                 target.appendJavaScript(initCall());
                             }
                         });
-                        toggle.add(new ToggleCaretLabel("workspaceToggleIcon", () -> ws.expanded));
+                        toggle.add(new ToggleCaretIcon("workspaceToggleIcon", () -> ws.expanded));
                         item.add(toggle);
 
                         item.add(workspaceIcon("workspaceIcon"));
@@ -354,7 +347,7 @@ public class NavigationTreePanel extends Panel {
                         WebMarkupContainer layersPagination = new WebMarkupContainer("layersPagination") {
                             @Override
                             public boolean isVisible() {
-                                return ws.expanded && !hasActiveTreeFilter() && getLayerCount(ws.name) > PAGE_SIZE;
+                                return ws.expanded && getLayerCount(ws.name) > PAGE_SIZE;
                             }
                         };
                         layersPagination.setOutputMarkupId(true);
@@ -379,9 +372,6 @@ public class NavigationTreePanel extends Panel {
                                         "workspaceChildren", new LoadableDetachableModel<List<WorkspaceChild>>() {
                                             @Override
                                             protected List<WorkspaceChild> load() {
-                                                if (hasActiveTreeFilter()) {
-                                                    return getWorkspaceChildren(ws.name, Integer.MAX_VALUE);
-                                                }
                                                 int page = layerPageByWorkspace.getOrDefault(ws.name, 1);
                                                 int pageSize =
                                                         layerPageSizeByWorkspace.getOrDefault(ws.name, PAGE_SIZE);
@@ -414,7 +404,6 @@ public class NavigationTreePanel extends Panel {
         workspacesList.setOutputMarkupId(true);
         workspacesScroll.add(workspacesList);
 
-        // --- Page-based pagination via AJAX ---
         loadWorkspacesBehavior = new AbstractDefaultAjaxBehavior() {
             @Override
             protected void respond(AjaxRequestTarget target) {
@@ -425,13 +414,9 @@ public class NavigationTreePanel extends Panel {
                     String query = p.getParameterValue("q").toOptionalString();
                     treeFilterQuery = query == null ? "" : query.trim();
 
-                    // When filtering, hide pagination and show full results.
                     globalPage = 1;
-                    globalPageSize = PAGE_SIZE;
                     workspacesPage = 1;
-                    workspacesPageSize = PAGE_SIZE;
                     layerPageByWorkspace.clear();
-                    layerPageSizeByWorkspace.clear();
                     workspacesExpanded = true;
 
                     target.add(globalSectionContainer);
@@ -442,7 +427,6 @@ public class NavigationTreePanel extends Panel {
                 }
 
                 if ("global".equals(kind)) {
-                    if (hasActiveTreeFilter()) return;
                     int page = parsePositiveInt(p.getParameterValue("page").toOptionalString(), 1);
                     int pageSize = parsePageSize(p.getParameterValue("pageSize").toOptionalString(), PAGE_SIZE);
                     globalPage = page;
@@ -455,9 +439,7 @@ public class NavigationTreePanel extends Panel {
                 }
 
                 if ("workspaces".equals(kind)) {
-                    if (hasActiveTreeFilter()) return;
                     if (selectedWorkspaceName != null) return;
-
                     int page = parsePositiveInt(p.getParameterValue("page").toOptionalString(), 1);
                     int pageSize = parsePageSize(p.getParameterValue("pageSize").toOptionalString(), PAGE_SIZE);
                     workspacesPage = page;
@@ -470,7 +452,6 @@ public class NavigationTreePanel extends Panel {
                 }
 
                 if ("layers".equals(kind)) {
-                    if (hasActiveTreeFilter()) return;
                     String wsName = p.getParameterValue("workspace").toOptionalString();
                     if (wsName == null) return;
 
@@ -479,7 +460,6 @@ public class NavigationTreePanel extends Panel {
                     layerPageByWorkspace.put(wsName, page);
                     layerPageSizeByWorkspace.put(wsName, pageSize);
 
-                    // Re-render the workspace list so its layers + pager update.
                     target.add(workspacesScroll);
                     target.appendJavaScript(initCall());
                 }
@@ -488,12 +468,102 @@ public class NavigationTreePanel extends Panel {
         add(loadWorkspacesBehavior);
     }
 
+    private Catalog getCatalog() {
+        return GeoServerApplication.get().getCatalog();
+    }
+
+    private Filter buildSearchFilter(String propertyName) {
+        if (Strings.isEmpty(treeFilterQuery)) return Filter.INCLUDE;
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        return ff.like(ff.property(propertyName), "%" + treeFilterQuery + "%", "%", "_", "\\", false);
+    }
+
+    private Filter buildGlobalLayerFilter() {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Filter noWorkspace = ff.isNull(ff.property("resource.store.workspace.name"));
+        return ff.and(noWorkspace, buildSearchFilter("name"));
+    }
+
+    private Filter buildGlobalGroupFilter() {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Filter noWorkspace = ff.isNull(ff.property("workspace.name"));
+        return ff.and(noWorkspace, buildSearchFilter("name"));
+    }
+
+    private Filter buildWorkspaceLayerFilter(String wsName) {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Filter wsMatch = ff.equal(ff.property("resource.store.workspace.name"), ff.literal(wsName), true);
+        return ff.and(wsMatch, buildSearchFilter("name"));
+    }
+
+    private Filter buildWorkspaceGroupFilter(String wsName) {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Filter wsMatch = ff.equal(ff.property("workspace.name"), ff.literal(wsName), true);
+        return ff.and(wsMatch, buildSearchFilter("name"));
+    }
+
+    private SortBy getAlphabeticalSort() {
+        return CommonFactoryFinder.getFilterFactory().sort("name", SortOrder.ASCENDING);
+    }
+
+    private int getTotalGlobalItems() {
+        int layerCount = getCatalog().count(LayerInfo.class, buildGlobalLayerFilter());
+        int groupCount = getCatalog().count(LayerGroupInfo.class, buildGlobalGroupFilter());
+        return layerCount + groupCount;
+    }
+
+    private int getLayerCount(String workspaceName) {
+        int layerCount = getCatalog().count(LayerInfo.class, buildWorkspaceLayerFilter(workspaceName));
+        int groupCount = getCatalog().count(LayerGroupInfo.class, buildWorkspaceGroupFilter(workspaceName));
+        return layerCount + groupCount;
+    }
+
+    private int getTotalWorkspaceItems() {
+        if (hasActiveTreeFilter()) {
+            return getWorkspacesMatchingFilter().size();
+        }
+        return getCatalog().count(WorkspaceInfo.class, Filter.INCLUDE);
+    }
+
+    private Set<String> getWorkspacesMatchingFilter() {
+        Set<String> matchingWs = new HashSet<>();
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Filter nameMatch = buildSearchFilter("name");
+
+        try (CloseableIterator<WorkspaceInfo> it =
+                getCatalog().list(WorkspaceInfo.class, nameMatch, 0, SEARCH_LIMIT, null)) {
+            while (it.hasNext()) {
+                matchingWs.add(it.next().getName());
+            }
+        }
+        Filter layerMatch = ff.and(ff.not(ff.isNull(ff.property("resource.store.workspace.name"))), nameMatch);
+        try (CloseableIterator<LayerInfo> it = getCatalog().list(LayerInfo.class, layerMatch, 0, SEARCH_LIMIT, null)) {
+            while (it.hasNext()) {
+                LayerInfo layer = it.next();
+                if (layer.getResource() != null && layer.getResource().getStore() != null) {
+                    WorkspaceInfo ws = layer.getResource().getStore().getWorkspace();
+                    if (ws != null) matchingWs.add(ws.getName());
+                }
+            }
+        }
+
+        Filter groupMatch = ff.and(ff.not(ff.isNull(ff.property("workspace.name"))), nameMatch);
+        try (CloseableIterator<LayerGroupInfo> it =
+                getCatalog().list(LayerGroupInfo.class, groupMatch, 0, SEARCH_LIMIT, null)) {
+            while (it.hasNext()) {
+                WorkspaceInfo ws = it.next().getWorkspace();
+                if (ws != null) matchingWs.add(ws.getName());
+            }
+        }
+
+        return matchingWs;
+    }
+
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(CSS));
         response.render(JavaScriptHeaderItem.forReference(JS));
-
         response.render(OnDomReadyHeaderItem.forScript(initCall()));
     }
 
@@ -520,7 +590,6 @@ public class NavigationTreePanel extends Panel {
                     }
                 }
             } else if (paramLayer != null) {
-                // Global layer selection: expand global section and set page so selection is visible.
                 globalExpanded = true;
                 int idx = findGlobalChildIndex(paramLayer);
                 if (idx >= 0) {
@@ -534,38 +603,53 @@ public class NavigationTreePanel extends Panel {
     private int findGlobalChildIndex(String childName) {
         if (childName == null) return -1;
 
-        int idx = 0;
-        try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, Filter.INCLUDE, null, null, null)) {
-            while (it.hasNext()) {
-                LayerInfo li = it.next();
-                if (li.getResource() == null
-                        || li.getResource().getStore() == null
-                        || li.getResource().getStore().getWorkspace() != null) {
-                    continue;
-                }
-                if (matchesFilterText(li.getName()) && childName.equals(li.getName())) {
-                    return idx;
-                }
-                if (matchesFilterText(li.getName())) {
-                    idx++;
-                }
-            }
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Filter comesBefore = ff.less(ff.property("name"), ff.literal(childName));
+
+        LayerInfo layer = getCatalog().getLayerByName(childName);
+        if (layer != null
+                && (layer.getResource() == null
+                        || layer.getResource().getStore() == null
+                        || layer.getResource().getStore().getWorkspace() == null)) {
+            Filter precedingFilter = ff.and(buildGlobalLayerFilter(), comesBefore);
+            return getCatalog().count(LayerInfo.class, precedingFilter);
         }
 
-        try (CloseableIterator<LayerGroupInfo> it =
-                catalog.list(LayerGroupInfo.class, Filter.INCLUDE, null, null, null)) {
-            while (it.hasNext()) {
-                LayerGroupInfo gi = it.next();
-                if (gi.getWorkspace() != null) {
-                    continue;
-                }
-                if (matchesFilterText(gi.getName()) && childName.equals(gi.getName())) {
-                    return idx;
-                }
-                if (matchesFilterText(gi.getName())) {
-                    idx++;
-                }
-            }
+        LayerGroupInfo group = getCatalog().getLayerGroupByName(childName);
+        if (group != null && group.getWorkspace() == null) {
+            int totalGlobalLayers = getCatalog().count(LayerInfo.class, buildGlobalLayerFilter());
+            Filter precedingFilter = ff.and(buildGlobalGroupFilter(), comesBefore);
+            int precedingGroups = getCatalog().count(LayerGroupInfo.class, precedingFilter);
+            return totalGlobalLayers + precedingGroups;
+        }
+
+        return -1;
+    }
+
+    private int findWorkspaceChildIndex(String workspaceName, String childName) {
+        if (childName == null) return -1;
+
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Filter comesBefore = ff.less(ff.property("name"), ff.literal(childName));
+
+        LayerInfo layer = getCatalog().getLayerByName(childName);
+        if (layer != null
+                && layer.getResource() != null
+                && layer.getResource().getStore() != null
+                && workspaceName.equals(
+                        layer.getResource().getStore().getWorkspace().getName())) {
+            Filter precedingFilter = ff.and(buildWorkspaceLayerFilter(workspaceName), comesBefore);
+            return getCatalog().count(LayerInfo.class, precedingFilter);
+        }
+
+        LayerGroupInfo group = getCatalog().getLayerGroupByName(childName);
+        if (group != null
+                && group.getWorkspace() != null
+                && workspaceName.equals(group.getWorkspace().getName())) {
+            int totalWorkspaceLayers = getCatalog().count(LayerInfo.class, buildWorkspaceLayerFilter(workspaceName));
+            Filter precedingFilter = ff.and(buildWorkspaceGroupFilter(workspaceName), comesBefore);
+            int precedingGroups = getCatalog().count(LayerGroupInfo.class, precedingFilter);
+            return totalWorkspaceLayers + precedingGroups;
         }
 
         return -1;
@@ -588,61 +672,41 @@ public class NavigationTreePanel extends Panel {
     private List<Workspace> loadWorkspaces() {
         if (selectedWorkspaceName != null) {
             List<Workspace> single = new ArrayList<>();
-            WorkspaceInfo wsInfo = catalog.getWorkspaceByName(selectedWorkspaceName);
-            if (wsInfo != null && matchesWorkspaceFilter(wsInfo.getName())) {
+            WorkspaceInfo wsInfo = getCatalog().getWorkspaceByName(selectedWorkspaceName);
+            if (wsInfo != null) {
                 WorkspaceState state = workspaceStates.computeIfAbsent(wsInfo.getName(), n -> new WorkspaceState());
                 single.add(new Workspace(wsInfo.getName(), isWorkspaceExpanded(state)));
             }
             return single;
         }
 
-        // When filtering, don't page the workspace list; otherwise we can incorrectly show "no data"
-        // just because the matching workspace appears beyond the current window.
         if (hasActiveTreeFilter()) {
+            List<String> sortedNames = new ArrayList<>(getWorkspacesMatchingFilter());
+            sortedNames.sort(String::compareTo);
+
             List<Workspace> result = new ArrayList<>();
-            try (CloseableIterator<WorkspaceInfo> it =
-                    catalog.list(WorkspaceInfo.class, Filter.INCLUDE, null, totalWorkspaces, null)) {
-                while (it.hasNext()) {
-                    WorkspaceInfo wi = it.next();
-                    if (!matchesWorkspaceFilter(wi.getName())) continue;
-                    WorkspaceState state = workspaceStates.computeIfAbsent(wi.getName(), n -> new WorkspaceState());
-                    result.add(new Workspace(wi.getName(), isWorkspaceExpanded(state)));
-                }
+            int start = Math.max(0, (workspacesPage - 1) * workspacesPageSize);
+            int end = Math.min(start + workspacesPageSize, sortedNames.size());
+
+            for (int i = start; i < end; i++) {
+                String wsName = sortedNames.get(i);
+                WorkspaceState state = workspaceStates.computeIfAbsent(wsName, n -> new WorkspaceState());
+                result.add(new Workspace(wsName, isWorkspaceExpanded(state)));
             }
             return result;
         }
 
         int offset = Math.max(0, (workspacesPage - 1) * workspacesPageSize);
-        if (offset >= totalWorkspaces) {
-            return new ArrayList<>();
-        }
         List<Workspace> result = new ArrayList<>();
-        try (CloseableIterator<WorkspaceInfo> it =
-                catalog.list(WorkspaceInfo.class, Filter.INCLUDE, offset, workspacesPageSize, null)) {
+        try (CloseableIterator<WorkspaceInfo> it = getCatalog()
+                .list(WorkspaceInfo.class, Filter.INCLUDE, offset, workspacesPageSize, getAlphabeticalSort())) {
             while (it.hasNext()) {
                 WorkspaceInfo wi = it.next();
-                if (!matchesWorkspaceFilter(wi.getName())) {
-                    continue;
-                }
                 WorkspaceState state = workspaceStates.computeIfAbsent(wi.getName(), n -> new WorkspaceState());
                 result.add(new Workspace(wi.getName(), isWorkspaceExpanded(state)));
             }
         }
         return result;
-    }
-
-    private boolean hasFilteredGlobalResults() {
-        if (!hasActiveTreeFilter()) {
-            return true;
-        }
-        return !getGlobalChildren(Integer.MAX_VALUE).isEmpty();
-    }
-
-    private boolean hasFilteredWorkspacesResults() {
-        if (!hasActiveTreeFilter()) {
-            return true;
-        }
-        return !loadWorkspaces().isEmpty();
     }
 
     private static final class Workspace implements Serializable {
@@ -680,24 +744,27 @@ public class NavigationTreePanel extends Panel {
         boolean getAsBoolean();
     }
 
-    private static final class ToggleCaretLabel extends Label {
+    private static final class ToggleCaretIcon extends WebMarkupContainer {
         @Serial
         private static final long serialVersionUID = 1L;
 
         private final BooleanSupplier expanded;
 
-        private ToggleCaretLabel(String id, BooleanSupplier expanded) {
-            super(id, "");
+        private ToggleCaretIcon(String id, BooleanSupplier expanded) {
+            super(id);
             this.expanded = expanded;
         }
 
         @Override
-        protected void onConfigure() {
-            super.onConfigure();
-            // Use simple caret characters instead of image icons.
-            // Collapsed: › (right-facing caret)
-            // Expanded: ˅ (down-facing caret)
-            setDefaultModelObject(expanded.getAsBoolean() ? "▾" : "›");
+        protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+            super.onComponentTag(tag);
+            String stateClass = expanded.getAsBoolean() ? "is-expanded" : "is-collapsed";
+            String existingClass = tag.getAttribute("class");
+            if (Strings.isEmpty(existingClass)) {
+                tag.put("class", stateClass);
+            } else {
+                tag.put("class", existingClass + " " + stateClass);
+            }
         }
     }
 
@@ -734,128 +801,86 @@ public class NavigationTreePanel extends Panel {
         return new Image(id, new PackageResourceReference(GeoServerBasePage.class, path));
     }
 
-    private int getLayerCount(String workspaceName) {
-        Filter layerFilter = Predicates.equal("resource.store.workspace.name", workspaceName);
-        int layers = catalog.count(LayerInfo.class, layerFilter);
-        Filter groupFilter = Predicates.equal("workspace.name", workspaceName);
-        int groups = catalog.count(LayerGroupInfo.class, groupFilter);
-        return layers + groups;
-    }
-
-    private int getWorkspaceLayerCount(String workspaceName) {
-        Filter layerFilter = Predicates.equal("resource.store.workspace.name", workspaceName);
-        return catalog.count(LayerInfo.class, layerFilter);
-    }
-
-    private int getWorkspaceGroupCount(String workspaceName) {
-        Filter groupFilter = Predicates.equal("workspace.name", workspaceName);
-        return catalog.count(LayerGroupInfo.class, groupFilter);
-    }
-
     private List<WorkspaceChild> getWorkspaceChildrenPage(String workspaceName, int offset, int limit) {
         List<WorkspaceChild> children = new ArrayList<>();
-        if (limit <= 0) {
-            return children;
-        }
+        if (limit <= 0) return children;
 
-        int layerCount = getWorkspaceLayerCount(workspaceName);
-        int groupCount = getWorkspaceGroupCount(workspaceName);
-        int total = layerCount + groupCount;
-        if (offset >= total) {
-            return children;
-        }
+        int layerCount = getCatalog().count(LayerInfo.class, buildWorkspaceLayerFilter(workspaceName));
+        int groupCount = getCatalog().count(LayerGroupInfo.class, buildWorkspaceGroupFilter(workspaceName));
+
+        if (offset >= layerCount + groupCount) return children;
 
         int remaining = limit;
 
-        // 1) Layers (first)
         if (offset < layerCount) {
-            int layersToSkip = Math.max(0, offset);
-            int layersToTake = Math.min(remaining, layerCount - layersToSkip);
-            Filter layerFilter = Predicates.equal("resource.store.workspace.name", workspaceName);
-            try (CloseableIterator<LayerInfo> it =
-                    catalog.list(LayerInfo.class, layerFilter, layersToSkip, layersToTake, null)) {
-                while (it.hasNext() && children.size() < limit) {
-                    String name = it.next().getName();
-                    if (!matchesFilterText(name)) continue;
-                    children.add(new WorkspaceChild(name, ChildType.LAYER));
+            int layersToTake = Math.min(remaining, layerCount - offset);
+            try (CloseableIterator<LayerInfo> it = getCatalog()
+                    .list(
+                            LayerInfo.class,
+                            buildWorkspaceLayerFilter(workspaceName),
+                            offset,
+                            layersToTake,
+                            getAlphabeticalSort())) {
+                while (it.hasNext()) {
+                    children.add(new WorkspaceChild(it.next().getName(), ChildType.LAYER));
                 }
             }
             remaining = limit - children.size();
         }
 
-        // 2) Layer groups (second)
         if (remaining > 0) {
             int offsetInGroups = Math.max(0, offset - layerCount);
-            int groupsToTake = Math.min(remaining, groupCount - offsetInGroups);
-            if (groupsToTake > 0) {
-                Filter groupFilter = Predicates.equal("workspace.name", workspaceName);
-                try (CloseableIterator<LayerGroupInfo> it =
-                        catalog.list(LayerGroupInfo.class, groupFilter, offsetInGroups, groupsToTake, null)) {
-                    while (it.hasNext() && children.size() < limit) {
-                        String name = it.next().getName();
-                        if (!matchesFilterText(name)) continue;
-                        children.add(new WorkspaceChild(name, ChildType.LAYER_GROUP));
-                    }
+            try (CloseableIterator<LayerGroupInfo> it = getCatalog()
+                    .list(
+                            LayerGroupInfo.class,
+                            buildWorkspaceGroupFilter(workspaceName),
+                            offsetInGroups,
+                            remaining,
+                            getAlphabeticalSort())) {
+                while (it.hasNext()) {
+                    children.add(new WorkspaceChild(it.next().getName(), ChildType.LAYER_GROUP));
                 }
             }
         }
-
         return children;
     }
 
-    private int findWorkspaceChildIndex(String workspaceName, String childName) {
-        if (childName == null) return -1;
-
-        Filter layerFilter = Predicates.equal("resource.store.workspace.name", workspaceName);
-        int idx = 0;
-        try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, layerFilter, null, null, null)) {
-            while (it.hasNext()) {
-                LayerInfo li = it.next();
-                if (childName.equals(li.getName())) {
-                    return idx;
-                }
-                idx++;
-            }
-        }
-
-        Filter groupFilter = Predicates.equal("workspace.name", workspaceName);
-        try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class, groupFilter, null, null, null)) {
-            while (it.hasNext()) {
-                LayerGroupInfo gi = it.next();
-                if (childName.equals(gi.getName())) {
-                    return idx;
-                }
-                idx++;
-            }
-        }
-
-        return -1;
-    }
-
-    private List<WorkspaceChild> getWorkspaceChildren(String workspaceName, int limit) {
+    private List<WorkspaceChild> getGlobalChildrenPage(int offset, int limit) {
         List<WorkspaceChild> children = new ArrayList<>();
+        if (limit <= 0) return children;
 
-        Filter layerFilter = Predicates.equal("resource.store.workspace.name", workspaceName);
-        try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, layerFilter, null, limit, null)) {
-            while (it.hasNext() && children.size() < limit) {
-                String name = it.next().getName();
-                if (!matchesFilterText(name)) continue;
-                children.add(new WorkspaceChild(name, ChildType.LAYER));
+        int layerCount = getCatalog().count(LayerInfo.class, buildGlobalLayerFilter());
+        int groupCount = getCatalog().count(LayerGroupInfo.class, buildGlobalGroupFilter());
+
+        if (offset >= layerCount + groupCount) return children;
+
+        int remaining = limit;
+
+        if (offset < layerCount) {
+            int layersToTake = Math.min(remaining, layerCount - offset);
+            try (CloseableIterator<LayerInfo> it = getCatalog()
+                    .list(LayerInfo.class, buildGlobalLayerFilter(), offset, layersToTake, getAlphabeticalSort())) {
+                while (it.hasNext()) {
+                    children.add(new WorkspaceChild(it.next().getName(), ChildType.LAYER));
+                }
             }
+            remaining = limit - children.size();
         }
 
-        if (children.size() < limit) {
-            Filter groupFilter = Predicates.equal("workspace.name", workspaceName);
-            try (CloseableIterator<LayerGroupInfo> it =
-                    catalog.list(LayerGroupInfo.class, groupFilter, null, limit, null)) {
-                while (it.hasNext() && children.size() < limit) {
-                    String name = it.next().getName();
-                    if (!matchesFilterText(name)) continue;
-                    children.add(new WorkspaceChild(name, ChildType.LAYER_GROUP));
+        if (remaining > 0) {
+            int offsetInGroups = Math.max(0, offset - layerCount);
+            try (CloseableIterator<LayerGroupInfo> it = getCatalog()
+                    .list(
+                            LayerGroupInfo.class,
+                            buildGlobalGroupFilter(),
+                            offsetInGroups,
+                            remaining,
+                            getAlphabeticalSort())) {
+                while (it.hasNext()) {
+                    children.add(new WorkspaceChild(it.next().getName(), ChildType.LAYER_GROUP));
                 }
             }
         }
-
         return children;
     }
 
@@ -877,131 +902,8 @@ public class NavigationTreePanel extends Panel {
         };
     }
 
-    private List<WorkspaceChild> getGlobalChildrenPage(int offset, int limit) {
-        List<WorkspaceChild> children = new ArrayList<>();
-        if (limit <= 0) {
-            return children;
-        }
-
-        int remainingOffset = Math.max(0, offset);
-
-        // 1) Global layers first
-        try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, Filter.INCLUDE, null, null, null)) {
-            while (it.hasNext() && children.size() < limit) {
-                LayerInfo layer = it.next();
-                if (layer.getResource() == null
-                        || layer.getResource().getStore() == null
-                        || layer.getResource().getStore().getWorkspace() != null) {
-                    continue;
-                }
-
-                String name = layer.getName();
-                if (!matchesFilterText(name)) continue;
-
-                if (remainingOffset > 0) {
-                    remainingOffset--;
-                    continue;
-                }
-
-                children.add(new WorkspaceChild(name, ChildType.LAYER));
-            }
-        }
-
-        // 2) Then global layer groups
-        if (children.size() < limit) {
-            try (CloseableIterator<LayerGroupInfo> it =
-                    catalog.list(LayerGroupInfo.class, Filter.INCLUDE, null, null, null)) {
-                while (it.hasNext() && children.size() < limit) {
-                    LayerGroupInfo group = it.next();
-                    if (group.getWorkspace() != null) {
-                        continue;
-                    }
-                    String name = group.getName();
-                    if (!matchesFilterText(name)) continue;
-
-                    if (remainingOffset > 0) {
-                        remainingOffset--;
-                        continue;
-                    }
-
-                    children.add(new WorkspaceChild(name, ChildType.LAYER_GROUP));
-                }
-            }
-        }
-
-        return children;
-    }
-
-    private List<WorkspaceChild> getGlobalChildren(int limit) {
-        List<WorkspaceChild> children = new ArrayList<>();
-
-        try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, Filter.INCLUDE, null, null, null)) {
-            while (it.hasNext() && children.size() < limit) {
-                LayerInfo layer = it.next();
-                if (layer.getResource() == null
-                        || layer.getResource().getStore() == null
-                        || layer.getResource().getStore().getWorkspace() != null) {
-                    continue;
-                }
-                String name = layer.getName();
-                if (!matchesFilterText(name)) continue;
-                children.add(new WorkspaceChild(name, ChildType.LAYER));
-            }
-        }
-
-        if (children.size() < limit) {
-            try (CloseableIterator<LayerGroupInfo> it =
-                    catalog.list(LayerGroupInfo.class, Filter.INCLUDE, null, null, null)) {
-                while (it.hasNext() && children.size() < limit) {
-                    LayerGroupInfo group = it.next();
-                    if (group.getWorkspace() != null) {
-                        continue;
-                    }
-                    String name = group.getName();
-                    if (!matchesFilterText(name)) continue;
-                    children.add(new WorkspaceChild(name, ChildType.LAYER_GROUP));
-                }
-            }
-        }
-
-        return children;
-    }
-
     private boolean hasActiveTreeFilter() {
         return !Strings.isEmpty(treeFilterQuery);
-    }
-
-    private boolean matchesFilterText(String text) {
-        if (!hasActiveTreeFilter()) return true;
-        return text != null && text.toLowerCase().contains(treeFilterQuery.toLowerCase());
-    }
-
-    private boolean matchesWorkspaceFilter(String workspaceName) {
-        if (!hasActiveTreeFilter()) return true;
-        if (matchesFilterText(workspaceName)) return true;
-        return workspaceHasMatchingChildrenByName(workspaceName);
-    }
-
-    private boolean workspaceHasMatchingChildrenByName(String workspaceName) {
-        Filter layerWs = Predicates.equal("resource.store.workspace.name", workspaceName);
-        try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, layerWs, null, null, null)) {
-            while (it.hasNext()) {
-                if (matchesFilterText(it.next().getName())) {
-                    return true;
-                }
-            }
-        }
-
-        Filter groupWs = Predicates.equal("workspace.name", workspaceName);
-        try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class, groupWs, null, null, null)) {
-            while (it.hasNext()) {
-                if (matchesFilterText(it.next().getName())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     private String highlightTreeText(String text) {

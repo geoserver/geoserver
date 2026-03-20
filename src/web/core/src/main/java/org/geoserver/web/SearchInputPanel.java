@@ -36,7 +36,6 @@ import org.geotools.api.filter.Filter;
 
 public class SearchInputPanel extends Panel {
 
-    // --- 1. Class-Level Field Declarations ---
     private TextField<String> searchInput;
     private WebMarkupContainer resultsContainer;
     private ListView<SearchResult> initialResults;
@@ -47,9 +46,6 @@ public class SearchInputPanel extends Panel {
     private static final int PAGE_SIZE = 20;
     private final boolean autocompleteEnabled;
 
-    private final Catalog catalog = GeoServerApplication.get().getCatalog();
-
-    // --- 2. Resource References ---
     private static final CssResourceReference CSS =
             new CssResourceReference(SearchInputPanel.class, "SearchInputPanel.css");
     private static final JavaScriptResourceReference JS =
@@ -63,7 +59,6 @@ public class SearchInputPanel extends Panel {
         super(id);
         this.autocompleteEnabled = autocompleteEnabled;
 
-        // --- 3. Initialize Search Input ---
         searchInput = new TextField<>("searchInput", Model.of(""));
         searchInput.setOutputMarkupId(true);
         searchInput.add(new org.apache.wicket.AttributeModifier("placeholder", new LoadableDetachableModel<String>() {
@@ -79,12 +74,10 @@ public class SearchInputPanel extends Panel {
         }));
         add(searchInput);
 
-        // --- 4. Initialize Results Container ---
         resultsContainer = new WebMarkupContainer("resultsContainer");
         resultsContainer.setOutputMarkupId(true);
         add(resultsContainer);
 
-        // --- 5. Initial Results ListView ---
         initialResults =
                 new ListView<SearchResult>("initialResults", new LoadableDetachableModel<List<SearchResult>>() {
                     @Override
@@ -124,17 +117,14 @@ public class SearchInputPanel extends Panel {
                 };
         resultsContainer.add(initialResults);
 
-        // --- 6. Input Behavior (Triggers search on typing) ---
         searchInput.add(new AjaxFormComponentUpdatingBehavior("input") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 currentQuery = searchInput.getModelObject();
-                currentPage = 0; // Reset page on new search
+                currentPage = 0;
 
-                // Re-render the container to show Page 0
                 target.add(resultsContainer);
 
-                // Re-initialize the JS behavior for the new DOM (keyboard, scroll, click handlers)
                 String reinitScript = String.format(
                         "initSearchInputPanel('%s','%s','%s',%s);",
                         resultsContainer.getMarkupId(),
@@ -142,7 +132,6 @@ public class SearchInputPanel extends Panel {
                         loadMoreBehavior.getCallbackUrl(),
                         autocompleteEnabled);
 
-                // Re-initialize the JS state for the new dropdown list (visibility + ARIA)
                 String stateScript = "var $ul = $('#" + resultsContainer.getMarkupId() + "');"
                         + "var isAutocompleteEnabled = " + autocompleteEnabled
                         + " || window.matchMedia('(max-width: 768px)').matches;"
@@ -155,8 +144,6 @@ public class SearchInputPanel extends Panel {
                 target.appendJavaScript(reinitScript + stateScript);
             }
         });
-
-        // --- 7. Infinite Scroll Behavior (Fetches next pages) ---
         loadMoreBehavior = new AbstractDefaultAjaxBehavior() {
             @Override
             protected void respond(AjaxRequestTarget target) {
@@ -168,7 +155,6 @@ public class SearchInputPanel extends Panel {
                     return;
                 }
 
-                // Resolve icon URLs for each result type
                 String workspaceIconUrl = RequestCycle.get()
                         .urlFor(
                                 new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/folder.png"),
@@ -186,7 +172,6 @@ public class SearchInputPanel extends Panel {
                                 null)
                         .toString();
 
-                // Build the HTML snippet with Accessibility attributes
                 StringBuilder htmlSnippet = new StringBuilder();
                 for (SearchResult result : nextBatch) {
                     String highlightedText = highlightLabel(result.label, currentQuery);
@@ -217,15 +202,14 @@ public class SearchInputPanel extends Panel {
                             .append(safeLayer)
                             .append("\"")
                             .append(">")
-                            .append("<img class=\\\"item-icon\\\" src=\\\"")
+                            .append("<img class=\"item-icon\" src=\"")
                             .append(iconUrl)
-                            .append("\\\" alt=\\\"\\\" />")
+                            .append("\" alt=\"\" />")
                             .append("<span class=\"item-label\">")
                             .append(highlightedText)
                             .append("</span></li>");
                 }
 
-                // Append the HTML
                 String jsEscapedHtml =
                         htmlSnippet.toString().replace("'", "\\'").replace("\n", "");
                 target.appendJavaScript(
@@ -236,11 +220,13 @@ public class SearchInputPanel extends Panel {
         add(loadMoreBehavior);
     }
 
-    // --- 8. Inject CSS/JS and Initialize JS Logic ---
+    private Catalog getCatalog() {
+        return GeoServerApplication.get().getCatalog();
+    }
+
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-
         response.render(CssHeaderItem.forReference(CSS));
         response.render(JavaScriptHeaderItem.forReference(JS));
 
@@ -254,66 +240,79 @@ public class SearchInputPanel extends Panel {
         response.render(OnDomReadyHeaderItem.forScript(initScript));
     }
 
-    // --- 9. Data Fetching Logic (GeoServer Catalog-backed) ---
     private List<SearchResult> fetchResults(String query, int page, int pageSize) {
         List<SearchResult> results = new ArrayList<>();
-        if (Strings.isEmpty(query)) {
-            return results;
-        }
+        if (Strings.isEmpty(query)) return results;
 
-        int offset = page * pageSize;
-        int count = pageSize;
+        int limit = pageSize;
+        int remainingOffset = page * pageSize;
 
-        // Simple full-text search on AnyText
         Filter textFilter = Predicates.fullTextSearch(query);
-
-        // If a workspace is selected (via page parameters), restrict layer and layer group
-        // searches to that workspace only. Workspace search itself remains global.
         String selectedWorkspace =
                 getPage().getPageParameters().get("workspace").toOptionalString();
 
-        // 1) Workspaces
-        try (CloseableIterator<WorkspaceInfo> it = catalog.list(WorkspaceInfo.class, textFilter, offset, count, null)) {
-            while (it.hasNext() && results.size() < pageSize) {
-                WorkspaceInfo ws = it.next();
-                // Show only the workspace name as label (no type prefix)
-                results.add(new SearchResult(ws.getName(), ws.getName(), null, "workspace"));
-            }
-        }
-
-        // 2) Layers
-        if (results.size() < pageSize) {
-            Filter layerFilter = textFilter;
-            if (selectedWorkspace != null) {
-                Filter wsFilter = Predicates.equal("resource.store.workspace.name", selectedWorkspace);
-                layerFilter = Predicates.and(textFilter, wsFilter);
-            }
-            try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, layerFilter, offset, count, null)) {
-                while (it.hasNext() && results.size() < pageSize) {
-                    LayerInfo layer = it.next();
-                    String wsName =
-                            layer.getResource().getStore().getWorkspace().getName();
-                    // Show only the layer name as label
-                    results.add(new SearchResult(layer.getName(), wsName, layer.getName(), "layer"));
+        if (selectedWorkspace == null) {
+            int wsCount = getCatalog().count(WorkspaceInfo.class, textFilter);
+            if (remainingOffset < wsCount) {
+                int toTake = Math.min(limit, wsCount - remainingOffset);
+                try (CloseableIterator<WorkspaceInfo> it =
+                        getCatalog().list(WorkspaceInfo.class, textFilter, remainingOffset, toTake, null)) {
+                    while (it.hasNext() && results.size() < pageSize) {
+                        WorkspaceInfo ws = it.next();
+                        results.add(new SearchResult(ws.getName(), ws.getName(), null, "workspace"));
+                    }
                 }
             }
+            remainingOffset = Math.max(0, remainingOffset - wsCount);
+            limit = pageSize - results.size();
         }
 
-        // 3) Layer groups
-        if (results.size() < pageSize) {
+        if (limit > 0) {
+            Filter layerFilter = textFilter;
+            if (selectedWorkspace != null) {
+                layerFilter = Predicates.and(
+                        textFilter, Predicates.equal("resource.store.workspace.name", selectedWorkspace));
+            }
+
+            int layerCount = getCatalog().count(LayerInfo.class, layerFilter);
+            if (remainingOffset < layerCount) {
+                int toTake = Math.min(limit, layerCount - remainingOffset);
+                try (CloseableIterator<LayerInfo> it =
+                        getCatalog().list(LayerInfo.class, layerFilter, remainingOffset, toTake, null)) {
+                    while (it.hasNext() && results.size() < pageSize) {
+                        LayerInfo layer = it.next();
+                        String wsName = null;
+
+                        if (layer.getResource() != null
+                                && layer.getResource().getStore() != null
+                                && layer.getResource().getStore().getWorkspace() != null) {
+                            wsName = layer.getResource()
+                                    .getStore()
+                                    .getWorkspace()
+                                    .getName();
+                        }
+
+                        results.add(new SearchResult(layer.getName(), wsName, layer.getName(), "layer"));
+                    }
+                }
+            }
+            remainingOffset = Math.max(0, remainingOffset - layerCount);
+            limit = pageSize - results.size();
+        }
+
+        if (limit > 0) {
             Filter groupFilter = textFilter;
             if (selectedWorkspace != null) {
-                Filter wsFilter = Predicates.equal("workspace.name", selectedWorkspace);
-                groupFilter = Predicates.and(textFilter, wsFilter);
+                groupFilter = Predicates.and(textFilter, Predicates.equal("workspace.name", selectedWorkspace));
             }
+
             try (CloseableIterator<LayerGroupInfo> it =
-                    catalog.list(LayerGroupInfo.class, groupFilter, offset, count, null)) {
+                    getCatalog().list(LayerGroupInfo.class, groupFilter, remainingOffset, limit, null)) {
                 while (it.hasNext() && results.size() < pageSize) {
                     LayerGroupInfo group = it.next();
                     String wsName = group.getWorkspace() == null
                             ? "(global)"
                             : group.getWorkspace().getName();
-                    // Show only the layer group name as label
                     results.add(new SearchResult(
                             group.getName(),
                             group.getWorkspace() == null ? null : wsName,

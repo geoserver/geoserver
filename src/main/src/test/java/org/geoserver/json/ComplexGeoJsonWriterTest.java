@@ -13,8 +13,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.api.feature.Attribute;
 import org.geotools.api.feature.ComplexAttribute;
@@ -36,6 +34,8 @@ import org.geotools.feature.LenientFeatureFactoryImpl;
 import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.feature.type.FeatureTypeImpl;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
 
 public class ComplexGeoJsonWriterTest extends GeoServerSystemTestSupport {
 

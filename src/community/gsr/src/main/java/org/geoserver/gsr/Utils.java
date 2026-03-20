@@ -13,9 +13,6 @@ package org.geoserver.gsr;
 import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.geoserver.gsr.model.geometry.SpatialRelationship;
 import org.geoserver.gsr.translate.geometry.GeometryEncoder;
 import org.geoserver.gsr.translate.geometry.SpatialReferenceEncoder;
@@ -33,6 +30,9 @@ import org.geotools.referencing.CRS;
 import org.geotools.temporal.object.DefaultInstant;
 import org.geotools.temporal.object.DefaultPeriod;
 import org.geotools.temporal.object.DefaultPosition;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -116,7 +116,7 @@ public class Utils {
             } // else fall through to the catch-all exception at the end
         } else {
             try {
-                net.sf.json.JSON json = JSONSerializer.toJSON(geometryText);
+                org.kordamp.json.JSON json = JSONSerializer.toJSON(geometryText);
                 org.locationtech.jts.geom.Geometry g = GeometryEncoder.jsonToJtsGeometry(json);
                 if (mathTx != null) {
                     g = JTS.transform(g, mathTx);
@@ -156,7 +156,7 @@ public class Utils {
     }
 
     private static Envelope parseJsonEnvelope(String text) {
-        net.sf.json.JSON json = JSONSerializer.toJSON(text);
+        org.kordamp.json.JSON json = JSONSerializer.toJSON(text);
         try {
             return GeometryEncoder.jsonToEnvelope(json);
         } catch (JSONException e) {
@@ -183,7 +183,7 @@ public class Utils {
     }
 
     private static org.locationtech.jts.geom.Point parseJsonPoint(String text) {
-        net.sf.json.JSON json = JSONSerializer.toJSON(text);
+        org.kordamp.json.JSON json = JSONSerializer.toJSON(text);
         try {
             org.locationtech.jts.geom.Geometry geometry = GeometryEncoder.jsonToJtsGeometry(json);
             if (geometry instanceof org.locationtech.jts.geom.Point point) {
@@ -212,7 +212,7 @@ public class Utils {
             }
 
             try {
-                net.sf.json.JSON json = JSONSerializer.toJSON(srText);
+                org.kordamp.json.JSON json = JSONSerializer.toJSON(srText);
                 return SpatialReferenceEncoder.coordinateReferenceSystemFromJSON(json);
             } catch (JSONException e) {
                 throw new IllegalArgumentException("Failed to parse JSON spatial reference: " + srText);

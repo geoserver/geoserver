@@ -13,8 +13,6 @@ package org.geoserver.gsr.model.feature;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.IOException;
 import java.util.ArrayList;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.gsr.Utils;
 import org.geoserver.gsr.model.GSRModel;
@@ -37,6 +35,8 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
 import org.locationtech.jts.geom.Envelope;
 
 /**

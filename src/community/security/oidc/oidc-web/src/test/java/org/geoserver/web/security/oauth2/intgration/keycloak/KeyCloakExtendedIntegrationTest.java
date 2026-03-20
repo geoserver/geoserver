@@ -16,7 +16,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityFilterChain;
@@ -28,6 +27,7 @@ import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFil
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 
 /**
  * Extended integration tests using Keycloak testcontainer.

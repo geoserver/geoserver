@@ -12,11 +12,11 @@ package org.geoserver.gsr.controller.map;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.gsr.controller.ControllerTest;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 
 public class LegendControllerTest extends ControllerTest {
 

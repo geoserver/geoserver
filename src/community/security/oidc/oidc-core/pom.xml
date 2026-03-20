@@ -74,8 +74,8 @@
     </dependency>
 
     <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
+      <groupId>org.kordamp.json</groupId>
+      <artifactId>json-lib-core</artifactId>
     </dependency>
 
     <dependency>

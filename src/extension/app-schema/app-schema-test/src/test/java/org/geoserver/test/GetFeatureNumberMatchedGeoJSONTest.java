@@ -3,9 +3,9 @@ package org.geoserver.test;
 import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
 
 public class GetFeatureNumberMatchedGeoJSONTest extends AbstractAppSchemaTestSupport {
     @Override

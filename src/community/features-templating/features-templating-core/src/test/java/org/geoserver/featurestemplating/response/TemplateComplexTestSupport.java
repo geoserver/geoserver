@@ -14,9 +14,6 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Charsets;
 import java.io.IOException;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
@@ -29,6 +26,9 @@ import org.geoserver.featurestemplating.configuration.schema.*;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.geoserver.test.FeatureChainingMockData;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSupport {

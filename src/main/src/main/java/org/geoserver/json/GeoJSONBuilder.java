@@ -9,10 +9,10 @@ import java.io.Writer;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import net.sf.json.JSONException;
-import net.sf.json.util.JSONBuilder;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.util.JSONBuilder;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -220,7 +220,7 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     private void roundedValue(double value) {
-        super.value(RoundingUtil.round(value, numDecimals));
+        super.value(normalizeFloatingNumber(RoundingUtil.round(value, numDecimals)));
     }
 
     /**
@@ -375,7 +375,7 @@ public class GeoJSONBuilder extends JSONBuilder {
      *
      * <p>Overrides the handling of java.util.Map, java.util.List, and Geometry objects as well.
      *
-     * @see net.sf.json.util.JSONBuilder#value(java.lang.Object)
+     * @see org.kordamp.json.util.JSONBuilder#value(java.lang.Object)
      */
     @Override
     public GeoJSONBuilder value(Object value) {
@@ -390,10 +390,32 @@ public class GeoJSONBuilder extends JSONBuilder {
         } else {
             if (value instanceof java.util.Date || value instanceof Calendar) {
                 value = Converters.convert(value, String.class);
+            } else if (value instanceof Number number) {
+                value = normalizeFloatingNumber(number);
             }
             super.value(value);
         }
         return this;
+    }
+
+    /** Restores json-lib legacy behavior where integral float/double values are serialized without a trailing ".0". */
+    private static Number normalizeFloatingNumber(Number number) {
+        if (number instanceof Double value) {
+            if (Double.isFinite(value)
+                    && value == Math.rint(value)
+                    && value >= Long.MIN_VALUE
+                    && value <= Long.MAX_VALUE) {
+                return Long.valueOf(value.longValue());
+            }
+        } else if (number instanceof Float value) {
+            if (Float.isFinite(value)
+                    && value == Math.rint(value)
+                    && value >= Long.MIN_VALUE
+                    && value <= Long.MAX_VALUE) {
+                return Long.valueOf(value.longValue());
+            }
+        }
+        return number;
     }
 
     /**

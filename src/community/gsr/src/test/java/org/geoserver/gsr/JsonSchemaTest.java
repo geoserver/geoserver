@@ -10,10 +10,10 @@
 package org.geoserver.gsr;
 
 import java.io.File;
-import net.sf.json.JSON;
-import net.sf.json.JSONSerializer;
 import org.geoserver.gsr.api.GeoServicesJacksonJsonConverter;
 import org.geoserver.gsr.validation.JSONValidator;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONSerializer;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 

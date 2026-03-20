@@ -11,8 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.ows.LocalWorkspace;
@@ -23,6 +21,8 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

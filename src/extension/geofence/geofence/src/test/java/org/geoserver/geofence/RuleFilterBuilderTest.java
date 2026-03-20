@@ -4,7 +4,7 @@
  */
 package org.geoserver.geofence;
 
-import static net.sf.ezmorph.test.ArrayAssertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;

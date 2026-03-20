@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.xml.transform.TransformerException;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -67,6 +65,8 @@ import org.geotools.xml.styling.SLDParser;
 import org.geotools.xml.styling.SLDTransformer;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.locationtech.jts.geom.Geometry;
 import org.w3c.dom.Document;
 

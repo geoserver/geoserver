@@ -7,10 +7,10 @@ package org.geoserver.sldservice.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CapabilitiesTest extends SLDServiceBaseTest {

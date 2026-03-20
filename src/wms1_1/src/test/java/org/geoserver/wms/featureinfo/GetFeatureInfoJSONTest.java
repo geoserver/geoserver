@@ -30,8 +30,6 @@ import java.util.function.Function;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.emf.common.util.EList;
@@ -69,6 +67,8 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {

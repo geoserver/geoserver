@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.Styles;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.api.style.FeatureTypeStyle;
@@ -21,6 +20,7 @@ import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.styling.SLD;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 
 public class CssHandlerTest extends GeoServerSystemTestSupport {
 

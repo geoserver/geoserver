@@ -11,8 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.TimeZone;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.response.GeoJSONSearchResponse;
@@ -22,6 +20,8 @@ import org.geoserver.platform.resource.Resource;
 import org.hamcrest.CoreMatchers;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 
 public class GeoJSONSearchTest extends OSEOTestSupport {
 

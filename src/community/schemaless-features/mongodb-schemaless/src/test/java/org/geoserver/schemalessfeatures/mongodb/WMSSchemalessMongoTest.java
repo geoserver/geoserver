@@ -9,8 +9,6 @@ import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -29,6 +27,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

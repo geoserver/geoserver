@@ -4,7 +4,7 @@
  */
 package org.geoserver.ogcapi.v1.geovolumes;
 
-import static net.sf.ezmorph.test.ArrayAssertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 import java.util.HashMap;

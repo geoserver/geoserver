@@ -16,12 +16,12 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sf.json.JSONException;
-import net.sf.json.util.JSONBuilder;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.util.JSONBuilder;
 
 /**
  * Enum to hold the MIME type for JSON and some useful related utils

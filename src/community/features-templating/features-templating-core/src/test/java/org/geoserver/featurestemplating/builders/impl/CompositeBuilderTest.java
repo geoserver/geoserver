@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geotools.data.DataTestCase;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
 import org.xml.sax.helpers.NamespaceSupport;
 import tools.jackson.core.JsonEncoding;
 import tools.jackson.core.ObjectWriteContext;

@@ -17,8 +17,6 @@ import java.util.logging.Level;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.swing.Icon;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
@@ -70,6 +68,8 @@ import org.geotools.api.style.TextSymbolizer;
 import org.geotools.api.util.InternationalString;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.filter.text.ecql.ECQL;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.locationtech.jts.geom.Geometry;
 
 /** @author Ian Turton */
@@ -443,7 +443,15 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             }
         }
 
-        return "'[" + ECQL.toCQL(exp) + "]'";
+        String cql = ECQL.toCQL(exp);
+        // Preserve legacy output style for simple string literals (e.g. '${15+5}').
+        if (cql.length() >= 2 && cql.startsWith("'") && cql.endsWith("'")) {
+            String inner = cql.substring(1, cql.length() - 1);
+            if (inner.indexOf('\'') < 0) {
+                cql = "\"" + inner + "\"";
+            }
+        }
+        return "'[" + cql + "]'";
     }
 
     /** */

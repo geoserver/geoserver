@@ -10,8 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
@@ -22,6 +20,8 @@ import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.wcs.WCSInfo;
 import org.junit.After;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

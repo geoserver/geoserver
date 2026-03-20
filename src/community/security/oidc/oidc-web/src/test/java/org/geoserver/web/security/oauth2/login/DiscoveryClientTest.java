@@ -8,13 +8,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.Map;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;

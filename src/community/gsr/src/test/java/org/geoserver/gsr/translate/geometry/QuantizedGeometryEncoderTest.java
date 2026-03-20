@@ -15,11 +15,11 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import net.sf.json.JSONSerializer;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.gsr.model.geometry.Geometry;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKID;
 import org.junit.Test;
+import org.kordamp.json.JSONSerializer;
 import org.locationtech.jts.geom.Envelope;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -33,7 +33,7 @@ public class QuantizedGeometryEncoderTest {
         final int testSRID = 102100;
 
         File jsonFile = new File(getClass().getResource("sample_geometry.json").toURI());
-        net.sf.json.JSON json = JSONSerializer.toJSON(FileUtils.readFileToString(jsonFile, "UTF-8"));
+        org.kordamp.json.JSON json = JSONSerializer.toJSON(FileUtils.readFileToString(jsonFile, "UTF-8"));
 
         org.locationtech.jts.geom.Geometry inputGeometry = GeometryEncoder.jsonToJtsGeometry(json);
 

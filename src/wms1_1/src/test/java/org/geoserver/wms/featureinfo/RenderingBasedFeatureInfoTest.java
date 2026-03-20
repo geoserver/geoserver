@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -47,6 +46,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.junit.After;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.locationtech.jts.geom.Envelope;
 
 public class RenderingBasedFeatureInfoTest extends WMSTestSupport {

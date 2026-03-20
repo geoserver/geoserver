@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sf.json.JSONException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.json.GeoJSONFeatureWriter;
 import org.geoserver.json.JSONType;
@@ -24,6 +23,7 @@ import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.FeatureCollection;
+import org.kordamp.json.JSONException;
 
 /**
  * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a GetFeatureInfo request.

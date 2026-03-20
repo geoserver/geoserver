@@ -12,8 +12,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.logging.Logger;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -27,6 +25,8 @@ import org.geotools.http.HTTPResponse;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.request.AbstractGetLegendGraphicRequest;
 import org.geotools.ows.wms.response.GetLegendGraphicResponse;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 
 public final class CascadedLegendRequest extends LegendRequest {
 

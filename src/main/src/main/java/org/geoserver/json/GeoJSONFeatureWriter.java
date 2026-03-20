@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sf.json.JSONException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -48,6 +47,7 @@ import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.NamedIdentifier;
 import org.geotools.util.logging.Logging;
+import org.kordamp.json.JSONException;
 import org.locationtech.jts.geom.Geometry;
 
 /**

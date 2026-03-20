@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import net.sf.json.JSONObject;
+import org.kordamp.json.JSONObject;
 
 /** @author ian */
 public class JSONLegendGraphic implements LegendGraphic {

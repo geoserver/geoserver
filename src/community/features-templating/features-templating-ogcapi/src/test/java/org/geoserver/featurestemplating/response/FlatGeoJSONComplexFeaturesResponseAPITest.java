@@ -9,13 +9,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Set;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 
 public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTestSupport {
 

@@ -7,9 +7,9 @@ package org.geoserver.wms.utfgrid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 
 /**
  * Helper class to test UTFGrid contents

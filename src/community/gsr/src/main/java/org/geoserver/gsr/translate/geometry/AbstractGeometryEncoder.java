@@ -18,12 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.util.JSONBuilder;
-import net.sf.json.util.JSONStringer;
 import org.geoserver.gsr.model.geometry.GeometryArray;
 import org.geoserver.gsr.model.geometry.GeometryTypeEnum;
 import org.geoserver.gsr.model.geometry.Multipoint;
@@ -31,6 +25,12 @@ import org.geoserver.gsr.model.geometry.Point;
 import org.geoserver.gsr.model.geometry.Polygon;
 import org.geoserver.gsr.model.geometry.Polyline;
 import org.geoserver.gsr.model.geometry.SpatialReference;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.util.JSONBuilder;
+import org.kordamp.json.util.JSONStringer;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -372,7 +372,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @param json the json object representing an envelope
      * @return the envelope
      */
-    public static Envelope jsonToEnvelope(net.sf.json.JSON json) {
+    public static Envelope jsonToEnvelope(org.kordamp.json.JSON json) {
         if (!(json instanceof JSONObject)) {
             throw new JSONException("An envelope must be encoded as a JSON Object");
         }
@@ -392,7 +392,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @see #jsonToJtsGeometry(JSON)
      * @see #toJts(org.geoserver.gsr.model.geometry.Geometry)
      */
-    public static Geometry jsonToJtsGeometry(net.sf.json.JSON json) {
+    public static Geometry jsonToJtsGeometry(org.kordamp.json.JSON json) {
         return toJts(jsonToGeometry(json));
     }
 
@@ -402,7 +402,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @param json the json object representing a geometry
      * @return the geometry
      */
-    public static org.geoserver.gsr.model.geometry.Geometry jsonToGeometry(net.sf.json.JSON json) {
+    public static org.geoserver.gsr.model.geometry.Geometry jsonToGeometry(org.kordamp.json.JSON json) {
         JSONObject obj = (JSONObject) json;
 
         SpatialReference spatialReference = null;

@@ -4,11 +4,11 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import net.sf.json.JSONObject;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicOutputFormat;
 import org.geoserver.wms.GetLegendGraphicRequest;
+import org.kordamp.json.JSONObject;
 
 /**
  * JSON output format for the WMS {@link GetLegendGraphic} operation.

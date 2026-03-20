@@ -28,7 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
-import net.sf.json.util.JSONBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -75,6 +74,7 @@ import org.geotools.api.style.TextSymbolizer;
 import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
+import org.kordamp.json.util.JSONBuilder;
 
 public class StyleEncoder {
 

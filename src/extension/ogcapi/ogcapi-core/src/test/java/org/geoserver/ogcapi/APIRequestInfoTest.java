@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import net.sf.json.JSONObject;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.TestDispatcherCallback;
 import org.geoserver.platform.Operation;
@@ -26,6 +25,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.MediaType;
 
 /**

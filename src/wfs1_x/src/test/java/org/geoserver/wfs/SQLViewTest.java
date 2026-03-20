@@ -12,8 +12,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
 import java.util.Map;
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
@@ -32,6 +30,8 @@ import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
 import org.locationtech.jts.geom.Point;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;

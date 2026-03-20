@@ -14,13 +14,13 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 import java.util.Collections;
 import javax.xml.namespace.QName;
-import net.sf.json.JSONObject;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /** Contains tests related with GeoJSON output format when requested through WFS. */

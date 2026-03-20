@@ -11,8 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
@@ -23,6 +21,8 @@ import org.geoserver.featurestemplating.configuration.TemplateRuleService;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;

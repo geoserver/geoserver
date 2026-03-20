@@ -9,16 +9,16 @@
  */
 package org.geoserver.gsr.translate.geometry;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.util.JSONBuilder;
 import org.geoserver.gsr.model.geometry.SpatialReference;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKID;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKT;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.util.JSONBuilder;
 
 public class SpatialReferenceEncoder {
     /**

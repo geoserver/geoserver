@@ -8,9 +8,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.json.JSONObject;
 import org.geoserver.wps.ppio.CDataPPIO;
 import org.geotools.process.vector.AggregateProcess;
+import org.kordamp.json.JSONObject;
 
 /**
  * Provides a JSON output for the aggregate process result. The result are encoded in a tabular format very similar to

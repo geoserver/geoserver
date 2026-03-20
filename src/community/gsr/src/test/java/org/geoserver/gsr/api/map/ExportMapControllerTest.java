@@ -15,11 +15,11 @@ import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import javax.imageio.ImageIO;
-import net.sf.json.JSONObject;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gsr.controller.ControllerTest;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 

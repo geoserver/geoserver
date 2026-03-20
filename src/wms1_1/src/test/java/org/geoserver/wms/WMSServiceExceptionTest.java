@@ -18,10 +18,10 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import javax.imageio.ImageIO;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.json.JSONType;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

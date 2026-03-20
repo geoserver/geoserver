@@ -7,10 +7,10 @@ package org.geoserver.wms.legendgraphic;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import net.sf.json.JSONObject;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.kordamp.json.JSONObject;
 import org.springframework.util.Assert;
 
 /**

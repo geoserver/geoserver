@@ -10,10 +10,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.List;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
@@ -26,6 +22,9 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -82,7 +81,6 @@ public class JsonWriterTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testJsonWriterEncodesArrays() throws URISyntaxException, IOException {
         // test that values of URL types are correctly encoded
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -99,10 +97,10 @@ public class JsonWriterTest {
         String jsonString = new String(baos.toByteArray());
         JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
 
-        List<Integer> intArray = json.getJSONArray("intArray");
+        JSONArray intArray = json.getJSONArray("intArray");
         assertThat(intArray, Matchers.hasItems(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)));
 
-        List<String> strArray = json.getJSONArray("strArray");
+        JSONArray strArray = json.getJSONArray("strArray");
         assertThat(strArray, Matchers.hasItems("one", "two", "three"));
     }
 
@@ -131,25 +129,25 @@ public class JsonWriterTest {
         JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
 
         // straight array expansion tests
-        List<Integer> intArray = json.getJSONArray("intArray");
+        JSONArray intArray = json.getJSONArray("intArray");
         assertThat(intArray, Matchers.hasItems(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)));
 
-        List<String> strArray = json.getJSONArray("strArray");
+        JSONArray strArray = json.getJSONArray("strArray");
         assertThat(strArray, Matchers.hasItems("one", "two", "three"));
 
         // iterating over array elements and building objects around them
-        List<JSONObject> intObjectArray = json.getJSONArray("intObjectArray");
+        JSONArray intObjectArray = json.getJSONArray("intObjectArray");
         assertEquals(3, intObjectArray.size());
         for (int i = 0; i < 3; i++) {
-            JSONObject jo = intObjectArray.get(i);
+            JSONObject jo = intObjectArray.getJSONObject(i);
             assertEquals(i, jo.getInt("idx"));
             assertEquals("TheInteger" + i, jo.getString("name"));
         }
-        List<JSONObject> strObjectArray = json.getJSONArray("strObjectArray");
+        JSONArray strObjectArray = json.getJSONArray("strObjectArray");
         assertEquals(3, strObjectArray.size());
         String[] names = (String[]) sf.getAttribute("strArray");
         for (int i = 0; i < 3; i++) {
-            JSONObject jo = strObjectArray.get(i);
+            JSONObject jo = strObjectArray.getJSONObject(i);
             assertEquals(names[i], jo.getString("id"));
             assertEquals("TheString" + names[i], jo.getString("name"));
         }

@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import net.sf.json.JSONObject;
-import net.sf.json.util.JSONBuilder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -46,6 +44,8 @@ import org.geotools.api.data.Query;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.util.JSONBuilder;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

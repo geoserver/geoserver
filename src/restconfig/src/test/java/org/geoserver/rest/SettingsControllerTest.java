@@ -12,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
@@ -25,6 +23,8 @@ import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

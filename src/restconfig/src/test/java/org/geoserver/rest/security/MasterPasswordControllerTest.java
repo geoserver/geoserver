@@ -10,11 +10,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import net.sf.json.JSONObject;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.w3c.dom.Document;
 
 /**

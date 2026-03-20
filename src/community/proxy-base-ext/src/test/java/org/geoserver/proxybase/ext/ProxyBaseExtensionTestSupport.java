@@ -12,11 +12,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import net.sf.json.JSON;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.proxybase.ext.config.ProxyBaseExtRuleDAO;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.kordamp.json.JSON;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

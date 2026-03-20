@@ -13,8 +13,6 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
-import net.sf.json.JSONException;
-import net.sf.json.util.JSONBuilder;
 import org.geoserver.json.JSONType;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -24,6 +22,8 @@ import org.geoserver.wms.DescribeLayerRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.ows.wms.LayerDescription;
 import org.geotools.util.logging.Logging;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.util.JSONBuilder;
 
 /**
  * A DescribeLayer response specialized in producing Json or JsonP data for a DescribeLayer request.

@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
@@ -36,6 +35,7 @@ import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

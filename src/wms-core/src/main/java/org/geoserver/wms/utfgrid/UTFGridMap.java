@@ -13,8 +13,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import net.sf.json.util.JSONBuilder;
-import net.sf.json.util.JSONStringer;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.utfgrid.UTFGridEntries.UTFGridEntry;
 import org.geotools.api.feature.Feature;
@@ -24,6 +22,8 @@ import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.util.Converters;
 import org.geotools.xml.gml.GMLComplexTypes.GeometryPropertyType;
+import org.kordamp.json.util.JSONBuilder;
+import org.kordamp.json.util.JSONStringer;
 
 public class UTFGridMap extends RawMap {
 

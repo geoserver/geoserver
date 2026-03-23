@@ -7,44 +7,39 @@
 }
 .custom-search-wrapper {
     position: relative;
-    width: 100%; /* Adjust to match GeoServer's styling */
+    width: 100%;
     margin-bottom: 0.75rem;
 }
-
 .custom-search-input {
     width: 100%;
     box-sizing: border-box;
     padding: 5px;
 }
-
 .search-results-container {
     display: none;
     position: absolute;
     top: 100%;
     left: 0;
     width: 100%;
-    border: 1px solid #ccc;
-    background: white;
+    border: 1px solid var(--gs-border-color);
+    background: var(--gs-body-bg);
     list-style: none;
     padding: 0;
     margin: 0;
     z-index: 1000;
     max-height: 200px;
     overflow-y: auto;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: var(--gs-box-shadow);
 }
-
 .search-result-item {
     padding: 8px;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--gs-border-color);
 }
-
 .search-result-item:hover,
 .search-result-item.active-descendant {
-    background-color: #e0e0e0; /* Highlight color for mouse AND keyboard */
+    background-color: var(--gs-secondary-bg);
 }
-
 /* Screen Reader Only Utility Class */
 .sr-only {
     position: absolute;

@@ -84,7 +84,7 @@ public class SearchInputPanel extends Panel {
         add(resultsContainer);
 
         initialResults =
-                new ListView<SearchResult>("initialResults", new LoadableDetachableModel<List<SearchResult>>() {
+                new ListView<>("initialResults", new LoadableDetachableModel<>() {
                     @Override
                     protected List<SearchResult> load() {
                         if (Strings.isEmpty(currentQuery)) return new ArrayList<>();

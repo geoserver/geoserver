@@ -173,7 +173,7 @@ public class NavigationTreePanel extends Panel {
         }));
 
         globalChildrenList =
-                new ListView<>("globalChildren", new LoadableDetachableModel<List<WorkspaceChild>>() {
+                new ListView<>("globalChildren", new LoadableDetachableModel<>() {
                     @Override
                     protected List<WorkspaceChild> load() {
                         int offset = (globalPage - 1) * globalPageSize;
@@ -299,7 +299,7 @@ public class NavigationTreePanel extends Panel {
         add(noDataMessage);
 
         workspacesList =
-                new ListView<>("workspaces", new LoadableDetachableModel<List<Workspace>>() {
+                new ListView<>("workspaces", new LoadableDetachableModel<>() {
                     @Override
                     protected List<Workspace> load() {
                         return loadWorkspaces();
@@ -376,8 +376,8 @@ public class NavigationTreePanel extends Panel {
                         item.add(layersPagination);
 
                         layersScroll.add(
-                                new ListView<WorkspaceChild>(
-                                        "workspaceChildren", new LoadableDetachableModel<List<WorkspaceChild>>() {
+                                new ListView<>(
+                                        "workspaceChildren", new LoadableDetachableModel<>() {
                                             @Override
                                             protected List<WorkspaceChild> load() {
                                                 int page = layerPageByWorkspace.getOrDefault(ws.name, 1);

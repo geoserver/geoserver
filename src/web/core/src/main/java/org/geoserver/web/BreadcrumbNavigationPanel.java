@@ -45,7 +45,7 @@ public class BreadcrumbNavigationPanel extends Panel {
     public BreadcrumbNavigationPanel(String id) {
         super(id);
 
-        allMenuBeansModel = new LoadableDetachableModel<List<BreadcrumbContextMenuItemInfo>>() {
+        allMenuBeansModel = new LoadableDetachableModel<>() {
             @Override
             protected List<BreadcrumbContextMenuItemInfo> load() {
                 return ((GeoServerApplication) getApplication()).getBeansOfType(BreadcrumbContextMenuItemInfo.class);
@@ -53,7 +53,7 @@ public class BreadcrumbNavigationPanel extends Panel {
         };
 
         LoadableDetachableModel<List<BreadcrumbItem>> breadcrumbModel =
-                new LoadableDetachableModel<List<BreadcrumbItem>>() {
+                new LoadableDetachableModel<>() {
                     @Override
                     protected List<BreadcrumbItem> load() {
                         List<BreadcrumbItem> items = new ArrayList<>();
@@ -92,11 +92,11 @@ public class BreadcrumbNavigationPanel extends Panel {
                     }
                 };
 
-        ListView<BreadcrumbItem> breadcrumbList = new ListView<BreadcrumbItem>("breadcrumbs", breadcrumbModel) {
+        ListView<BreadcrumbItem> breadcrumbList = new ListView<>("breadcrumbs", breadcrumbModel) {
             @Override
             protected void populateItem(ListItem<BreadcrumbItem> item) {
                 BreadcrumbItem bc = item.getModelObject();
-                boolean isLast = (item.getIndex() == getList().size() - 1);
+                boolean isLast = item.getIndex() == getList().size() - 1;
 
                 DropdownMenuData menuData;
                 if (isLast) {
@@ -107,16 +107,16 @@ public class BreadcrumbNavigationPanel extends Panel {
                     Map<Category, List<BreadcrumbContextMenuItemInfo>> grouped = new HashMap<>();
 
                     for (BreadcrumbContextMenuItemInfo bean : allBeans) {
-                        if (bean.getTargetLevel().equalsIgnoreCase(bc.getLevel())) {
-                            if (bean.getAuthorizer() == null
-                                    || bean.getAuthorizer().isAccessAllowed(bean.getComponentClass(), user)) {
-                                Category cat = bean.getCategory();
-                                if (cat == null) {
-                                    standalone.add(bean);
-                                } else {
-                                    grouped.computeIfAbsent(cat, k -> new ArrayList<>())
-                                            .add(bean);
-                                }
+                        if (bean.getTargetLevel().equalsIgnoreCase(bc.getLevel())
+                                && (bean.getAuthorizer() == null
+                                        || bean.getAuthorizer()
+                                                .isAccessAllowed(bean.getComponentClass(), user))) {
+                            Category cat = bean.getCategory();
+                            if (cat == null) {
+                                standalone.add(bean);
+                            } else {
+                                grouped.computeIfAbsent(cat, k -> new ArrayList<>())
+                                        .add(bean);
                             }
                         }
                     }
@@ -164,7 +164,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                 Class<? extends Page> targetPageClass =
                         (bc.getPageClass() != null) ? bc.getPageClass() : GeoServerHomePage.class;
                 BookmarkablePageLink<Void> link =
-                        new BookmarkablePageLink<Void>("link", targetPageClass, bc.getParameters());
+                        new BookmarkablePageLink<>("link", targetPageClass, bc.getParameters());
                 link.add(new Image("linkIcon", iconRef));
                 link.add(new Label("label", bc.getLabel()));
                 normalLinkContainer.add(link);
@@ -184,7 +184,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                 contextMenuContainer.add(new Label("currentLabel", bc.getLabel() + " ▾"));
 
                 ListView<BreadcrumbContextMenuItemInfo> standaloneList =
-                        new ListView<BreadcrumbContextMenuItemInfo>("standaloneItems", menuData.standalone) {
+                        new ListView<>("standaloneItems", menuData.standalone) {
                             @Override
                             protected void populateItem(ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem) {
                                 populateMenuLink(menuItemListItem, getPage().getPageParameters());
@@ -193,7 +193,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                 contextMenuContainer.add(standaloneList);
 
                 ListView<CategoryGroup> categoryGroupsList =
-                        new ListView<CategoryGroup>("categoryGroups", menuData.groups) {
+                        new ListView<>("categoryGroups", menuData.groups) {
                             @Override
                             protected void populateItem(ListItem<CategoryGroup> groupItem) {
                                 CategoryGroup group = groupItem.getModelObject();
@@ -203,7 +203,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                                         new ResourceModel(group.category.getNameKey(), group.category.getNameKey())));
 
                                 ListView<BreadcrumbContextMenuItemInfo> categoryItemsList =
-                                        new ListView<BreadcrumbContextMenuItemInfo>("categoryItems", group.items) {
+                                        new ListView<>("categoryItems", group.items) {
                                             @Override
                                             protected void populateItem(
                                                     ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem) {
@@ -232,7 +232,7 @@ public class BreadcrumbNavigationPanel extends Panel {
 
         PageParameters targetParams = ctxMenu.getPageParameters(wName, lName);
         BookmarkablePageLink<Void> menuLink =
-                new BookmarkablePageLink<Void>("menuLink", ctxMenu.getComponentClass(), targetParams);
+                new BookmarkablePageLink<>("menuLink", ctxMenu.getComponentClass(), targetParams);
 
         menuLink.add(org.apache.wicket.AttributeModifier.append("class", ctxMenu.getId()));
 
@@ -243,9 +243,9 @@ public class BreadcrumbNavigationPanel extends Panel {
                 String contextPath = ctxMenu.getIcon().substring(1);
                 iconComponent = new org.apache.wicket.markup.html.image.ContextImage("menuItemIcon", contextPath);
             } else {
-                iconComponent = new org.apache.wicket.markup.html.image.Image(
+                iconComponent = new Image(
                         "menuItemIcon",
-                        new org.apache.wicket.request.resource.PackageResourceReference(
+                        new PackageResourceReference(
                                 ctxMenu.getComponentClass(), ctxMenu.getIcon()));
             }
         } else {

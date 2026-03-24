@@ -42,7 +42,7 @@ jobs:
         run: make war
 
       - name: Upload geoserver.war as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: geoserver-war
           path: build/acceptance/geoserver/geoserver.war
@@ -88,7 +88,7 @@ jobs:
 
       - name: Upload failed test files
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: failed-test-files-java-${{ matrix.java-version }}
           path: ${{ env.GEOSERVER_ACCEPTANCE_FAILED_TESTS_DIR }}

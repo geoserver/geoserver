@@ -343,7 +343,7 @@ jobs:
       if: |
         (github.ref == 'refs/heads/main') || 
         (github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true')
-      uses: actions/configure-pages@v4
+      uses: actions/configure-pages@v5
       with:
         enablement: true
 

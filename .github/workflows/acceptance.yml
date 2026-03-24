@@ -16,7 +16,7 @@ jobs:
     name: Build GeoServer WAR
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
@@ -59,7 +59,7 @@ jobs:
        java-version: [17, 21, 25]
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 

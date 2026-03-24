@@ -25,7 +25,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         # 500 commits, set to 0 to get all
         fetch-depth: 500

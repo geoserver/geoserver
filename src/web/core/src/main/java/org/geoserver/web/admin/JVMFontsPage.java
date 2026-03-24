@@ -8,10 +8,10 @@ package org.geoserver.web.admin;
 import static org.geoserver.web.admin.PreviewFontProvider.PREVIEW_IMAGE;
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.Component;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.image.resource.BufferedDynamicImageResource;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -41,10 +41,8 @@ public class JVMFontsPage extends ServerAdminPage {
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         if (!isCssEmpty) {
-            response.render(
-                    CssHeaderItem.forReference(
-                            new PackageResourceReference(
-                                    getClass(), getClass().getSimpleName() + ".css")));
+            response.render(CssHeaderItem.forReference(
+                    new PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
         }
     }
 

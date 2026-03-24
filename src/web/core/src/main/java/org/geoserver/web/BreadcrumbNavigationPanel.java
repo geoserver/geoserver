@@ -1,5 +1,10 @@
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +23,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
@@ -31,6 +35,8 @@ import org.springframework.security.core.Authentication;
 
 public class BreadcrumbNavigationPanel extends Panel {
 
+    private final LoadableDetachableModel<List<BreadcrumbContextMenuItemInfo>> allMenuBeansModel;
+
     private static final CssResourceReference CSS =
             new CssResourceReference(BreadcrumbNavigationPanel.class, "BreadcrumbNavigationPanel.css");
     private static final JavaScriptResourceReference JS =
@@ -38,6 +44,13 @@ public class BreadcrumbNavigationPanel extends Panel {
 
     public BreadcrumbNavigationPanel(String id) {
         super(id);
+
+        allMenuBeansModel = new LoadableDetachableModel<List<BreadcrumbContextMenuItemInfo>>() {
+            @Override
+            protected List<BreadcrumbContextMenuItemInfo> load() {
+                return ((GeoServerApplication) getApplication()).getBeansOfType(BreadcrumbContextMenuItemInfo.class);
+            }
+        };
 
         LoadableDetachableModel<List<BreadcrumbItem>> breadcrumbModel =
                 new LoadableDetachableModel<List<BreadcrumbItem>>() {
@@ -64,11 +77,9 @@ public class BreadcrumbNavigationPanel extends Panel {
 
                         if (resourceName != null && !resourceName.isEmpty()) {
                             String level = "LAYER";
-                            Catalog catalog = ((GeoServerApplication) getApplication()).getCatalog();
-
                             LayerGroupInfo group = (wsName != null)
-                                    ? catalog.getLayerGroupByName(wsName, resourceName)
-                                    : catalog.getLayerGroupByName(resourceName);
+                                    ? getCatalog().getLayerGroupByName(wsName, resourceName)
+                                    : getCatalog().getLayerGroupByName(resourceName);
 
                             if (group != null) {
                                 level = "LAYER_GROUP";
@@ -87,54 +98,46 @@ public class BreadcrumbNavigationPanel extends Panel {
                 BreadcrumbItem bc = item.getModelObject();
                 boolean isLast = (item.getIndex() == getList().size() - 1);
 
-                LoadableDetachableModel<DropdownMenuData> menuDataModel =
-                        new LoadableDetachableModel<DropdownMenuData>() {
-                            @Override
-                            protected DropdownMenuData load() {
-                                GeoServerApplication app = (GeoServerApplication) getApplication();
-                                List<BreadcrumbContextMenuItemInfo> allBeans =
-                                        app.getBeansOfType(BreadcrumbContextMenuItemInfo.class);
-                                Authentication user = ((GeoServerSession) getSession()).getAuthentication();
+                DropdownMenuData menuData;
+                if (isLast) {
+                    List<BreadcrumbContextMenuItemInfo> allBeans = allMenuBeansModel.getObject();
+                    Authentication user = ((GeoServerSession) getSession()).getAuthentication();
 
-                                List<BreadcrumbContextMenuItemInfo> standalone = new ArrayList<>();
-                                Map<Category, List<BreadcrumbContextMenuItemInfo>> grouped = new HashMap<>();
+                    List<BreadcrumbContextMenuItemInfo> standalone = new ArrayList<>();
+                    Map<Category, List<BreadcrumbContextMenuItemInfo>> grouped = new HashMap<>();
 
-                                for (BreadcrumbContextMenuItemInfo bean : allBeans) {
-                                    if (bean.getTargetLevel().equalsIgnoreCase(bc.getLevel())) {
-                                        if (bean.getAuthorizer() == null
-                                                || bean.getAuthorizer()
-                                                        .isAccessAllowed(bean.getComponentClass(), user)) {
-                                            String target =
-                                                    bean.getTargetLevel() != null ? bean.getTargetLevel() : "LAYER";
-                                            if (target.equalsIgnoreCase(bc.getLevel())) {
-                                                Category cat = bean.getCategory();
-                                                if (cat == null) {
-                                                    standalone.add(bean);
-                                                } else {
-                                                    grouped.computeIfAbsent(cat, k -> new ArrayList<>())
-                                                            .add(bean);
-                                                }
-                                            }
-                                        }
-                                    }
+                    for (BreadcrumbContextMenuItemInfo bean : allBeans) {
+                        if (bean.getTargetLevel().equalsIgnoreCase(bc.getLevel())) {
+                            if (bean.getAuthorizer() == null
+                                    || bean.getAuthorizer().isAccessAllowed(bean.getComponentClass(), user)) {
+                                Category cat = bean.getCategory();
+                                if (cat == null) {
+                                    standalone.add(bean);
+                                } else {
+                                    grouped.computeIfAbsent(cat, k -> new ArrayList<>())
+                                            .add(bean);
                                 }
-
-                                Collections.sort(standalone);
-                                List<Category> categories = new ArrayList<>(grouped.keySet());
-                                Collections.sort(categories);
-
-                                List<CategoryGroup> categoryGroups = new ArrayList<>();
-                                for (Category cat : categories) {
-                                    List<BreadcrumbContextMenuItemInfo> groupItems = grouped.get(cat);
-                                    Collections.sort(groupItems);
-                                    categoryGroups.add(new CategoryGroup(cat, groupItems));
-                                }
-
-                                return new DropdownMenuData(standalone, categoryGroups);
                             }
-                        };
+                        }
+                    }
 
-                boolean hasMenuItems = !menuDataModel.getObject().isEmpty();
+                    Collections.sort(standalone);
+                    List<Category> categories = new ArrayList<>(grouped.keySet());
+                    Collections.sort(categories);
+
+                    List<CategoryGroup> categoryGroups = new ArrayList<>();
+                    for (Category cat : categories) {
+                        List<BreadcrumbContextMenuItemInfo> groupItems = grouped.get(cat);
+                        Collections.sort(groupItems);
+                        categoryGroups.add(new CategoryGroup(cat, groupItems));
+                    }
+
+                    menuData = new DropdownMenuData(standalone, categoryGroups);
+                } else {
+                    menuData = new DropdownMenuData(new ArrayList<>(), new ArrayList<>());
+                }
+
+                boolean hasMenuItems = !menuData.isEmpty();
 
                 PackageResourceReference iconRef;
                 switch (bc.getLevel()) {
@@ -174,7 +177,6 @@ public class BreadcrumbNavigationPanel extends Panel {
 
                 WebMarkupContainer contextMenuContainer = new WebMarkupContainer("contextMenuContainer");
 
-                contextMenuContainer.setDefaultModel(menuDataModel);
                 contextMenuContainer.setVisible(isLast && hasMenuItems);
                 item.add(contextMenuContainer);
 
@@ -182,8 +184,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                 contextMenuContainer.add(new Label("currentLabel", bc.getLabel() + " ▾"));
 
                 ListView<BreadcrumbContextMenuItemInfo> standaloneList =
-                        new ListView<BreadcrumbContextMenuItemInfo>(
-                                "standaloneItems", new PropertyModel<>(menuDataModel, "standalone")) {
+                        new ListView<BreadcrumbContextMenuItemInfo>("standaloneItems", menuData.standalone) {
                             @Override
                             protected void populateItem(ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem) {
                                 populateMenuLink(menuItemListItem, getPage().getPageParameters());
@@ -192,7 +193,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                 contextMenuContainer.add(standaloneList);
 
                 ListView<CategoryGroup> categoryGroupsList =
-                        new ListView<CategoryGroup>("categoryGroups", new PropertyModel<>(menuDataModel, "groups")) {
+                        new ListView<CategoryGroup>("categoryGroups", menuData.groups) {
                             @Override
                             protected void populateItem(ListItem<CategoryGroup> groupItem) {
                                 CategoryGroup group = groupItem.getModelObject();
@@ -257,6 +258,16 @@ public class BreadcrumbNavigationPanel extends Panel {
         menuItemListItem.add(menuLink);
     }
 
+    private static Catalog getCatalog() {
+        return GeoServerApplication.get().getCatalog();
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        allMenuBeansModel.detach();
+    }
+
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
@@ -265,6 +276,9 @@ public class BreadcrumbNavigationPanel extends Panel {
     }
 
     private static class BreadcrumbItem implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         private final String label;
         private final Class<? extends Page> pageClass;
         private final PageParameters parameters;
@@ -295,6 +309,9 @@ public class BreadcrumbNavigationPanel extends Panel {
     }
 
     private static class DropdownMenuData implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         List<BreadcrumbContextMenuItemInfo> standalone;
         List<CategoryGroup> groups;
 
@@ -309,6 +326,9 @@ public class BreadcrumbNavigationPanel extends Panel {
     }
 
     private static class CategoryGroup implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         Category category;
         List<BreadcrumbContextMenuItemInfo> items;
 

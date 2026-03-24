@@ -1,3 +1,7 @@
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web;
 
 import java.io.Serial;
@@ -44,6 +48,7 @@ public class SearchInputPanel extends Panel {
     private String currentQuery = "";
     private int currentPage = 0;
     private static final int PAGE_SIZE = 20;
+    private static final int MAX_QUERY_LENGTH = 100;
     private final boolean autocompleteEnabled;
 
     private static final CssResourceReference CSS =
@@ -210,8 +215,12 @@ public class SearchInputPanel extends Panel {
                             .append("</span></li>");
                 }
 
-                String jsEscapedHtml =
-                        htmlSnippet.toString().replace("'", "\\'").replace("\n", "");
+                String jsEscapedHtml = htmlSnippet
+                        .toString()
+                        .replace("\\", "\\\\")
+                        .replace("'", "\\'")
+                        .replace("\n", "")
+                        .replace("\r", "");
                 target.appendJavaScript(
                         "$('#" + resultsContainer.getMarkupId() + "').append('" + jsEscapedHtml + "');");
                 target.appendJavaScript("$('#" + resultsContainer.getMarkupId() + "').data('hasMore', true);");
@@ -242,8 +251,9 @@ public class SearchInputPanel extends Panel {
 
     private List<SearchResult> fetchResults(String query, int page, int pageSize) {
         List<SearchResult> results = new ArrayList<>();
-        if (Strings.isEmpty(query)) return results;
+        if (Strings.isEmpty(query) || query.length() > MAX_QUERY_LENGTH) return results;
 
+        Catalog catalog = getCatalog();
         int limit = pageSize;
         int remainingOffset = page * pageSize;
 
@@ -252,11 +262,11 @@ public class SearchInputPanel extends Panel {
                 getPage().getPageParameters().get("workspace").toOptionalString();
 
         if (selectedWorkspace == null) {
-            int wsCount = getCatalog().count(WorkspaceInfo.class, textFilter);
+            int wsCount = catalog.count(WorkspaceInfo.class, textFilter);
             if (remainingOffset < wsCount) {
                 int toTake = Math.min(limit, wsCount - remainingOffset);
                 try (CloseableIterator<WorkspaceInfo> it =
-                        getCatalog().list(WorkspaceInfo.class, textFilter, remainingOffset, toTake, null)) {
+                        catalog.list(WorkspaceInfo.class, textFilter, remainingOffset, toTake, null)) {
                     while (it.hasNext() && results.size() < pageSize) {
                         WorkspaceInfo ws = it.next();
                         results.add(new SearchResult(ws.getName(), ws.getName(), null, "workspace"));
@@ -274,11 +284,11 @@ public class SearchInputPanel extends Panel {
                         textFilter, Predicates.equal("resource.store.workspace.name", selectedWorkspace));
             }
 
-            int layerCount = getCatalog().count(LayerInfo.class, layerFilter);
+            int layerCount = catalog.count(LayerInfo.class, layerFilter);
             if (remainingOffset < layerCount) {
                 int toTake = Math.min(limit, layerCount - remainingOffset);
                 try (CloseableIterator<LayerInfo> it =
-                        getCatalog().list(LayerInfo.class, layerFilter, remainingOffset, toTake, null)) {
+                        catalog.list(LayerInfo.class, layerFilter, remainingOffset, toTake, null)) {
                     while (it.hasNext() && results.size() < pageSize) {
                         LayerInfo layer = it.next();
                         String wsName = null;
@@ -307,7 +317,7 @@ public class SearchInputPanel extends Panel {
             }
 
             try (CloseableIterator<LayerGroupInfo> it =
-                    getCatalog().list(LayerGroupInfo.class, groupFilter, remainingOffset, limit, null)) {
+                    catalog.list(LayerGroupInfo.class, groupFilter, remainingOffset, limit, null)) {
                 while (it.hasNext() && results.size() < pageSize) {
                     LayerGroupInfo group = it.next();
                     String wsName = group.getWorkspace() == null

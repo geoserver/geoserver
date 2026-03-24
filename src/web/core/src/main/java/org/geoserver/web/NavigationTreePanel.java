@@ -1,3 +1,7 @@
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web;
 
 import java.io.Serial;
@@ -86,11 +90,14 @@ public class NavigationTreePanel extends Panel {
     private String selectedLayerName;
     private String treeFilterQuery = "";
     private boolean selectionInitialized;
+    private transient Set<String> cachedMatchingWorkspaces;
 
     private static final CssResourceReference CSS =
             new CssResourceReference(NavigationTreePanel.class, "NavigationTreePanel.css");
     private static final JavaScriptResourceReference JS =
             new JavaScriptResourceReference(NavigationTreePanel.class, "NavigationTreePanel.js");
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
+    private static final SortBy ALPHABETICAL = FF.sort("name", SortOrder.ASCENDING);
 
     public NavigationTreePanel(String id) {
         super(id);
@@ -301,6 +308,7 @@ public class NavigationTreePanel extends Panel {
                     @Override
                     protected void populateItem(ListItem<Workspace> item) {
                         Workspace ws = item.getModelObject();
+                        final int wsLayerCount = getLayerCount(ws.name);
 
                         WebMarkupContainer toggle = new WebMarkupContainer("workspaceToggle");
                         toggle.add(new AjaxEventBehavior("click") {
@@ -331,7 +339,7 @@ public class NavigationTreePanel extends Panel {
                         workspaceName.setEscapeModelStrings(false);
                         select.add(workspaceName);
                         item.add(select);
-                        item.add(new Label("workspaceLayerCount", String.valueOf(getLayerCount(ws.name))));
+                        item.add(new Label("workspaceLayerCount", String.valueOf(wsLayerCount)));
 
                         WebMarkupContainer layersScroll = new WebMarkupContainer("layersScroll") {
                             @Override
@@ -347,7 +355,7 @@ public class NavigationTreePanel extends Panel {
                         WebMarkupContainer layersPagination = new WebMarkupContainer("layersPagination") {
                             @Override
                             public boolean isVisible() {
-                                return ws.expanded && getLayerCount(ws.name) > PAGE_SIZE;
+                                return ws.expanded && wsLayerCount > PAGE_SIZE;
                             }
                         };
                         layersPagination.setOutputMarkupId(true);
@@ -359,9 +367,9 @@ public class NavigationTreePanel extends Panel {
                                 "data-page-size",
                                 () -> String.valueOf(layerPageSizeByWorkspace.getOrDefault(ws.name, PAGE_SIZE))));
                         layersPagination.add(new org.apache.wicket.AttributeModifier(
-                                "data-total-items", () -> String.valueOf(getLayerCount(ws.name))));
+                                "data-total-items", () -> String.valueOf(wsLayerCount)));
                         layersPagination.add(new org.apache.wicket.AttributeModifier("data-total-pages", () -> {
-                            int total = getLayerCount(ws.name);
+                            int total = wsLayerCount;
                             int pageSize = layerPageSizeByWorkspace.getOrDefault(ws.name, PAGE_SIZE);
                             return String.valueOf((int) Math.ceil(total / (double) pageSize));
                         }));
@@ -468,42 +476,33 @@ public class NavigationTreePanel extends Panel {
         add(loadWorkspacesBehavior);
     }
 
-    private Catalog getCatalog() {
+    private static Catalog getCatalog() {
         return GeoServerApplication.get().getCatalog();
     }
 
     private Filter buildSearchFilter(String propertyName) {
         if (Strings.isEmpty(treeFilterQuery)) return Filter.INCLUDE;
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-        return ff.like(ff.property(propertyName), "%" + treeFilterQuery + "%", "%", "_", "\\", false);
+        return FF.like(FF.property(propertyName), "%" + treeFilterQuery + "%", "%", "_", "\\", false);
     }
 
     private Filter buildGlobalLayerFilter() {
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-        Filter noWorkspace = ff.isNull(ff.property("resource.store.workspace.name"));
-        return ff.and(noWorkspace, buildSearchFilter("name"));
+        Filter noWorkspace = FF.isNull(FF.property("resource.store.workspace.name"));
+        return FF.and(noWorkspace, buildSearchFilter("name"));
     }
 
     private Filter buildGlobalGroupFilter() {
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-        Filter noWorkspace = ff.isNull(ff.property("workspace.name"));
-        return ff.and(noWorkspace, buildSearchFilter("name"));
+        Filter noWorkspace = FF.isNull(FF.property("workspace.name"));
+        return FF.and(noWorkspace, buildSearchFilter("name"));
     }
 
     private Filter buildWorkspaceLayerFilter(String wsName) {
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-        Filter wsMatch = ff.equal(ff.property("resource.store.workspace.name"), ff.literal(wsName), true);
-        return ff.and(wsMatch, buildSearchFilter("name"));
+        Filter wsMatch = FF.equal(FF.property("resource.store.workspace.name"), FF.literal(wsName), true);
+        return FF.and(wsMatch, buildSearchFilter("name"));
     }
 
     private Filter buildWorkspaceGroupFilter(String wsName) {
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-        Filter wsMatch = ff.equal(ff.property("workspace.name"), ff.literal(wsName), true);
-        return ff.and(wsMatch, buildSearchFilter("name"));
-    }
-
-    private SortBy getAlphabeticalSort() {
-        return CommonFactoryFinder.getFilterFactory().sort("name", SortOrder.ASCENDING);
+        Filter wsMatch = FF.equal(FF.property("workspace.name"), FF.literal(wsName), true);
+        return FF.and(wsMatch, buildSearchFilter("name"));
     }
 
     private int getTotalGlobalItems() {
@@ -520,14 +519,13 @@ public class NavigationTreePanel extends Panel {
 
     private int getTotalWorkspaceItems() {
         if (hasActiveTreeFilter()) {
-            return getWorkspacesMatchingFilter().size();
+            return matchingWorkspaces().size();
         }
         return getCatalog().count(WorkspaceInfo.class, Filter.INCLUDE);
     }
 
     private Set<String> getWorkspacesMatchingFilter() {
         Set<String> matchingWs = new HashSet<>();
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         Filter nameMatch = buildSearchFilter("name");
 
         try (CloseableIterator<WorkspaceInfo> it =
@@ -536,7 +534,7 @@ public class NavigationTreePanel extends Panel {
                 matchingWs.add(it.next().getName());
             }
         }
-        Filter layerMatch = ff.and(ff.not(ff.isNull(ff.property("resource.store.workspace.name"))), nameMatch);
+        Filter layerMatch = FF.and(FF.not(FF.isNull(FF.property("resource.store.workspace.name"))), nameMatch);
         try (CloseableIterator<LayerInfo> it = getCatalog().list(LayerInfo.class, layerMatch, 0, SEARCH_LIMIT, null)) {
             while (it.hasNext()) {
                 LayerInfo layer = it.next();
@@ -547,7 +545,7 @@ public class NavigationTreePanel extends Panel {
             }
         }
 
-        Filter groupMatch = ff.and(ff.not(ff.isNull(ff.property("workspace.name"))), nameMatch);
+        Filter groupMatch = FF.and(FF.not(FF.isNull(FF.property("workspace.name"))), nameMatch);
         try (CloseableIterator<LayerGroupInfo> it =
                 getCatalog().list(LayerGroupInfo.class, groupMatch, 0, SEARCH_LIMIT, null)) {
             while (it.hasNext()) {
@@ -559,12 +557,25 @@ public class NavigationTreePanel extends Panel {
         return matchingWs;
     }
 
+    private Set<String> matchingWorkspaces() {
+        if (cachedMatchingWorkspaces == null) {
+            cachedMatchingWorkspaces = getWorkspacesMatchingFilter();
+        }
+        return cachedMatchingWorkspaces;
+    }
+
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(CSS));
         response.render(JavaScriptHeaderItem.forReference(JS));
         response.render(OnDomReadyHeaderItem.forScript(initCall()));
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        cachedMatchingWorkspaces = null;
     }
 
     @Override
@@ -603,22 +614,21 @@ public class NavigationTreePanel extends Panel {
     private int findGlobalChildIndex(String childName) {
         if (childName == null) return -1;
 
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-        Filter comesBefore = ff.less(ff.property("name"), ff.literal(childName));
+        Filter comesBefore = FF.less(FF.property("name"), FF.literal(childName));
 
         LayerInfo layer = getCatalog().getLayerByName(childName);
         if (layer != null
                 && (layer.getResource() == null
                         || layer.getResource().getStore() == null
                         || layer.getResource().getStore().getWorkspace() == null)) {
-            Filter precedingFilter = ff.and(buildGlobalLayerFilter(), comesBefore);
+            Filter precedingFilter = FF.and(buildGlobalLayerFilter(), comesBefore);
             return getCatalog().count(LayerInfo.class, precedingFilter);
         }
 
         LayerGroupInfo group = getCatalog().getLayerGroupByName(childName);
         if (group != null && group.getWorkspace() == null) {
             int totalGlobalLayers = getCatalog().count(LayerInfo.class, buildGlobalLayerFilter());
-            Filter precedingFilter = ff.and(buildGlobalGroupFilter(), comesBefore);
+            Filter precedingFilter = FF.and(buildGlobalGroupFilter(), comesBefore);
             int precedingGroups = getCatalog().count(LayerGroupInfo.class, precedingFilter);
             return totalGlobalLayers + precedingGroups;
         }
@@ -629,8 +639,7 @@ public class NavigationTreePanel extends Panel {
     private int findWorkspaceChildIndex(String workspaceName, String childName) {
         if (childName == null) return -1;
 
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-        Filter comesBefore = ff.less(ff.property("name"), ff.literal(childName));
+        Filter comesBefore = FF.less(FF.property("name"), FF.literal(childName));
 
         LayerInfo layer = getCatalog().getLayerByName(childName);
         if (layer != null
@@ -638,7 +647,7 @@ public class NavigationTreePanel extends Panel {
                 && layer.getResource().getStore() != null
                 && workspaceName.equals(
                         layer.getResource().getStore().getWorkspace().getName())) {
-            Filter precedingFilter = ff.and(buildWorkspaceLayerFilter(workspaceName), comesBefore);
+            Filter precedingFilter = FF.and(buildWorkspaceLayerFilter(workspaceName), comesBefore);
             return getCatalog().count(LayerInfo.class, precedingFilter);
         }
 
@@ -647,7 +656,7 @@ public class NavigationTreePanel extends Panel {
                 && group.getWorkspace() != null
                 && workspaceName.equals(group.getWorkspace().getName())) {
             int totalWorkspaceLayers = getCatalog().count(LayerInfo.class, buildWorkspaceLayerFilter(workspaceName));
-            Filter precedingFilter = ff.and(buildWorkspaceGroupFilter(workspaceName), comesBefore);
+            Filter precedingFilter = FF.and(buildWorkspaceGroupFilter(workspaceName), comesBefore);
             int precedingGroups = getCatalog().count(LayerGroupInfo.class, precedingFilter);
             return totalWorkspaceLayers + precedingGroups;
         }
@@ -681,7 +690,7 @@ public class NavigationTreePanel extends Panel {
         }
 
         if (hasActiveTreeFilter()) {
-            List<String> sortedNames = new ArrayList<>(getWorkspacesMatchingFilter());
+            List<String> sortedNames = new ArrayList<>(matchingWorkspaces());
             sortedNames.sort(String::compareTo);
 
             List<Workspace> result = new ArrayList<>();
@@ -698,8 +707,8 @@ public class NavigationTreePanel extends Panel {
 
         int offset = Math.max(0, (workspacesPage - 1) * workspacesPageSize);
         List<Workspace> result = new ArrayList<>();
-        try (CloseableIterator<WorkspaceInfo> it = getCatalog()
-                .list(WorkspaceInfo.class, Filter.INCLUDE, offset, workspacesPageSize, getAlphabeticalSort())) {
+        try (CloseableIterator<WorkspaceInfo> it =
+                getCatalog().list(WorkspaceInfo.class, Filter.INCLUDE, offset, workspacesPageSize, ALPHABETICAL)) {
             while (it.hasNext()) {
                 WorkspaceInfo wi = it.next();
                 WorkspaceState state = workspaceStates.computeIfAbsent(wi.getName(), n -> new WorkspaceState());
@@ -773,7 +782,6 @@ public class NavigationTreePanel extends Panel {
     }
 
     private enum ChildType {
-        WORKSPACE,
         LAYER,
         LAYER_GROUP
     }
@@ -794,7 +802,6 @@ public class NavigationTreePanel extends Panel {
     private static WebComponent childIcon(String id, ChildType type) {
         String path =
                 switch (type) {
-                    case WORKSPACE -> "img/icons/silk/folder.png";
                     case LAYER -> "img/icons/silk/picture_empty.png";
                     case LAYER_GROUP -> "img/icons/silk/layers.png";
                 };
@@ -820,7 +827,7 @@ public class NavigationTreePanel extends Panel {
                             buildWorkspaceLayerFilter(workspaceName),
                             offset,
                             layersToTake,
-                            getAlphabeticalSort())) {
+                            ALPHABETICAL)) {
                 while (it.hasNext()) {
                     children.add(new WorkspaceChild(it.next().getName(), ChildType.LAYER));
                 }
@@ -836,7 +843,7 @@ public class NavigationTreePanel extends Panel {
                             buildWorkspaceGroupFilter(workspaceName),
                             offsetInGroups,
                             remaining,
-                            getAlphabeticalSort())) {
+                            ALPHABETICAL)) {
                 while (it.hasNext()) {
                     children.add(new WorkspaceChild(it.next().getName(), ChildType.LAYER_GROUP));
                 }
@@ -858,8 +865,8 @@ public class NavigationTreePanel extends Panel {
 
         if (offset < layerCount) {
             int layersToTake = Math.min(remaining, layerCount - offset);
-            try (CloseableIterator<LayerInfo> it = getCatalog()
-                    .list(LayerInfo.class, buildGlobalLayerFilter(), offset, layersToTake, getAlphabeticalSort())) {
+            try (CloseableIterator<LayerInfo> it =
+                    getCatalog().list(LayerInfo.class, buildGlobalLayerFilter(), offset, layersToTake, ALPHABETICAL)) {
                 while (it.hasNext()) {
                     children.add(new WorkspaceChild(it.next().getName(), ChildType.LAYER));
                 }
@@ -870,12 +877,7 @@ public class NavigationTreePanel extends Panel {
         if (remaining > 0) {
             int offsetInGroups = Math.max(0, offset - layerCount);
             try (CloseableIterator<LayerGroupInfo> it = getCatalog()
-                    .list(
-                            LayerGroupInfo.class,
-                            buildGlobalGroupFilter(),
-                            offsetInGroups,
-                            remaining,
-                            getAlphabeticalSort())) {
+                    .list(LayerGroupInfo.class, buildGlobalGroupFilter(), offsetInGroups, remaining, ALPHABETICAL)) {
                 while (it.hasNext()) {
                     children.add(new WorkspaceChild(it.next().getName(), ChildType.LAYER_GROUP));
                 }

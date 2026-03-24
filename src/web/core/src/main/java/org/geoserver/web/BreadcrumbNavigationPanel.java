@@ -52,45 +52,43 @@ public class BreadcrumbNavigationPanel extends Panel {
             }
         };
 
-        LoadableDetachableModel<List<BreadcrumbItem>> breadcrumbModel =
-                new LoadableDetachableModel<>() {
-                    @Override
-                    protected List<BreadcrumbItem> load() {
-                        List<BreadcrumbItem> items = new ArrayList<>();
-                        PageParameters currentParams = getPage().getPageParameters();
+        LoadableDetachableModel<List<BreadcrumbItem>> breadcrumbModel = new LoadableDetachableModel<>() {
+            @Override
+            protected List<BreadcrumbItem> load() {
+                List<BreadcrumbItem> items = new ArrayList<>();
+                PageParameters currentParams = getPage().getPageParameters();
 
-                        String wsName = currentParams.get("workspace").toString(null);
-                        String resourceName = currentParams.get("layer").toString(null);
-                        if (resourceName == null)
-                            resourceName = currentParams.get("name").toString(null);
-                        if (resourceName == null)
-                            resourceName = currentParams.get("group").toString(null);
+                String wsName = currentParams.get("workspace").toString(null);
+                String resourceName = currentParams.get("layer").toString(null);
+                if (resourceName == null)
+                    resourceName = currentParams.get("name").toString(null);
+                if (resourceName == null)
+                    resourceName = currentParams.get("group").toString(null);
 
-                        items.add(
-                                new BreadcrumbItem("Global", GeoServerHomePage.class, new PageParameters(), "GLOBAL"));
+                items.add(new BreadcrumbItem("Global", GeoServerHomePage.class, new PageParameters(), "GLOBAL"));
 
-                        if (wsName != null && !wsName.isEmpty()) {
-                            PageParameters wsParams = new PageParameters();
-                            wsParams.add("workspace", wsName);
-                            items.add(new BreadcrumbItem(wsName, GeoServerHomePage.class, wsParams, "WORKSPACE"));
-                        }
+                if (wsName != null && !wsName.isEmpty()) {
+                    PageParameters wsParams = new PageParameters();
+                    wsParams.add("workspace", wsName);
+                    items.add(new BreadcrumbItem(wsName, GeoServerHomePage.class, wsParams, "WORKSPACE"));
+                }
 
-                        if (resourceName != null && !resourceName.isEmpty()) {
-                            String level = "LAYER";
-                            LayerGroupInfo group = (wsName != null)
-                                    ? getCatalog().getLayerGroupByName(wsName, resourceName)
-                                    : getCatalog().getLayerGroupByName(resourceName);
+                if (resourceName != null && !resourceName.isEmpty()) {
+                    String level = "LAYER";
+                    LayerGroupInfo group = (wsName != null)
+                            ? getCatalog().getLayerGroupByName(wsName, resourceName)
+                            : getCatalog().getLayerGroupByName(resourceName);
 
-                            if (group != null) {
-                                level = "LAYER_GROUP";
-                            }
-
-                            items.add(new BreadcrumbItem(resourceName, null, null, level));
-                        }
-
-                        return items;
+                    if (group != null) {
+                        level = "LAYER_GROUP";
                     }
-                };
+
+                    items.add(new BreadcrumbItem(resourceName, null, null, level));
+                }
+
+                return items;
+            }
+        };
 
         ListView<BreadcrumbItem> breadcrumbList = new ListView<>("breadcrumbs", breadcrumbModel) {
             @Override
@@ -109,8 +107,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                     for (BreadcrumbContextMenuItemInfo bean : allBeans) {
                         if (bean.getTargetLevel().equalsIgnoreCase(bc.getLevel())
                                 && (bean.getAuthorizer() == null
-                                        || bean.getAuthorizer()
-                                                .isAccessAllowed(bean.getComponentClass(), user))) {
+                                        || bean.getAuthorizer().isAccessAllowed(bean.getComponentClass(), user))) {
                             Category cat = bean.getCategory();
                             if (cat == null) {
                                 standalone.add(bean);
@@ -192,29 +189,27 @@ public class BreadcrumbNavigationPanel extends Panel {
                         };
                 contextMenuContainer.add(standaloneList);
 
-                ListView<CategoryGroup> categoryGroupsList =
-                        new ListView<>("categoryGroups", menuData.groups) {
-                            @Override
-                            protected void populateItem(ListItem<CategoryGroup> groupItem) {
-                                CategoryGroup group = groupItem.getModelObject();
+                ListView<CategoryGroup> categoryGroupsList = new ListView<>("categoryGroups", menuData.groups) {
+                    @Override
+                    protected void populateItem(ListItem<CategoryGroup> groupItem) {
+                        CategoryGroup group = groupItem.getModelObject();
 
-                                groupItem.add(new Label(
-                                        "categoryHeader",
-                                        new ResourceModel(group.category.getNameKey(), group.category.getNameKey())));
+                        groupItem.add(new Label(
+                                "categoryHeader",
+                                new ResourceModel(group.category.getNameKey(), group.category.getNameKey())));
 
-                                ListView<BreadcrumbContextMenuItemInfo> categoryItemsList =
-                                        new ListView<>("categoryItems", group.items) {
-                                            @Override
-                                            protected void populateItem(
-                                                    ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem) {
-                                                populateMenuLink(
-                                                        menuItemListItem,
-                                                        getPage().getPageParameters());
-                                            }
-                                        };
-                                groupItem.add(categoryItemsList);
-                            }
-                        };
+                        ListView<BreadcrumbContextMenuItemInfo> categoryItemsList =
+                                new ListView<>("categoryItems", group.items) {
+                                    @Override
+                                    protected void populateItem(
+                                            ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem) {
+                                        populateMenuLink(
+                                                menuItemListItem, getPage().getPageParameters());
+                                    }
+                                };
+                        groupItem.add(categoryItemsList);
+                    }
+                };
                 contextMenuContainer.add(categoryGroupsList);
             }
         };
@@ -244,9 +239,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                 iconComponent = new org.apache.wicket.markup.html.image.ContextImage("menuItemIcon", contextPath);
             } else {
                 iconComponent = new Image(
-                        "menuItemIcon",
-                        new PackageResourceReference(
-                                ctxMenu.getComponentClass(), ctxMenu.getIcon()));
+                        "menuItemIcon", new PackageResourceReference(ctxMenu.getComponentClass(), ctxMenu.getIcon()));
             }
         } else {
             iconComponent = new WebMarkupContainer("menuItemIcon");

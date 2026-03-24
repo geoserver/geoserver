@@ -376,7 +376,7 @@ jobs:
     
     - name: Comment PR with deployment URL
       if: github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true'
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           github.rest.issues.createComment({

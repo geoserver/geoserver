@@ -351,7 +351,7 @@ jobs:
       if: |
         (github.ref == 'refs/heads/main') || 
         (github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true')
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v4
       with:
         path: gh-pages-output
 

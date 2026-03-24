@@ -92,8 +92,8 @@ public class NavigationTreePanel extends Panel {
     private String treeFilterQuery = "";
     private boolean selectionInitialized;
     private transient Set<String> cachedMatchingWorkspaces;
-    private transient int cachedTotalGlobalItems = -1;
-    private transient int cachedTotalWorkspaceItems = -1;
+    private transient Integer cachedTotalGlobalItems;
+    private transient Integer cachedTotalWorkspaceItems;
 
     private static final CssResourceReference CSS =
             new CssResourceReference(NavigationTreePanel.class, "NavigationTreePanel.css");
@@ -508,7 +508,7 @@ public class NavigationTreePanel extends Panel {
     }
 
     private int getTotalGlobalItems() {
-        if (cachedTotalGlobalItems < 0) {
+        if (cachedTotalGlobalItems == null) {
             int layerCount = getCatalog().count(LayerInfo.class, buildGlobalLayerFilter());
             int groupCount = getCatalog().count(LayerGroupInfo.class, buildGlobalGroupFilter());
             cachedTotalGlobalItems = layerCount + groupCount;
@@ -523,7 +523,7 @@ public class NavigationTreePanel extends Panel {
     }
 
     private int getTotalWorkspaceItems() {
-        if (cachedTotalWorkspaceItems < 0) {
+        if (cachedTotalWorkspaceItems == null) {
             if (hasActiveTreeFilter()) {
                 cachedTotalWorkspaceItems = matchingWorkspaces().size();
             } else {
@@ -585,8 +585,8 @@ public class NavigationTreePanel extends Panel {
     protected void onDetach() {
         super.onDetach();
         cachedMatchingWorkspaces = null;
-        cachedTotalGlobalItems = -1;
-        cachedTotalWorkspaceItems = -1;
+        cachedTotalGlobalItems = null;
+        cachedTotalWorkspaceItems = null;
     }
 
     @Override

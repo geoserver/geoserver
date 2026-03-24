@@ -1847,20 +1847,8 @@ public class CatalogImpl implements Catalog {
 
     public static void validateKeywords(List<KeywordInfo> keywords) {
         if (keywords != null) {
-            for (KeywordInfo kw : keywords) {
-                Matcher m = KeywordInfo.RE.matcher(kw.getValue());
-                if (!m.matches()) {
-                    throw new IllegalArgumentException("Illegal keyword '"
-                            + kw
-                            + "'. "
-                            + "Keywords must not be empty and must not contain the '\\' character");
-                }
-                if (kw.getVocabulary() != null) {
-                    m = KeywordInfo.RE.matcher(kw.getVocabulary());
-                    if (!m.matches()) {
-                        throw new IllegalArgumentException("Keyword vocbulary must not contain the '\\' character");
-                    }
-                }
+            for (KeywordInfo keyword : keywords) {
+                KeywordInfo.checkValid(keyword);
             }
         }
     }

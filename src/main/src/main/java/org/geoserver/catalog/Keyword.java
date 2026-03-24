@@ -6,6 +6,7 @@
 package org.geoserver.catalog;
 
 import java.io.Serializable;
+import java.util.regex.Matcher;
 
 public class Keyword implements Serializable, KeywordInfo {
 
@@ -31,6 +32,11 @@ public class Keyword implements Serializable, KeywordInfo {
     @Override
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public void setValue(String keyword){
+        this.value = keyword;
     }
 
     @Override

@@ -4,12 +4,15 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import org.apache.wicket.Page;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
-@SuppressWarnings("serial")
 public class BreadcrumbContextMenuItemInfo extends ComponentInfo<Page>
         implements Comparable<BreadcrumbContextMenuItemInfo> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private int order = 100;
     private String targetLevel = "LAYER";
@@ -57,6 +60,10 @@ public class BreadcrumbContextMenuItemInfo extends ComponentInfo<Page>
     }
 
     public PageParameters getPageParameters(String workspaceName, String resourceName) {
+        return getPageParameters(workspaceName, resourceName, null);
+    }
+
+    public PageParameters getPageParameters(String workspaceName, String resourceName, String level) {
         PageParameters params = new PageParameters();
 
         if (workspaceName != null && !workspaceName.isEmpty()) {
@@ -64,8 +71,15 @@ public class BreadcrumbContextMenuItemInfo extends ComponentInfo<Page>
         }
 
         if (resourceName != null && !resourceName.isEmpty()) {
-            params.add("layer", resourceName);
-            params.add("group", resourceName);
+            if ("LAYER_GROUP".equals(level)) {
+                params.add("group", resourceName);
+            } else if ("LAYER".equals(level)) {
+                params.add("layer", resourceName);
+            } else {
+                // Fallback: add both for backward compatibility
+                params.add("layer", resourceName);
+                params.add("group", resourceName);
+            }
         }
         return params;
     }

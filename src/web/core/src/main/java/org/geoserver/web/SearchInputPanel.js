@@ -142,8 +142,8 @@ function initSearchInputPanel(containerId, inputId, callbackUrl, autocompleteEna
         }
     });
 
-    // Click outside to close
-    $(document).on('click', function(e) {
+    // Click outside to close (unbind first to avoid duplicate handlers on AJAX re-init)
+    $(document).off('click.gsSearchInput').on('click.gsSearchInput', function(e) {
         if (!$(e.target).closest('.custom-search-wrapper').length) {
             toggleDropdown(false);
         }

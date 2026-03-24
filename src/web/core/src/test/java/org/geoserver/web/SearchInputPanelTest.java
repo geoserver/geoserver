@@ -4,6 +4,7 @@
  */
 package org.geoserver.web;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -82,5 +83,45 @@ public class SearchInputPanelTest extends GeoServerWicketTestSupport {
         assertNotNull(results);
         // Empty query should return empty results
         assertTrue(results.getList().isEmpty());
+    }
+
+    @Test
+    public void testEscapeForJsStringNull() {
+        assertEquals("", SearchInputPanel.escapeForJsString(null));
+    }
+
+    @Test
+    public void testEscapeForJsStringSingleQuote() {
+        assertEquals("\\'", SearchInputPanel.escapeForJsString("'"));
+    }
+
+    @Test
+    public void testEscapeForJsStringBackslash() {
+        assertEquals("\\\\", SearchInputPanel.escapeForJsString("\\"));
+    }
+
+    @Test
+    public void testEscapeForJsStringNewlines() {
+        assertEquals("\\n\\r", SearchInputPanel.escapeForJsString("\n\r"));
+    }
+
+    @Test
+    public void testEscapeForJsStringSlash() {
+        assertEquals("\\/script", SearchInputPanel.escapeForJsString("/script"));
+    }
+
+    @Test
+    public void testEscapeForJsStringLineSeparators() {
+        assertEquals("\\u2028\\u2029", SearchInputPanel.escapeForJsString("\u2028\u2029"));
+    }
+
+    @Test
+    public void testEscapeForJsStringMixed() {
+        String input = "it's a \"test\" with \\ and /";
+        String escaped = SearchInputPanel.escapeForJsString(input);
+        assertTrue(escaped.contains("\\'"));
+        assertTrue(escaped.contains("\\\""));
+        assertTrue(escaped.contains("\\\\"));
+        assertTrue(escaped.contains("\\/"));
     }
 }

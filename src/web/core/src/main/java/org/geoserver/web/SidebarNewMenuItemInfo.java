@@ -1,9 +1,16 @@
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web;
 
+import java.io.Serial;
 import org.apache.wicket.Page;
 
-@SuppressWarnings("serial")
 public class SidebarNewMenuItemInfo extends ComponentInfo<Page> implements Comparable<SidebarNewMenuItemInfo> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private int order = 100;
     private Category category;

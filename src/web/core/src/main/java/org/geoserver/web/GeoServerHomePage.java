@@ -691,6 +691,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         Catalog catalog = getGeoServer().getCatalog();
         if (workspaceInfo != null) {
             NamespaceInfo namespaceInfo = catalog.getNamespaceByPrefix(workspaceInfo.getName());
+            if (namespaceInfo == null) {
+                return null;
+            }
             LayerInfo layerInfo = catalog.getLayerByName(new NameImpl(namespaceInfo.getURI(), layerName));
             if (layerInfo != null) {
                 return layerInfo;

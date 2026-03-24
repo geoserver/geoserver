@@ -169,4 +169,44 @@ public class BreadcrumbContextMenuItemInfoTest {
         assertNotNull(info.getAuthorizer());
         assertEquals(ComponentAuthorizer.ALLOW, info.getAuthorizer());
     }
+
+    @Test
+    public void testGetPageParametersWithLevelLayer() {
+        BreadcrumbContextMenuItemInfo info = new BreadcrumbContextMenuItemInfo();
+        PageParameters params = info.getPageParameters("ws", "myLayer", "LAYER");
+
+        assertEquals("ws", params.get("workspace").toString());
+        assertEquals("myLayer", params.get("layer").toString());
+        assertTrue(params.get("group").isNull());
+    }
+
+    @Test
+    public void testGetPageParametersWithLevelLayerGroup() {
+        BreadcrumbContextMenuItemInfo info = new BreadcrumbContextMenuItemInfo();
+        PageParameters params = info.getPageParameters("ws", "myGroup", "LAYER_GROUP");
+
+        assertEquals("ws", params.get("workspace").toString());
+        assertTrue(params.get("layer").isNull());
+        assertEquals("myGroup", params.get("group").toString());
+    }
+
+    @Test
+    public void testGetPageParametersWithUnknownLevel() {
+        BreadcrumbContextMenuItemInfo info = new BreadcrumbContextMenuItemInfo();
+        PageParameters params = info.getPageParameters("ws", "res", "WORKSPACE");
+
+        assertEquals("ws", params.get("workspace").toString());
+        assertEquals("res", params.get("layer").toString());
+        assertEquals("res", params.get("group").toString());
+    }
+
+    @Test
+    public void testGetPageParametersWithNullLevel() {
+        BreadcrumbContextMenuItemInfo info = new BreadcrumbContextMenuItemInfo();
+        PageParameters params = info.getPageParameters("ws", "res", null);
+
+        assertEquals("ws", params.get("workspace").toString());
+        assertEquals("res", params.get("layer").toString());
+        assertEquals("res", params.get("group").toString());
+    }
 }

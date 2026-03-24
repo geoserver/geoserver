@@ -65,7 +65,11 @@ public class BreadcrumbNavigationPanel extends Panel {
                 if (resourceName == null)
                     resourceName = currentParams.get("group").toString(null);
 
-                items.add(new BreadcrumbItem("Global", GeoServerHomePage.class, new PageParameters(), "GLOBAL"));
+                items.add(new BreadcrumbItem(
+                        getString("BreadcrumbNavigationPanel.global", null, "Global"),
+                        GeoServerHomePage.class,
+                        new PageParameters(),
+                        "GLOBAL"));
 
                 if (wsName != null && !wsName.isEmpty()) {
                     PageParameters wsParams = new PageParameters();
@@ -178,7 +182,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                 item.add(contextMenuContainer);
 
                 contextMenuContainer.add(new Image("menuIcon", iconRef));
-                contextMenuContainer.add(new Label("currentLabel", bc.getLabel() + " ▾"));
+                contextMenuContainer.add(new Label("currentLabel", bc.getLabel()));
 
                 ListView<BreadcrumbContextMenuItemInfo> standaloneList =
                         new ListView<>("standaloneItems", menuData.standalone) {
@@ -305,8 +309,8 @@ public class BreadcrumbNavigationPanel extends Panel {
         @Serial
         private static final long serialVersionUID = 1L;
 
-        List<BreadcrumbContextMenuItemInfo> standalone;
-        List<CategoryGroup> groups;
+        final List<BreadcrumbContextMenuItemInfo> standalone;
+        final List<CategoryGroup> groups;
 
         DropdownMenuData(List<BreadcrumbContextMenuItemInfo> standalone, List<CategoryGroup> groups) {
             this.standalone = standalone;
@@ -322,8 +326,8 @@ public class BreadcrumbNavigationPanel extends Panel {
         @Serial
         private static final long serialVersionUID = 1L;
 
-        Category category;
-        List<BreadcrumbContextMenuItemInfo> items;
+        final Category category;
+        final List<BreadcrumbContextMenuItemInfo> items;
 
         CategoryGroup(Category category, List<BreadcrumbContextMenuItemInfo> items) {
             this.category = category;

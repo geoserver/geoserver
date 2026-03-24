@@ -72,9 +72,11 @@ public class SearchInputPanel extends Panel {
                 String selectedWorkspace =
                         getPage().getPageParameters().get("workspace").toOptionalString();
                 if (Strings.isEmpty(selectedWorkspace)) {
-                    return "Search...";
+                    return getString("SearchInputPanel.placeholder", null, "Search...");
                 }
-                return "Search in " + selectedWorkspace + "...";
+                return getString(
+                                "SearchInputPanel.placeholderWorkspace", null, "Search in " + selectedWorkspace + "...")
+                        .replace("${workspace}", selectedWorkspace);
             }
         }));
         add(searchInput);
@@ -83,43 +85,42 @@ public class SearchInputPanel extends Panel {
         resultsContainer.setOutputMarkupId(true);
         add(resultsContainer);
 
-        initialResults =
-                new ListView<>("initialResults", new LoadableDetachableModel<List<SearchResult>>() {
-                    @Override
-                    protected List<SearchResult> load() {
-                        if (Strings.isEmpty(currentQuery)) return new ArrayList<>();
-                        return fetchResults(currentQuery, 0, PAGE_SIZE);
-                    }
-                }) {
-                    @Override
-                    protected void populateItem(ListItem<SearchResult> item) {
-                        SearchResult result = item.getModelObject();
+        LoadableDetachableModel<List<SearchResult>> resultsModel = new LoadableDetachableModel<>() {
+            @Override
+            protected List<SearchResult> load() {
+                if (Strings.isEmpty(currentQuery)) return new ArrayList<>();
+                return fetchResults(currentQuery, 0, PAGE_SIZE);
+            }
+        };
+        initialResults = new ListView<>("initialResults", resultsModel) {
+            @Override
+            protected void populateItem(ListItem<SearchResult> item) {
+                SearchResult result = item.getModelObject();
 
-                        String iconPath;
-                        if ("workspace".equals(result.type)) {
-                            iconPath = "img/icons/silk/folder.png";
-                        } else if ("layer".equals(result.type)) {
-                            iconPath = "img/icons/silk/picture_empty.png";
-                        } else if ("layerGroup".equals(result.type)) {
-                            iconPath = "img/icons/silk/layers.png";
-                        } else {
-                            iconPath = "img/icons/silk/help.png";
-                        }
-                        item.add(
-                                new Image("itemIcon", new PackageResourceReference(GeoServerBasePage.class, iconPath)));
+                String iconPath;
+                if ("workspace".equals(result.type)) {
+                    iconPath = "img/icons/silk/folder.png";
+                } else if ("layer".equals(result.type)) {
+                    iconPath = "img/icons/silk/picture_empty.png";
+                } else if ("layerGroup".equals(result.type)) {
+                    iconPath = "img/icons/silk/layers.png";
+                } else {
+                    iconPath = "img/icons/silk/help.png";
+                }
+                item.add(new Image("itemIcon", new PackageResourceReference(GeoServerBasePage.class, iconPath)));
 
-                        Label itemLabel = new Label("itemLabel", highlightLabel(result.label, currentQuery));
-                        itemLabel.setEscapeModelStrings(false);
-                        item.add(itemLabel);
-                        item.add(new org.apache.wicket.AttributeModifier("data-type", result.type));
-                        if (result.workspace != null) {
-                            item.add(new org.apache.wicket.AttributeModifier("data-workspace", result.workspace));
-                        }
-                        if (result.layer != null) {
-                            item.add(new org.apache.wicket.AttributeModifier("data-layer", result.layer));
-                        }
-                    }
-                };
+                Label itemLabel = new Label("itemLabel", highlightLabel(result.label, currentQuery));
+                itemLabel.setEscapeModelStrings(false);
+                item.add(itemLabel);
+                item.add(new org.apache.wicket.AttributeModifier("data-type", result.type));
+                if (result.workspace != null) {
+                    item.add(new org.apache.wicket.AttributeModifier("data-workspace", result.workspace));
+                }
+                if (result.layer != null) {
+                    item.add(new org.apache.wicket.AttributeModifier("data-layer", result.layer));
+                }
+            }
+        };
         resultsContainer.add(initialResults);
 
         searchInput.add(new AjaxFormComponentUpdatingBehavior("input") {
@@ -185,6 +186,7 @@ public class SearchInputPanel extends Panel {
                     String safeWs = Strings.escapeMarkup(ws).toString().replace("\"", "&quot;");
                     String safeLayer = Strings.escapeMarkup(layer).toString().replace("\"", "&quot;");
                     String type = result.type == null ? "" : result.type;
+                    String safeType = Strings.escapeMarkup(type).toString().replace("\"", "&quot;");
                     String iconUrl;
                     if ("workspace".equals(type)) {
                         iconUrl = workspaceIconUrl;
@@ -198,7 +200,7 @@ public class SearchInputPanel extends Panel {
                     htmlSnippet
                             .append("<li class=\"search-result-item\" role=\"option\" tabindex=\"-1\"")
                             .append(" data-type=\"")
-                            .append(type)
+                            .append(safeType)
                             .append("\"")
                             .append(" data-workspace=\"")
                             .append(safeWs)
@@ -215,12 +217,7 @@ public class SearchInputPanel extends Panel {
                             .append("</span></li>");
                 }
 
-                String jsEscapedHtml = htmlSnippet
-                        .toString()
-                        .replace("\\", "\\\\")
-                        .replace("'", "\\'")
-                        .replace("\n", "")
-                        .replace("\r", "");
+                String jsEscapedHtml = escapeForJsString(htmlSnippet.toString());
                 target.appendJavaScript(
                         "$('#" + resultsContainer.getMarkupId() + "').append('" + jsEscapedHtml + "');");
                 target.appendJavaScript("$('#" + resultsContainer.getMarkupId() + "').data('hasMore', true);");
@@ -241,9 +238,9 @@ public class SearchInputPanel extends Panel {
 
         String initScript = String.format(
                 "initSearchInputPanel('%s', '%s', '%s', %s);",
-                resultsContainer.getMarkupId(),
-                searchInput.getMarkupId(),
-                loadMoreBehavior.getCallbackUrl(),
+                escapeForJsString(resultsContainer.getMarkupId()),
+                escapeForJsString(searchInput.getMarkupId()),
+                escapeForJsString(loadMoreBehavior.getCallbackUrl().toString()),
                 autocompleteEnabled);
 
         response.render(OnDomReadyHeaderItem.forScript(initScript));
@@ -385,5 +382,19 @@ public class SearchInputPanel extends Panel {
             out.append(Strings.escapeMarkup(label.substring(start)));
         }
         return out.toString();
+    }
+
+    /** Escape a string for safe embedding inside a JavaScript single-quoted string literal. */
+    static String escapeForJsString(String value) {
+        if (value == null) return "";
+        return value.replace("\\", "\\\\")
+                .replace("'", "\\'")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t")
+                .replace("/", "\\/")
+                .replace("\u2028", "\\u2028")
+                .replace("\u2029", "\\u2029");
     }
 }

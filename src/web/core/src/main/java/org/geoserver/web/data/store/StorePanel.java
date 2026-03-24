@@ -108,6 +108,9 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         IModel storeNameModel = NAME.getModel(itemModel);
         String storeName = (String) storeNameModel.getObject();
         StoreInfo store = getCatalog().getStoreByName(wsName, storeName, StoreInfo.class);
+        if (store == null) {
+            return new Label(id, storeNameModel);
+        }
         if (store instanceof DataStoreInfo) {
             return new SimpleBookmarkableLink(
                     id,

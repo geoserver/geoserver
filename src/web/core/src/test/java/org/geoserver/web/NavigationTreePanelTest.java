@@ -66,7 +66,7 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
         ListView<?> wsList = (ListView<?>) tester.getComponentFromLastRenderedPage(
                 "form:panel:workspacesSectionContainer:workspacesSectionBody:workspacesScroll:workspaces");
         assertNotNull(wsList);
-        assertTrue("Expected workspaces in test catalog", wsList.getList().size() > 0);
+        assertFalse("Expected workspaces in test catalog", wsList.getList().isEmpty());
     }
 
     @Test

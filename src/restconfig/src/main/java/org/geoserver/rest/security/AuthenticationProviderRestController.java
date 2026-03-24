@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -32,6 +34,7 @@ import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -99,6 +102,7 @@ import tools.jackson.databind.node.ObjectNode;
 @RestController
 @RequestMapping(RestBaseController.ROOT_PATH + "/security/authproviders")
 public class AuthenticationProviderRestController extends RestBaseController {
+    private static final Logger LOGGER = Logging.getLogger(AuthenticationProviderRestController.class);
 
     /**
      * Accept provider names with optional ".xml" / ".json" extension, but block "order(.ext)" which is reserved for the
@@ -406,6 +410,11 @@ public class AuthenticationProviderRestController extends RestBaseController {
     @SuppressWarnings("unchecked")
     private Class<? extends SecurityAuthProviderConfig> resolveConfigClass(String className) {
         return CONFIG_CACHE.computeIfAbsent(className, cn -> {
+            if (!AllowedAuthenticationProviderClasses.isAllowed(cn)) {
+                logRejectedProviderClass("className", cn, null);
+                return null;
+            }
+
             // A) className is already a config class
             try {
                 Class<?> c = Class.forName(cn);
@@ -422,6 +431,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
                 String[] candidates = getCandidates(provider);
 
                 for (String fqn : candidates) {
+                    if (!AllowedAuthenticationProviderClasses.isAllowed(fqn)) continue;
                     try {
                         Class<?> cfg = Class.forName(fqn);
                         if (SecurityAuthProviderConfig.class.isAssignableFrom(cfg)) {
@@ -488,10 +498,14 @@ public class AuthenticationProviderRestController extends RestBaseController {
         if (!n.isObject()) throw new BadRequest("Malformed JSON payload");
 
         Class<? extends SecurityAuthProviderConfig> type = null;
+        String providerName = n.path("name").asString(null);
 
         // Optional explicit override for the config class
         String explicitCfg = n.path("configClassName").asString(null);
         if (explicitCfg != null && !explicitCfg.isBlank()) {
+            if (!AllowedAuthenticationProviderClasses.isAllowed(explicitCfg)) {
+                throw rejectedProviderClass("configClassName", explicitCfg, providerName);
+            }
             try {
                 Class<?> c = Class.forName(explicitCfg);
                 if (!SecurityAuthProviderConfig.class.isAssignableFrom(c)) {
@@ -511,6 +525,9 @@ public class AuthenticationProviderRestController extends RestBaseController {
             String fqn = e.getKey();
             JsonNode inner = e.getValue();
             if (!inner.isObject()) throw new BadRequest("Malformed JSON payload");
+            if (!AllowedAuthenticationProviderClasses.isAllowed(fqn)) {
+                throw rejectedProviderClass("className", fqn, providerName);
+            }
 
             ObjectNode innerObj = ((ObjectNode) inner).deepCopy();
             try {
@@ -540,11 +557,14 @@ public class AuthenticationProviderRestController extends RestBaseController {
         if (className == null || className.isBlank()) {
             throw new BadRequest("Missing 'className' in JSON payload");
         }
+        if (!AllowedAuthenticationProviderClasses.isAllowed(className)) {
+            throw rejectedProviderClass("className", className, providerName);
+        }
 
         if (type == null) {
             type = resolveConfigClass(className);
             if (type == null) {
-                throw new BadRequest("Unsupported className: " + className);
+                throw new BadRequest("Unsupported className");
             }
         }
 
@@ -552,6 +572,35 @@ public class AuthenticationProviderRestController extends RestBaseController {
         // Light validation here; detailed checks are performed by GeoServerSecurityManager validators
         ensureNotReserved(cfg.getName());
         return cfg;
+    }
+
+    /**
+     * Creates a client error for a rejected authentication provider class and logs the rejected request context.
+     *
+     * @param fieldName the payload field containing the rejected class name
+     * @param className the rejected class name
+     * @param providerName the provider name supplied in the payload, if present
+     * @return a bad-request exception describing the rejected field
+     */
+    private BadRequest rejectedProviderClass(String fieldName, String className, String providerName) {
+        logRejectedProviderClass(fieldName, className, providerName);
+        if ("configClassName".equals(fieldName)) {
+            return new BadRequest("Unsupported configClassName");
+        }
+        return new BadRequest("Unsupported className");
+    }
+
+    /**
+     * Logs a rejected authentication provider class with the available request context.
+     *
+     * @param fieldName the payload field containing the rejected class name
+     * @param className the rejected class name
+     * @param providerName the provider name supplied in the payload, if present
+     */
+    private void logRejectedProviderClass(String fieldName, String className, String providerName) {
+        LOGGER.log(Level.WARNING, "Rejected authentication provider {0} value {1} for provider {2}", new Object[] {
+            fieldName, className, providerName
+        });
     }
 
     private List<String> parseOrder(HttpServletRequest req) throws IOException {

@@ -66,6 +66,7 @@ import tools.jackson.databind.ObjectMapper;
 public class AuthenticationProviderRestControllerTest extends GeoServerTestSupport {
 
     private static final String TEST_PROVIDER_PREFIX = "TEST-";
+    private static final String ALLOWED_PROVIDER_PROPERTY = "geoserver.security.allowedAuthenticationProviderClasses";
 
     private AuthenticationProviderRestController controller;
     private AuthenticationProviderHelper authenticationProviderHelper;
@@ -140,6 +141,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             }
         } finally {
             created.clear();
+            System.clearProperty(ALLOWED_PROVIDER_PROPERTY);
             SecurityContextHolder.clearContext();
         }
     }
@@ -355,6 +357,45 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         setUser();
         Map<String, Object> inner = new LinkedHashMap<>();
         inner.put("name", generateName("bad"));
+        controller.create(
+                jsonRequest(Collections.singletonMap("authprovider", inner)), null, UriComponentsBuilder.newInstance());
+    }
+
+    /** create(JSON): blocked explicit configClassName -> 400 BadRequest. */
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
+    public void testCreate_JSON_blockedConfigClassName() throws Exception {
+        setUser();
+        Map<String, Object> inner = new LinkedHashMap<>();
+        inner.put("name", generateName("badcfg"));
+        inner.put("className", "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider");
+        inner.put("configClassName", "java.lang.Runtime");
+        controller.create(
+                jsonRequest(Collections.singletonMap("authprovider", inner)), null, UriComponentsBuilder.newInstance());
+    }
+
+    /** create(JSON): blocked legacy wrapper FQN -> 400 BadRequest. */
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
+    public void testCreate_JSON_blockedLegacyWrapperClassName() throws Exception {
+        setUser();
+        Map<String, Object> wrapped = new LinkedHashMap<>();
+        wrapped.put("name", generateName("badwrap"));
+        wrapped.put("userGroupServiceName", "default");
+
+        Map<String, Object> root = new LinkedHashMap<>();
+        root.put("authprovider", Collections.singletonMap("java.lang.Runtime", wrapped));
+        controller.create(jsonRequest(root), null, UriComponentsBuilder.newInstance());
+    }
+
+    /** create(JSON): allowed provider class with blocked derived config candidates -> 400 BadRequest. */
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
+    public void testCreate_JSON_allowedProviderWithBlockedDerivedConfigCandidates() throws Exception {
+        setUser();
+        System.setProperty(ALLOWED_PROVIDER_PROPERTY, AuthenticationProviderRestControllerTest.class.getName());
+
+        Map<String, Object> inner = new LinkedHashMap<>();
+        inner.put("name", generateName("derived"));
+        inner.put("className", AuthenticationProviderRestControllerTest.class.getName());
+
         controller.create(
                 jsonRequest(Collections.singletonMap("authprovider", inner)), null, UriComponentsBuilder.newInstance());
     }

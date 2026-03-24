@@ -580,9 +580,13 @@
     <bean id="OpenLayers3MapProducer" class="org.geoserver.wms.map.OpenLayers3MapOutputFormat">
       <constructor-arg index="0" ref="wms" />
     </bean>
+    <bean id="OpenLayers10MapProducer" class="org.geoserver.wms.map.OpenLayers10MapOutputFormat">
+      <constructor-arg index="0" ref="wms" />
+    </bean>
     <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
       <constructor-arg index="0" ref="OpenLayers2MapProducer" />
       <constructor-arg index="1" ref="OpenLayers3MapProducer" />
+      <constructor-arg index="2" ref="OpenLayers10MapProducer" />
     </bean>
     <bean id="RawMapResponse" class="org.geoserver.wms.map.RawMapResponse">
     </bean>
@@ -677,6 +681,7 @@
        <props>
         <prop key="/openlayers/**">classpathPublisher</prop>
         <prop key="/openlayers3/**">classpathPublisher</prop>
+        <prop key="/openlayers10/**">classpathPublisher</prop>
         <prop key="/options.png">classpathPublisher</prop>
        </props>
      </property>

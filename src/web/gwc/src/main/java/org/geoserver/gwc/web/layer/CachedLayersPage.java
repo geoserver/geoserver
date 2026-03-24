@@ -97,7 +97,6 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             return filtered;
         }
     };
-    ;
 
     private GeoServerTablePanel<TileLayer> table;
 

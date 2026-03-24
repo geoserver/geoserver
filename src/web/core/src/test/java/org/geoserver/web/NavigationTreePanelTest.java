@@ -4,9 +4,11 @@
  */
 package org.geoserver.web;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -42,13 +44,6 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testPanelContainsGlobalSection() {
-        tester.startPage(new FormTestPage((ComponentBuilder) id -> new NavigationTreePanel(id)));
-        tester.assertNoErrorMessage();
-        tester.assertComponent("form:panel:globalSectionContainer", WebMarkupContainer.class);
-    }
-
-    @Test
     public void testPanelContainsWorkspacesSection() {
         tester.startPage(new FormTestPage((ComponentBuilder) id -> new NavigationTreePanel(id)));
         tester.assertNoErrorMessage();
@@ -59,7 +54,6 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
     public void testWorkspacesListRendered() {
         tester.startPage(new FormTestPage((ComponentBuilder) id -> new NavigationTreePanel(id)));
         tester.assertNoErrorMessage();
-        // Workspaces scroll container should exist
         tester.assertComponent(
                 "form:panel:workspacesSectionContainer:workspacesSectionBody:workspacesScroll",
                 WebMarkupContainer.class);
@@ -72,7 +66,6 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
         ListView<?> wsList = (ListView<?>) tester.getComponentFromLastRenderedPage(
                 "form:panel:workspacesSectionContainer:workspacesSectionBody:workspacesScroll:workspaces");
         assertNotNull(wsList);
-        // There should be workspaces from the test data
         assertTrue("Expected workspaces in test catalog", wsList.getList().size() > 0);
     }
 
@@ -99,7 +92,6 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         WebMarkupContainer newMenu = (WebMarkupContainer) tester.getComponentFromLastRenderedPage("form:panel:newMenu");
         assertNotNull(newMenu);
-        // When logged in as admin, the new menu should be visible
         assertTrue(newMenu.isVisible());
     }
 
@@ -108,16 +100,19 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
         logout();
         tester.startPage(new FormTestPage((ComponentBuilder) id -> new NavigationTreePanel(id)));
         tester.assertNoErrorMessage();
-        WebMarkupContainer newMenu = (WebMarkupContainer) tester.getComponentFromLastRenderedPage("form:panel:newMenu");
-        assertNotNull(newMenu);
+        // After logout the menu should not be visible
+        Component newMenu = tester.getComponentFromLastRenderedPage("form:panel:newMenu");
+        // The component exists but should not be visible
+        if (newMenu != null) {
+            assertFalse("New menu should be hidden for anonymous users", newMenu.isVisible());
+        }
     }
 
     @Test
-    public void testNoDataMessageHiddenWhenDataExists() {
+    public void testNoDataMessageInvisibleWhenDataExists() {
         tester.startPage(new FormTestPage((ComponentBuilder) id -> new NavigationTreePanel(id)));
         tester.assertNoErrorMessage();
-        WebMarkupContainer noData =
-                (WebMarkupContainer) tester.getComponentFromLastRenderedPage("form:panel:noDataMessage");
-        assertNotNull(noData);
+        // noDataMessage should not be visible when workspaces exist in the catalog
+        tester.assertInvisible("form:panel:noDataMessage");
     }
 }

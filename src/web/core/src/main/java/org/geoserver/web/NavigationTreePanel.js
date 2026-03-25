@@ -180,4 +180,14 @@ function initNavigationTreePanel(workspacesScrollId, callbackUrl) {
             Wicket.Ajax.get({ u: url });
         }, 150);
     });
+
+    // Keyboard accessibility for expandable/collapsible section toggles.
+    $(document)
+        .off('keydown.gsNavTreeToggle')
+        .on('keydown.gsNavTreeToggle', '.gs-toggle-button[role="button"]', function (e) {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar') {
+                e.preventDefault();
+                this.click();
+            }
+        });
 }

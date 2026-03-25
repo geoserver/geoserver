@@ -153,10 +153,16 @@ public class NavigationTreePanel extends Panel {
             }
         };
         globalSectionBody.setOutputMarkupPlaceholderTag(true);
+        globalSectionBody.setOutputMarkupId(true);
         globalSectionContainer.add(globalSectionBody);
 
         globalToggle = new WebMarkupContainer("globalSectionToggle");
         globalToggle.setOutputMarkupId(true);
+        globalToggle.add(
+                new org.apache.wicket.AttributeModifier(
+                        "aria-expanded", () -> isGlobalExpanded() ? "true" : "false"));
+        globalToggle.add(
+                new org.apache.wicket.AttributeModifier("aria-controls", () -> globalSectionBody.getMarkupId()));
         globalToggle.add(new AjaxEventBehavior("click") {
             @Override
             protected void onEvent(AjaxRequestTarget target) {
@@ -240,10 +246,17 @@ public class NavigationTreePanel extends Panel {
             }
         };
         workspacesSectionBody.setOutputMarkupPlaceholderTag(true);
+        workspacesSectionBody.setOutputMarkupId(true);
         workspacesSectionContainer.add(workspacesSectionBody);
 
         workspacesToggle = new WebMarkupContainer("workspacesSectionToggle");
         workspacesToggle.setOutputMarkupId(true);
+        workspacesToggle.add(
+                new org.apache.wicket.AttributeModifier(
+                        "aria-expanded", () -> workspacesExpanded ? "true" : "false"));
+        workspacesToggle.add(
+                new org.apache.wicket.AttributeModifier(
+                        "aria-controls", () -> workspacesSectionBody.getMarkupId()));
         workspacesToggle.add(new AjaxEventBehavior("click") {
             @Override
             protected void onEvent(AjaxRequestTarget target) {
@@ -350,6 +363,12 @@ public class NavigationTreePanel extends Panel {
                     }
                 };
                 layersScroll.setOutputMarkupId(true);
+                toggle.add(
+                        new org.apache.wicket.AttributeModifier(
+                                "aria-expanded", () -> ws.expanded ? "true" : "false"));
+                toggle.add(
+                        new org.apache.wicket.AttributeModifier(
+                                "aria-controls", () -> layersScroll.getMarkupId()));
                 layersScroll.add(new org.apache.wicket.AttributeModifier("data-kind", "layers"));
                 layersScroll.add(new org.apache.wicket.AttributeModifier("data-workspace", ws.name));
                 item.add(layersScroll);

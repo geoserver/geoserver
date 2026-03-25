@@ -24,6 +24,7 @@ The following links provide direct access to the GeoServer REST API documentatio
 * :api:`/datastores <datastores.yaml>`
 * :api:`/coverages <coverages.yaml>`
 * :api:`/coveragestores <coveragestores.yaml>`
+* :api:`/crs <crs.yaml>`
 * :api:`/featuretypes <featuretypes.yaml>`
 * :api:`/fonts <fonts.yaml>`
 * :api:`/layergroups <layergroups.yaml>`

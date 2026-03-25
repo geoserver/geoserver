@@ -319,6 +319,9 @@ public class GeoServerApplication extends WebApplication
                         .setRenderStrategy(
                                 defaultIsRedirect ? RenderStrategy.REDIRECT_TO_BUFFER : RenderStrategy.ONE_PASS_RENDER);
         }
+
+        // Allow extension points to customize the GeoServerApplication initialization phase
+        getBeansOfType(GeoServerApplicationInitializer.class).forEach(initializer -> initializer.init(this));
     }
 
     @Override

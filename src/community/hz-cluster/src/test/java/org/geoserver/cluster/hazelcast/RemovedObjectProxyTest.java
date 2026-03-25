@@ -44,7 +44,6 @@ public class RemovedObjectProxyTest {
                 // Check that the method is called by accept when the proxy is mimicking the
                 // appropriate type
                 CatalogVisitor visitor = createMock(CatalogVisitor.class);
-                System.err.println(method);
                 method.invoke(visitor, same(info));
                 expectLastCall();
 

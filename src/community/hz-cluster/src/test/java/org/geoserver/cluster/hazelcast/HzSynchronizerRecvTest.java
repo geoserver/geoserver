@@ -46,7 +46,6 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         LayerInfo info;
         final String layerName = "testLayer";
         final String layerId = "Layer-TEST";
-        final String layerWorkspace = null; // LayerInfo doesn't have a workspace property
 
         {
             info = createMock(LayerInfo.class);
@@ -136,7 +135,6 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
 
             expect(catalog.getStore(EasyMock.eq(dsId), (Class<DataStoreInfo>) EasyMock.anyObject(Class.class)))
                     .andStubReturn(dsInfo);
-            ;
 
             expectationTestFTDelete(info, ftName, ftId, dsId, FeatureTypeInfo.class);
         }
@@ -160,9 +158,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
     @Test
     public void testContactChange() throws Exception {
         GeoServerInfo info;
-        final String globalName = null;
         final String globalId = "GeoServer-TEST";
-        final String globalWorkspace = null;
 
         {
             info = createMock(GeoServerInfo.class);
@@ -400,7 +396,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
 
     protected void mockMessage(ConfigChangeEvent evt) {
         evt.setSource(remoteAddress);
-        Message<Event> msg = new Message<Event>(TOPIC_NAME, evt, 0, null);
+        Message<Event> msg = new Message<>(TOPIC_NAME, evt, 0, null);
         for (MessageListener<Event> listener : captureTopicListener.getValues()) {
             listener.onMessage(msg);
         }

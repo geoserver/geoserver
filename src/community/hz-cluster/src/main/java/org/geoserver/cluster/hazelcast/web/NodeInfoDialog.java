@@ -53,7 +53,7 @@ public class NodeInfoDialog extends Panel {
         add(new Label("host", address.getHostName()));
         add(new Label("port", String.valueOf(address.getPort())));
 
-        add(new WebMarkupContainer("cluster").add(new ListView<Member>("members", new MembersDetachableModel()) {
+        add(new WebMarkupContainer("cluster").add(new ListView<>("members", new MembersDetachableModel()) {
             @Serial
             private static final long serialVersionUID = 1L;
 
@@ -78,8 +78,7 @@ public class NodeInfoDialog extends Panel {
         protected List<Member> load() {
             HazelcastInstance hz = getHazelcast();
             Cluster c = hz.getCluster();
-            List<Member> members = new ArrayList<Member>(c.getMembers());
-            return members;
+            return new ArrayList<>(c.getMembers());
         }
     }
 

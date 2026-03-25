@@ -36,6 +36,11 @@
                 <prop key="webApplication.defaultIsRedirect">false</prop>
             </props>
         </property>
-    </bean>    
+    </bean>
+
+    <bean id="hazelcastSessionStoreInitializer"
+             class="org.geoserver.cluster.hazelcast.web.HazelcastSessionStoreInitializer">
+        <constructor-arg ref="hzCluster"/>
+    </bean>
    
 </beans>

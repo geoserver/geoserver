@@ -1,0 +1,105 @@
+<wicket:panel>
+  <div>
+    <div class="gs-sidebar-filter">
+      <div class="gs-sidebar-search" wicket:id="myCustomSearch"></div>
+  
+      <div class="gs-sidebar-new" wicket:id="newMenu">
+        <button
+          id="gs-sidebar-new-toggle"
+          class="gs-sidebar-new-button"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="gs-sidebar-new-menu"
+        >
+          <span aria-hidden="true">+</span>
+          <span>New</span>
+        </button>
+        <ul id="gs-sidebar-new-menu" class="gs-sidebar-new-menu" hidden="hidden">
+          <li wicket:id="newMenuItems">
+            <a wicket:id="link">
+              <span wicket:id="label">New item</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div wicket:id="globalSectionContainer">
+      <h6>
+        <div class="gs-section-header">
+          <div class="gs-toggle-button" wicket:id="globalSectionToggle">
+            <span wicket:id="globalSectionToggleIcon" class="gs-toggle-caret" aria-hidden="true"></span>
+          </div>
+          <a>
+            <span>GLOBAL</span>
+          </a>
+        </div>
+        <span class="gs-count" wicket:id="globalCount">0</span>
+      </h6>
+
+      <div wicket:id="globalSectionBody">
+        <ul class="gs-global-list">
+          <li wicket:id="globalChildren" class="gs-layer-item">
+            <img wicket:id="layerIcon" alt="" />
+            <a href="#" wicket:id="layerSelect">
+              <span wicket:id="layerName">Layer</span>
+            </a>
+          </li>
+        </ul>
+        <div wicket:id="globalPagination" class="gs-pagination" data-section="global"></div>
+      </div>
+    </div>
+  
+    <div wicket:id="workspacesSectionContainer">
+      <h6>
+        <div class="gs-section-header">
+          <div class="gs-toggle-button" wicket:id="workspacesSectionToggle">
+            <span wicket:id="workspacesSectionToggleIcon" class="gs-toggle-caret" aria-hidden="true"></span>
+          </div>
+          <a href="#" wicket:id="workspacesSectionSelect">
+            <span>WORKSPACES</span>
+          </a>
+        </div>
+        <span class="gs-count" wicket:id="workspacesCount">0</span>
+      </h6>
+  
+      <div wicket:id="workspacesSectionBody" class="gs-workspaces-list">
+        <div wicket:id="workspacesScroll">
+          <ul>
+            <li wicket:id="workspaces">
+              <div class="gs-workspace-header">
+                <div>
+                  <div class="gs-toggle-button" wicket:id="workspaceToggle">
+                    <span wicket:id="workspaceToggleIcon" class="gs-toggle-caret" aria-hidden="true"></span>
+                  </div>
+                  <img wicket:id="workspaceIcon" alt="" />
+                  <a href="#" wicket:id="workspaceSelect">
+                    <span wicket:id="workspaceName">Workspace</span>
+                  </a>
+                </div>
+                <div>
+                  <span class="gs-count" wicket:id="workspaceLayerCount">0</span>
+                </div>
+              </div>
+              <div wicket:id="layersScroll">
+                <ul>
+                  <li wicket:id="workspaceChildren" class="gs-layer-item">
+                    <img wicket:id="layerIcon" alt="" />
+                    <a href="#" wicket:id="layerSelect">
+                      <span wicket:id="layerName">Layer</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+                <div wicket:id="layersPagination" class="gs-pagination" data-section="layers"></div>
+            </li>
+          </ul>
+        </div>
+        <div wicket:id="workspacesPagination" class="gs-pagination" data-section="workspaces"></div>
+      </div>
+    </div>
+
+    <div class="gs-no-data" wicket:id="noDataMessage">No data available</div>
+  </div>
+</wicket:panel>

@@ -1,0 +1,49 @@
+version: 2
+updates:
+  # Updates for production dependencies. Currently excludes test dependencies and maven plugins.
+  - package-ecosystem: "maven"
+    directories:
+      - "**/*"
+    target-branch: "main"
+    schedule:
+      interval: "daily"
+      time: "05:00"
+      timezone: "Europe/Rome"
+    groups:
+      maven-deps:
+        group-by: dependency-name  
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+    pull-request-branch-name:
+      separator: "-"
+    allow:
+      - dependency-type: "production"
+    ignore:
+      - dependency-name: "org.apache.maven.plugins:*"
+      - dependency-name: "org.codehaus.mojo:*"
+      - dependency-name: "*:*maven-plugin*"
+      - dependency-name: "org.xmlunit:xmlunit-matchers"
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    target-branch: 'main'
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    target-branch: '1.28.x'
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    target-branch: '1.27.x'
+    open-pull-requests-limit: 10

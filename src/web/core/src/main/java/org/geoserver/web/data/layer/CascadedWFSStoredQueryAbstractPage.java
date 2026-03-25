@@ -57,7 +57,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
 
     public static final String DATASTORE = "storeName";
 
-    public static final String WORKSPACE = "wsName";
+    public static final String WORKSPACE = "workspace";
 
     String storeId;
 

@@ -22,6 +22,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -54,6 +55,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.InternationalStringUtils;
 import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.data.layer.NewLayerPage;
@@ -86,6 +88,22 @@ import org.geotools.feature.NameImpl;
  * @author Andrea Aime - TOPP
  */
 public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnlockablePage {
+
+    /**
+     * When {@code true}, show the legacy workspace/layer chooser on the home page and hide the navigation panels.
+     *
+     * <p>Defaults to {@code false} (navigation tree + breadcrumb UI).
+     */
+    public static final String LEGACY_HOMEPAGE_SELECTOR = "GeoServerHomePage.legacyHomepageSelector";
+
+    static boolean isLegacyHomepageSelectorEnabled() {
+        String systemProp = System.getProperty(LEGACY_HOMEPAGE_SELECTOR);
+        if (systemProp != null) {
+            return Boolean.parseBoolean(systemProp);
+        }
+        String raw = GeoServerExtensions.getProperty(LEGACY_HOMEPAGE_SELECTOR);
+        return !Strings.isEmpty(raw) && Boolean.parseBoolean(raw);
+    }
 
     // used only during page initialization, not persisted (needed temporarily as a field in order
     // to work across the GeoServerBasePage framework of description calculation and component
@@ -149,8 +167,12 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             }
         }
 
+        WebMarkupContainer chooser = new WebMarkupContainer("chooser");
+        chooser.setVisible(isLegacyHomepageSelectorEnabled());
+        add(chooser);
+
         Form<GeoServerHomePage> form = selectionForm(true);
-        add(form);
+        chooser.add(form);
 
         Locale locale = getLocale();
 
@@ -669,6 +691,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         Catalog catalog = getGeoServer().getCatalog();
         if (workspaceInfo != null) {
             NamespaceInfo namespaceInfo = catalog.getNamespaceByPrefix(workspaceInfo.getName());
+            if (namespaceInfo == null) {
+                return null;
+            }
             LayerInfo layerInfo = catalog.getLayerByName(new NameImpl(namespaceInfo.getURI(), layerName));
             if (layerInfo != null) {
                 return layerInfo;

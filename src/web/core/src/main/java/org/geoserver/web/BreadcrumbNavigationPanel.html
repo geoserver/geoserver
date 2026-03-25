@@ -1,0 +1,54 @@
+<wicket:panel>
+    <nav class="gs-breadcrumb-nav" aria-label="breadcrumb">
+        <ol class="gs-breadcrumb">
+            <li wicket:id="breadcrumbs" class="gs-breadcrumb-item">
+                
+                <wicket:container wicket:id="normalLinkContainer">
+                    <a wicket:id="link" class="gs-breadcrumb-main-link">
+                        <img wicket:id="linkIcon" class="gs-breadcrumb-icon" alt=""/>
+                        <span wicket:id="label">Breadcrumb Label</span>
+                    </a>
+                </wicket:container>
+
+                <wicket:container wicket:id="plainLabelContainer">
+                    <span class="gs-breadcrumb-current-label">
+                        <img wicket:id="plainIcon" class="gs-breadcrumb-icon" alt=""/>
+                        <span wicket:id="plainLabel">Layer Name</span>
+                    </span>
+                </wicket:container>
+
+                <wicket:container wicket:id="contextMenuContainer">
+                    <div class="gs-dropdown">
+                        <div class="gs-dropdown-header">
+                            <img wicket:id="menuIcon" class="gs-breadcrumb-icon" alt=""/>
+                            <span wicket:id="currentLabel">Layer Name ▾</span>
+                        </div>
+                        
+                        <ul class="gs-dropdown-menu">
+                            <li class="gs-dropdown-item" wicket:id="standaloneItems">
+                                <a wicket:id="menuLink">
+                                    <img wicket:id="menuItemIcon" class="gs-dropdown-item-icon" alt=""/>
+                                    <span wicket:id="menuLabel">Context Action</span>
+                                </a>
+                            </li>
+
+                            <wicket:container wicket:id="categoryGroups">
+                                <li class="gs-dropdown-header">
+                                    <span wicket:id="categoryHeader">Category Name</span>
+                                </li>
+                                <li class="gs-dropdown-item" wicket:id="categoryItems">
+                                    <a wicket:id="menuLink">
+                                        <img wicket:id="menuItemIcon" class="gs-dropdown-item-icon" alt=""/>
+                                        <span wicket:id="menuLabel">Context Action</span>
+                                    </a>
+                                </li>
+                            </wicket:container>
+                        </ul>
+
+                    </div>
+                </wicket:container>
+
+            </li>
+        </ol>
+    </nav>
+</wicket:panel>

@@ -248,6 +248,10 @@ body {
   overflow: auto;
 }
 
+.gs-page-wrapper {
+  flex-direction: column;
+}
+
 #page {
   flex: 1;
   min-width: 0;
@@ -1660,7 +1664,8 @@ form a.collapsed {
 .authentication-form .gs-authentication-form {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Nav container & dropdowns */
@@ -1684,20 +1689,20 @@ form a.collapsed {
   margin: 0;
   padding: 0;
 }
-.gs-header-nav .navigation-tab {
+.gs-dropdown {
   position: relative;
   align-self: center;
 }
 
 /* Navigation tab base & header nav */
+.gs-dropdown-header,
 .navigation-tab-header {
   position: sticky;
   top: 0;
   z-index: 1;
-  background-color: var(--gs-body-bg);
   padding: 0.5rem 0;
 }
-.gs-header-nav .navigation-tab-header {
+.gs-dropdown-header {
   display: inline-flex;
   align-items: center;
   padding: 0.25em 0.5em;
@@ -1705,15 +1710,15 @@ form a.collapsed {
   border-radius: var(--gs-border-radius);
   min-height: 2.25em;
 }
-.gs-header-nav .navigation-tab-header:hover {
+.gs-dropdown-header:hover {
   background: var(--gs-tertiary-bg);
 }
-.gs-header-nav .navigation-tab-header:focus-visible {
+.gs-header-nav .gs-dropdown-header:focus-visible {
   outline: 0;
   box-shadow: 0 0 0 2px var(--gs-primary-border-subtle);
 }
-.gs-header-nav .navigation-tab-content,
-.gs-header-nav .navigation-tab ul {
+.gs-dropdown-menu,
+.gs-dropdown ul {
   display: none;
   position: absolute;
   top: 100%;
@@ -1727,46 +1732,41 @@ form a.collapsed {
   min-width: 12em;
   z-index: 100;
 }
-.gs-header-nav .navigation-tab.is-open .navigation-tab-content,
-.gs-header-nav .navigation-tab.is-open .navigation-tab ul,
-.gs-header-nav .navigation-tab:focus-within .navigation-tab-content,
-.gs-header-nav .navigation-tab:focus-within .navigation-tab ul {
+.gs-dropdown.is-open .gs-dropdown-menu,
+.gs-dropdown.is-open ul,
+.gs-dropdown:focus-within .gs-dropdown-menu,
+.gs-dropdown:focus-within ul {
   display: flex;
 }
 /* Hover behavior only applies on devices that actually support hover. */
 @media (hover: hover) and (pointer: fine) {
-  .gs-header-nav .navigation-tab:hover .navigation-tab-content,
-  .gs-header-nav .navigation-tab:hover .navigation-tab ul {
+  .gs-dropdown:hover .gs-dropdown-menu,
+  .gs-dropdown:hover ul {
     display: flex;
   }
 }
-.navigation-tab li a {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.125em;
-}
-.gs-header-nav .navigation-tab li a,
-.gs-header-nav .navigation-tab-content a {
+.gs-dropdown li a,
+.gs-dropdown-menu a {
   display: inline-flex;
   align-items: center;
-  gap: 0.35em;
+  gap: 0.375em;
   padding: 0.25em 0.5em;
   border-radius: var(--gs-border-radius);
   white-space: nowrap;
   color: var(--gs-body-color);
   width: 100%;
+  font-size: 1.125em;
 }
-.gs-header-nav .navigation-tab li.nav-administer-service {
+.gs-dropdown li.gs-dropdown-item {
   width: 100%;
 }
-.gs-header-nav .navigation-tab li.nav-administer-service img {
+.gs-dropdown li.gs-dropdown-item img {
   height: 1rem;
 }
-.gs-header-nav .navigation-tab li:hover {
+.gs-dropdown li:hover {
   background: var(--gs-tertiary-bg);
 }
-.gs-header-nav .navigation-tab li a:hover {
+.gs-dropdown li a:hover {
   text-decoration: none;
 }
 .gs-header-nav [id="nodeIdContainer"],
@@ -1970,6 +1970,9 @@ label.gs-switch-label {
   .gs-header-hamburger {
     display: flex;
   }
+  aside.gs-sidebar {
+    display: none;
+  }
   .gs-header-nav-container {
     display: none;
     position: fixed;
@@ -1988,7 +1991,7 @@ label.gs-switch-label {
     transform: translateX(0);
     display: block;
   }
-  .gs-header-nav-container.is-open .navigation-tab-header:hover {
+  .gs-header-nav-container.is-open .gs-dropdown-header:hover {
     background: transparent;
     cursor: default;
   }
@@ -2012,15 +2015,15 @@ label.gs-switch-label {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
-  .gs-header-nav .navigation-tab-header {
+  .gs-header-nav .gs-dropdown-header {
     display: block;
     position: static;
     padding: 0.5em 0;
     font-weight: 600;
     color: var(--gs-primary-text-emphasis);
   }
-  .gs-header-nav .navigation-tab-content,
-  .gs-header-nav .navigation-tab ul {
+  .gs-header-nav .gs-dropdown-menu,
+  .gs-header-nav .gs-dropdown ul {
     display: flex;
     position: static;
     border: none;
@@ -2029,7 +2032,7 @@ label.gs-switch-label {
     padding: 0;
     gap: 0;
   }
-  .gs-header-nav .navigation-tab + .navigation-tab {
+  .gs-header-nav .gs-dropdown + .gs-dropdown {
     border-left: none;
     margin-top: 0.5em;
     padding-top: 0.5em;
@@ -2224,7 +2227,6 @@ div.value-wide {
   .table-header form {
     flex-direction: column;
   }
-
   /* Mobile card table */
   table.gs-mobile-card-table > thead {
     display: none;

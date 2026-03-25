@@ -39,6 +39,7 @@
     <dependency>
       <groupId>com.hazelcast.spring</groupId>
       <artifactId>hazelcast-spring-session</artifactId>
+      <version>4.0.0</version>
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
@@ -86,6 +87,10 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

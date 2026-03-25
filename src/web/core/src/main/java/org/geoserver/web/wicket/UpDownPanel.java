@@ -15,13 +15,13 @@ import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.IAjaxCallListener;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.ContextRelativeResourceReference;
-import org.apache.wicket.core.util.string.JavaScriptUtils;
 
 /**
  * A panel with two arrows, up and down, supposed to reorder items in a container (a table)
@@ -68,25 +68,22 @@ public class UpDownPanel<T> extends Panel {
         this.entry = entry;
         this.setOutputMarkupId(true);
         this.container = container;
-        this.debouncedMoveBehavior =
-                new AbstractDefaultAjaxBehavior() {
-                    @Override
-                    protected void respond(AjaxRequestTarget target) {
-                        IRequestParameters params =
-                                RequestCycle.get().getRequest().getRequestParameters();
-                        String direction =
-                                params.getParameterValue("direction").toOptionalString();
-                        int count = params.getParameterValue("count").toInt(0);
-                        if (count <= 0 || direction == null) {
-                            return;
-                        }
-                        if ("up".equals(direction)) {
-                            moveBy(-count, target, items);
-                        } else if ("down".equals(direction)) {
-                            moveBy(count, target, items);
-                        }
-                    }
-                };
+        this.debouncedMoveBehavior = new AbstractDefaultAjaxBehavior() {
+            @Override
+            protected void respond(AjaxRequestTarget target) {
+                IRequestParameters params = RequestCycle.get().getRequest().getRequestParameters();
+                String direction = params.getParameterValue("direction").toOptionalString();
+                int count = params.getParameterValue("count").toInt(0);
+                if (count <= 0 || direction == null) {
+                    return;
+                }
+                if ("up".equals(direction)) {
+                    moveBy(-count, target, items);
+                } else if ("down".equals(direction)) {
+                    moveBy(count, target, items);
+                }
+            }
+        };
         add(this.debouncedMoveBehavior);
 
         upLink =
@@ -154,10 +151,9 @@ public class UpDownPanel<T> extends Panel {
         return new AjaxCallListener() {
             @Override
             public CharSequence getPrecondition(Component component) {
-                String callbackUrl =
-                        JavaScriptUtils.escapeQuotes(
-                                        debouncedMoveBehavior.getCallbackUrl().toString())
-                                .toString();
+                String callbackUrl = JavaScriptUtils.escapeQuotes(
+                                debouncedMoveBehavior.getCallbackUrl().toString())
+                        .toString();
                 String key = JavaScriptUtils.escapeQuotes(getMarkupId()).toString();
                 return ""
                         + "var el = document.getElementById('"

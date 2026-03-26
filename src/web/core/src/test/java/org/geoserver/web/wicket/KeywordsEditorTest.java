@@ -39,7 +39,6 @@ public class KeywordsEditorTest {
     @Test
     public void testRemove() throws Exception {
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
-        FormTester ft = tester.newFormTester("form");
         tester.executeAjaxEvent("form:panel:container:table:keywords:0:removeKeyword", "click");
 
         assertEquals(2, keywords.size());
@@ -66,5 +65,10 @@ public class KeywordsEditorTest {
         assertEquals("four", keywords.get(3).getValue());
         assertEquals("en", keywords.get(3).getLanguage());
         assertEquals("foobar", keywords.get(3).getVocabulary());
+
+        ft = tester.newFormTester("form");
+        ft.setClearFeedbackMessagesBeforeSubmit(true);
+        ft.submit();
+        tester.assertNoErrorMessage();
     }
 }

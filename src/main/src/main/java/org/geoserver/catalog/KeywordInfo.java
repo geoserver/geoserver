@@ -58,9 +58,9 @@ public interface KeywordInfo {
      *
      * @throws IllegalArgumentException If value, language, or vocabulary is invalid.
      */
-    public static void checkValid(KeywordInfo keyword) {
-        Matcher valueMatcher = isValidPattern.matcher(keyword.getValue());
-        if (!valueMatcher.matches()) {
+    public static void checkValid(KeywordInfo keyword) throws IllegalArgumentException {
+        if (keyword.getValue() != null
+                && !isValidPattern.matcher(keyword.getValue()).matches()) {
             throw new IllegalArgumentException("Illegal keyword '"
                     + keyword
                     + "'. "

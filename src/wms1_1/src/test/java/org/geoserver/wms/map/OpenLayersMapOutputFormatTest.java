@@ -315,37 +315,43 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     }
 
     @Test
-    public void testOL3vsOL2() throws Exception {
+    public void testOL10vsOL3vsOL2() throws Exception {
         // the base request
         String path = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
                 + getLayerId(MockData.BASIC_POLYGONS)
                 + "&styles=&bbox=-180,-90,180,90&width=768&height=330"
                 + "&srs=EPSG:4326&format=";
-        final String firefoxAgent = "Firefox 40.1";
-        String ie8Agent = "MSIE 8.";
+        final String modernAgent = "Firefox 120.0";
+        String ancientAgent = "MSIE 8.";
 
-        // generic request on browser supporting OL3
-        String contentFirefox = getResponseContent(
-                path + "application/openlayers", firefoxAgent, getBaseMimeType(OpenLayers3MapOutputFormat.MIME_TYPE));
-        assertThat(contentFirefox, containsString("openlayers3/ol.js"));
+        // generic request on modern browser -> should now yield OL10 by default
+        String contentModern = getResponseContent(
+                path + "application/openlayers", modernAgent, getBaseMimeType(OpenLayersMapOutputFormat.MIME_TYPE));
+        assertThat(contentModern, containsString("openlayers10/ol.js"));
 
-        // generic request on browser not supporting OL3
-        String contentIE8 = getResponseContent(
-                path + "application/openlayers", ie8Agent, getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
-        assertThat(contentIE8, containsString("OpenLayers.js"));
+        // generic request on browser not supporting OL3/OL10 -> should yield OL2
+        String contentAncient = getResponseContent(
+                path + "application/openlayers", ancientAgent, getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
+        assertThat(contentAncient, containsString("OpenLayers.js"));
 
         // ask explicitly for OL2
         String contentOL2 = getResponseContent(
-                path + "application/openlayers2", firefoxAgent, getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
+                path + "application/openlayers2", modernAgent, getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
         assertThat(contentOL2, containsString("OpenLayers.js"));
 
         // ask explicitly for OL3
         String contentOL3 = getResponseContent(
-                path + "application/openlayers3", firefoxAgent, getBaseMimeType(OpenLayers3MapOutputFormat.MIME_TYPE));
+                path + "application/openlayers3", modernAgent, getBaseMimeType(OpenLayers3MapOutputFormat.MIME_TYPE));
         assertThat(contentOL3, containsString("openlayers3/ol.js"));
 
-        // ask explicitly for OL3 on a non supporting browser
-        String exception = getResponseContent(path + "application/openlayers3", ie8Agent, "application/vnd.ogc.se_xml");
+        // ask explicitly for OL10
+        String contentOL10 = getResponseContent(
+                path + "application/openlayers10", modernAgent, getBaseMimeType(OpenLayersMapOutputFormat.MIME_TYPE));
+        assertThat(contentOL10, containsString("openlayers10/ol.js"));
+
+        // ask explicitly for OL10 on a non supporting browser
+        String exception =
+                getResponseContent(path + "application/openlayers10", ancientAgent, "application/vnd.ogc.se_xml");
         assertThat(exception, containsString("not supported"));
     }
 
@@ -373,6 +379,15 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     String getAsHTMLOL3(WMSMapContent map) throws IOException {
         OpenLayers3MapOutputFormat mapProducer =
                 GeoServerExtensions.extensions(OpenLayers3MapOutputFormat.class).get(0);
+        RawMap rawMap = mapProducer.produceMap(map);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        rawMap.writeTo(bos);
+        return new String(bos.toByteArray(), StandardCharsets.UTF_8);
+    }
+
+    String getAsHTMLOL10(WMSMapContent map) throws IOException {
+        OpenLayers10MapOutputFormat mapProducer = GeoServerExtensions.extensions(OpenLayers10MapOutputFormat.class)
+                .get(0);
         RawMap rawMap = mapProducer.produceMap(map);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         rawMap.writeTo(bos);
@@ -465,6 +480,52 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     }
 
     @Test
+    public void testXssOL10() throws Exception {
+        Catalog catalog = getCatalog();
+        final FeatureSource fs = catalog.getFeatureTypeByName(
+                        MockData.BASIC_POLYGONS.getPrefix(), MockData.BASIC_POLYGONS.getLocalPart())
+                .getFeatureSource(null, null);
+
+        final Envelope env = fs.getBounds();
+
+        GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);
+        request.putHttpRequestHeader("USER-AGENT", "Firefox 120.0");
+        request.getRawKvp().put("</script><script>alert('x-scripted');</script><script>", "foo");
+        request.getRawKvp().put("25064;ALERT(1)//419", "1");
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+        map.setMapWidth(300);
+        map.setMapHeight(300);
+        map.setBgColor(Color.red);
+        map.setTransparent(false);
+        map.setRequest(request);
+
+        StyleInfo styleByName = catalog.getStyleByName("Default");
+        Style basicStyle = styleByName.getStyle();
+        FeatureLayer layer = new FeatureLayer(fs, basicStyle);
+        layer.setTitle("Title");
+        map.addLayer(layer);
+        request.setFormat("application/openlayers10");
+
+        StyleInfo otherStyle = new StyleInfoImpl(null);
+        otherStyle.setName("style<>");
+        try {
+            request.getLayers().get(0).getLayerInfo().getStyles().add(otherStyle);
+            String htmlDoc = getAsHTMLOL10(map);
+            // check that weird param is correctly encoded to avoid js code execution
+            assertThat(
+                    htmlDoc,
+                    containsString(
+                            "&lt;/script&gt;&lt;script&gt;alert(&#39;x-scripted&#39;);&lt;/script&gt;&lt;script&gt;"));
+            assertThat(htmlDoc, containsString("25064;ALERT(1)//419"));
+            assertThat(htmlDoc, not(containsString(otherStyle.getName())));
+            assertThat(htmlDoc, containsString("style&lt;&gt;"));
+        } finally {
+            request.getLayers().get(0).getLayerInfo().getStyles().remove(otherStyle);
+        }
+    }
+
+    @Test
     public void testLayerGroupStylesInDropdown() throws Exception {
         // tests that layer groups style are available from the styles dropdown in ol preview
         LayerGroupInfo group = null;
@@ -535,6 +596,18 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.getRequest().putHttpRequestHeader("USER-AGENT", "Firefox 40.1");
         String htmlDoc = getAsHTMLOL3(map);
+        assertThat(htmlDoc, containsString("<script src=\""));
+        assertThat(htmlDoc, not(containsString("<script type=\"text/javascript\">")));
+        assertThat(htmlDoc, not(containsString(" onchange=")));
+        assertThat(htmlDoc, not(containsString(" onClick=")));
+    }
+
+    @Test
+    public void testRemovedInlineJavaScriptOL10() throws Exception {
+        WMSMapContent map = new WMSMapContent();
+        map.setRequest(createGetMapRequest(MockData.BASIC_POLYGONS));
+        map.getRequest().putHttpRequestHeader("USER-AGENT", "Firefox 120.0");
+        String htmlDoc = getAsHTMLOL10(map);
         assertThat(htmlDoc, containsString("<script src=\""));
         assertThat(htmlDoc, not(containsString("<script type=\"text/javascript\">")));
         assertThat(htmlDoc, not(containsString(" onchange=")));

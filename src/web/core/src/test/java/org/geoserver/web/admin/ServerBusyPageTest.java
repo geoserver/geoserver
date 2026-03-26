@@ -77,7 +77,7 @@ public class ServerBusyPageTest extends GeoServerWicketTestSupport {
 
                 tester.startPage(
                         DataAccessEditPage.class,
-                        new PageParameters().add("wsName", "cite").add("storeName", "cite"));
+                        new PageParameters().add("workspace", "cite").add("storeName", "cite"));
                 tester.assertRenderedPage(ServerBusyPage.class);
                 tester.assertNoErrorMessage();
             } finally {

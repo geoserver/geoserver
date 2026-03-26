@@ -17,11 +17,12 @@
               <legend>
                 <span><wicket:message key="globalLimits">globalLimits</wicket:message></span>
               </legend>
-                <div class="gs-unordered-list-class">
-                    <div class="gs-list-item-class"> <label><wicket:message key="maxInputSizeMB">"maxInputSizeMB"</wicket:message></label>
-                        <input type="text" wicket:id="maxComplexInputSize" class="field" />
-                    </div>
+              <div class="gs-unordered-list-class">
+                <div class="gs-list-item-class gs-form-group"> 
+                  <label><wicket:message key="maxInputSizeMB">"maxInputSizeMB"</wicket:message></label>
+                  <input type="text" wicket:id="maxComplexInputSize" class="field" />
                 </div>
+              </div>
             </fieldset>
             <fieldset>
               <legend>
@@ -39,9 +40,11 @@
                 <span><wicket:message key="processAccessMode">Process access mode</wicket:message></span>
                 <a href="#" wicket:id="processAccessModeHelp" class="help-link"></a>
               </legend>
-              <span id="processAccessMode" wicket:id="processAccessMode">
-                <input type="radio">mode 1</input>
-              </span>
+              <div class="gs-form">
+                <span id="processAccessMode" class="choiceList" wicket:id="processAccessMode">
+                  <input type="radio"/>mode 1
+                </span>
+              </div>
             </fieldset>
             </div>
       </div>

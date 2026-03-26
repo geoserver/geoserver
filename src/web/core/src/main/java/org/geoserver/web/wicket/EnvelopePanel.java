@@ -43,7 +43,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
         if (!isCssEmpty) {
             response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
                     new org.apache.wicket.request.resource.PackageResourceReference(
-                            getClass(), getClass().getSimpleName() + ".css")));
+                            EnvelopePanel.class, EnvelopePanel.class.getSimpleName() + ".css")));
         }
         String oDomReadyScript = "\n";
         oDomReadyScript += "\nEnvelopePanel_setup('" + this.getMarkupId() + "');";
@@ -52,7 +52,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
 
         response.render(JavaScriptContentHeaderItem.forReference(
                 new org.apache.wicket.request.resource.PackageResourceReference(
-                        getClass(), getClass().getSimpleName() + ".js")));
+                        EnvelopePanel.class, EnvelopePanel.class.getSimpleName() + ".js")));
     }
 
     @Serial

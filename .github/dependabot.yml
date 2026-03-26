@@ -38,12 +38,12 @@ updates:
     directory: '/'
     schedule:
       interval: 'monthly'
-    target-branch: '1.28.x'
+    target-branch: '2.28.x'
     open-pull-requests-limit: 10
 
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'monthly'
-    target-branch: '1.27.x'
+    target-branch: '2.27.x'
     open-pull-requests-limit: 10

@@ -16,8 +16,7 @@ import org.geoserver.web.wicket.Select2DropDownChoice;
 /**
  * Drop down choice for choosing Locale.
  *
- * The display value is the language tag and the display name of the locale,
- * for example {@code en - English}.
+ * <p>The display value is the language tag and the display name of the locale, for example {@code en - English}.
  */
 public class LocalesDropdown extends Select2DropDownChoice<Locale> {
 

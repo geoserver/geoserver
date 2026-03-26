@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;

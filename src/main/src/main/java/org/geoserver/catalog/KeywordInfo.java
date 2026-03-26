@@ -41,8 +41,8 @@ public interface KeywordInfo {
     /**
      * The vocabulary of the keyword, {@code null} if no vocabulary.
      *
-     * Vocabulary is a URI that identifies the controlled vocabulary, providing a formal definition
-     * of they keyword in context. Vocabulary  is not a human readable string, but rather a unique identifier
+     * <p>Vocabulary is a URI that identifies the controlled vocabulary, providing a formal definition of they keyword
+     * in context. Vocabulary is not a human readable string, but rather a unique identifier
      */
     String getVocabulary();
 
@@ -58,7 +58,7 @@ public interface KeywordInfo {
      *
      * @throws IllegalArgumentException If value, language, or vocabulary is invalid.
      */
-    public static void checkValid(KeywordInfo keyword){
+    public static void checkValid(KeywordInfo keyword) {
         Matcher valueMatcher = isValidPattern.matcher(keyword.getValue());
         if (!valueMatcher.matches()) {
             throw new IllegalArgumentException("Illegal keyword '"

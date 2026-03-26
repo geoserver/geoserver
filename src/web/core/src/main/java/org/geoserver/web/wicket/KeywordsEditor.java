@@ -11,10 +11,8 @@ import java.io.Serial;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -33,11 +31,11 @@ import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
-import org.geoserver.web.InternationalStringPanel;
 import org.geoserver.web.data.resource.LocalesDropdown;
 
 /**
- * Shows and allows editing of the  {@link KeywordInfo} defining {@cdode } List<String>} keywords field of various catalog objects.
+ * Shows and allows editing of the {@link KeywordInfo} defining {@cdode } List<String>} keywords field of various
+ * catalog objects.
  */
 public class KeywordsEditor extends Panel {
 
@@ -57,17 +55,11 @@ public class KeywordsEditor extends Panel {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Repeating list view, providing a row of controls to edit each keyword individually.
-     */
+    /** Repeating list view, providing a row of controls to edit each keyword individually. */
     private ListView<KeywordInfo> keywordsView;
-    /**
-     * Label displayed when no keywords are listed.
-     */
+    /** Label displayed when no keywords are listed. */
     private Label noKeywords;
-    /**
-     * Table listing keywords.
-     */
+    /** Table listing keywords. */
     private WebMarkupContainer table;
 
     /**
@@ -86,7 +78,8 @@ public class KeywordsEditor extends Panel {
         // the keywords table
         table = new WebMarkupContainer("table");
         table.setOutputMarkupId(true);
-        container.add(table);;
+        container.add(table);
+        ;
 
         // add new keyword button
         GeoServerAjaxFormLink addKeyword = new GeoServerAjaxFormLink("addKeyword") {
@@ -99,8 +92,7 @@ public class KeywordsEditor extends Panel {
 
                 List<KeywordInfo> keywordList = keywordModel.getObject();
                 keywordList.add(keyword);
-
-                keywordModel.setObject(keywordList);
+                keywordsView.setModelObject(keywordList);
                 keywordsView.modelChanged();
 
                 updateVisibility();
@@ -124,13 +116,11 @@ public class KeywordsEditor extends Panel {
                 item.add(keywordBorder);
 
                 // keyword info
-                TextField<String> keywordValue = new TextField<>("keyword", new PropertyModel<>(item.getModel(), "value"));
+                TextField<String> keywordValue =
+                        new TextField<>("keyword", new PropertyModel<>(item.getModel(), "value"));
                 keywordValue.add(new KeywordValueValidator());
                 keywordValue.setRequired(true);
                 keywordBorder.add(keywordValue);
-
-//                FormComponentFeedbackBorder languageBorder = new FormComponentFeedbackBorder("languageBorder");
-//                item.add(languageBorder);
 
                 LocalesDropdown language =
                         new LocalesDropdown("language", new PropertyModel<>(item.getModel(), "language"));
@@ -141,6 +131,7 @@ public class KeywordsEditor extends Panel {
                         String languageTag = object.toLanguageTag();
                         return languageTag;
                     }
+
                     @Override
                     public String getIdValue(Locale object, int index) {
                         return object.toLanguageTag();
@@ -155,7 +146,8 @@ public class KeywordsEditor extends Panel {
                 FormComponentFeedbackBorder vocabularyBorder = new FormComponentFeedbackBorder("vocabularyBorder");
                 item.add(vocabularyBorder);
 
-                TextField<String> vocabulary = new TextField<>("vocabulary", new PropertyModel<>(item.getModel(), "vocabulary"));
+                TextField<String> vocabulary =
+                        new TextField<>("vocabulary", new PropertyModel<>(item.getModel(), "vocabulary"));
                 vocabulary.add(new VocabularyValidator());
                 vocabularyBorder.add(vocabulary);
 
@@ -169,7 +161,8 @@ public class KeywordsEditor extends Panel {
                         // remove item
                         List<KeywordInfo> keywordList = getList();
                         keywordList.remove(item.getIndex());
-                        keywordModel.setObject(keywordList);
+
+                        keywordsView.setModelObject(keywordList);
 
                         keywordsView.modelChanged();
 
@@ -193,54 +186,51 @@ public class KeywordsEditor extends Panel {
         table.add(keywordsView);
 
         // the noKeywords  label
-        noKeywords = new Label("noKeywords",
-                new ResourceModel("noKeywords"));
+        noKeywords = new Label("noKeywords", new ResourceModel("noKeywords"));
         container.add(noKeywords);
         updateVisibility();
     }
 
-    /**
-     * Keywords must not be empty and are unable to contain {@code \\} character.
-     */
+    /** Keywords must not be empty and are unable to contain {@code \\} character. */
     public static class KeywordValueValidator implements IValidator<String> {
         @Override
         public void validate(IValidatable<String> validatable) {
-            String keyword = validatable.getValue();;
+            String keyword = validatable.getValue();
+            ;
             if (keyword != null) {
                 Matcher valueMatcher = KeywordInfo.isValidPattern.matcher(keyword);
                 if (!valueMatcher.matches()) {
                     ValidationError invalidKeyword = new ValidationError("invalidKeyword")
                             .addKey("invalidKeyword")
-                            .setVariable("keyword",keyword);
+                            .setVariable("keyword", keyword);
                     validatable.error(invalidKeyword);
                 }
-            }
-            else {
-                ValidationError nullKeywordValue = new ValidationError("nullKeywordValue")
-                        .addKey("nullKeywordValue");
+            } else {
+                ValidationError nullKeywordValue = new ValidationError("nullKeywordValue").addKey("nullKeywordValue");
                 validatable.error(nullKeywordValue);
             }
         }
-    };
+    }
+    ;
 
-    /**
-     * Vocabulary is optional, but are unable to contain {@code \\} character.
-     */
+    /** Vocabulary is optional, but are unable to contain {@code \\} character. */
     public static class VocabularyValidator implements IValidator<String> {
         @Override
         public void validate(IValidatable<String> validatable) {
-            String vocabulary = validatable.getValue();;
+            String vocabulary = validatable.getValue();
+            ;
             if (vocabulary != null) {
                 Matcher vocabMatcher = KeywordInfo.isValidPattern.matcher(vocabulary);
                 if (!vocabMatcher.matches()) {
                     ValidationError invalidVocabulary = new ValidationError("invalidVocabulary")
                             .addKey("invalidVocabulary")
-                            .setVariable("vocabulary",vocabulary);
+                            .setVariable("vocabulary", vocabulary);
                     validatable.error(invalidVocabulary);
                 }
             }
         }
-    };
+    }
+    ;
 
     private void updateVisibility() {
         List<KeywordInfo> keywordList = (List<KeywordInfo>) getDefaultModelObject();
@@ -249,5 +239,4 @@ public class KeywordsEditor extends Panel {
         // table.setVisible(hasKeywords);
         noKeywords.setVisible(!hasKeywords);
     }
-
 }

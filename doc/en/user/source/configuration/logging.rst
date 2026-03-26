@@ -11,7 +11,7 @@ The GeoServer logging profiles assign logging levels to specific server operatio
 * GeoWebCache loggers record the activity of the tile protocol library used by GeoServer.
 * GeoTools loggers record the activity of the data access and rendering library used by GeoServer.
 * The appender ``stdout`` is setup as a Console appender sending information to standard output, based on :guilabel:`Log to Stdout` :ref:`global settings <config_globalsettings_log_stdout>`.
-* The appender ``geoserverlogfile`` is setup as a FileAppender or RollingFile appender sending information to the :guilabel:`Log location` :ref:`global settings <config_globalsettings_log_location>`.
+* The appender ``geoserverlogfile`` is setup as a FileAppender or RollingFile appender sending information to the :guilabel:`Log location` set using ``GEOSERVER_LOG_LOCATION`` property
 * Logging levels range from:
   
   * Failure (``FATAL``, ``ERROR``, ``WARN``) levels
@@ -65,7 +65,7 @@ There are however a few rules to follow:
   
 * Appenders are used to output logging information, with GeoServer providing external configuration for appenders named ``geoserverlogfile`` and ``stdout``.
 
-  * Always include a ``geoserverlogfile`` ``FileAppender`` or ``RollingFile`` appender that GeoServer will configure to work against the location configured in the :ref:`global settings <config_globalsettings_log_location>`.
+  * Always include a ``geoserverlogfile`` ``FileAppender`` or ``RollingFile`` appender that GeoServer will configure to work against the location configured using ``GEOSERVER_LOG_LOCATION`` property.
 
     Care is taken to preserve your file extension when updating ``<filename>`` location, so if you wish to log to :file:`access_logs.txt` you may do so, and the :file:`txt` extension will be preserved.
 

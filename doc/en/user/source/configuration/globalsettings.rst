@@ -165,9 +165,9 @@ Logging Settings
 Log Location
 ''''''''''''
 
-Sets the written output location for the logs. A log location may be a directory or a file, and can be specified as an absolute path (e.g., :file:`C:\\GeoServer\\GeoServer.log`) or a relative one (for example, :file:`geoserver.log`). Relative paths are relative to the GeoServer data directory. Default is :file:`logs/geoserver.log`.
+:guilabel:`Log location` setting can be set using ``GEOSERVER_LOG_LOCATION`` property, see :ref:`logging` for details (this setting is applied FileAppender or RollingFile ``geoserverlogfile`` appender).
 
-This :guilabel:`Log location` setting can be overridden by ``GEOSERVER_LOG_LOCATION`` property, see :ref:`logging` for details (this setting is applied FileAppender or RollingFile ``geoserverlogfile`` appender).
+A log location may be a directory or a file, and can be specified as an absolute path (e.g., :file:`C:\\GeoServer\\GeoServer.log`) or a relative one (for example, :file:`geoserver.log`). Relative paths are relative to the GeoServer data directory. Default is :file:`logs/geoserver.log`.
 
 .. _config_globalsettings_log_profile:
 

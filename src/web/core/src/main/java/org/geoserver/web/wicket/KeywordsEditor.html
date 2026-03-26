@@ -4,13 +4,17 @@
     <wicket:panel>
       <div class="gs-panel-KeywordsEditor">
         <div wicket:id="container">
+          <div class="gs-unordered-list-class action-group">
+            <div class="gs-list-item-class">
+              <a class="add-link button" href="#" wicket:id="addKeyword">
+                <wicket:message key="addKeyword">Add keyword</wicket:message>
+              </a>
+            </div>
+          </div>
           <table wicket:id="table">
             <tr>
               <th>
                 <wicket:message key="keywordValue">Keyword</wicket:message>
-              </th>
-              <th>
-                <wicket:message key="language">Langauge</wicket:message>
               </th>
               <th>
                 <wicket:message key="vocabulary">Vocabulary</wicket:message>
@@ -19,31 +23,24 @@
             </tr>
             <tr wicket:id="keywords">
               <td>
-                <span wicket:id="keywordBorder">
-                  <input wicket:id="keyword" type="text"/>
-                </span>
-              </td>
-              <td>
-                <input wicket:id="language" type="text"/>
+                <div class="gs-input-group" wicket:id="keywordBorder">
+                  <input wicket:id="keyword" type="text" size="20"/>
+                  <select wicket:id="language"/>
+                </div>
               </td>
               <td>
                 <span wicket:id="vocabularyBorder">
-                  <input wicket:id="vocabulary" type="text"/>
+                  <input wicket:id="vocabulary" type="text" size="10"/>
                 </span>
               </td>
               <td>
-                <a wicket:id="removeKeyword"><img wicket:id="image"/></a>
+                <a wicket:id="removeKeyword" class="button"><img wicket:id="image"/></a>
               </td>
             </tr>
           </table>
-          <p wicket:id="noKeywords"/>
-        </div>
-        <div>
-          <span>
-            <button wicket:id="addKeyword">
-              <wicket:message key="addKeyword">Add keyword</wicket:message>
-            </button>
-          </span>
+          <div>
+            <span wicket:id="noKeywords"/>
+          </div>
         </div>
       </div>
     </wicket:panel>

@@ -9,6 +9,7 @@ import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 import org.apache.wicket.AttributeModifier;
@@ -16,6 +17,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -31,6 +33,8 @@ import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.web.InternationalStringPanel;
+import org.geoserver.web.data.resource.LocalesDropdown;
 
 /**
  * Shows and allows editing of the  {@link KeywordInfo} defining {@cdode } List<String>} keywords field of various catalog objects.
@@ -84,6 +88,26 @@ public class KeywordsEditor extends Panel {
         table.setOutputMarkupId(true);
         container.add(table);;
 
+        // add new keyword button
+        GeoServerAjaxFormLink addKeyword = new GeoServerAjaxFormLink("addKeyword") {
+            @Serial
+            private static final long serialVersionUID = -4136656891019857299L;
+
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                KeywordInfo keyword = new Keyword("");
+
+                List<KeywordInfo> keywordList = keywordModel.getObject();
+                keywordList.add(keyword);
+
+                keywordModel.setObject(keywordList);
+                keywordsView.modelChanged();
+
+                updateVisibility();
+                target.add(container);
+            }
+        };
+        container.add(addKeyword);
 
         // the list view of keywords
         keywordsView = new ListView<>("keywords", keywordModel) {
@@ -105,8 +129,28 @@ public class KeywordsEditor extends Panel {
                 keywordValue.setRequired(true);
                 keywordBorder.add(keywordValue);
 
-                TextField<String> language = new TextField<>("language", new PropertyModel<>(item.getModel(), "language"));
-                item.add(language);
+//                FormComponentFeedbackBorder languageBorder = new FormComponentFeedbackBorder("languageBorder");
+//                item.add(languageBorder);
+
+                LocalesDropdown language =
+                        new LocalesDropdown("language", new PropertyModel<>(item.getModel(), "language"));
+
+                ChoiceRenderer<Locale> languageTagRenderer = new ChoiceRenderer<>() {
+                    @Override
+                    public Object getDisplayValue(Locale object) {
+                        String languageTag = object.toLanguageTag();
+                        return languageTag;
+                    }
+                    @Override
+                    public String getIdValue(Locale object, int index) {
+                        return object.toLanguageTag();
+                    }
+                };
+                language.setChoiceRenderer(languageTagRenderer);
+                language.setNullValid(true);
+
+                keywordBorder.add(language);
+                // languageBorder.add(new InternationalStringPanel.LocaleValidator());
 
                 FormComponentFeedbackBorder vocabularyBorder = new FormComponentFeedbackBorder("vocabularyBorder");
                 item.add(vocabularyBorder);
@@ -153,48 +197,6 @@ public class KeywordsEditor extends Panel {
                 new ResourceModel("noKeywords"));
         container.add(noKeywords);
         updateVisibility();
-
-        // add new keyword button
-        AjaxButton addKeyword = new AjaxButton("addKeyword") {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                KeywordInfo keyword = new Keyword("");
-
-                List<KeywordInfo> keywordList = keywordModel.getObject();
-                keywordList.add(keyword);
-
-                keywordModel.setObject(keywordList);
-                keywordsView.modelChanged();
-
-                updateVisibility();
-                target.add(container);
-            }
-        };
-        add(addKeyword);
-
-
-
-        /*
-        langChoice = new DropDownChoice<>(
-                "lang", new Model<>(), Arrays.asList(Locale.getISOLanguages()), new ChoiceRenderer<>() {
-                    @Serial
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public String getDisplayValue(String object) {
-                        return new Locale(object).getDisplayLanguage();
-                    }
-
-                    @Override
-                    public String getIdValue(String object, int index) {
-                        return object;
-                    }
-                });
-
-        langChoice.setNullValid(true);
-        langChoice.setOutputMarkupId(true);
-        add(langChoice);
-        */
     }
 
     /**
@@ -244,7 +246,7 @@ public class KeywordsEditor extends Panel {
         List<KeywordInfo> keywordList = (List<KeywordInfo>) getDefaultModelObject();
         boolean hasKeywords = keywordList != null && !keywordList.isEmpty();
 
-        table.setVisible(hasKeywords);
+        // table.setVisible(hasKeywords);
         noKeywords.setVisible(!hasKeywords);
     }
 

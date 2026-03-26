@@ -98,7 +98,7 @@
     <gt.version>35-SNAPSHOT</gt.version>
     <gwc.version>2.0-SNAPSHOT</gwc.version>
     <spring.version>7.0.6</spring.version>
-    <spring.security.version>7.0.3</spring.security.version>
+    <spring.security.version>7.0.4</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring.ldap.version>4.0.1</spring.ldap.version>
     <spring-integration.version>7.0.3</spring-integration.version>

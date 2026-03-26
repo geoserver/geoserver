@@ -28,7 +28,7 @@ jobs:
       with:
         maven-version: 3.9.8
     - name: Setup python for docs
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.x'
         cache: 'pip' # caching pip dependencies from requirements.txt below
@@ -60,7 +60,7 @@ jobs:
       with:
         maven-version: 3.9.8
     - name: Setup python for docs
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.x'
         cache: 'pip' # caching pip dependencies from requirements.txt below

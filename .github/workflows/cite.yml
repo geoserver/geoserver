@@ -73,7 +73,7 @@ jobs:
           maven-version: 3.9.8
 
       - name: Download geoserver.war artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: geoserver-war
           path: build/cite/geoserver/

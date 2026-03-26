@@ -64,8 +64,7 @@ import org.geoserver.config.impl.SettingsInfoImpl;
  */
 public class ConfigChangeEvent extends Event {
 
-    static Map<Class<? extends Info>, Class<? extends Info>> INTERFACES =
-            new HashMap<Class<? extends Info>, Class<? extends Info>>();
+    static Map<Class<? extends Info>, Class<? extends Info>> INTERFACES = new HashMap<>();
 
     static {
         INTERFACES.put(GeoServerInfoImpl.class, GeoServerInfo.class);
@@ -163,9 +162,9 @@ public class ConfigChangeEvent extends Event {
      */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ConfigChangeEvent)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
         ConfigChangeEvent e = (ConfigChangeEvent) o;
         return equal(id, e.id) && equal(type, e.type);
     }

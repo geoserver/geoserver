@@ -157,4 +157,9 @@ public class HzSessionShareFilter implements Filter {
     public void resetDelegate() {
         tearDownDelegate();
     }
+
+    /** Returns the delegate, for testing purposes */
+    SessionRepositoryFilter<?> getDelegate() {
+        return delegate;
+    }
 }

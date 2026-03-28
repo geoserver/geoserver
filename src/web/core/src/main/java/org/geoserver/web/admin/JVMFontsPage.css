@@ -1,0 +1,4 @@
+[data-gs-theme="dark"] .gs-font-preview {
+    filter: invert(1) contrast(100);
+    background-color: inherit;
+}

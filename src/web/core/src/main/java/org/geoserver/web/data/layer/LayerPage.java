@@ -24,8 +24,10 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
@@ -43,13 +45,26 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geotools.api.filter.Filter;
 
 /**
  * Page listing all the available layers. Follows the usual filter/sort/page approach, provides ways to bulk delete
  * layers and to add new ones
  */
 public class LayerPage extends GeoServerSecuredPage {
-    LayerProvider provider = new LayerProvider();
+    LayerProvider provider = new LayerProvider() {
+        @Override
+        protected Filter getFilter() {
+            Filter baseFilter = super.getFilter();
+            StringValue wsParam = getPageParameters().get("workspace");
+            if (wsParam.isNull() || wsParam.isEmpty()) {
+                return baseFilter;
+            }
+            String targetWs = wsParam.toString();
+            Filter workspaceFilter = Predicates.equal("resource.store.workspace.name", targetWs);
+            return Predicates.and(baseFilter, workspaceFilter);
+        }
+    };
     GeoServerTablePanel<LayerInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
@@ -125,7 +140,7 @@ public class LayerPage extends GeoServerSecuredPage {
                 id,
                 ResourceConfigurationPage.class,
                 linkModel,
-                ResourceConfigurationPage.NAME,
+                ResourceConfigurationPage.LAYER,
                 layerName,
                 ResourceConfigurationPage.WORKSPACE,
                 wsName);
@@ -155,7 +170,7 @@ public class LayerPage extends GeoServerSecuredPage {
                 id,
                 ResourceConfigurationPage.class,
                 new Model<>(linkTitle),
-                ResourceConfigurationPage.NAME,
+                ResourceConfigurationPage.LAYER,
                 layerName,
                 ResourceConfigurationPage.WORKSPACE,
                 wsName);

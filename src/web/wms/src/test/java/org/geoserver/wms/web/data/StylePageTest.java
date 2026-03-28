@@ -7,14 +7,17 @@ package org.geoserver.wms.web.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -196,6 +199,53 @@ public class StylePageTest extends GeoServerWicketTestSupport {
 
         dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(1, dv.size());
+    }
+
+    @Test
+    public void testLayerAndWorkspaceParameterFilters() {
+        login();
+
+        Catalog catalog = getCatalog();
+        LayerInfo layer = catalog.getLayers().stream().findFirst().orElse(null);
+        assertNotNull(layer);
+
+        String workspaceName = null;
+        if (layer.getResource() != null
+                && layer.getResource().getStore() != null
+                && layer.getResource().getStore().getWorkspace() != null) {
+            workspaceName = layer.getResource().getStore().getWorkspace().getName();
+        }
+
+        Set<String> expectedStyleIds = new java.util.LinkedHashSet<>();
+        if (layer.getDefaultStyle() != null
+                && layer.getDefaultStyle().getId() != null
+                && (workspaceName == null
+                        || layer.getDefaultStyle().getWorkspace() == null
+                        || workspaceName.equals(
+                                layer.getDefaultStyle().getWorkspace().getName()))) {
+            expectedStyleIds.add(layer.getDefaultStyle().getId());
+        }
+        if (layer.getStyles() != null) {
+            for (StyleInfo style : layer.getStyles()) {
+                if (style == null || style.getId() == null) continue;
+                if (workspaceName != null
+                        && style.getWorkspace() != null
+                        && !workspaceName.equals(style.getWorkspace().getName())) {
+                    continue;
+                }
+                expectedStyleIds.add(style.getId());
+            }
+        }
+
+        PageParameters pp = new PageParameters();
+        pp.set("layer", layer.getName());
+        if (workspaceName != null) {
+            pp.set("workspace", workspaceName);
+        }
+
+        tester.startPage(StylePage.class, pp);
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(expectedStyleIds.size(), dv.size());
     }
 
     @Test

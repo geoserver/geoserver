@@ -35,7 +35,9 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.vfny.geoserver.global.ConfigurationException;
 
-import static org.geoserver.logging.LoggingUtils.*;
+import static org.geoserver.logging.LoggingUtils.GEOSERVER_LOG_LOCATION;
+import static org.geoserver.logging.LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS;
+import static org.geoserver.logging.LoggingUtils.updateBuiltInLoggingProfiles;
 
 /**
  * Used to manage GeoServer logging facilities.

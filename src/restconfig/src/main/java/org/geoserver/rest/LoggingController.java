@@ -47,7 +47,11 @@ public class LoggingController extends AbstractGeoServerController {
             })
     public void settingsPut(@RequestBody LoggingInfo loggingInfo) {
         LoggingInfo original = geoServer.getLogging();
+        // Preserve the existing log location — it can only be set via the
+        // GEOSERVER_LOG_LOCATION property, not through the REST API.
+        String preservedLocation = original.getLocation();
         OwsUtils.copy(loggingInfo, original, LoggingInfo.class);
+        original.setLocation(preservedLocation);
         geoServer.save(original);
     }
 

@@ -100,7 +100,6 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         logLevelsAppend(form, loggingInfoModel);
         form.add(new CheckBox("stdOutLogging", new PropertyModel<>(loggingInfoModel, "stdOutLogging")));
-        form.add(new TextField<>("loggingLocation", new PropertyModel<>(loggingInfoModel, "location")));
 
         TextField<String> xmlPostRequestLogBufferSize = new TextField<>(
                 "xmlPostRequestLogBufferSize", new PropertyModel<>(globalInfoModel, "xmlPostRequestLogBufferSize"));

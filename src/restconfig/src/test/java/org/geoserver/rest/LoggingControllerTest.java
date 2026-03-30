@@ -107,7 +107,8 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         JSONObject loggingInfo = jsonObject.getJSONObject("logging");
         assertNotNull(loggingInfo);
         assertEquals("DEFAULT_LOGGING.xml", loggingInfo.get("level"));
-        assertEquals("logs/geoserver-test-2.log", loggingInfo.get("location"));
+        // location is not changed via REST API, it can only be set via GEOSERVER_LOG_LOCATION property
+        assertEquals("logs/geoserver-test.log", loggingInfo.get("location"));
         assertFalse((Boolean) loggingInfo.get("stdOutLogging"));
     }
 
@@ -123,7 +124,8 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/logging.xml");
         assertEquals("logging", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("DEFAULT_LOGGING.xml", "/logging/level", dom);
-        assertXpathEvaluatesTo("logs/geoserver-test-2.log", "/logging/location", dom);
+        // location is not changed via REST API, it can only be set via GEOSERVER_LOG_LOCATION property
+        assertXpathEvaluatesTo("logs/geoserver-test.log", "/logging/location", dom);
         assertXpathEvaluatesTo("false", "/logging/stdOutLogging", dom);
     }
 }

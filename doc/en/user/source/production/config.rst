@@ -8,7 +8,7 @@ Configuration targets three distinct environments:
 * Common Case: The System Administrator and the GeoServer Administrator are the same individual, or the GeoServer Administrator already has console access to perform data management. 
   
   In this environment the GeoServer Administrator already has console access, and many settings are available in
-  the Web administration interface to define proxy base url, log file location, or what file directories may be
+  the Web administration interface to define proxy base url, or what file directories may be
   used for storage, that assume general knowledge of the environments and the ability to create folders and
   adjust file permissions.
 
@@ -18,11 +18,11 @@ Configuration targets three distinct environments:
   define configuration settings using :ref:`application properties <application_properties>`.
   
   In this environment the functionality of the Web administration interface is reduced. The GeoServer Administrator
-  may see settings, such as log file location, which are ignored as they have been already specified by the System Administrator.
+  may see settings which are ignored as they have been already specified by the System Administrator.
   
   This is most often seen when a system administrator is providing hosting for a GeoServer administrator.
   It is also seen when GeoServer is used in a container environment where Environmental Variables are
-  used for integration defining settings such proxy base url and log file location.
+  used for integration defining settings such as proxy base url and log file location.
   
   See :ref:`production_config_system_admin`
 
@@ -143,7 +143,6 @@ The GeoServer administration console provides a trusted GeoServer Administrator 
 In this workflow the Administration Console is used to adapt the application to the operational environment:
 
 * :ref:`proxy_base`
-* :ref:`config_globalsettings_log_location`
 * ... and many more :ref:`config_globalsettings`.
 
 Management of a web service using an administration console is a more common practice when running GeoServer as a windows web service.
@@ -169,7 +168,7 @@ Logging configuration hardening
 
 For production systems, it is advised to set ``GEOSERVER_LOG_LOCATION`` parameter during startup. The value may be defined as either an environment variable, java system property, or servlet context parameter.
 
-The location set for ``GEOSERVER_LOG_LOCATION`` has priority, causing the setting provided using the Admin Console or REST API to be ignored.
+The ``GEOSERVER_LOG_LOCATION`` property is the only way to set the log file location. The Admin Console and REST API do not allow changing this setting.
 
 See :ref:`logging_location` for more information.
 

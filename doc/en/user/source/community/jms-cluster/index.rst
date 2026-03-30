@@ -57,7 +57,8 @@ All the produced code is based on spring-jms to ensure portability amongst diffe
 
 The VirtualTopics feature has also other advantages explained here: http://activemq.apache.org/virtual-destinations.html
 
-This setup requires installed ActiveMQ to be used as MOM broker.
+This setup requires an external ActiveMQ installation to be used as MOM broker.
+Previously, GeoServer provided a simplified ``activeMQ-broker`` WAR for quick setup. This has been removed in GeoServer 3.0 due to outdated dependencies. Users who need an external JMS broker should install the full `Apache ActiveMQ Classic <https://activemq.apache.org/components/classic/download/>`__ distribution.
 
 Installation
 ^^^^^^^^^^^^

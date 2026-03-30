@@ -4,6 +4,10 @@
  */
 package org.geoserver.logging;
 
+import static org.geoserver.logging.LoggingUtils.GEOSERVER_LOG_LOCATION;
+import static org.geoserver.logging.LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS;
+import static org.geoserver.logging.LoggingUtils.updateBuiltInLoggingProfiles;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,10 +38,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.vfny.geoserver.global.ConfigurationException;
-
-import static org.geoserver.logging.LoggingUtils.GEOSERVER_LOG_LOCATION;
-import static org.geoserver.logging.LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS;
-import static org.geoserver.logging.LoggingUtils.updateBuiltInLoggingProfiles;
 
 /**
  * Used to manage GeoServer logging facilities.
@@ -201,7 +201,8 @@ class LoggingUtilsDelegate {
         boolean reloadRequired = false;
 
         if (!suppressFileLogging) {
-            LoggingStartupContextListener.getLogger().warning(() -> "The logging location can be set using " + GEOSERVER_LOG_LOCATION + " property");
+            LoggingStartupContextListener.getLogger()
+                    .warning(() -> "The logging location can be set using " + GEOSERVER_LOG_LOCATION + " property");
             if (configuration.getProperties().containsKey(GEOSERVER_LOG_LOCATION)) {
                 // this is a log4j 2 configuration using default properties
                 LoggingStartupContextListener.getLogger()

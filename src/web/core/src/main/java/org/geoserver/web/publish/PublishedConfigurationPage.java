@@ -62,9 +62,9 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
     @Serial
     private static final long serialVersionUID = 7870938096047218989L;
 
-    public static final String NAME = "name";
+    public static final String LAYER = "layer";
 
-    public static final String WORKSPACE = "wsName";
+    public static final String WORKSPACE = "workspace";
 
     protected IModel<T> myModel;
 

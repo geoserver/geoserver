@@ -74,4 +74,14 @@
     <property name="descriptionKey" value="CatalogStressTester.description" />
     <property name="componentClass" value="org.geoserver.web.catalogstresstool.CatalogStressTester" />
   </bean>
+
+  <bean id="breadcrumbItemWsBrowse" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemWsBrowse" />
+    <property name="titleKey" value="MapPreviewPage.title" /> 
+    <property name="componentClass" value="org.geoserver.web.demo.MapPreviewPage" /> 
+    <property name="targetLevel" value="WORKSPACE" />
+    <property name="category" ref="breadcrumbCatWorkspace" />
+    <property name="order" value="20" />
+    <property name="icon" value="../img/icons/geosilk/map.png"/>
+  </bean>
 </beans>

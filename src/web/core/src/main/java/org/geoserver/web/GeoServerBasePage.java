@@ -375,6 +375,15 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         // locale switcher
         add(localeSwitcher());
+
+        // sidebar
+        boolean legacyHome = (this instanceof GeoServerHomePage) && GeoServerHomePage.isLegacyHomepageSelectorEnabled();
+        NavigationTreePanel sidebar = new NavigationTreePanel("sidebar");
+        sidebar.setVisible(!legacyHome);
+        add(sidebar);
+        BreadcrumbNavigationPanel breadcrumb = new BreadcrumbNavigationPanel("breadcrumbPanel");
+        breadcrumb.setVisible(!legacyHome);
+        add(breadcrumb);
     }
 
     private Component localeSwitcher() {

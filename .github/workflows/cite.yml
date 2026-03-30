@@ -16,12 +16,12 @@ jobs:
     name: Build GeoServer WAR
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'        # only build the oldest Java version, but below run against the matrix of LTS versions
@@ -30,7 +30,7 @@ jobs:
         with:
           maven-version: 3.9.8
       - name: Maven repository caching
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository
           key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -42,7 +42,7 @@ jobs:
         run: make war
 
       - name: Upload geoserver.war as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: geoserver-war
           path: build/cite/geoserver/geoserver.war
@@ -58,12 +58,12 @@ jobs:
         java-version: [17, 21, 25]
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
       - name: Download geoserver.war artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: geoserver-war
           path: build/cite/geoserver/
@@ -140,7 +140,7 @@ jobs:
 
       - name: Upload logs folder
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cite-${{ matrix.suite }}-java-${{ matrix.java-version }}-logs
           path: build/cite/logs/

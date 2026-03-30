@@ -112,4 +112,16 @@
     <property name="order" value="10" />
   </bean>
 
+  <!-- Tile Caching - Workspace-based tile caching page -->
+  <bean id="breadcrumbItemWsTileCaching" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemWsTileCaching" />
+    <property name="titleKey" value="BreadcrumbNavigationPanel.tilelayers" /> 
+    <property name="componentClass" value="org.geoserver.gwc.web.layer.CachedLayersPage" />
+    <property name="targetLevel" value="WORKSPACE" />
+    <property name="category" ref="breadcrumbCatTileCaching" />
+    <property name="order" value="10" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    <property name="icon" value="../wmts/server_tile_map.png"/>
+  </bean>
+
 </beans>

@@ -38,6 +38,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.gwc.GWC;
@@ -73,7 +74,29 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     private static final PackageResourceReference JS_FILE =
             new PackageResourceReference(CachedLayersPage.class, "CachedLayersPage.js");
 
-    private CachedLayerProvider provider = new CachedLayerProvider();
+    private CachedLayerProvider provider = new CachedLayerProvider() {
+        @Override
+        protected List<TileLayer> getItems() {
+            List<TileLayer> base = super.getItems();
+            PageParameters params = getPageParameters();
+            String workspace = params.get("workspace").toOptionalString();
+            if (workspace == null || workspace.isEmpty()) {
+                return base;
+            }
+            List<TileLayer> filtered = new ArrayList<>();
+            for (TileLayer layer : base) {
+                String name = layer.getName();
+                int idx = name.indexOf(':');
+                if (idx > 0) {
+                    String wsPrefix = name.substring(0, idx);
+                    if (workspace.equals(wsPrefix)) {
+                        filtered.add(layer);
+                    }
+                }
+            }
+            return filtered;
+        }
+    };
 
     private GeoServerTablePanel<TileLayer> table;
 

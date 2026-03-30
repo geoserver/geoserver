@@ -42,6 +42,8 @@ import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.request.resource.caching.IStaticCacheableResource;
+import org.apache.wicket.util.string.StringValue;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
@@ -52,6 +54,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geotools.api.filter.Filter;
 
 /** Shows a paged list of the available layers and points to previews in various formats */
 public class MapPreviewPage extends GeoServerBasePage {
@@ -62,7 +65,22 @@ public class MapPreviewPage extends GeoServerBasePage {
     private static final PackageResourceReference JS_FILE =
             new PackageResourceReference(MapPreviewPage.class, "MapPreviewPage.js");
 
-    PreviewLayerProvider provider = new PreviewLayerProvider();
+    PreviewLayerProvider provider = new PreviewLayerProvider() {
+        @Override
+        protected Filter getFilter() {
+
+            Filter baseFilter = super.getFilter();
+            StringValue wsParam = getPageParameters().get("workspace");
+            if (wsParam.isNull() || wsParam.isEmpty()) {
+                return baseFilter;
+            }
+            String targetWs = wsParam.toString();
+            Filter layerWsFilter = Predicates.equal("resource.store.workspace.name", targetWs);
+            Filter groupWsFilter = Predicates.equal("workspace.name", targetWs);
+            Filter workspaceFilter = Predicates.or(layerWsFilter, groupWsFilter);
+            return Predicates.and(baseFilter, workspaceFilter);
+        }
+    };
 
     GeoServerTablePanel<PreviewLayer> table;
 

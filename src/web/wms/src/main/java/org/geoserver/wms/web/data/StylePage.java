@@ -5,6 +5,10 @@
  */
 package org.geoserver.wms.web.data;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -14,7 +18,11 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -26,6 +34,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.geoserver.web.wicket.StyleFormatLabel;
+import org.geotools.api.filter.Filter;
 
 /** Page listing all the styles, allows to edit, add, remove styles */
 @SuppressWarnings("serial")
@@ -38,7 +47,78 @@ public class StylePage extends GeoServerSecuredPage {
     GeoServerDialog dialog;
 
     public StylePage() {
-        StyleProvider provider = new StyleProvider();
+        StyleProvider provider = new StyleProvider() {
+            @Override
+            protected Filter getFilter() {
+                Filter baseFilter = Objects.requireNonNull(super.getFilter());
+
+                StringValue wsParam = getPageParameters().get("workspace");
+                StringValue layerParam = getPageParameters().get("layer");
+
+                String targetWs = wsParam != null ? wsParam.toOptionalString() : null;
+                String targetLayer = layerParam != null ? layerParam.toOptionalString() : null;
+
+                // If a layer is specified, resolve it to styles and filter by those.
+                if (targetLayer != null && !targetLayer.isEmpty()) {
+                    Set<String> styleIds = new LinkedHashSet<>();
+
+                    LayerInfo layer = getCatalog().getLayerByName(targetLayer);
+                    if (layer != null) {
+                        collectStyleIds(styleIds, layer.getDefaultStyle(), targetWs);
+                        if (layer.getStyles() != null) {
+                            for (StyleInfo s : layer.getStyles()) {
+                                collectStyleIds(styleIds, s, targetWs);
+                            }
+                        }
+                    } else {
+                        LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(targetLayer);
+                        if (layerGroup != null) {
+                            for (LayerInfo li : layerGroup.layers()) {
+                                if (li == null) continue;
+                                collectStyleIds(styleIds, li.getDefaultStyle(), targetWs);
+                                if (li.getStyles() != null) {
+                                    for (StyleInfo s : li.getStyles()) {
+                                        collectStyleIds(styleIds, s, targetWs);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (styleIds.isEmpty()) {
+                        return Objects.requireNonNull(Predicates.acceptNone());
+                    }
+
+                    Filter combined = Predicates.and(
+                            Objects.requireNonNull(baseFilter),
+                            Objects.requireNonNull(Predicates.in("id", new ArrayList<>(styleIds))));
+                    return Objects.requireNonNull(combined);
+                }
+
+                // If only workspace is specified, filter by style workspace.
+                if (targetWs != null && !targetWs.isEmpty()) {
+                    Filter combined = Predicates.and(
+                            Objects.requireNonNull(baseFilter),
+                            Objects.requireNonNull(Predicates.equal("workspace.name", targetWs)));
+                    return Objects.requireNonNull(combined);
+                }
+
+                return baseFilter;
+            }
+
+            private void collectStyleIds(Set<String> styleIds, StyleInfo style, String targetWs) {
+                if (style == null) return;
+                if (style.getId() == null) return;
+                if (targetWs != null && !targetWs.isEmpty()) {
+                    // Keep global (workspace-less) styles as well when filtering by a layer workspace.
+                    if (style.getWorkspace() != null
+                            && !targetWs.equals(style.getWorkspace().getName())) {
+                        return;
+                    }
+                }
+                styleIds.add(style.getId());
+            }
+        };
         add(
                 table = new GeoServerTablePanel<>("table", provider, true) {
 

@@ -78,7 +78,6 @@ Community modules are provided "as is" alongside the `nightly builds <https://bu
    pmtiles-store/index
    png-wind/index
    proxy-base-ext/index
-   remote-wps/index
    s3-geotiff/index
    schemaless-features/index
    singlestore/index

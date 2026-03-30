@@ -359,7 +359,7 @@ jobs:
       if: |
         (github.ref == 'refs/heads/main') || 
         (github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true')
-      uses: actions/deploy-pages@v4
+      uses: actions/deploy-pages@v5
       id: deployment
 
     - name: Skip deployment (no mkdocs label)

@@ -55,6 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const pureCoverage = elements.pureCoverage?.value === "true";
     const format = pureCoverage ? "image/jpeg" : "image/png";
+
+    // minX/Y/maxX/Y are the layer's data extent already expressed in the native CRS.
     const bounds = [
         parseFloat(elements.minimumX.value),
         parseFloat(elements.minimumY.value),
@@ -95,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         FORMAT: format,
         VERSION: "1.1.1",
         tiled: true,
-        tilesOrigin: `${elements.minimumX.value},${elements.minimumY.value}`,
+        tilesOrigin: `${bounds[0]},${bounds[1]}`,
     };
 
     document.querySelectorAll("input.param").forEach((input) => {
@@ -251,35 +253,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const requestedGlobal = elements.global.value === "true";
     const projectionUnits = elements.units.value;
 
-    const crsMinX = document.getElementById("crsMinX")?.value;
-    const crsMinY = document.getElementById("crsMinY")?.value;
-    const crsMaxX = document.getElementById("crsMaxX")?.value;
-    const crsMaxY = document.getElementById("crsMaxY")?.value;
-
     let projection = ol.proj.get(srsCode);
 
     if (!projection) {
-        let worldExtent = null;
+        // Default extent to the layer data bounds; overridden below for global projections.
+        let worldExtent = bounds.slice();
         let safeGlobal = requestedGlobal;
 
-        if (crsMinX && crsMinY && crsMaxX && crsMaxY) {
-            const wgs84Extent = [
-                parseFloat(crsMinX),
-                parseFloat(crsMinY),
-                parseFloat(crsMaxX),
-                parseFloat(crsMaxY),
-            ];
-
-            if (srsCode !== "EPSG:4326") {
-                worldExtent = ol.proj.transformExtent(
-                    wgs84Extent,
-                    "EPSG:4326",
-                    srsCode,
-                );
-            } else {
-                worldExtent = wgs84Extent;
-            }
-        } else if (requestedGlobal) {
+        if (requestedGlobal) {
             if (projectionUnits === "degrees") {
                 worldExtent = [-180, -90, 180, 90];
             } else if (
@@ -308,6 +289,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ...(elements.axisOrderYx.value === "true" &&
                 { axisOrientation: "neu" }),
         });
+        // Register so OL has the identity transform for this CRS.
+        // Without this, getFeatureInfoUrl throws "No transform available between X and X".
+        ol.proj.addProjection(projection);
     }
 
     const defaultControls = ol.control.defaults.defaults({ attribution: false });
@@ -476,20 +460,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             if (geomStringLength > GEOM_SIZE_THRESHOLD) {
                                 console.warn(`Geometry for ${feature.id} is too large (${geomStringLength} chars). Using fallback shape.`);
-                                
                                 if (feature.bbox) {
-                                    const transformedBbox = ol.proj.transformExtent(feature.bbox, "EPSG:4326", viewProjection);
+                                    // bbox is already in the view CRS — use it directly
                                     safeFeaturesToRender.push(new ol.Feature({
-                                        geometry: ol.geom.Polygon.fromExtent(transformedBbox)
+                                        geometry: ol.geom.Polygon.fromExtent(feature.bbox),
                                     }));
                                 } else {
                                     safeFeaturesToRender.push(new ol.Feature({
-                                        geometry: new ol.geom.Point(event.coordinate)
+                                        geometry: new ol.geom.Point(event.coordinate),
                                     }));
                                 }
                             } else {
+                                // Coordinates are in the view CRS — dataProjection = featureProjection = identity
                                 safeFeaturesToRender.push(geojsonFormat.readFeature(feature, {
-                                    featureProjection: viewProjection
+                                    dataProjection: viewProjection,
+                                    featureProjection: viewProjection,
                                 }));
                             }
                         });

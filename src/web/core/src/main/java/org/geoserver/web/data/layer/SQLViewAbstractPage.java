@@ -77,7 +77,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
 
     public static final String DATASTORE = "storeName";
 
-    public static final String WORKSPACE = "wsName";
+    public static final String WORKSPACE = "workspace";
 
     String storeId;
 

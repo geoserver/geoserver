@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.net.URL;
 import junit.framework.AssertionFailedError;
@@ -42,6 +43,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
@@ -484,5 +486,45 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
 
         doc = getAsDOM(resourceUrl);
         assertXpathEvaluatesTo("states", "/wmsLayer/name", doc);
+    }
+
+    /**
+     * Regression test for GEOS-12065: catch block in {@code getRemoteStyleInfos()} must return a mutable set.
+     *
+     * <p>{@code OwsUtils.updateCollectionProperty()} calls {@code clear()} on the set returned by this method when
+     * processing a PUT request. If the catch block returns {@code Collections.emptySet()} (immutable), {@code clear()}
+     * throws {@code UnsupportedOperationException} → HTTP 500.
+     */
+    @Test
+    public void testGetRemoteStyleInfosReturnsMutableSet() {
+        // catalog=null forces NPE in getWMSLayer() → catch block entered directly.
+        // Collections.emptySet() (broken) → add() throws UnsupportedOperationException.
+        // new HashSet<>() (fixed) → add() must not throw.
+        assertDoesNotThrow(() -> new WMSLayerInfoImpl(null)
+                .getRemoteStyleInfos()
+                .add(catalog.getFactory().createStyle()));
+    }
+
+    /**
+     * Regression test for GEOS-12065: PUT on a WMS layer whose remote server is unreachable must return HTTP 200, not
+     * 500.
+     *
+     * <p>{@code ModificationProxyCloner} reflectively clones the set returned by {@code getRemoteStyleInfos()}.
+     * {@code Collections.emptySet()} is a private inner class of {@code java.base} — inaccessible via reflection →
+     * {@code IllegalAccessException} → HTTP 500. {@code new HashSet<>()} is freely clonable → HTTP 200.
+     */
+    @Test
+    public void testPutOfflineStoreReturns200() throws Exception {
+        clientMocker.bind(
+                new MockHttpClient(),
+                clientMocker.getServer() + "/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo/wmslayers/states",
+                "<wmsLayer><title>Lots of states here</title></wmsLayer>",
+                "text/xml");
+        assertEquals(200, response.getStatus());
+        assertEquals(
+                "Lots of states here",
+                catalog.getResourceByName("sf", "states", WMSLayerInfo.class).getTitle());
     }
 }

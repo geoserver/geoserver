@@ -47,7 +47,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
 
     public static final String COVERAGESTORE = "storeName";
 
-    public static final String WORKSPACE = "wsName";
+    public static final String WORKSPACE = "workspace";
 
     static final String COVERAGE_VIEW_NAME = "COVERAGEVIEW_NAME";
 

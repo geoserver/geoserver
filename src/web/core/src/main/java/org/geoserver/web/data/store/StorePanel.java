@@ -108,6 +108,9 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         IModel storeNameModel = NAME.getModel(itemModel);
         String storeName = (String) storeNameModel.getObject();
         StoreInfo store = getCatalog().getStoreByName(wsName, storeName, StoreInfo.class);
+        if (store == null) {
+            return new Label(id, storeNameModel);
+        }
         if (store instanceof DataStoreInfo) {
             return new SimpleBookmarkableLink(
                     id,
@@ -152,7 +155,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     private Component workspaceLink(String id, IModel<StoreInfo> itemModel) {
         IModel nameModel = WORKSPACE.getModel(itemModel);
         return new SimpleBookmarkableLink(
-                id, WorkspaceEditPage.class, nameModel, "name", (String) nameModel.getObject());
+                id, WorkspaceEditPage.class, nameModel, "workspace", (String) nameModel.getObject());
     }
 
     protected Component removeLink(String id, final IModel itemModel) {

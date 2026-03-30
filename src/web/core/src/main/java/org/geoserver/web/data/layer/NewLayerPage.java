@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
@@ -62,6 +64,8 @@ import org.geotools.util.decorate.Wrapper;
 @SuppressWarnings("serial")
 public class NewLayerPage extends GeoServerSecuredPage {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NewLayerPage.class);
+
     String storeId;
     private NewLayerPageProvider provider;
     private GeoServerTablePanel<Resource> layers;
@@ -74,6 +78,17 @@ public class NewLayerPage extends GeoServerSecuredPage {
     private WebMarkupContainer createCascadedWFSStoredQueryContainer;
     private WebMarkupContainer createWMSLayerImportContainer;
     private WebMarkupContainer createWMTSLayerImportContainer;
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the page-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     public NewLayerPage() {
         this(null);

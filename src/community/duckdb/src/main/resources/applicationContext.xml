@@ -17,6 +17,5 @@
     <!-- Driver jars are shipped with the extension package, so availability is unconditional. -->
     <property name="available" value="true"/>
     <property name="enabled" value="true"/>
-    <property name="category" value="COMMUNITY"/>
   </bean>
 </beans>

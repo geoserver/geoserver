@@ -11,12 +11,10 @@ Installing the DuckDB Extension
 #. Visit the :website:`website download <download>` page, switch to the **Development** tab,
    and locate the nightly build matching your GeoServer version.
 
-#. Follow the **Community Modules** link and download the DuckDB module:
-
-   * |version| example: :nightly_community:`duckdb`
-
+#. Follow the **Community Modules** link and download the **DuckDB** community extension from the appropriate `nightly build <https://build.geoserver.org/geoserver/>`_. 
+   The file name is called :file:`geoserver-*-duckdb-plugin.zip`, where ``*`` matches the version number of GeoServer you are using. 
    The website lists active nightly builds to provide feedback to developers.
-   You may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
+   -   You may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
 
 #. Extract the downloaded archive into :file:`WEB-INF/lib` of your GeoServer installation.
 

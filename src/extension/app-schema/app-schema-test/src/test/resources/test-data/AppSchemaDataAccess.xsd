@@ -89,7 +89,7 @@
 		<documentation>
         <![CDATA[
       This is only needed if this type has related types that do not have their own 
-      Geoserver configuration, ie. not published in Geoserver. The type might be
+      GeoServer configuration, ie. not published in GeoServer. The type might be
       mapped separately so they can be reusable (feature chaining concept), e.g. 
       If feature type A contains data type B, and feature type C also contains
       data type B, we only want to have one mapping file for data type B. 

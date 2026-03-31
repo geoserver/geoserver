@@ -124,7 +124,6 @@
         <module>hz-cluster</module>
         <module>solr</module>
         <module>elasticsearch</module>
-        <module>wps-remote</module>
         <module>jdbcstore</module>
         <module>gdal</module>
         <module>gwc-azure-blob</module>
@@ -304,12 +303,6 @@
       <id>gwc-gcs-blob</id>
       <modules>
         <module>gwc-gcs-blob</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wps-remote</id>
-      <modules>
-        <module>wps-remote</module>
       </modules>
     </profile>
     <profile>

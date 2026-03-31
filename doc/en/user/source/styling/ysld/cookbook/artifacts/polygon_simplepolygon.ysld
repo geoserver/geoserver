@@ -1,7 +1,0 @@
-title: 'YSLD Cook Book: Simple polygon'
-feature-styles:
-- name: name
-  rules:
-  - symbolizers:
-    - polygon:
-        fill-color: '#000080'

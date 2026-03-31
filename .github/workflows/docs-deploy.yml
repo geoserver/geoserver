@@ -1,0 +1,91 @@
+name: Documentation Deployment
+
+on:
+  push:
+    branches: [main, 2.28.x, 3.0.x, 3.1.x, 'fix-AA-feedback', afrigis-new-screenshots]
+    paths:
+      - 'doc/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs-deploy.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for mike
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Install MkDocs and mike
+        run: |
+          pip install mkdocs mkdocs-material mkdocs-macros-plugin \
+                      pymdown-extensions mike
+      
+      - name: Configure Git for mike
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      
+      - name: Determine version and aliases
+        id: version
+        run: |
+          BRANCH=${GITHUB_REF##refs/heads/}
+          
+          if [ "$BRANCH" = "main" ]; then
+            echo "version=latest" >> $GITHUB_OUTPUT
+            echo "title=Latest (3.0 dev)" >> $GITHUB_OUTPUT
+            echo "is_default=false" >> $GITHUB_OUTPUT
+          elif [ "$BRANCH" = "2.28.x" ]; then
+            echo "version=stable" >> $GITHUB_OUTPUT
+            echo "title=Stable (2.28.x)" >> $GITHUB_OUTPUT
+            echo "is_default=true" >> $GITHUB_OUTPUT
+          ### TODO This logic will need to be generalised.    
+          elif [ "$BRANCH" = "3.0.x" ]; then
+            echo "version=3.0.x" >> $GITHUB_OUTPUT
+            echo "title=3.0" >> $GITHUB_OUTPUT
+            echo "is_default=false" >> $GITHUB_OUTPUT
+          elif [ "$BRANCH" = "3.1.x" ]; then
+            echo "version=3.1.x" >> $GITHUB_OUTPUT
+            echo "title=3.1" >> $GITHUB_OUTPUT
+            echo "is_default=false" >> $GITHUB_OUTPUT
+          else
+            echo "version=$BRANCH" >> $GITHUB_OUTPUT
+            echo "title=$BRANCH" >> $GITHUB_OUTPUT
+            echo "is_default=false" >> $GITHUB_OUTPUT
+          fi
+      
+      # Deploy unified documentation with mike (builds and deploys)
+      - name: Deploy unified documentation
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          mike deploy $VERSION \
+            --title "${{ steps.version.outputs.title }}" \
+            --push \
+            --update-aliases
+      
+      # Set default version (stable only)
+      - name: Set default version
+        if: steps.version.outputs.is_default == 'true'
+        run: |
+          mike set-default ${{ steps.version.outputs.version }} --push
+      
+      # Create CNAME file (main branch only)
+      - name: Configure custom domain
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+          echo "docs.geoserver.org" > CNAME
+          git add CNAME
+          git commit -m "Add CNAME for custom domain" || echo "CNAME exists"
+          git push origin gh-pages

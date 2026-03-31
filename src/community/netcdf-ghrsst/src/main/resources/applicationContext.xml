@@ -9,7 +9,7 @@
 <beans>
   <bean id="ghrsstNetCDFEncoderFactory" class="org.geoserver.wcs.responses.GHRSSTEncoderFactory"/>
   <bean id="ghrsstExtensionPanel" class="org.geoserver.web.netcdf.NetCDFExtensionPanelInfo">
-    <description>This bean adds the GHRSST form fields to Geoserver layer page</description>
+    <description>This bean adds the GHRSST form fields to GeoServer layer page</description>
     <property name="id" value="ghrsstExtensionPanel"/>
     <property name="titleKey" value="title"/>
     <property name="componentClass" value="org.geoserver.web.netcdf.GHRSSTExtensionPanel"/>

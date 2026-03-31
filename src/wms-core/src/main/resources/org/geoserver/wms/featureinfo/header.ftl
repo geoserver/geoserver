@@ -6,7 +6,7 @@ like td, tr, and so on.
 -->
 <html>
   <head>
-    <title>Geoserver GetFeatureInfo output</title>
+    <title>GeoServer GetFeatureInfo output</title>
   </head>
   <style type="text/css">
 	table.featureInfo, table.featureInfo td, table.featureInfo th {

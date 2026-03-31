@@ -293,7 +293,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
     }
 
     private Set<GeoServerUserGroup> getChildrenGroups(GeoServerUserGroup parent) {
-        Assert.notNull(parent, "Geoserver group shouldn't be null.");
+        Assert.notNull(parent, "GeoServer group shouldn't be null.");
         final String groupName = parent.getGroupname();
         final Set<String> memberGroupDns = new HashSet<>();
         final Set<GeoServerUserGroup> childGroups = new HashSet<>();

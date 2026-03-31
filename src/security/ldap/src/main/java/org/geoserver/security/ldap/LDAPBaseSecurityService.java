@@ -5,10 +5,14 @@
 package org.geoserver.security.ldap;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
@@ -73,6 +77,9 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
 
     /** attribute of a user containing the username (used if userFilter is defined) */
     protected String userNameAttribute = "uid";
+
+    /** convert from group's member to a username for user-based search. Blank/null = do nothing */
+    protected String groupMember2UserName = null;
 
     /** lookup user for dn */
     protected volatile boolean lookupUserForDn = false;
@@ -179,6 +186,8 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
         else this.nestedGroupSearchFilter = "member= {0}";
         if (ldapConfig.getMaxGroupSearchLevel() >= 0) this.maxGroupSearchLevel = ldapConfig.getMaxGroupSearchLevel();
         else this.maxGroupSearchLevel = 10;
+
+        this.groupMember2UserName = ldapConfig.getGroupMember2UserName();
     }
 
     /**
@@ -195,6 +204,38 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
 
     protected static boolean isEmpty(String property) {
         return property == null || property.isEmpty();
+    }
+
+    /**
+     * Extract the username from the group memembership example:
+     *
+     * <p>cn=Adm-AD-Blasby,ou=Administration,ou=Production,ou=Accounts,ou=ApplicationServerManagement,dc=ad,dc=geocat,dc=net
+     * groupMember2UserName: cn
+     *
+     * <p>--> Adm-AD-Blasby
+     *
+     * <p>NOTE: if groupMember2UserName is blank/null, then this does nothing
+     *
+     * @param uName - username (from group membership - likely fully qualified)
+     * @return simplified username
+     */
+    public String groupName2UserName(String uName) {
+        if (!StringUtils.isBlank(groupMember2UserName)) {
+            try {
+                LdapName name = new LdapName(uName);
+                Optional<Rdn> username =
+                        name.getRdns().stream()
+                                .filter(x -> x.getType().equals(groupMember2UserName))
+                                .findFirst();
+                if (username.isPresent()
+                        && !StringUtils.isBlank(username.get().getValue().toString())) {
+                    return username.get().getValue().toString();
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "LDAP issue parsing username: " + user, e);
+            }
+        }
+        return uName;
     }
 
     protected String getUserNameFromMembership(final String user) {

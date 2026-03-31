@@ -213,10 +213,23 @@ public class GeoServerApplication extends WebApplication
         return GeoServerExtensions.extensions(type, getApplicationContext());
     }
 
+    /**
+     * Returns a versioned (cache-busted) URL for the given servlet-context-relative asset path. The version token is a
+     * deployment/build identifier derived from manifest metadata and cached for the application lifetime (until
+     * {@link #clearWicketCaches()} is called).
+     *
+     * @param path e.g. {@code "css/geoserver.css"}
+     * @return e.g. {@code "css/geoserver.css?v=20260326"}
+     */
+    public String versioned(String path) {
+        return AssetVersionManager.versioned(path, getServletContext());
+    }
+
     /** Clears all the wicket caches so that resources and localization files will be re-read */
     public void clearWicketCaches() {
         getResourceSettings().getPropertiesFactory().clearCache();
         getResourceSettings().getLocalizer().clearCache();
+        AssetVersionManager.clearCache();
     }
 
     /**

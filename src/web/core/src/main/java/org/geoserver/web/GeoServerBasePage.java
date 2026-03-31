@@ -497,27 +497,18 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         // includes jquery, required by the placeholder plugin (wicket only include jquery if needed)
         response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(JQueryResourceReference.INSTANCE_3)));
-        response.render(CssReferenceHeaderItem.forUrl("css/blueprint/print.css", "print"));
-        response.render(CssReferenceHeaderItem.forUrl("css/geoserver.css", "screen, projection"));
-        //        response.render(CssReferenceHeaderItem.forReference(
-        //                new PackageResourceReference(GeoServerBasePage.class, "css/blueprint/print.css"), "print"));
-        //        response.render(CssReferenceHeaderItem.forReference(
-        //                new PackageResourceReference(GeoServerBasePage.class, "css/geoserver.css"), "screen,
-        // projection"));
+        // Grab the application once — versioned() is a trivial cache lookup after first call
+        GeoServerApplication app = getGeoServerApplication();
 
-        response.render(JavaScriptHeaderItem.forUrl("js/geoserver.js"));
-        response.render(JavaScriptHeaderItem.forUrl("js/jquery.placeholder.js"));
-        response.render(JavaScriptHeaderItem.forUrl("js/jquery.fullscreen.js"));
-        response.render(JavaScriptHeaderItem.forUrl("js/jquery.hide.ajaxFeedback.js"));
+        // CSS — each file gets its own hash, so changing one doesn't bust the others
+        response.render(CssReferenceHeaderItem.forUrl(app.versioned("css/blueprint/print.css"), "print"));
+        response.render(CssReferenceHeaderItem.forUrl(app.versioned("css/geoserver.css"), "screen, projection"));
 
-        //        response.render(JavaScriptHeaderItem.forReference(
-        //                new PackageResourceReference(GeoServerBasePage.class, "js/geoserver.js")));
-        //        response.render(JavaScriptHeaderItem.forReference(
-        //                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.placeholder.js")));
-        //        response.render(JavaScriptHeaderItem.forReference(
-        //                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.fullscreen.js")));
-        //        response.render(JavaScriptHeaderItem.forReference(
-        //                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.hide.ajaxFeedback.js")));
+        // JavaScript
+        response.render(JavaScriptHeaderItem.forUrl(app.versioned("js/geoserver.js")));
+        response.render(JavaScriptHeaderItem.forUrl(app.versioned("js/jquery.placeholder.js")));
+        response.render(JavaScriptHeaderItem.forUrl(app.versioned("js/jquery.fullscreen.js")));
+        response.render(JavaScriptHeaderItem.forUrl(app.versioned("js/jquery.hide.ajaxFeedback.js")));
 
         // Due to CSPontent-security-policy, JS must be rendered by Wicket.  This inits the textboxes
         // for placeholders.

@@ -153,6 +153,8 @@ To add a new LDAP user/group service, click the :guilabel:`Add new` link, and th
        
    * - Attribute name to retrieve the user/group mapping
      - Attribute name used for mapping user/group memberships.  Leave blank to derive from filter.
+   * - Key for converting group member to username
+     - Optional conversion from the username listed as a member of a group to the username used in a search for that user. If this is blank, then no conversion is done.  
    * - User search base
      - LDAP search base for users.
    * - Filter to search all users

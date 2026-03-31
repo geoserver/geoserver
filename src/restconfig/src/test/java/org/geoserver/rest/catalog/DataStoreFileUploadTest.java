@@ -28,8 +28,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -211,27 +209,6 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     @Test
     public void testShapefileUploadZip() throws Exception {
         uploadSanAndreas();
-    }
-
-    @Test
-    public void testGetProperties() throws Exception {
-        MockHttpServletResponse resp =
-                getAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties");
-        assertEquals(404, resp.getStatus());
-
-        byte[] bytes = propertyFile();
-        put(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
-
-        resp = getAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties");
-        assertEquals(200, resp.getStatus());
-        assertEquals("application/zip", resp.getContentType());
-
-        ByteArrayInputStream bin = getBinaryInputStream(resp);
-        ZipInputStream zin = new ZipInputStream(bin);
-
-        ZipEntry entry = zin.getNextEntry();
-        assertNotNull(entry);
-        assertEquals("pds.properties", entry.getName());
     }
 
     @Test

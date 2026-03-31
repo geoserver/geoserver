@@ -84,7 +84,7 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     public void setCatalog(Catalog catalog) {
         this.catalog = catalog;
 
-        // This instance of check is has to be here because this Geoserver cannot be injected
+        // This instance of check is has to be here because this GeoServer cannot be injected
         // into LocalWorkspaceCatalog because it causes a circular reference
         if (catalog instanceof LocalWorkspaceCatalog lwCatalog) {
             lwCatalog.setGeoServer(this);

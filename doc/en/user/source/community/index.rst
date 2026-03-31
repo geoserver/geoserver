@@ -63,7 +63,6 @@ Community modules are provided "as is" alongside the `nightly builds <https://bu
    importer-jdbc/index
    jdbcconfig/index
    jdbcstore/index
-   jms-cluster/index
    jwt-headers/index
    libdeflate/index
    mbtiles/index
@@ -78,7 +77,6 @@ Community modules are provided "as is" alongside the `nightly builds <https://bu
    pmtiles-store/index
    png-wind/index
    proxy-base-ext/index
-   remote-wps/index
    s3-geotiff/index
    schemaless-features/index
    singlestore/index

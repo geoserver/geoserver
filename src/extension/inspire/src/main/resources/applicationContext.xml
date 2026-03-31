@@ -23,14 +23,14 @@
   <bean id="inspireXStreamConfigurer" class="org.geoserver.inspire.InspireXStreamPersisterInitializer"/>
   
   <bean id="inspireWmsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
-      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+      <description>This bean adds the necessary form fields to GeoServer admin interface</description>
     <property name="id" value="inspireWmsAdminPanel"/>
     <property name="titleKey" value="inspire"/>
     <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
     <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
   </bean>
   <bean id="inspireWfsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
-      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+      <description>This bean adds the necessary form fields to GeoServer admin interface</description>
     <property name="id" value="inspireWfsAdminPanel"/>
     <property name="titleKey" value="inspire"/>
     <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
@@ -38,14 +38,14 @@
     <property name="specificServiceType" value="WFS"/>
   </bean>
   <bean id="inspireWcsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
-      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+      <description>This bean adds the necessary form fields to GeoServer admin interface</description>
     <property name="id" value="inspireWcsAdminPanel"/>
     <property name="titleKey" value="inspire"/>
     <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
     <property name="serviceClass" value="org.geoserver.wcs.WCSInfo"/>
   </bean>
   <bean id="inspireWmtsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
-    <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+    <description>This bean adds the necessary form fields to GeoServer admin interface</description>
     <property name="id" value="inspireWmtsAdminPanel"/>
     <property name="titleKey" value="inspire"/>
     <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>

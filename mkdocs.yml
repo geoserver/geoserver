@@ -1,0 +1,1042 @@
+site_name: GeoServer Documentation
+site_url: https://docs.geoserver.org/3.0.x/
+repo_url: https://github.com/geoserver/geoserver
+repo_name: geoserver/geoserver
+edit_uri: edit/main/doc/
+
+docs_dir: doc
+site_dir: mkdocs_output
+
+# Exclude include files from the build (they are included by other pages)
+exclude_docs: |
+  en/user/styling/ysld/reference/symbolizers/include/
+  en/developer/policies/gsip_voting.md
+  en/developer/quickstart/checkout.md
+
+theme:
+  name: material
+  custom_dir: doc/themes/geoserver
+  logo: img/geoserver-logo.png
+  favicon: img/geoserver.ico
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+    - navigation.tabs
+    - navigation.tabs.sticky
+#    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.path
+    - navigation.footer
+
+extra:
+  version:
+    provider: mike
+  version_selector:
+    # GitHub Pages versions (new versions)
+    - version: latest
+      title: Latest (3.0)
+      aliases: []
+      archive: false
+    - version: "3.0"
+      title: "3.0"
+      aliases: []
+      archive: false
+    - version: "main"
+      title: "Latest"
+      aliases: []
+      archive: false
+    - version: "2.28.x"
+      title: "2.28.x"
+      aliases: []
+      archive: false
+    # Archive versions (OSGeo server)
+    - version: "2.27.x"
+      title: "2.27.x (archive)"
+      url: "https://docs-archive.geoserver.org/2.27.x/"
+      archive: true
+    - version: "2.26.x"
+      title: "2.26.x (archive)"
+      url: "https://docs-archive.geoserver.org/2.26.x/"
+      archive: true
+    - version: "2.25.x"
+      title: "2.25.x (archive)"
+      url: "https://docs-archive.geoserver.org/2.25.x/"
+      archive: true
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/geoserver/geoserver
+    - icon: fontawesome/solid/globe
+      link: https://geoserver.org
+
+plugins:
+  - search:
+      lang: en
+  - macros:
+      render_by_default: true
+      include_dir: doc
+      module_name: doc/version
+
+hooks:
+  - doc/download_files.py
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/hide-empty-toc.js
+
+nav:
+  - Home: index.md
+  - User Manual:
+    - en/user/index.md
+    - Introduction:
+      - en/user/introduction/index.md
+      - en/user/introduction/overview.md
+      - en/user/introduction/history.md
+      - en/user/introduction/gettinginvolved.md
+      - en/user/introduction/license.md
+    - Installation:
+      - en/user/installation/index.md
+      - en/user/installation/linux.md
+      - en/user/installation/win_binary.md
+      - en/user/installation/win_installer.md
+      - en/user/installation/war.md
+      - en/user/installation/docker.md
+      - en/user/installation/upgrade.md
+    - Getting started:
+      - en/user/gettingstarted/index.md
+      - Using the web administration interface: en/user/gettingstarted/web-admin-quickstart/index.md
+      - Publishing a GeoPackage: en/user/gettingstarted/geopkg-quickstart/index.md
+      - Publishing a GeoTIFF: en/user/gettingstarted/image-quickstart/index.md
+      - Publishing a Layer Group: en/user/gettingstarted/group-quickstart/index.md
+      - Publishing a style: en/user/gettingstarted/style-quickstart/index.md
+      - Preflight Checklist: en/user/gettingstarted/preflight-quickstart/index.md
+      - Publishing a shapefile: en/user/gettingstarted/shapefile-quickstart/index.md
+      - Publishing a PostGIS table: en/user/gettingstarted/postgis-quickstart/index.md
+    - Web administration interface:
+      - en/user/webadmin/index.md
+      - en/user/webadmin/welcome.md
+      - en/user/webadmin/about.md
+    - Data management:
+      - en/user/data/index.md
+      - Data settings:
+        - en/user/data/webadmin/index.md
+        - en/user/data/webadmin/layerpreview.md
+        - en/user/data/webadmin/workspaces.md
+        - en/user/data/webadmin/stores.md
+        - en/user/data/webadmin/layers.md
+        - en/user/data/webadmin/layergroups.md
+      - Vector:
+        - en/user/data/vector/index.md
+        - en/user/data/vector/shapefile.md
+        - en/user/data/vector/directory.md
+        - en/user/data/vector/properties.md
+        - en/user/data/vector/geopkg.md
+        - en/user/data/vector/featurepregen.md
+      - Raster:
+        - en/user/data/raster/index.md
+        - en/user/data/raster/geotiff.md
+        - en/user/data/raster/worldimage.md
+        - Imagemosaic:
+          - en/user/data/raster/imagemosaic/index.md
+          - en/user/data/raster/imagemosaic/configuration.md
+          - en/user/data/raster/imagemosaic/tutorial.md
+        - en/user/data/raster/geopkg.md
+        - en/user/data/raster/arcgrid.md
+        - en/user/data/raster/gdal.md
+        - en/user/data/raster/imagepyramid.md
+        - en/user/data/raster/coverageview.md
+      - Database:
+        - en/user/data/database/index.md
+        - en/user/data/database/postgis.md
+        - en/user/data/database/db2.md
+        - en/user/data/database/mysql.md
+        - en/user/data/database/oracle.md
+        - en/user/data/database/sqlserver.md
+        - en/user/data/database/connection-pooling.md
+        - en/user/data/database/jndi.md
+        - en/user/data/database/sqlview.md
+        - en/user/data/database/primarykey.md
+        - en/user/data/database/sqlsession.md
+      - Cascaded service data:
+        - en/user/data/cascaded/index.md
+        - en/user/data/cascaded/wfs.md
+        - en/user/data/cascaded/stored_query.md
+        - en/user/data/cascaded/wms.md
+        - en/user/data/cascaded/wmts.md
+      - Application schemas:
+        - en/user/data/app-schema/index.md
+        - en/user/data/app-schema/complex-features.md
+        - en/user/data/app-schema/installation.md
+        - en/user/data/app-schema/wfs-service-settings.md
+        - en/user/data/app-schema/configuration.md
+        - en/user/data/app-schema/mapping-file.md
+        - en/user/data/app-schema/app-schema-resolution.md
+        - en/user/data/app-schema/supported-gml-versions.md
+        - en/user/data/app-schema/secondary-namespaces.md
+        - en/user/data/app-schema/cql-functions.md
+        - en/user/data/app-schema/property-interpolation.md
+        - en/user/data/app-schema/data-stores.md
+        - en/user/data/app-schema/feature-chaining.md
+        - en/user/data/app-schema/polymorphism.md
+        - en/user/data/app-schema/data-access-integration.md
+        - en/user/data/app-schema/wms-support.md
+        - en/user/data/app-schema/wfs-2.0-support.md
+        - en/user/data/app-schema/joining.md
+        - en/user/data/app-schema/tutorial.md
+        - en/user/data/app-schema/mongo-tutorial.md
+        - en/user/data/app-schema/solr-tutorial.md
+    - Styling:
+      - en/user/styling/index.md
+      - Styles: en/user/styling/webadmin/index.md
+      - SLD Styling:
+        - en/user/styling/sld/index.md
+        - en/user/styling/sld/introduction.md
+        - en/user/styling/sld/working.md
+        - Cookbook:
+          - en/user/styling/sld/cookbook/index.md
+          - en/user/styling/sld/cookbook/points.md
+          - en/user/styling/sld/cookbook/lines.md
+          - en/user/styling/sld/cookbook/polygons.md
+          - en/user/styling/sld/cookbook/rasters.md
+        - Reference:
+          - en/user/styling/sld/reference/index.md
+          - en/user/styling/sld/reference/sld.md
+          - en/user/styling/sld/reference/layers.md
+          - en/user/styling/sld/reference/styles.md
+          - en/user/styling/sld/reference/rules.md
+          - en/user/styling/sld/reference/filters.md
+          - en/user/styling/sld/reference/pointsymbolizer.md
+          - en/user/styling/sld/reference/linesymbolizer.md
+          - en/user/styling/sld/reference/polygonsymbolizer.md
+          - en/user/styling/sld/reference/textsymbolizer.md
+          - en/user/styling/sld/reference/labeling.md
+          - en/user/styling/sld/reference/rastersymbolizer.md
+        - SLD Extensions in GeoServer:
+          - en/user/styling/sld/extensions/index.md
+          - en/user/styling/sld/extensions/geometry-transformations.md
+          - en/user/styling/sld/extensions/rendering-transform.md
+          - en/user/styling/sld/extensions/pointsymbols.md
+          - en/user/styling/sld/extensions/substitution.md
+          - en/user/styling/sld/extensions/uom.md
+          - en/user/styling/sld/extensions/label-obstacles.md
+          - en/user/styling/sld/extensions/margins.md
+          - en/user/styling/sld/extensions/randomized.md
+          - Color compositing and color blending:
+            - en/user/styling/sld/extensions/composite-blend/index.md
+            - en/user/styling/sld/extensions/composite-blend/syntax.md
+            - en/user/styling/sld/extensions/composite-blend/modes.md
+            - en/user/styling/sld/extensions/composite-blend/example.md
+          - Z ordering features within and across feature types and layers:
+            - en/user/styling/sld/extensions/z-order/index.md
+            - en/user/styling/sld/extensions/z-order/syntax.md
+            - en/user/styling/sld/extensions/z-order/example.md
+          - en/user/styling/sld/extensions/rendering-selection.md
+        - SLD Tips and Tricks:
+          - en/user/styling/sld/tipstricks/index.md
+          - en/user/styling/sld/tipstricks/mixed-geometries.md
+          - en/user/styling/sld/tipstricks/transformation-func.md
+        - en/user/styling/sld/language.md
+      - Generating SLD styles with QGIS: en/user/styling/qgis/index.md
+      - CSS Styling:
+        - en/user/styling/css/index.md
+        - en/user/styling/css/install.md
+        - en/user/styling/css/tutorial.md
+        - en/user/styling/css/filters.md
+        - en/user/styling/css/metadata.md
+        - en/user/styling/css/multivalueprops.md
+        - en/user/styling/css/properties.md
+        - en/user/styling/css/valuetypes.md
+        - en/user/styling/css/directives.md
+        - en/user/styling/css/cascading.md
+        - en/user/styling/css/nested.md
+        - en/user/styling/css/transformation.md
+        - en/user/styling/css/multilayer.md
+        - en/user/styling/css/styledmarks.md
+        - Cookbook:
+          - en/user/styling/css/cookbook/index.md
+          - en/user/styling/css/cookbook/point.md
+          - en/user/styling/css/cookbook/line.md
+          - en/user/styling/css/cookbook/polygon.md
+          - en/user/styling/css/cookbook/raster.md
+        - Styling examples:
+          - en/user/styling/css/examples/index.md
+          - en/user/styling/css/examples/randomfills.md
+          - en/user/styling/css/examples/transformation.md
+          - en/user/styling/css/examples/extrude.md
+          - en/user/styling/css/examples/kml.md
+          - en/user/styling/css/examples/misc.md
+      - YSLD Styling:
+        - en/user/styling/ysld/index.md
+        - en/user/styling/ysld/installing.md
+        - en/user/styling/ysld/gs-extensions.md
+        - Reference:
+          - en/user/styling/ysld/reference/index.md
+          - en/user/styling/ysld/reference/structure.md
+          - en/user/styling/ysld/reference/featurestyles.md
+          - en/user/styling/ysld/reference/rules.md
+          - Symbolizers: en/user/styling/ysld/reference/symbolizers/index.md
+          - en/user/styling/ysld/reference/symbolizers/line.md
+          - en/user/styling/ysld/reference/symbolizers/polygon.md
+          - en/user/styling/ysld/reference/symbolizers/point.md
+          - en/user/styling/ysld/reference/symbolizers/raster.md
+          - en/user/styling/ysld/reference/symbolizers/text.md
+          - en/user/styling/ysld/reference/scalezoom.md
+          - en/user/styling/ysld/reference/filters.md
+          - en/user/styling/ysld/reference/functions.md
+          - en/user/styling/ysld/reference/variables.md
+          - en/user/styling/ysld/reference/transforms.md
+        - Cookbook:
+          - en/user/styling/ysld/cookbook/index.md
+          - en/user/styling/ysld/cookbook/points.md
+          - en/user/styling/ysld/cookbook/lines.md
+          - en/user/styling/ysld/cookbook/polygons.md
+          - en/user/styling/ysld/cookbook/rasters.md
+      - MBStyle Styling:
+        - en/user/styling/mbstyle/index.md
+        - en/user/styling/mbstyle/installing.md
+        - en/user/styling/mbstyle/source.md
+        - MBStyle references: en/user/styling/mbstyle/reference/index.md
+        - MBStyle Cookbook:
+          - en/user/styling/mbstyle/cookbook/index.md
+          - en/user/styling/mbstyle/cookbook/points.md
+          - en/user/styling/mbstyle/cookbook/lines.md
+          - en/user/styling/mbstyle/cookbook/polygons.md
+      - Styling Workshop:
+        - en/user/styling/workshop/index.md
+        - Workshop Setup:
+          - en/user/styling/workshop/setup/index.md
+          - en/user/styling/workshop/setup/install.md
+          - en/user/styling/workshop/setup/data.md
+        - Design:
+          - en/user/styling/workshop/design/index.md
+          - en/user/styling/workshop/design/symbology.md
+          - en/user/styling/workshop/design/style.md
+        - CSS Styling Workbook:
+          - en/user/styling/workshop/css/index.md
+          - en/user/styling/workshop/css/css.md
+          - en/user/styling/workshop/css/linestring.md
+          - en/user/styling/workshop/css/polygon.md
+          - en/user/styling/workshop/css/point.md
+          - en/user/styling/workshop/css/raster.md
+          - en/user/styling/workshop/css/done.md
+        - YSLD Styling Workbook:
+          - en/user/styling/workshop/ysld/index.md
+          - en/user/styling/workshop/ysld/ysld.md
+          - en/user/styling/workshop/ysld/linestring.md
+          - en/user/styling/workshop/ysld/polygon.md
+          - en/user/styling/workshop/ysld/point.md
+          - en/user/styling/workshop/ysld/raster.md
+          - en/user/styling/workshop/ysld/done.md
+        - MBStyle Styling Workbook:
+          - en/user/styling/workshop/mbstyle/index.md
+          - en/user/styling/workshop/mbstyle/mbstyle.md
+          - en/user/styling/workshop/mbstyle/linestring.md
+          - en/user/styling/workshop/mbstyle/polygon.md
+          - en/user/styling/workshop/mbstyle/point.md
+          - en/user/styling/workshop/mbstyle/raster.md
+          - en/user/styling/workshop/mbstyle/done.md
+    - Services:
+      - en/user/services/index.md
+      - Web Map Service (WMS):
+        - en/user/services/wms/index.md
+        - en/user/services/wms/webadmin.md
+        - en/user/services/wms/basics.md
+        - en/user/services/wms/reference.md
+        - en/user/services/wms/time.md
+        - en/user/services/wms/outputformats.md
+        - en/user/services/wms/vendor.md
+        - en/user/services/wms/nonstandardautonamespace.md
+        - en/user/services/wms/configuration.md
+        - en/user/services/wms/global.md
+        - GetLegendGraphic: en/user/services/wms/get_legend_graphic/index.md
+        - en/user/services/wms/decoration.md
+      - Web Feature Service (WFS):
+        - en/user/services/wfs/index.md
+        - en/user/services/wfs/webadmin.md
+        - en/user/services/wfs/basics.md
+        - en/user/services/wfs/reference.md
+        - en/user/services/wfs/outputformats.md
+        - en/user/services/wfs/vendor.md
+        - en/user/services/wfs/schemamapping.md
+        - en/user/services/wfs/axis_order.md
+      - OGC API - Features:
+        - en/user/services/features/index.md
+        - en/user/services/features/install.md
+        - en/user/services/features/service.md
+        - en/user/services/features/config.md
+        - en/user/services/features/status.md
+        - en/user/services/features/templates.md
+      - Web Coverage Service (WCS):
+        - en/user/services/wcs/index.md
+        - en/user/services/wcs/install.md
+        - en/user/services/wcs/webadmin.md
+        - en/user/services/wcs/basics.md
+        - en/user/services/wcs/reference.md
+        - en/user/services/wcs/outputformats.md
+        - en/user/services/wcs/vendor.md
+        - en/user/services/wcs/configuration.md
+        - en/user/services/wcs/requestbuilder.md
+      - Web Map Tile Service (WMTS):
+        - en/user/services/wmts/index.md
+        - en/user/services/wmts/webadmin.md
+      - Web Processing Service (WPS):
+        - en/user/services/wps/index.md
+        - en/user/services/wps/install.md
+        - en/user/services/wps/operations.md
+        - en/user/services/wps/administration.md
+        - en/user/services/wps/security.md
+        - en/user/services/wps/requestbuilder.md
+        - Process Cookbook:
+          - en/user/services/wps/processes/index.md
+          - en/user/services/wps/processes/geo.md
+          - en/user/services/wps/processes/gs.md
+          - en/user/services/wps/processes/chaining.md
+        - en/user/services/wps/hazelcast-clustering.md
+      - Catalog Services for the Web (CSW):
+        - en/user/services/csw/index.md
+        - en/user/services/csw/installing.md
+        - en/user/services/csw/features.md
+        - en/user/services/csw/directdownload.md
+    - Filter:
+      - en/user/filter/index.md
+      - en/user/filter/syntax.md
+      - en/user/filter/filter_reference.md
+      - en/user/filter/ecql_reference.md
+      - en/user/filter/function.md
+      - en/user/filter/function_reference.md
+    - Server configuration:
+      - en/user/configuration/index.md
+      - en/user/configuration/status.md
+      - en/user/configuration/contact.md
+      - Service Metadata: en/user/configuration/service-metadata/index.md
+      - OGC API Service Configuration: en/user/configuration/ogc-api-services/index.md
+      - en/user/configuration/globalsettings.md
+      - Image Processing: en/user/configuration/image_processing/index.md
+      - en/user/configuration/raster_access.md
+      - en/user/configuration/REST.md
+      - en/user/configuration/logging.md
+      - Coordinate Reference System Handling:
+        - en/user/configuration/crshandling/index.md
+        - en/user/configuration/crshandling/configurecrs.md
+        - en/user/configuration/crshandling/customcrs.md
+        - en/user/configuration/crshandling/coordtransforms.md
+        - en/user/configuration/crshandling/manualepsg.md
+      - en/user/configuration/virtual-services.md
+      - Internationalization (i18n): en/user/configuration/internationalization/index.md
+      - Demos: en/user/configuration/demos/index.md
+      - Tools:
+        - en/user/configuration/tools/index.md
+        - Bulk Load tool: en/user/configuration/tools/bulk/index.md
+        - Resource Browser tool:
+          - en/user/configuration/tools/resource/index.md
+          - en/user/configuration/tools/resource/install.md
+          - en/user/configuration/tools/resource/browser.md
+          - en/user/configuration/tools/resource/examples.md
+      - Application Properties: en/user/configuration/properties/index.md
+    - GeoServer data directory:
+      - en/user/datadirectory/index.md
+      - en/user/datadirectory/location.md
+      - en/user/datadirectory/setting.md
+      - en/user/datadirectory/structure.md
+      - en/user/datadirectory/migrating.md
+      - en/user/datadirectory/configtemplate.md
+    - Running in a production environment:
+      - en/user/production/index.md
+      - en/user/production/java.md
+      - en/user/production/container.md
+      - en/user/production/config.md
+      - en/user/production/data.md
+      - en/user/production/linuxscript.md
+      - en/user/production/misc.md
+      - en/user/production/troubleshooting.md
+      - en/user/production/identify.md
+    - Rest:
+      - en/user/rest/index.md
+      - en/user/rest/about.md
+      - en/user/rest/fonts.md
+      - en/user/rest/layergroups.md
+      - en/user/rest/layers.md
+      - en/user/rest/security.md
+      - en/user/rest/styles.md
+      - en/user/rest/workspaces.md
+      - en/user/rest/stores.md
+      - en/user/rest/imagemosaic.md
+      - en/user/rest/appschema.md
+      - en/user/rest/urlchecks.md
+      - en/user/rest/filterchains.md
+      - en/user/rest/authenticationfilters.md
+      - en/user/rest/authenticationproviders.md
+      - en/user/rest/usergroupservices.md
+      - REST configuration API reference:
+        - en/user/rest/api/index.md
+        - en/user/rest/api/details.md
+        - en/user/rest/api/global.md
+        - en/user/rest/api/workspaces.md
+        - en/user/rest/api/namespaces.md
+        - en/user/rest/api/datastores.md
+        - en/user/rest/api/featuretypes.md
+        - en/user/rest/api/coveragestores.md
+        - en/user/rest/api/coverages.md
+        - en/user/rest/api/styles.md
+        - en/user/rest/api/layers.md
+        - en/user/rest/api/logging.md
+        - en/user/rest/api/layergroups.md
+        - en/user/rest/api/fonts.md
+        - en/user/rest/api/templates.md
+        - en/user/rest/api/services.md
+        - en/user/rest/api/reload.md
+        - en/user/rest/api/reset.md
+        - en/user/rest/api/manifests.md
+        - en/user/rest/api/masterpassword.md
+        - en/user/rest/api/selfadmin.md
+        - en/user/rest/api/accesscontrol.md
+        - en/user/rest/api/userrole.md
+        - en/user/rest/api/resources.md
+        - en/user/rest/api/urlchecks.md
+        - en/user/rest/api/filterchains.md
+        - en/user/rest/api/authenticationfilters.md
+        - en/user/rest/api/authenticationproviders.md
+        - en/user/rest/api/usergroupservices.md
+    - Security:
+      - en/user/security/index.md
+      - Security settings:
+        - en/user/security/webadmin/index.md
+        - en/user/security/webadmin/settings.md
+        - en/user/security/webadmin/auth.md
+        - en/user/security/webadmin/passwords.md
+        - en/user/security/webadmin/ugr.md
+        - en/user/security/webadmin/data.md
+        - en/user/security/webadmin/services.md
+        - en/user/security/webadmin/filebrowse.md
+        - en/user/security/webadmin/csrf.md
+      - Role system:
+        - en/user/security/usergrouprole/index.md
+        - en/user/security/usergrouprole/usergroups.md
+        - en/user/security/usergrouprole/usergroupservices.md
+        - en/user/security/usergrouprole/roles.md
+        - en/user/security/usergrouprole/roleservices.md
+        - en/user/security/usergrouprole/rolesource.md
+        - en/user/security/usergrouprole/interaction.md
+      - Authentication:
+        - en/user/security/auth/index.md
+        - en/user/security/auth/chain.md
+        - en/user/security/auth/web.md
+        - en/user/security/auth/owsrest.md
+        - en/user/security/auth/providers.md
+      - en/user/security/passwd.md
+      - en/user/security/root.md
+      - en/user/security/service.md
+      - en/user/security/layer.md
+      - en/user/security/sandbox.md
+      - en/user/security/rest.md
+      - en/user/security/urlchecks.md
+      - en/user/security/csp.md
+      - en/user/security/disable.md
+      - Tutorials:
+        - en/user/security/tutorials/index.md
+        - Authentication with LDAP: en/user/security/tutorials/ldap/index.md
+        - Authentication with LDAP against ActiveDirectory: en/user/security/tutorials/activedirectory/index.md
+        - Configuring Digest Authentication: en/user/security/tutorials/digest/index.md
+        - Configuring X.509 Certificate Authentication: en/user/security/tutorials/cert/index.md
+        - Configuring J2EE Authentication: en/user/security/tutorials/j2ee/index.md
+        - Configuring HTTP Header Proxy Authentication: en/user/security/tutorials/httpheaderproxy/index.md
+        - Configuring Apache HTTPD Session Integration: en/user/security/tutorials/credentialsfromheaders/index.md
+        - Authentication with CAS: en/user/security/tutorials/cas/index.md
+    - Geowebcache:
+      - en/user/geowebcache/index.md
+      - GeoWebCache settings:
+        - en/user/geowebcache/webadmin/index.md
+        - en/user/geowebcache/webadmin/layers.md
+        - en/user/geowebcache/webadmin/demopage.md
+        - en/user/geowebcache/webadmin/defaults.md
+        - en/user/geowebcache/webadmin/gridsets.md
+        - en/user/geowebcache/webadmin/diskquotas.md
+        - en/user/geowebcache/webadmin/blobstores.md
+      - en/user/geowebcache/using.md
+      - en/user/geowebcache/config.md
+      - en/user/geowebcache/seeding.md
+      - en/user/geowebcache/responseheaders.md
+      - GeoWebCache REST API:
+        - en/user/geowebcache/rest/index.md
+        - en/user/geowebcache/rest/layers.md
+        - en/user/geowebcache/rest/seed.md
+        - en/user/geowebcache/rest/diskquota.md
+      - en/user/geowebcache/troubleshooting.md
+    - Extensions:
+      - en/user/extensions/index.md
+      - Key authentication module: en/user/extensions/authkey/index.md
+      - Control flow module: en/user/extensions/controlflow/index.md
+      - DXF OutputFormat for WFS and WPS PPIO: en/user/extensions/dxf/index.md
+      - en/user/extensions/excel.md
+      - GeoPackage Output:
+        - en/user/extensions/geopkg-output/index.md
+        - en/user/extensions/geopkg-output/install.md
+        - en/user/extensions/geopkg-output/usage.md
+      - GRIB: en/user/extensions/grib/index.md
+      - Importer:
+        - en/user/extensions/importer/index.md
+        - en/user/extensions/importer/installing.md
+        - en/user/extensions/importer/configuring.md
+        - en/user/extensions/importer/using.md
+        - en/user/extensions/importer/guireference.md
+        - en/user/extensions/importer/formats.md
+        - en/user/extensions/importer/rest_reference.md
+        - en/user/extensions/importer/rest_examples.md
+      - Inspire:
+        - en/user/extensions/inspire/index.md
+        - en/user/extensions/inspire/installing.md
+        - en/user/extensions/inspire/using.md
+      - JP2K Plugin: en/user/extensions/jp2k/index.md
+      - Kml:
+        - en/user/extensions/kml/index.md
+        - en/user/extensions/kml/overview.md
+        - en/user/extensions/kml/quickstart.md
+        - en/user/extensions/kml/kmlstyling.md
+        - Tutorials:
+          - en/user/extensions/kml/tutorials/index.md
+          - KML Placemark Templates: en/user/extensions/kml/tutorials/kmlplacemark/index.md
+          - en/user/extensions/kml/tutorials/heights/heights.md
+          - en/user/extensions/kml/tutorials/time/time.md
+          - en/user/extensions/kml/tutorials/superoverlaysgwc.md
+        - Features:
+          - en/user/extensions/kml/features/index.md
+          - en/user/extensions/kml/features/kmlreflector.md
+          - en/user/extensions/kml/features/togglingplacemarks.md
+          - en/user/extensions/kml/features/customizingplacemarks.md
+          - en/user/extensions/kml/features/kmlcentroids.md
+          - en/user/extensions/kml/features/kmlheighttime.md
+          - en/user/extensions/kml/features/kmllegends.md
+          - en/user/extensions/kml/features/filters.md
+          - en/user/extensions/kml/features/kmlsuperoverlays.md
+          - en/user/extensions/kml/features/kmlregionation.md
+          - en/user/extensions/kml/features/kmlscoring.md
+      - libjpeg-turbo Map Encoder Extension: en/user/extensions/libjpeg-turbo/index.md
+      - Monitoring:
+        - en/user/extensions/monitoring/index.md
+        - en/user/extensions/monitoring/installation.md
+        - en/user/extensions/monitoring/overview.md
+        - en/user/extensions/monitoring/reference.md
+        - en/user/extensions/monitoring/configuration.md
+        - en/user/extensions/monitoring/audit.md
+        - en/user/extensions/monitoring/query.md
+        - en/user/extensions/monitoring/geoip.md
+      - en/user/extensions/netcdf/netcdf.md
+      - NetCDF Output Format:
+        - en/user/extensions/netcdf-out/index.md
+        - en/user/extensions/netcdf-out/nc4.md
+      - en/user/extensions/ogr.md
+      - GeoServer Printing Module:
+        - en/user/extensions/printing/index.md
+        - en/user/extensions/printing/install.md
+        - en/user/extensions/printing/configuration.md
+        - en/user/extensions/printing/protocol.md
+        - en/user/extensions/printing/faq.md
+      - Cross-layer filtering: en/user/extensions/querylayer/index.md
+      - Vector Tiles:
+        - en/user/extensions/vectortiles/index.md
+        - en/user/extensions/vectortiles/install.md
+        - en/user/extensions/vectortiles/options.md
+        - en/user/extensions/vectortiles/tutorial.md
+      - Web Coverage Service 2.0 Earth Observation extensions: en/user/extensions/wcs20eo/index.md
+      - MongoDB Data Store: en/user/extensions/mongodb/index.md
+      - SLD REST Service: en/user/extensions/sldservice/index.md
+      - Geofence Plugin:
+        - en/user/extensions/geofence/index.md
+        - en/user/extensions/geofence/installing.md
+        - en/user/extensions/geofence/configuration.md
+        - en/user/extensions/geofence/cache.md
+      - Geofence Internal Server:
+        - en/user/extensions/geofence-server/index.md
+        - en/user/extensions/geofence-server/installing.md
+        - en/user/extensions/geofence-server/gui.md
+        - en/user/extensions/geofence-server/rest.md
+        - en/user/extensions/geofence-server/rest-adminrule.md
+        - en/user/extensions/geofence-server/rest-batch-op.md
+        - en/user/extensions/geofence-server/tutorial.md
+        - en/user/extensions/geofence-server/migration.md
+      - Geofence WPS Integration:
+        - en/user/extensions/geofence-wps/index.md
+        - en/user/extensions/geofence-wps/installing.md
+        - en/user/extensions/geofence-wps/gui.md
+      - CAS integration: en/user/extensions/cas/index.md
+      - Parameters Extractor:
+        - en/user/extensions/params-extractor/index.md
+        - en/user/extensions/params-extractor/install.md
+        - en/user/extensions/params-extractor/usage.md
+      - Gwc S3:
+        - en/user/extensions/gwc-s3/index.md
+        - en/user/extensions/gwc-s3/install.md
+        - en/user/extensions/gwc-s3/configuration.md
+      - Wmts Multidimensional:
+        - en/user/extensions/wmts-multidimensional/index.md
+        - en/user/extensions/wmts-multidimensional/install.md
+        - en/user/extensions/wmts-multidimensional/usage.md
+        - en/user/extensions/wmts-multidimensional/performance.md
+      - Wps Download:
+        - en/user/extensions/wps-download/index.md
+        - en/user/extensions/wps-download/rawDownload.md
+        - en/user/extensions/wps-download/mapAnimationDownload.md
+      - WPS JDBC: en/user/extensions/wps-jdbc/index.md
+      - Mapml:
+        - en/user/extensions/mapml/index.md
+        - en/user/extensions/mapml/installation.md
+        - en/user/extensions/mapml/template.md
+      - Catalog Services for the Web (CSW) - ISO Metadata Profile:
+        - en/user/extensions/csw-iso/index.md
+        - en/user/extensions/csw-iso/installing.md
+        - en/user/extensions/csw-iso/mapping.md
+        - en/user/extensions/csw-iso/queryables.md
+        - en/user/extensions/csw-iso/tutorial.md
+      - Metadata:
+        - en/user/extensions/metadata/index.md
+        - en/user/extensions/metadata/configuration.md
+        - en/user/extensions/metadata/uiconfiguration.md
+        - en/user/extensions/metadata/advanced.md
+        - en/user/extensions/metadata/user.md
+      - IAU planetary CRSs:
+        - en/user/extensions/iau/index.md
+        - en/user/extensions/iau/install.md
+        - en/user/extensions/iau/usage.md
+      - Raster Attribute Table support:
+        - en/user/extensions/rat/index.md
+        - en/user/extensions/rat/installing.md
+        - en/user/extensions/rat/using.md
+      - Installing the ArcGrid extension: en/user/extensions/arcgrid/index.md
+      - Installing the Image extension: en/user/extensions/image/index.md
+    - Community modules:
+      - en/user/community/index.md
+      - OpenSearch for EO:
+        - en/user/community/opensearch-eo/index.md
+        - en/user/community/opensearch-eo/intro.md
+        - en/user/community/opensearch-eo/installation.md
+        - en/user/community/opensearch-eo/configuration.md
+        - en/user/community/opensearch-eo/security.md
+        - en/user/community/opensearch-eo/database.md
+        - en/user/community/opensearch-eo/automation.md
+        - en/user/community/opensearch-eo/STAC.md
+        - en/user/community/opensearch-eo/templates.md
+        - en/user/community/opensearch-eo/upgrading.md
+      - Backup and Restore Documentation:
+        - en/user/community/backuprestore/index.md
+        - en/user/community/backuprestore/installation.md
+        - en/user/community/backuprestore/usagegui.md
+        - en/user/community/backuprestore/usagerest.md
+        - en/user/community/backuprestore/extensions.md
+        - en/user/community/backuprestore/usecases.md
+      - COG (Cloud Optimized GeoTIFF) Documentation:
+        - en/user/community/cog/index.md
+        - en/user/community/cog/cog.md
+        - en/user/community/cog/mosaic.md
+        - en/user/community/cog/update.md
+      - Dynamic colormap generation: en/user/community/colormap/index.md
+      - CoverageJSON output format: en/user/community/cov-json/index.md
+      - DDS/BIL(World Wind Data Formats) Extension: en/user/community/dds/index.md
+      - Elasticsearch data store: en/user/community/elasticsearch/index.md
+      - Features-Autopopulate Extension: en/user/community/features-autopopulate/index.md
+      - Features-Templating Extension:
+        - en/user/community/features-templating/index.md
+        - en/user/community/features-templating/installing.md
+        - en/user/community/features-templating/directives.md
+        - en/user/community/features-templating/configuration.md
+        - en/user/community/features-templating/querying.md
+        - en/user/community/features-templating/rest.md
+        - en/user/community/features-templating/schemas.md
+      - WFS FlatGeobuf input and output format:
+        - en/user/community/flatgeobuf/index.md
+        - en/user/community/flatgeobuf/installing.md
+      - GDAL based WCS Output Format: en/user/community/gdal/index.md
+      - Geoparquet:
+        - en/user/community/geoparquet/index.md
+        - en/user/community/geoparquet/installing.md
+        - en/user/community/geoparquet/configuration.md
+      - GeoPackage Extension:
+        - en/user/community/geopkg/index.md
+        - en/user/community/geopkg/installing.md
+        - en/user/community/geopkg/output.md
+      - GeoServer Access Control List authorization: en/user/community/acl/index.md
+      - GeoStyler: en/user/community/geostyler/index.md
+      - Graticule Extension: en/user/community/graticules/index.md
+      - GSR Extension:
+        - en/user/community/gsr/index.md
+        - en/user/community/gsr/installing.md
+        - en/user/community/gsr/usage.md
+        - en/user/community/gsr/functionality.md
+        - Examples:
+          - en/user/community/gsr/examples.md
+          - en/user/community/gsr/featureLayer.md
+          - en/user/community/gsr/dynamicMapLayer.md
+          - en/user/community/gsr/featureTable.md
+      - GWC Azure BlobStore plugin: en/user/community/gwc-azure-blob/index.md
+      - GWC Google Cloud Storage BlobStore plugin: en/user/community/gwc-gcs-blob/index.md
+      - GWC MBTiles layer plugin: en/user/community/gwc-mbtiles/index.md
+      - GWC SQLite Plugin: en/user/community/gwc-sqlite/index.md
+      - SAP HANA: en/user/community/hana/index.md
+      - Hazelcast Clustering Plugin: en/user/community/hz-cluster/index.md
+      - Importer JDBC storage: en/user/community/importer-jdbc/index.md
+      - Jdbcconfig:
+        - en/user/community/jdbcconfig/index.md
+        - en/user/community/jdbcconfig/installing.md
+        - en/user/community/jdbcconfig/configuration.md
+      - Jdbcstore:
+        - en/user/community/jdbcstore/index.md
+        - en/user/community/jdbcstore/installing.md
+        - en/user/community/jdbcstore/configuration.md
+      - JMS based Clustering:
+        - en/user/community/jms-cluster/index.md
+        - en/user/community/jms-cluster/installation.md
+        - en/user/community/jms-cluster/activemq/activemqBroker.md
+        - en/user/community/jms-cluster/activemq/JDBC.md
+        - en/user/community/jms-cluster/activemq/SharedFolder.md
+      - Jwt Headers:
+        - en/user/community/jwt-headers/index.md
+        - en/user/community/jwt-headers/overview.md
+        - en/user/community/jwt-headers/installing.md
+        - en/user/community/jwt-headers/configuration.md
+      - Libdeflate: en/user/community/libdeflate/index.md
+      - MBTiles Extension:
+        - en/user/community/mbtiles/index.md
+        - en/user/community/mbtiles/installing.md
+        - en/user/community/mbtiles/input.md
+        - en/user/community/mbtiles/output.md
+      - Monitoring Kafka storage:
+        - en/user/community/monitor-kafka/index.md
+        - en/user/community/monitor-kafka/installation.md
+        - en/user/community/monitor-kafka/configuration.md
+        - en/user/community/monitor-kafka/usage.md
+      - Monitoring with Micrometer support:
+        - en/user/community/monitor-micrometer/index.md
+        - en/user/community/monitor-micrometer/installation.md
+        - en/user/community/monitor-micrometer/configuration.md
+        - en/user/community/monitor-micrometer/usage.md
+      - ncWMS WMS extensions support: en/user/community/ncwms/index.md
+      - GHRSST NetCDF output: en/user/community/netcdf-ghrsst/index.md
+      - Notification community module Plugin Documentation: en/user/community/notification/index.md
+      - OGC API modules:
+        - en/user/community/ogc-api/index.md
+        - OGC API - Tiles: en/user/community/ogc-api/tiles/index.md
+        - OGC API - Maps: en/user/community/ogc-api/maps/index.md
+        - OGC API - Coverages: en/user/community/ogc-api/coverages/index.md
+        - OGC API - Processes: en/user/community/ogc-api/processes/index.md
+        - OGC API - Styles: en/user/community/ogc-api/styles/index.md
+        - OGC API - Tiled features demonstration: en/user/community/ogc-api/tiled-features/index.md
+        - OGC API - 3D GeoVolumes: en/user/community/ogc-api/3dgeovolumes/index.md
+        - en/user/community/ogc-api/testbed.md
+      - OGR datastore: en/user/community/ogr-store/index.md
+      - OAuth2 OpenID Connect:
+        - en/user/community/oidc/index.md
+        - en/user/community/oidc/installing.md
+        - en/user/community/oidc/configuring.md
+        - en/user/community/oidc/oauth2/google.md
+        - en/user/community/oidc/oauth2/github.md
+        - en/user/community/oidc/oauth2/azure.md
+        - en/user/community/oidc/oauth2/keycloak.md
+        - en/user/community/oidc/oauth2/generic.md
+        - en/user/community/oidc/role-config.md
+        - en/user/community/oidc/advanced.md
+      - PMTiles DataStore:
+        - en/user/community/pmtiles-store/index.md
+        - en/user/community/pmtiles-store/installing.md
+        - en/user/community/pmtiles-store/usage.md
+      - Proxy Base Extension:
+        - en/user/community/proxy-base-ext/index.md
+        - en/user/community/proxy-base-ext/install.md
+        - en/user/community/proxy-base-ext/usage.md
+      - WPS Remote community module:
+        - en/user/community/remote-wps/index.md
+        - en/user/community/remote-wps/install_geoserver.md
+        - en/user/community/remote-wps/install_xmpp.md
+        - en/user/community/remote-wps/install_python.md
+        - en/user/community/remote-wps/running_example.md
+      - S3 Support for GeoTiff: en/user/community/s3-geotiff/index.md
+      - Schemaless Features Mongo Plugin:
+        - en/user/community/schemaless-features/index.md
+        - en/user/community/schemaless-features/install.md
+        - MongoDB Schemaless Support: en/user/community/schemaless-features/schemaless-mongo/index.md
+      - SingleStore: en/user/community/singlestore/index.md
+      - Smart Data Loader Extension:
+        - en/user/community/smart-data-loader/index.md
+        - en/user/community/smart-data-loader/install.md
+        - en/user/community/smart-data-loader/data-store.md
+      - SpatialJSON WFS Output Format Extension:
+        - en/user/community/spatialjson/index.md
+        - en/user/community/spatialjson/installation.md
+        - en/user/community/spatialjson/development.md
+        - en/user/community/spatialjson/schema.md
+        - en/user/community/spatialjson/attributes.md
+      - STAC Datastore extension:
+        - en/user/community/stac-datastore/index.md
+        - en/user/community/stac-datastore/install.md
+        - en/user/community/stac-datastore/data-store.md
+      - SOLR data store:
+        - en/user/community/solr/index.md
+        - en/user/community/solr/configure.md
+        - en/user/community/solr/load.md
+        - en/user/community/solr/optimize.md
+      - Task Manager:
+        - en/user/community/taskmanager/index.md
+        - en/user/community/taskmanager/basic.md
+        - en/user/community/taskmanager/user.md
+        - en/user/community/taskmanager/developer.md
+      - Vector Mosaic datastore:
+        - en/user/community/vector-mosaic/index.md
+        - en/user/community/vector-mosaic/installing.md
+        - en/user/community/vector-mosaic/configuration.md
+        - en/user/community/vector-mosaic/delegate.md
+        - en/user/community/vector-mosaic/restingestion.md
+      - VSI Virtual File System Support: en/user/community/vsi/index.md
+      - HTTP Based Authorization plug-in:
+        - en/user/community/web-service-auth/index.md
+        - en/user/community/web-service-auth/install.md
+        - en/user/community/web-service-auth/configuration.md
+      - WMS WebP output format:
+        - en/user/community/webp/index.md
+        - en/user/community/webp/installing.md
+        - en/user/community/webp/webp_processing.md
+      - WFS FreeMarker Extension:
+        - en/user/community/wfs-freemarker/index.md
+        - en/user/community/wfs-freemarker/installing.md
+        - en/user/community/wfs-freemarker/configuration.md
+      - WPS Download NetCDF: en/user/community/wps-download-netcdf/index.md
+      - WPS longitudinal profile process: en/user/community/wps-longitudinal-profile/index.md
+      - WPS OpenAI process: en/user/community/wps-openai/index.md
+    - Tutorials:
+      - en/user/tutorials/index.md
+      - en/user/tutorials/freemarker.md
+      - en/user/tutorials/georss/georss.md
+      - GetFeatureInfo Templates:
+        - en/user/tutorials/GetFeatureInfo/index.md
+        - en/user/tutorials/GetFeatureInfo/html.md
+        - en/user/tutorials/GetFeatureInfo/geojson.md
+        - en/user/tutorials/GetFeatureInfo/raster.md
+      - en/user/tutorials/palettedimage/palettedimage.md
+      - en/user/tutorials/staticfiles.md
+      - en/user/tutorials/wmsreflector.md
+      - en/user/tutorials/cql/cql_tutorial.md
+      - en/user/tutorials/imagemosaic_timeseries/imagemosaic_timeseries.md
+      - en/user/tutorials/imagemosaic_timeseries/imagemosaic_time-elevationseries.md
+      - en/user/tutorials/imagemosaic_footprint/imagemosaic_footprint.md
+      - en/user/tutorials/imagepyramid/imagepyramid.md
+      - en/user/tutorials/feature-pregeneralized/feature-pregeneralized_tutorial.md
+      - INSPIRE metadata configuration using metadata and CSW: en/user/tutorials/metadata/index.md
+      - en/user/tutorials/tomcat-jndi/tomcat-jndi.md
+      - en/user/tutorials/jboss/jboss_tutorial.md
+      - en/user/tutorials/cloud-foundry/run_cf.md
+
+  - Developer Guide:
+    - en/developer/index.md
+    - en/developer/introduction.md
+    - en/developer/tools.md
+    - en/developer/source.md
+    - Quickstart:
+      - en/developer/quickstart/index.md
+      - en/developer/quickstart/maven.md
+      - en/developer/quickstart/intellij.md
+      - en/developer/quickstart/eclipse.md
+      - en/developer/quickstart/eclipse_m2.md
+    - en/developer/maven-guide/index.md
+    - en/developer/eclipse-guide/index.md
+    - en/developer/qa-guide/index.md
+    - Programming Guide:
+      - en/developer/programming-guide/index.md
+      - Configuration:
+        - en/developer/programming-guide/config/index.md
+        - en/developer/programming-guide/config/geoserver.md
+        - en/developer/programming-guide/config/catalog.md
+        - en/developer/programming-guide/config/resource.md
+      - Ows Services:
+        - en/developer/programming-guide/ows-services/index.md
+        - en/developer/programming-guide/ows-services/overview.md
+        - en/developer/programming-guide/ows-services/implementing.md
+      - Rest Services:
+        - en/developer/programming-guide/rest-services/index.md
+        - en/developer/programming-guide/rest-services/overview.md
+        - en/developer/programming-guide/rest-services/implementing.md
+        - en/developer/programming-guide/rest-services/implementing-map.md
+        - en/developer/programming-guide/rest-services/implementing-reflection.md
+        - en/developer/programming-guide/rest-services/implementing-mapper.md
+      - Web User Interface:
+        - en/developer/programming-guide/web-ui/index.md
+        - en/developer/programming-guide/web-ui/overview.md
+        - en/developer/programming-guide/web-ui/implementing.md
+      - Wicket Development In GeoServer: en/developer/programming-guide/wicket-pages/index.md
+      - Extension Points: en/developer/programming-guide/extension-points/index.md
+      - Wps Services:
+        - en/developer/programming-guide/wps-services/index.md
+        - en/developer/programming-guide/wps-services/design-guide.md
+        - en/developer/programming-guide/wps-services/implementing.md
+        - en/developer/programming-guide/wps-services/implement-rendertrans.md
+      - Testing: en/developer/programming-guide/testing/index.md
+      - Security: en/developer/programming-guide/security/index.md
+      - App-Schema Online Tests: en/developer/programming-guide/app-schema/index.md
+    - Release Process:
+      - en/developer/release/index.md
+      - Release Schedule: en/developer/release/schedule/index.md
+      - Release Guide: en/developer/release/guide/index.md
+      - Release Testing Checklist: en/developer/release/testing/index.md
+      - en/developer/release/guide/old.md
+    - en/developer/cite-test-guide/index.md
+    - en/developer/translation.md
+    - Policies and Procedures:
+      - en/developer/policies/index.md
+      - en/developer/policies/community-process.md
+      - en/developer/policies/psc.md
+      - en/developer/policies/gsip.md
+      - en/developer/policies/committing.md
+      - en/developer/policies/pull_request.md
+      - en/developer/policies/review.md
+      - en/developer/policies/community-modules.md
+      - en/developer/policies/service_providers.md
+      - en/developer/policies/security.md
+    - en/developer/installer/index.md
+  
+  - Documentation Guide:
+    - Home: en/docguide/index.md
+    - Background: en/docguide/background.md
+    - Quickfix: en/docguide/quickfix.md
+    - Contributing: en/docguide/contributing.md
+    - Installing Sphinx: en/docguide/install.md
+    - Installing LaTeX: en/docguide/installlatex.md
+    - Workflow: en/docguide/workflow.md
+    - Markdown Syntax: en/docguide/markdown.md
+    - Style Guidelines: en/docguide/style.md
+    - Writing a Tutorial: en/docguide/tutorial.md
+  
+  - API Reference:
+    - en/api/index.html

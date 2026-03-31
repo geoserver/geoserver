@@ -7,7 +7,7 @@ For writing guide please generate and review [docguide](https://docs.geoserver.o
 
 GeoServer documentation is released using [Creative Commons Attribution 4.0 International](LICENSE.md).
 
-### Python Virtual Environment Setup
+## Python Virtual Environment Setup
 
 The documentation is written with [sphinx-build](https://www.sphinx-doc.org/en/master/), which is a Python documentation generator.
 

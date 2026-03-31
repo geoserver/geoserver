@@ -1,0 +1,5 @@
+../../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/cesium.ftl
+../../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/landingPage.ftl
+../../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/collections.ftl
+../../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/i3sclient.ftl
+../../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/collection.ftl

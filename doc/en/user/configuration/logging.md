@@ -8,7 +8,7 @@ The GeoServer logging profiles assign logging levels to specific server operatio
 - GeoWebCache loggers record the activity of the tile protocol library used by GeoServer.
 - GeoTools loggers record the activity of the data access and rendering library used by GeoServer.
 - The appender `stdout` is setup as a Console appender sending information to standard output, based on **Log to Stdout** [global settings](globalsettings.md#config_globalsettings_log_stdout).
-- The appender `geoserverlogfile` is setup as a FileAppender or RollingFile appender sending information to the **Log location** [global settings](globalsettings.md#config_globalsettings_log_location).
+- The appender `geoserverlogfile` is setup as a FileAppender or RollingFile appender sending information to the **Log location** set using the `GEOSERVER_LOG_LOCATION` property.
 - Logging levels range from:
   - Failure (`FATAL`, `ERROR`, `WARN`) levels
   - Operational (`INFO`, `CONFIG`) levels
@@ -53,7 +53,7 @@ There are however a few rules to follow:
 
 - Custom levels are available for `CONFIG` and `FINEST` levels.
 - Appenders are used to output logging information, with GeoServer providing external configuration for appenders named `geoserverlogfile` and `stdout`.
-  - Always include a `geoserverlogfile` `FileAppender` or `RollingFile` appender that GeoServer will configure to work against the location configured in the [global settings](globalsettings.md#config_globalsettings_log_location).
+  - Always include a `geoserverlogfile` `FileAppender` or `RollingFile` appender that GeoServer will configure to work against the location configured using the `GEOSERVER_LOG_LOCATION` property.
 
     Care is taken to preserve your file extension when updating `<filename>` location, so if you wish to log to **`access_logs.txt`** you may do so, and the **`txt`** extension will be preserved.
 
@@ -160,23 +160,21 @@ Copy built-in logging profile and customize:
 
 6.  This result provides minimal feedback to the console, only reporting when GeoServer encounters an error.
 
-## Overriding the log location setup in the GeoServer configuration {: #logging_location }
+## Configuring the log location {: #logging_location }
 
-When setting up a cluster of GeoServer machines it is common to share a single data directory among all the cluster nodes.
+The log file location is set using the `GEOSERVER_LOG_LOCATION` system property or environment variable. This is the only way to configure the log location as of GeoServer 3.0 (the Admin Console and REST API no longer allow changing this setting).
 
-There is however a gotcha, all nodes would end up writing the logs in the same file, which would cause various kinds of troubles depending on the operating system file locking rules (a single server might be able to write, or all together in an uncontrolled manner resulting in an unreadable log file).
+The `GEOSERVER_LOG_LOCATION` parameter can be set as system property, environment variables, or servlet context parameters:
 
-A common choice could be to use the machine name as a distinction, setting values such as `logs/geoserver_node1.log`, `logs/geoserver_node2.log` and so on: in this case all the log files would still be contained in the data directory and properly rotated, but each server would have its own separate log file to write on.
+```properties
+GEOSERVER_LOG_LOCATION=<the location of the file>
+```
 
-In this case it is convenient to set a separate log location for each GeoServer node:
+This setting is applied to `geoserverlogfile` appender as a template for filename and filePattern.
 
-- The `GEOSERVER_LOG_LOCATION` parameter can be set as system property, environment variables, or servlet context parameters:
+When setting up a cluster of GeoServer machines it is common to share a single data directory among all the cluster nodes. All nodes would end up writing the logs in the same file, which would cause various kinds of troubles depending on the operating system file locking rules.
 
-  ```properties
-  GEOSERVER_LOG_LOCATION=<the location of the file>
-  ```
-
-  This setting overrides global setting, and is applied to `geoserverlogfile` appender as a template for filename and filePattern.
+A common choice is to use the machine name as a distinction, setting values such as `logs/geoserver_node1.log`, `logs/geoserver_node2.log` and so on: in this case all the log files would still be contained in the data directory and properly rotated, but each server would have its own separate log file to write on.
 
 - This same effect may be obtained using Log4J [property substitution](https://logging.apache.org/log4j/2.x/manual/configuration.md#PropertySubstitution), where a wide range of [property lookups](https://logging.apache.org/log4j/2.x/manual/lookups.md) are available.
 

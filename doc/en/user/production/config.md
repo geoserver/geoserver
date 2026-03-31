@@ -115,7 +115,6 @@ The GeoServer administration console provides a trusted GeoServer Administrator 
 In this workflow the Administration Console is used to adapt the application to the operational environment:
 
 - [Proxy Base URL](../configuration/globalsettings.md#proxy_base)
-- [Log Location](../configuration/globalsettings.md#config_globalsettings_log_location)
 - \... and many more [Global Settings](../configuration/globalsettings.md).
 
 Management of a web service using an administration console is a more common practice when running GeoServer as a windows web service.
@@ -137,7 +136,7 @@ Management of web services using environmental variables is standard practice wh
 
 For production systems, it is advised to set `GEOSERVER_LOG_LOCATION` parameter during startup. The value may be defined as either an environment variable, java system property, or servlet context parameter.
 
-The location set for `GEOSERVER_LOG_LOCATION` has priority, causing the setting provided using the Admin Console or REST API to be ignored.
+The `GEOSERVER_LOG_LOCATION` property is the only way to set the log file location. The Admin Console and REST API do not allow changing this setting.
 
 See [Overriding the log location setup in the GeoServer configuration](../configuration/logging.md#logging_location) for more information.
 

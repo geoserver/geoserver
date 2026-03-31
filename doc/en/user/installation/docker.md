@@ -193,5 +193,5 @@ For the current list see GeoServer [build server](https://build.geoserver.org/ge
     gpx                           ogcapi-dggs                     webp
     graticule                     ogcapi-images                   wfs-freemarker
     gsr                           ogcapi-maps                     wps-longitudinal-profile
-    gwc-azure-blobstore           ogcapi-styles                   wps-remote
+    gwc-azure-blobstore           ogcapi-styles                   
                                   ogcapi-tiled-features               

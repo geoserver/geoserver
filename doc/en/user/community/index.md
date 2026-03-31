@@ -67,7 +67,6 @@ Community modules are provided "as is" alongside the [nightly builds](https://bu
 - [OAuth2 OpenID Connect](oidc/index.md)
 - [PMTiles DataStore](pmtiles-store/index.md)
 - [Proxy Base Extension](proxy-base-ext/index.md)
-- [WPS Remote community module](remote-wps/index.md)
 - [S3 Support for GeoTiff](s3-geotiff/index.md)
 - [Schemaless Features Mongo Plugin](schemaless-features/index.md)
 - [SingleStore](singlestore/index.md)

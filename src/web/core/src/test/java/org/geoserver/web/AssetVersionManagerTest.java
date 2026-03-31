@@ -1,6 +1,11 @@
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import jakarta.servlet.ServletContext;
@@ -47,6 +52,6 @@ public class AssetVersionManagerTest {
 
         assertEquals("img/logo.png?v=first", first);
         assertEquals("img/logo.png?v=second", second);
-        assertTrue("Tokens should differ after cache clear", !firstToken.equals(secondToken));
+        assertNotEquals("Tokens should differ after cache clear", firstToken, secondToken);
     }
 }

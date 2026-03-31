@@ -1,5 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -36,6 +35,7 @@ public class AssetVersionManager {
     public static final String ASSETS_VERSION_PROPERTY = "geoserver.assets.version";
 
     private static final String DEFAULT_VERSION = "0";
+    private static final int MAX_CACHE_ENTRIES = 100;
 
     /** Per-file cache: normalized asset path -> versioned URL (e.g. "css/geoserver.css?v=20260326"). */
     private static final ConcurrentHashMap<String, String> CACHE = new ConcurrentHashMap<>();
@@ -59,6 +59,13 @@ public class AssetVersionManager {
     public static String versioned(String path, ServletContext context) {
         String normalizedPath = path.startsWith("/") ? path.substring(1) : path;
         String version = getDeploymentVersion();
+        if (CACHE.size() >= MAX_CACHE_ENTRIES && !CACHE.containsKey(normalizedPath)) {
+            synchronized (CACHE) {
+                if (CACHE.size() >= MAX_CACHE_ENTRIES && !CACHE.containsKey(normalizedPath)) {
+                    CACHE.clear();
+                }
+            }
+        }
         return CACHE.computeIfAbsent(normalizedPath, p -> p + "?v=" + version);
     }
 

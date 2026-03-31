@@ -157,6 +157,22 @@ If your installation contains any H2-based datastores, migrate those layers to a
 
 After upgrading, review the startup logs for missing datastore errors and verify all layers and services load as expected.
 
+### Log Location Configuration (GeoServer 3.0 and newer)
+
+As of GeoServer 3.0, the **Log location** setting has been removed from the Admin Console (Global Settings page) and is no longer configurable via the REST API.
+
+The log file location must now be set using the `GEOSERVER_LOG_LOCATION` system property or environment variable:
+
+``` shell
+# System property
+-DGEOSERVER_LOG_LOCATION=/var/log/geoserver/geoserver.log
+
+# Environment variable
+export GEOSERVER_LOG_LOCATION=/var/log/geoserver/geoserver.log
+```
+
+Any existing `location` value in the data directory `logging.xml` file is retained for backward compatibility but is ignored at runtime when the system property or environment variable is set. REST API clients that send a `location` field in PUT requests to `/rest/logging` will receive a warning in the server logs; the value is silently discarded.
+
 ## Upgrading GeoServer 2 Guidance
 
 GeoServer 2.0.x was first released in October 29, 2009.

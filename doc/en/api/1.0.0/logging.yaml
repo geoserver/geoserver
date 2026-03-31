@@ -87,7 +87,8 @@ definitions:
         description: Logging level of GeoServer such as DEFAULT_LOGGING
       location:
         type: string
-        description: Logging file path. Relative to the GeoServer data directory. Read-only; can only be set using the GEOSERVER_LOG_LOCATION property.
+        deprecated: true
+        description: "Deprecated since GeoServer 3.0. Log location must be set via the GEOSERVER_LOG_LOCATION system property or environment variable. This field is read-only and retained for backward compatibility; any value sent via PUT is ignored."
       stdOutLogging:
         type: boolean
         description: Enables/disables stdOutLogging

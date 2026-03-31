@@ -70,7 +70,9 @@ public class LoggingStartupContextListener implements ServletContextListener {
             LoggingInfo loginfo = getLogging(loader);
 
             if (loginfo != null) {
-                final String location = LoggingUtils.getLogFileLocation(loginfo.getLocation(), context);
+                // Log location is only sourced from GEOSERVER_LOG_LOCATION property (GeoServer 3.0+).
+                // The <location> element in logging.xml is ignored.
+                final String location = LoggingUtils.getLogFileLocation(null, context);
 
                 LoggingUtils.initLogging(loader, loginfo.getLevel(), !loginfo.isStdOutLogging(), false, location);
             } else {

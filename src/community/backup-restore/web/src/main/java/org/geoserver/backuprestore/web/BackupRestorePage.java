@@ -188,9 +188,6 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
         add(details);
 
         String location = bkp.getArchiveFile().path();
-        if (location == null) {
-            location = getGeoServerApplication().getGeoServer().getLogging().getLocation();
-        }
         backupFile = new File(location);
         if (!backupFile.isAbsolute()) {
             // locate the geoserver.log file

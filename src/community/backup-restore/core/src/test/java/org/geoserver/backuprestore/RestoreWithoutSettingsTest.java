@@ -82,7 +82,6 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
 
         if (restoreExecution.getStatus() == BatchStatus.COMPLETED) {
             GeoServer geoServer = getGeoServer();
-            assertEquals(null, geoServer.getLogging().getLocation());
 
             assertEquals(
                     "Andrea Aime",

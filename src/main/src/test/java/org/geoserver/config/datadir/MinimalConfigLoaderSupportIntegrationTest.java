@@ -116,7 +116,6 @@ public class MinimalConfigLoaderSupportIntegrationTest {
         global.getSettings().setTitle("pre-existing");
 
         LoggingInfo logging = support.getGeoServer().getFactory().createLogging();
-        logging.setLocation("logs/gs2.log");
 
         TestService1Impl service1 = new TestService1Impl();
         service1.setTitle("pre-existing service 1");
@@ -185,7 +184,6 @@ public class MinimalConfigLoaderSupportIntegrationTest {
         LoggingInfo logging = context.getBean(GeoServer.class).getLogging();
         assertNotNull(logging);
         assertEquals("DEFAULT_LOGGING", logging.getLevel());
-        assertEquals("logs/geoserver.log", logging.getLocation());
         assertTrue(logging.isStdOutLogging());
     }
 
@@ -262,7 +260,6 @@ public class MinimalConfigLoaderSupportIntegrationTest {
             // Verify our externally created logging config was loaded
             LoggingInfo logging = gs.getLogging();
             assertEquals("DEFAULT_LOGGING", logging.getLevel());
-            assertEquals("logs/geoserver.log", logging.getLocation());
             assertTrue(logging.isStdOutLogging());
         }
 

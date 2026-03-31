@@ -281,5 +281,73 @@
 
         // Initialize responsive table cards
         syncResponsiveTableCards();
+
+        // Keep sticky UI elements clear of dynamic feedback panels
+        function initFeedbackOffsets() {
+            var page = document.getElementById('page');
+            if (!page) return;
+            var topFeedback = document.getElementById('topFeedback');
+            var bottomFeedback = document.getElementById('bottomFeedback');
+
+            function getFeedbackHeight(feedbackElement) {
+                if (!feedbackElement) return 0;
+                var panel = feedbackElement.querySelector('.feedbackPanel');
+                return panel && panel.offsetHeight > 0 ? feedbackElement.offsetHeight : 0;
+            }
+
+            function updateOffsets() {
+                var topHeight = getFeedbackHeight(topFeedback);
+                var bottomHeight = getFeedbackHeight(bottomFeedback);
+                page.style.setProperty('--gs-feedback-top-height', topHeight + 'px');
+                page.style.setProperty('--gs-feedback-bottom-height', bottomHeight + 'px');
+            }
+
+            function refreshFeedbackRefs() {
+                topFeedback = document.getElementById('topFeedback');
+                bottomFeedback = document.getElementById('bottomFeedback');
+            }
+
+            updateOffsets();
+            window.addEventListener('resize', updateOffsets);
+
+            var pageHeader = document.querySelector('.page-header');
+            var pageFooter = document.querySelector('.page-footer');
+            if (window.MutationObserver && (pageHeader || pageFooter)) {
+                var mutationObserver = new MutationObserver(function () {
+                    refreshFeedbackRefs();
+                    updateOffsets();
+                });
+                if (pageHeader) {
+                    mutationObserver.observe(pageHeader, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true,
+                        characterData: true
+                    });
+                }
+                if (pageFooter) {
+                    mutationObserver.observe(pageFooter, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true,
+                        characterData: true
+                    });
+                }
+            }
+
+            if (window.ResizeObserver) {
+                var resizeObserver = new ResizeObserver(function () {
+                    refreshFeedbackRefs();
+                    updateOffsets();
+                });
+                if (pageHeader) {
+                    resizeObserver.observe(pageHeader);
+                }
+                if (pageFooter) {
+                    resizeObserver.observe(pageFooter);
+                }
+            }
+        };
+        initFeedbackOffsets();
     });
 })();

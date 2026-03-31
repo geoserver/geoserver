@@ -294,7 +294,7 @@ body {
 
 .table-header {
   position: sticky;
-  top: 0;
+  top: var(--gs-feedback-top-height, 0);
   z-index: 10;
   background-color: var(--gs-body-bg);
   border-bottom: 1px solid var(--gs-border-color);
@@ -856,7 +856,7 @@ table > tbody > tr:nth-of-type(odd) > * {
 }
 .tab-row {
   position: sticky;
-  top: 0;
+  top: var(--gs-feedback-top-height, 0);
   z-index: 10;
   background-color: var(--gs-body-bg);
 }
@@ -1700,7 +1700,7 @@ form a.collapsed {
 .gs-dropdown-header,
 .navigation-tab-header {
   position: sticky;
-  top: 0;
+  top: var(--gs-feedback-top-height, 0);
   z-index: 1;
   padding: 0.5rem 0;
 }
@@ -2272,4 +2272,24 @@ div.value-wide {
   table.gs-mobile-card-table > tbody tr th.selection {
     display: none;
   }
+}
+
+/* Keep sticky UI clear of top/bottom feedback messages */
+#page {
+  --gs-feedback-top-height: 0;
+  --gs-feedback-bottom-height: 0;
+}
+#page .toolbar-sticky {
+  bottom: var(--gs-feedback-bottom-height);
+}
+#topFeedback:has(.feedbackPanel:not(:empty)) {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--gs-body-bg);
+}
+#page:has(#bottomFeedback .feedbackPanel:not(:empty)) .page-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }

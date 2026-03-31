@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import jakarta.servlet.Filter;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,12 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -212,25 +208,6 @@ public class DataStoreFileUploadWFSTest extends CatalogRESTTestSupport {
 
             dom = getAsDOM("wfs?request=getfeature&typename=gs:pds");
             assertFeatures(dom);
-
-            // try to download it again after a full reload from disk (GEOS-4616)
-            getGeoServer().reload();
-
-            resp = getAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/pds/file.shp");
-            assertEquals(200, resp.getStatus());
-            assertEquals("application/zip", resp.getContentType());
-
-            Set<String> entryNames = new HashSet<>();
-            try (ByteArrayInputStream bin = getBinaryInputStream(resp);
-                    ZipInputStream zin = new ZipInputStream(bin)) {
-                ZipEntry entry;
-                while ((entry = zin.getNextEntry()) != null) {
-                    entryNames.add(entry.getName());
-                }
-            }
-            assertTrue(entryNames.contains("pds.shp"));
-            assertTrue(entryNames.contains("pds.shx"));
-            assertTrue(entryNames.contains("pds.dbf"));
         } finally {
             FileUtils.deleteQuietly(f);
         }

@@ -173,7 +173,7 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
     }
 
     /**
-     * extracts the roles from the request (cf JwtHeadersRolesExtractor). It uses the standard Geoserver infrastructure
+     * extracts the roles from the request (cf JwtHeadersRolesExtractor). It uses the standard GeoServer infrastructure
      * (superclass) for getting the "standard" roles (i.e. Header, UserGroupService, RoleService)
      */
     @Override

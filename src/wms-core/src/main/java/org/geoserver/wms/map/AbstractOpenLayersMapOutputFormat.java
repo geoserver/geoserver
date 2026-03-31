@@ -171,7 +171,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             if (mapContent.layers().size() == 1) {
                 map.put("layerName", mapContent.layers().get(0).getTitle());
             } else {
-                map.put("layerName", "Geoserver layers");
+                map.put("layerName", "GeoServer layers");
             }
 
             template.setOutputEncoding("UTF-8");

@@ -40,7 +40,7 @@ public class GeoServerSecurityFilterChainProxy
     static ThreadLocal<HttpServletRequest> REQUEST = new ThreadLocal<>();
 
     /**
-     * Request header attribute indicating if the request was running through a Geoserver security filter chain. The
+     * Request header attribute indicating if the request was running through a GeoServer security filter chain. The
      * default is <code>false</code>.
      *
      * <p>The mandatory {@link GeoServerSecurityContextPersistenceFilter} object sets this attribute to <code>true

@@ -84,7 +84,7 @@ public class IndexControllerTest extends GeoServerSystemTestSupport {
         String content = response.getContentAsString();
         if (username != null) {
             assertEquals(200, response.getStatus());
-            assertThat(content, containsString("Geoserver Configuration API"));
+            assertThat(content, containsString("GeoServer Configuration API"));
             assertThat(content, containsString("<a href="));
         } else {
             assertEquals(401, response.getStatus());

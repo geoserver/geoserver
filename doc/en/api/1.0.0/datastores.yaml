@@ -13,37 +13,6 @@ basePath: /geoserver/rest
 
 paths:
   /workspaces/{workspaceName}/datastores:
-    get:
-      operationId: getDatastores
-      tags:
-       - "DataStores"
-      summary: Get a list of data stores
-      description: List all data stores in workspace ws. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores.xml" for XML)
-      produces:
-        - application/xml
-        - application/json
-        - text/html
-      parameters:
-        - name: workspaceName
-          in: path
-          required: true
-          type: string
-          description: The name of the workspace containing the data stores.
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/dataStoreResponse"
-          examples:
-            application/xml: |
-              <dataStore>
-                <name>sf</name>
-                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf.xml" type="application/xml"/>
-              </dataStore>
-            
-            application/json: |
-              {"dataStores":{"dataStore":[{"name":"sf","href":"http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf.json"}]}}
-            
     post:
       operationId: postDatastores
       tags:

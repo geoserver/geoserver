@@ -60,7 +60,7 @@ public class DSFinderRepository extends org.geotools.data.gen.DSFinderRepository
                 throw new RuntimeException(ex);
             }
         }
-        Logging.getLogger(this.getClass().getName()).info("Not in Geoserver catalog: " + name.toString());
+        Logging.getLogger(this.getClass().getName()).info("Not in GeoServer catalog: " + name.toString());
         return super.dataStore(name);
     }
 }

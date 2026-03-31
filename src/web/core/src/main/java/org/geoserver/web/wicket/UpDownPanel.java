@@ -184,7 +184,7 @@ public class UpDownPanel<T> extends Panel {
     }
 
     private void moveBy(int delta, AjaxRequestTarget target, List<T> items) {
-        int index = items.indexOf(UpDownPanel.this.entry);
+        int index = items.indexOf(entry);
         if (index < 0) {
             return;
         }
@@ -199,8 +199,8 @@ public class UpDownPanel<T> extends Panel {
         } else {
             newIndex = Math.min(items.size(), index + count);
         }
-        items.add(newIndex, UpDownPanel.this.entry);
-        target.add(UpDownPanel.this.container);
+        items.add(newIndex, entry);
+        target.add(container);
         target.add(this);
         target.add(downLink);
         target.add(upLink);

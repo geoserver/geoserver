@@ -171,7 +171,7 @@ As of GeoServer 3.0, the **Log location** setting has been removed from the Admi
 export GEOSERVER_LOG_LOCATION=/var/log/geoserver/geoserver.log
 ```
 
-Any existing `location` value in the data directory `logging.xml` file is retained for backward compatibility but is ignored at runtime when the system property or environment variable is set. REST API clients that send a `location` field in PUT requests to `/rest/logging` will receive a warning in the server logs; the value is silently discarded.
+Any existing `location` value in the data directory `logging.xml` file is retained for backward compatibility but is ignored at runtime. REST API clients that send a `location` field in PUT requests to `/rest/logging` will receive a warning in the server logs; the value is silently discarded.
 
 ## Upgrading GeoServer 2 Guidance
 

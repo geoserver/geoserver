@@ -51,7 +51,7 @@ paths:
       tags:
         - "Logging"
       summary: Update logging
-      description: Updates logging settings on the server. Note that the log location cannot be changed via the REST API; it can only be set using the GEOSERVER_LOG_LOCATION property.
+      description: Updates logging settings on the server. Note that the log location cannot be changed via the REST API; it can only be set using the GEOSERVER_LOG_LOCATION application property.
 
       parameters:
         - name: loggingBody
@@ -88,7 +88,7 @@ definitions:
       location:
         type: string
         deprecated: true
-        description: "Deprecated since GeoServer 3.0. Log location must be set via the GEOSERVER_LOG_LOCATION system property or environment variable. This field is read-only and retained for backward compatibility; any value sent via PUT is ignored."
+        description: "Deprecated since GeoServer 3.0. Log location must be set via the GEOSERVER_LOG_LOCATION application property. This field is read-only and retained for backward compatibility; any value sent via PUT is ignored."
       stdOutLogging:
         type: boolean
         description: Enables/disables stdOutLogging

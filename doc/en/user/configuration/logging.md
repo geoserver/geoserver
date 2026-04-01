@@ -8,7 +8,7 @@ The GeoServer logging profiles assign logging levels to specific server operatio
 - GeoWebCache loggers record the activity of the tile protocol library used by GeoServer.
 - GeoTools loggers record the activity of the data access and rendering library used by GeoServer.
 - The appender `stdout` is setup as a Console appender sending information to standard output, based on **Log to Stdout** [global settings](globalsettings.md#config_globalsettings_log_stdout).
-- The appender `geoserverlogfile` is setup as a FileAppender or RollingFile appender sending information to the **Log location** set using the `GEOSERVER_LOG_LOCATION` property.
+- The appender `geoserverlogfile` is setup as a FileAppender or RollingFile appender sending information to the **Log location** set using the `GEOSERVER_LOG_LOCATION` application property.
 - Logging levels range from:
   - Failure (`FATAL`, `ERROR`, `WARN`) levels
   - Operational (`INFO`, `CONFIG`) levels
@@ -53,7 +53,7 @@ There are however a few rules to follow:
 
 - Custom levels are available for `CONFIG` and `FINEST` levels.
 - Appenders are used to output logging information, with GeoServer providing external configuration for appenders named `geoserverlogfile` and `stdout`.
-  - Always include a `geoserverlogfile` `FileAppender` or `RollingFile` appender that GeoServer will configure to work against the location configured using the `GEOSERVER_LOG_LOCATION` property.
+  - Always include a `geoserverlogfile` `FileAppender` or `RollingFile` appender that GeoServer will configure to work against the location configured using the `GEOSERVER_LOG_LOCATION` application property.
 
     Care is taken to preserve your file extension when updating `<filename>` location, so if you wish to log to **`access_logs.txt`** you may do so, and the **`txt`** extension will be preserved.
 
@@ -162,7 +162,7 @@ Copy built-in logging profile and customize:
 
 ## Configuring the log location {: #logging_location }
 
-The log file location is set using the `GEOSERVER_LOG_LOCATION` system property or environment variable. This is the only way to configure the log location as of GeoServer 3.0 (the Admin Console and REST API no longer allow changing this setting).
+The log file location is set using the `GEOSERVER_LOG_LOCATION` application property. This is the only way to configure the log location as of GeoServer 3.0 (the Admin Console and REST API no longer allow changing this setting).
 
 The `GEOSERVER_LOG_LOCATION` parameter can be set as system property, environment variables, or servlet context parameters:
 

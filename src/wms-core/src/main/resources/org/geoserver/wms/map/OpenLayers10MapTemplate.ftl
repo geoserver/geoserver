@@ -122,10 +122,6 @@
       <input type="hidden" id="minY" value="${request.bbox.minY?c}"/>
       <input type="hidden" id="maxX" value="${request.bbox.maxX?c}"/>
       <input type="hidden" id="maxY" value="${request.bbox.maxY?c}"/>
-      <input type="hidden" id="crsMinX" value="${crsMinX!''}"/>
-      <input type="hidden" id="crsMinY" value="${crsMinY!''}"/>
-      <input type="hidden" id="crsMaxX" value="${crsMaxX!''}"/>
-      <input type="hidden" id="crsMaxY" value="${crsMaxY!''}"/>
       <input type="hidden" id="SRS" value="${request.SRS}"/>
       <input type="hidden" id="yx" value="${yx}"/>
       <input type="hidden" id="global" value="${global}"/>

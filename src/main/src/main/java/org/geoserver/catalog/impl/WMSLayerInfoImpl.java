@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -193,8 +194,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
             LOGGER.log(Level.SEVERE, "Unable to fetch available styles for cascaded layer " + getNativeName());
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
-        // on error default to super
-        return Collections.emptySet();
+        // on error default to mutable empty set (not Collections.emptySet() which is immutable)
+        return new HashSet<>();
     }
 
     @Override

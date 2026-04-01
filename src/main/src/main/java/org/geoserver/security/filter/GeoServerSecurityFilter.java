@@ -34,7 +34,7 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
         implements Filter, BeanNameAware {
 
     /**
-     * Geoserver authentication filter should set an {@link AuthenticationEntryPoint} using this servlet attribute name.
+     * GeoServer authentication filter should set an {@link AuthenticationEntryPoint} using this servlet attribute name.
      *
      * <p>The {@link GeoServerExceptionTranslationFilter} may use the entry point in case of an
      * {@link AuthenticationException}

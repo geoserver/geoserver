@@ -1,10 +1,10 @@
 <html>
 <head>
-<title> Geoserver Configuration API </title>
+<title> GeoServer Configuration API </title>
 <meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
 </head>
 <body>
-<h2>Geoserver Configuration API</h2>
+<h2>GeoServer Configuration API</h2>
 <#if links?size != 0>
 <ul>
 <#foreach link in links>

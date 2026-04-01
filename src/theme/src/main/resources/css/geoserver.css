@@ -709,7 +709,6 @@ select:-moz-focusring {
 ------------------------------*/
 
 body .select2.select2-container--default {
-  width: 100% !important;
   display: block;
 }
 
@@ -846,8 +845,10 @@ table > tbody > tr:nth-of-type(odd) > * {
 
 .action-group {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
+  width: 100%;
   padding: 0;
   margin: 0;
   list-style: none;

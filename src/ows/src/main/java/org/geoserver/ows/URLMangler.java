@@ -10,11 +10,11 @@ import java.util.Map;
 /** Callback that can change the contents of the baseURL, the path or the KVP map. */
 public interface URLMangler {
     public enum URLType {
-        /** The link points outside Geoserver * */
+        /** The link points outside GeoServer * */
         EXTERNAL,
         /** The link points to a static resource (image, ogc schema, etc. * */
         RESOURCE,
-        /** The link points to a dynamic service provided by Geoserver (WFS, WMS, WCS, etc.) */
+        /** The link points to a dynamic service provided by GeoServer (WFS, WMS, WCS, etc.) */
         SERVICE
     }
 

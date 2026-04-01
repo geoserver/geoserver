@@ -39,26 +39,36 @@ public class KeywordsEditorTest {
     @Test
     public void testRemove() throws Exception {
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
-        FormTester ft = tester.newFormTester("form");
-        ft.selectMultiple("panel:keywords", new int[] {0, 2});
-        tester.executeAjaxEvent("form:panel:removeKeywords", "click");
+        tester.executeAjaxEvent("form:panel:container:table:keywords:0:removeKeyword", "click");
 
-        assertEquals(1, keywords.size());
+        assertEquals(2, keywords.size());
         assertEquals("two", keywords.get(0).getValue());
     }
 
     @Test
     public void testAdd() throws Exception {
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
+        tester.executeAjaxEvent("form:panel:container:addKeyword", "click");
+
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("panel:newKeyword", "four");
-        ft.setValue("panel:lang", "en");
-        ft.setValue("panel:vocab", "foobar");
-        tester.executeAjaxEvent("form:panel:addKeyword", "click");
+        ft.getForm()
+                .get("panel:container:table:keywords:3:keywordBorder:keywordBorder_body:keyword")
+                .setDefaultModelObject("four");
+        ft.getForm()
+                .get("panel:container:table:keywords:3:keywordBorder:keywordBorder_body:language")
+                .setDefaultModelObject("en");
+        ft.getForm()
+                .get("panel:container:table:keywords:3:vocabularyBorder:vocabularyBorder_body:vocabulary")
+                .setDefaultModelObject("foobar");
 
         assertEquals(4, keywords.size());
         assertEquals("four", keywords.get(3).getValue());
         assertEquals("en", keywords.get(3).getLanguage());
         assertEquals("foobar", keywords.get(3).getVocabulary());
+
+        ft = tester.newFormTester("form");
+        ft.setClearFeedbackMessagesBeforeSubmit(true);
+        ft.submit();
+        tester.assertNoErrorMessage();
     }
 }

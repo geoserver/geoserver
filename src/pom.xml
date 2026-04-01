@@ -1050,6 +1050,11 @@
         <version>${hazelcast.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.hazelcast.spring</groupId>
+        <artifactId>hazelcast-spring-session</artifactId>
+        <version>4.0.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock-standalone</artifactId>
         <version>3.11.0</version>

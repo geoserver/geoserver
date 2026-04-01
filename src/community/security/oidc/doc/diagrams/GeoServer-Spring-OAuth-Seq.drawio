@@ -64,7 +64,7 @@
             <mxPoint x="200" y="160" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="R4H-Cz9XJfiXXCovYyHO-6" value="open Geoserver Admin UI" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="R4H-Cz9XJfiXXCovYyHO-5" vertex="1" connectable="0">
+        <mxCell id="R4H-Cz9XJfiXXCovYyHO-6" value="open GeoServer Admin UI" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="R4H-Cz9XJfiXXCovYyHO-5" vertex="1" connectable="0">
           <mxGeometry x="-0.0444" y="8" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>

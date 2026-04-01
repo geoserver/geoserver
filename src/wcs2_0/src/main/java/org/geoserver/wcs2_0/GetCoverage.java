@@ -276,7 +276,7 @@ public class GetCoverage {
                 final String nativeName = cinfo.getNativeCoverageName();
                 final String coverageName = nativeName != null ? nativeName : reader.getGridCoverageNames()[0];
                 final GranuleStackImpl stack = new GranuleStackImpl(coverageName, cinfo.getCRS(), dimensions);
-                // Geoserver max memory limit definition
+                // GeoServer max memory limit definition
                 long outputLimit = wcs.getMaxOutputMemory() * 1024;
                 long inputLimit = wcs.getMaxInputMemory() * 1024;
                 // Object value used for storing the sum of the output size of each internal

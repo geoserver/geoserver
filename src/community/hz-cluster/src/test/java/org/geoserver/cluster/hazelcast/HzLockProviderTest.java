@@ -43,7 +43,8 @@ public class HzLockProviderTest {
     }
 
     @Test
-    public void testAqcuire() {
+    @SuppressWarnings("LockNotBeforeTry") // ErrorProne, this is just a test
+    public void testAcquire() {
 
         FencedLock lock = createMock(FencedLock.class);
         CPSubsystem cpSubsystem = createMock(CPSubsystem.class);

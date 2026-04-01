@@ -44,7 +44,6 @@ import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.feature.type.FeatureType;
-import org.geotools.api.geometry.Bounds;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.referencing.FactoryException;
@@ -138,21 +137,6 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             }
             map.put("global", Boolean.toString(handler != null && handler instanceof WrappingProjectionHandler));
 
-            Bounds validArea = CRS.getEnvelope(request.getCrs());
-
-            if (validArea != null) {
-                ReferencedEnvelope crsBounds = new ReferencedEnvelope(validArea);
-                map.put("crsMinX", Double.toString(crsBounds.getMinX()));
-                map.put("crsMinY", Double.toString(crsBounds.getMinY()));
-                map.put("crsMaxX", Double.toString(crsBounds.getMaxX()));
-                map.put("crsMaxY", Double.toString(crsBounds.getMaxY()));
-            } else {
-                map.put("crsMinX", "");
-                map.put("crsMinY", "");
-                map.put("crsMaxX", "");
-                map.put("crsMaxY", "");
-            }
-
             String baseUrl = ResponseUtils.buildURL(request.getBaseUrl(), "/", null, URLType.RESOURCE);
             String queryString = null;
             // remove query string from baseUrl
@@ -187,7 +171,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             if (mapContent.layers().size() == 1) {
                 map.put("layerName", mapContent.layers().get(0).getTitle());
             } else {
-                map.put("layerName", "Geoserver layers");
+                map.put("layerName", "GeoServer layers");
             }
 
             template.setOutputEncoding("UTF-8");

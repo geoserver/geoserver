@@ -27,7 +27,7 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.BeanNameAware;
 
 /**
- * Class for Geoserver specific key management
+ * Class for GeoServer specific key management
  *
  * <p><strong>requires a master password</strong> form {@link MasterPasswordProvider}
  *

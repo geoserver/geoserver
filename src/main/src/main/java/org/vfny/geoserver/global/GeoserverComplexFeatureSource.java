@@ -22,7 +22,7 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
- * Geoserver wrapper for a complex features feature source.
+ * GeoServer wrapper for a complex features feature source.
  *
  * <p>Handles the final query build taking into account the definition query from the FeatureTypeInfo if exists.
  *

@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * WFS GetFeature to test polymorphism mixed with inline mappings in Geoserver app-schema.
+ * WFS GetFeature to test polymorphism mixed with inline mappings in GeoServer app-schema.
  *
  * @author Rini Angreani, CSIRO Earth Science and Resource Engineering
  */

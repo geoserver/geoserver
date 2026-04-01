@@ -34,6 +34,11 @@ public class Keyword implements Serializable, KeywordInfo {
     }
 
     @Override
+    public void setValue(String keyword) {
+        this.value = keyword;
+    }
+
+    @Override
     public String getLanguage() {
         return language;
     }
@@ -55,7 +60,15 @@ public class Keyword implements Serializable, KeywordInfo {
 
     @Override
     public String toString() {
-        return value;
+        final StringBuilder sb = new StringBuilder();
+        sb.append(value);
+        if (language != null) {
+            sb.append(" (").append(language).append(")");
+        }
+        if (vocabulary != null) {
+            sb.append(" [").append(vocabulary).append("]");
+        }
+        return sb.toString();
     }
 
     @Override

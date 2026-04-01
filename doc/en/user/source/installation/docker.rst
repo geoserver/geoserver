@@ -202,8 +202,8 @@ Working with a Nightly build is a good way to test community modules and provide
    ::
    
        acl                           gwc-mbtiles                     ogcapi-tiles
-       activeMQ-broker               gwc-sqlite                      ogr-datastore
-       backup-restore                hz-cluster                      opensearch-eo
+       backup-restore                gwc-sqlite                      ogr-datastore
+                                     hz-cluster                      opensearch-eo
        cog-azure                                                     proxy-base-ext
        cog-google                    importer-jdbc                   s3-geotiff
        cog-http                                                      sec-keycloak
@@ -222,5 +222,5 @@ Working with a Nightly build is a good way to test community modules and provide
        gpx                           ogcapi-dggs                     webp
        graticule                     ogcapi-images                   wfs-freemarker
        gsr                           ogcapi-maps                     wps-longitudinal-profile
-       gwc-azure-blobstore           ogcapi-styles                   wps-remote
+       gwc-azure-blobstore           ogcapi-styles
                                      ogcapi-tiled-features               

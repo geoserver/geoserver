@@ -161,7 +161,7 @@ After upgrading, review the startup logs for missing datastore errors and verify
 
 As of GeoServer 3.0, the **Log location** setting has been removed from the Admin Console (Global Settings page) and is no longer configurable via the REST API.
 
-The log file location must now be set using the `GEOSERVER_LOG_LOCATION` system property or environment variable:
+        The [log file location](../configuration/logging/#logging_location) must now be set using the `GEOSERVER_LOG_LOCATION` application property which can be set as system property, environment variable, or servlet context parameter:
 
 ``` shell
 # System property

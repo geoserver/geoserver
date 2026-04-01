@@ -12,11 +12,14 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,12 +29,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.rest.security.xml.AuthProviderCollection;
 import org.geoserver.rest.security.xml.AuthProviderOrder;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
@@ -114,6 +119,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
 
         secMgr.reload();
         created.clear();
+        clearConfigCache();
         SecurityContextHolder.clearContext();
     }
 
@@ -141,6 +147,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             }
         } finally {
             created.clear();
+            clearConfigCache();
             System.clearProperty(ALLOWED_PROVIDER_PROPERTY);
             SecurityContextHolder.clearContext();
         }
@@ -192,6 +199,19 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         inner.put("className", className);
         if (ugService != null) inner.put("userGroupServiceName", ugService);
         return Collections.singletonMap("authprovider", inner);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void clearConfigCache() {
+        try {
+            Field field = AuthenticationProviderRestController.class.getDeclaredField("CONFIG_CACHE");
+            field.setAccessible(true);
+            ConcurrentMap<String, Class<? extends SecurityAuthProviderConfig>> cache =
+                    (ConcurrentMap<String, Class<? extends SecurityAuthProviderConfig>>) field.get(null);
+            cache.clear();
+        } catch (ReflectiveOperationException e) {
+            fail("Cannot clear config cache: " + e.getMessage());
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -400,6 +420,42 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                 jsonRequest(Collections.singletonMap("authprovider", inner)), null, UriComponentsBuilder.newInstance());
     }
 
+    /** create(XML): blocked provider className is rejected by allow-list validation. */
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
+    public void testCreate_XML_blockedProviderClassName() throws Exception {
+        setUser();
+        String name = generateName("xml-blocked");
+        UsernamePasswordAuthenticationProviderConfig provider =
+                authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
+        provider.setClassName("java.lang.Runtime");
+
+        controller.create(xmlRequest(provider), null, UriComponentsBuilder.newInstance());
+    }
+
+    /** resolveConfigClass cache entries are revalidated when allow-list configuration changes. */
+    @Test
+    public void testResolveConfigClass_revalidatesCachedEntryAfterAllowListChange() throws Exception {
+        setUser();
+        clearConfigCache();
+
+        Method resolve = AuthenticationProviderRestController.class.getDeclaredMethod(
+                "resolveConfigClass", String.class, AllowedAuthenticationProviderClasses.class, String.class);
+        resolve.setAccessible(true);
+
+        String testConfigClassName = TestDynamicAuthProviderConfig.class.getName();
+        System.setProperty(ALLOWED_PROVIDER_PROPERTY, testConfigClassName);
+
+        Object first = resolve.invoke(
+                controller, testConfigClassName, AllowedAuthenticationProviderClasses.load(), "className");
+        assertEquals(TestDynamicAuthProviderConfig.class, first);
+
+        System.setProperty(
+                ALLOWED_PROVIDER_PROPERTY, "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider");
+        Object second = resolve.invoke(
+                controller, testConfigClassName, AllowedAuthenticationProviderClasses.load(), "className");
+        assertNull(second);
+    }
+
     /** create(JSON): position out of range -> 400 BadRequest. */
     @Test(expected = AuthenticationProviderRestController.BadRequest.class)
     public void testCreate_positionOutOfRange_isBadRequest() throws Exception {
@@ -535,6 +591,13 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         }
     }
 
+    /** delete(name): missing provider in enabled order throws NothingToDelete (not CannotSaveConfig). */
+    @Test(expected = AuthenticationProviderRestController.NothingToDelete.class)
+    public void testDelete_missingProviderThrowsNothingToDelete() {
+        setUser();
+        controller.delete(generateName("missing"));
+    }
+
     // ---------------------------------------------------------------------
     // reorder
     // ---------------------------------------------------------------------
@@ -589,5 +652,23 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         assertEquals(405, g.getStatusCode().value());
         assertEquals(405, p.getStatusCode().value());
         assertEquals(405, d.getStatusCode().value());
+    }
+
+    /** Test config class used to validate cache re-checks when allow-list values change. */
+    public static class TestDynamicAuthProviderConfig extends BaseSecurityNamedServiceConfig
+            implements SecurityAuthProviderConfig {
+
+        private static final long serialVersionUID = 1L;
+        private String userGroupServiceName;
+
+        @Override
+        public String getUserGroupServiceName() {
+            return userGroupServiceName;
+        }
+
+        @Override
+        public void setUserGroupServiceName(String userGroupServiceName) {
+            this.userGroupServiceName = userGroupServiceName;
+        }
     }
 }

@@ -7,6 +7,7 @@ package org.geoserver.rest.security;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.thoughtworks.xstream.XStream;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
@@ -119,6 +120,42 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
     public AuthenticationProviderRestController(GeoServerSecurityManager securityManager) {
         this.securityManager = securityManager;
+    }
+
+    /**
+     * Logs the effective allow-list at startup and audits persisted authentication provider configurations.
+     *
+     * <p>Audit failures are logged and never prevent startup.
+     */
+    @PostConstruct
+    public void logAllowListAndAuditPersistedProviders() {
+        AllowedAuthenticationProviderClasses allowList = AllowedAuthenticationProviderClasses.load();
+        LOGGER.log(
+                Level.INFO,
+                "Authentication provider allow-list active from {0}: {1} entries ({2} exact, {3} prefix)",
+                new Object[] {
+                    allowList.getSource(),
+                    Integer.valueOf(allowList.getDisplayEntries().size()),
+                    Integer.valueOf(allowList.getExactAllowed().size()),
+                    Integer.valueOf(allowList.getPackagePrefixes().size())
+                });
+        LOGGER.log(Level.INFO, "Authentication provider allow-list entries: {0}", allowList.getDisplayEntries());
+
+        try {
+            Set<String> providerNames = securityManager.listAuthenticationProviders();
+            for (String providerName : providerNames) {
+                SecurityAuthProviderConfig cfg = securityManager.loadAuthenticationProviderConfig(providerName);
+                if (cfg == null) {
+                    continue;
+                }
+                auditConfiguredProviderClasses(allowList, cfg);
+            }
+        } catch (IOException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Could not audit persisted authentication provider configurations against the allow-list",
+                    e);
+        }
     }
 
     // ------------------------------------------------------------------------------------ XStream
@@ -309,7 +346,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
             SecurityManagerConfig smc = securityManager.loadSecurityConfig();
             List<String> order = smc.getAuthProviderNames();
             if (!order.remove(providerName)) {
-                throw new NothingToDelete("No provider '" + providerName + "' to delete");
+                throw new NothingToDelete(providerName);
             }
             // Persist the order removal first (disables the provider in config).
             securityManager.saveSecurityConfig(smc);
@@ -318,6 +355,8 @@ public class AuthenticationProviderRestController extends RestBaseController {
             securityManager.removeAuthenticationProvider(cfg);
 
             securityManager.reload();
+        } catch (NothingToDelete e) {
+            throw e;
         } catch (Exception e) {
             throw new CannotSaveConfig(e);
         }
@@ -402,51 +441,80 @@ public class AuthenticationProviderRestController extends RestBaseController {
     /**
      * Cache of resolved config classes keyed by 'className' values from payloads. Values are either a
      * {@link SecurityAuthProviderConfig} subclass FQN or a provider FQN which is then mapped to a conventional config
-     * class.
+     * class. Only successful resolutions are cached.
      */
     private static final ConcurrentMap<String, Class<? extends SecurityAuthProviderConfig>> CONFIG_CACHE =
             new ConcurrentHashMap<>();
 
+    private Class<? extends SecurityAuthProviderConfig> resolveConfigClass(
+            String className, AllowedAuthenticationProviderClasses allowList, String sourceFieldName) {
+        Class<? extends SecurityAuthProviderConfig> cached = CONFIG_CACHE.get(className);
+        if (cached != null) {
+            if (allowList.allows(className) && allowList.allows(cached.getName())) {
+                return cached;
+            }
+            CONFIG_CACHE.remove(className, cached);
+            LOGGER.log(
+                    Level.FINE,
+                    "Evicted cached auth provider config mapping for className {0} due to allow-list update",
+                    className);
+        }
+
+        if (!allowList.allows(className)) {
+            logRejectedProviderClass(sourceFieldName, className, null);
+            return null;
+        }
+
+        Class<? extends SecurityAuthProviderConfig> resolved =
+                resolveConfigClassUncached(className, allowList, sourceFieldName);
+        if (resolved == null) {
+            return null;
+        }
+        if (!allowList.allows(resolved.getName())) {
+            logRejectedProviderClass("configClassName", resolved.getName(), null);
+            return null;
+        }
+
+        Class<? extends SecurityAuthProviderConfig> existing = CONFIG_CACHE.putIfAbsent(className, resolved);
+        return existing != null ? existing : resolved;
+    }
+
     @SuppressWarnings("unchecked")
-    private Class<? extends SecurityAuthProviderConfig> resolveConfigClass(String className) {
-        return CONFIG_CACHE.computeIfAbsent(className, cn -> {
-            if (!AllowedAuthenticationProviderClasses.isAllowed(cn)) {
-                logRejectedProviderClass("className", cn, null);
-                return null;
-            }
+    private Class<? extends SecurityAuthProviderConfig> resolveConfigClassUncached(
+            String className, AllowedAuthenticationProviderClasses allowList, String sourceFieldName) {
+        // A) className is already a config class
+        Class<?> providerOrConfig;
+        try {
+            providerOrConfig = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
 
-            // A) className is already a config class
+        if (SecurityAuthProviderConfig.class.isAssignableFrom(providerOrConfig)) {
+            return (Class<? extends SecurityAuthProviderConfig>) providerOrConfig;
+        }
+
+        // B) className is a provider class – derive plausible config classes
+        String[] candidates = getCandidates(providerOrConfig);
+        for (String fqn : candidates) {
+            if (!allowList.allows(fqn)) {
+                LOGGER.log(
+                        Level.FINE,
+                        "Rejected derived auth provider config candidate {0} for {1} value {2}",
+                        new Object[] {fqn, sourceFieldName, className});
+                continue;
+            }
             try {
-                Class<?> c = Class.forName(cn);
-                if (SecurityAuthProviderConfig.class.isAssignableFrom(c)) {
-                    return (Class<? extends SecurityAuthProviderConfig>) c;
+                Class<?> cfg = Class.forName(fqn);
+                if (SecurityAuthProviderConfig.class.isAssignableFrom(cfg)) {
+                    return (Class<? extends SecurityAuthProviderConfig>) cfg;
                 }
-            } catch (ClassNotFoundException ignore) {
-                // fall through
+            } catch (ClassNotFoundException e) {
+                LOGGER.log(Level.FINEST, "Candidate auth provider config class not found: {0}", fqn);
             }
+        }
 
-            // B) className is a provider class – derive plausible config classes
-            try {
-                Class<?> provider = Class.forName(cn);
-                String[] candidates = getCandidates(provider);
-
-                for (String fqn : candidates) {
-                    if (!AllowedAuthenticationProviderClasses.isAllowed(fqn)) continue;
-                    try {
-                        Class<?> cfg = Class.forName(fqn);
-                        if (SecurityAuthProviderConfig.class.isAssignableFrom(cfg)) {
-                            return (Class<? extends SecurityAuthProviderConfig>) cfg;
-                        }
-                    } catch (ClassNotFoundException ignore2) {
-                        // try the next candidate
-                    }
-                }
-            } catch (ClassNotFoundException ignore) {
-                // not a provider class either
-            }
-
-            return null; // not resolvable
-        });
+        return null;
     }
 
     private static String[] getCandidates(Class<?> provider) {
@@ -467,17 +535,24 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
     private SecurityAuthProviderConfig parseConfig(HttpServletRequest req) throws IOException {
         byte[] body = read(req);
+        AllowedAuthenticationProviderClasses allowList = AllowedAuthenticationProviderClasses.load();
 
         if (isXml(req)) {
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
             configurePersister(xp, null);
             Object o = xp.load(new ByteArrayInputStream(body), Object.class);
             if (o instanceof SecurityAuthProviderConfig) {
-                return (SecurityAuthProviderConfig) o;
+                SecurityAuthProviderConfig cfg = (SecurityAuthProviderConfig) o;
+                validateProviderAllowList(cfg, allowList);
+                return cfg;
             }
             if (o instanceof AuthProviderCollection) {
                 AuthProviderCollection c = (AuthProviderCollection) o;
-                if (c.first() != null) return c.first();
+                if (c.first() != null) {
+                    SecurityAuthProviderConfig cfg = c.first();
+                    validateProviderAllowList(cfg, allowList);
+                    return cfg;
+                }
             }
             throw new BadRequest("Malformed XML payload");
         }
@@ -503,7 +578,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
         // Optional explicit override for the config class
         String explicitCfg = n.path("configClassName").asString(null);
         if (explicitCfg != null && !explicitCfg.isBlank()) {
-            if (!AllowedAuthenticationProviderClasses.isAllowed(explicitCfg)) {
+            if (!allowList.allows(explicitCfg)) {
                 throw rejectedProviderClass("configClassName", explicitCfg, providerName);
             }
             try {
@@ -525,7 +600,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
             String fqn = e.getKey();
             JsonNode inner = e.getValue();
             if (!inner.isObject()) throw new BadRequest("Malformed JSON payload");
-            if (!AllowedAuthenticationProviderClasses.isAllowed(fqn)) {
+            if (!allowList.allows(fqn)) {
                 throw rejectedProviderClass("className", fqn, providerName);
             }
 
@@ -534,7 +609,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
                 Class<?> c = Class.forName(fqn);
                 if (GeoServerAuthenticationProvider.class.isAssignableFrom(c)) {
                     // wrapper is a PROVIDER -> set provider FQN into className and resolve config
-                    type = resolveConfigClass(fqn);
+                    type = resolveConfigClass(fqn, allowList, "legacyWrapperClassName");
                     if (type == null) throw new BadRequest("Unsupported className: " + fqn);
                     innerObj.put("className", fqn);
                     n = innerObj;
@@ -557,21 +632,56 @@ public class AuthenticationProviderRestController extends RestBaseController {
         if (className == null || className.isBlank()) {
             throw new BadRequest("Missing 'className' in JSON payload");
         }
-        if (!AllowedAuthenticationProviderClasses.isAllowed(className)) {
+        if (!allowList.allows(className)) {
             throw rejectedProviderClass("className", className, providerName);
         }
 
         if (type == null) {
-            type = resolveConfigClass(className);
+            type = resolveConfigClass(className, allowList, "className");
             if (type == null) {
                 throw new BadRequest("Unsupported className");
             }
         }
 
         SecurityAuthProviderConfig cfg = MAPPER.treeToValue(n, type);
+        validateProviderAllowList(cfg, allowList);
         // Light validation here; detailed checks are performed by GeoServerSecurityManager validators
         ensureNotReserved(cfg.getName());
         return cfg;
+    }
+
+    private void validateProviderAllowList(
+            SecurityAuthProviderConfig cfg, AllowedAuthenticationProviderClasses allowList) {
+        String providerName = cfg.getName();
+        String configClassName = cfg.getClass().getName();
+        if (!allowList.allows(configClassName)) {
+            throw rejectedProviderClass("configClassName", configClassName, providerName);
+        }
+
+        String providerClassName = cfg.getClassName();
+        if (providerClassName != null && !providerClassName.isBlank() && !allowList.allows(providerClassName)) {
+            throw rejectedProviderClass("className", providerClassName, providerName);
+        }
+    }
+
+    private void auditConfiguredProviderClasses(
+            AllowedAuthenticationProviderClasses allowList, SecurityAuthProviderConfig cfg) {
+        String providerName = cfg.getName();
+        String configClassName = cfg.getClass().getName();
+        if (!allowList.allows(configClassName)) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Persisted auth provider {0} uses config class {1} not present in effective allow-list",
+                    new Object[] {providerName, configClassName});
+        }
+
+        String providerClassName = cfg.getClassName();
+        if (providerClassName != null && !providerClassName.isBlank() && !allowList.allows(providerClassName)) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Persisted auth provider {0} uses provider class {1} not present in effective allow-list",
+                    new Object[] {providerName, providerClassName});
+        }
     }
 
     /**
@@ -758,7 +868,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
         DuplicateProviderName.class,
         NothingToDelete.class,
         NotAuthorised.class,
-        IllegalArgumentException.class // <-- add this
+        IllegalArgumentException.class
     })
     public ResponseEntity<ErrorResponse> handle(RuntimeException ex) {
         HttpStatus st = ex instanceof BadRequest || ex instanceof IllegalArgumentException

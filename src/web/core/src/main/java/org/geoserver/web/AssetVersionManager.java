@@ -59,12 +59,10 @@ public class AssetVersionManager {
     public static String versioned(String path, ServletContext context) {
         String normalizedPath = path.startsWith("/") ? path.substring(1) : path;
         String version = getDeploymentVersion();
+        // Safety cap: clear if cache grows beyond expected size (e.g. misuse with dynamic paths).
+        // ConcurrentHashMap is thread-safe; a racy double-clear is harmless.
         if (CACHE.size() >= MAX_CACHE_ENTRIES && !CACHE.containsKey(normalizedPath)) {
-            synchronized (CACHE) {
-                if (CACHE.size() >= MAX_CACHE_ENTRIES && !CACHE.containsKey(normalizedPath)) {
-                    CACHE.clear();
-                }
-            }
+            CACHE.clear();
         }
         return CACHE.computeIfAbsent(normalizedPath, p -> p + "?v=" + version);
     }

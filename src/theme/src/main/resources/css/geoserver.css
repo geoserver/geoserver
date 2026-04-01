@@ -895,20 +895,17 @@ table > tbody > tr:nth-of-type(odd) > * {
   display: inline-flex;
   border-radius: var(--gs-border-radius);
 }
-
 .paginator a,
 .paginator em {
   display: inline-block;
-  padding: 0.25rem;
+  padding: 0.25rem 0.5rem;
   text-decoration: none;
-  min-width: 4ch;
+  min-width: 3ch;
   text-align: center;
 }
-
 .paginator em {
   color: var(--gs-body-color);
 }
-
 .paginator > a[disabled='disabled'] {
   color: var(--gs-secondary-color);
   pointer-events: none;
@@ -919,6 +916,28 @@ table > tbody > tr:nth-of-type(odd) > * {
 .paginator a:not([disabled='disabled']):hover {
   z-index: 2;
   background-color: var(--gs-tertiary-bg);
+}
+.paginator a.first,
+.paginator a.prev,
+.paginator a.next,
+.paginator a.last {
+  font-size: 0;
+}
+.paginator a.first::before {
+  content: "\2039\2039";
+  font-size: 1rem;
+}
+.paginator a.prev::before {
+  content: "\2039";
+  font-size: 1rem;
+}
+.paginator a.next::before {
+  content: "\203A";
+  font-size: 1rem;
+}
+.paginator a.last::before {
+  content: "\203A\203A";
+  font-size: 1rem;
 }
 
 .service-links {

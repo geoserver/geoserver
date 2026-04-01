@@ -18,14 +18,6 @@ public class LoggingInfoImpl implements LoggingInfo {
 
     String level;
 
-    /**
-     * Retained only for XStream deserialization of existing {@code logging.xml} files. This field is not exposed via
-     * getter/setter and is never read at runtime. From GeoServer 3.0 the log location must be set using the
-     * {@code GEOSERVER_LOG_LOCATION} application property.
-     */
-    @SuppressWarnings("unused")
-    String location;
-
     boolean stdOutLogging;
 
     @Override

@@ -134,7 +134,6 @@ Management of web services using environmental variables is standard practice wh
 
 ### Logging configuration hardening
 
-For production systems, it is advised to set `GEOSERVER_LOG_LOCATION` parameter during startup. The value may be defined as either an environment variable, java system property, or servlet context parameter.
 
 The `GEOSERVER_LOG_LOCATION` property is the only way to set the log file location. The Admin Console and REST API do not allow changing this setting.
 

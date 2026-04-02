@@ -2,27 +2,32 @@
 
 For really quick fixes:
 
-1.  Browse the documentation source code directly on the GitHub website:
+1.  Look at any documentation page, at the top corner there is an "Edit this page" icon.
+    
+    Clicking this button navigates to the GitHub website showing the source code for the page.
+    
+    As an example the current page is located at:
+    
+    - <https://github.com/geoserver/geoserver/edit/main/doc/en/docguide/quickfix.md>
+    
+2.  The GitHub website will open to an **Edit** tab allowing you to update the contents:
 
-    - <https://github.com/geoserver/geoserver/tree/main/doc/en>
+    ![](img/github_edit1.png)  
+    *GitHub Edit for quickfix.md page*
+    
+    The editor also has a **Preview** tab:
 
-2.  Navigate to the file you wish to change and click the **edit** icon
-
-    ![](github_edit1.png)
-
-    *GitHub Preview of style.rst page*
-
+    ![](img/github_edit2.png)  
+    *GitHub Preview for quickfix.md page*
+    
     Note: you must first be signed into GitHub, and GitHub will help you create a fork from which to submit the quick fix, (we recommend that you keep the fork for next time.)
 
-3.  Use the editor to modify the file
-
-    ![](github_edit1.png)
-
-    *GitHub Editor for style.rst page*
-
 4.  Scroll to the bottom of the page, provide a commit comment and submit.
-
-5.  GitHub will:
+    
+    ![](img/github-commit.png)  
+    *GitHub Commit Message**
+    
+    GitHub will:
 
     - Create a fork and submit a pull request on your behalf; or
     - Immediately make the change for those with commit access

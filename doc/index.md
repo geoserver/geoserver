@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+  - toc
+---
 # GeoServer Documentation
 
 Welcome to the GeoServer documentation. Choose a guide to get started:
@@ -41,7 +46,7 @@ Welcome to the GeoServer documentation. Choose a guide to get started:
 .doc-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  gap: 3rem;
   margin: 3rem 0;
   padding: 0;
 }

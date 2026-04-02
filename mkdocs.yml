@@ -41,6 +41,7 @@ theme:
     - search.suggest
     - search.highlight
     - content.code.copy
+    - content.tabs.link
     - content.action.edit
     - navigation.tabs
     - navigation.tabs.sticky
@@ -118,6 +119,7 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
+  - pymdownx.keys
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
@@ -1043,8 +1045,7 @@ nav:
     - Background: en/docguide/background.md
     - Quickfix: en/docguide/quickfix.md
     - Contributing: en/docguide/contributing.md
-    - Installing Sphinx: en/docguide/install.md
-    - Installing LaTeX: en/docguide/installlatex.md
+    - Installing mkdocs: en/docguide/install.md
     - Workflow: en/docguide/workflow.md
     - Markdown Syntax: en/docguide/markdown.md
     - Style Guidelines: en/docguide/style.md

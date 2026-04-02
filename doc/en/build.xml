@@ -48,7 +48,8 @@
   <target name="-build" if="mkdocs.available">
     <mkdir dir="${build.directory}"/>
     <antcall target="mkdocs">
-      <param name="build" value="build" />
+      <param name="build" value="serve" />
+      <param name="argLine" value="" />
     </antcall>
   </target>
   
@@ -58,17 +59,14 @@
     <mkdir dir="${build.directory}"/>
     <antcall target="mkdocs">
       <param name="build" value="serve" />
+      <param name="argLine" value="--site-dir ${build.directory} --no-directory-urls" />
     </antcall>
   </target>
   
   <target name="mkdocs" if="mkdocs.available">
-    <local name="argLine"/>
-    <property name="argLine" value="--no-directory-urls"/>
-    
-    <echo message="Running mkdocs ${build} --site-dir ${build.directory} ${argLine} "/>
+    <echo message="Running mkdocs ${build} ${argLine}"/>
     <exec executable="mkdocs" failonerror="true" dir="${basedir}">
       <arg line="${build}"/>
-      <arg line="--site-dir ${build.directory}"/>
       <arg line="${argLine}"/>
     </exec>
   </target>

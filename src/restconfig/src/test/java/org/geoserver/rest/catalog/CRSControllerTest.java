@@ -19,6 +19,9 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.text.StringEscapeUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -31,6 +34,7 @@ public class CRSControllerTest extends GeoServerSystemTestSupport {
             "GEOGCS[\"WGS84(DD) - %s\", DATUM[\"WGS84\", SPHEROID[\"WGS84\", 6378137.0, 298.25722%s]],"
                     + " PRIMEM[\"Greenwich\", 0.0], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic latitude\","
                     + " NORTH], AXIS[\"Geodetic longitude\", EAST],  AUTHORITY[\"%s\",\"%s\"]]";
+    private static final double DELTA = 0.5;
 
     @Before
     public void resetCustomAuthorities() throws IOException {
@@ -158,6 +162,57 @@ public class CRSControllerTest extends GeoServerSystemTestSupport {
         String definition = json.getString("definition");
         assertNotNull(definition);
         assertFalse(definition.isEmpty());
+    }
+
+    @Test
+    public void testListCRSsQueryByPartialId() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON("/rest/crs.json?authority=AT&query=32&limit=100");
+        JSONArray codes = json.getJSONArray("crs");
+        assertNotNull(codes);
+        assertEquals(1, codes.size()); // should only match AT:1032
+        String id = codes.getJSONObject(0).getString("id");
+        assertTrue(id.startsWith("AT:"));
+        assertTrue(id.contains("32"));
+    }
+
+    @Test
+    public void testLookupUtmAsJsonContainsBBoxes() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON("/rest/crs/EPSG:32632.json");
+
+        assertEquals("EPSG:32632", json.getString("id"));
+        assertEquals("wkt", json.getString("format"));
+
+        String definition = json.getString("definition");
+        assertNotNull(definition);
+        assertFalse(definition.isEmpty());
+        assertTrue(definition.contains("UTM") || definition.contains("Transverse_Mercator"));
+
+        JSONObject nativeBBox = json.getJSONObject("bbox");
+        CoordinateReferenceSystem utmCRS =
+                CRS.decode("EPSG:32632", true); // make sure the CRS is cached, so that bbox can be built
+        Bounds envelope = CRS.getEnvelope(utmCRS);
+        assertNotNull(nativeBBox);
+        assertEquals(envelope.getMinimum(0), nativeBBox.getDouble("minX"), DELTA);
+        assertEquals(envelope.getMinimum(1), nativeBBox.getDouble("minY"), DELTA);
+        assertEquals(envelope.getMaximum(0), nativeBBox.getDouble("maxX"), DELTA);
+        assertEquals(envelope.getMaximum(1), nativeBBox.getDouble("maxY"), DELTA);
+
+        JSONObject geoBBox = json.getJSONObject("bboxWGS84");
+        assertNotNull(geoBBox);
+
+        double minX = geoBBox.getDouble("minX");
+        double minY = geoBBox.getDouble("minY");
+        double maxX = geoBBox.getDouble("maxX");
+        double maxY = geoBBox.getDouble("maxY");
+
+        assertTrue(minX < maxX);
+        assertTrue(minY < maxY);
+
+        // EPSG:32632 geographic extent is roughly 6E..12E and 0..84N
+        assertTrue(minX >= 5.0);
+        assertTrue(maxX <= 13.0);
+        assertTrue(minY >= -1.0);
+        assertTrue(maxY <= 85.0);
     }
 
     @Test

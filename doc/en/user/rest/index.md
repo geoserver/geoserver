@@ -22,6 +22,7 @@ The following links provide direct access to the GeoServer REST API documentatio
 - [/datastores]({{ api_url }}?urls.primaryName=Datastores)
 - [/coverages]({{ api_url }}?urls.primaryName=Coverages)
 - [/coveragestores]({{ api_url }}?urls.primaryName=Coverage%20Stores)
+- [/crs]({{ api_url }}?urls.primaryName=Coordinate%20Reference%20Systems)
 - [/featuretypes]({{ api_url }}?urls.primaryName=Feature%20Types)
 - [/fonts]({{ api_url }}?urls.primaryName=Fonts)
 - [/layergroups]({{ api_url }}?urls.primaryName=Layer%20Groups)

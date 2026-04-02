@@ -1,38 +1,39 @@
 # Documentation Instructions
 
-For writing guide please generate and review [docguide](https://docs.geoserver.org/latest/en/docguide/). Documentation is written in a combination of:
+For writing guide please generate and review [docguide](https://docs.geoserver.org/3.0.x/en/docguide/). Documentation is written in a combination of:
 
-* [sphinx-doc.org](http://www.sphinx-doc.org): user manual, developers guide and documentation guide
-* [swagger.io](http://swagger.io) - REST API reference documentation
+* [material for mkdocs](https://squidfunk.github.io/mkdocs-material/): user manual, developers guide and documentation guide
+* [swagger.io](http://swagger.io): REST API reference documentation
 
 GeoServer documentation is released using [Creative Commons Attribution 4.0 International](LICENSE.md).
 
 ## Python Virtual Environment Setup
 
-The documentation is written with [sphinx-build](https://www.sphinx-doc.org/en/master/), which is a Python documentation generator.
+The documentation is written with [mkdocs](https://www.mkdocs.org/), which is a Python documentation generator. We use [Material for mkdocs](https://squidfunk.github.io/mkdocs-material/) theme which provides excellent documentation.
 
-To establish a virtual environment just for this project (macOS example):
+1. From the root of your GeoServer checkout:
 
-```bash
-brew install virtualenv
-virtualenv venv
-```
+   ```bash
+   virtualenv venv
+   ```
 
-To activate python:
-```bash
-source venv/bin/activate
-```
+2. Activate virtual environment and install (or update) requirements:
+   ```bash
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+   
+3. Use ***mkdocs*** to preview from virtual environment:
 
-To install requirements into virtual environment:
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   mkdocs serve
+   ```
 
-To confirm installation:
-```bash
-sphinx-build --version
-sphinx-autobuild --version
-```
+3. Preview:
+
+   ```
+   python3 -m webbrowser http://localhost:8000
+   ```
 
 ## Building with Maven
 

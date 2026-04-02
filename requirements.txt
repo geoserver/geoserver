@@ -1,0 +1,5 @@
+mkdocs-material>=9.5.3
+mkdocs-static-i18n>=1.0.5
+mkdocs-include-markdown-plugin
+mkdocs-exclude
+mike==2.0.0

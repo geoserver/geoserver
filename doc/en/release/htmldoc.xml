@@ -23,12 +23,8 @@
     </fileSet>
     <!-- content -->
     <fileSet>
-      <directory>target/developer/html</directory>
-      <outputDirectory>developer</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/user/html</directory>
-      <outputDirectory>user</outputDirectory>
+      <directory>../../target</directory>
+      <outputDirectory></outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target/api</directory>

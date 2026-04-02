@@ -284,7 +284,8 @@ if [ -z $SKIP_BUILD ]; then
   ##################
 
   pushd ../doc/en > /dev/null
-
+  
+  ant build -Dproject.version=$tag
   # ant clean user -Dproject.version=$tag
   # ant user-pdf -Dproject.version=$tag
   # ant developer -Dproject.version=$tag

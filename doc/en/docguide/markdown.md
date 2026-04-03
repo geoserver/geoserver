@@ -13,26 +13,25 @@ The simplest Markdown elements are:
 | Monospace  | `` `monospace` `` | `monospace` |
 
 
-Application is carefully constructed for consistent representation of user interface elements, files, data and field input.
+These elements are used for consistent representation of user interface elements, files, data and field input.
 
-
-| Markdown                 | Directive                   |
-|--------------------------|-----------------------------|
-| `**strong**`             | gui label, menu selection   |
-| `` `monospace` ``        | text input, item selection  |
-| `*emphasis*`             | figure (caption)            |
-| `***strong-emphasis***`  | application, command        |
-| **`monospace-strong`**   | file                        |
+| Markdown                       | Subject                     | Example |
+|--------------------------------|-----------------------------|---------|
+| `**strong**`                   | gui label, menu selection   | **Apply**
+| `` `monospace` ``              | text input, item selection  | `admin` |
+| `*emphasis*`                   | figure (caption)            | *Diagram 1* |
+| `***strong-emphasis***`        | application, command        | ***PostGIS*** |
+| `` **`monospace-strong`** ``   | file, path reference        | **`example.gpkg`** |
 
 !!! note
 
-    The above conventions are important for consistency and are required by the translation process.
-    As an example we do not wish to translate a search terms, so these are represented as monospace text input.
+    The above conventions are important for consistency, and allow for documentation translation.
+    As an example we do not wish to translate a layer name, so these are represented as monospace text input.
 
 
 ### User interface components
 
-Use `**strong**` to name user interface components for interaction (press for buttons, click for link).
+Use `**button**` to name user interface components for interaction (press for buttons, click for link).
 
 === "Preview"
 
@@ -48,7 +47,7 @@ Use `**strong**` to name user interface components for interaction (press for bu
 
 ### User input
 
-Use `` `item` `` for user supplied input, or item in a list or tree::
+Use `` `item` `` monospace for user supplied input, or item in a list or tree:
 
 === "Markdown"
 
@@ -61,7 +60,7 @@ Use `` `item` `` for user supplied input, or item in a list or tree::
     Select `Basemap` layer.
 
 
-Use `` `text` `` for user supplied text input:
+Use `` `text` `` monspace for user supplied text input:
 
 === "Markdown"
 
@@ -122,7 +121,7 @@ Use definition list to document data entry. The field names use strong as they n
 
 ### Applications, commands and tools
 
-Use **bold** and *italics* for proper names of applications, commands, tools, and products.
+Use `***command***` (combination of **bold** and *italics*) for proper names of applications, commands, tools, and products.
 
 === "Markdown"
 
@@ -136,7 +135,7 @@ Use **bold** and *italics* for proper names of applications, commands, tools, an
 
 ### Files
 
-Use **bold** **monospace** for files and folders:
+Use `` **`file.txt`** `` (combine **bold** **monospace**) for files and path references:
 
 === "Markdown"
 
@@ -149,35 +148,6 @@ Use **bold** **monospace** for files and folders:
 === "Preview"
     
      See configuration file **`security/rest.properties`** for access control.
-
-
-### Links and references
-
-Specific kinds of links:
-
-Reference to other section of the document (some care is required to reference a specific heading):
-
-- Relative paths are used
-- Use of `#anchor` to locate anchor within a page, generated from heading text
-- References to `index.md` are converted to `index.md`.
-  
-  !!! note
-  
-      Use of `directory/index.md`, rather than `directory`,
-      is required for documentation to export to work
-      on local file system.
-
-=== "Markdown"
-
-    ```
-    Administrators have option to manage
-    [default langauge](../../user/configuration/internationalization/index.md#default-language).
-    ```
-
-=== "Preview"
-
-    Administrators have option to manage
-    [default langauge](../../user/configuration/internationalization/index.md#default-language).
 
 ### Icons, Images and Figures
 
@@ -199,22 +169,20 @@ Material for markdown has extensive icon support, for most user interface elemen
 
 Figures are handled by convention, adding emphasized text after each image, and trust CSS rules to provide a consistent presentation:
 
+* The image has two trailing `  ` space characters, to affect a newline to position the caption under the figure.
+* The caption uses `*emphasis*` appearance.
+
 === "Markdown"
 
     ```markdown
     ![](img/add-keyword.png)  
-    *Keywords with **Add Layer**, and individual **Remove Layer** buttons.**
+    *Keywords with **Add Layer**, and individual **Remove Layer** buttons.*
     ```
-    
-    !!! note
-        
-        The first line has two trailing `  ` space characters, to affect a newline
-        to position the caption under the figure.
 
 === "Preview"
    
     ![](img/add-keyword.png)  
-    *Keywords with **Add Layer**, and individual **Remove Layer** buttons.**
+    *Keywords with **Add Layer**, and individual **Remove Layer** buttons.*
 
 Raw images are not used very often:
 
@@ -227,6 +195,79 @@ Raw images are not used very often:
 === "Preview"
 
     ![GeoServer](img/logo-icon.svg "GeoServer Mark")
+
+### Screensnaps
+
+Take consistent screen snaps by following these guidelines:
+
+* Create a responsive design profile of 900 x 800 for consistent size of on screen components.
+  This size allows the user interface to display two-column layout of forms, and
+  avoid responsive design layout changes.
+  
+    This can be accomplished using responsive design mode in your browser development tools.
+    
+    The browser may also have a screen snap button to save an image at the requested DPI.
+
+* Use light appearance in the application, adjust monitor to sRGB.
+
+Be considerate of file size:
+
+* If taking a screen snap with HiDPI display, process by 50% to 72 DPI.
+  
+    ![](img/screen-snap-scale.png)  
+    *Screen Snap scale to 72 DPI*
+    
+    !!! tip
+        You may find it faster to adjust monitor resolution in order
+        avoid this step when making a lot of screen snaps.
+       
+* No need to include an alpha band when saving PNG
+
+    ![](img/screen-snap-alpha.png)  
+    *Do not include alpha band when saving*
+
+Full screen 900 x 800 is used sparingly, and are presented as figures (with a caption):
+
+=== "Markdown"
+    
+    ```markdown
+    ![](img/screen-snap.png)  
+    *Full screen*
+    ```
+
+=== "Preview"
+
+    ![](img/screen-snap.png)  
+    *Full screen*
+
+Crop for form and data entry steps:
+
+=== "Markdown"
+    
+    ```markdown
+    ![](img/screen-snap-form.png)  
+    *Form screen snap*
+    ```
+
+=== "Preview"
+
+    ![](img/screen-snap-form.png)  
+    *Form screen snap*
+
+Scale for smaller elements like dialogs and menus:
+
+=== "Markdown"
+    
+    ```markdown
+    ![](img/screen-snap-dialog.png){: width=50%}  
+    *Dialog screen snap*
+    ```
+
+=== "Preview"
+
+    ![](img/screen-snap-dialog.png){: width=50%}  
+    *Dialog screen snap*
+
 
 ### Lists
 
@@ -336,13 +377,19 @@ Column alignment using `:`
 
 GeoServer documentation uses the `admonition` extension in Markdown for notes and warnings.
 
+* default: `note`
+* admonition: `abstract`, `quote`, `question`, `info`, `tip`, `example`
+* caution: `warning`, `danger`
+* result: `success`, `failure`. `bug`
+* [Reference: Admonitions](https://squidfunk.github.io/mkdocs-material/reference/admonitions/)
+
 Important user guidance:
 
 - `!!! note`, `!!! warning`, etc. is valid at top level, and in list nesting when indented to the same depth as surrounding list content.
 - For top-level admonitions, use 0-3 spaces before `!!!` and indent block content by 4 spaces.
 - For nested admonitions in lists, align `!!!` with the list item block content (e.g. 4 / 8 / 12 spaces depending on nesting).
 
-  This means `!!!` can be at 12 spaces and still render when it is nested in a list item at that depth.
+   This means `!!!` can be at 12 spaces and still render when it is nested in a list item at that depth.
 
 === "Markdown"
 
@@ -356,50 +403,129 @@ Important user guidance:
     !!! note
         Do not wait for a release to fall out of support before upgrading.
 
-
-If you need a note-like callout inside a list item, use inline emphasis instead:
+Changing the title:
 
 === "Markdown"
 
     ```Markdown
-    - Remember:
-        - **Note:** Do not rely on this in production.
+    !!! tip "Upgrade Often"
+        Do not wait for a release to fall out of support before upgrading.
+    ```
+
+=== "Preview"
+
+    !!! tip "Upgrade Often"
+        Do not wait for a release to fall out of support before upgrading.
+
+Collapsible:
+
+=== "Markdown"
+
+    ```Markdown
+    ??? example "Spoiler"
+    
+         The answer is 3
+    ```
+
+=== "Preview"
+
+    ??? example "Spoiler"
+    
+         The answer is 3
+
+For use of note-like callout inside a list item, use inline emphasis can be an alternative:
+
+=== "Markdown"
+
+    ```Markdown
+        
+    1. Register application schema `xsd` location with ``ENTITY_RESOLUTION_ALLOWLIST`` application property.
+        
+        The setting ``ENTITY_RESOLUTION_UNRESTRICTED`` can be used to temporarily allow
+        local ``xsd`` documents when troubleshooting.
+       
+        !!! danger
+            Do not rely on this in production.
+            
+    2. Remember use of ``ENTITY_RESOLUTION_UNRESTRICTED`` intended for troubelshooing only.
+       
+        **:material-pencil-circle: Note:** Do not rely on this in production.
+
     ```
     
 === "Preview"
 
-    - Remember:
-        - **Note:** Do not rely on this in production.
+    1. Register application schema `xsd` location with ``ENTITY_RESOLUTION_ALLOWLIST`` application property.
+        
+        The setting ``ENTITY_RESOLUTION_UNRESTRICTED`` can be used to temporarily allow
+        local ``xsd`` documents when troubleshooting.
+       
+        !!! danger
+            Do not rely on this in production.
+            
+    2. Remember use of ``ENTITY_RESOLUTION_UNRESTRICTED`` intended for troubelshooing only.
+       
+        **:material-pencil-circle: Note:** Do not rely on this in production.
 
 <a name="anchor"/>
 
-### Headings
+### Headings and anchors
 
 Use `#`, `##`, `###`, etc... to define headings within a page:
 
-- Headings are used to establish "Page contents" along the right hand side allowing easy navigation between headings
-
-=== "Markdown"
-
-    ```md
-    # Main section
-    ## Subsection
-    ### Sub-subsection
-    ```
-
-### Page labels and anchors
-
-In Markdown, you can use heading-based anchors or explicit named anchors (with HTML) if needed.
+* Headings are used to establish "Page contents" along the right hand side allowing navigation with page
+* Heading text used to auto-generate an anchor for use to link to content within a page.
   
-=== "Markdown"
-    
-    ```markdown
-    <a name="anchor"/>
-    
-    ### Linking
-    ```
+```md
+# Main section
+## Subsection
+### Sub-subsection
+```
+
+Define an explicit named anchors (with HTML) as needed:
+
+* Used to provide an anchor for figures and tables
+* Also used as an alternative anchor for a heading,
+  Helpful to preserve previous auto generated anchor when heading text changes.
+
+For the heading:
+
+```markdown
+<a name="anchor"/>
+
+### Headings and anchors
+```
+
+May be referneced using `#anchor` or `#headings-and-anchors`.
 
 ### Linking
+
+Specific kinds of links:
+
+Reference to other section of the document (some care is required to reference a specific heading):
+
+- Relative paths are used between pages
+
+- Use of `#anchor` to locate anchor within a page, generated from heading text.
+
+- References to `index.md` are converted to `index.html`.
+
+    !!! note
+        Use of `directory/index.md`, rather than `directory`,
+        is required for documentation to export to work
+        on local file system.
+
+=== "Markdown"
+
+    ```
+    Administrators have option to manage
+    [default langauge](../../user/configuration/internationalization/index.md#default-language).
+    ```
+
+=== "Preview"
+
+    Administrators have option to manage
+    [default langauge](../../user/configuration/internationalization/index.md#default-language).
 
 When linking do not use "here" as link text, instead use the title of the heading
 being navigated to.
@@ -412,13 +538,13 @@ being navigated to.
     
     ```Markdown
     Links to content within a page: [anchors](#anchor), and [linking](#linking),
-    or link to content on another page: [Be concist](style#be-concise).
+    or link to content on another page: [Be concist](style.md#be-concise).
     ```
 
 === "Preview"
 
     Links to content within a page: [anchors](#anchor), and [linking](#linking),
-    or link to content on another page: [Be concist](style#be-concise).
+    or link to content on another page: [Be concist](style.md#be-concise).
 
 
 External link:
@@ -426,26 +552,26 @@ External link:
 === "Markdown"
 
     ```md
-    [Text of the link](http://example.com)
+    [Security Policy](https://github.com/geoserver/geoserver/security/policy)
     ```
 
 === "Preview"
 
-    [Text of the link](http://example.com)
+    [Security Policy](https://github.com/geoserver/geoserver/security/policy)
 
-### External files
+Local file:
 
 === "Markdown"
 
     ```md
-    [An external file](img/logo-icon.svg)
+    [An local file](img/logo-icon.svg)
     ```
 
 === "Preview"
 
-    [An external file](img/logo-icon.svg)
+    [An local file](img/logo-icon.svg)
     
-To force a download link:
+Force download link:
 
 === "Markdown"
 
@@ -457,50 +583,59 @@ To force a download link:
 
     [GeoServer Logo](img/logo-icon.svg){:download="geoserver.svg"}
 
-### Code blocks and inline code
+### Inline code and code blocks
 
-Inline code is presented as monspace using `` ` ``.
+Inline code is presented as monspace using `` ` `` characters.
+
 === "Markdown"
     
     ```Markdown
-    Inline code: `myCommand`.
+    Build using `mvn clean install -DskipTests`.
     ```
     
 === "Preview"
 
-    Inline code: `myCommand`.
+    Build using `mvn clean install -DskipTests`.
 
 
 Fenced block are used to represent code examples:
+
 - Syntax highlighting is available for `bash`, `Markdown`, `xml`, `Java`, etc...
+- Preferable to inline code as the result can directly be used by provided copy button
 
 === "Markdown"
     
     
     `````md
     ```bash
-    command args
+    mvn clean install -DskipTests
     ```
     `````
 
 === "Preview"
 
     ```bash
-    command args
+    mvn clean install -DskipTests
     ```
 
 
-### Include code snippets
+### Include snippets
 
-Use snippet `--8<--` include a code snippet into a code block:
+Use snippet `--8<--` include content from another file:
 
-* Syntax highlighting is available
+* This is very powerful when used to include code into a code block. When doing so the syntax highlighting from the code block is used.
+* [Extensions: Snippets](https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/#snippets)
+* [Snippets Documentation](https://facelessuser.github.io/pymdown-extensions/extensions/snippets/)
+
+To include a number of lines into an `xml` code-block:
+
+* `xml` is sensitive to dashes, so `-8<-` is used here
 
 === "Markdown"
     
-    ```` Markdown
+    ````Markdown
     ```xml
-    --8<-- "build/qa/pmd-ruleset.xml:23:25"
+    ;--8<-- "build/qa/pmd-ruleset.xml:23:25"
     ```
     ````
 
@@ -509,6 +644,34 @@ Use snippet `--8<--` include a code snippet into a code block:
     ```xml
     --8<-- "build/qa/pmd-ruleset.xml:23:25"
     ```
+
+To include named section:
+
+* Defined section using comment markers
+* GeoServer has configured `snippets` with `dedent_subsections: True`
+
+Example of comment markers from `ResourcesTest.java`:
+
+```Java
+// --8<-- [start:example]
+--8<-- "src/platform/src/test/java/org/geoserver/platform/resource/ResourcesTest.java:example"
+// --8<-- [end:example]
+```
+
+=== "Markdown"
+        
+    ````Markdown
+    ```Java
+    ;--8<-- "src/platform/src/test/java/org/geoserver/platform/resource/ResourcesTest.java:example"
+    ```
+    ````
+
+=== "Preview"
+
+    ```Java
+    --8<-- "src/platform/src/test/java/org/geoserver/platform/resource/ResourcesTest.java:example"
+    ```
+
 
 ### Show Source
 

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" data-gs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoServer CSS – Component Showcase</title>
+  <link rel="icon" type="image/svg+xml" href="img/logo-icon.svg" />
+  <link rel="stylesheet" href="css/geoserver.css" />
+  <script src="js/geoserver.js" defer></script>
+  <style>
+    /* Showcase-only styles - not part of geoserver.css */
+    html, body {
+      position: static;
+      display: block;
+      height: auto;
+      overflow: auto;
+    }
+    .showcase {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+      font-family: var(--gs-body-font-family);
+    }
+    .showcase-section {
+      margin-bottom: 3rem;
+    }
+    .showcase-section-title {
+      border-bottom: 2px solid var(--gs-body-color);
+      padding-bottom: 0.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--gs-body-color);
+    }
+    .showcase-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .showcase-label {
+      font-size: 0.75rem;
+      color: var(--gs-secondary-color);
+      margin-bottom: 0.25rem;
+    }
+    .showcase-item {
+      display: flex;
+      flex-direction: column;
+    }
+    pre.code-snippet {
+      background: var(--gs-tertiary-bg);
+      border: 1px solid var(--gs-border-color);
+      border-radius: var(--gs-border-radius);
+      padding: 0.75rem 1rem;
+      font-size: 0.8125rem;
+      overflow-x: auto;
+      margin: 0.5rem 0 0;
+      white-space: pre;
+    }
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0 2rem;
+    }
+    .swatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+    }
+    .swatch-dot {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 50%;
+      border: 1px solid var(--gs-border-color);
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+<div class="showcase">
+
+  <h1 style="display:flex;align-items:center;gap:0.5rem;">
+    <img src="img/logo-icon.svg" style="width:1.5rem;height:1.5rem;" alt="" />
+    GeoServer CSS - Component Showcase
+  </h1>
+  <p>Visual reference for main components defined in <code>geoserver.css</code>.</p>
+
+  <!-- Theme toggle -->
+  <div class="theme-toggle">
+    <strong>Theme:</strong>
+    <button class="button" id="theme-light">Light</button>
+    <button class="button" id="theme-dark">Dark</button>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       1. COLOR PALETTE
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">1. Color Palette</h2>
+    <p>CSS custom properties defined on <code>:root</code> (and <code>[data-gs-theme=dark]</code> override).</p>
+    <div class="showcase-row" style="flex-wrap:wrap;gap:0.5rem;">
+      <span class="swatch"><span class="swatch-dot" style="background:var(--gs-primary)"></span>--gs-primary</span>
+      <span class="swatch"><span class="swatch-dot" style="background:var(--gs-secondary)"></span>--gs-secondary</span>
+      <span class="swatch"><span class="swatch-dot" style="background:var(--gs-success)"></span>--gs-success</span>
+      <span class="swatch"><span class="swatch-dot" style="background:var(--gs-info)"></span>--gs-info</span>
+      <span class="swatch"><span class="swatch-dot" style="background:var(--gs-warning)"></span>--gs-warning</span>
+      <span class="swatch"><span class="swatch-dot" style="background:var(--gs-danger)"></span>--gs-danger</span>
+      <span class="swatch"><span class="swatch-dot" style="background:var(--gs-light);border:1px solid #ccc;"></span>--gs-light</span>
+      <span class="swatch"><span class="swatch-dot" style="background:var(--gs-dark)"></span>--gs-dark</span>
+    </div>
+    <pre class="code-snippet">/* In CSS */
+color: var(--gs-primary);
+background: var(--gs-danger-bg-subtle);
+border-color: var(--gs-border-color);</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       2. TYPOGRAPHY
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">2. Typography</h2>
+    <h1>Heading 1</h1>
+    <h2>Heading 2</h2>
+    <h3>Heading 3</h3>
+    <h4>Heading 4</h4>
+    <h5>Heading 5</h5>
+    <p>Body paragraph - <a href="#">link example</a>, <strong>bold</strong>, <em>italic</em>, <code>inline code</code>, <mark>highlighted</mark>.</p>
+    <p><small>Small text (.875em)</small> &nbsp; <span class="text-xs">Extra-small (.text-xs)</span></p>
+    <pre class="code-snippet">&lt;h1&gt;Heading 1&lt;/h1&gt;
+&lt;p&gt;Body text with &lt;a href="#"&gt;link&lt;/a&gt;, &lt;strong&gt;bold&lt;/strong&gt;, &lt;code&gt;code&lt;/code&gt;&lt;/p&gt;
+&lt;span class="text-xs"&gt;Extra-small&lt;/span&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       3. BUTTONS
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">3. Buttons</h2>
+    <div class="showcase-row">
+      <div class="showcase-item">
+        <span class="showcase-label">Default</span>
+        <button class="button">Default</button>
+      </div>
+      <div class="showcase-item">
+        <span class="showcase-label">.primary</span>
+        <button class="button primary">Primary</button>
+      </div>
+      <div class="showcase-item">
+        <span class="showcase-label">.danger</span>
+        <button class="button danger">Danger</button>
+      </div>
+      <div class="showcase-item">
+        <span class="showcase-label">.outline-primary</span>
+        <button class="button outline-primary">Outline Primary</button>
+      </div>
+      <div class="showcase-item">
+        <span class="showcase-label">.outline-danger</span>
+        <button class="button outline-danger">Outline Danger</button>
+      </div>
+      <div class="showcase-item">
+        <span class="showcase-label">Disabled</span>
+        <button class="button primary" disabled>Disabled</button>
+      </div>
+    </div>
+    <pre class="code-snippet">&lt;button class="button"&gt;Default&lt;/button&gt;
+&lt;button class="button primary"&gt;Primary&lt;/button&gt;
+&lt;button class="button danger"&gt;Danger&lt;/button&gt;
+&lt;button class="button outline-primary"&gt;Outline Primary&lt;/button&gt;
+&lt;button class="button outline-danger"&gt;Outline Danger&lt;/button&gt;
+&lt;button class="button primary" disabled&gt;Disabled&lt;/button&gt;
+
+&lt;!-- .button class works on &lt;a&gt; too --&gt;
+&lt;a class="button primary" href="#"&gt;Link Button&lt;/a&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       4. FORM INPUTS
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">4. Form Inputs</h2>
+    <div style="max-width:30rem;display:flex;flex-direction:column;gap:0.75rem;">
+      <div>
+        <label>Text input</label>
+        <input type="text" placeholder="Enter text…" />
+      </div>
+      <div>
+        <label>Password</label>
+        <input type="password" placeholder="Password" />
+      </div>
+      <div>
+        <label>Number</label>
+        <input type="number" value="42" />
+      </div>
+      <div>
+        <label>File</label>
+        <input type="file" />
+      </div>
+      <div>
+        <label>Textarea</label>
+        <textarea rows="3" placeholder="Multiline text…"></textarea>
+      </div>
+      <div>
+        <label>Disabled input</label>
+        <input type="text" value="Not editable" disabled />
+      </div>
+      <div>
+        <label>Select</label>
+        <select>
+          <option>Option A</option>
+          <option>Option B</option>
+          <option>Option C</option>
+        </select>
+      </div>
+    </div>
+    <pre class="code-snippet">&lt;input type="text" placeholder="Enter text…" /&gt;
+&lt;input type="password" placeholder="Password" /&gt;
+&lt;input type="number" value="42" /&gt;
+&lt;input type="file" /&gt;
+&lt;textarea rows="3"&gt;&lt;/textarea&gt;
+&lt;input type="text" disabled value="Not editable" /&gt;
+&lt;select&gt;
+  &lt;option&gt;Option A&lt;/option&gt;
+&lt;/select&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       5. CHECKBOX & RADIO
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">5. Checkbox &amp; Radio</h2>
+    <div class="showcase-row" style="flex-direction:column;gap:0.5rem;">
+      <div class="choiceItem">
+        <input type="checkbox" id="chk1" checked />
+        <label for="chk1">Checked checkbox</label>
+      </div>
+      <div class="choiceItem">
+        <input type="checkbox" id="chk2" />
+        <label for="chk2">Unchecked checkbox</label>
+      </div>
+      <div class="choiceItem">
+        <input type="checkbox" id="chk3" disabled />
+        <label for="chk3">Disabled checkbox</label>
+      </div>
+      <div class="choiceItem">
+        <input type="radio" name="demo-radio" id="r1" checked />
+        <label for="r1">Radio option A</label>
+      </div>
+      <div class="choiceItem">
+        <input type="radio" name="demo-radio" id="r2" />
+        <label for="r2">Radio option B</label>
+      </div>
+    </div>
+    <pre class="code-snippet">&lt;!-- .choiceItem wrapper for consistent layout --&gt;
+&lt;div class="choiceItem"&gt;
+  &lt;input type="checkbox" id="chk1" checked /&gt;
+  &lt;label for="chk1"&gt;Label&lt;/label&gt;
+&lt;/div&gt;
+&lt;div class="choiceItem"&gt;
+  &lt;input type="radio" name="group" id="r1" /&gt;
+  &lt;label for="r1"&gt;Label&lt;/label&gt;
+&lt;/div&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       6. FIELDSET
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">6. Fieldset</h2>
+    <fieldset>
+      <legend>Section Title</legend>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label class="gs-form-group-label">Layer name</label>
+          <input type="text" placeholder="my:layer" />
+        </div>
+        <div class="gs-form-group">
+          <label class="gs-form-group-label">Workspace</label>
+          <select><option>cite</option><option>sf</option></select>
+        </div>
+        <div class="choiceItem">
+          <input type="checkbox" id="fs-enabled" checked />
+          <label for="fs-enabled">Enabled</label>
+        </div>
+        <div class="gs-form-group">
+          <label class="gs-form-group-label">SRS</label>
+          <div class="gs-input-group">
+            <select style="width:auto;"><option>EPSG</option><option>AUTO</option></select>
+            <input type="text" placeholder="4326" />
+            <button class="button">Find</button>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    <pre class="code-snippet">&lt;fieldset&gt;
+  &lt;legend&gt;Section Title&lt;/legend&gt;
+  &lt;div class="gs-form"&gt;
+    &lt;div class="gs-form-group"&gt;
+      &lt;label class="gs-form-group-label"&gt;Layer name&lt;/label&gt;
+      &lt;input type="text" placeholder="my:layer" /&gt;
+    &lt;/div&gt;
+    &lt;div class="gs-form-group"&gt;
+      &lt;label class="gs-form-group-label"&gt;Workspace&lt;/label&gt;
+      &lt;select&gt;&lt;option&gt;cite&lt;/option&gt;&lt;/select&gt;
+    &lt;/div&gt;
+    &lt;div class="choiceItem"&gt;
+      &lt;input type="checkbox" id="fs-enabled" checked /&gt;
+      &lt;label for="fs-enabled"&gt;Enabled&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="gs-form-group"&gt;
+      &lt;label class="gs-form-group-label"&gt;SRS&lt;/label&gt;
+      &lt;div class="gs-input-group"&gt;
+        &lt;select style="width:auto;"&gt;&lt;option&gt;EPSG&lt;/option&gt;&lt;/select&gt;
+        &lt;input type="text" placeholder="4326" /&gt;
+        &lt;button class="button"&gt;Find&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/fieldset&gt;</pre>
+
+    <h3 style="margin-top:1.5rem;margin-bottom:0.75rem;font-size:1rem;">Even if gs-form are nested the alignment is persisted</h3>
+    <fieldset>
+      <legend>Layer</legend>
+      <div class="gs-form">
+        <div class="gs-form-group">
+          <label class="gs-form-group-label">Title</label>
+          <input type="text" placeholder="Layer title" />
+        </div>
+        <div class="gs-form-group">
+          <label class="gs-form-group-label">Abstract</label>
+          <textarea rows="2" placeholder="Brief description…"></textarea>
+        </div>
+        <div class="gs-form">
+        <div class="gs-form-group">
+          <label class="gs-form-group-label">SRS</label>
+          <div class="gs-input-group">
+            <select style="width:auto;"><option>EPSG</option><option>AUTO</option></select>
+            <input type="text" placeholder="4326" />
+            <button class="button">Find</button>
+          </div>
+        </div>
+        <div class="gs-form-group">
+          <label class="gs-form-group-label">Native bounds</label>
+          <input type="text" placeholder="-180, -90, 180, 90" />
+        </div>
+      </div>
+      </div>
+    </fieldset>
+    <pre class="code-snippet">&lt;fieldset&gt;
+  &lt;legend&gt;Layer&lt;/legend&gt;
+  &lt;div class="gs-form"&gt;
+    &lt;div class="gs-form-group"&gt;…&lt;/div&gt;
+    &lt;div class="gs-form-group"&gt;…&lt;/div&gt;
+    &lt;div class="gs-form"&gt;
+      &lt;div class="gs-form-group"&gt;…&lt;/div&gt;
+      &lt;div class="gs-form-group"&gt;…&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/fieldset&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       7. GS-FORM / GS-FORM-GROUP
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">7. Form Layout (<code>.gs-form</code> / <code>.gs-form-group</code>)</h2>
+    <div class="gs-form" style="max-width:600px;">
+      <div class="gs-form-group">
+        <label class="gs-form-group-label">
+          Title
+          <span class="instruct">The display title for this resource.</span>
+        </label>
+        <input type="text" placeholder="Layer title" />
+      </div>
+      <div class="gs-form-group">
+        <label class="gs-form-group-label">Abstract</label>
+        <textarea rows="3" placeholder="Brief description…"></textarea>
+      </div>
+      <div class="gs-form-group">
+        <label class="gs-form-group-label" for="fg-srs">SRS</label>
+        <div class="gs-form-group-content">
+          <input id="fg-srs" type="text" placeholder="EPSG:4326" />
+          <span class="gs-form-help">Coordinate reference system in EPSG or AUTO format.</span>
+        </div>
+      </div>
+    </div>
+    <pre class="code-snippet">&lt;div class="gs-form"&gt;
+  &lt;div class="gs-form-group"&gt;
+    &lt;label class="gs-form-group-label"&gt;
+      Title
+      &lt;span class="instruct"&gt;Tooltip hint.&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;input type="text" placeholder="…" /&gt;
+  &lt;/div&gt;
+  &lt;div class="gs-form-group"&gt;
+    &lt;label class="gs-form-group-label"&gt;Abstract&lt;/label&gt;
+    &lt;textarea rows="3"&gt;&lt;/textarea&gt;
+  &lt;/div&gt;
+  &lt;div class="gs-form-group"&gt;
+    &lt;label class="gs-form-group-label" for="srs"&gt;SRS&lt;/label&gt;
+    &lt;div class="gs-form-group-content"&gt;
+      &lt;input id="srs" type="text" placeholder="EPSG:4326" /&gt;
+      &lt;span class="gs-form-help"&gt;Coordinate reference system in EPSG or AUTO format.&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       8. INPUT GROUP
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">8. Input Group (<code>.gs-input-group</code>)</h2>
+    <div style="max-width:28rem;display:flex;flex-direction:column;gap:0.75rem;">
+      <div class="gs-input-group">
+        <input type="text" placeholder="Search…" />
+        <button class="button primary">Go</button>
+      </div>
+      <div class="gs-input-group">
+        <select style="width:auto;">
+          <option>EPSG</option>
+          <option>AUTO</option>
+        </select>
+        <input type="text" placeholder="4326" />
+        <button class="button">Find</button>
+      </div>
+    </div>
+    <pre class="code-snippet">&lt;div class="gs-input-group"&gt;
+  &lt;input type="text" placeholder="Search…" /&gt;
+  &lt;button class="button primary"&gt;Go&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;div class="gs-input-group"&gt;
+  &lt;select&gt;&lt;option&gt;EPSG&lt;/option&gt;&lt;/select&gt;
+  &lt;input type="text" placeholder="4326" /&gt;
+  &lt;button class="button"&gt;Find&lt;/button&gt;
+&lt;/div&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       9. TABLE
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">9. Table</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Enabled</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>roads</td>
+          <td>Vector</td>
+          <td><input type="checkbox" checked /></td>
+          <td><a href="#" class="edit-link">Edit</a></td>
+        </tr>
+        <tr>
+          <td>dem</td>
+          <td>Raster</td>
+          <td><input type="checkbox" /></td>
+          <td><a href="#" class="edit-link">Edit</a></td>
+        </tr>
+        <tr>
+          <td>basemap</td>
+          <td>WMS</td>
+          <td><input type="checkbox" checked /></td>
+          <td><a href="#" class="edit-link">Edit</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <pre class="code-snippet">&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;roads&lt;/td&gt;&lt;td&gt;Vector&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;dem&lt;/td&gt;&lt;td&gt;Raster&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;!-- Odd rows get --gs-table-striped-bg automatically --&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       10. TABS
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">10. Tabs (<code>.tab-row</code> / <code>.tab-panel</code>)</h2>
+    <div class="tab-row" style="position:static;">
+      <ul>
+        <li class="selected"><a href="#">Data</a></li>
+        <li><a href="#">Publishing</a></li>
+        <li><a href="#">Dimensions</a></li>
+        <li><a href="#">Tile Caching</a></li>
+      </ul>
+    </div>
+    <div class="tab-panel">
+      <p>Content for the selected tab.</p>
+    </div>
+    <pre class="code-snippet">&lt;div class="tab-row"&gt;
+  &lt;ul&gt;
+    &lt;li class="selected"&gt;&lt;a href="#"&gt;Data&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Publishing&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="tab-panel"&gt;
+  …tab content…
+&lt;/div&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       11. PAGINATOR
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">11. Paginator</h2>
+    <div class="paginator">
+      <a href="#" disabled="disabled">&laquo;</a>
+      <a href="#" disabled="disabled">&lsaquo;</a>
+      <em>1</em>
+      <a href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">&rsaquo;</a>
+      <a href="#">&raquo;</a>
+    </div>
+    <pre class="code-snippet">&lt;div class="paginator"&gt;
+  &lt;a href="#" disabled="disabled"&gt;&amp;laquo;&lt;/a&gt;
+  &lt;a href="#" disabled="disabled"&gt;&amp;lsaquo;&lt;/a&gt;
+  &lt;em&gt;1&lt;/em&gt;
+  &lt;a href="#"&gt;2&lt;/a&gt;
+  &lt;a href="#"&gt;3&lt;/a&gt;
+  &lt;a href="#"&gt;&amp;rsaquo;&lt;/a&gt;
+  &lt;a href="#"&gt;&amp;raquo;&lt;/a&gt;
+&lt;/div&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       12. FEEDBACK PANELS
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">12. Feedback Panels</h2>
+    <ul class="feedbackPanel" style="display:flex;flex-direction:column;gap:0.5rem;">
+      <li class="feedbackPanelINFO">Info - Layer saved successfully.</li>
+      <li class="feedbackPanelWARNING">Warning - SRS not recognized, defaulting to EPSG:4326.</li>
+      <li class="feedbackPanelERROR">Error - Could not connect to the data store.</li>
+    </ul>
+    <pre class="code-snippet">&lt;ul class="feedbackPanel"&gt;
+  &lt;li class="feedbackPanelINFO"&gt;Info message&lt;/li&gt;
+  &lt;li class="feedbackPanelWARNING"&gt;Warning message&lt;/li&gt;
+  &lt;li class="feedbackPanelERROR"&gt;Error message&lt;/li&gt;
+&lt;/ul&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       13. SPINNER
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">13. Spinner (<code>.gs-spinner</code>)</h2>
+    <div class="showcase-row" style="align-items:center;gap:1rem;">
+      <div class="gs-spinner"></div>
+      <span>Loading…</span>
+    </div>
+    <pre class="code-snippet">&lt;div class="gs-spinner"&gt;&lt;/div&gt;</pre>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       14. UTILITY CLASSES
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">14. Width &amp; Height Utilities</h2>
+    <p>Applied with <code>!important</code>; useful to constrain inputs, selects and table columns.</p>
+
+    <table style="max-width:36rem;">
+      <thead><tr><th>Class</th><th>Width / Height</th><th>Typical use</th></tr></thead>
+      <tbody>
+        <tr><td><code>.w-xs</code></td><td>1.875rem (≈30px)</td><td>Icon button, checkbox column</td></tr>
+        <tr><td><code>.w-sm</code></td><td>5rem (≈80px)</td><td>Short numeric input, port number</td></tr>
+        <tr><td><code>.w-md</code></td><td>15rem (≈240px)</td><td>Dropdown, short text field</td></tr>
+        <tr><td><code>.w-lg</code></td><td>37.5rem (≈600px)</td><td>URL, long text field</td></tr>
+        <tr><td><code>.w-edge</code></td><td>1%</td><td>Action/icon table column</td></tr>
+        <tr><td><code>.w-full</code></td><td>100%</td><td>Full-width field</td></tr>
+        <tr><td><code>.h-sm</code></td><td>3.125rem</td><td>Compact textarea</td></tr>
+        <tr><td><code>.h-md</code></td><td>6.25rem</td><td>Short textarea</td></tr>
+        <tr><td><code>.h-lg</code></td><td>25rem</td><td>Code / log textarea</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:1.5rem;margin-bottom:0.75rem;font-size:1rem;">Input examples</h3>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <div>
+        <span class="showcase-label">.w-sm - short numeric (e.g. port, timeout)</span>
+        <input type="number" class="w-sm" value="8080" />
+      </div>
+      <div>
+        <span class="showcase-label">.w-md - dropdown / short text (e.g. CRS, format)</span>
+        <select class="w-md">
+          <option>EPSG:4326</option>
+          <option>EPSG:3857</option>
+          <option>CRS:84</option>
+        </select>
+      </div>
+      <div>
+        <span class="showcase-label">.w-lg - long text (e.g. URL, file path)</span>
+        <input type="text" class="w-lg" value="http://localhost:8080/geoserver/wms" />
+      </div>
+    </div>
+
+    <pre class="code-snippet">&lt;!-- Short numeric input --&gt;
+&lt;input type="number" class="w-sm" value="8080" /&gt;
+
+&lt;!-- Constrained dropdown --&gt;
+&lt;select class="w-md"&gt;…&lt;/select&gt;
+
+&lt;!-- Long URL field --&gt;
+&lt;input type="text" class="w-lg" /&gt;</pre>
+  </section>
+
+</div>
+
+<script src="js/ui-components.js"></script>
+</body>
+</html>

@@ -15,3 +15,14 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+.gs-panel-UpDownPanel {
+      display: flex;
+      flex-direction: column;
+}
+.gs-panel-UpDownPanel button {
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+}

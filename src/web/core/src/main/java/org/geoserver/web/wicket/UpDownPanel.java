@@ -32,7 +32,7 @@ import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 public class UpDownPanel<T> extends Panel {
 
     private static final boolean isCssEmpty = IsWicketCssFileEmpty(UpDownPanel.class);
-    private static final int DEBOUNCE_MS = 300;
+    private static final int DEBOUNCE_MS = 500;
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -155,30 +155,22 @@ public class UpDownPanel<T> extends Panel {
                                 debouncedMoveBehavior.getCallbackUrl().toString())
                         .toString();
                 String key = JavaScriptUtils.escapeQuotes(getMarkupId()).toString();
-                return ""
-                        + "var el = document.getElementById('"
-                        + key
-                        + "');"
-                        + "if(!el){return false;}"
-                        + "var state = el._gsUpDownState || (el._gsUpDownState = {count:0, direction:null, timer:null});"
-                        + "if(state.direction !== '"
-                        + direction
-                        + "'){state.direction='"
-                        + direction
-                        + "'; state.count=0;}"
-                        + "state.count += 1;"
-                        + "if(state.timer){clearTimeout(state.timer);}"
-                        + "state.timer = setTimeout(function(){"
-                        + "var count=state.count; var dir=state.direction;"
-                        + "state.count=0; state.direction=null; state.timer=null;"
-                        + "if(!count || !dir){return;}"
-                        + "Wicket.Ajax.post({u:'"
-                        + callbackUrl
-                        + "', ep:{direction:dir, count:count}});"
-                        + "}, "
-                        + DEBOUNCE_MS
-                        + ");"
-                        + "return false;";
+                return """
+                    var el = document.getElementById('%s');
+                    if(!el){return false;}
+                    var state = el._gsUpDownState || (el._gsUpDownState = {count:0, direction:null, timer:null});
+                    if(state.direction !== '%s'){state.direction='%s'; state.count=0;}
+                    state.count += 1;
+                    if(state.timer){clearTimeout(state.timer);}
+                    state.timer = setTimeout(function(){
+                    var count=state.count; var dir=state.direction;
+                    state.count=0; state.direction=null; state.timer=null;
+                    if(!count || !dir){return;}
+                    Wicket.Ajax.post({u:'%s', ep:{direction:dir, count:count}});
+                    }, %d);
+                    return false;
+                    """
+                        .formatted(key, direction, direction, callbackUrl, DEBOUNCE_MS);
             }
         };
     }

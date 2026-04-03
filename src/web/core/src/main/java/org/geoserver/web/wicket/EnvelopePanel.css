@@ -98,6 +98,12 @@ Your css selectors should look like this to avoid modifying styles outside the p
     margin-left: auto;
 }
 
+@media (max-width: 1080px) {
+    .gs-panel-EnvelopePanel .dataentry {
+        grid-template-columns: auto auto;
+    }
+}
+
 @media (max-width: 768px) {
     .gs-panel-EnvelopePanel .dataentry {
         grid-template-columns: auto;

@@ -1,0 +1,85 @@
+# GeoServer
+
+Configuration is managed by a top-level `GeoServer` object providing `save()` and `reload()` functionality.
+
+The `GeoServer` interface is configured as a spring bean with access to:
+
+- [Catalogue API](catalog.md)
+- [Resource API](resource.md)
+- [GeoServerInfo](#config_geoserver_info)
+- [SettingsInfo](#config_settings)
+
+Access to `GeoServer` configuration is available to spring beans during application startup and shutdown:
+
+``` java
+public Bean implements DisposableBean {} 
+
+    GeoServer gs;
+
+    public Bean(GeoServer gs){
+       this.gs = gs;
+    }
+    public void destroy(){
+       this.gs = null;
+    }
+}
+```
+
+`GeoServer` can be looked up once the application is running:
+
+``` java
+GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
+```
+
+Also available for use via wicket (via `GeoServerApplication` web application):
+
+``` java
+GeoServer gs = page.getGeoServerApplication().getGeoServer();
+```
+
+## Info {: #config_info }
+
+All Configuration `Info` objects have an `getId()` identifier used during persistance.
+
+## GeoServerInfo {: #config_geoserver_info }
+
+Manages some of the global configuration options:
+
+- `ImageProcessingInfo` image processing settings
+- `CoverageAccessInfo` image access settings
+- Admin username and password
+- resourceErrorHandling: Policy for handling misconfigured layers
+- updateSequence: Used via WMS protocols to communicate configuration changes to clients
+- featureTypeCacheSize
+- globalServices
+- xmlExternalEntitiesEnabled
+- lockProviderName
+- metadata: generic metadata map available to store additional settings
+- clientProperties: transient information
+- webUIMode: how to handle redirection
+- allowStoredQueriesPerWorkspace
+
+Both `clientProperties` and `metadata` can be used to communicate between modules and are intended to experiment with ideas during development. Once established this information can be recoded as `GeoServerInfo` property. Settings such as `webUIMode` and `allowStoredQueriesPerWorkspace` are examples of this progression.
+
+## SettingsInfo {: #config_settings }
+
+Manages the remaining global configuration settings:
+
+- title
+- contact: contact information, used in service description
+- charset
+- numDecimals
+- onlineResource: website used for contact information or service provider details. This setting is available as default if a web service as not been provided with online resource information.
+- proxyBaseUrl: Public location of GeoServer instance, if managed behind a proxy or as part of a cluster.
+- schemaBaseUrl
+- verbose: Flag to control pretty printing and formatting of xml output
+- verboseException: flag to include full strack trace in web service expections
+- metadata: generic metadata map available to store additional settings
+- clientProperties: transient information
+- localWorkspaceIncludesPrefix
+- showCreatedTimeColumnsInAdminList
+- showModifiedTimeColumnsInAdminList
+- defaultLocale
+- userHeadsProxyURL
+
+Some of these settings can be overriden on a workspace by workspace basis. This allows a workspace to have its own contact information and information policies.

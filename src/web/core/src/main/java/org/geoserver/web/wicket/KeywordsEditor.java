@@ -8,25 +8,37 @@ package org.geoserver.web.wicket;
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
+import org.apache.wicket.markup.html.image.ContextImage;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 
-/** Form component to edit a List<String> that makes up the keywords field of various catalog objects. */
-// TODO WICKET8 - Verify this page works OK
+/**
+ * Form component allows editing of the {@link KeywordInfo} defining {@code List<KeywordInfo>} keywords field of various
+ * catalog objects.
+ */
 public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
 
     private static final boolean isCssEmpty = IsWicketCssFileEmpty(KeywordsEditor.class);
@@ -45,147 +57,239 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    ListMultipleChoice<KeywordInfo> choices;
-    TextField<String> newKeyword;
-    TextField<String> vocabTextField;
-    DropDownChoice<String> langChoice;
+    /** Repeating list view, providing a row of controls to edit each keyword individually. */
+    private KeywordListView keywordsView;
+
+    /** Label displayed when no keywords are listed. */
+    private Label noKeywords;
+
+    /** Table listing keywords. */
+    private WebMarkupContainer table;
 
     /**
      * Creates a new keywords editor.
      *
-     * @param keywords The module should return a non null collection of strings.
+     * @param model The model should return a non null List of KeywordInfo Strings.
      */
-    public KeywordsEditor(String id, final IModel<List<KeywordInfo>> keywords) {
-        super(id, keywords);
+    public KeywordsEditor(String id, final IModel<List<KeywordInfo>> model) {
+        super(id, model);
 
-        choices = new ListMultipleChoice<>(
-                "keywords", new Model<>(), new ArrayList<>(keywords.getObject()), new ChoiceRenderer<>() {
-                    @Serial
-                    private static final long serialVersionUID = 1L;
+        // container for ajax updates
+        final WebMarkupContainer container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
+        add(container);
 
-                    @Override
-                    public Object getDisplayValue(KeywordInfo kw) {
-                        StringBuffer sb = new StringBuffer(kw.getValue());
-                        if (kw.getLanguage() != null) {
-                            sb.append(" (").append(kw.getLanguage()).append(")");
-                        }
-                        if (kw.getVocabulary() != null) {
-                            sb.append(" [").append(kw.getVocabulary()).append("]");
-                        }
-                        return sb.toString();
-                    }
-                });
-        choices.setOutputMarkupId(true);
-        add(choices);
-        add(removeKeywordsButton());
-        newKeyword = new TextField<>("newKeyword", new Model<>());
-        newKeyword.setOutputMarkupId(true);
-        add(newKeyword);
+        // the keywords table
+        table = new WebMarkupContainer("table");
+        table.setOutputMarkupId(true);
+        container.add(table);
 
-        langChoice = new DropDownChoice<>(
-                "lang", new Model<>(), Arrays.asList(Locale.getISOLanguages()), new ChoiceRenderer<>() {
-                    @Serial
-                    private static final long serialVersionUID = 1L;
+        // IModel<List<KeywordInfo>> internalModel = new PropertyModel<>(this, "keywordList");
 
-                    @Override
-                    public String getDisplayValue(String object) {
-                        return new Locale(object).getDisplayLanguage();
-                    }
+        // the list view of keywords
+        keywordsView = new KeywordListView(model, container);
+        keywordsView.setOutputMarkupId(true);
+        // this is necessary to avoid loosing item contents on edit/validation checks
+        keywordsView.setReuseItems(true);
+        table.add(keywordsView);
 
-                    @Override
-                    public String getIdValue(String object, int index) {
-                        return object;
-                    }
-                });
+        GeoServerAjaxFormLink addKeyword = keywordsView.addKeywordLink("addKeyword");
+        container.add(addKeyword);
 
-        langChoice.setNullValid(true);
-        langChoice.setOutputMarkupId(true);
-        add(langChoice);
-
-        vocabTextField = new TextField<>("vocab", new Model<>());
-        vocabTextField.setOutputMarkupId(true);
-
-        add(vocabTextField);
-
-        add(addKeywordsButton());
+        // the noKeywords  label
+        noKeywords = new Label("noKeywords", new ResourceModel("noKeywords"));
+        container.add(noKeywords);
+        updateVisibility();
     }
 
-    private AjaxButton addKeywordsButton() {
-        AjaxButton button = new AjaxButton("addKeyword") {
-            @Serial
-            private static final long serialVersionUID = 1L;
+    /** Keywords must not be empty and are unable to contain {@code \\} character. */
+    public static class KeywordValueValidator implements IValidator<String> {
+        @Override
+        public void validate(IValidatable<String> validatable) {
+            String keyword = validatable.getValue();
 
-            @Override
-            public void onSubmit(AjaxRequestTarget target) {
-                String value = newKeyword.getInput();
-                String lang = langChoice.getInput();
-                String vocab = vocabTextField.getInput();
-
-                KeywordInfo keyword = new Keyword(value);
-                if (lang != null && !"".equals(lang.trim())) {
-                    keyword.setLanguage(lang);
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                Matcher valueMatcher = KeywordInfo.isValidPattern.matcher(keyword);
+                if (!valueMatcher.matches()) {
+                    ValidationError invalidKeyword = new ValidationError("invalidKeyword")
+                            .addKey("invalidKeyword")
+                            .setVariable("keyword", keyword);
+                    validatable.error(invalidKeyword);
                 }
-                if (vocab != null && !"".equals(vocab.trim())) {
-                    keyword.setVocabulary(vocab);
-                }
-
-                @SuppressWarnings("unchecked")
-                List<KeywordInfo> choiceList = (List<KeywordInfo>) choices.getChoices();
-                choiceList.add(keyword);
-                choices.setChoices(choiceList);
-
-                langChoice.setModelObject(null);
-                langChoice.modelChanged();
-
-                vocabTextField.setModelObject(null);
-                vocabTextField.modelChanged();
-
-                target.add(newKeyword);
-                target.add(langChoice);
-                target.add(vocabTextField);
-                target.add(choices);
+            } else {
+                ValidationError nullKeywordValue = new ValidationError("nullKeywordValue").addKey("nullKeywordValue");
+                validatable.error(nullKeywordValue);
             }
-        };
-        button.setDefaultFormProcessing(false);
-        return button;
+        }
     }
 
-    private AjaxButton removeKeywordsButton() {
-        AjaxButton button = new AjaxButton("removeKeywords") {
+    /** Vocabulary is optional, but are unable to contain {@code \\} character. */
+    public static class VocabularyValidator implements IValidator<String> {
+        @Override
+        public void validate(IValidatable<String> validatable) {
+            String vocabulary = validatable.getValue();
 
-            @Serial
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void onSubmit(AjaxRequestTarget target) {
-                Collection<KeywordInfo> selection = choices.getModelObject();
-                @SuppressWarnings("unchecked")
-                List<KeywordInfo> keywords = (List<KeywordInfo>) choices.getChoices();
-                for (KeywordInfo selected : selection) {
-                    keywords.remove(selected);
+            if (vocabulary != null) {
+                Matcher vocabMatcher = KeywordInfo.isValidPattern.matcher(vocabulary);
+                if (!vocabMatcher.matches()) {
+                    ValidationError invalidVocabulary = new ValidationError("invalidVocabulary")
+                            .addKey("invalidVocabulary")
+                            .setVariable("vocabulary", vocabulary);
+                    validatable.error(invalidVocabulary);
                 }
-                choices.setChoices(keywords);
-                choices.modelChanged();
-                target.add(choices);
             }
-        };
-        // button.setDefaultFormProcessing(false);
-        return button;
+        }
+    }
+
+    private void updateVisibility() {
+        @SuppressWarnings("unchecked")
+        List<KeywordInfo> keywordList = (List<KeywordInfo>) getDefaultModelObject();
+        boolean hasKeywords = keywordList != null && !keywordList.isEmpty();
+
+        // table.setVisible(hasKeywords);
+        noKeywords.setVisible(!hasKeywords);
     }
 
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
-        updateFields();
-    }
+        List<KeywordInfo> list = getModelObject();
+        keywordsView.setModelObject(list);
 
-    private void updateFields() {
-        choices.setChoices(getModel());
+        updateVisibility();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void convertInput() {
-        setConvertedInput((List<KeywordInfo>) choices.getChoices());
+        processInputs();
+        setConvertedInput(keywordsView.getList());
+    }
+
+    /**
+     * Process submitted (non {@code null}) input on FormComponents, this has the effect of updating the model contents.
+     */
+    public void processInputs() {
+        this.visitChildren(FormComponent.class, (component, visit) -> {
+            FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (formComponent.getInput() != null) {
+                formComponent.processInput();
+            }
+            visit.dontGoDeeper();
+        });
+    }
+
+    /** Render langauge choice using the same appearance as InternationalStringEditor. */
+    private static class LocaleChoiceRenderer extends ChoiceRenderer<String> {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public Object getDisplayValue(String language) {
+            Locale locale = new Locale(language);
+
+            String languageTag = locale.toLanguageTag();
+            String displayName = locale.getDisplayName(locale);
+            return languageTag + " - " + displayName;
+        }
+
+        @Override
+        public String getIdValue(String object, int index) {
+            return object;
+        }
+    }
+
+    /** ListView of keywords, providing a row for each keyword, along with links to add/remove keyword. */
+    private class KeywordListView extends ListView<KeywordInfo> {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        private final WebMarkupContainer container;
+
+        public KeywordListView(IModel<? extends List<KeywordInfo>> model, WebMarkupContainer container) {
+            super("keywords", model);
+            this.container = container;
+        }
+
+        @Override
+        protected void populateItem(final ListItem<KeywordInfo> item) {
+            // odd/even style
+            item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even" : "odd"));
+
+            FormComponentFeedbackBorder keywordBorder = new FormComponentFeedbackBorder("keywordBorder");
+            item.add(keywordBorder);
+
+            // keyword info
+            TextField<String> keywordValue = new TextField<>("keyword", new PropertyModel<>(item.getModel(), "value"));
+            keywordValue.add(new KeywordValueValidator());
+            keywordValue.setOutputMarkupId(true);
+            keywordValue.setRequired(true);
+            keywordBorder.add(keywordValue);
+
+            DropDownChoice<String> language = new DropDownChoice<>(
+                    "language",
+                    new PropertyModel<>(item.getModel(), "language"),
+                    Arrays.asList(Locale.getISOLanguages()),
+                    new LocaleChoiceRenderer());
+            language.setNullValid(true);
+            language.setOutputMarkupId(true);
+            keywordBorder.add(language);
+
+            FormComponentFeedbackBorder vocabularyBorder = new FormComponentFeedbackBorder("vocabularyBorder");
+            item.add(vocabularyBorder);
+
+            TextField<String> vocabulary =
+                    new TextField<>("vocabulary", new PropertyModel<>(item.getModel(), "vocabulary"));
+            vocabulary.add(new VocabularyValidator());
+            vocabulary.setOutputMarkupId(true);
+            vocabularyBorder.add(vocabulary);
+
+            GeoServerAjaxFormLink removeKeyword = removeKeywordLink("removeKeyword", item);
+            ContextImage image = new ContextImage("image", "img/icons/silk/delete.png");
+            removeKeyword.add(image);
+            item.add(removeKeyword);
+        }
+
+        public GeoServerAjaxFormLink addKeywordLink(final String id) {
+            return new GeoServerAjaxFormLink(id) {
+                @Serial
+                private static final long serialVersionUID = -4136656891019857299L;
+
+                @Override
+                protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                    KeywordsEditor.this.processInputs();
+
+                    KeywordInfo keyword = new Keyword("");
+
+                    List<KeywordInfo> list = getList();
+                    list.add(keyword);
+                    setList(list);
+
+                    updateVisibility();
+                    target.add(container);
+                }
+            };
+        }
+
+        public GeoServerAjaxFormLink removeKeywordLink(final String id, final ListItem<KeywordInfo> item) {
+            return new GeoServerAjaxFormLink(id) {
+                @Serial
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                    KeywordsEditor.this.processInputs();
+
+                    List<KeywordInfo> list = getList();
+                    list.remove(item.getIndex());
+                    setModelObject(list);
+
+                    updateVisibility();
+
+                    // update the enclosing container so the UI reflects the change
+                    target.add(container);
+                }
+            };
+        }
     }
 }

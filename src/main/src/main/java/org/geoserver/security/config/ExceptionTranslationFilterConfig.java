@@ -22,7 +22,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * point found in the servlet request attribute {@link GeoServerSecurityFilter#AUTHENTICATION_ENTRY_POINT_HEADER}
  *
  * <p>The property {@link #accessDeniedErrorPage} is optional and needed in case of an {@link AccessDeniedException}.
- * Geoserver default is <b>/accessDenied.html</b>
+ * GeoServer default is <b>/accessDenied.html</b>
  *
  * @author christian
  */

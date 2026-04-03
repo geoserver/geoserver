@@ -46,26 +46,6 @@ public interface LoggingInfo extends Info {
     void setLevel(String loggingConfiguration);
 
     /**
-     * The location where GeoServer logs to (relative to GEOSERVER_DATA_DIR, or an absolute path).
-     *
-     * <p>This setting is intended to be used by administrators who require logs to be written in a particular location.
-     * This setting may be overridden by administrator environmental variable, context parameter or system property, see
-     * LoggingUtils.getLogFileLocation.
-     *
-     * <p>Do not use this value directly, process via LoggingUtils.getLogFileLocation(baseLocation).
-     */
-    String getLocation();
-
-    /**
-     * Sets the logging location (relative to GEOSERVER_DATA_DIR, or absolute path).
-     *
-     * <p>Location resource reference, used to identify a local file.
-     *
-     * @param loggingLocation A file or url to a location to log.
-     */
-    void setLocation(String loggingLocation);
-
-    /**
      * Flag indicating if GeoServer is allowed to log to STDOUT, {@code false} to disable Console appenders.
      *
      * <p>A value of {@code true} does not ensure logging to STDOUT, as this requires the selected logging profile to

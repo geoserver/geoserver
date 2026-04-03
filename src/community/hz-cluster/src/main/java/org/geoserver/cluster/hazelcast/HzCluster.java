@@ -6,14 +6,25 @@
 package org.geoserver.cluster.hazelcast;
 
 import com.google.common.base.Optional;
+import com.hazelcast.cluster.Cluster;
+import com.hazelcast.cluster.Member;
+import com.hazelcast.cluster.MembershipEvent;
+import com.hazelcast.cluster.MembershipListener;
+import com.hazelcast.config.CompactSerializationConfig;
 import com.hazelcast.config.Config;
+import com.hazelcast.config.InvalidConfigurationException;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.nio.serialization.compact.CompactSerializer;
+import com.hazelcast.spring.session.AttributeValueCompactSerializer;
+import com.hazelcast.spring.session.HazelcastSessionCompactSerializer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.ClusterConfig;
@@ -131,10 +142,42 @@ public class HzCluster implements GeoServerPluginConfigurator, DisposableBean, I
         watcher = loadConfig(this.rl);
         if (watcher.get().isEnabled()) {
             hz = Hazelcast.newHazelcastInstance(loadHazelcastConfig(this.rl));
+            logClusterLayout(hz, true);
+            // some logging about the cluster configuration, makes debugging split cluster situations easier
+            hz.getCluster().addMembershipListener(new MembershipListener() {
+                @Override
+                public void memberAdded(MembershipEvent event) {
+                    logClusterLayout(hz, false);
+                }
+
+                @Override
+                public void memberRemoved(MembershipEvent event) {
+                    logClusterLayout(hz, false);
+                }
+            });
             CLUSTER = this;
         }
 
         rnd.setCluster(this);
+    }
+
+    private void logClusterLayout(HazelcastInstance hz, boolean initialized) {
+        Cluster cluster = hz.getCluster();
+        Member local = cluster.getLocalMember();
+        Set<Member> members = cluster.getMembers();
+
+        String layout = members.stream()
+                .map(m -> m.getAddress().toString())
+                .sorted()
+                .collect(java.util.stream.Collectors.joining(", "));
+
+        LOGGER.log(Level.INFO, "Hazelcast cluster {0} {1}. Local member={2}, size={3}, members=[{4}]", new Object[] {
+            hz.getConfig().getClusterName(),
+            initialized ? "initialized" : "updated",
+            local.getAddress(),
+            members.size(),
+            layout
+        });
     }
 
     @Override
@@ -151,7 +194,31 @@ public class HzCluster implements GeoServerPluginConfigurator, DisposableBean, I
     private Config loadHazelcastConfig(ResourceStore rl) throws IOException {
         Resource hzf = getConfigFile(HAZELCAST_FILENAME, HzCluster.class, rl);
         try (InputStream hzIn = hzf.in()) {
-            return new XmlConfigBuilder(hzIn).build();
+            Config config = new XmlConfigBuilder(hzIn).build();
+
+            // the switch to a newer Hazelcast causes serialization exceptions, because by default
+            // Hazelcast only uses compact serializers. Rather than making users update the hazelcast.xml
+            // centralize the serialization configuration change here.
+            CompactSerializationConfig serializationConfig =
+                    config.getSerializationConfig().getCompactSerializationConfig();
+            registerIfMissing(serializationConfig, HazelcastSessionCompactSerializer.INSTANCE);
+            registerIfMissing(serializationConfig, AttributeValueCompactSerializer.INSTANCE);
+
+            return config;
+        }
+    }
+
+    private void registerIfMissing(CompactSerializationConfig compact, CompactSerializer<?> serializer) {
+        try {
+            compact.addSerializer(serializer);
+            LOGGER.fine(() -> "Registered Hazelcast compact serializer: "
+                    + serializer.getClass().getName());
+        } catch (InvalidConfigurationException e) {
+            LOGGER.log(
+                    Level.FINE,
+                    e,
+                    () -> "Failed to register compact serializer: "
+                            + serializer.getClass().getName());
         }
     }
 
@@ -207,7 +274,8 @@ public class HzCluster implements GeoServerPluginConfigurator, DisposableBean, I
 
     @Override
     public void loadConfiguration(GeoServerResourceLoader resourceLoader) throws IOException {
-        synchronized (hz) {
+        // guarding the CLUSTER static variable updates, this one can happen during runtime
+        synchronized (HzCluster.class) {
             try {
                 destroy();
             } catch (Exception e) {

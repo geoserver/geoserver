@@ -28,15 +28,6 @@
   </repositories>
   <profiles>
     <profile>
-      <id>activemq</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>activemqBroker</module>
-      </modules>
-    </profile>
-    <profile>
       <id>cluster</id>
 
       <activation>

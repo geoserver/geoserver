@@ -42,6 +42,7 @@ Community modules are provided "as is" alongside the `nightly builds <https://bu
    colormap/index
    cov-json/index
    dds/index
+   duckdb/index
    elasticsearch/index
    features-autopopulate/index
    features-templating/index
@@ -62,7 +63,6 @@ Community modules are provided "as is" alongside the `nightly builds <https://bu
    importer-jdbc/index
    jdbcconfig/index
    jdbcstore/index
-   jms-cluster/index
    jwt-headers/index
    libdeflate/index
    mbtiles/index
@@ -77,7 +77,6 @@ Community modules are provided "as is" alongside the `nightly builds <https://bu
    pmtiles-store/index
    png-wind/index
    proxy-base-ext/index
-   remote-wps/index
    s3-geotiff/index
    schemaless-features/index
    singlestore/index
@@ -94,4 +93,3 @@ Community modules are provided "as is" alongside the `nightly builds <https://bu
    wps-download-netcdf/index
    wps-longitudinal-profile/index
    wps-openai/index
-

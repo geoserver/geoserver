@@ -26,16 +26,23 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     /** System property name to toggle OL3 support. */
     public static final String ENABLE_OL3 = "ENABLE_OL3";
 
+    public static final String ENABLE_OL10 = "ENABLE_OL10";
+
     /** The formats accepted in a GetMap request for this producer and stated in getcaps */
     private static final Set<String> OUTPUT_FORMATS =
             new HashSet<>(Arrays.asList("application/openlayers", "openlayers", MIME_TYPE));
 
     private final OpenLayers2MapOutputFormat ol2Format;
     private final OpenLayers3MapOutputFormat ol3Format;
+    private final OpenLayers10MapOutputFormat ol10Format;
 
-    public OpenLayersMapOutputFormat(OpenLayers2MapOutputFormat ol2Format, OpenLayers3MapOutputFormat ol3Format) {
+    public OpenLayersMapOutputFormat(
+            OpenLayers2MapOutputFormat ol2Format,
+            OpenLayers3MapOutputFormat ol3Format,
+            OpenLayers10MapOutputFormat ol10Format) {
         this.ol2Format = ol2Format;
         this.ol3Format = ol3Format;
+        this.ol10Format = ol10Format;
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames() */
@@ -58,11 +65,27 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
     @Override
     public RawMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
-        if (isOL3Enabled(mapContent) && ol3Format.browserSupportsOL3(mapContent)) {
+        if (isOL10Enabled(mapContent) && ol10Format.browserSupportsOL10(mapContent)) {
+            return ol10Format.produceMap(mapContent);
+        } else if (isOL3Enabled(mapContent) && ol3Format.browserSupportsOL3(mapContent)) {
             return ol3Format.produceMap(mapContent);
         } else {
             return ol2Format.produceMap(mapContent);
         }
+    }
+
+    protected boolean isOL10Enabled(WMSMapContent mapContent) {
+        GetMapRequest req = mapContent.getRequest();
+
+        // check format options
+        Object enableOL10 = Converters.convert(req.getFormatOptions().get(ENABLE_OL10), Boolean.class);
+        if (enableOL10 == null) {
+            // check system property
+            enableOL10 = GeoServerExtensions.getProperty(ENABLE_OL10);
+        }
+
+        // enable by default
+        return enableOL10 == null || Converters.convert(enableOL10, Boolean.class);
     }
 
     protected boolean isOL3Enabled(WMSMapContent mapContent) {

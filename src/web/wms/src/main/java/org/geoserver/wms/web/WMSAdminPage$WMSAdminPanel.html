@@ -102,7 +102,7 @@
        </div>
        <div class="gs-form-group">
           <label><wicket:message key="kmScore">Raster/vector threshold (0-100, default 40)</wicket:message></label>
-          <input type="text" wicket:id="kml.kmscore"/>
+          <input type="text" wicket:id="kml.kmscore" class="w-md" />
         </div>
       </div>
     </fieldset>
@@ -112,19 +112,19 @@
       <div class="gs-form">
         <div class="gs-form-group">
           <label><wicket:message key="maxRequestMemory">Max rendering memory</wicket:message></label>
-          <input type="text" wicket:id="maxRequestMemory" class="field"/>
+          <input type="text" wicket:id="maxRequestMemory" class="field w-md"/>
         </div>
         <div class="gs-form-group">
           <label><wicket:message key="maxRenderingTime">Max rendering time</wicket:message></label>
-          <input type="text" wicket:id="maxRenderingTime" class="field"/>
+          <input type="text" wicket:id="maxRenderingTime" class="field w-md"/>
         </div>
         <div class="gs-form-group">
           <label><wicket:message key="maxRenderingErrors">Max rendering errors</wicket:message></label>
-          <input type="text" wicket:id="maxRenderingErrors" class="field"/>
+          <input type="text" wicket:id="maxRenderingErrors" class="field w-md"/>
         </div>
         <div class="gs-form-group">
           <label><wicket:message key="maxRequestedDimensionValues">Max requested dimension values</wicket:message></label>
-          <input type="text" wicket:id="maxRequestedDimensionValues" class="field"/>
+          <input type="text" wicket:id="maxRequestedDimensionValues" class="field w-md"/>
         </div>
       </div>
     </fieldset>
@@ -134,7 +134,7 @@
       <div class="gs-form">
         <div class="gs-form-group">
           <label><wicket:message key="maxBuffer">Max buffer</wicket:message></label>
-          <input type="text" wicket:id="maxBuffer" class="field"/>
+          <input type="text" wicket:id="maxBuffer" class="field w-md"/>
         </div>
       </div>
     </fieldset>
@@ -159,13 +159,13 @@
         <div class="gs-form-group">
           <label><wicket:message key="watermarkUrl">Watermark URL</wicket:message></label>
           <div class="gs-input-group">
-            <input wicket:id="watermark.uRL" class="field" type="text"></input>
+            <input wicket:id="watermark.uRL" type="text"></input>
             <a class="button" href="#" wicket:id="chooser"><wicket:message key="browse">...</wicket:message></a>
           </div>
         </div>
         <div class="gs-form-group">
           <label><wicket:message key="watermarkTransparency">Watermark Transparency (0 - 100)</wicket:message></label>
-          <input wicket:id="watermark.transparency" class="field" type="text"></input>
+          <input wicket:id="watermark.transparency" class="field w-md" type="text"></input>
         </div>
         <div class="gs-form-group">
           <label><wicket:message key="watermarkPosition">Watermark Position</wicket:message></label>
@@ -179,7 +179,7 @@
       <div class="gs-form">
         <div class="gs-form-group">
           <label><wicket:message key="pngCompression">Compression level (0-100, default 25)</wicket:message></label>
-          <input type="text" wicket:id="png.compression"></input>
+          <input class="w-md" type="text" wicket:id="png.compression"></input>
         </div>
       </div>
     </fieldset>
@@ -189,7 +189,7 @@
       <div class="gs-form">
         <div class="gs-form-group">
           <label><wicket:message key="jpegCompression">Compression level (0-100, default 25)</wicket:message></label>
-          <input type="text" wicket:id="jpeg.compression"></input>
+          <input class="w-md" type="text" wicket:id="jpeg.compression"></input>
         </div>
       </div>
     </fieldset>
@@ -297,11 +297,11 @@
         </div>
         <div class="gs-form-group">
           <label><wicket:message key="cacheEntries">Max entries</wicket:message></label>
-          <input type="text" wicket:id="cacheConfiguration.maxEntries"></input>
+          <input class="w-md" type="text" wicket:id="cacheConfiguration.maxEntries"></input>
         </div>
         <div class="gs-form-group">
           <label><wicket:message key="cacheEntrySize">Max entry size</wicket:message></label>
-          <input type="text" wicket:id="cacheConfiguration.maxEntrySize"></input>
+          <input class="w-md" type="text" wicket:id="cacheConfiguration.maxEntrySize"></input>
         </div>
       </div>
     </fieldset>
@@ -311,11 +311,11 @@
       <div class="gs-form">
         <div class="gs-form-group">
           <label><wicket:message key="remoteStyleTimeout">Timeout in milliseconds</wicket:message></label>
-          <input type="text" wicket:id="remoteStyleTimeout"></input>
+          <input class="w-md" type="text" wicket:id="remoteStyleTimeout"></input>
         </div>
         <div class="gs-form-group">
           <label><wicket:message key="remoteStyleMaxRequestTime">Max request time in milliseconds</wicket:message></label>
-          <input type="text" wicket:id="remoteStyleMaxRequestTime"></input>
+          <input class="w-md" type="text" wicket:id="remoteStyleMaxRequestTime"></input>
         </div>
       </div>
     </fieldset>

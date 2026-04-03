@@ -12,7 +12,7 @@ import org.apereo.cas.client.validation.Assertion;
 import org.springframework.security.cas.ServiceProperties;
 
 /**
- * Cas constants and convenience methods used for the Geoserver CAS implementation
+ * Cas constants and convenience methods used for the GeoServer CAS implementation
  *
  * @author christian
  */

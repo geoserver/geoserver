@@ -51,13 +51,13 @@ paths:
       tags:
         - "Logging"
       summary: Update logging
-      description: Updates logging settings on the server.
+      description: Updates logging settings on the server. Note that the log location cannot be changed via the REST API; it can only be set using the GEOSERVER_LOG_LOCATION application property.
 
       parameters:
         - name: loggingBody
           description: The logging information to upload.
           in: body
-          required: true          
+          required: true
           schema:
             $ref: "#/definitions/Logging"
       consumes:
@@ -87,7 +87,8 @@ definitions:
         description: Logging level of GeoServer such as DEFAULT_LOGGING
       location:
         type: string
-        description: Logging file path. Relative to the GeoServer data directory.
+        deprecated: true
+        description: "Deprecated since GeoServer 3.0. Log location must be set via the GEOSERVER_LOG_LOCATION application property. This field is read-only and retained for backward compatibility; any value sent via PUT is ignored."
       stdOutLogging:
         type: boolean
         description: Enables/disables stdOutLogging

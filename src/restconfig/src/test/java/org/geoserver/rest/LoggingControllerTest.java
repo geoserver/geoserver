@@ -15,7 +15,6 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.LoggingInfo;
-import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
@@ -40,8 +39,7 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
     @Before
     public void init() {
         geoServer = getGeoServer();
-        LoggingInfo loggingInfo = new LoggingInfoImpl();
-        loggingInfo.setLocation("logs/geoserver-test.log");
+        LoggingInfo loggingInfo = geoServer.getFactory().createLogging();
         loggingInfo.setLevel("TEST_LOGGING.xml");
         loggingInfo.setStdOutLogging(true);
 
@@ -74,7 +72,6 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         JSONObject loggingInfo = jsonObject.getJSONObject("logging");
         assertNotNull(loggingInfo);
         assertEquals("TEST_LOGGING.xml", loggingInfo.get("level"));
-        assertEquals("logs/geoserver-test.log", loggingInfo.get("location"));
         assertTrue((Boolean) loggingInfo.get("stdOutLogging"));
     }
 
@@ -83,7 +80,6 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/logging.xml");
         assertEquals("logging", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("TEST_LOGGING.xml", "/logging/level", dom);
-        assertXpathEvaluatesTo("logs/geoserver-test.log", "/logging/location", dom);
         assertXpathEvaluatesTo("true", "/logging/stdOutLogging", dom);
     }
 
@@ -107,7 +103,6 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         JSONObject loggingInfo = jsonObject.getJSONObject("logging");
         assertNotNull(loggingInfo);
         assertEquals("DEFAULT_LOGGING.xml", loggingInfo.get("level"));
-        assertEquals("logs/geoserver-test-2.log", loggingInfo.get("location"));
         assertFalse((Boolean) loggingInfo.get("stdOutLogging"));
     }
 
@@ -123,7 +118,6 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/logging.xml");
         assertEquals("logging", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("DEFAULT_LOGGING.xml", "/logging/level", dom);
-        assertXpathEvaluatesTo("logs/geoserver-test-2.log", "/logging/location", dom);
         assertXpathEvaluatesTo("false", "/logging/stdOutLogging", dom);
     }
 }

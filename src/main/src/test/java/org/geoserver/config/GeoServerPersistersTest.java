@@ -1212,7 +1212,6 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         String path = getDataDirectory().getResourceLoader().getBaseDirectory().getPath();
         LoggingInfo logging = getGeoServer().getLogging();
         final File logFile = new File(path, "logging.xml");
-        logging.setLocation("logs/geoserver.log");
         logging.setStdOutLogging(true);
         logging.setLevel("VERBOSE_LOGGING.xml");
         getGeoServer().save(logging);

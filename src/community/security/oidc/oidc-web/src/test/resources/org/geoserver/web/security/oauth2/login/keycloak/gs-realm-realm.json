@@ -1,7 +1,7 @@
 {
   "id" : "9459138f-a276-4846-8cb5-19f80c063a96",
   "realm" : "gs-realm",
-  "displayName" : "Geoserver Realm",
+  "displayName" : "GeoServer Realm",
   "displayNameHtml" : "",
   "notBefore" : 0,
   "defaultSignatureAlgorithm" : "RS256",

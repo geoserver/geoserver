@@ -1,6 +1,5 @@
-(function() {
-    document.addEventListener("DOMContentLoaded", function() {
-
+(function () {
+    document.addEventListener("DOMContentLoaded", function () {
         // Theme toggle: light theme by default, persist choice in localStorage
         (function initThemeToggle() {
             var STORAGE_KEY = 'gs-theme';
@@ -24,7 +23,14 @@
                 });
             }
         })();
-
+        // Helpers
+        function debounce(fn, delay) {
+            let t;
+            return function () {
+                clearTimeout(t);
+                t = setTimeout(fn, delay);
+            };
+        }
         // Mobile navigation: hamburger toggles overlay panel, ESC/backdrop/close button close it
         function initializeNavigationMenu() {
             const hamburger = document.querySelector('#navigation-menu');
@@ -76,7 +82,72 @@
             });
         }
         initializeNavigationMenu();
-
+        // Navigation Tabs
+        function initializeNavigationTabs() {
+            const navRoot = document.querySelector('#navigation');
+            if (!navRoot) return;
+            const tabs = Array.from(navRoot.querySelectorAll('.navigation-tab'));
+            const headers = Array.from(navRoot.querySelectorAll('.navigation-tab-header'));
+            if (!tabs.length || !headers.length) return;
+            const mobileQuery = window.matchMedia('(max-width: 768px)');
+            function isMobile() {
+                return mobileQuery.matches;
+            }
+            function setTabState(tab, open) {
+                const trigger = tab.querySelector('.navigation-tab-header');
+                tab.classList.toggle('is-open', open);
+                if (trigger) trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+            function closeAll() {
+                tabs.forEach(tab => setTabState(tab, false));
+            }
+            function openExclusive(tab) {
+                closeAll();
+                setTabState(tab, true);
+            }
+            function toggleTab(header) {
+                if (!header || isMobile()) return;
+                const tab = header.closest('.navigation-tab');
+                if (!tab) return;
+                const isOpen = tab.classList.contains('is-open');
+                isOpen ? setTabState(tab, false) : openExclusive(tab);
+            }
+            headers.forEach(header => {
+                header.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    toggleTab(header);
+                });
+                header.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleTab(header);
+                    }
+                });
+                header.addEventListener('focus', function () {
+                    if (!isMobile()) {
+                        const tab = header.closest('.navigation-tab');
+                        if (tab) openExclusive(tab);
+                    }
+                });
+            });
+            document.addEventListener('click', function (e) {
+                if (!navRoot.contains(e.target) && !isMobile()) closeAll();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !isMobile()) closeAll();
+            });
+            function syncForViewport() {
+                if (isMobile()) {
+                    tabs.forEach(tab => setTabState(tab, true));
+                } else {
+                    closeAll();
+                }
+            }
+            syncForViewport();
+            mobileQuery.addEventListener('change', syncForViewport);
+            window.addEventListener('resize', debounce(syncForViewport, 150));
+        }
+        initializeNavigationTabs();
         // User dropdown: click avatar to toggle, close on outside click or ESC
         function initializeUserDropdown() {
             const trigger = document.querySelector('#user-avatar-trigger');
@@ -247,6 +318,74 @@
         
         // Initialize responsive table cards
         initializeResponsiveTableCards();
+        syncResponsiveTableCards();
+
+        // Keep sticky UI elements clear of dynamic feedback panels
+        function initFeedbackOffsets() {
+            var page = document.getElementById('page');
+            if (!page) return;
+            var topFeedback = document.getElementById('topFeedback');
+            var bottomFeedback = document.getElementById('bottomFeedback');
+
+            function getFeedbackHeight(feedbackElement) {
+                if (!feedbackElement) return 0;
+                var panel = feedbackElement.querySelector('.feedbackPanel');
+                return panel && panel.offsetHeight > 0 ? feedbackElement.offsetHeight : 0;
+            }
+
+            function updateOffsets() {
+                var topHeight = getFeedbackHeight(topFeedback);
+                var bottomHeight = getFeedbackHeight(bottomFeedback);
+                page.style.setProperty('--gs-feedback-top-height', topHeight + 'px');
+                page.style.setProperty('--gs-feedback-bottom-height', bottomHeight + 'px');
+            }
+
+            function refreshFeedbackRefs() {
+                topFeedback = document.getElementById('topFeedback');
+                bottomFeedback = document.getElementById('bottomFeedback');
+            }
+
+            updateOffsets();
+            window.addEventListener('resize', updateOffsets);
+
+            var pageHeader = document.querySelector('.page-header');
+            var pageFooter = document.querySelector('.page-footer');
+            if (window.MutationObserver && (pageHeader || pageFooter)) {
+                var mutationObserver = new MutationObserver(function () {
+                    refreshFeedbackRefs();
+                    updateOffsets();
+                });
+                if (pageHeader) {
+                    mutationObserver.observe(pageHeader, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true,
+                        characterData: true
+                    });
+                }
+                if (pageFooter) {
+                    mutationObserver.observe(pageFooter, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true,
+                        characterData: true
+                    });
+                }
+            }
+
+            if (window.ResizeObserver) {
+                var resizeObserver = new ResizeObserver(function () {
+                    refreshFeedbackRefs();
+                    updateOffsets();
+                });
+                if (pageHeader) {
+                    resizeObserver.observe(pageHeader);
+                }
+                if (pageFooter) {
+                    resizeObserver.observe(pageFooter);
+                }
+            }
+        };
+        initFeedbackOffsets();
     });
 })();
-

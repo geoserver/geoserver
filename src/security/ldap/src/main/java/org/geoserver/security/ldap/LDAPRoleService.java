@@ -340,7 +340,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     }
 
     private Set<GeoServerRole> getChildrenRoles(final GeoServerRole role) {
-        Assert.notNull(role, "Geoserver role shouldn't be null.");
+        Assert.notNull(role, "GeoServer role shouldn't be null.");
         String roleName = normalizeGroupName(role.getAuthority());
         String roleDn = getRoleDn(role);
         final Set<String> membersDns = new HashSet<>();

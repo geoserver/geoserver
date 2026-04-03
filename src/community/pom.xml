@@ -124,7 +124,6 @@
         <module>hz-cluster</module>
         <module>solr</module>
         <module>elasticsearch</module>
-        <module>wps-remote</module>
         <module>jdbcstore</module>
         <module>gdal</module>
         <module>gwc-azure-blob</module>
@@ -163,6 +162,7 @@
         <module>stac-datastore</module>
         <module>acl</module>
         <module>geoparquet</module>
+        <module>duckdb</module>
         <module>wps-download-netcdf</module>
         <module>singlestore</module>
         <module>pmtiles-store</module>
@@ -269,12 +269,6 @@
       </modules>
     </profile>
     <profile>
-      <id>activemq</id>
-      <modules>
-        <module>jms-cluster</module>
-      </modules>
-    </profile>
-    <profile>
       <id>hz-cluster</id>
       <modules>
         <module>hz-cluster</module>
@@ -303,12 +297,6 @@
       <id>gwc-gcs-blob</id>
       <modules>
         <module>gwc-gcs-blob</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wps-remote</id>
-      <modules>
-        <module>wps-remote</module>
       </modules>
     </profile>
     <profile>
@@ -529,6 +517,12 @@
       <id>geoparquet</id>
       <modules>
         <module>geoparquet</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>duckdb</id>
+      <modules>
+        <module>duckdb</module>
       </modules>
     </profile>
     <profile>

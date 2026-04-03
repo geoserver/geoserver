@@ -24,7 +24,7 @@ import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -380,19 +380,19 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     Component removeLink(String id, IModel<LayerGroupEntry> itemModel) {
         final LayerGroupEntry entry = itemModel.getObject();
-        ImageAjaxLink<Object> link =
-                new ImageAjaxLink<>(id, new PackageResourceReference(getClass(), "../../img/icons/silk/delete.png")) {
+        ContextRelativeResourceReference icon = new ContextRelativeResourceReference("img/icons/silk/delete.png");
+        ImageAjaxLink<Object> link = new ImageAjaxLink<>(id, icon) {
 
-                    @Serial
-                    private static final long serialVersionUID = 4050942811476326745L;
+            @Serial
+            private static final long serialVersionUID = 4050942811476326745L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
 
-                        items.remove(entry);
-                        target.add(layerTable);
-                    }
-                };
+                items.remove(entry);
+                target.add(layerTable);
+            }
+        };
         link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
     }

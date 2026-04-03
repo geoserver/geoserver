@@ -101,7 +101,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
     Component workspaceLink(String id, final IModel<WorkspaceInfo> itemModel) {
         IModel<?> nameModel = NAME.getModel(itemModel);
         return new SimpleBookmarkableLink(
-                id, WorkspaceEditPage.class, nameModel, "name", (String) nameModel.getObject());
+                id, WorkspaceEditPage.class, nameModel, "workspace", (String) nameModel.getObject());
     }
 
     @Override

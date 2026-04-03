@@ -68,11 +68,6 @@ public class EventHzSynchronizerSendTest extends HzSynchronizerSendTest {
         }
         replay(info, wsInfo);
         {
-            HzSynchronizer sync = getSynchronizer();
-
-            // Mock the result of doing this:
-            // getCatalog().remove(info);
-
             CatalogRemoveEventImpl event = new CatalogRemoveEventImpl();
 
             event.setSource(info);
@@ -86,7 +81,7 @@ public class EventHzSynchronizerSendTest extends HzSynchronizerSendTest {
                 UUID messageObject = capture.getValue().getUUID();
                 int publishTime = 0;
                 Member publishingMember = null;
-                Message<UUID> message = new Message<UUID>(topicName, messageObject, publishTime, publishingMember);
+                Message<UUID> message = new Message<>(topicName, messageObject, publishTime, publishingMember);
                 listener.onMessage(message);
             }
         }

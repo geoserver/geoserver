@@ -38,7 +38,7 @@ public class NodeLinkPanel extends Panel {
     public NodeLinkPanel(String id, final HzCluster cluster) {
         super(id);
 
-        add(new SimpleAjaxLink("link", new Model(localIPAsString(cluster.getHz()))) {
+        add(new SimpleAjaxLink<>("link", new Model<>(localIPAsString(cluster.getHz()))) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 // dialog.show(target);

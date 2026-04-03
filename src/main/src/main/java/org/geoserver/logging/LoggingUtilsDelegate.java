@@ -4,6 +4,10 @@
  */
 package org.geoserver.logging;
 
+import static org.geoserver.logging.LoggingUtils.GEOSERVER_LOG_LOCATION;
+import static org.geoserver.logging.LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS;
+import static org.geoserver.logging.LoggingUtils.updateBuiltInLoggingProfiles;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -197,7 +201,9 @@ class LoggingUtilsDelegate {
         boolean reloadRequired = false;
 
         if (!suppressFileLogging) {
-            if (configuration.getProperties().containsKey("GEOSERVER_LOG_LOCATION")) {
+            LoggingStartupContextListener.getLogger()
+                    .warning(() -> "The logging location can be set using " + GEOSERVER_LOG_LOCATION + " property");
+            if (configuration.getProperties().containsKey(GEOSERVER_LOG_LOCATION)) {
                 // this is a log4j 2 configuration using default properties
                 LoggingStartupContextListener.getLogger()
                         .fine("Logging property GEOSERVER_LOG_LOCATION set to file '"
@@ -567,7 +573,7 @@ class LoggingUtilsDelegate {
 
         File target = new File(logsDirectory.getAbsolutePath(), logConfigXml);
         if (target.exists()) {
-            if (LoggingUtils.updateBuiltInLoggingProfiles) {
+            if (updateBuiltInLoggingProfiles) {
                 try (FileInputStream targetContents = new FileInputStream(target);
                         InputStream template = getStreamFromResource(logConfigXml)) {
                     if (!IOUtils.contentEquals(targetContents, template)) {
@@ -619,7 +625,7 @@ class LoggingUtilsDelegate {
         Resource logs = resourceLoader.get("logs");
         File logsDirectory = logs.dir();
 
-        for (String logConfigFile : LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS) {
+        for (String logConfigFile : STANDARD_LOGGING_CONFIGURATIONS) {
             String logConfigProperties = logConfigFile + ".properties";
 
             File properties = new File(logsDirectory.getAbsolutePath(), logConfigProperties);

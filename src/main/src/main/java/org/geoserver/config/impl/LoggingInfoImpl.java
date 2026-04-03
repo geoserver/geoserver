@@ -18,8 +18,6 @@ public class LoggingInfoImpl implements LoggingInfo {
 
     String level;
 
-    String location;
-
     boolean stdOutLogging;
 
     @Override
@@ -42,16 +40,6 @@ public class LoggingInfoImpl implements LoggingInfo {
     }
 
     @Override
-    public String getLocation() {
-        return location;
-    }
-
-    @Override
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    @Override
     public boolean isStdOutLogging() {
         return stdOutLogging;
     }
@@ -66,7 +54,6 @@ public class LoggingInfoImpl implements LoggingInfo {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((level == null) ? 0 : level.hashCode());
-        result = prime * result + ((location == null) ? 0 : location.hashCode());
         result = prime * result + (stdOutLogging ? 1231 : 1237);
         return result;
     }
@@ -82,9 +69,6 @@ public class LoggingInfoImpl implements LoggingInfo {
         if (level == null) {
             if (other.getLevel() != null) return false;
         } else if (!level.equals(other.getLevel())) return false;
-        if (location == null) {
-            if (other.getLocation() != null) return false;
-        } else if (!location.equals(other.getLocation())) return false;
         if (stdOutLogging != other.isStdOutLogging()) return false;
         return true;
     }

@@ -68,7 +68,7 @@ public class LoggingUtils {
      */
     public static final String GT2_LOGGING_REDIRECTION = "GT2_LOGGING_REDIRECTION";
 
-    /** Flag used to override {@link LoggingInfo#getLocation()} */
+    /** Application property used to configure the log file location. */
     public static final String GEOSERVER_LOG_LOCATION = "GEOSERVER_LOG_LOCATION";
 
     /** Policy settings for {@link LoggingUtils#GEOSERVER_LOG_LOCATION} configuration. */

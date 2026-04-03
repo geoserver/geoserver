@@ -20,7 +20,7 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 
 /**
- * Adaptor from Geoserver resource to Spring Resource
+ * Adaptor from GeoServer resource to Spring Resource
  *
  * @author Niels Charlier
  */

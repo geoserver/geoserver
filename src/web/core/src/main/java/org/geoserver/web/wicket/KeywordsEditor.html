@@ -1,40 +1,50 @@
 <?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
   <body>
+    <form>
     <wicket:panel>
-      <div class="gs-panel-KeywordsEditor gs-form">
-        <div class="gs-form-group">
-          <label for="keywords">
-            <wicket:message key="currentKeywords">Current Keywords</wicket:message>
-          </label>
-          <div class="gs-input-group">
-            <select id="keywords" class="select w-md" wicket:id="keywords" multiple="multiple"/>
-            <button wicket:id="removeKeywords" type="submit">
-              <wicket:message key="removeSelected">Remove selected</wicket:message>
-            </button>
+      <div class="gs-panel-KeywordsEditor">
+        <div wicket:id="container">
+          <div class="gs-unordered-list-class action-group">
+            <div class="gs-list-item-class">
+              <a class="add-link button" href="#" wicket:id="addKeyword">
+                <wicket:message key="addKeyword">Add keyword</wicket:message>
+              </a>
+            </div>
           </div>
-        </div>
-        <div class="gs-form-group">
-          <label for="newKeyword">
-            <wicket:message key="newKeyword">New Keyword</wicket:message>
-          </label>
-          <div class="gs-input-group">
-            <input id="newKeyword" type="text" wicket:id="newKeyword"/>
-            <select id="lang" class="text" type="text" wicket:id="lang"/>
-          </div>
-        </div>
-        <div class="gs-form-group">
-          <label for="vocab">
-            <wicket:message key="vocabulary">Vocabulary</wicket:message>
-          </label>
-          <div class="gs-input-group">
-            <input id="vocab" type="text" wicket:id="vocab"/>
-            <button wicket:id="addKeyword" type="submit">
-              <wicket:message key="addKeyword">Add</wicket:message>
-            </button>
+          <table wicket:id="table">
+            <tr>
+              <th>
+                <wicket:message key="keywordValue">Keyword</wicket:message>
+              </th>
+              <th>
+                <wicket:message key="vocabulary">Vocabulary</wicket:message>
+              </th>
+              <th/>
+            </tr>
+            <tr wicket:id="keywords">
+              <td>
+                <div class="gs-input-group" wicket:id="keywordBorder">
+                  <input wicket:id="keyword" type="text" size="20"/>
+                  <select wicket:id="language"/>
+                </div>
+              </td>
+              <td>
+                <span wicket:id="vocabularyBorder">
+                  <input wicket:id="vocabulary" type="text" size="10"/>
+                </span>
+              </td>
+              <td>
+                <a wicket:id="removeKeyword" class="button"><img wicket:id="image"/></a>
+              </td>
+            </tr>
+          </table>
+          <div>
+            <span wicket:id="noKeywords"/>
           </div>
         </div>
       </div>
     </wicket:panel>
+    </form>
   </body>
 </html>

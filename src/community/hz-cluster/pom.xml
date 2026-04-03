@@ -14,8 +14,7 @@
   <name>GeoServer Hazelcast Clustering Module</name>
 
   <properties>
-    <hazelcast.web.version>5.1</hazelcast.web.version>
-    <metrics.version>4.0.3</metrics.version>
+    <metrics.version>4.2.37</metrics.version>
   </properties>
 
   <dependencies>
@@ -38,9 +37,8 @@
       <artifactId>hazelcast-spring</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.hazelcast</groupId>
-      <artifactId>hazelcast-wm</artifactId>
-      <version>${hazelcast.web.version}</version>
+      <groupId>com.hazelcast.spring</groupId>
+      <artifactId>hazelcast-spring-session</artifactId>
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
@@ -88,6 +86,15 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

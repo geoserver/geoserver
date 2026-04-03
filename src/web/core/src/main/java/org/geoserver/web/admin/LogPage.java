@@ -70,10 +70,8 @@ public class LogPage extends GeoServerSecuredPage {
          * take geoserver log file location from Config as absolute path and only use if valid, otherwise fallback to
          * (geoserver-root)/logs/geoserver.log as default.
          */
+        // Log location only from GEOSERVER_LOG_LOCATION property (GeoServer 3.0+)
         String location = GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION);
-        if (location == null) {
-            location = getGeoServerApplication().getGeoServer().getLogging().getLocation();
-        }
         if (location == null) {
             GeoServerResourceLoader loader = getGeoServerApplication().getResourceLoader();
             logFile = loader.get("logs").get("geoserver.log").file();

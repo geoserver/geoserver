@@ -22,7 +22,7 @@ import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.logging.Logging;
 
 /**
- * A WPS process to retrieve unique field values from a layer on Geoserver catalog. Requires a valid layer name and a
+ * A WPS process to retrieve unique field values from a layer on GeoServer catalog. Requires a valid layer name and a
  * field name to extract the unique values. It accepts sorting and paging parameters.
  *
  * @author Cesar Martinez Izquierdo

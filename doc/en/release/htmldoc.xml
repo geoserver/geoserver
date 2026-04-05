@@ -21,21 +21,25 @@
       </includes>
       <outputDirectory></outputDirectory>
     </fileSet>
+    <!-- api -->
+    <fileSet>
+      <directory>target/api</directory>
+      <outputDirectory>en/api</outputDirectory>
+    </fileSet>
     <!-- content -->
     <fileSet>
       <directory>../../target</directory>
+      <excludes>
+        <exclude>en/api/**</exclude>
+      </excludes>
       <outputDirectory></outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/api</directory>
-      <outputDirectory>api</outputDirectory>
     </fileSet>
   </fileSets>
   <files>
     <file>
       <source>target/html/rest.html</source>
       <outputDirectory></outputDirectory>
-      <destName>api/index.html</destName>
+      <destName>en/api/index.html</destName>
     </file>
   </files>
 </assembly>

@@ -2,17 +2,15 @@ GeoServer HTML documentation
 ============================
 
 This archive contains HTML documentation for GeoServer. To read these manuals, go into the
-appropriate folder and open the ``index.html`` file in a browser.
-
-The full HTML documentation bundle contains the following folders:
-
-* [api/index.html](api/index.html) - REST API
-* [user/index.html](user/index.html) - User Manual
-* [developer/index.html](developer/index.html) - Developer Manual
-
-The individual HTML documentation bundles contain:
+appropriate folder and open the ``index.html`` file in a browser:
 
 * [index.html](index.html)
+
+The documentation bundle contains the following sections:
+
+* [en/api/index.html](api/index.html) - REST API (Offline)
+* [en/user/index.html](user/index.html) - User Manual
+* [en/developer/index.html](developer/index.html) - Developer Manual
 
 Documentation License
 ---------------------

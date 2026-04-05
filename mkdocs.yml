@@ -54,6 +54,7 @@ theme:
 
 extra:
   version:
+    default: latest
     provider: mike
   version_selector:
     # GitHub Pages versions (mike-managed)
@@ -99,6 +100,8 @@ extra:
       link: https://geoserver.org
 
 plugins:
+  - offline:
+      enabled: !ENV [OFFLINE, false]
   - search:
       lang: en
   - macros:
@@ -138,6 +141,9 @@ extra_css:
 extra_javascript:
   - javascripts/hide-empty-toc.js
   - javascripts/version-archive.js
+
+not_in_nav: |
+  en/docguide/sphinx.md
 
 nav:
   - Home: index.md
@@ -505,7 +511,7 @@ nav:
       - en/user/production/misc.md
       - en/user/production/troubleshooting.md
       - en/user/production/identify.md
-    - Rest:
+    - REST:
       - en/user/rest/index.md
       - en/user/rest/about.md
       - en/user/rest/fonts.md
@@ -597,7 +603,7 @@ nav:
         - Configuring HTTP Header Proxy Authentication: en/user/security/tutorials/httpheaderproxy/index.md
         - Configuring Apache HTTPD Session Integration: en/user/security/tutorials/credentialsfromheaders/index.md
         - Authentication with CAS: en/user/security/tutorials/cas/index.md
-    - Geowebcache:
+    - GeoWebCache:
       - en/user/geowebcache/index.md
       - GeoWebCache settings:
         - en/user/geowebcache/webadmin/index.md
@@ -1015,7 +1021,7 @@ nav:
         - en/developer/programming-guide/web-ui/implementing.md
       - Wicket Development In GeoServer: en/developer/programming-guide/wicket-pages/index.md
       - Extension Points: en/developer/programming-guide/extension-points/index.md
-      - Wps Services:
+      - WPS Services:
         - en/developer/programming-guide/wps-services/index.md
         - en/developer/programming-guide/wps-services/design-guide.md
         - en/developer/programming-guide/wps-services/implementing.md
@@ -1049,8 +1055,8 @@ nav:
     - Background: en/docguide/background.md
     - Quickfix: en/docguide/quickfix.md
     - Contributing: en/docguide/contributing.md
-    - Installing mkdocs: en/docguide/install.md
     - Workflow: en/docguide/workflow.md
+    - Installing mkdocs: en/docguide/install.md
     - Markdown Syntax: en/docguide/markdown.md
     - Style Guidelines: en/docguide/style.md
     - Writing a Tutorial: en/docguide/tutorial.md

@@ -10,7 +10,7 @@ The best practice is to use a python virtual environment, so the tools required 
 1. From the root of your GeoServer checkout:
 
     ```bash
-    virtualenv venv
+    python3 -m venv venv
     ```
 
 2. Activate virtual environment and install (or update) requirements:

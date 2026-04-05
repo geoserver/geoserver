@@ -684,9 +684,6 @@
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.2.0</version>
-        <configuration>
-          <finalName>geoserver-${project.version}</finalName>
-        </configuration>
         <executions>
           <execution>
             <id>api</id>
@@ -694,42 +691,6 @@
             <configuration>
               <descriptors>
                 <descriptor>release/api.xml</descriptor>
-              </descriptors>
-            </configuration>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>user</id>
-            <phase>package</phase>
-            <configuration>
-              <descriptors>
-                <descriptor>release/user.xml</descriptor>
-              </descriptors>
-            </configuration>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>developer</id>
-            <phase>package</phase>
-            <configuration>
-              <descriptors>
-                <descriptor>release/developer.xml</descriptor>
-              </descriptors>
-            </configuration>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>docguide</id>
-            <phase>package</phase>
-            <configuration>
-              <descriptors>
-                <descriptor>release/docguide.xml</descriptor>
               </descriptors>
             </configuration>
             <goals>

@@ -47,16 +47,16 @@ See the [developer guide](https://docs.geoserver.org/3.0.x/en/developer/) for mo
 
 GeoServer uses [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) for documentation written in Markdown. Use ``mkdocs`` to run the docs locally for feedback while editing:
 
-Live preview:
+Serve live preview locally:
 ```bash
-virtualenv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 mkdocs serve
 ```
 
-Open preview:
-```
+Open preview in browser:
+```bash
 python3 -m webbrowser http://localhost:8000
 ```
 

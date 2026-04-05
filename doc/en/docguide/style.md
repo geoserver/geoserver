@@ -118,7 +118,7 @@ Any code or command line snippets should be formatted as code:
 }
 ```
 
-When lines are longer than 77 characters, extend multiple lines in a format appropriate for the language in use. If possible, snippets should be functional when pasted directly into the appropriate target.
+When lines are longer than 80 characters, extend multiple lines in a format appropriate for the language in use. If possible, snippets should be functional when pasted directly into the appropriate target.
 
 Java and XML make no distinction between a single space and multiple spaces, so the following snippets are fine:
 

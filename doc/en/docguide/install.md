@@ -2,7 +2,7 @@
 
 In order to work with mkdocs to generate and preview documentation you will need the following:
 
-- [Python 3](http://www.python.org/download/)
+- [Python 3](https://www.python.org/download/)
 - [pip3](https://pypi.org/project/pip/) (Package Installer for Python, included with Python)
 
 The best practice is to use a python virtual environment, so the tools required for GeoServer documentation are provided their own environment.
@@ -20,14 +20,8 @@ The best practice is to use a python virtual environment, so the tools required 
     pip install -r requirements.txt
     ```
  
-3. Use ***mkdocs*** to preview from virtual environment:
+3. Confirm ***mkdocs*** is available:
 
     ```bash
-    mkdocs serve
-    ```
-
-4. Preview:
-
-    ```bash
-    python3 -m webbrowser http://localhost:8000
+    mkdocs --version
     ```

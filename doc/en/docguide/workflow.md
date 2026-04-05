@@ -62,18 +62,12 @@ Documentation in is written in [Markdown](https://www.markdownguide.org/), a lig
 
 ## Build and test locally
 
-You should install mkdocs on your local system (see the next page on [Installing](install.md)) to build the documentation locally and view any changes made.
+You should install mkdocs on your local system (see the page on [Installing](install.md)) to build the documentation locally and view any changes made.
 
-1.  Confirm availability of Python 3:
-
-    ``` bash
-    python --version
-    ```
-
-2.  From the root of your GeoServer checkout, install python virtual environment:
+1.  From the root of your GeoServer checkout, install python virtual environment:
 
     ```bash
-    virtualenv venv
+    python3 -m venv venv
     ```
 
 2. Activate virtual environment and install (or update) requirements:
@@ -117,15 +111,19 @@ You should install mkdocs on your local system (see the next page on [Installing
 
 The final step is to commit the changes to a branch in *your* repository, using these commands:
 
-    git checkout -b doc-fix
-    git add [path/file(s)]
-    git commit -m "message describing your fix"
-    git push origin doc-fix
+```bash
+git checkout -b doc-fix
+git add [path/file(s)]
+git commit -m "message describing your fix"
+git push origin doc-fix
+```
 
 You can use any name you like for the branch, often I use the issue number so I can tell my branches apart if I need to find them later. **`{path/file(s)}`** is the path and file(s) you wish to commit to the repository. If you are unclear about which files you have changed you can use `git status -sb` to list the files that you have changed, this will give you a list of changed files, and indicate the ones that still need to be added to this commit:
 
+```bash
+git status -sb 
 ```
-$ git status -sb 
+```
 ## update
  M docguide/source/background.md
  M docguide/source/contributing.md

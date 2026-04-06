@@ -33,6 +33,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LambdaModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -176,11 +177,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
         Locale locale = getLocale();
 
-        InternationalString welcome =
-                InternationalStringUtils.growable(contactInfo.getInternationalWelcome(), contactInfo.getWelcome());
-        String welcomeText = welcome.toString(locale);
-        Label welcomeMessage = new Label("welcome", welcomeText);
-        welcomeMessage.setVisible(StringUtils.isNotBlank(welcomeText));
+        String welcomeText = getWelcomeDescription();
+        Label welcomeMessage = new Label("welcome", welcomeText );
+        welcomeMessage.setVisible(!Strings.isEmpty(welcomeText));
         add(welcomeMessage);
 
         add(belongsTo(contactInfo, locale));
@@ -481,7 +480,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         }
     }
 
-    /** Gets the title from the PageName.title resource, falling back on "GeoServer" if not found */
+    /**
+     * Gets the title from the PageName.title resource, falling back on "GeoServer" if not found
+     */
     protected String getTitle() {
         String titleText = getWelcomeTitle();
         if (!Strings.isEmpty(titleText)) {
@@ -492,27 +493,62 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         }
     }
 
-    String getWelcomeTitle() {
-        GeoServer gs = getGeoServer();
-        ContactInfo contactInfo = gs.getSettings().getContact();
-        if (workspaceInfo != null) {
+    protected String getWelcomeDescription() {
+        Locale locale = getLocale();
+
+        if (publishedInfo != null) {
+            InternationalString description = InternationalStringUtils.growable(publishedInfo.getInternationalAbstract(), publishedInfo.getAbstract());
+            return description.toString(locale);
+        }
+        else if (workspaceInfo != null) {
+            GeoServer gs = getGeoServer();
+            ContactInfo contactInfo = gs.getSettings().getContact();
+
             SettingsInfo settings = gs.getSettings(workspaceInfo);
             if (settings != null) {
                 contactInfo = settings.getContact();
             }
-        }
-        InternationalString title =
-                InternationalStringUtils.growable(contactInfo.getInternationalTitle(), contactInfo.getTitle());
+            InternationalString title =
+                    InternationalStringUtils.growable(contactInfo.getInternationalWelcome(), contactInfo.getWelcome());
 
+            return title.toString(locale);
+        }
+        return null; // not available
+    }
+    /**
+     * Lookup welcome title, using {@code publishedInfo} and {@code workspaceInfo} if provided.
+     * @return welcome title
+     */
+    String getWelcomeTitle() {
         Locale locale = getLocale();
-        return title.toString(locale);
+
+        if (publishedInfo != null) {
+            InternationalString title = InternationalStringUtils.growable(publishedInfo.getInternationalTitle(), publishedInfo.getTitle());
+            return title.toString(locale);
+        }
+        else if (workspaceInfo != null) {
+            GeoServer gs = getGeoServer();
+            ContactInfo contactInfo = gs.getSettings().getContact();
+
+            SettingsInfo settings = gs.getSettings(workspaceInfo);
+            if (settings != null) {
+                contactInfo = settings.getContact();
+            }
+            InternationalString title =
+                    InternationalStringUtils.growable(contactInfo.getInternationalTitle(), contactInfo.getTitle());
+
+            return title.toString(locale);
+        }
+        return null; // not available
     }
 
-    /** Gets the page title from the contact information, falling back on PageName.title resource if not found */
+    /**
+     * Gets the page title from the contact information, falling back on PageName.title resource if not found.
+     */
     String getPageTitle() {
         String titleText = getWelcomeTitle();
         if (!Strings.isEmpty(titleText)) {
-            return titleText;
+            return "GeoServer: "+titleText;
         }
         else {
             return super.getPageTitle();

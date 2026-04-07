@@ -26,6 +26,11 @@ paths:
           description: Filter CRS by authority (e.g. EPSG)
           required: false
           type: string
+        - name: query
+          in: query
+          description: Allow to query for a code by partial ID (e.g. query=32 will return all CRSs containing "32" on their code)
+          required: false
+          type: string
         - name: offset
           in: query
           description: Starting index for pagination
@@ -95,7 +100,7 @@ paths:
        - "CRS"
       summary: Get CRS by ID
       description: >
-        Returns the CRS definition. By default, return the definition in a JSON containing the code, format (wkt) and the WKT definition. Append .wkt to the request to get the WKT definition directly
+        Returns the CRS definition. By default, return the definition in a JSON containing the details of the CRS, such as ID, name, definition and extent of validity if available. Append .wkt to the request to get the WKT definition directly
       produces:
         - application/json
         - text/plain
@@ -115,6 +120,19 @@ paths:
               {
                 "id": "EPSG:2010",
                 "format": "wkt",
+                "name" : "NAD27(CGQ77) / SCoPQ zone 4"
+                "bbox": {
+                  "minX": 191065.839387873,
+                  "minY": 5224293.41960327,
+                  "maxX": 418534.160612128,
+                  "maxY": 5764724.15009722
+                },
+                "bboxWGS84": {
+                  "minX": -63,
+                  "minY": 47.16,
+                  "maxX": -60,
+                  "maxY": 52.01
+                },
                 "definition": "PROJCS[\"NAD27(CGQ77) / SCoPQ zone 4\", \r\n  GEOGCS[\"NAD27(CGQ77)\", \r\n    DATUM[\"North American Datum 1927 (CGQ77)\", \r\n      SPHEROID[\"Clarke 1866\", 6378206.4, 294.9786982138982, AUTHORITY[\"EPSG\",\"7008\"]], \r\n      AUTHORITY[\"EPSG\",\"6609\"]], \r\n    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n    UNIT[\"degree\", 0.017453292519943295], \r\n    AXIS[\"Geodetic longitude\", EAST], \r\n    AXIS[\"Geodetic latitude\", NORTH], \r\n    AUTHORITY[\"EPSG\",\"4609\"]], \r\n  PROJECTION[\"Transverse_Mercator\", AUTHORITY[\"EPSG\",\"9807\"]], \r\n  PARAMETER[\"central_meridian\", -61.5], \r\n  PARAMETER[\"latitude_of_origin\", 0.0], \r\n  PARAMETER[\"scale_factor\", 0.9999], \r\n  PARAMETER[\"false_easting\", 304800.0], \r\n  PARAMETER[\"false_northing\", 0.0], \r\n  UNIT[\"m\", 1.0], \r\n  AXIS[\"Easting\", EAST], \r\n  AXIS[\"Northing\", NORTH], \r\n  AUTHORITY[\"EPSG\",\"2010\"]]"
               }
             text/plain: |
@@ -203,10 +221,12 @@ definitions:
 
   Authority:
     type: object
+    description: The CRS authority
     properties:
       name:
         type: string
         example: EPSG
+        description: name of the authority
       href:
         type: string
         example: http://localhost:8080/geoserver/rest/crs?authority=EPSG
@@ -235,8 +255,31 @@ definitions:
       - returned
       - total
 
+  BBox:
+    type: object
+    description: A bounding box describing the domain of validity
+    properties:
+      minX:
+        type: number
+        example: 10
+      minY:
+        type: number
+        example: 0.0
+      maxX:
+        type: number
+        example: 30
+      maxY:
+        type: number
+        example: 40
+    required:
+      - minX
+      - minY
+      - maxX
+      - maxY
+
   Codes:
     type: object
+    description: The list of CRS code identifiers
     properties:
       crs:
         type: array
@@ -260,16 +303,29 @@ definitions:
 
   DefinitionResponse:
     type: object
+    description: The CoordinateReferenceSystem Definition
     properties:
       id:
         type: string
         example: EPSG:4326
+        description: The CRS identifier, including its authority
       format:
         type: string
         example: wkt
+      name:
+        type: string
+        example: WGS 84
+        description: The name of the CRS
+      bbox:
+        $ref: '#/definitions/BBox'
+        description: The domain of validity of the CRS.
+      bboxWGS84:
+        $ref: '#/definitions/BBox'
+        description: The geographic domain of validity of the CRS.
       definition:
         type: string
         example: GEOGCS["WGS 84", ...]
+        description: The WKT definition of the CRS (WKT1 format)
     required:
       - id
       - format

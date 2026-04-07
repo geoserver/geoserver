@@ -25,6 +25,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -42,6 +44,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.INamedParameters;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
@@ -88,6 +91,15 @@ import org.geotools.feature.NameImpl;
  * @author Andrea Aime - TOPP
  */
 public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnlockablePage {
+
+    private static final CssResourceReference CSS =
+            new CssResourceReference(GeoServerHomePage.class, "GeoServerHomePage.css");
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(CssHeaderItem.forReference(CSS));
+    }
 
     /**
      * When {@code true}, show the legacy workspace/layer chooser on the home page and hide the navigation panels.

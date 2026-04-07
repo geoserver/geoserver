@@ -9,7 +9,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -187,7 +187,14 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                 new RangeValidator<>(1, 360)));
 
         // cancel/submit buttons
-        form.add(new BookmarkablePageLink<>("cancel", StorePage.class));
+        form.add(new Link<Void>("cancel") {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void onClick() {
+                doReturn(StorePage.class);
+            }
+        });
         form.add(saveLink());
         form.setDefaultButton(saveLink());
 

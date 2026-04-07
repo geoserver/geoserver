@@ -49,6 +49,7 @@ import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
@@ -205,10 +206,20 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                     loginForm.add(new Label("link.label", ""));
                 }
 
+                String redirectUrl = null;
+                if (org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter.class.equals(
+                        info.getFilterClass())) {
+                    String ws = getPageParameters().get("workspace").toOptionalString();
+                    if (ws != null && !ws.isEmpty()) {
+                        redirectUrl = "/web/?workspace=" + ws;
+                    }
+                }
                 LoginFormHTMLInclude include;
                 if (info.getInclude() != null) {
                     include = new LoginFormHTMLInclude(
-                            "login.include", new PackageResourceReference(info.getComponentClass(), info.getInclude()));
+                            "login.include",
+                            new PackageResourceReference(info.getComponentClass(), info.getInclude()),
+                            redirectUrl);
                 } else {
                     include = new LoginFormHTMLInclude("login.include", null);
                 }
@@ -327,11 +338,32 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             @Override
             public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
                 MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
+                String ws = getPageParameters().get("workspace").toOptionalString();
+                final boolean hasWorkspace = !Strings.isEmpty(ws);
+                final boolean includeWorkspace = info.isIncludeWorkspaceParam();
+
                 BookmarkablePageLink<GeoServerBasePage> link =
-                        new BookmarkablePageLink<>("link", info.getComponentClass());
+                        new BookmarkablePageLink<>("link", info.getComponentClass()) {
+                            @Override
+                            public PageParameters getPageParameters() {
+                                PageParameters pageParams = super.getPageParameters();
+                                if (hasWorkspace && includeWorkspace) {
+                                    pageParams.add("workspace", ws);
+                                }
+                                return pageParams;
+                            }
+                        };
                 link.add(AttributeModifier.replace(
                         "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
-                link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+                final StringResourceModel baseTitle = new StringResourceModel(info.getTitleKey(), null, null);
+                link.add(new Label("link.label", baseTitle));
+                WebMarkupContainer wsIndicator = new WebMarkupContainer("link.wsIndicator");
+                if (hasWorkspace && includeWorkspace) {
+                    wsIndicator.add(AttributeModifier.replace("title", ws));
+                } else {
+                    wsIndicator.setVisible(false);
+                }
+                link.add(wsIndicator);
                 item.add(link);
             }
         });
@@ -457,18 +489,32 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     private void createMenuComponent(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
         MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
+        String ws = getPageParameters().get("workspace").toOptionalString();
+        final boolean hasWorkspace = !Strings.isEmpty(ws);
+        final boolean includeWorkspace = info.isIncludeWorkspaceParam();
         BookmarkablePageLink<Page> link = new BookmarkablePageLink<>("link", info.getComponentClass()) {
 
             @Override
             public PageParameters getPageParameters() {
                 PageParameters pageParams = super.getPageParameters();
                 pageParams.add(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
+                if (hasWorkspace && includeWorkspace) {
+                    pageParams.add("workspace", ws);
+                }
                 return pageParams;
             }
         };
 
         link.add(AttributeModifier.replace("title", new StringResourceModel(info.getDescriptionKey(), null, null)));
-        link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+        final StringResourceModel baseTitle = new StringResourceModel(info.getTitleKey(), null, null);
+        link.add(new Label("link.label", baseTitle));
+        WebMarkupContainer wsIndicator = new WebMarkupContainer("link.wsIndicator");
+        if (hasWorkspace && includeWorkspace) {
+            wsIndicator.add(AttributeModifier.replace("title", ws));
+        } else {
+            wsIndicator.setVisible(false);
+        }
+        link.add(wsIndicator);
         WebComponent image;
         if (info.getIcon() != null) {
             if (info.getIcon().startsWith("/")) {
@@ -691,17 +737,20 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      * then {@link GeoServerHomePage} is used.
      */
     protected void doReturn(Class<? extends Page> defaultPageClass) {
+        String ws = getPageParameters().get("workspace").toOptionalString();
+        PageParameters params = (ws != null && !ws.isEmpty()) ? new PageParameters().add("workspace", ws) : null;
+
         if (returnPage != null) {
             setResponsePage(returnPage);
             return;
         }
         if (returnPageClass != null) {
-            setResponsePage(returnPageClass);
+            setResponsePage(returnPageClass, params);
             return;
         }
 
         defaultPageClass = defaultPageClass != null ? defaultPageClass : GeoServerHomePage.class;
-        setResponsePage(defaultPageClass);
+        setResponsePage(defaultPageClass, params);
     }
 
     public void addFeedbackPanels(AjaxRequestTarget target) {

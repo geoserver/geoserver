@@ -45,6 +45,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.AbstractResource;
+import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -143,6 +144,14 @@ public class StyleAdminPanel extends StyleEditTabPanel {
     public void initUI(CompoundPropertyModel<StyleInfo> styleModel) {
 
         StyleInfo style = getStylePage().getStyleInfo();
+        String workspaceParam =
+                getStylePage().getPageParameters().get("workspace").toOptionalString();
+        if (stylePage instanceof StyleNewPage && !Strings.isEmpty(workspaceParam)) {
+            WorkspaceInfo workspace = stylePage.getCatalog().getWorkspaceByName(workspaceParam);
+            if (workspace != null) {
+                style.setWorkspace(workspace);
+            }
+        }
 
         IModel<String> nameBinding = styleModel.bind("name");
 

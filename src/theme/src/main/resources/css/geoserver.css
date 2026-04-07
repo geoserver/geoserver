@@ -970,7 +970,7 @@ table > tbody > tr:nth-of-type(odd) > * {
   display: flex;
   flex-direction: column;
   text-align: center;
-  border: 2px solid var(--gs-border-color);
+  border: 1px solid var(--gs-border-color);
   border-radius: var(--gs-border-radius);
   min-width: 8rem;
   box-shadow: var(--gs-box-shadow-sm);
@@ -1802,6 +1802,30 @@ form a.collapsed {
 .gs-dropdown li a:hover {
   text-decoration: none;
 }
+
+/* Workspace context indicator shown next to nav items when scoped to a workspace */
+.gs-ws-indicator {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0.55;
+  cursor: default;
+  margin-top: 0.25rem;
+}
+
+.gs-ws-indicator::before {
+  content: "";
+  display: inline-block;
+  width: 13px;
+  height: 11px;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+}
+
 .gs-header-nav [id="nodeIdContainer"],
 .gs-header-nav .devtoolbar {
   display: none;

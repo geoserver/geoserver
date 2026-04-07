@@ -9,7 +9,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -103,7 +103,14 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
         paramsForm.add(storeEditPanel);
 
         // cancel/submit buttons
-        paramsForm.add(new BookmarkablePageLink<>("cancel", StorePage.class));
+        paramsForm.add(new Link<Void>("cancel") {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void onClick() {
+                doReturn(StorePage.class);
+            }
+        });
         paramsForm.add(saveLink());
         paramsForm.add(applyLink());
         paramsForm.setDefaultButton(saveLink());

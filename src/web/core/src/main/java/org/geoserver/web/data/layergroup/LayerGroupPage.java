@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -129,7 +130,13 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(new BookmarkablePageLink<>("addNew", LayerGroupEditPage.class));
+        StringValue workspace = getPageParameters().get(LayerGroupEditPage.WORKSPACE);
+        if (!workspace.isNull() && !workspace.isEmpty()) {
+            PageParameters addParams = new PageParameters().add(LayerGroupEditPage.WORKSPACE, workspace.toString());
+            header.add(new BookmarkablePageLink<>("addNew", LayerGroupEditPage.class, addParams));
+        } else {
+            header.add(new BookmarkablePageLink<>("addNew", LayerGroupEditPage.class));
+        }
 
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));

@@ -32,6 +32,23 @@ public abstract class ComponentInfo<C extends Component> implements Serializable
     /** Controls access to the component */
     ComponentAuthorizer authorizer = ComponentAuthorizer.ALLOW;
 
+    /**
+     * When {@code true}, and a {@code workspace} page parameter is present in the current request, the UI may scope the
+     * component's label/link to that workspace (e.g. append {@code (workspace_name)} to the label and keep the
+     * {@code workspace} parameter when navigating).
+     *
+     * <p>Defaults to {@code false} and must be explicitly enabled by extension point beans that want workspace context.
+     */
+    boolean includeWorkspaceParam = false;
+
+    public boolean isIncludeWorkspaceParam() {
+        return includeWorkspaceParam;
+    }
+
+    public void setIncludeWorkspaceParam(boolean includeWorkspaceParam) {
+        this.includeWorkspaceParam = includeWorkspaceParam;
+    }
+
     /** The id of the component. */
     public String getId() {
         return id;

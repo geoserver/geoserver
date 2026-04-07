@@ -55,8 +55,7 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
         tester.startPage(new FormTestPage((ComponentBuilder) id -> new NavigationTreePanel(id)));
         tester.assertNoErrorMessage();
         tester.assertComponent(
-                "form:panel:globalSectionContainer:globalSectionBody:workspacesScroll",
-                WebMarkupContainer.class);
+                "form:panel:globalSectionContainer:globalSectionBody:workspacesScroll", WebMarkupContainer.class);
     }
 
     @Test

@@ -179,6 +179,24 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         Form<GeoServerHomePage> form = selectionForm(true);
         chooser.add(form);
 
+        if (admin) {
+            // show admin some additional details
+            add(adminOverview());
+        } else {
+            // add catalogLinks placeholder (even when not admin) to identify this page location
+            add(placeholderLabel("catalogLinks"));
+        }
+
+        // additional content provided by plugins across the geoserver codebase
+        // for example security warnings to admin
+        if (admin && workspaceInfo == null && publishedInfo == null) {
+            add(additionalHomePageContent());
+        } else {
+            // add catalogLinks placeholder (even when not admin) to identify this page location
+            add(placeholderLabel("contributedContent"));
+        }
+
+
         Locale locale = getLocale();
 
         String welcomeText = getWelcomeDescription();
@@ -191,17 +209,6 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         add(footerMessage(contactInfo, locale));
         add(footerContact(contactInfo, locale));
 
-        if (admin) {
-            // show admin some additional details
-            add(adminOverview());
-        } else {
-            // add catalogLinks placeholder (even when not admin) to identify this page location
-            add(placeholderLabel("catalogLinks"));
-        }
-
-        // additional content provided by plugins across the geoserver codebase
-        // for example security warnings to admin
-        add(additionalHomePageContent());
 
         List<ServiceDescription> serviceDescriptions = new ArrayList<>();
         List<ServiceLinkDescription> serviceLinks = new ArrayList<>();
@@ -584,9 +591,10 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             @Override
             protected void populateItem(ListItem<GeoServerHomePageContentProvider> item) {
                 GeoServerHomePageContentProvider provider = item.getModelObject();
-                Component extraContent = provider.getPageBodyComponent("contentList");
+                Component extraContent = provider.getPageBodyComponent("content");
                 if (null == extraContent) {
-                    extraContent = placeholderLabel("contentList");
+                    extraContent = placeholderLabel("content");
+                    item.setVisible(false);
                 }
                 item.add(extraContent);
             }

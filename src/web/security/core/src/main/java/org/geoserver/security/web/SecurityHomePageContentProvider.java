@@ -35,6 +35,10 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerHomePageContentProvider;
 import org.geotools.util.logging.Logging;
 
+/**
+ * Checks secutity configuration and warns about potential security issues,
+ * such as the use of the default master password.
+ */
 public class SecurityHomePageContentProvider implements GeoServerHomePageContentProvider {
 
     static Logger LOGGER = Logging.getLogger(SecurityHomePageContentProvider.class);

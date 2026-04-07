@@ -9,14 +9,13 @@ import org.apache.wicket.Component;
 import org.geoserver.platform.GeoServerExtensions;
 
 /**
- * {@link GeoServerHomePage} extension point allowing to contribute a Wicket component to the central body of the home
- * page.
+ * {@link GeoServerHomePage} extension point allowing to contribute a Wicket component to the {@code contributedContent}
+ * div of the home page.
  *
  * <p>Instances of this type are to be looked up by the {@code GeoServerHomePage} by means of the
  * {@link GeoServerExtensions} mechanism and appended to the home page's central body in no predefined order.
  *
  * @author Gabriel Roldan
- * @see CapabilitiesHomePageLinkProvider
  */
 public interface GeoServerHomePageContentProvider {
 

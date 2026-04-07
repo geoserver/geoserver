@@ -13,12 +13,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.rest.security.AuthenticationFilterChainRestController;
 import org.geoserver.security.HTTPMethod;
 import org.geoserver.security.RequestFilterChain;
+import org.geotools.util.logging.Logging;
 
 @XStreamAlias("filterchain")
 public class AuthFilterChain {
+    private static final Logger LOGGER = Logging.getLogger(AuthFilterChain.class);
+
     private String name;
     private String className;
     private List<String> patterns;
@@ -29,8 +34,6 @@ public class AuthFilterChain {
     private boolean matchHTTPMethod;
     private Set<String> httpMethods;
     private String roleFilterName;
-
-    private static final AllowedAuthFilterChainClasses ALLOWED = AllowedAuthFilterChainClasses.load();
 
     // Property that is not available in RequestFilterChain
     private int position;
@@ -71,7 +74,10 @@ public class AuthFilterChain {
 
     private RequestFilterChain createInstance(List<String> patterns) {
         // Fail closed before any reflective class loading
-        if (!ALLOWED.isAllowed(className)) {
+        if (!AllowedAuthFilterChainClasses.load().isAllowed(className)) {
+            LOGGER.log(Level.WARNING, "Rejected authentication filter chain class {0} for chain {1}", new Object[] {
+                className, name
+            });
             throw new AuthenticationFilterChainRestController.CannotMakeChain(
                     className, new InstantiationException("Unsupported AuthFilterChain class (not in allow-list)"));
         }

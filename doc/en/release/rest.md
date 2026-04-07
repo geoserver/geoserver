@@ -18,6 +18,7 @@ Core API:
 
 *   [coverages](coverages/index.html)
 *   [coveragestores](coveragestores/index.html)
+*   [crs](crs/index.html)
 *   [datastores](datastores/index.html)
 *   [featuretypes](featuretypes/index.html)
 *   [fonts](fonts/index.html)

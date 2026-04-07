@@ -8,8 +8,8 @@ Those involved with GeoServer founded the [GeoTools](http://geotools.org) projec
 
 Around the same time as GeoServer was founded, The OpenGIS Consortium (now the [Open Geospatial Consortium](http://www.opengeospatial.org)) was working on the [Web Feature Service](http://www.opengeospatial.org/standards/wfs) standard. It specifies a protocol to make spatial data directly available on the web, using GML (Geographic Markup Language), an interoperable data format. A [Web Map Service](http://www.opengeospatial.org/standards/wms) was also created, a protocol for creating and displaying map images created from spatial data.
 
-Other projects became interrelated. [Refractions Research](http://www.refractions.net) created PostGIS, a free and open spatial database, which enabled GeoServer to connect to a free database. Also, MetaCarta originally created [OpenLayers](https://openlayers.org), an open source browser-based map viewing utility. Together, these tools have all enhanced the functionality of GeoServer.
+Other projects became interrelated. [Refractions Research](http://www.refractions.net) created PostGIS, a free and open spatial database, which enabled GeoServer to connect to a free database. [QGIS](https://qgis.org/) was started at this time as a desktop GIS. Also, MetaCarta originally created [OpenLayers](https://openlayers.org), an open source browser-based map viewing utility. Together, these tools adopted the same industry standards and have all enhanced the functionality of GeoServer.
 
 GeoServer joined the [Open Source Geospatial Foundation (OSGeo)](https://www.osgeo.org) providing a new home for the project and a venue for ongoing collaboration.
 
-GeoServer can now read data from over a dozen spatial data sources and output to many different formats. Now in its second decade, GeoServer is continuing its mission to make spatial data more accessible to all.
+GeoServer can now read data from over a dozen spatial data sources and output to many different formats. Now in its third decade, GeoServer is continuing its mission to make spatial data more accessible to all.

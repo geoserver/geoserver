@@ -5,7 +5,7 @@ This module provides version and release variables to mkdocs-macros-plugin,
 ensuring consistent version numbers across all documentation manuals
 (user, developer, docguide, and translations).
 
-To update the version for a new release, simply change the values below.
+To update the version for a new release, change the values below.
 """
 
 import os

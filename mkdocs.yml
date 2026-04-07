@@ -9,6 +9,8 @@ site_dir: mkdocs_output
 
 # Exclude include files from the build (they are included by other pages)
 exclude_docs: |
+  README.md
+  target
   en/user/styling/ysld/reference/symbolizers/include/
   en/developer/policies/gsip_voting.md
   en/developer/quickstart/checkout.md
@@ -39,6 +41,7 @@ theme:
     - search.suggest
     - search.highlight
     - content.code.copy
+    - content.tabs.link
     - content.action.edit
     - navigation.tabs
     - navigation.tabs.sticky
@@ -51,6 +54,7 @@ theme:
 
 extra:
   version:
+    default: latest
     provider: mike
   version_selector:
     # GitHub Pages versions (mike-managed)
@@ -96,6 +100,8 @@ extra:
       link: https://geoserver.org
 
 plugins:
+  - offline:
+      enabled: !ENV [OFFLINE, false]
   - search:
       lang: en
   - macros:
@@ -112,10 +118,18 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      dedent_subsections: true
+  - pymdownx.keys
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - attr_list
   - md_in_html
   - toc:
@@ -127,6 +141,9 @@ extra_css:
 extra_javascript:
   - javascripts/hide-empty-toc.js
   - javascripts/version-archive.js
+
+not_in_nav: |
+  en/docguide/sphinx.md
 
 nav:
   - Home: index.md
@@ -494,7 +511,7 @@ nav:
       - en/user/production/misc.md
       - en/user/production/troubleshooting.md
       - en/user/production/identify.md
-    - Rest:
+    - REST:
       - en/user/rest/index.md
       - en/user/rest/about.md
       - en/user/rest/fonts.md
@@ -586,7 +603,7 @@ nav:
         - Configuring HTTP Header Proxy Authentication: en/user/security/tutorials/httpheaderproxy/index.md
         - Configuring Apache HTTPD Session Integration: en/user/security/tutorials/credentialsfromheaders/index.md
         - Authentication with CAS: en/user/security/tutorials/cas/index.md
-    - Geowebcache:
+    - GeoWebCache:
       - en/user/geowebcache/index.md
       - GeoWebCache settings:
         - en/user/geowebcache/webadmin/index.md
@@ -885,12 +902,6 @@ nav:
         - en/user/community/proxy-base-ext/index.md
         - en/user/community/proxy-base-ext/install.md
         - en/user/community/proxy-base-ext/usage.md
-      - WPS Remote community module:
-        - en/user/community/remote-wps/index.md
-        - en/user/community/remote-wps/install_geoserver.md
-        - en/user/community/remote-wps/install_xmpp.md
-        - en/user/community/remote-wps/install_python.md
-        - en/user/community/remote-wps/running_example.md
       - S3 Support for GeoTiff: en/user/community/s3-geotiff/index.md
       - Schemaless Features Mongo Plugin:
         - en/user/community/schemaless-features/index.md
@@ -1004,7 +1015,7 @@ nav:
         - en/developer/programming-guide/web-ui/implementing.md
       - Wicket Development In GeoServer: en/developer/programming-guide/wicket-pages/index.md
       - Extension Points: en/developer/programming-guide/extension-points/index.md
-      - Wps Services:
+      - WPS Services:
         - en/developer/programming-guide/wps-services/index.md
         - en/developer/programming-guide/wps-services/design-guide.md
         - en/developer/programming-guide/wps-services/implementing.md
@@ -1038,9 +1049,8 @@ nav:
     - Background: en/docguide/background.md
     - Quickfix: en/docguide/quickfix.md
     - Contributing: en/docguide/contributing.md
-    - Installing Sphinx: en/docguide/install.md
-    - Installing LaTeX: en/docguide/installlatex.md
     - Workflow: en/docguide/workflow.md
+    - Installing mkdocs: en/docguide/install.md
     - Markdown Syntax: en/docguide/markdown.md
     - Style Guidelines: en/docguide/style.md
     - Writing a Tutorial: en/docguide/tutorial.md

@@ -140,13 +140,38 @@ The REST API allows you to list, create, upload, update, and delete filterChains
 </filterChains>
 ```
 
-# Configuring Allowed Authentication Filter Chain Classes
+## Authentication REST Class Allowlist
 
-GeoServer uses reflection to instantiate authentication filter chain implementations defined in the security configuration. To reduce the risk of loading unexpected or unsupported classes, GeoServer enforces an allow-list of authentication filter chain classes.
+GeoServer can restrict which authentication-related classes may be created by the REST security configuration endpoints.
 
-## Default behavior
+This protection applies to reflective class loading used when REST requests define authentication filter chain classes
+or authentication provider classes. The allowlists are intended to reduce the risk of creating unexpected classes from
+request input.
 
-By default, GeoServer allows the built-in authentication filter chain implementations shipped with the platform, including:
+Two separate allowlists are available:
+
+- one for authentication filter chain classes
+- one for authentication provider and provider configuration classes
+
+The configuration accepts comma-separated values. Supported syntax depends on the specific allowlist.
+
+### Authentication Filter Chain Allowlist
+
+GeoServer uses reflection to instantiate authentication filter chain implementations defined in the security
+configuration. To reduce the risk of loading unexpected or unsupported classes, GeoServer enforces an allow-list of
+authentication filter chain classes.
+
+This allowlist is used by both:
+
+- the XML/domain path for authentication filter chains
+- the REST controller path that creates or updates authentication filter chains
+
+Configuration keys:
+
+- System property: `geoserver.security.allowedAuthFilterChainClasses`
+- Environment variable: `GEOSERVER_SECURITY_ALLOWED_AUTH_FILTERCHAIN_CLASSES`
+
+Default allowed classes:
 
 - `org.geoserver.security.HtmlLoginFilterChain`
 - `org.geoserver.security.ConstantFilterChain`
@@ -154,37 +179,114 @@ By default, GeoServer allows the built-in authentication filter chain implementa
 - `org.geoserver.security.ServiceLoginFilterChain`
 - `org.geoserver.security.VariableFilterChain`
 
-These default classes are always permitted.
+Supported values:
 
-## Extending the allow-list
+- exact fully qualified class names
+- package prefixes ending in `.*`
 
-Installations that provide custom authentication filter chain implementations can extend the allow-list using either a system property or an environment variable.
+Example prefix value:
 
-The configured values are **merged** with the built-in allow-list.
-
-### System property
-
-```
--Dgeoserver.security.allowedAuthFilterChainClasses=\
-com.example.geoserver.security.CustomChain,\
-com.example.geoserver.security.*
+``` properties
+geoserver.security.allowedAuthFilterChainClasses=com.example.security.*
 ```
 
-### Environment variable
+If a class name is not present in the allow-list, GeoServer will reject the configuration and fail to instantiate the
+filter chain.
 
+This mechanism prevents the reflective construction of unexpected classes and mitigates risks associated with unsafe
+reflection, while preserving extensibility for custom deployments.
+
+### Authentication Provider Allowlist
+
+This allowlist is used by the REST authentication provider endpoint for both JSON and XML payloads.
+
+Configuration keys:
+
+- System property: `geoserver.security.allowedAuthenticationProviderClasses`
+- Environment variable: `GEOSERVER_SECURITY_ALLOWED_AUTHENTICATION_PROVIDER_CLASSES`
+
+Default allowed classes:
+
+- `org.geoserver.security.auth.UsernamePasswordAuthenticationProvider`
+- `org.geoserver.security.jdbc.JDBCConnectAuthProvider`
+- `org.geoserver.security.ldap.LDAPAuthenticationProvider`
+- `org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProvider`
+- `org.geoserver.security.auth.web.WebServiceAuthenticationProvider`
+- `org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig`
+- `org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig`
+- `org.geoserver.security.ldap.LDAPSecurityServiceConfig`
+- `org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProviderConfig`
+- `org.geoserver.security.auth.web.WebAuthenticationConfig`
+- `org.geoserver.security.WebServiceBodyResponseSecurityProvider`
+- `org.geoserver.security.WebServiceBodyResponseSecurityProviderConfig`
+
+Supported values:
+
+- exact fully qualified class names
+- package prefixes ending in `.*`
+
+### How Configuration Is Applied
+
+For each allowlist:
+
+- GeoServer starts with the built-in defaults listed above
+- if a system property is set, its values are added to the built-in defaults
+- otherwise, if the environment variable is set, its values are added to the built-in defaults
+- blank values are ignored
+
+System properties take precedence over environment variables.
+
+The configured values do not replace the defaults. They extend them.
+
+### Examples
+
+To allow a custom authentication filter chain class, add its fully qualified name to the filter chain allowlist.
+
+Example using a system property:
+
+``` properties
+-Dgeoserver.security.allowedAuthFilterChainClasses=com.example.security.CustomFilterChain
 ```
-GEOSERVER_SECURITY_ALLOWED_AUTH_FILTERCHAIN_CLASSES=\
-com.example.geoserver.security.CustomChain,\
-com.example.geoserver.security.*
+
+Example using an environment variable:
+
+``` bash
+export GEOSERVER_SECURITY_ALLOWED_AUTH_FILTERCHAIN_CLASSES=com.example.security.CustomFilterChain
 ```
 
-The value is a comma-separated list of:
+To allow a custom authentication provider and its configuration class:
 
-- Fully qualified class names, or
-- Package prefixes ending in `.*`
+System property:
 
-## Security notes
+``` properties
+-Dgeoserver.security.allowedAuthenticationProviderClasses=com.example.security.CustomAuthenticationProvider,com.example.security.CustomAuthenticationProviderConfig
+```
 
-If a class name is not present in the allow-list, GeoServer will reject the configuration and fail to instantiate the filter chain.
+Environment variable:
 
-This mechanism prevents the reflective construction of unexpected classes and mitigates risks associated with unsafe reflection, while preserving extensibility for custom deployments.
+``` bash
+export GEOSERVER_SECURITY_ALLOWED_AUTHENTICATION_PROVIDER_CLASSES=com.example.security.CustomAuthenticationProvider,com.example.security.CustomAuthenticationProviderConfig
+```
+
+To allow classes in a custom package:
+
+``` properties
+-Dgeoserver.security.allowedAuthenticationProviderClasses=com.example.security.*
+```
+
+### Migration Note
+
+Before upgrading, deployments with custom authentication provider classes should configure the allowlist with those
+provider and provider-config class names (or package prefixes) so create/update operations keep working after upgrade.
+
+At startup, GeoServer logs the active authentication provider allowlist and warns if persisted provider configurations
+reference classes outside the effective allowlist.
+
+### Notes
+
+- The filter chain allowlist accepts exact class names and package prefixes ending in `.*`.
+- The authentication provider allowlist accepts exact class names and package prefixes ending in `.*`.
+- A custom authentication provider typically requires both the provider class and its corresponding configuration class
+  to be allowed.
+- These allowlists only affect the REST security class-loading paths described above. They do not replace the normal
+  type checks performed by GeoServer.

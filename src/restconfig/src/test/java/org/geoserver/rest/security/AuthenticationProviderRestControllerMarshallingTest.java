@@ -518,6 +518,25 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         assertThat(up.getContentAsString(), containsString("Unsupported className"));
     }
 
+    /** Explicit blocked {@code configClassName} is rejected with 400. */
+    @Test
+    public void create_rejects_blocked_configClassName_400() throws Exception {
+        String name = "MARSHAL-" + System.nanoTime() + "-cfg";
+
+        JSONObject inner = new JSONObject();
+        inner.put("name", name);
+        inner.put("className", CLASSNAME_UP);
+        inner.put("configClassName", "java.lang.Runtime");
+        inner.put("userGroupServiceName", "default");
+        JSONObject root = new JSONObject();
+        root.put("authprovider", inner);
+
+        MockHttpServletResponse resp =
+                adminPOST(BASE + "/security/authproviders", json(root.toString()), "application/json");
+        assertEquals(400, resp.getStatus());
+        assertThat(resp.getContentAsString(), containsString("Unsupported configClassName"));
+    }
+
     /** Path/payload name mismatch is rejected with 400. */
     @Test
     public void update_rejects_path_payload_mismatch_400() throws Exception {

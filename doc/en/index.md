@@ -2,6 +2,13 @@
 
 Welcome to the GeoServer documentation. Choose a guide to get started:
 
+<div class="grid cards doc-cards" markdown="span">
+[:book:{: .doc-card-icon } <br/><span class="guide">User Manual</span><br/>Learn how to install, configure, and use GeoServer for publishing geospatial data](user/index.md){: .doc-card}
+[:computer:{: .doc-card-icon } <br/><span class="guide">Developer Guide</span></br>Contribute to GeoServer development with architecture guides and coding standards](developer/index.md){: .doc-card}
+[:writing_hand:{: .doc-card-icon } <br/><span class="guide">Documentation Guide</span>Learn how to write and contribute to GeoServer documentation](docguide/index.md){: .doc-card}
+[:electric_plug:{: .doc-card-icon } <br/><span class="guide">API Reference</span>Explore the REST API and service endpoints for programmatic access](api/index.html){: .doc-card}
+</div>
+
 <div class="doc-cards">
   <a href="user/" class="doc-card">
     <div class="doc-card-icon">📖</div>
@@ -32,7 +39,7 @@ Welcome to the GeoServer documentation. Choose a guide to get started:
 .doc-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  gap: 3rem;
   margin: 3rem 0;
   padding: 0;
 }

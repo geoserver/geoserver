@@ -35,6 +35,9 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
 
     private static final String BASE = RestBaseController.ROOT_PATH + "/security/filterchain";
     private static final String CLASS_HTML = "org.geoserver.security.HtmlLoginFilterChain";
+    private static final String ALLOWED_PROP = "geoserver.security.allowedAuthFilterChainClasses";
+    private static final String CLASS_DUMMY = "org.geoserver.rest.security.DummyRequestFilterChain";
+    private static final String ALLOWED_PREFIX = "org.geoserver.rest.security.*";
 
     private static final String JSON = "application/json";
     private static final String XML = "application/xml";
@@ -330,6 +333,70 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
                 403,
                 postAsServletResponse(BASE, defaultChainXml(newName()), XML).getStatus());
         super.loginAsAdmin(); // restore
+    }
+
+    @Test
+    public void testCreate_JSON_rejectsBlockedChainClass() throws Exception {
+        String name = newName();
+        String body = defaultChainJson(name).replace(CLASS_HTML, "java.lang.Runtime");
+
+        MockHttpServletResponse resp = postAsServletResponse(BASE, body, JSON);
+        TestCase.assertEquals(400, resp.getStatus());
+        assertTrue(resp.getContentAsString().contains("Unsupported className"));
+    }
+
+    @Test
+    public void testCreate_JSON_acceptsConfiguredChainClass() throws Exception {
+        String name = newName();
+        String previous = System.getProperty(ALLOWED_PROP);
+        System.setProperty(ALLOWED_PROP, CLASS_DUMMY);
+        try {
+            String body = defaultChainJson(name).replace(CLASS_HTML, CLASS_DUMMY);
+            MockHttpServletResponse resp = postAsServletResponse(BASE, body, JSON);
+            TestCase.assertEquals(201, resp.getStatus());
+
+            MockHttpServletResponse view = getAsServletResponse(BASE + "/" + name + ".json");
+            TestCase.assertEquals(200, view.getStatus());
+            String clazz = om.readTree(view.getContentAsByteArray())
+                    .path("filters")
+                    .path("@class")
+                    .asString();
+            assertEquals(CLASS_DUMMY, clazz);
+        } finally {
+            if (previous == null) {
+                System.clearProperty(ALLOWED_PROP);
+            } else {
+                System.setProperty(ALLOWED_PROP, previous);
+            }
+            safeDelete(name);
+        }
+    }
+
+    @Test
+    public void testCreate_JSON_acceptsConfiguredChainPrefix() throws Exception {
+        String name = newName();
+        String previous = System.getProperty(ALLOWED_PROP);
+        System.setProperty(ALLOWED_PROP, ALLOWED_PREFIX);
+        try {
+            String body = defaultChainJson(name).replace(CLASS_HTML, CLASS_DUMMY);
+            MockHttpServletResponse resp = postAsServletResponse(BASE, body, JSON);
+            TestCase.assertEquals(201, resp.getStatus());
+
+            MockHttpServletResponse view = getAsServletResponse(BASE + "/" + name + ".json");
+            TestCase.assertEquals(200, view.getStatus());
+            String clazz = om.readTree(view.getContentAsByteArray())
+                    .path("filters")
+                    .path("@class")
+                    .asString();
+            assertEquals(CLASS_DUMMY, clazz);
+        } finally {
+            if (previous == null) {
+                System.clearProperty(ALLOWED_PROP);
+            } else {
+                System.setProperty(ALLOWED_PROP, previous);
+            }
+            safeDelete(name);
+        }
     }
 
     // ----------------- update -----------------

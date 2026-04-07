@@ -112,23 +112,31 @@ Good
 ### Code and command line
 
 Any code or command line snippets should be formatted as code:
-
-    This is a code block.
-
-When lines are longer than 77 characters, extend multiple lines in a format appropriate for the language in use. If possible, snippets should be functional when pasted directly into the appropriate target.
-
-For example, Java and XML make no distinction between a single space and multiple spaces, so the following snippets are fine:
-
+```json
+{
+    code: 'This is a code block.'
+}
 ```
+
+When lines are longer than 80 characters, extend multiple lines in a format appropriate for the language in use. If possible, snippets should be functional when pasted directly into the appropriate target.
+
+Java and XML make no distinction between a single space and multiple spaces, so the following snippets are fine:
+
+```java
 org.geoserver.package.Object someVeryLongIdentifier =
    org.geoserver.package.Object.factoryMethod();
+```
 
+```xml
 <namespace:tagname attributename="attributevalue" attribute2="attributevalue"
    nextattribute="this is on another line"/>
 ```
 
-For shell scripts, new lines can be escaped with a backslash character (\\). It is also recommended to use a simple `$` prompt to save space. For example:
+For shell scripts, new lines can be escaped with a backslash character (\\). It is also recommended to avoid including a prompt so the entire example can be copied and pasted:
 
-    $ /org/jdk1.5.0*/bin/java \
-       -cp /home/user/.m2/repository/org/geoserver/*/*.jar \
-       org.geoserver.GeoServer -DGEOSERVER_DATA_DIR=/var/lib/geoserver_data/release
+```bash
+    cd gwc/tmp
+    find . \
+      -type f \
+      -regex ".*\.png" | wc -l
+```

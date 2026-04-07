@@ -32,10 +32,10 @@ If you choose to use Java System properties, add the following ones to the GeoSe
 
 ### Disabling the plugin
 
-The ``geoserver.acl.enabled`` config property defaults to ``true`` so it's not required for the plugin to run. In order to completely disable the plugin, set it to `false`:
+The ``geoserver.acl.client.enabled`` config property defaults to ``true`` so it's not required for the plugin to run. In order to completely disable the plugin, set it to `false`:
 
 ``` shell
--Dgeoserver.acl.enabled=false
+-Dgeoserver.acl.client.enabled=false
 ```
 
 ### Environment variables
@@ -47,7 +47,7 @@ All the system properties mentioned above can be mapped to environment variables
 For example:
 
 ``` shell
-export GEOSERVER_ACL_ENABLED=false
+export GEOSERVER_ACL_CLIENT_ENABLED=false
 export GEOSERVER_ACL_CLIENT_BASEPATH=https://example.com/acl/api
 export GEOSERVER_ACL_CLIENT_USERNAME=geoserver
 export GEOSERVER_ACL_CLIENT_PASSWORD=ch4ng3m3

@@ -2221,6 +2221,10 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/security/tutorials/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/security/tutorials/activedirectory/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
@@ -2253,7 +2257,15 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/security/usergrouprole/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/security/usergrouprole/interaction/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/security/usergrouprole/roles/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2262,6 +2274,10 @@
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/security/usergrouprole/usergroupservices/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/security/webadmin/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2317,6 +2333,10 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/services/features/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/services/features/config/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
@@ -2326,6 +2346,10 @@
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/services/features/service/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/services/features/status/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2405,7 +2429,15 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/services/wms/configuration/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/services/wms/decoration/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/services/wms/global/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2477,6 +2509,10 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/css/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/css/cascading/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
@@ -2517,6 +2553,10 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/css/cookbook/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/css/cookbook/line/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
@@ -2530,6 +2570,10 @@
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/css/cookbook/raster/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/css/examples/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2573,11 +2617,19 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/introduction/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/working/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/cookbook/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2617,6 +2669,10 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/extensions/rendering-selection/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/extensions/rendering-transform/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
@@ -2629,7 +2685,15 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/extensions/composite-blend/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/extensions/composite-blend/example/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/extensions/composite-blend/modes/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2661,11 +2725,23 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/reference/pointsymbolizer/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/reference/polygonsymbolizer/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/reference/rastersymbolizer/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/reference/rules/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/reference/sld/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2785,11 +2861,19 @@
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/ysld/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/ysld/gs-extensions/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/ysld/installing/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/ysld/cookbook/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2806,6 +2890,10 @@
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/ysld/cookbook/rasters/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/styling/ysld/reference/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>
@@ -2878,6 +2966,10 @@
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/tutorials/wmsreflector/</loc>
+         <lastmod>2026-04-07</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/tutorials/GetFeatureInfo/</loc>
          <lastmod>2026-04-07</lastmod>
     </url>
     <url>

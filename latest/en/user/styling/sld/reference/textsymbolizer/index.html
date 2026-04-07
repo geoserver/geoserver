@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/styling/sld/reference/textsymbolizer/">
       
       
-        <link rel="prev" href="../linesymbolizer/">
+        <link rel="prev" href="../polygonsymbolizer/">
       
       
         <link rel="next" href="../labeling/">
@@ -54,6 +54,58 @@
       <link rel="stylesheet" href="../../../../../../stylesheets/extra.css">
     
     <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<script>
+(function() {
+  var host = location.hostname;
+  if (host === '127.0.0.1' || host === 'localhost' || host === '[::1]') {
+    var versionData = JSON.stringify({
+      default: 'latest',
+      versions: [
+        { version: 'latest', title: 'Latest', aliases: ['main', '3.0.x'], archive: false }
+      ]
+    });
+
+    function isVersionsJson(url) {
+      return typeof url === 'string' && url.indexOf('/versions.json') !== -1;
+    }
+
+    if (window.fetch) {
+      var originalFetch = window.fetch.bind(window);
+      window.fetch = function(resource, options) {
+        var url = typeof resource === 'string' ? resource : resource && resource.url;
+        if (isVersionsJson(url)) {
+          return Promise.resolve(new Response(versionData, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+          }));
+        }
+        return originalFetch(resource, options);
+      };
+    }
+
+    if (window.XMLHttpRequest) {
+      var originalOpen = XMLHttpRequest.prototype.open;
+      var originalSend = XMLHttpRequest.prototype.send;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        this.__versionsJsonDisabled = isVersionsJson(url);
+        return originalOpen.apply(this, arguments);
+      };
+      XMLHttpRequest.prototype.send = function(body) {
+        if (this.__versionsJsonDisabled) {
+          this.readyState = 4;
+          this.status = 200;
+          this.responseText = versionData;
+          this.response = versionData;
+          this.dispatchEvent(new Event('readystatechange'));
+          this.dispatchEvent(new Event('load'));
+          return;
+        }
+        return originalSend.apply(this, arguments);
+      };
+    }
+  }
+})();
+</script>
     
       
 
@@ -3685,6 +3737,8 @@
     
       
         
+          
+        
       
         
       
@@ -3714,8 +3768,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_2_7_3" id="__nav_2_7_3_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -3729,8 +3784,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_7_3" id="__nav_2_7_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_7_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2_7_3">
@@ -3743,32 +3804,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -3837,6 +3872,8 @@
     
       
         
+          
+        
       
         
       
@@ -3860,8 +3897,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7_3_4" >
         
           
-          <label class="md-nav__link" for="__nav_2_7_3_4" id="__nav_2_7_3_4_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../cookbook/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -3875,8 +3913,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_7_3_4" id="__nav_2_7_3_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_7_3_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_7_3_4">
@@ -3889,32 +3933,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../cookbook/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -4133,14 +4151,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../sld.md" class="md-nav__link">
+      <a href="../sld/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    StyledLayerDescriptor
   
 
     
@@ -4273,14 +4291,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../pointsymbolizer.md" class="md-nav__link">
+      <a href="../pointsymbolizer/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    PointSymbolizer
   
 
     
@@ -4329,14 +4347,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../polygonsymbolizer.md" class="md-nav__link">
+      <a href="../polygonsymbolizer/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    PolygonSymbolizer
   
 
     
@@ -4965,6 +4983,8 @@
     
       
         
+          
+        
       
         
       
@@ -4986,8 +5006,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7_3_6_10" >
         
           
-          <label class="md-nav__link" for="__nav_2_7_3_6_10" id="__nav_2_7_3_6_10_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../extensions/composite-blend/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -5001,8 +5022,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_7_3_6_10" id="__nav_2_7_3_6_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_2_7_3_6_10_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_7_3_6_10">
@@ -5015,32 +5042,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../extensions/composite-blend/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -5078,14 +5079,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../extensions/composite-blend/modes.md" class="md-nav__link">
+      <a href="../../extensions/composite-blend/modes/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    Composite and blending modes
   
 
     
@@ -5292,14 +5293,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../extensions/rendering-selection.md" class="md-nav__link">
+      <a href="../../extensions/rendering-selection/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    Rendering Selection
   
 
     
@@ -5528,6 +5529,8 @@
     
       
         
+          
+        
       
         
       
@@ -5573,8 +5576,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7_5" >
         
           
-          <label class="md-nav__link" for="__nav_2_7_5" id="__nav_2_7_5_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../css/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -5588,8 +5592,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_7_5" id="__nav_2_7_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_7_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_7_5">
@@ -5602,32 +5612,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../css/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -6004,6 +5988,8 @@
     
       
         
+          
+        
       
         
       
@@ -6027,8 +6013,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7_5_15" >
         
           
-          <label class="md-nav__link" for="__nav_2_7_5_15" id="__nav_2_7_5_15_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../css/cookbook/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -6042,8 +6029,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_7_5_15" id="__nav_2_7_5_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_7_5_15_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_7_5_15">
@@ -6056,32 +6049,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../css/cookbook/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -6214,6 +6181,8 @@
     
       
         
+          
+        
       
         
       
@@ -6239,8 +6208,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7_5_16" >
         
           
-          <label class="md-nav__link" for="__nav_2_7_5_16" id="__nav_2_7_5_16_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../css/examples/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -6254,8 +6224,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_7_5_16" id="__nav_2_7_5_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_7_5_16_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_7_5_16">
@@ -6268,32 +6244,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../css/examples/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -6462,6 +6412,8 @@
     
       
         
+          
+        
       
         
       
@@ -6485,8 +6437,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7_6" >
         
           
-          <label class="md-nav__link" for="__nav_2_7_6" id="__nav_2_7_6_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../ysld/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -6500,8 +6453,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_7_6" id="__nav_2_7_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_7_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_7_6">
@@ -6514,32 +6473,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../ysld/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -6608,15 +6541,15 @@
     
       
         
-      
-        
-      
-        
-      
-        
-      
-        
           
+        
+      
+        
+      
+        
+      
+        
+      
         
       
         
@@ -6654,7 +6587,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../ysld/reference/symbolizers/" class="md-nav__link ">
+            <a href="../../../ysld/reference/" class="md-nav__link ">
               
   
   
@@ -6689,32 +6622,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../ysld/reference/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -6801,6 +6708,32 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ysld/reference/symbolizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Symbolizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -7101,6 +7034,8 @@
     
       
         
+          
+        
       
         
       
@@ -7124,8 +7059,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7_6_5" >
         
           
-          <label class="md-nav__link" for="__nav_2_7_6_5" id="__nav_2_7_6_5_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../ysld/cookbook/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -7139,8 +7075,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_7_6_5" id="__nav_2_7_6_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_7_6_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_7_6_5">
@@ -7153,32 +7095,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../ysld/cookbook/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -9224,14 +9140,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../services/wms/configuration.md" class="md-nav__link">
+      <a href="../../../../services/wms/configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    WMS configuration
   
 
     
@@ -9252,14 +9168,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../services/wms/global.md" class="md-nav__link">
+      <a href="../../../../services/wms/global/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    Global variables affecting WMS
   
 
     
@@ -9630,6 +9546,8 @@
     
       
         
+          
+        
       
         
       
@@ -9655,8 +9573,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8_4" >
         
           
-          <label class="md-nav__link" for="__nav_2_8_4" id="__nav_2_8_4_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../services/features/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -9670,8 +9589,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_8_4" id="__nav_2_8_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_8_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_8_4">
@@ -9684,32 +9609,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../../services/features/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -9803,14 +9702,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../services/features/status.md" class="md-nav__link">
+      <a href="../../../../services/features/status/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    OGC API - Features Implementation status
   
 
     
@@ -14108,6 +14007,8 @@
     
       
         
+          
+        
       
         
       
@@ -14139,8 +14040,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_14_2" >
         
           
-          <label class="md-nav__link" for="__nav_2_14_2" id="__nav_2_14_2_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../security/webadmin/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -14154,8 +14056,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_14_2" id="__nav_2_14_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_14_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_14_2">
@@ -14168,32 +14076,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../../security/webadmin/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -14438,6 +14320,8 @@
     
       
         
+          
+        
       
         
       
@@ -14465,8 +14349,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_14_3" >
         
           
-          <label class="md-nav__link" for="__nav_2_14_3" id="__nav_2_14_3_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../security/usergrouprole/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -14480,8 +14365,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_14_3" id="__nav_2_14_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_14_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_14_3">
@@ -14494,32 +14385,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../../security/usergrouprole/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -14585,14 +14450,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../security/usergrouprole/roles.md" class="md-nav__link">
+      <a href="../../../../security/usergrouprole/roles/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    Roles
   
 
     
@@ -15153,9 +15018,9 @@
     
       
         
-      
-        
           
+        
+      
         
       
         
@@ -15187,7 +15052,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../security/tutorials/ldap/" class="md-nav__link ">
+            <a href="../../../../security/tutorials/" class="md-nav__link ">
               
   
   
@@ -15223,20 +15088,22 @@
           <ul class="md-nav__list" data-md-scrollfix>
             
               
+            
+              
                 
   
   
   
   
     <li class="md-nav__item">
-      <a href="../../../../security/tutorials/index.md" class="md-nav__link">
+      <a href="../../../../security/tutorials/ldap/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    None
+    Authentication with LDAP
   
 
     
@@ -15248,8 +15115,6 @@
     </li>
   
 
-              
-            
               
             
               
@@ -23282,12 +23147,6 @@
       
         
       
-        
-      
-        
-      
-        
-      
     
     
     
@@ -23355,90 +23214,6 @@
     
   
     Installation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../../community/jms-cluster/activemq/activemqBroker.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../../community/jms-cluster/activemq/JDBC.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../../community/jms-cluster/activemq/SharedFolder.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
   
 
     
@@ -27023,6 +26798,8 @@
     
       
         
+          
+        
       
         
       
@@ -27044,8 +26821,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_18_4" >
         
           
-          <label class="md-nav__link" for="__nav_2_18_4" id="__nav_2_18_4_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../tutorials/GetFeatureInfo/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -27059,8 +26837,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_18_4" id="__nav_2_18_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_18_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_18_4">
@@ -27073,32 +26857,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../../tutorials/GetFeatureInfo/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    None
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -30321,7 +30079,7 @@
     
     
       <li class="md-path__item">
-        <a href="../../index.md" class="md-path__link">
+        <a href="../../" class="md-path__link">
           
   <span class="md-ellipsis">
     SLD Styling
@@ -30416,12 +30174,12 @@
 <tr>
 <td><code>&lt;Graphic&gt;</code></td>
 <td>No</td>
-<td>A graphic to be displayed behind the label text. See <a href="pointsymbolizer.md#sld_reference_graphic">Graphic</a> for content syntax.</td>
+<td>A graphic to be displayed behind the label text. See <a href="../pointsymbolizer/#sld_reference_graphic">Graphic</a> for content syntax.</td>
 </tr>
 <tr>
 <td><code>&lt;Priority&gt;</code></td>
 <td>No</td>
-<td>The priority of the label during conflict resolution. Content may contains <a href="pointsymbolizer.md#sld_reference_parameter_expressions">expressions</a>. See also <a href="../labeling/#labeling_priority">Priority Labeling</a>.</td>
+<td>The priority of the label during conflict resolution. Content may contains <a href="../pointsymbolizer/#sld_reference_parameter_expressions">expressions</a>. See also <a href="../labeling/#labeling_priority">Priority Labeling</a>.</td>
 </tr>
 <tr>
 <td><code>&lt;VendorOption&gt;</code></td>
@@ -30438,7 +30196,7 @@
 <p>If this element is omitted, no label is rendered.</p>
 <h3 id="font">Font<a class="headerlink" href="#font" title="Permanent link">&para;</a></h3>
 <p>The <code>&lt;Font&gt;</code> element specifies the font to be used for the label. A set of <code>&lt;CssParameter&gt;</code> elements specify the details of the font.</p>
-<p>The <code>name</code> <strong>attribute</strong> indicates what aspect of the font is described, using the standard CSS/SVG font model. The <strong>content</strong> of the element supplies the value of the font parameter. The value may contain <a href="pointsymbolizer.md#sld_reference_parameter_expressions">expressions</a>.</p>
+<p>The <code>name</code> <strong>attribute</strong> indicates what aspect of the font is described, using the standard CSS/SVG font model. The <strong>content</strong> of the element supplies the value of the font parameter. The value may contain <a href="../pointsymbolizer/#sld_reference_parameter_expressions">expressions</a>.</p>
 <table>
 <thead>
 <tr>
@@ -30507,17 +30265,17 @@
 <tr>
 <td><code>&lt;AnchorPoint&gt;</code></td>
 <td>No</td>
-<td>The location within the label bounding box that is aligned with the label point. The location is specified by <code>&lt;AnchorPointX&gt;</code> and <code>&lt;AnchorPointY&gt;</code> sub-elements, with values in the range [0..1]. Values may contain <a href="pointsymbolizer.md#sld_reference_parameter_expressions">expressions</a>.</td>
+<td>The location within the label bounding box that is aligned with the label point. The location is specified by <code>&lt;AnchorPointX&gt;</code> and <code>&lt;AnchorPointY&gt;</code> sub-elements, with values in the range [0..1]. Values may contain <a href="../pointsymbolizer/#sld_reference_parameter_expressions">expressions</a>.</td>
 </tr>
 <tr>
 <td><code>&lt;Displacement&gt;</code></td>
 <td>No</td>
-<td>Specifies that the label point should be offset from the original point. The offset is specified by <code>&lt;DisplacementX&gt;</code> and <code>&lt;DisplacementY&gt;</code> sub-elements, with values in pixels. Values may contain <a href="pointsymbolizer.md#sld_reference_parameter_expressions">expressions</a>. Default is <code>(0, 0)</code>.</td>
+<td>Specifies that the label point should be offset from the original point. The offset is specified by <code>&lt;DisplacementX&gt;</code> and <code>&lt;DisplacementY&gt;</code> sub-elements, with values in pixels. Values may contain <a href="../pointsymbolizer/#sld_reference_parameter_expressions">expressions</a>. Default is <code>(0, 0)</code>.</td>
 </tr>
 <tr>
 <td><code>&lt;Rotation&gt;</code></td>
 <td>No</td>
-<td>The rotation of the label in clockwise degrees (negative values are counterclockwise). Value may contain <a href="pointsymbolizer.md#sld_reference_parameter_expressions">expressions</a>. Default is <code>0</code>.</td>
+<td>The rotation of the label in clockwise degrees (negative values are counterclockwise). Value may contain <a href="../pointsymbolizer/#sld_reference_parameter_expressions">expressions</a>. Default is <code>0</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -30536,7 +30294,7 @@
 <tr>
 <td><code>&lt;PerpendicularOffset&gt;</code></td>
 <td>No</td>
-<td>The offset from the linear path, in pixels. Positive values offset to the left of the line, negative to the right. Value may contain <a href="pointsymbolizer.md#sld_reference_parameter_expressions">expressions</a>. Default is <code>0</code>.</td>
+<td>The offset from the linear path, in pixels. Positive values offset to the left of the line, negative to the right. Value may contain <a href="../pointsymbolizer/#sld_reference_parameter_expressions">expressions</a>. Default is <code>0</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -30555,21 +30313,21 @@
 <tr>
 <td><code>&lt;Radius&gt;</code></td>
 <td>No</td>
-<td>The halo radius, in pixels. Value may contain <a href="pointsymbolizer.md#sld_reference_parameter_expressions">expressions</a>. Default is <code>1</code>.</td>
+<td>The halo radius, in pixels. Value may contain <a href="../pointsymbolizer/#sld_reference_parameter_expressions">expressions</a>. Default is <code>1</code>.</td>
 </tr>
 <tr>
 <td><code>&lt;Fill&gt;</code></td>
 <td>No</td>
-<td>The color and opacity of the halo via <code>CssParameter</code> elements for <code>fill</code> and <code>fill-opacity</code>. See <a href="polygonsymbolizer.md#sld_reference_fill">Fill</a> for full syntax. The parameter values may contain <a href="pointsymbolizer.md#sld_reference_parameter_expressions">expressions</a>. Default is a <strong>white</strong> fill (<code>#FFFFFF</code>) at <strong>100%</strong> opacity.</td>
+<td>The color and opacity of the halo via <code>CssParameter</code> elements for <code>fill</code> and <code>fill-opacity</code>. See <a href="../polygonsymbolizer/#sld_reference_fill">Fill</a> for full syntax. The parameter values may contain <a href="../pointsymbolizer/#sld_reference_parameter_expressions">expressions</a>. Default is a <strong>white</strong> fill (<code>#FFFFFF</code>) at <strong>100%</strong> opacity.</td>
 </tr>
 </tbody>
 </table>
 <h3 id="fill">Fill<a class="headerlink" href="#fill" title="Permanent link">&para;</a></h3>
-<p>The <code>&lt;Fill&gt;</code> element specifies the fill style for the label text. The syntax is the same as that of the <code>PolygonSymbolizer</code> <a href="polygonsymbolizer.md#sld_reference_fill">Fill</a> element. The default fill color is <strong>black</strong> (<code>#FFFFFF</code>) at <strong>100%</strong> opacity..</p>
+<p>The <code>&lt;Fill&gt;</code> element specifies the fill style for the label text. The syntax is the same as that of the <code>PolygonSymbolizer</code> <a href="../polygonsymbolizer/#sld_reference_fill">Fill</a> element. The default fill color is <strong>black</strong> (<code>#FFFFFF</code>) at <strong>100%</strong> opacity..</p>
 <h3 id="graphic">Graphic<a class="headerlink" href="#graphic" title="Permanent link">&para;</a></h3>
-<p>The <code>&lt;Graphic&gt;</code> element specifies a graphic symbol to be displayed behind the label text (if any). A classic use for this is to display "highway shields" behind road numbers provided by feature attributes. The element content has the same syntax as the <code>&lt;PointSymbolizer&gt;</code> <a href="pointsymbolizer.md#sld_reference_graphic">Graphic</a> element. Graphics can be provided by internal <a href="../../extensions/pointsymbols/">mark symbols</a>, or by external images or SVG files. Their size and aspect ratio can be changed to match the text displayed with them by using the vendor options <a href="../labeling/#labeling_graphic_resize">graphic-resize</a> and <a href="../labeling/#labeling_graphic_margin">graphic-margin</a>.</p>
+<p>The <code>&lt;Graphic&gt;</code> element specifies a graphic symbol to be displayed behind the label text (if any). A classic use for this is to display "highway shields" behind road numbers provided by feature attributes. The element content has the same syntax as the <code>&lt;PointSymbolizer&gt;</code> <a href="../pointsymbolizer/#sld_reference_graphic">Graphic</a> element. Graphics can be provided by internal <a href="../../extensions/pointsymbols/">mark symbols</a>, or by external images or SVG files. Their size and aspect ratio can be changed to match the text displayed with them by using the vendor options <a href="../labeling/#labeling_graphic_resize">graphic-resize</a> and <a href="../labeling/#labeling_graphic_margin">graphic-margin</a>.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
-<p>The following symbolizer is taken from the <a href="../../cookbook/points/">Points</a> section in the <a href="../cookbook/index.md">SLD Cookbook</a>.</p>
+<p>The following symbolizer is taken from the <a href="../../cookbook/points/">Points</a> section in the <a href="../../cookbook/">SLD Cookbook</a>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;TextSymbolizer&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&lt;Label&gt;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">&lt;ogc:PropertyName&gt;</span>name<span class="nt">&lt;/ogc:PropertyName&gt;</span>
@@ -30661,7 +30419,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../linesymbolizer/" class="md-footer__link md-footer__link--prev" aria-label="Previous: LineSymbolizer">
+          <a href="../polygonsymbolizer/" class="md-footer__link md-footer__link--prev" aria-label="Previous: PolygonSymbolizer">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30671,7 +30429,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                LineSymbolizer
+                PolygonSymbolizer
               </div>
             </div>
           </a>

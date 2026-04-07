@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.metadata.extent.Extent;
+import org.geotools.api.metadata.extent.GeographicBoundingBox;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
@@ -32,6 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class CRSController extends RestBaseController {
 
     static final int PAGE_LIMIT = Integer.getInteger("org.geoserver.rest.crs.page.limit", 200);
+    private static final String WKT = "wkt";
+
+    public record BBox(Double minX, Double minY, Double maxX, Double maxY) {}
 
     private record CRSLink(String id, String href) {}
 
@@ -43,7 +49,8 @@ public class CRSController extends RestBaseController {
 
     public record AuthoritiesResponse(List<Authority> authorities) {}
 
-    public record DefinitionResponse(String id, String format, String definition) {}
+    public record DefinitionResponse(
+            String id, String format, String name, BBox bbox, BBox bboxWGS84, String definition) {}
 
     private static final Set<String> EXCLUDED_AUTHORITIES = Set.of(
             "http://www.opengis.net/gml",
@@ -56,11 +63,12 @@ public class CRSController extends RestBaseController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Codes list(
             @RequestParam(name = "authority", required = false) String authority,
+            @RequestParam(name = "query", required = false) String query,
             @RequestParam(name = "offset", defaultValue = "0") int offset,
             @RequestParam(name = "limit", defaultValue = "50") int limit) {
 
         validatePaging(offset, limit);
-        List<String> codes = new ArrayList<>(getCodes(authority));
+        List<String> codes = new ArrayList<>(getCodes(authority, query));
         int total = codes.size();
         int from = Math.min(offset, total);
         int to = Math.min(offset + limit, total);
@@ -86,21 +94,63 @@ public class CRSController extends RestBaseController {
     @GetMapping(path = "/{identifier:.+}.wkt", produces = MediaType.TEXT_PLAIN_VALUE)
     /** Return the WKT of the specified identifier. Will return a 404 if not existing. */
     public ResponseEntity<String> getWkt(@PathVariable String identifier) {
-        return ResponseEntity.ok(decodeWkt(identifier));
+        return ResponseEntity.ok(decode((identifier)).toWKT());
     }
 
     /** Return the definition (id, format and wkt) of the specified identifier. Will return a 404 if not existing. */
     @GetMapping(path = "/{identifier:.+}.json", produces = MediaType.APPLICATION_JSON_VALUE)
-    public DefinitionResponse getJson(@PathVariable String identifier) {
-        return new DefinitionResponse(identifier, "wkt", decodeWkt(identifier));
+    public DefinitionResponse getJson(@PathVariable String identifier) throws FactoryException {
+        CoordinateReferenceSystem crs = decode(identifier);
+        String name = "";
+        try {
+            name = CRS.getAuthorityFactory(true).getDescriptionText(identifier).toString();
+        } catch (Exception e) {
+            //
+        }
+
+        return new DefinitionResponse(identifier, WKT, name, buildNativeBBox(crs), buildGeoBBox(crs), crs.toWKT());
     }
 
-    private String decodeWkt(String identifier) {
+    private BBox buildNativeBBox(CoordinateReferenceSystem crs) {
+        try {
+            Extent extent = crs.getDomainOfValidity();
+            if (extent == null) {
+                return null;
+            }
+
+            Bounds bounds = CRS.getEnvelope(crs);
+            if (bounds == null) {
+                return null;
+            }
+
+            return new BBox(bounds.getMinimum(0), bounds.getMinimum(1), bounds.getMaximum(0), bounds.getMaximum(1));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private BBox buildGeoBBox(CoordinateReferenceSystem crs) {
+        try {
+            GeographicBoundingBox bbox = CRS.getGeographicBoundingBox(crs);
+            if (bbox == null) {
+                return null;
+            }
+
+            return new BBox(
+                    bbox.getWestBoundLongitude(),
+                    bbox.getSouthBoundLatitude(),
+                    bbox.getEastBoundLongitude(),
+                    bbox.getNorthBoundLatitude());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private CoordinateReferenceSystem decode(String identifier) {
         validateIdentifier(identifier);
 
         try {
-            CoordinateReferenceSystem crs = CRS.decode(identifier, true);
-            return crs.toWKT();
+            return CRS.decode(identifier, true);
         } catch (FactoryException e) {
             throw new ResourceNotFoundException("CRS not found: " + identifier);
         }
@@ -127,7 +177,7 @@ public class CRSController extends RestBaseController {
         }
     }
 
-    private Set<String> getCodes(String requestedAuthority) {
+    private Set<String> getCodes(String requestedAuthority, String query) {
         List<String> authorities = getAuthorities(requestedAuthority);
 
         return authorities.stream()
@@ -135,7 +185,12 @@ public class CRSController extends RestBaseController {
                         .filter(CRSController::filterCode)
                         .sorted(this::compareCodes)
                         .map(code -> mapCode(authority, code)))
+                .filter(id -> matchesQuery(id, query))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private boolean matchesQuery(String id, String query) {
+        return query == null || query.isBlank() || id.contains(query);
     }
 
     private List<String> getAuthorities(String requestedAuthority) {

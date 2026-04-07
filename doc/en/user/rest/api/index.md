@@ -15,6 +15,7 @@ This section describes the GeoServer REST configuration API.
 - [Feature types](featuretypes.md)
 - [Coverage stores](coveragestores.md)
 - [Coverages](coverages.md)
+- [Coordinate Reference Systems](crs.md)
 - [Styles](styles.md)
 - [Layers](layers.md)
 - [Logging settings](logging.md)

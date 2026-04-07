@@ -14,8 +14,7 @@ This guide covers creating and maintaining the GeoServer {{ release }} User Manu
 - [Contributing](contributing.md)
 - [Workflow](workflow.md)
 - [Install](install.md)
-- [Installlatex](installlatex.md)
-- [Sphinx](sphinx.md)
+- [Markdown](markdown.md)
 - [Style](style.md)
 - [Tutorial](tutorial.md)
 

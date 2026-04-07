@@ -11,6 +11,7 @@ import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,12 +24,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.security.xml.AllowedAuthFilterChainClasses;
 import org.geoserver.rest.security.xml.AuthFilterChainCollection;
 import org.geoserver.rest.security.xml.AuthFilterChainFilters;
 import org.geoserver.rest.security.xml.AuthFilterChainOrder;
@@ -37,6 +41,7 @@ import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,6 +64,7 @@ import tools.jackson.databind.ObjectMapper;
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/filterchain")
 public class AuthenticationFilterChainRestController extends RestBaseController {
+    private static final Logger LOGGER = Logging.getLogger(AuthenticationFilterChainRestController.class);
 
     private static final Pattern SAFE_CHAIN_NAME = Pattern.compile("^[A-Za-z0-9_.-]{1,64}$");
 
@@ -428,6 +434,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
     private RequestFilterChain toModel(AuthFilterChainFilters dto) {
         try {
+            if (!AllowedAuthFilterChainClasses.load().isAllowed(dto.getClazz())) {
+                LOGGER.log(Level.WARNING, "Rejected authentication filter chain class {0} for chain {1}", new Object[] {
+                    dto.getClazz(), dto.getName()
+                });
+                throw new BadRequest("Unsupported className");
+            }
             Class<?> raw = Class.forName(dto.getClazz());
             checkArgument(
                     RequestFilterChain.class.isAssignableFrom(raw),
@@ -449,27 +461,26 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             invokeStringSetter(chain, "setExceptionTranslationName", dto.getExceptionTranslationName());
             return chain;
 
-        } catch (IllegalArgumentException e) {
+        } catch (BadRequest | IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
             throw new CannotMakeChain(dto.getClazz(), e);
         }
     }
 
-    @SuppressWarnings("PMD.UseExplicitTypes")
     private RequestFilterChain instantiateChain(Class<? extends RequestFilterChain> type, AuthFilterChainFilters dto)
             throws Exception {
 
         // Prefer a no-arg if it exists
         try {
-            var c0 = type.getDeclaredConstructor();
+            Constructor<? extends RequestFilterChain> c0 = type.getDeclaredConstructor();
             c0.setAccessible(true);
             return c0.newInstance();
         } catch (NoSuchMethodException ignore) {
         }
 
-        // Prefer a single var-arg String[] (VariableFilterChain pattern-ctor)
-        for (var ctor : type.getDeclaredConstructors()) {
+        // Prefer a single String[] constructor used by VariableFilterChain.
+        for (Constructor<?> ctor : type.getDeclaredConstructors()) {
             Class<?>[] p = ctor.getParameterTypes();
             if (p.length == 1 && p[0].isArray() && p[0].getComponentType() == String.class) {
                 ctor.setAccessible(true);
@@ -480,7 +491,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
         // Generic fallback: try each ctor with best-effort args
         Exception last = null;
-        for (var ctor : type.getDeclaredConstructors()) {
+        for (Constructor<?> ctor : type.getDeclaredConstructors()) {
             try {
                 ctor.setAccessible(true);
                 Class<?>[] p = ctor.getParameterTypes();
@@ -770,7 +781,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public static class CannotMakeChain extends RuntimeException {
         public CannotMakeChain(String cn, Exception e) {
-            super("Cannot make class " + cn, e);
+            super("Cannot make class", e);
         }
     }
 

@@ -71,6 +71,7 @@ In some situations, that won't be enough and the page might get stuck anyways. T
 - `GeoServerHomePage.selectionMode` : can be set to `text` to always use simple text fields, `dropdown` to always use dropdowns, or `auto` to use the default automatic behavior.
 - `GeoServerHomePage.selectionTimeout` : the time limit in milliseconds, defaults to `5000`.
 - `GeoServerHomePage.selectionMaxItems` : the maximum number of items to show in the dropdowns, defaults to `1000`.
+- `GeoServerHomePage.legacyHomepageSelector` : when set to `true`, the legacy workspace and layer selectors are used, defaults to `false`.
 
 When using `text` selection mode the page description is static, no longer offering of available workspace and layers.
 

@@ -10,19 +10,24 @@ This next block should state any assumptions that you the writer are making. Pre
 
 This tutorial assumes:
 
-- GeoServer is running on <http://localhost:8080/geoserver>
-- PostGIS is installed on the system
+- ***GeoServer*** is running on <http://localhost:8080/geoserver>
+- ***PostGIS*** is installed on the system
 
 ### Getting started
 
-State any introductory steps in this section. These might include:
+State any numbered introductory steps in this section. These might include:
 
-- Downloading data
-- Creating a database
+1. Downloading data
+2. Creating a database
 
 ### Other sections
 
 In a single sentence, state what will be achieved in this section. Then list the steps the user needs to take:
 
-1.  Step one
-2.  Step two
+1. Step one
+
+2. Step two
+     
+    !!! note
+    
+        When documenting application use follow the [markdown](markdown.md#Basic-markup) guidelines for **buttons**, **links**, **`filenames`**, user `input` and `item` selection, and definition lists for filling in a form.

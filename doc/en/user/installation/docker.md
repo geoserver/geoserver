@@ -124,25 +124,28 @@ This will download and install the [YSLD](../styling/ysld/index.md) and [OGCAPI 
 
 Here is a list of available extensions (taken from the [build server](https://build.geoserver.org/geoserver/main/ext-latest/)):
 
-    app-schema               geopkg-output            ogr-wps
-    authkey                  grib                     oracle
-    cas                      gwc-s3                   params-extractor
-    charts                   iau                      printing                 
-    control-flow             importer                 pyramid                  
-    css                      inspire                  querylayer               
-    csw-iso                  jp2k                     rat                      
-    csw                      libjpeg-turbo            sldservice
-    datadir-catalog-loader   mapml                    sqlserver
-    db2                      mbstyle                  vectortiles
-    dxf                      metadata                 wcs2_0-eo
-    excel                    mongodb                  web-resource
-    feature-pregeneralized   monitor                  wmts-multi-dimensional
-    gdal                     mysql                    wps-cluster-hazelcas
-    geofence                 netcdf-out               wps-download
-    geofence-server-h2       netcdf                   wps-jdbc
-    geofence-server-postgres ogcapi-features          wps
-    geofence-wps             ogr-wfs                  ysld
-    kml
+
+|   |   |   |
+|---|---|---|
+| app-schema | authkey | cas |
+| charts | control-flow | css |
+| csw | csw-iso | datadir-catalog-loader |
+| db2 | dxf | excel |
+| feature-pregeneralized | gdal | geofence |
+| geofence-server-h2 | geofence-server-postgres | geofence-wps |
+| geopkg-output | grib | gwc-s3 |
+| iau | importer | inspire |
+| jp2k | kml | libjpeg-turbo |
+| mapml | mbstyle | metadata |
+| mongodb | monitor | mysql |
+| netcdf | netcdf-out | ogcapi-features |
+| ogr-wfs | ogr-wps | oracle |
+| params-extractor | printing | pyramid |
+| querylayer | rat | sldservice |
+| sqlserver | vectortiles | wcs2_0-eo |
+| web-resource | wmts-multi-dimensional | wps |
+| wps-cluster-hazelcas | wps-download | wps-jdbc |
+| ysld |  |  |
 
 ## Testing GeoServer Community modules
 
@@ -172,26 +175,26 @@ docker run -it -p 8080:8080 \
 
 For the current list see GeoServer [build server](https://build.geoserver.org/geoserver/main/community-latest/).
 
-    acl                           gwc-mbtiles                     ogcapi-tiles
-    activeMQ-broker               gwc-sqlite                      ogr-datastore
-    backup-restore                hz-cluster                      opensearch-eo
-    cog-azure                                                     proxy-base-ext
-    cog-google                    importer-jdbc                   s3-geotiff
-    cog-http                                                      sec-keycloak
-    cog-s3                        jdbcconfig                      sec-oauth2-geonode
-    colormap                      jdbcstore                       sec-oauth2-github
-    cov-json                      jms-cluster                     sec-oauth2-google
-                                  libdeflate                      sec-oauth2-openid
-    dds                           mbtiles                         smart-data-loader
-    elasticsearch                 mbtiles-store                   solr
-    features-autopopulate         mongodb-schemaless              spatialjson
-    features-templating           monitor-kafka                   stac-datastore
-    flatgeobuf                    ncwms                           taskmanager-core
-    gdal-wcs                      netcdf-ghrsst                   taskmanager-s3
-    gdal-wps                      notification                    vector-mosaic
-    geopkg                        ogcapi-coverages                vsi
-    gpx                           ogcapi-dggs                     webp
-    graticule                     ogcapi-images                   wfs-freemarker
-    gsr                           ogcapi-maps                     wps-longitudinal-profile
-    gwc-azure-blobstore           ogcapi-styles                   
-                                  ogcapi-tiled-features               
+|   |   |   |
+|---|---|---|
+| acl | backup-restore | cog-azure |
+| cog-google | cog-http | cog-s3 |
+| colormap | cov-json | dds |
+| elasticsearch | features-autopopulate | features-templating |
+| flatgeobuf | gdal-wcs | gdal-wps |
+| geopkg | gpx | graticule |
+| gsr | gwc-azure-blobstore | gwc-mbtiles |
+| gwc-sqlite | hz-cluster | importer-jdbc |
+| jdbcconfig | jdbcstore | jms-cluster |
+| libdeflate | mbtiles | mbtiles-store |
+| mongodb-schemaless | monitor-kafka | ncwms |
+| netcdf-ghrsst | notification | ogcapi-coverages |
+| ogcapi-dggs | ogcapi-images | ogcapi-maps |
+| ogcapi-styles | ogcapi-tiled-features | ogcapi-tiles |
+| ogr-datastore | opensearch-eo | proxy-base-ext |
+| s3-geotiff | sec-keycloak | sec-oauth2-geonode |
+| sec-oauth2-github | sec-oauth2-google | sec-oauth2-openid |
+| smart-data-loader | solr | spatialjson |
+| stac-datastore | taskmanager-core | taskmanager-s3 |
+| vector-mosaic | vsi | webp |
+| wfs-freemarker | wps-longitudinal-profile |  |

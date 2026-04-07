@@ -1,40 +1,18 @@
-<project name="user" default="full">
+<project name="docs" basedir="../.." default="build">
 
   <target name="init">
     <property environment="env"/>
     
-    <property name="sphinx.options" value=""/>
+    <property name="mkdocs.options" value=""/>
 
-    <condition property="sphinx.available">
+    <condition property="mkdocs.available">
       <or>
-        <available file="sphinx-build" filepath="${env.PATH}"/>
-        <available file="sphinx-build.exe" filepath="${env.Path}"/>
-        <available file="sphinx-build.exe" filepath="${env.PATH}"/>
+        <available file="mkdocs" filepath="${env.PATH}"/>
+        <available file="mkdocs.exe" filepath="${env.Path}"/>
+        <available file="mkdocs.exe" filepath="${env.PATH}"/>
       </or>
     </condition>
     
-    <condition property="autobuild.available">
-      <or>
-        <available file="sphinx-autobuild" filepath="${env.PATH}"/>
-        <available file="sphinx-autobuild.exe" filepath="${env.Path}"/>
-        <available file="sphinx-autobuild.exe" filepath="${env.PATH}"/>
-      </or>
-    </condition>
-  
-    <condition property="rst2pdf.available">
-      <or>
-        <available file="rst2pdf" filepath="${env.PATH}"/>
-        <available file="rst2pdf.exe" filepath="${env.Path}"/>
-        <available file="rst2pdf.exe" filepath="${env.PATH}"/>
-      </or>
-    </condition>
-
-    <condition property="pdflatex.available">
-      <or>
-        <available file="pdflatex" filepath="${env.PATH}"/>
-      </or>
-    </condition>
-
     <condition property="build.directory" value="${build.directory}" else="${basedir}/target">
       <isset property="build.directory" />
     </condition>
@@ -52,100 +30,49 @@
     </delete>
   </target>
   
-  <target name="user" depends="init,-setup,-user"
-    description="Generate user html documentation for GeoServer">
-    <mkdir dir="${build.directory}"/>
-    <antcall target="sphinx">
-      <param name="id" value="user" />
-      <param name="build" value="html" />
-    </antcall>
+  <target name="build" depends="init,-setup,-build"
+    description="Build documentation for GeoServer">
+    <echo>Documentation generated: ${build.directory}/index.html</echo>
   </target>
-  <target name="-setup" unless="sphinx.available">
+  
+  <target name="-setup" unless="mkdocs.available">
     <echo>
-      sphinx-build not available, see README.md for details. To setup use:
+      mkdocs not available, to setup use:
       
       source venv/bin/activate &amp;&amp; pip install -r requirements.txt
-      sphinx-build --version
-      sphinx-autobuild --version
+      mkdocs --version
       
       See README.md for details.
     </echo>
   </target>  
-  <target name="-user" if="sphinx.available">
+  <target name="-build" if="mkdocs.available">
     <mkdir dir="${build.directory}"/>
-    <antcall target="sphinx">
-      <param name="id" value="user" />
-      <param name="build" value="html" />
-    </antcall>
-  </target>
-
-  <target name="user-site" depends="init,-setup,-user-site"
-    description="Interactive generation of user html documentation for GeoServer">
-  </target>
-  
-  <target name="-user-site" depends="init" if="autobuild.available">
-    
-    <mkdir dir="${build.directory}"/>
-    <antcall target="autobuild">
-      <param name="id" value="user" />
+    <antcall target="mkdocs">
+      <param name="build" value="build" />
+      <param name="argLine" value="--site-dir ${build.directory}" />
+      <param name="offline" value="true" />
     </antcall>
   </target>
   
-  <target name="docguide" depends="init" if="sphinx.available"
-    description="Generate instructions for editing GeoServer documentation">
+  <target name="site" depends="init,-setup"
+    description="Live preview of GeoServer documentation">
+    <echo>Documentation generated: ${build.directory}/index.html</echo>
     <mkdir dir="${build.directory}"/>
-    <antcall target="sphinx">
-      <param name="id" value="docguide" />
-      <param name="build" value="html" />
+    <antcall target="mkdocs">
+      <param name="build" value="serve" />
+      <param name="argLine" value="" />
+      <param name="offline" value="false" />
     </antcall>
   </target>
   
-  <target name="docguide-site" depends="init" if="autobuild.available"
-    description="Interactive generation of docguide html documentation for GeoServer">
-    
-    <mkdir dir="${build.directory}"/>
-    <antcall target="autobuild">
-      <param name="id" value="docguide" />
-    </antcall>
-  </target>
-  
-  <target name="developer" depends="init" if="sphinx.available"
-    description="Generate developers guide for GeoServer">
-    <mkdir dir="${build.directory}"/>
-    <antcall target="sphinx">
-      <param name="id" value="developer"/>
-      <param name="build" value="html"/>
-    </antcall>
-  </target>
-  
-  <target name="developer-site" depends="init" if="autobuild.available"
-    description="Interactive generation of developer html documentation for GeoServer">
-    
-    <mkdir dir="${build.directory}"/>
-    <antcall target="autobuild">
-      <param name="id" value="developer" />
-    </antcall>
-  </target>
-
-  <target name="full" depends="docguide,user,developer">
-  </target>
-
-  <target name="sphinx" if="sphinx.available">
-    <local name="argLine"/>
-    <property name="argLine" value="${sphinx.options} -W --keep-going -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
-    <echo message="Running sphinx-build ${argLine}"/> 
-    <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}/source">
+  <target name="mkdocs" if="mkdocs.available">
+    <echo message="Running: [OFFLINE=${offline}] mkdocs ${build} ${argLine}"/>
+    <exec executable="mkdocs" failonerror="true" dir="${basedir}">
+      <arg line="${build}"/>
       <arg line="${argLine}"/>
+      <env key="OFFLINE" value="${offline}"/>
+      <env key="NO_MKDOCS_2_WARNING" value="1"/>
     </exec>
   </target>
   
-  <target name="autobuild" if="autobuild.available">
-    <local name="argLine"/>
-    <property name="argLine" value="${sphinx.options} -W -b html -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/html&quot;"/>
-    <echo message="Running sphinx-autobuild ${argLine}"/> 
-    <exec executable="sphinx-autobuild" failonerror="true" dir="${basedir}/${id}/source">
-      <arg line="${argLine} --open-browser"/>
-    </exec>
-  </target>
-
 </project>

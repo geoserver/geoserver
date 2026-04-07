@@ -17,10 +17,10 @@
   </form>
 </div>
 
-<fieldset>
+<fieldset wicket:id="administration">
 	<legend><span><wicket:message key="administration">Administration</wicket:message></span></legend>
 	<div wicket:id="catalogLinks"/>
-	<div class="gs-form" wicket:id="contributedContent">
+	<div class="gs-form" wicket:id="adminContent">
 		<span wicket:id="content"/>
 	</div>
 </fieldset>
@@ -30,6 +30,12 @@
 		<span wicket:id="welcome"></span>
 		<span wicket:id="belongsTo"></span>
 	</p>
+</div>
+
+<div id="preview">
+	<div class="gs-form" wicket:id="previewContent">
+		<span wicket:id="content"/>
+	</div>
 </div>
 
 <div id="services">

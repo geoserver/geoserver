@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -35,7 +36,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LambdaModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -62,16 +62,11 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.InternationalStringUtils;
 import org.geoserver.web.data.layer.LayerPage;
-import org.geoserver.web.data.layer.NewLayerPage;
-import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geoserver.web.data.layergroup.LayerGroupPage;
-import org.geoserver.web.data.store.NewDataPage;
 import org.geoserver.web.data.store.StorePage;
-import org.geoserver.web.data.workspace.WorkspaceNewPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
 import org.geotools.api.util.InternationalString;
 import org.geotools.feature.NameImpl;
-import org.springframework.security.core.parameters.P;
 
 /**
  * Home page, shows introduction for each kind of service along with any service links.
@@ -179,36 +174,40 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         Form<GeoServerHomePage> form = selectionForm(true);
         chooser.add(form);
 
+        WebMarkupContainer administration = new WebMarkupContainer("administration");
+        administration.setVisible(admin);
+        add(administration);
+
         if (admin) {
             // show admin some additional details
-            add(adminOverview());
+            administration.add(adminOverview());
         } else {
             // add catalogLinks placeholder (even when not admin) to identify this page location
-            add(placeholderLabel("catalogLinks"));
+            administration.add(placeholderLabel("catalogLinks"));
         }
 
-        // additional content provided by plugins across the geoserver codebase
+        // adminContent content provided by plugins across the geoserver codebase
         // for example security warnings to admin
-        if (admin && workspaceInfo == null && publishedInfo == null) {
-            add(additionalHomePageContent());
+        if (admin) {
+            administration.add(additionalHomePageContent("adminContent", true));
         } else {
-            // add catalogLinks placeholder (even when not admin) to identify this page location
-            add(placeholderLabel("contributedContent"));
+            // add placeholder (even when not admin) to identify this page location
+            administration.add(placeholderLabel("adminContent"));
         }
-
 
         Locale locale = getLocale();
 
         String welcomeText = getWelcomeDescription();
-        Label welcomeMessage = new Label("welcome", welcomeText );
+        Label welcomeMessage = new Label("welcome", welcomeText);
         welcomeMessage.setVisible(!Strings.isEmpty(welcomeText));
         add(welcomeMessage);
 
         add(belongsTo(contactInfo, locale));
 
+        add(additionalHomePageContent("previewContent", false));
+
         add(footerMessage(contactInfo, locale));
         add(footerContact(contactInfo, locale));
-
 
         List<ServiceDescription> serviceDescriptions = new ArrayList<>();
         List<ServiceLinkDescription> serviceLinks = new ArrayList<>();
@@ -491,15 +490,12 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         }
     }
 
-    /**
-     * Gets the title from the PageName.title resource, falling back on "GeoServer" if not found
-     */
+    /** Gets the title from the PageName.title resource, falling back on "GeoServer" if not found */
     protected String getTitle() {
         String welcomeText = getWelcomeTitle();
         if (!Strings.isEmpty(welcomeText)) {
             return welcomeText;
-        }
-        else {
+        } else {
             return super.getTitle();
         }
     }
@@ -508,10 +504,10 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         Locale locale = getLocale();
 
         if (publishedInfo != null) {
-            InternationalString description = InternationalStringUtils.growable(publishedInfo.getInternationalAbstract(), publishedInfo.getAbstract());
+            InternationalString description = InternationalStringUtils.growable(
+                    publishedInfo.getInternationalAbstract(), publishedInfo.getAbstract());
             return description.toString(locale);
-        }
-        else if (workspaceInfo != null) {
+        } else if (workspaceInfo != null) {
             GeoServer gs = getGeoServer();
             ContactInfo contactInfo = gs.getSettings().getContact();
 
@@ -528,16 +524,17 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     }
     /**
      * Lookup welcome title, using {@code publishedInfo} and {@code workspaceInfo} if provided.
+     *
      * @return welcome title
      */
     String getWelcomeTitle() {
         Locale locale = getLocale();
 
         if (publishedInfo != null) {
-            InternationalString title = InternationalStringUtils.growable(publishedInfo.getInternationalTitle(), publishedInfo.getTitle());
+            InternationalString title =
+                    InternationalStringUtils.growable(publishedInfo.getInternationalTitle(), publishedInfo.getTitle());
             return title.toString(locale);
-        }
-        else {
+        } else {
             GeoServer gs = getGeoServer();
             ContactInfo contactInfo = gs.getSettings().getContact();
 
@@ -554,18 +551,15 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         }
     }
 
-    /**
-     * Gets the page title from the contact information, falling back on PageName.title resource if not found.
-     */
+    /** Gets the page title from the contact information, falling back on PageName.title resource if not found. */
     String getPageTitle() {
         String titleText = getWelcomeTitle();
         if (!Strings.isEmpty(titleText)) {
             if ("GeoServer".equals(titleText)) {
                 return "GeoServer";
             }
-            return "GeoServer: "+titleText;
-        }
-        else {
+            return "GeoServer: " + titleText;
+        } else {
             return super.getPageTitle();
         }
     }
@@ -578,13 +572,15 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     /**
      * Additional content provided by plugins across the geoserver codebase for example security warnings to admin
      *
+     * @param id the id of the returned component
+     * @param isAdmin {@code true} to process admin content, or {@code false} for anonymous content
      * @return ListView processing {@link GeoServerHomePageContentProvider} components
      */
-    private ListView<GeoServerHomePageContentProvider> additionalHomePageContent() {
+    private ListView<GeoServerHomePageContentProvider> additionalHomePageContent(String id, final boolean isAdmin) {
         final IModel<List<GeoServerHomePageContentProvider>> contentProviders =
-                getContentProviders(GeoServerHomePageContentProvider.class);
+                getGeoServerHomePageContentProvider(isAdmin);
 
-        return new ListView<>("contributedContent", contentProviders) {
+        return new ListView<>(id, contentProviders) {
             @Serial
             private static final long serialVersionUID = 3756653714268296207L;
 
@@ -637,7 +633,8 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                             if (store.getId() != null) {
                                 storeIds.add(store.getId());
                             }
-                            if (store.getWorkspace() != null && store.getWorkspace().getId() != null) {
+                            if (store.getWorkspace() != null
+                                    && store.getWorkspace().getId() != null) {
                                 workspaceIds.add(store.getWorkspace().getId());
                             }
                         }
@@ -651,8 +648,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                     storesCount = storeIds.size();
                     groupCount = groupIds.size();
                     wsCount = workspaceIds.size();
-                }
-                else {
+                } else {
                     layerCount = 0;
                     groupCount = 0;
                     storesCount = 0;
@@ -679,13 +675,13 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             catalogLinks.add(new BookmarkablePageLink<>("layersLink", LayerPage.class, this.getPageParameters())
                     .add(new Label("nlayers", numberFormat.format(layerCount))));
 
-            catalogLinks.add(new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class,  this.getPageParameters())
+            catalogLinks.add(new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class, this.getPageParameters())
                     .add(new Label("ngroups", numberFormat.format(groupCount))));
 
-            catalogLinks.add(new BookmarkablePageLink<>("storesLink", StorePage.class,  this.getPageParameters())
+            catalogLinks.add(new BookmarkablePageLink<>("storesLink", StorePage.class, this.getPageParameters())
                     .add(new Label("nstores", numberFormat.format(storesCount))));
 
-            catalogLinks.add(new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class,  this.getPageParameters())
+            catalogLinks.add(new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class, this.getPageParameters())
                     .add(new Label("nworkspaces", numberFormat.format(wsCount))));
             return catalogLinks;
         } finally {
@@ -789,6 +785,29 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             protected List<T> load() {
                 GeoServerApplication app = getGeoServerApplication();
                 List<T> providers = app.getBeansOfType(providerClass);
+                return providers;
+            }
+        };
+        return providersModel;
+    }
+
+    private <T> IModel<List<GeoServerHomePageContentProvider>> getGeoServerHomePageContentProvider(
+            final boolean isAdmin) {
+        IModel<List<GeoServerHomePageContentProvider>> providersModel = new LoadableDetachableModel<>() {
+            @Serial
+            private static final long serialVersionUID = 3042209889224234563L;
+
+            @Override
+            protected List<GeoServerHomePageContentProvider> load() {
+                GeoServerApplication app = getGeoServerApplication();
+                List<GeoServerHomePageContentProvider> providers =
+                        app.getBeansOfType(GeoServerHomePageContentProvider.class);
+                providers.removeIf(new Predicate<GeoServerHomePageContentProvider>() {
+                    @Override
+                    public boolean test(GeoServerHomePageContentProvider provider) {
+                        return !provider.checkContext(isAdmin, workspaceInfo, publishedInfo);
+                    }
+                });
                 return providers;
             }
         };

@@ -4,44 +4,48 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-OAuth2LoginAuthProviderPanel_MSGraphPanel">
-        <br />
-        <div class="display-flex">
-          <input class="field autoTopBottom" id="msGraphMemberOf" type="checkbox" wicket:id="msGraphMemberOf" />
-          <label class="padLeftSmall">
-            <wicket:message key="msGraphMemberOf"></wicket:message>
-          </label>
-        </div>
-        <div class="display-flex">
-          <input class="field autoTopBottom" id="msGraphAppRoleAssignments" type="checkbox" wicket:id="msGraphAppRoleAssignments" />
-          <label class="padLeftSmall">
-            <wicket:message key="msGraphAppRoleAssignments"></wicket:message>
-          </label>
-        </div>
-        <div class="" id="msGraphObjectIdDiv">
-          <div class="display-flex flex-column pad-checkbox">
-            <input type="text" class="field autoTopBottom" id="msGraphAppRoleAssignmentsObjectId" wicket:id="msGraphAppRoleAssignmentsObjectId" />
+        <div>
+          <div class="choiceItem">
+            <input class="field autoTopBottom" id="msGraphMemberOf" type="checkbox" wicket:id="msGraphMemberOf" />
             <label class="padLeftSmall">
-              <wicket:message key="msGraphAppRoleAssignmentsObjectId"></wicket:message>
+              <wicket:message key="msGraphMemberOf"></wicket:message>
             </label>
           </div>
+          <div class="choiceItem">
+            <input class="field autoTopBottom" id="msGraphAppRoleAssignments" type="checkbox" wicket:id="msGraphAppRoleAssignments" />
+            <label class="padLeftSmall">
+              <wicket:message key="msGraphAppRoleAssignments"></wicket:message>
+            </label>
+          </div>
+          <div class="" id="msGraphObjectIdDiv">
+            <div class="display-flex flex-column pad-checkbox">
+              <input type="text" class="field autoTopBottom" id="msGraphAppRoleAssignmentsObjectId" wicket:id="msGraphAppRoleAssignmentsObjectId" />
+              <label class="padLeftSmall">
+                <wicket:message key="msGraphAppRoleAssignmentsObjectId"></wicket:message>
+              </label>
+            </div>
+          </div>
         </div>
-        <br />
-        <label class="padTopLarge">
-          <wicket:message key="roleConverterTitle"></wicket:message>
-        </label>
-<!--
-      `oninput` fires when user changes the value - this will
-      update the summary table.
-    -->
-        <input type="text" class="field width95" id="roleConverterString" wicket:id="roleConverterString" />
-        <label>
-          <wicket:message key="roleConverterHint"></wicket:message>
-        </label>
-        <div class="display-flex">
-          <input class="field autoTopBottom" id="onlyExternalListedRoles" type="checkbox" wicket:id="onlyExternalListedRoles" />
-          <label class="padLeftSmall">
-            <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>
+        <div class="gs-form">
+          <div class="gs-form-group">
+            <label class="padTopLarge">
+              <wicket:message key="roleConverterTitle"></wicket:message>
+            </label>
+            <!--
+              `oninput` fires when user changes the value - this will
+              update the summary table.
+            -->
+            <input type="text" class="field" id="roleConverterString" wicket:id="roleConverterString" />
+          </div>
+          <label>
+            <wicket:message key="roleConverterHint"></wicket:message>
           </label>
+          <div class="choiceItem">
+            <input class="field" id="onlyExternalListedRoles" type="checkbox" wicket:id="onlyExternalListedRoles" />
+            <label>
+              <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>
+            </label>
+          </div>
         </div>
         <div id="roleConverterStringDiv" class="padTopLarge">
           <table id="roleConverterStringTable">

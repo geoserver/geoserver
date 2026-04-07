@@ -268,8 +268,8 @@ public class CoveragesClientIT {
                 ProjectionPolicy.FORCE_DECLARED,
                 created.getProjectionPolicy());
         assertEquals(Boolean.TRUE, created.getEnabled());
-        assertNull("Should have been [EPSG:26713]", created.getRequestSRS());
-        assertNull("Should have been [EPSG:26713]", created.getResponseSRS());
+        assertEquals("Should have been [EPSG:26713]", Collections.emptyList(), created.getRequestSRS());
+        assertEquals("Should have been [EPSG:26713]", Collections.emptyList(), created.getResponseSRS());
     }
 
     public @Test void createBadStoreName() {

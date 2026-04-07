@@ -18,7 +18,7 @@
   </modules>
 
   <properties>
-    <openapi-generator-maven-plugin.version>6.6.0</openapi-generator-maven-plugin.version>
+    <openapi-generator-maven-plugin.version>7.21.0</openapi-generator-maven-plugin.version>
     <mapstruct.version>1.6.3</mapstruct.version>
 
     <lombok.version>1.18.42</lombok.version>
@@ -34,6 +34,7 @@
     <openapi.basepackage>org.geoserver.restconfig</openapi.basepackage>
     <openapi.model.catalog>${openapi.basepackage}.model.catalog</openapi.model.catalog>
     <openapi.model.config>${openapi.basepackage}.model.config</openapi.model.config>
+    <openapi.enumPropertyNaming>legacy</openapi.enumPropertyNaming>
   </properties>
   <dependencyManagement>
     <dependencies>

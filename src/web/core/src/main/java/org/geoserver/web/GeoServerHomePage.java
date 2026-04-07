@@ -12,9 +12,11 @@ import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -44,6 +46,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -68,6 +71,7 @@ import org.geoserver.web.data.workspace.WorkspaceNewPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
 import org.geotools.api.util.InternationalString;
 import org.geotools.feature.NameImpl;
+import org.springframework.security.core.parameters.P;
 
 /**
  * Home page, shows introduction for each kind of service along with any service links.
@@ -484,9 +488,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
      * Gets the title from the PageName.title resource, falling back on "GeoServer" if not found
      */
     protected String getTitle() {
-        String titleText = getWelcomeTitle();
-        if (!Strings.isEmpty(titleText)) {
-            return titleText;
+        String welcomeText = getWelcomeTitle();
+        if (!Strings.isEmpty(welcomeText)) {
+            return welcomeText;
         }
         else {
             return super.getTitle();
@@ -526,20 +530,21 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             InternationalString title = InternationalStringUtils.growable(publishedInfo.getInternationalTitle(), publishedInfo.getTitle());
             return title.toString(locale);
         }
-        else if (workspaceInfo != null) {
+        else {
             GeoServer gs = getGeoServer();
             ContactInfo contactInfo = gs.getSettings().getContact();
 
-            SettingsInfo settings = gs.getSettings(workspaceInfo);
-            if (settings != null) {
-                contactInfo = settings.getContact();
+            if (workspaceInfo != null) {
+                SettingsInfo settings = gs.getSettings(workspaceInfo);
+                if (settings != null && settings.getContact() != null) {
+                    contactInfo = settings.getContact();
+                }
             }
             InternationalString title =
                     InternationalStringUtils.growable(contactInfo.getInternationalTitle(), contactInfo.getTitle());
 
             return title.toString(locale);
         }
-        return null; // not available
     }
 
     /**
@@ -548,6 +553,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     String getPageTitle() {
         String titleText = getWelcomeTitle();
         if (!Strings.isEmpty(titleText)) {
+            if ("GeoServer".equals(titleText)) {
+                return "GeoServer";
+            }
             return "GeoServer: "+titleText;
         }
         else {
@@ -604,11 +612,43 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                     groupCount = 0;
                     storesCount = 1;
                     wsCount = 1;
-                } else {
+                } else if (publishedInfo instanceof LayerGroupInfo) {
+                    LayerGroupInfo groupInfo = (LayerGroupInfo) publishedInfo;
+
+                    LayerGroupHelper helper = new LayerGroupHelper(groupInfo);
+                    Set<String> layerIds = new HashSet<>();
+                    Set<String> groupIds = new HashSet<>();
+                    Set<String> workspaceIds = new HashSet<>();
+                    Set<String> storeIds = new HashSet<>();
+                    for (LayerInfo li : helper.allLayers()) {
+                        if (li.getId() != null) {
+                            layerIds.add(li.getId());
+                        }
+                        if (li.getResource() != null && li.getResource().getStore() != null) {
+                            StoreInfo store = li.getResource().getStore();
+                            if (store.getId() != null) {
+                                storeIds.add(store.getId());
+                            }
+                            if (store.getWorkspace() != null && store.getWorkspace().getId() != null) {
+                                workspaceIds.add(store.getWorkspace().getId());
+                            }
+                        }
+                    }
+                    for (LayerGroupInfo gi : helper.allGroups()) {
+                        if (gi.getId() != null) {
+                            groupIds.add(gi.getId());
+                        }
+                    }
+                    layerCount = layerIds.size();
+                    storesCount = storeIds.size();
+                    groupCount = groupIds.size();
+                    wsCount = workspaceIds.size();
+                }
+                else {
                     layerCount = 0;
-                    groupCount = 1;
+                    groupCount = 0;
                     storesCount = 0;
-                    wsCount = publishedInfo.prefixedName().contains(":") ? 1 : 0;
+                    wsCount = 0;
                 }
             } else if (workspaceInfo != null) {
                 layerCount = catalog.count(
@@ -628,23 +668,17 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             NumberFormat numberFormat = NumberFormat.getIntegerInstance(getLocale());
             numberFormat.setGroupingUsed(true);
 
-            catalogLinks.add(new BookmarkablePageLink<>("layersLink", LayerPage.class)
+            catalogLinks.add(new BookmarkablePageLink<>("layersLink", LayerPage.class, this.getPageParameters())
                     .add(new Label("nlayers", numberFormat.format(layerCount))));
-            catalogLinks.add(new BookmarkablePageLink<>("addLayerLink", NewLayerPage.class));
 
-            catalogLinks.add(new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class)
+            catalogLinks.add(new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class,  this.getPageParameters())
                     .add(new Label("ngroups", numberFormat.format(groupCount))));
-            catalogLinks.add(new BookmarkablePageLink<>("addGroupLink", LayerGroupEditPage.class));
 
-            catalogLinks.add(new BookmarkablePageLink<>("storesLink", StorePage.class)
+            catalogLinks.add(new BookmarkablePageLink<>("storesLink", StorePage.class,  this.getPageParameters())
                     .add(new Label("nstores", numberFormat.format(storesCount))));
-            PageParameters newStoreParams = new PageParameters();
-            if (workspaceInfo != null) newStoreParams.add("workspace", workspaceInfo.getName());
-            catalogLinks.add(new BookmarkablePageLink<>("addStoreLink", NewDataPage.class, newStoreParams));
 
-            catalogLinks.add(new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class)
+            catalogLinks.add(new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class,  this.getPageParameters())
                     .add(new Label("nworkspaces", numberFormat.format(wsCount))));
-            catalogLinks.add(new BookmarkablePageLink<>("addWorkspaceLink", WorkspaceNewPage.class));
             return catalogLinks;
         } finally {
             sw.stop();

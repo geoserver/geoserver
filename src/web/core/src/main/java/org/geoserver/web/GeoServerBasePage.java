@@ -610,7 +610,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /**
-     * Get title displayed at the top of the page in {@code page-header} div.
+     * Get title displayed at the top of the page in {@code page-header} h1.
      * @return title displayed at the top of the page.
      */
     protected String getTitle() {
@@ -622,7 +622,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /**
-     * Gets the page title included in page header, from the PageName.title resource, falling back on "GeoServer" if not found
+     * Gets the page title as included in page header, from the PageName.title resource, falling back on "GeoServer" if not found
      */
     String getPageTitle() {
         try {

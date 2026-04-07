@@ -173,6 +173,53 @@ export GEOSERVER_LOG_LOCATION=/var/log/geoserver/geoserver.log
 
 Any existing `location` value in the data directory `logging.xml` file is retained for backward compatibility but is ignored at runtime. REST API clients that send a `location` field in PUT requests to `/rest/logging` will receive a warning in the server logs; the value is silently discarded.
 
+### NetCDF Index removal (GeoServer 3.0 and newer)
+
+Starting with GeoServer 3.0, NetCDF plugin (and coverage multidim machinery) has been simplified by removing external indexing mechanisms. In particular, it no longer relies on: 
+
+- a database (e.g., H2 or PostGIS) to map temporal and elevation domains to image indices, 
+- nor on the auxiliary .idx binary files previously used to link image indices to NetCDF dimension coordinates. 
+
+These relationships are now resolved directly from the NetCDF structure at runtime, reducing configuration overhead, 
+improving portability, and eliminating synchronization issues between datasets and external indexes.
+
+The NetCDF plugin no longer generates the legacy binary .idx files and the embedded H2 database previously used for indexing temporal and elevation domains.
+All indexing is now handled in-memory and derived directly from the NetCDF dataset structure at runtime, eliminating the need to manage or clean up external index artifacts.
+
+#### Cleanup of Existing Files
+Existing installations may still contain legacy index artifacts that are not needed anymore in GeoServer 3. 
+Hidden directories named like: `.<FILENAME_HASH>` (e.g. `.polyphemus_20130301_710e4edfc7d0ff89faf932b208ca22bda37a6921`) are companion folders created next to the NetCDF file (e.g. `polyphemus_20130301.nc`) and used to store:
+- the H2 db files:
+  - the primary H2 data storage file. (e.g. `polyphemus_20130301.data.db`)
+  - the index storage file (e.g. `polyphemus_20130301.index.db`)
+  - the transaction log (e.g. `polyphemus_20130301.4.log.db`)
+  - the debug/trage log (e.g. `polyphemus_20130301.trace.db`)
+
+- the binary index file:
+  - FILENAME.idx (e.g. `polyphemus_20130301.idx`)
+
+All such files are now obsolete and can be deleted without affecting functionality.
+If the NETCDF_DATA_DIR JAVA_OPT is configured, these hidden folders are grouped within the specified directory instead of being located alongside each NetCDF file.
+
+#### Mosaic of NetCDF files
+ImageMosaics built on NetCDF files could previously depend on an AuxiliaryDatastoreFile parameter defined in the  `indexer.xml `. This parameter referenced a  `netcdf_datastore.properties ` file containing connection settings for a shared database used to store the NetCDF entries catalog (allowing a single DB for the entire mosaic instead of one H2 database per NetCDF file).
+
+With the GeoServer 3 refactoring, this configuration is no longer required. The  `FILENAME_datastore.properties ` file can be safely removed, along with the corresponding entry in the indexer.xml. Update the configuration as follows, going from (for example):
+```xml
+  <parameters>
+    <parameter name="AuxiliaryFile" value="_auxiliary.xml" />
+    <parameter name="AbsolutePath" value="true" />
+    <parameter name="AuxiliaryDatastoreFile" value="netcdf_datastore.properties" />
+  </parameters>
+```
+  to
+```xml
+  <parameters>
+    <parameter name="AuxiliaryFile" value="_auxiliary.xml" />
+    <parameter name="AbsolutePath" value="true" />
+  </parameters>
+```
+
 ## Upgrading GeoServer 2 Guidance
 
 GeoServer 2.0.x was first released in October 29, 2009.

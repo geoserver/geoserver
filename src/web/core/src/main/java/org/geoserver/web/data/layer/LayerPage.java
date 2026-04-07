@@ -15,6 +15,8 @@ import static org.geoserver.web.data.layer.LayerProvider.STORE;
 import static org.geoserver.web.data.layer.LayerProvider.TITLE;
 import static org.geoserver.web.data.layer.LayerProvider.TYPE;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -48,12 +50,6 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.geotools.api.filter.Filter;
-import org.geotools.map.Layer;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Page listing all the available layers. Follows the usual filter/sort/page approach, provides ways to bulk delete
@@ -71,9 +67,8 @@ public class LayerPage extends GeoServerSecuredPage {
                 String targetLayer;
                 if (!wsParam.isEmpty()) {
                     targetLayer = wsParam.toString() + ":" + layerParam.toString();
-                }
-                else {
-                     targetLayer = layerParam.toString();
+                } else {
+                    targetLayer = layerParam.toString();
                 }
                 LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
                 if (gi != null) {

@@ -20,7 +20,6 @@ import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;

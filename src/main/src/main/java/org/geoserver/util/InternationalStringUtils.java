@@ -25,8 +25,8 @@ public class InternationalStringUtils {
     }
 
     /**
-     * Combine default text and translations into InternationalString.
-     * The {@code textDefault} is registered default locale provided by {@link GeoServerDefaultLocale}.
+     * Combine default text and translations into InternationalString. The {@code textDefault} is registered default
+     * locale provided by {@link GeoServerDefaultLocale}.
      *
      * @param textDefault Default text
      * @param textTranslations Available translations
@@ -51,10 +51,9 @@ public class InternationalStringUtils {
         return new GrowableInternationalString(textDefault);
     }
 
-
     /**
-     * Return the string value or the default InternationalString value if the string one is {@code null}.
-     * By default is meant the value that matches the {@link GeoServerDefaultLocale}.
+     * Return the string value or the default InternationalString value if the string one is {@code null}. By default is
+     * meant the value that matches the {@link GeoServerDefaultLocale}.
      *
      * @param string the string value.
      * @param internationalString the internationalString instance.

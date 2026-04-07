@@ -39,7 +39,7 @@ public class ContactPanel extends Panel {
 
         // WELCOME
 
-        add(new StringAndInternationalStringPanel("title", model, "welcomeTitle", "title", "internationalTitle",this));
+        add(new StringAndInternationalStringPanel("title", model, "welcomeTitle", "title", "internationalTitle", this));
         // setup the "welcome" text as either a textarea (non-international) or as a set of textareas (international).
         WebMarkupContainer abstractLabelContainer = new WebMarkupContainer("welcomeLabel");
         abstractLabelContainer.add(new Label("welcomeLabel", new StringResourceModel("welcomeDescription", this)));

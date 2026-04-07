@@ -21,22 +21,52 @@ public interface ContactInfo extends Info {
     @Override
     String getId();
 
-    /** @uml.property name="address" */
+    /**
+     * Contact address field.
+     *
+     * @return Contact address.
+     * @uml.property name="address"
+     */
     String getAddress();
 
-    /** @uml.property name="address" */
+    /**
+     * Contact address field.
+     *
+     * @param address Contact address.
+     * @uml.property name="address"
+     */
     void setAddress(String address);
 
-    /** @uml.property name="addressCity" */
+    /**
+     * Contact address city field.
+     *
+     * @return Contact address city.
+     * @uml.property name="addressCity"
+     */
     String getAddressCity();
 
-    /** @uml.property name="addressCity" */
+    /**
+     * Contract address city field.
+     *
+     * @param addressCity Contact address city.
+     * @uml.property name="addressCity"
+     */
     void setAddressCity(String addressCity);
 
-    /** @uml.property name="addressCountry" */
+    /**
+     * Contract address country field.
+     *
+     * @return Contact address country.
+     * @uml.property name="addressCountry"
+     */
     String getAddressCountry();
 
-    /** @uml.property name="addressCountry" */
+    /**
+     * Contract address country field.
+     *
+     * @param addressCountry Contact address country.
+     * @uml.property name="addressCountry"
+     */
     void setAddressCountry(String addressCountry);
 
     /**
@@ -64,27 +94,57 @@ public interface ContactInfo extends Info {
     /**
      * Contact address postal code.
      *
-     * @param postal code
+     * @param addressPostalCode Postal code
      * @uml.property name="addressPostalCode"
      */
     void setAddressPostalCode(String addressPostalCode);
 
-    /** @uml.property name="addressState" */
+    /**
+     * Contract address state field.
+     *
+     * @return Contact address state.
+     * @uml.property name="addressState"
+     */
     String getAddressState();
 
-    /** @uml.property name="addressState" */
+    /**
+     * Contract address state field.
+     *
+     * @param addressState Contact address state.
+     * @uml.property name="addressState"
+     */
     void setAddressState(String addressState);
 
-    /** @uml.property name="addressType" */
+    /**
+     * Contract address type field.
+     *
+     * @return Contact address type.
+     * @uml.property name="addressType"
+     */
     String getAddressType();
 
-    /** @uml.property name="addressType" */
+    /**
+     * Contract address type field.
+     *
+     * @param addressType Contact address type.
+     * @uml.property name="addressType"
+     */
     void setAddressType(String addressType);
 
-    /** @uml.property name="contactEmail" */
+    /**
+     * Contract email address.
+     *
+     * @return Contact email address.
+     * @uml.property name="contactEmail"
+     */
     String getContactEmail();
 
-    /** @uml.property name="contactEmail" */
+    /**
+     * Contact email address.
+     *
+     * @param contactEmail Contact email address.
+     * @uml.property name="contactEmail"
+     */
     void setContactEmail(String contactEmail);
 
     /**

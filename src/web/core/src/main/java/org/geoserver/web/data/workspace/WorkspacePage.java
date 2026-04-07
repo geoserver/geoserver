@@ -13,7 +13,6 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -55,8 +54,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
                 String targetLayer;
                 if (!wsParam.isEmpty()) {
                     targetLayer = wsParam.toString() + ":" + layerParam.toString();
-                }
-                else {
+                } else {
                     targetLayer = layerParam.toString();
                 }
                 LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
@@ -64,8 +62,11 @@ public class WorkspacePage extends GeoServerSecuredPage {
                     LayerGroupHelper helper = new LayerGroupHelper(gi);
                     List<String> ids = new ArrayList<String>();
                     for (LayerInfo li : helper.allLayers()) {
-                        if( li.getResource() != null && li.getResource().getStore() != null && li.getResource().getStore().getWorkspace() != null ) {
-                            String workspaceId = li.getResource().getStore().getWorkspace().getId();
+                        if (li.getResource() != null
+                                && li.getResource().getStore() != null
+                                && li.getResource().getStore().getWorkspace() != null) {
+                            String workspaceId =
+                                    li.getResource().getStore().getWorkspace().getId();
                             ids.add(workspaceId);
                         }
                     }
@@ -73,8 +74,11 @@ public class WorkspacePage extends GeoServerSecuredPage {
                 }
                 LayerInfo li = getCatalog().getLayerByName(targetLayer);
                 if (li != null) {
-                    if( li.getResource() != null && li.getResource().getStore() != null && li.getResource().getStore().getWorkspace() != null ) {
-                        String workspaceId = li.getResource().getStore().getWorkspace().getId();
+                    if (li.getResource() != null
+                            && li.getResource().getStore() != null
+                            && li.getResource().getStore().getWorkspace() != null) {
+                        String workspaceId =
+                                li.getResource().getStore().getWorkspace().getId();
                         return Predicates.and(baseFilter, Predicates.equal("id", workspaceId));
                     }
                 }

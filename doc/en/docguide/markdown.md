@@ -33,17 +33,17 @@ These elements are used for consistent representation of user interface elements
 
 Use `**button**` to name user interface components for interaction (press for buttons, click for link).
 
-=== "Preview"
-
-    Navigate to **Data --> Layers** page,
-    and press **Add a new layer** to create a new layer.
-
 === "Markdown"
 
     ```markdown
     Navigate to **Data --> Layers** page,
     and press **Add a new layer** to create a new layer.
     ```
+
+=== "Preview"
+
+    Navigate to **Data --> Layers** page,
+    and press **Add a new layer** to create a new layer.
 
 ### User input
 
@@ -196,9 +196,9 @@ Raw images are not used very often:
 
     ![GeoServer](img/logo-icon.svg "GeoServer Mark")
 
-### Screensnaps
+### Screenshots
 
-Take consistent screen snaps by following these guidelines:
+Take consistent screenshots by following these guidelines:
 
 * Create a responsive design profile of 900 x 800 for consistent size of on screen components.
   This size allows the user interface to display two-column layout of forms, and
@@ -206,20 +206,20 @@ Take consistent screen snaps by following these guidelines:
   
     This can be accomplished using responsive design mode in your browser development tools.
     
-    The browser may also have a screen snap button to save an image at the requested DPI.
+    The browser may also have a screenshot button to save an image at the requested DPI.
 
 * Use light appearance in the application, adjust monitor to sRGB.
 
 Be considerate of file size:
 
-* If taking a screen snap with HiDPI display, process by 50% to 72 DPI.
+* If taking a screenshot with HiDPI display, process by 50% to 72 DPI.
   
     ![](img/screen-snap-scale.png)  
     *Screen Snap scale to 72 DPI*
     
     !!! tip
         You may find it faster to adjust monitor resolution in order
-        avoid this step when making a lot of screen snaps.
+        avoid this step when making a lot of screenshots.
        
 * No need to include an alpha band when saving PNG
 

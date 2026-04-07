@@ -47,7 +47,7 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
     public void testPanelContainsWorkspacesSection() {
         tester.startPage(new FormTestPage((ComponentBuilder) id -> new NavigationTreePanel(id)));
         tester.assertNoErrorMessage();
-        tester.assertComponent("form:panel:workspacesSectionContainer", WebMarkupContainer.class);
+        tester.assertComponent("form:panel:globalSectionContainer", WebMarkupContainer.class);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
         tester.startPage(new FormTestPage((ComponentBuilder) id -> new NavigationTreePanel(id)));
         tester.assertNoErrorMessage();
         tester.assertComponent(
-                "form:panel:workspacesSectionContainer:workspacesSectionBody:workspacesScroll",
+                "form:panel:globalSectionContainer:globalSectionBody:workspacesScroll",
                 WebMarkupContainer.class);
     }
 
@@ -64,7 +64,7 @@ public class NavigationTreePanelTest extends GeoServerWicketTestSupport {
         tester.startPage(new FormTestPage((ComponentBuilder) id -> new NavigationTreePanel(id)));
         tester.assertNoErrorMessage();
         ListView<?> wsList = (ListView<?>) tester.getComponentFromLastRenderedPage(
-                "form:panel:workspacesSectionContainer:workspacesSectionBody:workspacesScroll:workspaces");
+                "form:panel:globalSectionContainer:globalSectionBody:workspacesScroll:workspaces");
         assertNotNull(wsList);
         assertFalse("Expected workspaces in test catalog", wsList.getList().isEmpty());
     }

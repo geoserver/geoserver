@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.geoserver.org/security/users" xmlns:gsu="http://www.geoserver.org/security/users" elementFormDefault="qualified">
+
+
+    <element name="userRegistry" type="gsu:UserRegistryType">
+        <key name="UserKey">
+    		<selector xpath="gsu:users/gsu:user"/>
+    		<field xpath="@name"/>
+    	</key>
+    	<key name="GroupKey">
+        	<selector xpath="gsu:groups/gsu:group"/>
+        	<field xpath="@name"/>
+		</key>
+		<keyref name="ForeinUserKey" refer="gsu:UserKey">  
+  			<selector xpath="gsu:groups/gsu:group/gsu:member"/>
+  			<field xpath="@username"/>
+		</keyref>    				    		    		    	    		    
+    </element>
+    
+    <complexType name="UserType">
+       	<sequence>
+    		<element name="property" type="gsu:UserPropertyType" minOccurs="0" maxOccurs="unbounded"/> 
+    	</sequence>    	
+    
+    	<attribute name="name" type="string" use="required"></attribute>
+    	<attribute name="password" type="string" use="optional"></attribute>
+    	<attribute name="enabled" type="boolean" use="optional" default="true"></attribute>
+    </complexType>
+    
+    <complexType name="GroupType">
+    	<sequence>    		
+    		<!--<element name="member" type="gsu:UserRefType" minOccurs="0" maxOccurs="unbounded"></element> -->
+    		<element name="member" type="gsu:UserRefType" minOccurs="0" maxOccurs="unbounded">
+    		</element>
+    	</sequence>    
+    	<attribute name="name" type="string" use="required"></attribute>
+    	<attribute name="enabled" type="boolean" use="optional" default="true"></attribute>
+    </complexType>
+    
+    
+    <complexType name="UserRefType">
+    	<attribute name="username" type="string" use="required"></attribute>
+    </complexType>
+    
+    
+
+    <complexType name="UserRegistryType">
+    	<sequence>    		
+    		<element name="users" type="gsu:UsersType" minOccurs="1" maxOccurs="1" />
+    		<element name="groups" type="gsu:GroupsType" minOccurs="1" maxOccurs="1"/>
+    	</sequence>
+    	<attribute  name="version" type="gsu:VersionType" use="required" ></attribute>
+    </complexType>
+    
+    <complexType name="UsersType">
+    	<sequence>
+    		<element name="user" type="gsu:UserType" minOccurs="0"
+    			maxOccurs="unbounded">
+    		</element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="GroupsType">
+    	<sequence>
+    		<element name="group" type="gsu:GroupType" minOccurs="0"
+    			maxOccurs="unbounded">
+    		</element>
+    	</sequence>    	
+    </complexType>
+    
+                    
+    <complexType name="UserPropertyType">
+    	<simpleContent>
+    		<extension base="string">
+    			<attribute name="name" type="string" use="required"></attribute>
+    		</extension>
+    	</simpleContent>
+    </complexType>
+
+    <simpleType name="VersionType" >
+    	<restriction base="string">
+    		<enumeration value="1.0"></enumeration>
+    	</restriction>
+    </simpleType>
+</schema>

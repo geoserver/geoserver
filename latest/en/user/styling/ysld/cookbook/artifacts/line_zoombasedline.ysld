@@ -1,0 +1,22 @@
+title: 'YSLD Cook Book: Zoom-based line'
+feature-styles:
+- name: name
+  rules:
+  - name: Large
+    scale: [min,1.8e8]
+    symbolizers:
+    - line:
+        stroke-color: '#009933'
+        stroke-width: 6
+  - name: Medium
+    scale: [1.8e8,3.6e8]
+    symbolizers:
+    - line:
+        stroke-color: '#009933'
+        stroke-width: 4
+  - name: Small
+    scale: [3.6e8,max]
+    symbolizers:
+    - line:
+        stroke-color: '#009933'
+        stroke-width: 2

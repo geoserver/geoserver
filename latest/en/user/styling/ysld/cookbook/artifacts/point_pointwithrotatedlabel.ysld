@@ -1,0 +1,22 @@
+title: 'YSLD Cook Book: Point with rotated label'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - point:
+        size: 6
+        symbols:
+        - mark:
+            shape: circle
+            fill-color: '#FF0000'
+    - text:
+        label: ${name}
+        fill-color: '#990099'
+        font-family: Arial
+        font-size: 12
+        font-style: normal
+        font-weight: bold
+        placement: point
+        anchor: [0.5,0.0]
+        displacement: [0,25]
+        rotation: -45

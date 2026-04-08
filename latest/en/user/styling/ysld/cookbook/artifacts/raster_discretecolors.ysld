@@ -1,0 +1,12 @@
+title: 'YSLD Cook Book: Discrete colors'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - raster:
+        opacity: 1
+        color-map:
+          type: intervals
+          entries:
+          - ['#008000',1,150,'']
+          - ['#663333',1,256,'']

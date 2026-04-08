@@ -205,6 +205,10 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             // add placeholder (even when not admin) to identify this page location
             administration.add(placeholderLabel("adminContent"));
         }
+        if (publishedInfo != null && publishedInfo instanceof LayerInfo) {
+            // hide all this for layer, we may need to bring this back for layer specific warnings guidance
+            administration.setVisible(false);
+        }
 
         Locale locale = getLocale();
 
@@ -685,17 +689,31 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             NumberFormat numberFormat = NumberFormat.getIntegerInstance(getLocale());
             numberFormat.setGroupingUsed(true);
 
-            catalogLinks.add(new BookmarkablePageLink<>("layersLink", LayerPage.class, this.getPageParameters())
-                    .add(new Label("nlayers", numberFormat.format(layerCount))));
+            BookmarkablePageLink layersLink = new BookmarkablePageLink<>("layersLink", LayerPage.class, this.getPageParameters());
+            layersLink.add(new Label("nlayers", numberFormat.format(layerCount)));
+            catalogLinks.add(layersLink);
 
-            catalogLinks.add(new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class, this.getPageParameters())
-                    .add(new Label("ngroups", numberFormat.format(groupCount))));
+            BookmarkablePageLink groupsLink = new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class, this.getPageParameters());
+            groupsLink.add(new Label("ngroups", numberFormat.format(groupCount)));
+            catalogLinks.add(groupsLink);
 
-            catalogLinks.add(new BookmarkablePageLink<>("storesLink", StorePage.class, this.getPageParameters())
-                    .add(new Label("nstores", numberFormat.format(storesCount))));
+            BookmarkablePageLink storesLink = new BookmarkablePageLink<>("storesLink", StorePage.class, this.getPageParameters());
+            storesLink.add(new Label("nstores", numberFormat.format(storesCount)));
+            catalogLinks.add(storesLink);
 
-            catalogLinks.add(new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class, this.getPageParameters())
-                    .add(new Label("nworkspaces", numberFormat.format(wsCount))));
+            BookmarkablePageLink workspacesLink = new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class, this.getPageParameters());
+            workspacesLink.add(new Label("nworkspaces", numberFormat.format(wsCount)));
+            catalogLinks.add(workspacesLink);
+
+            if (publishedInfo != null) {
+                if (publishedInfo instanceof LayerInfo) {
+                    catalogLinks.setVisible(false);
+                }
+            }
+            else  if (workspaceInfo != null) {
+                workspacesLink.setVisible(false); // hide from workspace welcome page
+            }
+
             return catalogLinks;
         } finally {
             sw.stop();

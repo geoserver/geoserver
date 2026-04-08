@@ -22,7 +22,6 @@
         <include>jsoup*.jar</include>
         <include>jcip-annotations*.jar</include>
         <include>ehcache-core*.jar</include>
-        <include>gt-jdbc-h2*.jar</include>
         <include>hatbox*.jar</include>
         <include>geodb*.jar</include>
         <include>bufr*.jar</include>
@@ -35,7 +34,6 @@
         <include>jcommander*.jar</include>
         <include>opendap*.jar</include>
         <include>http*.jar</include>
-        <include>h2-*.jar</include>
       </includes>
       <excludes>
         <exclude>gs-netcdf-out*.jar</exclude>

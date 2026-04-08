@@ -64,13 +64,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>net.sf.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.geotools.jdbc</groupId>
-      <artifactId>gt-jdbc-h2</artifactId>
+      <groupId>net.sf.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

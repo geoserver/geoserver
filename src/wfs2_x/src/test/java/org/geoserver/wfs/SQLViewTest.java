@@ -5,8 +5,8 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
 import org.apache.commons.text.StringEscapeUtils;
@@ -16,7 +16,9 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.PostGISTestResource;
 import org.geotools.api.data.DataStore;
+import org.geotools.api.data.Query;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.api.feature.simple.SimpleFeatureType;
@@ -24,6 +26,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.Point;
 import org.w3c.dom.Document;
@@ -31,7 +34,11 @@ import org.w3c.dom.NodeList;
 
 public class SQLViewTest extends WFSTestSupport {
 
+    static final String tableTypeName = "gs:pgeo";
     static final String viewTypeName = "gs:pgeo_view";
+
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
 
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
@@ -44,11 +51,8 @@ public class SQLViewTest extends WFSTestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        File dbFile = new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");
-        params.put("database", dbFile.getAbsolutePath());
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
-
         SimpleFeatureSource fsp = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
 
         DataStore store = (DataStore) ds.getDataStore(null);
@@ -82,6 +86,18 @@ public class SQLViewTest extends WFSTestSupport {
         FeatureTypeInfo vft = cb.buildFeatureType(jds.getFeatureSource(vt.getName()));
         vft.getMetadata().put(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, vt);
         cat.add(vft);
+    }
+
+    /** Checks the setup did the expected job */
+    @Test
+    public void testStoreSetup() throws Exception {
+        FeatureTypeInfo tableTypeInfo = getCatalog().getFeatureTypeByName(tableTypeName);
+        assertNotNull(tableTypeInfo);
+        assertEquals(5, tableTypeInfo.getFeatureSource(null, null).getCount(Query.ALL));
+
+        FeatureTypeInfo viewTypeInfo = getCatalog().getFeatureTypeByName(viewTypeName);
+        assertNotNull(viewTypeInfo);
+        assertEquals(1, viewTypeInfo.getFeatureSource(null, null).getCount(Query.ALL));
     }
 
     @Test

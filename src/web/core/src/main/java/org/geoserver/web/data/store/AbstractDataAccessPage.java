@@ -25,6 +25,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -313,5 +314,17 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
     @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
+
+    @Override
+    public PageParameters getPageParameters() {
+        PageParameters params = super.getPageParameters();
+        if (params.isEmpty() && workspacePanel != null) {
+            WorkspaceInfo ws = (WorkspaceInfo) workspacePanel.getDefaultModelObject();
+            if (ws != null) {
+                return new PageParameters().add("workspace", ws.getName());
+            }
+        }
+        return params;
     }
 }

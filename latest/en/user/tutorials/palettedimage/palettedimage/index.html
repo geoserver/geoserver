@@ -29784,7 +29784,7 @@
 <p>So, as it turns out, paletted images can be used with profit on vector data sets, either using the PNG8 or GIF formats.</p>
 <p>Antialiasing plays a role too. Let's take a road layer, where each road is depicted by a solid gray line, 2 pixels thick. One may think this layer needs only 2 colors: the background one (eventually transparent) and gray. In fact, this is true only if no antialiasing is enabled. Antialiasing will smooth the borders of the line giving a softer, better looking shape, and it will do so by adding pixels with an intermediate color, thus increasing the number of colors that are needed to fully display the image.</p>
 <p>The following zoom of an image shows antialiasing in action:</p>
-<p><img alt="" src="antialiasing.png" /></p>
+<p><img alt="" src="../antialiasing.png" /></p>
 <p><em>Antialiasing</em></p>
 <p>These output formats, if no other parameters are provided, do compute the optimal palette on the fly. As you'll see, this is an expensive process (CPU bound), but as you'll see, depending on the speed of the network connecting the server and the client, the extra cost can be ignored (especially if the bottleneck can be found in the network instead of the server CPU).</p>
 <p>Optimal palette computation is anyways a repetitive work that can be done up front: a user can compute the optimal palette once, and tell GeoServer to use it. There are three ways to do so:</p>
@@ -29810,16 +29810,16 @@
 </blockquote>
 <p>And we'll change various parameters in order to play with formats and palettes. Here goes the sampler:</p>
 <p><strong>Parameters</strong>:<code>FORMAT=image/png</code> | Size: 257 KB | Map generation time: 0.3s</p>
-<p><img alt="" src="tiger-ny-png24.png" /></p>
+<p><img alt="" src="../tiger-ny-png24.png" /></p>
 <p><em>The standard PNG full color output</em></p>
 <p><strong>Parameters</strong>:<code>FORMAT=image/png8</code> | Size: 60 KB | Map generation time: 0.6s</p>
-<p><img alt="" src="tiger-ny-png8.png" /></p>
+<p><img alt="" src="../tiger-ny-png8.png" /></p>
 <p><em>The PNG8 output</em></p>
 <p><strong>Parameters</strong>:<code>FORMAT=image/png</code> | Size: 257 KB | Map generation time: 0.3s</p>
-<p><img alt="" src="tiger-ny-png-safe-palette.png" /></p>
+<p><img alt="" src="../tiger-ny-png-safe-palette.png" /></p>
 <p><em>PNG + internet safe palette</em></p>
 <p><strong>Parameters</strong>:<code>FORMAT=image/png</code> &amp; <code>palette=nyp</code> | Size: 56KB | Map generation time: 0.3s</p>
-<p><img alt="" src="tiger-ny-png-custom-palette.png" /></p>
+<p><img alt="" src="../tiger-ny-png-custom-palette.png" /></p>
 <p><em>PNG + <code>custom palette &lt;http://geoserver.org/download/attachments/1278244/nyp.pal?version=1&gt;</code>_</em></p>
 <p>The attachments include also the GIF outputs, whose size, appearance and generation time does not differ significantly from the PNG outputs.</p>
 <p>As we can see, depending on the choice we have a variation on the image quality, size and generation time (which has been recorded using the FasterFox Firefox extension timer, with the browser sitting on the same box as the server). Using <code>palette=xxx</code> provides the best match in speed and size, though using the built-in internet safe palette altered the colors. Then again, the real gain can be seen only by assuming a certain connection speed between the server and the client, and adding the time required to move the image to the client. The following table provides some results:</p>
@@ -29890,19 +29890,19 @@
 <h2 id="an-example-with-raster-data">An example with raster data<a class="headerlink" href="#an-example-with-raster-data" title="Permanent link">&para;</a></h2>
 <p>To give you an example when paletted images may not fit the bill, let's consider the sf:dem coverage from the sample data, and repeat the same operation as before.</p>
 <p><strong>Parameters</strong>:<code>FORMAT=image/png</code> Size: 117 KB | Map generation time: 0.2s</p>
-<p><img alt="" src="dem-png24.png" /></p>
+<p><img alt="" src="../dem-png24.png" /></p>
 <p><em>The standard PNG full color output.</em></p>
 <p><strong>Parameters</strong>:<code>FORMAT=image/jpeg</code> Size: 23KB | Map generation time: 0.12s</p>
-<p><img alt="" src="dem-jpeg.jpg" /></p>
+<p><img alt="" src="../dem-jpeg.jpg" /></p>
 <p><em>JPEG output</em></p>
 <p><strong>Parameters</strong>:<code>FORMAT=image/png8</code> Size: 60 KB | Map generation time: 0.5s</p>
-<p><img alt="" src="dem-png8.png" /></p>
+<p><img alt="" src="../dem-png8.png" /></p>
 <p><em>The PNG8 output.</em></p>
 <p><strong>Parameters</strong>:<code>FORMAT=image/png</code> &amp; <code>palette=dem-png8</code> Size: 48KB | Map generation time: 0.15s</p>
-<p><img alt="" src="dem-png-custom-palette.png" /></p>
+<p><img alt="" src="../dem-png-custom-palette.png" /></p>
 <p><em>PNG + custom palette (using the png8 output as the palette).</em></p>
 <p><strong>Parameters</strong>:<code>FORMAT=image/png</code> &amp; <code>palette=safe</code> Size: 17KB | Map generation time: 0.15s</p>
-<p><img alt="" src="dem-png-safe-palette.png" /></p>
+<p><img alt="" src="../dem-png-safe-palette.png" /></p>
 <p><em>PNG + internet safe palette.</em></p>
 <p>As the sample shows, the JPEG output has the same quality as the full color image, is generated faster and uses only 1/5 of its size. On the other hand, the version using the internet safe palette is fast and small, but the output is totally ruined. Everything considered, JPEG is the clear winner, sporting good quality, fast image generation and a size that's half of the best png output we can get.</p>
 

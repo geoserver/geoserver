@@ -30553,7 +30553,7 @@
 <p><a href="../../sld/cookbook/artifacts/sld_cookbook_point.zip">Download the points shapefile</a></p>
 <h2 id="css_cookbook_points_simplepoint">Simple point<a class="headerlink" href="#css_cookbook_points_simplepoint" title="Permanent link">&para;</a></h2>
 <p>This example specifies points be styled as red circles with a diameter of 6 pixels.</p>
-<p><img alt="" src="../../sld/cookbook/images/point_simplepoint.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_simplepoint.png" /></p>
 <p><em>Simple point</em></p>
 <h3 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30568,7 +30568,7 @@
 <p>There are two rules in this CSS, the outer one matches all features, and asks them to be depicted with a circular mark, 6 pixels wide. The nested rule uses a symbol selector, <code>:mark</code>, which selects all marks, and allows to specify how to fill the contents of the circle, in this case, with a solid red fill (a stand alone fill property would have been interpreted as the request to fill all polygons in the input with solid red instead).</p>
 <h2 id="css_cookbook_points_simplepointwithstroke">Simple point with stroke<a class="headerlink" href="#css_cookbook_points_simplepointwithstroke" title="Permanent link">&para;</a></h2>
 <p>This example adds a stroke (or border) around the <a href="#css_cookbook_points_simplepoint">Simple point</a>, with the stroke colored black and given a thickness of 2 pixels.</p>
-<p><img alt="" src="../../sld/cookbook/images/point_simplepointwithstroke.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_simplepointwithstroke.png" /></p>
 <p><em>Simple point with stroke</em></p>
 <h3 id="code_1">Code<a class="headerlink" href="#code_1" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30585,7 +30585,7 @@
 <p>This example is similar to the <a href="#css_cookbook_points_simplepoint">Simple point</a> example, in this case a stroke and a stroke width have been specified in the mark selector in order to apply them to the circle symbols.</p>
 <h2 id="rotated-square">Rotated square<a class="headerlink" href="#rotated-square" title="Permanent link">&para;</a></h2>
 <p>This example creates a square instead of a circle, colors it green, sizes it to 12 pixels, and rotates it by 45 degrees.</p>
-<p><img alt="" src="../../sld/cookbook/images/point_rotatedsquare.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_rotatedsquare.png" /></p>
 <p><em>Rotated square</em></p>
 <h3 id="code_2">Code<a class="headerlink" href="#code_2" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30601,7 +30601,7 @@
 <p>In this example, <strong>line 2</strong> sets the shape to be a square, with <strong>line 6</strong> setting the color to a dark green (<code>#009900</code>). <strong>Line 3</strong> sets the size of the square to be 12 pixels, and <strong>line 4</strong> set the rotation is to 45 degrees.</p>
 <h2 id="transparent-triangle">Transparent triangle<a class="headerlink" href="#transparent-triangle" title="Permanent link">&para;</a></h2>
 <p>This example draws a triangle, creates a black stroke identical to the <a href="#css_cookbook_points_simplepointwithstroke">Simple point with stroke</a> example, and sets the fill of the triangle to 20% opacity (mostly transparent).</p>
-<p><img alt="" src="../../sld/cookbook/images/point_transparenttriangle.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_transparenttriangle.png" /></p>
 <p><em>Transparent triangle</em></p>
 <h3 id="code_3">Code<a class="headerlink" href="#code_3" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30619,7 +30619,7 @@
 <p>In this example, <strong>line 2</strong> once again sets the shape, in this case to a triangle, where <strong>line 3</strong> sets the mark size to 12 pixels. <strong>Line 5</strong> sets the fill color to a dark green (<code>#009900</code>) and <strong>line 6</strong> sets the opacity to 0.2 (20% opaque). An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is drawn 0% opaque, or completely transparent. The value of 0.2 (20% opaque) means that the fill of the points partially takes on the color and style of whatever is drawn beneath it. In this example, since the background is white, the dark green looks lighter. Were the points imposed on a dark background, the resulting color would be darker. <strong>Line 8</strong> set the stroke color to black and width to 2 pixels.</p>
 <h2 id="point-as-graphic">Point as graphic<a class="headerlink" href="#point-as-graphic" title="Permanent link">&para;</a></h2>
 <p>This example styles each point as a graphic instead of as a simple shape.</p>
-<p><img alt="" src="../../sld/cookbook/images/point_pointasgraphic.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_pointasgraphic.png" /></p>
 <p><em>Point as graphic</em></p>
 <h3 id="code_4">Code<a class="headerlink" href="#code_4" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30629,11 +30629,11 @@
 </code></pre></div>
 <h3 id="details_4">Details<a class="headerlink" href="#details_4" title="Permanent link">&para;</a></h3>
 <p>This style uses a graphic instead of a simple shape to render the points. <strong>Line 2</strong> sets the path and file name of the graphic, while <strong>line 3</strong> indicates the format (MIME type) of the graphic (image/png). In this example, the graphic is contained in the same directory as the SLD, so no path information is necessary, although a full URL could be used if desired.</p>
-<p><img alt="" src="../../sld/cookbook/images/smileyface.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/smileyface.png" /></p>
 <p><em>Graphic used for points</em></p>
 <h2 id="css_cookbook_points_pointwithdefaultlabel">Point with default label<a class="headerlink" href="#css_cookbook_points_pointwithdefaultlabel" title="Permanent link">&para;</a></h2>
 <p>This example shows a text label on the <a href="#css_cookbook_points_simplepoint">Simple point</a> that displays the "name" attribute of the point. This is how a label will be displayed in the absence of any other customization.</p>
-<p><img alt="" src="../../sld/cookbook/images/point_pointwithdefaultlabel.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_pointwithdefaultlabel.png" /></p>
 <p><em>Point with default label</em></p>
 <h3 id="code_5">Code<a class="headerlink" href="#code_5" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30650,7 +30650,7 @@
 <p>This style is quite similar to the <a href="#css_cookbook_points_simplepoint">Simple point</a>, but two new properties have been added to specify the labelling options. <strong>Line 4</strong> indicates that the label contents come from the "name" attribute (anything in square brackets is a CQL expression, the attribute name being the simplest case) while <strong>Line 5</strong> sets the label color to black.</p>
 <h2 id="css_cookbook_points_pointwithstyledlabel">Point with styled label<a class="headerlink" href="#css_cookbook_points_pointwithstyledlabel" title="Permanent link">&para;</a></h2>
 <p>This example improves the label style from the <a href="#css_cookbook_points_pointwithdefaultlabel">Point with default label</a> example by centering the label above the point and providing a different font name and size.</p>
-<p><img alt="" src="../../sld/cookbook/images/point_pointwithstyledlabel.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_pointwithstyledlabel.png" /></p>
 <p><em>Point with styled label</em></p>
 <h3 id="code_6">Code<a class="headerlink" href="#code_6" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30674,7 +30674,7 @@
 <p>The result is a centered bold label placed slightly above each point.</p>
 <h2 id="point-with-rotated-label">Point with rotated label<a class="headerlink" href="#point-with-rotated-label" title="Permanent link">&para;</a></h2>
 <p>This example builds on the previous example, <a href="#css_cookbook_points_pointwithstyledlabel">Point with styled label</a>, by rotating the label by 45 degrees, positioning the labels farther away from the points, and changing the color of the label to purple.</p>
-<p><img alt="" src="../../sld/cookbook/images/point_pointwithrotatedlabel.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_pointwithrotatedlabel.png" /></p>
 <p><em>Point with rotated label</em></p>
 <h3 id="code_7">Code<a class="headerlink" href="#code_7" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30698,7 +30698,7 @@
 <p>Note that the displacement takes effect before the rotation during rendering, so in this example, the 25 pixel vertical displacement is itself rotated 45 degrees.</p>
 <h2 id="attribute-based-point">Attribute-based point<a class="headerlink" href="#attribute-based-point" title="Permanent link">&para;</a></h2>
 <p>This example alters the size of the symbol based on the value of the population ("pop") attribute.</p>
-<p><img alt="" src="../../sld/cookbook/images/point_attributebasedpoint.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_attributebasedpoint.png" /></p>
 <p><em>Attribute-based point</em></p>
 <h3 id="code_8">Code<a class="headerlink" href="#code_8" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
@@ -30757,11 +30757,11 @@
 <p>The result of this style is that cities with larger populations have larger points. In particular, the rule at <strong>Line 6</strong> matches all features whose "pop" attribute is less than 50000, the rule at <strong>Line 9</strong> matches all features whose "pop" attribute is between 50000 and 100000 (mind the space between the two predicates, it is equivalent to and AND, if we had used a comma it would have been an OR instead), while the rule at <strong>Line 12</strong> matches all features with more than 100000 inhabitants.</p>
 <h2 id="zoom-based-point">Zoom-based point<a class="headerlink" href="#zoom-based-point" title="Permanent link">&para;</a></h2>
 <p>This example alters the style of the points at different zoom levels.</p>
-<p><img alt="" src="../../sld/cookbook/images/point_zoombasedpointlarge.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_zoombasedpointlarge.png" /></p>
 <p><em>Zoom-based point: Zoomed in</em></p>
-<p><img alt="" src="../../sld/cookbook/images/point_zoombasedpointmedium.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_zoombasedpointmedium.png" /></p>
 <p><em>Zoom-based point: Partially zoomed</em></p>
-<p><img alt="" src="../../sld/cookbook/images/point_zoombasedpointsmall.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/point_zoombasedpointsmall.png" /></p>
 <p><em>Zoom-based point: Zoomed out</em></p>
 <h3 id="code_9">Code<a class="headerlink" href="#code_9" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>

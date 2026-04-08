@@ -29748,7 +29748,7 @@
 <p>The following section describes the interaction between the <a href="../usergroupservices/">User/group services</a> and the <a href="../roleservices/">Role services</a>.</p>
 <h2 id="calculating-the-roles-of-a-user">Calculating the roles of a user<a class="headerlink" href="#calculating-the-roles-of-a-user" title="Permanent link">&para;</a></h2>
 <p>The diagram below illustrates how a user/group service and a role service interact to calculate user roles.</p>
-<p><img alt="" src="images/usergrouprole1.png" /></p>
+<p><img alt="" src="../images/usergrouprole1.png" /></p>
 <p><em>User/group and role service interacting for role calculation</em></p>
 <p>On fetching an enabled user from a user/group service, the roles(s) assigned to that user must be identified. The identification procedure is:</p>
 <ol>
@@ -29766,11 +29766,11 @@
 </div>
 <h2 id="authentication-of-user-credentials">Authentication of user credentials<a class="headerlink" href="#authentication-of-user-credentials" title="Permanent link">&para;</a></h2>
 <p>A user/group service is primarily used during authentication. An authentication provider in the <a href="../../auth/chain/">Authentication chain</a> may use a user/group service to authenticate user credentials.</p>
-<p><img alt="" src="images/usergrouprole2.png" /></p>
+<p><img alt="" src="../images/usergrouprole2.png" /></p>
 <p><em>Using a a user/group service for authentication</em></p>
 <h2 id="geoserver-defaults">GeoServer defaults<a class="headerlink" href="#geoserver-defaults" title="Permanent link">&para;</a></h2>
 <p>The following diagram illustrates the default user/group service, role service, and authentication provider in GeoServer:</p>
-<p><img alt="" src="images/usergrouprole3.png" /></p>
+<p><img alt="" src="../images/usergrouprole3.png" /></p>
 <p><em>Default GeoServer security configuration</em></p>
 <p>Two authentication providers are configured---the <em>Root</em> provider and the <em>Username/password</em> provider. The <em>Root</em> provider authenticates for the GeoServer <a href="../../root/">Root account</a> and does not use a user/group service. The <em>Username/password</em> provider is the default provider and relays username and password credentials to a user/group service.</p>
 <p>A single user/group service, which persist the user database as XML, is present. The database contains a single user named <code>admin</code> and no groups. Similarly, the role service persists the role database as XML. By default, this contains a single role named <code>ADMIN</code>, which is associated with the <code>admin</code> user. The <code>ADMIN</code> role is mapped to the <code>ROLE_ADMINISTRATOR</code> role and as a result, the <code>admin</code> user is associated with system administrator role during role calculation.</p>

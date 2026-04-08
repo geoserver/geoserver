@@ -29954,7 +29954,7 @@
 
 <h1 id="lines">Lines<a class="headerlink" href="#lines" title="Permanent link">&para;</a></h1>
 <p>We will start our tour of CSS styling by looking at the representation of lines.</p>
-<p><img alt="" src="../style/img/LineSymbology.svg" /></p>
+<p><img alt="" src="../../style/img/LineSymbology.svg" /></p>
 <p><em>LineString Geometry</em></p>
 <p>Review of line symbology:</p>
 <ul>
@@ -29973,7 +29973,7 @@
 </ul>
 <h2 id="stroke">Stroke<a class="headerlink" href="#stroke" title="Permanent link">&para;</a></h2>
 <p>The only mandatory property for representation of linework is <strong>stroke</strong>. This is a <strong>key property</strong>; its presence triggers the generation of an appropriate LineSymbolizer.</p>
-<p><img alt="" src="../style/img/LineStringStroke_CSS.svg" /></p>
+<p><img alt="" src="../../style/img/LineStringStroke_CSS.svg" /></p>
 <p><em>Basic Stroke Properties</em></p>
 <p>The use of <strong>stroke</strong> as a key property prevents CSS from having the idea of a default line color (as the <strong>stroke</strong> information must be supplied each time).</p>
 <ol>
@@ -30009,7 +30009,7 @@
 <li>
 <p>Click <strong>Submit</strong> and then the <strong>Map</strong> tab for an initial preview.</p>
 <p>You can use this tab to follow along as the style is edited, it will refresh each time <strong>Submit</strong> is pressed.</p>
-<p><img alt="image" src="../style/img/line.png" /></p>
+<p><img alt="image" src="../../style/img/line.png" /></p>
 </li>
 <li>
 <p>You can look at the <strong>SLD</strong> tab at any time to see the generated SLD. Currently it is showing a straight forward LineSymbolizer generated from the CSS <strong>stroke</strong> property:</p>
@@ -30055,7 +30055,7 @@
 </li>
 <li>
 <p>Check the <strong>Map</strong> tab to preview the result.</p>
-<p><img alt="image" src="../style/img/line_stroke.png" /></p>
+<p><img alt="image" src="../../style/img/line_stroke.png" /></p>
 </li>
 </ol>
 <div class="admonition note">
@@ -30064,7 +30064,7 @@
 </div>
 <h2 id="z-index">Z-Index<a class="headerlink" href="#z-index" title="Permanent link">&para;</a></h2>
 <p>The next exercise shows how to work around a limitation when using multiple strokes to render a line.</p>
-<p><img alt="" src="../style/img/LineStringZOrder_CSS.svg" /></p>
+<p><img alt="" src="../../style/img/LineStringZOrder_CSS.svg" /></p>
 <p><em>Use of Z-Index</em></p>
 <ol>
 <li>
@@ -30078,7 +30078,7 @@
 </li>
 <li>
 <p>If you look carefully you can see a problem with our initial attempt. The junctions of each line show that the casing outlines each line individually, making the lines appear randomly overlapped. Ideally we would like to control this process, only making use of this effect for overpasses.</p>
-<p><img alt="image" src="../style/img/line_zorder_1.png" /></p>
+<p><img alt="image" src="../../style/img/line_zorder_1.png" /></p>
 </li>
 <li>
 <p>The <strong>z-index</strong> parameter allows a draw order to be supplied. This time all the thick black lines are dawn first (at z-index 0) followed by the thinner blue lines (at z-index 1).</p>
@@ -30091,16 +30091,16 @@
 </li>
 <li>
 <p>If you look carefully you can see the difference.</p>
-<p><img alt="image" src="../style/img/line_zorder_2.png" /></p>
+<p><img alt="image" src="../../style/img/line_zorder_2.png" /></p>
 </li>
 <li>
 <p>By using <strong>z-index</strong> we have been able to simulate line casing.</p>
-<p><img alt="image" src="../style/img/line_zorder_3.png" /></p>
+<p><img alt="image" src="../../style/img/line_zorder_3.png" /></p>
 </li>
 </ol>
 <h2 id="label">Label<a class="headerlink" href="#label" title="Permanent link">&para;</a></h2>
 <p>Our next example is significant as it introduces the how text labels are generated.</p>
-<p><img alt="" src="../style/img/LineStringLabel_CSS.svg" /></p>
+<p><img alt="" src="../../style/img/LineStringLabel_CSS.svg" /></p>
 <p><em>Use of Label Property</em></p>
 <p>This is also our first example making use of a dynamic style (where the value of a property is defined by an attribute from your data).</p>
 <ol>
@@ -30115,7 +30115,7 @@
 </li>
 <li>
 <p>The SLD standard documents the default label position for each kind of Geometry. For LineStrings the initial label is positioned on the midway point of the line.</p>
-<p><img alt="image" src="../style/img/line_label_1.png" /></p>
+<p><img alt="image" src="../../style/img/line_label_1.png" /></p>
 </li>
 <li>
 <p>We have used an expression to calculate a property value for label. The <strong>label</strong> property is generated dynamically from the <code>name</code> attribute. Expressions are supplied within square brackets, making use of Constraint Query Language (CQL) syntax.</p>
@@ -30159,7 +30159,7 @@
 </li>
 <li>
 <p>When used in this manner the rotation of the label will be adjusted automatically to match the LineString.</p>
-<p><img alt="image" src="../style/img/line_label_2.png" /></p>
+<p><img alt="image" src="../../style/img/line_label_2.png" /></p>
 </li>
 </ol>
 <h2 id="how-labeling-works">How Labeling Works<a class="headerlink" href="#how-labeling-works" title="Permanent link">&para;</a></h2>
@@ -30191,7 +30191,7 @@
 </li>
 <li>
 <p>Each label is now separated from its neighbor, improving legibility.</p>
-<p><img alt="image" src="../style/img/line_label_3.png" /></p>
+<p><img alt="image" src="../../style/img/line_label_3.png" /></p>
 </li>
 </ol>
 <h2 id="scale">Scale<a class="headerlink" href="#scale" title="Permanent link">&para;</a></h2>
@@ -30206,7 +30206,7 @@
 </li>
 <li>
 <p>And use the <strong>Map</strong> tab to preview the result.</p>
-<p><img alt="image" src="../style/img/line_04_scalerank.png" /></p>
+<p><img alt="image" src="../../style/img/line_04_scalerank.png" /></p>
 </li>
 <li>
 <p>The <strong>scalerank</strong> attribute is provided by the Natural Earth dataset to allow control of the level of detail based on scale. Our selector short-listed all content with scalerank 4 or lower, providing a nice quick preview when we are zoomed out.</p>
@@ -30224,7 +30224,7 @@
 </li>
 <li>
 <p>As you adjust the scale in the <strong>Map</strong> preview (using the mouse scroll wheel) the color will change between black and blue. You can read the current scale in the bottom right corner, and the legend will change to reflect the current style.</p>
-<p><img alt="image" src="../style/img/line_05_scale.png" /></p>
+<p><img alt="image" src="../../style/img/line_05_scale.png" /></p>
 </li>
 <li>
 <p>Putting these two ideas together allows control of level detail based on scale:</p>
@@ -30268,7 +30268,7 @@
 <li>Selectors separated by a comma are combined using CQL Filter OR</li>
 </ul>
 <p>Our first rule [[@scale &lt; 9000000] [scalerank &gt; 7]]{.title-ref} checks that the scale is less than 9M AND scalerank is greater than 7.</p>
-<p><img alt="image" src="../style/img/line_06_adjust.png" /></p>
+<p><img alt="image" src="../../style/img/line_06_adjust.png" /></p>
 </li>
 </ol>
 <h2 id="bonus">Bonus<a class="headerlink" href="#bonus" title="Permanent link">&para;</a></h2>
@@ -30334,7 +30334,7 @@
 </li>
 <li>
 <p>The result is a new appearance for our roads.</p>
-<p><img alt="image" src="../style/img/line_label_4.png" /></p>
+<p><img alt="image" src="../../style/img/line_label_4.png" /></p>
 </li>
 </ol>
 <h3 id="css.line.q0">Challenge SLD Generation<a class="headerlink" href="#css.line.q0" title="Permanent link">&para;</a></h3>
@@ -30363,7 +30363,7 @@
 </li>
 <li>
 <p><strong>Challenge:</strong> Create a new style adjust road appearance based on <strong>type</strong>.</p>
-<p><img alt="image" src="../style/img/line_type.png" /></p>
+<p><img alt="image" src="../../style/img/line_type.png" /></p>
 <p>Hint: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30394,7 +30394,7 @@
 <ol>
 <li>
 <p>The traditional presentation of roads in the US is the use of a shield symbol, with the road number marked on top.</p>
-<p><img alt="image" src="../style/img/line_shield.png" /></p>
+<p><img alt="image" src="../../style/img/line_shield.png" /></p>
 </li>
 <li>
 <p><em>Challenge:</em> Have a look at the documentation and reproduce this technique.</p>

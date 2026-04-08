@@ -30557,7 +30557,7 @@
 <p><a href="artifacts/sld_cookbook_point.zip">Download the points shapefile</a></p>
 <h2 id="sld_cookbook_points_simplepoint">Simple point<a class="headerlink" href="#sld_cookbook_points_simplepoint" title="Permanent link">&para;</a></h2>
 <p>This example specifies points be styled as red circles with a diameter of 6 pixels.</p>
-<p><img alt="" src="images/point_simplepoint.png" /></p>
+<p><img alt="" src="../images/point_simplepoint.png" /></p>
 <p><em>Simple point</em></p>
 <h3 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_simplepoint.sld">View and download the full "Simple point" SLD</a></p>
@@ -30581,7 +30581,7 @@
 <p>There is one <code>&lt;Rule&gt;</code> in one <code>&lt;FeatureTypeStyle&gt;</code> for this SLD, which is the simplest possible situation. (All subsequent examples will contain one <code>&lt;Rule&gt;</code> and one <code>&lt;FeatureTypeStyle&gt;</code> unless otherwise specified.) Styling points is accomplished via the <code>&lt;PointSymbolizer&gt;</code> (<strong>lines 3-13</strong>). <strong>Line 6</strong> specifies the shape of the symbol to be a circle, with <strong>line 8</strong> determining the fill color to be red (<code>#FF0000</code>). <strong>Line 11</strong> sets the size (diameter) of the graphic to be 6 pixels.</p>
 <h2 id="sld_cookbook_points_simplepointwithstroke">Simple point with stroke<a class="headerlink" href="#sld_cookbook_points_simplepointwithstroke" title="Permanent link">&para;</a></h2>
 <p>This example adds a stroke (or border) around the <a href="#sld_cookbook_points_simplepoint">Simple point</a>, with the stroke colored black and given a thickness of 2 pixels.</p>
-<p><img alt="" src="images/point_simplepointwithstroke.png" /></p>
+<p><img alt="" src="../images/point_simplepointwithstroke.png" /></p>
 <p><em>Simple point with stroke</em></p>
 <h3 id="code_1">Code<a class="headerlink" href="#code_1" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_simplepointwithstroke.sld">View and download the full "Simple point with stroke" SLD</a></p>
@@ -30609,7 +30609,7 @@
 <p>This example is similar to the <a href="#sld_cookbook_points_simplepoint">Simple point</a> example. <strong>Lines 10-13</strong> specify the stroke, with <strong>line 11</strong> setting the color to black (<code>#000000</code>) and <strong>line 12</strong> setting the width to 2 pixels.</p>
 <h2 id="rotated-square">Rotated square<a class="headerlink" href="#rotated-square" title="Permanent link">&para;</a></h2>
 <p>This example creates a square instead of a circle, colors it green, sizes it to 12 pixels, and rotates it by 45 degrees.</p>
-<p><img alt="" src="images/point_rotatedsquare.png" /></p>
+<p><img alt="" src="../images/point_rotatedsquare.png" /></p>
 <p><em>Rotated square</em></p>
 <h3 id="code_2">Code<a class="headerlink" href="#code_2" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_rotatedsquare.sld">View and download the full "Rotated square" SLD</a></p>
@@ -30634,7 +30634,7 @@
 <p>In this example, <strong>line 6</strong> sets the shape to be a square, with <strong>line 8</strong> setting the color to a dark green (<code>#009900</code>). <strong>Line 11</strong> sets the size of the square to be 12 pixels, and <strong>line 12</strong> set the rotation is to 45 degrees.</p>
 <h2 id="transparent-triangle">Transparent triangle<a class="headerlink" href="#transparent-triangle" title="Permanent link">&para;</a></h2>
 <p>This example draws a triangle, creates a black stroke identical to the <a href="#sld_cookbook_points_simplepointwithstroke">Simple point with stroke</a> example, and sets the fill of the triangle to 20% opacity (mostly transparent).</p>
-<p><img alt="" src="images/point_transparenttriangle.png" /></p>
+<p><img alt="" src="../images/point_transparenttriangle.png" /></p>
 <p><em>Transparent triangle</em></p>
 <h3 id="code_3">Code<a class="headerlink" href="#code_3" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_transparenttriangle.sld">View and download the full "Transparent triangle" SLD</a></p>
@@ -30663,7 +30663,7 @@
 <p>In this example, <strong>line 6</strong> once again sets the shape, in this case to a triangle. <strong>Line 8</strong> sets the fill color to a dark green (<code>#009900</code>) and <strong>line 9</strong> sets the opacity to 0.2 (20% opaque). An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is drawn 0% opaque, or completely transparent. The value of 0.2 (20% opaque) means that the fill of the points partially takes on the color and style of whatever is drawn beneath it. In this example, since the background is white, the dark green looks lighter. Were the points imposed on a dark background, the resulting color would be darker. <strong>Lines 12-13</strong> set the stroke color to black (<code>#000000</code>) and width to 2 pixels. Finally, <strong>line 16</strong> sets the size of the point to be 12 pixels in diameter.</p>
 <h2 id="point-as-graphic">Point as graphic<a class="headerlink" href="#point-as-graphic" title="Permanent link">&para;</a></h2>
 <p>This example styles each point as a graphic instead of as a simple shape.</p>
-<p><img alt="" src="images/point_pointasgraphic.png" /></p>
+<p><img alt="" src="../images/point_pointasgraphic.png" /></p>
 <p><em>Point as graphic</em></p>
 <h3 id="code_4">Code<a class="headerlink" href="#code_4" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_pointasgraphic.sld">View and download the full "Point as graphic" SLD</a></p>
@@ -30685,11 +30685,11 @@
 </code></pre></div>
 <h3 id="details_4">Details<a class="headerlink" href="#details_4" title="Permanent link">&para;</a></h3>
 <p>This style uses a graphic instead of a simple shape to render the points. In SLD, this is known as an <code>&lt;ExternalGraphic&gt;</code>, to distinguish it from the commonly-used shapes such as squares and circles that are "internal" to the renderer. <strong>Lines 5-10</strong> specify the details of this graphic. <strong>Line 8</strong> sets the path and file name of the graphic, while <strong>line 9</strong> indicates the format (MIME type) of the graphic (image/png). In this example, the graphic is contained in the same directory as the SLD, so no path information is necessary in <strong>line 8</strong>, although a full URL could be used if desired. <strong>Line 11</strong> determines the size of the displayed graphic; this can be set independently of the dimensions of the graphic itself, although in this case they are the same (32 pixels). Should a graphic be rectangular, the <code>&lt;Size&gt;</code> value will apply to the <em>height</em> of the graphic only, with the width scaled proportionally.</p>
-<p><img alt="" src="images/smileyface.png" /></p>
+<p><img alt="" src="../images/smileyface.png" /></p>
 <p><em>Graphic used for points</em></p>
 <h2 id="sld_cookbook_points_pointwithdefaultlabel">Point with default label<a class="headerlink" href="#sld_cookbook_points_pointwithdefaultlabel" title="Permanent link">&para;</a></h2>
 <p>This example shows a text label on the <a href="#sld_cookbook_points_simplepoint">Simple point</a> that displays the "name" attribute of the point. This is how a label will be displayed in the absence of any other customization.</p>
-<p><img alt="" src="images/point_pointwithdefaultlabel.png" /></p>
+<p><img alt="" src="../images/point_pointwithdefaultlabel.png" /></p>
 <p><em>Point with default label</em></p>
 <h3 id="code_5">Code<a class="headerlink" href="#code_5" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_pointwithdefaultlabel.sld">View and download the full "Point with default label" SLD</a></p>
@@ -30721,7 +30721,7 @@
 <p><strong>Lines 3-13</strong>, which contain the <code>&lt;PointSymbolizer&gt;</code>, are identical to the <a href="#sld_cookbook_points_simplepoint">Simple point</a> example above. The label is set in the <code>&lt;TextSymbolizer&gt;</code> on <strong>lines 14-27</strong>. <strong>Lines 15-17</strong> determine what text to display in the label, which in this case is the value of the "name" attribute. (Refer to the attribute table in the <a href="#sld_cookbook_points_attributes">Example points layer</a> section if necessary.) <strong>Line 19</strong> sets the text color. All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels. The bottom left of the label is aligned with the center of the point.</p>
 <h2 id="sld_cookbook_points_pointwithstyledlabel">Point with styled label<a class="headerlink" href="#sld_cookbook_points_pointwithstyledlabel" title="Permanent link">&para;</a></h2>
 <p>This example improves the label style from the <a href="#sld_cookbook_points_pointwithdefaultlabel">Point with default label</a> example by centering the label above the point and providing a different font name and size.</p>
-<p><img alt="" src="images/point_pointwithstyledlabel.png" /></p>
+<p><img alt="" src="../images/point_pointwithstyledlabel.png" /></p>
 <p><em>Point with styled label</em></p>
 <h3 id="code_6">Code<a class="headerlink" href="#code_6" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_pointwithstyledlabel.sld">View and download the full "Point with styled label" SLD</a></p>
@@ -30772,7 +30772,7 @@
 <p>The result is a centered bold label placed slightly above each point.</p>
 <h2 id="point-with-rotated-label">Point with rotated label<a class="headerlink" href="#point-with-rotated-label" title="Permanent link">&para;</a></h2>
 <p>This example builds on the previous example, <a href="#sld_cookbook_points_pointwithstyledlabel">Point with styled label</a>, by rotating the label by 45 degrees, positioning the labels farther away from the points, and changing the color of the label to purple.</p>
-<p><img alt="" src="images/point_pointwithrotatedlabel.png" /></p>
+<p><img alt="" src="../images/point_pointwithrotatedlabel.png" /></p>
 <p><em>Point with rotated label</em></p>
 <h3 id="code_7">Code<a class="headerlink" href="#code_7" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_pointwithrotatedlabel.sld">View and download the full "Point with rotated label" SLD</a></p>
@@ -30824,7 +30824,7 @@
 <p>Note that the displacement takes effect before the rotation during rendering, so in this example, the 25 pixel vertical displacement is itself rotated 45 degrees.</p>
 <h2 id="attribute-based-point">Attribute-based point<a class="headerlink" href="#attribute-based-point" title="Permanent link">&para;</a></h2>
 <p>This example alters the size of the symbol based on the value of the population ("pop") attribute.</p>
-<p><img alt="" src="images/point_attributebasedpoint.png" /></p>
+<p><img alt="" src="../images/point_attributebasedpoint.png" /></p>
 <p><em>Attribute-based point</em></p>
 <h3 id="code_8">Code<a class="headerlink" href="#code_8" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_attribute.sld">View and download the full "Attribute-based point" SLD</a></p>
@@ -30944,11 +30944,11 @@
 <p>The result of this style is that cities with larger populations have larger points.</p>
 <h2 id="zoom-based-point">Zoom-based point<a class="headerlink" href="#zoom-based-point" title="Permanent link">&para;</a></h2>
 <p>This example alters the style of the points at different zoom levels.</p>
-<p><img alt="" src="images/point_zoombasedpointlarge.png" /></p>
+<p><img alt="" src="../images/point_zoombasedpointlarge.png" /></p>
 <p><em>Zoom-based point: Zoomed in</em></p>
-<p><img alt="" src="images/point_zoombasedpointmedium.png" /></p>
+<p><img alt="" src="../images/point_zoombasedpointmedium.png" /></p>
 <p><em>Zoom-based point: Partially zoomed</em></p>
-<p><img alt="" src="images/point_zoombasedpointsmall.png" /></p>
+<p><img alt="" src="../images/point_zoombasedpointsmall.png" /></p>
 <p><em>Zoom-based point: Zoomed out</em></p>
 <h3 id="code_9">Code<a class="headerlink" href="#code_9" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/point_zoom.sld">View and download the full "Zoom-based point" SLD</a></p>

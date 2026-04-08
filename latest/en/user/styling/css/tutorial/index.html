@@ -29960,7 +29960,7 @@
 <li>Choose <code>CSS</code> as the format</li>
 <li>In the <strong>Generate a default style</strong> dropdown choose <code>Polygon</code> and click on <strong>Generate...</strong></li>
 </ul>
-<p><img alt="" src="images/tutorial_new_style.png" /></p>
+<p><img alt="" src="../images/tutorial_new_style.png" /></p>
 <p><em>Creating a new CSS style</em></p>
 <p>This creates an example style with a source similar to this one (the colors may differ):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c">/* @title cyan polygon */</span>
@@ -29984,7 +29984,7 @@
 <li>Now on the "Style Editor page", switch to the "layer preview" tab and click on the "previewing on layer" link, then choose the "states" layer in the dialog</li>
 <li>The style editor should now show the states layer filled and stroked</li>
 </ul>
-<p><img alt="" src="images/tutorial_preview.png" /></p>
+<p><img alt="" src="../images/tutorial_preview.png" /></p>
 <p><em>Previewing the CSS style with the state layer</em></p>
 <p>Let's use these basics to start translating the states style. The first rule in the SLD applies to states where the <code>PERSONS</code> field is less than two million:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;Rule&gt;</span>
@@ -30111,7 +30111,7 @@
 <a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="p">}</span>
 </code></pre></div>
 <p>Click the <strong>Apply</strong> button at the bottom of the form to save your changes.</p>
-<p><img alt="" src="images/tutorial_noborder.png" /></p>
+<p><img alt="" src="../images/tutorial_noborder.png" /></p>
 <p><em>CSS style applied to the <code>states</code> layer</em></p>
 <p>You will see that the borders are missing! In the GeoServer CSS module, each type of symbolizer has a "key" property which controls whether it is applied. Without these "key" properties, subordinate properties are ignored. These "key" properties are:</p>
 <ul>
@@ -30137,7 +30137,7 @@
 <a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">  </span><span class="nt">font-size</span><span class="nd">:</span><span class="w"> </span><span class="nt">14</span><span class="o">;</span>
 <a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="p">}</span>
 </code></pre></div>
-<p><img alt="" src="images/tutorial_border.png" /></p>
+<p><img alt="" src="../images/tutorial_border.png" /></p>
 <p><em>Border added to style</em></p>
 <h2 id="refining-the-style">Refining the style<a class="headerlink" href="#refining-the-style" title="Permanent link">&para;</a></h2>
 <h3 id="removing-duplicated-properties">Removing duplicated properties<a class="headerlink" href="#removing-duplicated-properties" title="Permanent link">&para;</a></h3>
@@ -30245,7 +30245,7 @@
 <a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a><span class="w">  </span><span class="nt">font-size</span><span class="nd">:</span><span class="w"> </span><span class="nt">14</span><span class="o">;</span>
 <a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a><span class="p">}</span>
 </code></pre></div>
-<p><img alt="" src="images/tutorial_finalstyle.png" /></p>
+<p><img alt="" src="../images/tutorial_finalstyle.png" /></p>
 <p><em>Final style with rule names</em></p>
 <h3 id="applying-rule-nesting">Applying rule nesting<a class="headerlink" href="#applying-rule-nesting" title="Permanent link">&para;</a></h3>
 <p>As a final variation, the style can be made more compact by leveraging rule nesting:</p>

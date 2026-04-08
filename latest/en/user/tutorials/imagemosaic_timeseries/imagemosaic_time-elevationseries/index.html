@@ -29948,7 +29948,7 @@
 </code></pre></div>
 <h3 id="the-table-on-postgres">The table on postgres<a class="headerlink" href="#the-table-on-postgres" title="Permanent link">&para;</a></h3>
 <p>With the elevation support enabled the table on postgres has, for each image, the field <strong>elevation</strong> filled with the elevation value.</p>
-<p><img alt="" src="img/elevationTable.png" /></p>
+<p><img alt="" src="../img/elevationTable.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The user must create manually the index on the table in order to speed up the search by attribute.</p>
@@ -29962,11 +29962,11 @@
 <p>For example if an user wants to obtain the temperature coverage images for the day <strong>2013-03-10 at 6 PM</strong> at elevation <strong>200 meters</strong> must append to the request:</p>
 <div class="highlight"><pre><span></span><code>&amp;time=2013-03-10T00:00:00.000Z&amp;elevation=200.0
 </code></pre></div>
-<p><img alt="" src="img/temperature1.png" /></p>
+<p><img alt="" src="../img/temperature1.png" /></p>
 <p>Same day at elevation <strong>300.0 meters</strong>:</p>
 <div class="highlight"><pre><span></span><code>&amp;time=2013-03-10T00:00:00.000Z&amp;elevation=300.0
 </code></pre></div>
-<p><img alt="" src="img/temperature2.png" /></p>
+<p><img alt="" src="../img/temperature2.png" /></p>
 <p>Note that if just the time dimension is append to the request will be displayed the elevation <strong>200 meters</strong> (if present) because of the <strong>default</strong> attribute of the tag <code>&lt;Dimension name="elevation" ...</code> in the WMS Capabilities document is set to <strong>200</strong></p>
 
 

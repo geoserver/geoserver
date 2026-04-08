@@ -29769,15 +29769,15 @@
 <h1 id="wps-security-and-input-limits">WPS Security and input limits<a class="headerlink" href="#wps-security-and-input-limits" title="Permanent link">&para;</a></h1>
 <p>GeoServer service security is normally based on the generic <a href="../../../security/service/">OGC security configuration</a>, however, when it comes to WPS there is also a need to <strong>restrict access to individual processes</strong>, in the same way that data security restricts access to layers.</p>
 <p>WPS security allows access to be determined by process group or by single process. Each process and process group can be enabled/disabled, or subject to access control based on the user roles.</p>
-<p><img alt="" src="images/security.png" /></p>
+<p><img alt="" src="../images/security.png" /></p>
 <p><em>The WPS security page</em></p>
 <p>The WPS security configurations can be changed using the <a href="../../../webadmin/">Web administration interface</a> on the <strong>WPS security</strong> page under <strong>Security</strong>.</p>
-<p><img alt="" src="images/security_link.png" /></p>
+<p><img alt="" src="../images/security_link.png" /></p>
 <p><em>Click to access the WPS security settings</em></p>
 <h2 id="setting-access-roles">Setting access roles<a class="headerlink" href="#setting-access-roles" title="Permanent link">&para;</a></h2>
 <p>The list of roles attached to each group or process will determine which users can access which processes. If the list is empty the group/process will be available to all users, unless it has been disabled, in which case it won't be available to anyone.</p>
 <p>The roles string must be a list of roles separated by semicolons. The role editor provides auto-completion and also allows quick copy and paste of role lists from one process definition to the other:</p>
-<p><img alt="" src="images/security_roles.png" /></p>
+<p><img alt="" src="../images/security_roles.png" /></p>
 <p><em>Role selector field with auto-complete</em></p>
 <h2 id="access-modes">Access modes<a class="headerlink" href="#access-modes" title="Permanent link">&para;</a></h2>
 <p>The process access mode configuration specifies how GeoServer will advertise secured processes and behave when a secured process is accessed without the necessary privileges. The parameter can be one of three values:</p>
@@ -29811,10 +29811,10 @@
 <p class="admonition-title">Note</p>
 <p>Processes having a <code>*</code> beside the link have a defined set of limits</p>
 </div>
-<p><img alt="" src="images/security_processselector.png" /></p>
+<p><img alt="" src="../images/security_processselector.png" /></p>
 <p><em>The process selector, with access constraints and links to the limits configuration</em></p>
 <p>The process limits editor shows all inputs for which a limit can be provided. An empty field means that limits are disabled for that input.</p>
-<p><img alt="" src="images/security_processlimits.png" /></p>
+<p><img alt="" src="../images/security_processlimits.png" /></p>
 <p><em>The process limit page, with input limits configured</em></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>

@@ -29763,14 +29763,14 @@
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="p">}</span>
 </code></pre></div>
 <p>This will result in the following output:</p>
-<p><img alt="" src="images/kml-raster.png" /></p>
+<p><img alt="" src="../images/kml-raster.png" /></p>
 <p><em>Raster output, points are not yet clickable</em></p>
-<p><img alt="" src="images/kml-vector.png" /></p>
+<p><img alt="" src="../images/kml-vector.png" /></p>
 <p><em>Vector output, points are clickable and painted as larger icons</em></p>
 <p>One important bit about the above CSS is that the order of the rules is important. The CSS to SLD translator uses specificity to decide which rule overrides which other one, and the specificity is driven, at the time of writing, only by scale rules and access to attributes. The filter using the <code>kmlOutputMode</code> filter is not actually using any feature attribute, so it has the same specificity as the catch all <code>:mark</code> rule. Putting it first ensures that it overrides the catch all rule anyways, while putting it second would result in the output size being always 4.</p>
 <h2 id="getting-kml-marks-similar-to-the-old-kml-encoder">Getting KML marks similar to the old KML encoder<a class="headerlink" href="#getting-kml-marks-similar-to-the-old-kml-encoder" title="Permanent link">&para;</a></h2>
 <p>The old KML generator (prior to GeoServer 2.4) was not able to truly respect the marks own shape, and as a result, was simply applying the mark color to a fixed bull's eye like icon, for example:</p>
-<p><img alt="" src="images/legacy-kml-marks.png" /></p>
+<p><img alt="" src="../images/legacy-kml-marks.png" /></p>
 <p>Starting with GeoServer 2.4 the KML engine has been rewritten, and among other things, it can produce an exact representation of the marks, respecting not only color, but also shape and stroking. However, what if one want to reproduce the old output look?</p>
 <p>The solution is to leverage the ability to respect marks appearance to the letter, and combine two superimposed marks to generate the desired output:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -29789,7 +29789,7 @@
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="p">}</span>
 </code></pre></div>
 <p>Which results in the following Google Earth output:</p>
-<p><img alt="" src="images/kml-eyesbull-mark.png" /></p>
+<p><img alt="" src="../images/kml-eyesbull-mark.png" /></p>
 
 
 

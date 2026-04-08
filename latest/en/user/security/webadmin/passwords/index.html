@@ -29788,10 +29788,10 @@
 <p>In GeoServer, encrypting and decrypting passwords involves the generation of secret shared keys, stored in a Java <em>keystore</em>. For more information see <a href="../../passwd/#security_passwd_keystore">Secret keys and the keystore</a>.</p>
 <h3 id="active-keystore-password-provider">Active keystore password provider<a class="headerlink" href="#active-keystore-password-provider" title="Permanent link">&para;</a></h3>
 <p>This option sets the active keystore password provider, via a list of all available keystore password providers.</p>
-<p><img alt="" src="images/passwd_activemaster.png" /></p>
+<p><img alt="" src="../images/passwd_activemaster.png" /></p>
 <p><em>Active keystore password provider</em></p>
 <p>To change the keystore password click the <strong>Change password</strong> link.</p>
-<p><img alt="" src="images/passwd_changemaster.png" /></p>
+<p><img alt="" src="../images/passwd_changemaster.png" /></p>
 <p><em>Changing the keystore password</em></p>
 <p>To view the current keystore password use the link <strong>Keystore password forgotten?</strong>. This link requires access to the REST API which is used to <a href="../../../rest/security/#rest_security_keystore">view the current value</a> in your browser.</p>
 <div class="admonition warning">
@@ -29801,11 +29801,11 @@
 </div>
 <h3 id="security_webadmin_passwd_keystore">Keystore Password Providers<a class="headerlink" href="#security_webadmin_passwd_keystore" title="Permanent link">&para;</a></h3>
 <p>This section provides the options for adding, removing, and editing keystore password providers.</p>
-<p><img alt="" src="images/passwd_masterprovider.png" /></p>
+<p><img alt="" src="../images/passwd_masterprovider.png" /></p>
 <p><em>Keystore password provider list</em></p>
 <p>Use <strong>Add new</strong> and <strong>Remove selected</strong> to manage the list of keystore passowrd providers.</p>
 <p>When creating or editing a <strong>URL Keystore password Provider</strong> the following settings are available.</p>
-<p><img alt="" src="images/keystore-provider.png" /></p>
+<p><img alt="" src="../images/keystore-provider.png" /></p>
 <p><em>URL Keystore password Provider</em></p>
 <p>The <strong>Read-only</strong> setting is used to indicate the URL location is used as the source only, and disables the ability to change the keystore password from GeoServer.</p>
 <p>The <strong>URL</strong> indicates the location of the URL source used to obtain the Keystore password.</p>
@@ -29818,10 +29818,10 @@
 <h2 id="password-policies">Password policies<a class="headerlink" href="#password-policies" title="Permanent link">&para;</a></h2>
 <p>This section configures the various <a href="../../passwd/#security_passwd_policy">Password policies</a> available to users in GeoServer. New password policies can be added or renamed, and existing policies edited or removed.</p>
 <p>By default there are two password policies in effect, <code>default</code> and <code>root</code>. The <code>default</code> password policy, intended for most GeoServer users, does not have any active password constraints. The <code>keystore</code> password policy, intended for the <a href="../../root/">Root account</a>, specifies a <strong>minimum password length of eight characters</strong>. Password policies are applied to users via the user/group service.</p>
-<p><img alt="" src="images/passwd_policies.png" /></p>
+<p><img alt="" src="../images/passwd_policies.png" /></p>
 <p><em>List of password policies</em></p>
 <p>Clicking an existing policy enables editing, while clicking the <strong>Add new</strong> button will create a new password policy.</p>
-<p><img alt="" src="images/passwd_newpolicy.png" /></p>
+<p><img alt="" src="../images/passwd_newpolicy.png" /></p>
 <p><em>Creating a new password policy</em></p>
 
 

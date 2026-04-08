@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="700px" height="197px" viewBox="0 0 700 197" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+    <title>structure_example</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="structure_example" sketch:type="MSArtboardGroup">
+            <g id="Structure" sketch:type="MSLayerGroup" transform="translate(383.000000, 32.000000)">
+                <g id="style">
+                    <rect id="Rectangle-1" stroke="#4A4A4A" fill="#D8D8D8" sketch:type="MSShapeGroup" x="0" y="0" width="139" height="55" rx="4"></rect>
+                    <g id="style_icon" transform="translate(5.000000, 5.000000)" sketch:type="MSShapeGroup">
+                        <path d="M1.00803361,3.15234384 C0.0854144053,4.58832168 -0.187665831,8.77636719 -0.187665831,8.77636719 L3.20997936,9.02636719 L5.00710311,12.341797 L7.37124576,12.341797 L12.2728985,9.02636728 L12.2728985,2.50878916 C12.2728985,2.50878916 10.7073082,0.610949042 9.68266325,-0.0849609375 C8.54378922,-0.858451873 5.00710311,-0.0849609343 5.00710311,-0.0849609343 C5.00710311,-0.0849609343 1.98322244,1.63454569 1.00803361,3.15234384 Z" id="Path-228" stroke="#B1792C" fill="#F4D7BD"></path>
+                        <path d="M2.28773585,7 C3.04582486,7 3.66037736,6.32842717 3.66037736,5.5 C3.66037736,4.67157283 3.04582486,4 2.28773585,4 C1.52964684,4 0.91509434,4.67157283 0.91509434,5.5 C0.91509434,6.32842717 1.52964684,7 2.28773585,7 Z" id="Oval-55-copy" fill="#F86660"></path>
+                        <path d="M7.77830189,4 C8.5363909,4 9.1509434,3.32842717 9.1509434,2.5 C9.1509434,1.67157283 8.5363909,1 7.77830189,1 C7.02021288,1 6.40566038,1.67157283 6.40566038,2.5 C6.40566038,3.32842717 7.02021288,4 7.77830189,4 Z" id="Oval-55-copy-2" fill="#FFDB4E"></path>
+                        <path d="M5.03301887,4 C5.79110788,4 6.40566038,3.32842717 6.40566038,2.5 C6.40566038,1.67157283 5.79110788,1 5.03301887,1 C4.27492986,1 3.66037736,1.67157283 3.66037736,2.5 C3.66037736,3.32842717 4.27492986,4 5.03301887,4 Z" id="Oval-55-copy-3" stroke="#FFB545" fill="#FFCC84"></path>
+                        <path d="M9.60849057,7 C10.3665796,7 10.9811321,6.32842717 10.9811321,5.5 C10.9811321,4.67157283 10.3665796,4 9.60849057,4 C8.85040156,4 8.23584906,4.67157283 8.23584906,5.5 C8.23584906,6.32842717 8.85040156,7 9.60849057,7 Z" id="Oval-55-copy-4" stroke="#8EC357" fill="#A7D17A"></path>
+                        <path d="M8.69339623,10 C9.45148524,10 10.0660377,9.32842717 10.0660377,8.5 C10.0660377,7.67157283 9.45148524,7 8.69339623,7 C7.93530722,7 7.32075472,7.67157283 7.32075472,8.5 C7.32075472,9.32842717 7.93530722,10 8.69339623,10 Z" id="Oval-55-copy-5" stroke="#31A8BA" fill="#6BC2CF"></path>
+                        <path d="M6.86320755,12 C7.62129656,12 8.23584906,11.3284272 8.23584906,10.5 C8.23584906,9.67157283 7.62129656,9 6.86320755,9 C6.10511854,9 5.49056604,9.67157283 5.49056604,10.5 C5.49056604,11.3284272 6.10511854,12 6.86320755,12 Z" id="Oval-55-copy-6" stroke="#EAA97C" fill="#E9A36E"></path>
+                        <path d="M5.03301887,8 C5.79110788,8 6.40566038,7.32842717 6.40566038,6.5 C6.40566038,5.67157283 5.79110788,5 5.03301887,5 C4.27492986,5 3.66037736,5.67157283 3.66037736,6.5 C3.66037736,7.32842717 4.27492986,8 5.03301887,8 Z" id="Oval-55" stroke="#B27A2F" fill="#FFFFFF"></path>
+                    </g>
+                    <text id="header" sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                        <tspan x="23" y="14">header</tspan>
+                    </text>
+                    <text id="name:-style_example" sketch:type="MSTextLayer" font-family="Arial" font-size="10" font-weight="normal" fill="#000000">
+                        <tspan x="23" y="25">name: style_example</tspan>
+                    </text>
+                </g>
+                <g id="feature-style" transform="translate(22.000000, 33.250000)">
+                    <rect id="box" stroke="#4A4A4A" fill="#F2F2F2" sketch:type="MSShapeGroup" x="0" y="0" width="140" height="53" rx="4"></rect>
+                    <text sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                        <tspan x="26" y="12">feature-style</tspan>
+                    </text>
+                    <g id="feature_style" transform="translate(4.000000, 5.000000)" sketch:type="MSShapeGroup">
+                        <path d="M0.754882812,6.50254149 L5.75488281,0.423348942 L16.5048828,0.423348942 L11.5048828,6.50254149 L0.754882812,6.50254149 Z" id="border" stroke="#FFFFFF" fill="#F4D7BD"></path>
+                        <path d="M0.754882812,6.50254149 L5.75488281,0.423348942 L16.5048828,0.423348942 L11.5048828,6.50254149 L0.754882812,6.50254149 Z" id="edge" stroke="#B1792C"></path>
+                    </g>
+                </g>
+                <g id="rule" transform="translate(48.000000, 52.250000)">
+                    <rect id="Rectangle-3-Copy" stroke="#000000" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="137" height="81" rx="5"></rect>
+                    <text sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                        <tspan x="25" y="14">rule</tspan>
+                    </text>
+                    <g id="rule-copy" transform="translate(6.000000, 5.000000)" sketch:type="MSShapeGroup">
+                        <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="interior" stroke="#FFFFFF" fill="#F4D7BD"></path>
+                        <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="edge" stroke="#B1792C"></path>
+                    </g>
+                    <text id="name:-all" sketch:type="MSTextLayer" font-family="Arial" font-size="10" font-weight="normal" fill="#000000">
+                        <tspan x="24.25" y="25">name: all</tspan>
+                    </text>
+                </g>
+                <g id="symbolizer" transform="translate(72.250000, 81.750000)">
+                    <rect id="symbolizer_box" stroke="#4A4A4A" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="-1.42108547e-14" width="163" height="44"></rect>
+                    <text id="polygon" sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                        <tspan x="21" y="14">polygon</tspan>
+                    </text>
+                    <text id="fill:" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                        <tspan x="4" y="34">fill:</tspan>
+                    </text>
+                    <text id="stroke:" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                        <tspan x="73" y="34">stroke:</tspan>
+                    </text>
+                    <rect id="fill" fill="#D8D8D8" sketch:type="MSShapeGroup" x="22" y="25" width="46" height="12"></rect>
+                    <path d="M107.25,30.5 L154.25,30.5" id="stoke" stroke-opacity="0.75" stroke="#000000" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                    <g id="polygon_icon" transform="translate(4.000000, 5.000000)" stroke="#000000" sketch:type="MSShapeGroup" fill-opacity="0.5" fill="#808080" stroke-opacity="0.75">
+                        <rect id="Rectangle-49" stroke-width="1.5" x="1" y="1" width="12" height="10"></rect>
+                        <ellipse id="Oval-1-copy-3" cx="12.5" cy="10.5" rx="1.5" ry="1.5"></ellipse>
+                        <ellipse id="Oval-1-copy-4" cx="12.5" cy="1.5" rx="1.5" ry="1.5"></ellipse>
+                        <ellipse id="Oval-1-copy-5" cx="1.5" cy="1.5" rx="1.5" ry="1.5"></ellipse>
+                        <ellipse id="Oval-1-copy-6" cx="1.5" cy="10.5" rx="1.5" ry="1.5"></ellipse>
+                    </g>
+                </g>
+            </g>
+            <g id="Document" sketch:type="MSLayerGroup" transform="translate(90.000000, 32.000000)">
+                <rect id="Rectangle-50" stroke="#979797" fill="#E5E5E5" sketch:type="MSShapeGroup" x="0" y="0" width="174" height="151"></rect>
+                <text id="name:-style_example" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                    <tspan x="10" y="22">name: style_example</tspan>
+                    <tspan x="10" y="34">feature-styles:</tspan>
+                    <tspan x="10" y="46">- rules:</tspan>
+                </text>
+                <text id="fill-color:-'#808080" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                    <tspan x="27" y="94">fill-color: '#808080'</tspan>
+                    <tspan x="27" y="106">fill-opacity: 0.5</tspan>
+                    <tspan x="27" y="118">stroke-color: '#000000'</tspan>
+                    <tspan x="27" y="130">stroke-opacity: 0.75</tspan>
+                </text>
+                <text id="--name:-all" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                    <tspan x="15" y="58">- name: all</tspan>
+                </text>
+                <text id="symbolizers:" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                    <tspan x="21" y="69">symbolizers:</tspan>
+                    <tspan x="21" y="81">- polygon:</tspan>
+                </text>
+            </g>
+            <text id="YLSD-Document" sketch:type="MSTextLayer" font-family="Arial" font-size="14" font-weight="bold" fill="#000000">
+                <tspan x="130" y="21">YLSD Document</tspan>
+            </text>
+            <text id="Structure" sketch:type="MSTextLayer" font-family="Arial" font-size="14" font-weight="bold" fill="#000000">
+                <tspan x="474" y="21">Structure</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

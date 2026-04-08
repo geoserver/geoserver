@@ -30108,17 +30108,17 @@
 <tr>
 <td><code>extshape://triangle</code></td>
 <td>cold front</td>
-<td><img alt="triangle" src="images/triangle.png" /></td>
+<td><img alt="triangle" src="../images/triangle.png" /></td>
 </tr>
 <tr>
 <td><code>extshape://emicircle</code></td>
 <td>warm front</td>
-<td><img alt="emicircle" src="images/emicircle.png" /></td>
+<td><img alt="emicircle" src="../images/emicircle.png" /></td>
 </tr>
 <tr>
 <td><code>extshape://triangleemicircle</code></td>
 <td>stationary front</td>
-<td><img alt="triangleemicircle" src="images/triangleemicircle.png" /></td>
+<td><img alt="triangleemicircle" src="../images/triangleemicircle.png" /></td>
 </tr>
 </tbody>
 </table>
@@ -30189,7 +30189,7 @@
 <a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="nt">&lt;/LineSymbolizer&gt;</span>
 </code></pre></div>
 <p>Which produces double dashed line:</p>
-<p><img alt="" src="images/double-dashed-line.png" /></p>
+<p><img alt="" src="../images/double-dashed-line.png" /></p>
 <p>You can also make use of curves when defining WKT:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;LineSymbolizer&gt;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;Stroke&gt;</span>
@@ -30212,7 +30212,7 @@
 <a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="nt">&lt;/LineSymbolizer&gt;</span>
 </code></pre></div>
 <p>Producing an "emicircle" line:</p>
-<p><img alt="" src="images/emicircle-line.png" /></p>
+<p><img alt="" src="../images/emicircle-line.png" /></p>
 <h3 id="bulk-ttf-marks">Bulk TTF marks<a class="headerlink" href="#bulk-ttf-marks" title="Permanent link">&para;</a></h3>
 <p>It is possible to create a mark using glyphs from any decorative or symbolic True Type Font, such as Wingdings, WebDings, or the many symbol fonts available on the internet. To enable use WMS Settings <code>Mark Factory Precedence</code> to select <code>TTFMarkFactory</code>.</p>
 <p>The syntax for specifying this is:</p>
@@ -30220,7 +30220,7 @@
 </code></pre></div>
 <p>where <code>fontname</code> is the full name of a TTF font available to GeoServer, and <code>hexcode</code> is the hexadecimal code of the symbol. To get the hex code of a symbol, use the "Char Map" utility available in most operating systems (Windows and Linux Gnome both have one).</p>
 <p>For example, to use the "shield" symbol contained in the WebDings font, the Gnome <code>charmap</code> reports the symbol hex code as shown:</p>
-<p><img alt="" src="images/charmap.png" /></p>
+<p><img alt="" src="../images/charmap.png" /></p>
 <p><em>Selecting a symbol hex code in the Gnome char map</em></p>
 <p>The SLD to use the shield glyph as a symbol is:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;PointSymbolizer&gt;</span>
@@ -30237,7 +30237,7 @@
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="nt">&lt;/PointSymbolizer&gt;</span>
 </code></pre></div>
 <p>This results in the following map display:</p>
-<p><img alt="" src="images/shields.png" /></p>
+<p><img alt="" src="../images/shields.png" /></p>
 <p><em>Shield symbols rendered on the map</em></p>
 <h3 id="extending-the-mark-subsystem-using-java">Extending the Mark subsystem using Java<a class="headerlink" href="#extending-the-mark-subsystem-using-java" title="Permanent link">&para;</a></h3>
 <p>The Mark subsystem is user-extensible. To do this using Java code, implement the <code>MarkFactory</code> interface and declare the implementation in the <code>META-INF/services/org.geotools.renderer.style.MarkFactory</code> file.</p>
@@ -30290,7 +30290,7 @@
 <ul>
 <li>Displays <strong><code>poi_peak.svg</code></strong> with the default black <code>fill</code>.</li>
 </ul>
-<p><img alt="" src="images/peak_black.png" /></p>
+<p><img alt="" src="../images/peak_black.png" /></p>
 <p><em>SVG image with default black fill</em></p>
 <p>Using <code>#ff000</code> red parameter:</p>
 <ul>
@@ -30301,7 +30301,7 @@
 <ul>
 <li>Displays <strong><code>poi_peak.svg</code></strong> with supplied red <code>fill</code>.</li>
 </ul>
-<p><img alt="" src="images/peak_redfill.png" /></p>
+<p><img alt="" src="../images/peak_redfill.png" /></p>
 <p><em>SVG image with fill provided by parameter</em></p>
 <p>To define several parameters, the query-parameters should be url-encoded.</p>
 <ul>
@@ -30312,7 +30312,7 @@
 <ul>
 <li>Displayed with white fill, red outlined peaks:</li>
 </ul>
-<p><img alt="" src="images/peak_green25opacity.png" /></p>
+<p><img alt="" src="../images/peak_green25opacity.png" /></p>
 <p><em>SVG image with fill and outline provided by parameters</em></p>
 <p>Parameters names are defined by the SVG file:</p>
 <ul>
@@ -30328,7 +30328,7 @@
 <ul>
 <li>Displayed as:</li>
 </ul>
-<p><img alt="" src="images/peak_whitered.png" /></p>
+<p><img alt="" src="../images/peak_whitered.png" /></p>
 <p><em>SVG image with fill</em></p>
 <p>The use of SVG parameters can be combinded with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.</p>
 <ul>

@@ -30052,12 +30052,12 @@
 </li>
 <li>
 <p>Compare the formal <code>EPSG</code> definition of <code>WGS84</code>:</p>
-<p><img alt="" src="img/wgs84-epsg-description.png" /></p>
+<p><img alt="" src="../img/wgs84-epsg-description.png" /></p>
 <p><em>WGS84 EPSG definition</em></p>
 </li>
 <li>
 <p>With the internal definition of <code>WGS84</code>:</p>
-<p><img alt="" src="img/wgs84-internal-description.png" /></p>
+<p><img alt="" src="../img/wgs84-internal-description.png" /></p>
 <p><em>WGS84 Internal definition</em></p>
 </li>
 </ol>
@@ -30089,18 +30089,18 @@
 <li>
 <p>Locate <strong>Native SRS</strong> and click on the <strong>GCS_WGS_1984</strong> link to show how GeoServer interpreted the <strong><code>PRJ</code></strong> file above.</p>
 <p>The <strong><code>PRJ</code></strong> did not provide an axis-order and GeoSever has filled in an assumption. This describing the data in <code>x/y</code> order which matches our data and we could use it unmodified.</p>
-<p><img alt="" src="img/native_srs.png" /></p>
+<p><img alt="" src="../img/native_srs.png" /></p>
 <p><em>Native SRS for topp:states</em></p>
 </li>
 <li>
 <p>Locate <strong>Declared SRS</strong> and click on <strong>EPSG:WGS 84...</strong> link to see the definition used to publish this content.</p>
 <p>This is the internal definition of <code>EPSG:4326</code> as shown in the SRSList above, which also describes the data in <code>x/y</code> order matching our data. This definition provides slightly more readable names along with additional <code>AUTHORITY</code> information that may be helpful to client applications.</p>
-<p><img alt="" src="img/declared_srs.png" /></p>
+<p><img alt="" src="../img/declared_srs.png" /></p>
 <p><em>Declared SRS for topp:states</em></p>
 </li>
 <li>
 <p>The <strong>SRS Handling</strong> is set to <code>Force declared</code> to completely ignore the provided <strong>Native SRS</strong> definition and use the <strong>Declared SRS</strong>.</p>
-<p><img alt="" src="img/srs_handling.png" /></p>
+<p><img alt="" src="../img/srs_handling.png" /></p>
 <p>Force declared SRS handling for topp:states</p>
 </li>
 </ol>

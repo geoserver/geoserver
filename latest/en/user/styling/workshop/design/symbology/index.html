@@ -29822,7 +29822,7 @@
 
 <h1 id="symbology">Symbology<a class="headerlink" href="#symbology" title="Permanent link">&para;</a></h1>
 <p>In cartography, <strong>symbology is the practice of representing information using shapes, colors and symbols on a map</strong>.</p>
-<p><img alt="" src="img/layer_legend.svg" /></p>
+<p><img alt="" src="../img/layer_legend.svg" /></p>
 <p>A map legend, offers a quick summary of the symbology used for a map.</p>
 <p>The symbology for each layer should be distinct, allowing readers to clearly understand the information being presented. Care should be taken to consider the situation in which the map will be used, such as:</p>
 <ul>
@@ -29832,15 +29832,15 @@
 </ul>
 <h2 id="theme">Theme<a class="headerlink" href="#theme" title="Permanent link">&para;</a></h2>
 <p>For thematic maps, the symbology is changed on a feature-by-feature basis in order to illustrate the attribute values being presented.</p>
-<p><img alt="" src="img/layer_theme.svg" /></p>
+<p><img alt="" src="../img/layer_theme.svg" /></p>
 <p>The same data set may be represented in different maps, themed by a different attribute each time.</p>
 <h3 id="using-multiple-themes">Using Multiple Themes<a class="headerlink" href="#using-multiple-themes" title="Permanent link">&para;</a></h3>
 <p>A single map can be produced showing two datasets (each themed by a different attribute) allowing readers to look for any interesting patterns.</p>
-<p><img alt="" src="img/layer_theme2.svg" /></p>
+<p><img alt="" src="../img/layer_theme2.svg" /></p>
 <p>As an example there may be a relationship between a country's growing region and annual rainfall.</p>
 <h2 id="map-icons">Map Icons<a class="headerlink" href="#map-icons" title="Permanent link">&para;</a></h2>
 <p>The use of map icons (pictograms, glyphs or symbology sets) is a special case where we have a gap in terminology between Cartography and GIS.</p>
-<p><img alt="image" src="img/layer_symbolset.svg" /></p>
+<p><img alt="image" src="../img/layer_symbolset.svg" /></p>
 <p>As an example we may wish to represent a point-of-interest data set with each location marked by a different symbol.</p>
 <p>In cartography, each "type" is presented to the user as a clearly distinct data set with its own visual representation in the map legend.</p>
 <p>This is contrasted with GIS, where the "points of interest" are managed as a single layer and complex styling is used to produce the desired cartographic output.</p>
@@ -29857,7 +29857,7 @@
 <li>
 <p>Navigate to: <a href="http://colorbrewer2.org/">http://colorbrewer2.org/</a></p>
 <p>The website provides a generic data set which we can use to determine how effective each choice is in communicating attribute differences. We will be using this website to explore how to effectively theme an attribute.</p>
-<p><img alt="" src="img/color_01_brewer.png" /></p>
+<p><img alt="" src="../img/color_01_brewer.png" /></p>
 <p><em>Color Brewer</em></p>
 </li>
 <li>
@@ -29866,52 +29866,52 @@
 </li>
 <li>
 <p>The first step is determining how many attribute values you are looking to communicate. Set <strong>Number of data classes</strong> to <code>5</code>.</p>
-<p><img alt="" src="img/color_02_classes.png" /></p>
+<p><img alt="" src="../img/color_02_classes.png" /></p>
 <p><em>Number of data classes</em></p>
 </li>
 <li>
 <p>Color brewer offers palettes using three different color schemes:</p>
-<p><img alt="" src="img/color_sequential.png" /></p>
+<p><img alt="" src="../img/color_sequential.png" /></p>
 <p><em>Sequential</em></p>
-<p><img alt="" src="img/color_diverging.png" /></p>
+<p><img alt="" src="../img/color_diverging.png" /></p>
 <p><em>Diverging</em></p>
-<p><img alt="" src="img/color_qualatative.png" /></p>
+<p><img alt="" src="../img/color_qualatative.png" /></p>
 <p><em>Qualitative</em></p>
 <p>The nature of our data is qualitative (each attribute value is attached an equal importance, and there is no implied order that wish to communicate with color).</p>
 </li>
 <li>
 <p>Set <strong>Nature of your data</strong> to <code>Qualitative</code>. This change drastically reduces the number of color schemes listed.</p>
-<p><img alt="" src="img/color_03_qualitative.png" /></p>
+<p><img alt="" src="../img/color_03_qualitative.png" /></p>
 <p><em>Qualitative color scheme</em></p>
 </li>
 <li>
 <p>The initial <strong>5-class Accent</strong> color scheme does reasonably well.</p>
-<p><img alt="" src="img/color_04_accent.png" />
+<p><img alt="" src="../img/color_04_accent.png" />
 <em>5-class accent</em></p>
 </li>
 <li>
 <p>One of our requirements is to help readers locate their county. To assist with that let's turn on roads and cities.</p>
-<p><img alt="" src="img/color_05_context.png" /></p>
+<p><img alt="" src="../img/color_05_context.png" /></p>
 <p><em>Adding context</em></p>
 </li>
 <li>
 <p>The map is now starting to look a little busy:</p>
-<p><img alt="" src="img/color_06_context.png" /></p>
+<p><img alt="" src="../img/color_06_context.png" /></p>
 <p><em>Lots of context</em></p>
 </li>
 <li>
 <p>Now that we have seen what we are up against, we can try a strategy to help the text and roads stand out while still communicating our vaccination schedule. Change to one of the pastel color schemes.</p>
-<p><img alt="" src="img/color_06_pastel1.png" /></p>
+<p><img alt="" src="../img/color_06_pastel1.png" /></p>
 <p><em>Pastel color scheme</em></p>
 </li>
 <li>
 <p>Change the borders and roads to gray.</p>
-<p><img alt="" src="img/color_07_context.png" /></p>
+<p><img alt="" src="../img/color_07_context.png" /></p>
 <p><em>Gray borders and roads</em></p>
 </li>
 <li>
 <p>The result is fairly clear symbology and provides context.</p>
-<p><img alt="" src="img/color_08_done.png" /></p>
+<p><img alt="" src="../img/color_08_done.png" /></p>
 <p><em>Finished with context</em></p>
 </li>
 <li>
@@ -29965,7 +29965,7 @@
 </tr>
 </tbody>
 </table>
-<p><img alt="" src="img/color_09_color.png" /></p>
+<p><img alt="" src="../img/color_09_color.png" /></p>
 <p><em>Color palette</em></p>
 </li>
 </ol>
@@ -30012,7 +30012,7 @@
 <ol>
 <li>
 <p>The Color Brewer application provides a lot of helpful information using the small "information" icons in each section.</p>
-<p><img alt="" src="img/color_09_info.png" /></p>
+<p><img alt="" src="../img/color_09_info.png" /></p>
 <p><em>Information icons</em></p>
 </li>
 <li>

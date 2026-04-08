@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="149px" height="174px" viewBox="0 0 149 174" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>Point_Graphic</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Point_Mark" transform="translate(-150.000000, 0.000000)"></g>
+        <g id="Point_Graphic">
+            <g id="Graphic" transform="translate(1.000000, 2.000000)">
+                <rect id="Backdrop" stroke="#979797" fill="#FFFFFF" x="0" y="0" width="147" height="170"></rect>
+                <path d="M36.6672667,82.5 C35.6050681,82.6606358 34.5104165,91.8766274 34.5104165,91.8766274 C34.5104165,91.8766274 25.6922714,96.0778696 25.8181695,97.0222207 C25.9440677,97.9665719 34.9350583,95.4034828 34.9350583,95.4034828 L35.2550969,100.775643 C35.2550969,100.775643 31.3368845,102.982419 32.1569676,102.982419 L41.1217751,102.982419 C41.6471963,102.982419 37.9137368,100.775643 37.9137368,100.775643 L38.1697595,95.4034828 C38.1697595,95.4034828 46.8323696,98.0932924 46.8323696,97.0222207 C46.8323697,95.9511491 38.5151152,92.0470382 38.5151152,92.0470382 C38.5151152,92.0470382 37.7294653,82.3393642 36.6672667,82.5 Z" id="icon" stroke="#000000" stroke-width="0.99999994" fill="#FFFFFF"></path>
+                <text font-family="ProximaNova-Semibold, Proxima Nova" font-size="13" font-weight="500" fill="#000000">
+                    <tspan x="36.354" y="14">Graphic</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

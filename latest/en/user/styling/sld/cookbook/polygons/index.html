@@ -30640,7 +30640,7 @@
 <p><a href="artifacts/sld_cookbook_polygon.zip">Download the polygons shapefile</a></p>
 <h2 id="sld_cookbook_polygons_simplepolygon">Simple polygon<a class="headerlink" href="#sld_cookbook_polygons_simplepolygon" title="Permanent link">&para;</a></h2>
 <p>This example shows a polygon filled in blue.</p>
-<p><img alt="" src="images/polygon_simplepolygon.png" /></p>
+<p><img alt="" src="../images/polygon_simplepolygon.png" /></p>
 <p><em>Simple polygon</em></p>
 <h3 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_simplepolygon.sld">View and download the full "Simple polygon" SLD</a></p>
@@ -30662,7 +30662,7 @@
 </div>
 <h2 id="sld_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke<a class="headerlink" href="#sld_cookbook_polygons_simplepolygonwithstroke" title="Permanent link">&para;</a></h2>
 <p>This example adds a 2 pixel white stroke to the <a href="#sld_cookbook_polygons_simplepolygon">Simple polygon</a> example.</p>
-<p><img alt="" src="images/polygon_simplepolygonwithstroke.png" /></p>
+<p><img alt="" src="../images/polygon_simplepolygonwithstroke.png" /></p>
 <p><em>Simple polygon with stroke</em></p>
 <h3 id="code_1">Code<a class="headerlink" href="#code_1" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_simplepolygonwithstroke.sld">View and download the full "Simple polygon with stroke" SLD</a></p>
@@ -30684,7 +30684,7 @@
 <p>This example is similar to the <a href="#sld_cookbook_polygons_simplepolygon">Simple polygon</a> example above, with the addition of the <code>&lt;Stroke&gt;</code> tag (<strong>lines 7-10</strong>). <strong>Line 8</strong> sets the color of stroke to white (<code>#FFFFFF</code>) and <strong>line 9</strong> sets the width of the stroke to 2 pixels.</p>
 <h2 id="transparent-polygon">Transparent polygon<a class="headerlink" href="#transparent-polygon" title="Permanent link">&para;</a></h2>
 <p>This example builds on the <a href="#sld_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke</a> example and makes the fill partially transparent by setting the opacity to 50%.</p>
-<p><img alt="" src="images/polygon_transparentpolygon.png" /></p>
+<p><img alt="" src="../images/polygon_transparentpolygon.png" /></p>
 <p><em>Transparent polygon</em></p>
 <h3 id="code_2">Code<a class="headerlink" href="#code_2" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_transparentpolygon.sld">View and download the full "Transparent polygon" SLD</a></p>
@@ -30707,7 +30707,7 @@
 <p>This example is similar to the <a href="#sld_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke</a> example, save for defining the fill's opacity in <strong>line 6</strong>. The value of 0.5 results in partially transparent fill that is 50% opaque. An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill. In this example, since the background is white, the dark blue looks lighter. Were the points imposed on a dark background, the resulting color would be darker.</p>
 <h2 id="sld_cookbook_polygons_offset">Offset inner lines<a class="headerlink" href="#sld_cookbook_polygons_offset" title="Permanent link">&para;</a></h2>
 <p>Shows how to draw inner buffer lines inside a polygon.</p>
-<p><img alt="" src="images/polygon_offset.png" /></p>
+<p><img alt="" src="../images/polygon_offset.png" /></p>
 <p><em>Offset buffer</em></p>
 <h3 id="code_3">Code<a class="headerlink" href="#code_3" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_offset.sld">View and download the full "Inner offset lines" SLD</a></p>
@@ -30733,7 +30733,7 @@
 <p>This example is similar to the <a href="#sld_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke</a> example, save for defining adding a <code>&lt;LineSymbolizer&gt;&gt;</code> at <strong>line 9</strong>, where a light gray (<strong>line 11</strong>) 3 pixels wide (<strong>line 12</strong>) line is drawn as a inner buffer inside the polygon. <strong>Line 14</strong> controls the buffering distance, setting a inner buffer of 2 pixels.</p>
 <h2 id="sld_cookbook_polygons_graphicfill">Graphic fill<a class="headerlink" href="#sld_cookbook_polygons_graphicfill" title="Permanent link">&para;</a></h2>
 <p>This example fills the polygons with a tiled graphic.</p>
-<p><img alt="" src="images/polygon_graphicfill.png" /></p>
+<p><img alt="" src="../images/polygon_graphicfill.png" /></p>
 <p><em>Graphic fill</em></p>
 <h3 id="code_4">Code<a class="headerlink" href="#code_4" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_graphicfill.sld">View and download the full "Graphic fill" SLD</a></p>
@@ -30759,7 +30759,7 @@
 </code></pre></div>
 <h3 id="details_4">Details<a class="headerlink" href="#details_4" title="Permanent link">&para;</a></h3>
 <p>This style fills the polygon with a tiled graphic. This is known as an <code>&lt;ExternalGraphic&gt;</code> in SLD, to distinguish it from commonly-used shapes such as squares and circles that are "internal" to the renderer. <strong>Lines 7-12</strong> specify details for the graphic, with <strong>line 10</strong> setting the path and file name of the graphic and <strong>line 11</strong> indicating the file format (MIME type) of the graphic (<code>image/png</code>). Although a full URL could be specified if desired, no path information is necessary in <strong>line 11</strong> because this graphic is contained in the same directory as the SLD. <strong>Line 13</strong> determines the height of the displayed graphic in pixels; if the value differs from the height of the graphic then it will be scaled accordingly while preserving the aspect ratio.</p>
-<p><img alt="" src="images/colorblocks.png" /></p>
+<p><img alt="" src="../images/colorblocks.png" /></p>
 <p><em>Graphic used for fill</em></p>
 <h2 id="hatching-fill">Hatching fill<a class="headerlink" href="#hatching-fill" title="Permanent link">&para;</a></h2>
 <p>This example fills the polygons with a hatching pattern.</p>
@@ -30767,7 +30767,7 @@
 <p class="admonition-title">Note</p>
 <p>This example leverages an SLD extension in GeoServer. Hatching is not part of the standard SLD 1.0 specification.</p>
 </div>
-<p><img alt="" src="images/polygon_hatchingfill.png" /></p>
+<p><img alt="" src="../images/polygon_hatchingfill.png" /></p>
 <p><em>Hatching fill</em></p>
 <h3 id="code_5">Code<a class="headerlink" href="#code_5" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_hatchingfill.sld">View and download the full "Hatching fill" SLD</a></p>
@@ -30796,7 +30796,7 @@
 <p>In this example, there is a <code>&lt;GraphicFill&gt;</code> tag as in the <a href="#sld_cookbook_polygons_graphicfill">Graphic fill</a> example, but a <code>&lt;Mark&gt;</code> (<strong>lines 7-13</strong>) is used instead of an <code>&lt;ExternalGraphic&gt;</code>. <strong>Line 8</strong> specifies a "times" symbol (an "x") be tiled throughout the polygon. <strong>Line 10</strong> sets the color to purple (<code>#990099</code>), <strong>line 11</strong> sets the width of the hatches to 1 pixel, and <strong>line 14</strong> sets the size of the tile to 16 pixels. Because hatch tiles are always square, the <code>&lt;Size&gt;</code> sets both the width and the height.</p>
 <h2 id="sld_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label<a class="headerlink" href="#sld_cookbook_polygons_polygonwithdefaultlabel" title="Permanent link">&para;</a></h2>
 <p>This example shows a text label on the polygon. In the absence of any other customization, this is how a label will be displayed.</p>
-<p><img alt="" src="images/polygon_polygonwithdefaultlabel.png" /></p>
+<p><img alt="" src="../images/polygon_polygonwithdefaultlabel.png" /></p>
 <p><em>Polygon with default label</em></p>
 <h3 id="code_6">Code<a class="headerlink" href="#code_6" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_polygonwithdefaultlabel.sld">View and download the full "Polygon with default label" SLD</a></p>
@@ -30823,7 +30823,7 @@
 <p>In this example there is a <code>&lt;PolygonSymbolizer&gt;</code> and a <code>&lt;TextSymbolizer&gt;</code>. <strong>Lines 3-11</strong> comprise the <code>&lt;PolygonSymbolizer&gt;</code>. The fill of the polygon is set on <strong>line 5</strong> to a light green (<code>#40FF40</code>) while the stroke of the polygon is set on <strong>lines 8-9</strong> to white (<code>#FFFFFF</code>) with a thickness of 2 pixels. The label is set in the <code>&lt;TextSymbolizer&gt;</code> on <strong>lines 12-16</strong>, with <strong>line 14</strong> determining what text to display, in this case the value of the "name" attribute. (Refer to the attribute table in the <a href="#sld_cookbook_polygons_attributes">Example polygons layer</a> section if necessary.) All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.</p>
 <h2 id="label-halo">Label halo<a class="headerlink" href="#label-halo" title="Permanent link">&para;</a></h2>
 <p>This example alters the look of the <a href="#sld_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label</a> by adding a white halo to the label.</p>
-<p><img alt="" src="images/polygon_labelhalo.png" /></p>
+<p><img alt="" src="../images/polygon_labelhalo.png" /></p>
 <p><em>Label halo</em></p>
 <h3 id="code_7">Code<a class="headerlink" href="#code_7" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_labelhalo.sld">View and download the full "Label halo" SLD</a></p>
@@ -30860,7 +30860,7 @@
 <p class="admonition-title">Note</p>
 <p>The label placement optimizations discussed below (the <code>&lt;VendorOption&gt;</code> tags) are SLD extensions that are custom to GeoServer. They are not part of the SLD 1.0 specification.</p>
 </div>
-<p><img alt="" src="images/polygon_polygonwithstyledlabel.png" /></p>
+<p><img alt="" src="../images/polygon_polygonwithstyledlabel.png" /></p>
 <p><em>Polygon with styled label</em></p>
 <h3 id="code_8">Code<a class="headerlink" href="#code_8" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_polygonwithstyledlabel.sld">View and download the full "Polygon with styled label" SLD</a></p>
@@ -30908,7 +30908,7 @@
 <p>Finally, there are two added touches for label placement optimization: <strong>line 33</strong> ensures that long labels are split across multiple lines by setting line wrapping on the labels to 60 pixels, and <strong>line 34</strong> allows the label to be displaced by up to 150 pixels. This ensures that labels are compacted and less likely to spill over polygon boundaries. Notice little Massive County in the corner, whose label is now displayed."</p>
 <h2 id="attribute-based-polygon">Attribute-based polygon<a class="headerlink" href="#attribute-based-polygon" title="Permanent link">&para;</a></h2>
 <p>This example styles the polygons differently based on the "pop" (Population) attribute.</p>
-<p><img alt="" src="images/polygon_attributebasedpolygon.png" /></p>
+<p><img alt="" src="../images/polygon_attributebasedpolygon.png" /></p>
 <p><em>Attribute-based polygon</em></p>
 <h3 id="code_9">Code<a class="headerlink" href="#code_9" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_attributebasedpolygon.sld">View and download the full "Attribute-based polygon" SLD</a></p>
@@ -31009,11 +31009,11 @@
 <p>The third rule, on <strong>lines 38-52</strong>, specifies a style for polygons whose population attribute is greater than or equal to 500,000. The filter is set on <strong>lines 41-46</strong>. The color of the polygon fill is the only other difference in this rule, which is set to a dark green (<code>#009900</code>) on <strong>line 49</strong>.</p>
 <h2 id="zoom-based-polygon">Zoom-based polygon<a class="headerlink" href="#zoom-based-polygon" title="Permanent link">&para;</a></h2>
 <p>This example alters the style of the polygon at different zoom levels.</p>
-<p><img alt="" src="images/polygon_zoombasedpolygonlarge.png" /></p>
+<p><img alt="" src="../images/polygon_zoombasedpolygonlarge.png" /></p>
 <p><em>Zoom-based polygon: Zoomed in</em></p>
-<p><img alt="" src="images/polygon_zoombasedpolygonmedium.png" /></p>
+<p><img alt="" src="../images/polygon_zoombasedpolygonmedium.png" /></p>
 <p><em>Zoom-based polygon: Partially zoomed</em></p>
-<p><img alt="" src="images/polygon_zoombasedpolygonsmall.png" /></p>
+<p><img alt="" src="../images/polygon_zoombasedpolygonsmall.png" /></p>
 <p><em>Zoom-based polygon: Zoomed out</em></p>
 <h3 id="code_10">Code<a class="headerlink" href="#code_10" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_zoombasedpolygon.sld">View and download the full "Zoom-based polygon" SLD</a></p>

@@ -30076,7 +30076,7 @@
 
 <h1 id="wms-settings">WMS settings<a class="headerlink" href="#wms-settings" title="Permanent link">&para;</a></h1>
 <p>This page details the configuration options for WMS in the web administration interface.</p>
-<p><img alt="" src="img/services_WMS.png" /></p>
+<p><img alt="" src="../img/services_WMS.png" /></p>
 <p><em>WMS configuration options</em></p>
 <h2 id="workspace">Workspace<a class="headerlink" href="#workspace" title="Permanent link">&para;</a></h2>
 <p>Select <strong>workspace</strong> empty to configure global WMS settings.</p>
@@ -30084,7 +30084,7 @@
 <h2 id="service-metadata">Service Metadata<a class="headerlink" href="#service-metadata" title="Permanent link">&para;</a></h2>
 <p>For a description of WMS services, see the section on <a href="../../../configuration/service-metadata/">Service Metadata</a>.</p>
 <h2 id="services_webadmin_wms_raster_options">Root Layer Information<a class="headerlink" href="#services_webadmin_wms_raster_options" title="Permanent link">&para;</a></h2>
-<p><img alt="" src="img/services_WMS_rootLayerInfo.png" /></p>
+<p><img alt="" src="../img/services_WMS_rootLayerInfo.png" /></p>
 <p>In this section is possible to define a title and an abstract for the root layer in the WMS capabilities. When these are left empty the WMS service title and abstract are used.</p>
 <p>It is also possible to set the flag <strong>Always include Root Layer in capabilities</strong>. This is checked by default, but can be unset so that the root layer is included in capabilities only when there is NOT already a single top level Layer element. This can be useful to allow compatibility with some WMS clients that are not happy with the two or more layer tree levels. This default setting can be overridden at the layer or request level.</p>
 <h2 id="raster-rendering-options">Raster Rendering Options<a class="headerlink" href="#raster-rendering-options" title="Permanent link">&para;</a></h2>
@@ -30108,11 +30108,11 @@
 <p><strong>Watermark Transparency</strong>--Determines the opacity level of the watermark. Numbers range between 0 (opaque) and 100 (fully invisible).</p>
 <p><strong>Watermark Position</strong> -Specifies the position of the watermark relative to the WMS request. The nine options indicate which side and corner to place the graphic (top-left, top-center, top-right, etc). The default watermark position is bottom-right. Note that the watermark will always be displayed flush with the boundary. If extra space is required, the graphic itself needs to change.</p>
 <p>Because each WMS request renders the watermark, a single tiled map positions <em>one</em> watermark relative to the view window while a tiled map positions the watermark for each tile. The only layer specific aspect of watermarking occurs because a single tile map is one WMS request, whereas a tiled map contains many WMS requests. (The latter watermark display resembles Google Maps faint copyright notice in their Satellite imagery.) The following three examples demonstrate watermark position, transparency and tiling display, respectively.</p>
-<p><img alt="" src="img/services_WMS_watermark1.png" /></p>
+<p><img alt="" src="../img/services_WMS_watermark1.png" /></p>
 <p><em>Single tile watermark (aligned top-right, transparency=0)</em></p>
-<p><img alt="" src="img/services_WMS_watermark2.png" /></p>
+<p><img alt="" src="../img/services_WMS_watermark2.png" /></p>
 <p><em>Single tile watermark (aligned top-right, transparency=90)</em></p>
-<p><img alt="" src="img/services_WMS_watermark3.png" /></p>
+<p><img alt="" src="../img/services_WMS_watermark3.png" /></p>
 <p><em>Tiled watermark (aligned top-right, transparency=90)</em></p>
 <h2 id="svg-options">SVG Options<a class="headerlink" href="#svg-options" title="Permanent link">&para;</a></h2>
 <p>The GeoServer WMS supports SVG (Scalable Vector Graphics) as an output format. GeoServer currently supports two SVG renderers, available from the SVG producer menu.</p>
@@ -30123,12 +30123,12 @@
 <p><strong>Enable Anti-aliasing</strong> Anti-aliasing is a technique for making edges appear smoother by filling in the edges of an object with pixels that are between the object's color and the background color. Anti-aliasing creates the illusion of smoother lines and smoother selections. Turning on anti-aliasing will generally make maps look nicer, but will increase the size of the images, and will take longer to return. If you are overlaying the anti-aliased map on top of others, beware of using transparencies as the anti-aliasing process mixes with the colors behind and can create a "halo" effect.</p>
 <h2 id="limited-srs-list">Limited SRS list<a class="headerlink" href="#limited-srs-list" title="Permanent link">&para;</a></h2>
 <p>Some clients can have problems processing the large list of SRS (projections) that GeoServer can support when they are all listed in the capabilities document. It is possible to add a list of needed projections in the <em>Limited SRS List</em> box. This takes the form of a list of EPSG codes separated by commas, e.g. <code>4326,27700</code>.</p>
-<p><img alt="" src="img/services_WMS_srs.png" /></p>
+<p><img alt="" src="../img/services_WMS_srs.png" /></p>
 <p><em>A limited SRS list</em></p>
 <p>The <code>Output bounding box for every supported CRS</code> flag is only respected if a Limited SRS list has been specified.Setting this flag causes the WMS capabilities document to contain a Bounding Box for each supported CRS, for each Layer. Doing this for every CRS in the EPSG database, for each Layer in the catalog, would result in a impractically huge capabilities document.</p>
 <h2 id="authorization-headers-forwarding-for-remote-slds">Authorization headers forwarding for remote SLDs<a class="headerlink" href="#authorization-headers-forwarding-for-remote-slds" title="Permanent link">&para;</a></h2>
 <p>A GetMap request may specify the style by referring a remote URL in the SLD parameter. There might be the case that the remote URL require same authorization headers as the current GetMap request. If that's the case a list of allowed style URLs can be specified using newline as separators (URLs might be long). Authorization headers will be only forwarded to a remote URL when it starts with one of the specified URLs.</p>
-<p><img alt="" src="img/services_WMS_remoteurlsauth.png" /></p>
+<p><img alt="" src="../img/services_WMS_remoteurlsauth.png" /></p>
 <p><em>The list of remote URLs being allowed for authorization headers forwarding.</em></p>
 <h2 id="advanced-projection-handling-and-map-wrapping">Advanced projection handling and map wrapping<a class="headerlink" href="#advanced-projection-handling-and-map-wrapping" title="Permanent link">&para;</a></h2>
 <p>Advanced projection handling is a set of extra "smarts" applied while rendering that help getting a good looking map despite the data touching or crossing "difficult areas" in selected map projection. This includes, among others:</p>
@@ -30139,15 +30139,15 @@
 </ul>
 <p>Along with advanced projection handling there is the possibility of creating a continuous map across the dateline, wrapping the data on the other side of the longitude range, to get a continuous map. This is called continuous map wrapping, and it's enabled in Mercator and Equirectangular (plate carrée) projections. This also uses an heuristic to guess direction of lines that cross the dateline (west to east or east to west). The heuristic can be disabled using the <strong>Disable dateline wrapping heuristic</strong> option.</p>
 <p>Advanced projection handling and continuous map wrapping functionalities are rather useful, and enabled by default, but the tendency to generate multiple or-ed bounding boxes (to query both sides of the dateline) can cause extreme slowness in certain databases (e.g. Oracle), and some users might simply not like the wrapping output, thus, it's possible to disable both functions in the WMS UI:</p>
-<p><img alt="" src="img/services_WMS_aph.png" /></p>
+<p><img alt="" src="../img/services_WMS_aph.png" /></p>
 <p>Continuous map wrapping is disabled if advanced projection handling is disabled.</p>
 <p>Automatic densification can slow down rendering, so it's disabled by default, but can be enabled using the <strong>Enable automatic densification of geometries</strong> option.</p>
 <p>Advanced projection handling can also be disabled using the <code>advancedProjectionHandling</code> <a href="../vendor/#format_options">Format Option</a>. Similarly, continuous map wrapping can also be disabled using the <code>mapWrapping</code> <a href="../vendor/#format_options">Format Option</a>, automatic densification can be enabled using the <code>advancedProjectionHandlingDensification</code> <a href="../vendor/#format_options">Format Option</a>, and the dateline heuristic can be disabled using the <code>disableDatelineWrappingHeuristic</code> <a href="../vendor/#format_options">Format Option</a>.</p>
 <h2 id="restricting-mime-types-for-getmap-and-getfeatureinfo-requests">Restricting MIME types for GetMap and GetFeatureInfo requests<a class="headerlink" href="#restricting-mime-types-for-getmap-and-getfeatureinfo-requests" title="Permanent link">&para;</a></h2>
 <p>GeoServer supports restricting formats for WMS GetMap and WMS GetFeatureInfo requests. The default is to allow all MIME types for both kinds of request.</p>
-<p><img alt="" src="img/service_WMS_allMimeTypesAllowed.png" /></p>
+<p><img alt="" src="../img/service_WMS_allMimeTypesAllowed.png" /></p>
 <p>The following figure shows an example for MIME type restriction. The MIME types <strong>image/png</strong> and <strong>text/html;subtype=openlayers</strong> are allowed for GetMap requests, the MIME types <strong>text/html</strong> and <strong>text/plain</strong> are allowed for GetFeatureInfo requests. A GetMap/GetFeatureInfo request with a MIME type not allowed will result in a service exception reporting the error.</p>
-<p><img alt="" src="img/service_WMS_allowedMimeTypes.png" /></p>
+<p><img alt="" src="../img/service_WMS_allowedMimeTypes.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Activating MIME type restriction and not allowing at least one MIME type disables the particular request.</p>
@@ -30156,15 +30156,15 @@
 <p>Dynamic styles can be applied to layers in GetMap, GetFeatureInfo and GetLegendGraphic requests using the SLD or SLD_BODY parameters for GET requests.</p>
 <p>In addition, GetMap POST requests can contain inline style definition for layers.</p>
 <p>The usage of dynamic styling can be restricted on a global or per virtual service basis using the <strong>Dynamic styling</strong> section.</p>
-<p><img alt="" src="img/service_WMS_disableDynamicStyling.png" /></p>
+<p><img alt="" src="../img/service_WMS_disableDynamicStyling.png" /></p>
 <p>When the flag is checked, a GetMap/GetFeatureInfo/GetLegendGraphic request with a dynamic style will result in a service exception reporting the error.</p>
 <h2 id="disabling-getfeatureinfo-requests-results-reprojection">Disabling GetFeatureInfo requests results reprojection<a class="headerlink" href="#disabling-getfeatureinfo-requests-results-reprojection" title="Permanent link">&para;</a></h2>
 <p>By default GetFeatureInfo results are reproject to the map coordinate reference system. This behavior can be deactivated on a global or per virtual service basis in the <strong>GetFeatureInfo results reprojection</strong> section.</p>
-<p><img alt="" src="img/service_WMS_disableFeaturesReprojection.png" /></p>
+<p><img alt="" src="../img/service_WMS_disableFeaturesReprojection.png" /></p>
 <p>When the flag is checked, GetFeatureInfo requests results will not be reprojected and will instead used the layer coordinate reference system.</p>
 <h2 id="services_webadmin_wms_featureinfo_transformation">Disabling GetFeatureInfo requests results transformation<a class="headerlink" href="#services_webadmin_wms_featureinfo_transformation" title="Permanent link">&para;</a></h2>
 <p>By default GetFeatureInfo results are determined from the output after evaluating rendering transformation on the layer data. This behavior can be changed only for <strong>raster</strong> sources (i.e., raster-to-raster and raster-to-vector transformations). This behavior can be deactivated on a global or per virtual service basis in the <strong>GetFeatureInfo results transformation</strong> section. This setting can be overridden for individual FeatureTypeStyle elements using the <code>transformFeatureInfo</code> SLD vendor option (See section <a href="../../../styling/sld/extensions/rendering-transform/">Rendering Transformations</a>).</p>
-<p><img alt="" src="img/service_WMS_disableFeatureInfoTransformation.png" /></p>
+<p><img alt="" src="../img/service_WMS_disableFeatureInfoTransformation.png" /></p>
 <p>When the flag is checked, GetFeatureInfo requests results will not be transformed and will instead use the raw, underlying raster data.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30173,7 +30173,7 @@
 </div>
 <h2 id="enabling-getfeatureinfo-requests-results-html-auto-escaping">Enabling GetFeatureInfo requests results HTML auto-escaping<a class="headerlink" href="#enabling-getfeatureinfo-requests-results-html-auto-escaping" title="Permanent link">&para;</a></h2>
 <p>By default GetFeatureInfo results are printed in the HTML templates without any automatic escaping, which could result in incorrect and potentially malicious results. This behavior can be activated on a global or per virtual service basis in the <strong>GetFeatureInfo results auto-escaping</strong> section.</p>
-<p><img alt="" src="img/service_WMS_autoEscaping.png" /></p>
+<p><img alt="" src="../img/service_WMS_autoEscaping.png" /></p>
 <p>When the flag is checked, values that are printed in the HTML templates for GetFeatureInfo requests results will be automatically escaped. The default FreeMarker templates can be overridden to enable or disable auto-escaping on a per template, per block or per value basis.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30181,17 +30181,17 @@
 </div>
 <h2 id="setting-remote-style-max-connection-and-request-time">Setting Remote Style max connection and request time<a class="headerlink" href="#setting-remote-style-max-connection-and-request-time" title="Permanent link">&para;</a></h2>
 <p>Remote styles max request time and connection timeout can be configured in milliseconds.</p>
-<p><img alt="" src="img/service_WMS_remoteStyleTime.png" /></p>
+<p><img alt="" src="../img/service_WMS_remoteStyleTime.png" /></p>
 <p><strong>Timeout in milliseconds</strong> -The max connection timeout in milliseconds for remote style requests.</p>
 <p><strong>Max request time in milliseconds</strong> -The max request time limit in milliseconds for remote style requests.</p>
 <h2 id="mark-factory-precedence">Mark Factory Precedence<a class="headerlink" href="#mark-factory-precedence" title="Permanent link">&para;</a></h2>
 <p>Mark factories can be filtered and ordered during the rendering execution. This makes room to optimize the rendering phase by omitting unused mark factories and prioritizing the fastest ones.</p>
-<p><img alt="" src="img/service_WMS_markfactory.png" /></p>
+<p><img alt="" src="../img/service_WMS_markfactory.png" /></p>
 <p><strong>Enable Mark Factory Precedence</strong> -Enables the mark factory precedence setup.</p>
 <p><strong>Mark Factory Precedence setup</strong> -The allowed mark factories to use and its execution order.</p>
 <h2 id="i18n-settings">i18n Settings<a class="headerlink" href="#i18n-settings" title="Permanent link">&para;</a></h2>
 <p>Select default language for WMS Service.</p>
-<p><img alt="" src="img/i18n_default_language.png" /></p>
+<p><img alt="" src="../img/i18n_default_language.png" /></p>
 <p><em>Default language</em></p>
 <p>See <a href="../../../configuration/internationalization/">Internationalization (i18n)</a> section for a how this setting is used.</p>
 

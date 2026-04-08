@@ -29676,11 +29676,11 @@
 <h1 id="compositing-and-blending-example">Compositing and blending example<a class="headerlink" href="#compositing-and-blending-example" title="Permanent link">&para;</a></h1>
 <p>Let's say we want to draw the <code>topp:states</code> layer so that the polygons are not filled with the population keyed colors, but only an inner border inside the polygon should appear, leaving the internal fully transparent.</p>
 <p>This is the destination:</p>
-<p><img alt="" src="images/states.png" />
+<p><img alt="" src="../images/states.png" />
 <em>topp:states layer</em></p>
 <p>Using alpha blending, this can be achieved by creating a mask around the state borders with a thick stroke, and then using a "destination-in" alpha compositing.</p>
 <p>This is the source (mask):</p>
-<p><img alt="" src="images/states-border.png" /></p>
+<p><img alt="" src="../images/states-border.png" /></p>
 <p><em>Layer mask</em></p>
 <p>The SLD will contain three FeatureTypeStyles. The first one would be the standard rules (states colored by population) and the last one will contain the label rules. The second (middle) one is where the blending will occur:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>...
@@ -29704,16 +29704,16 @@
 <a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>...
 </code></pre></div>
 <p>This is the result of the composition:</p>
-<p><img alt="" src="images/states-border-composite.png" /></p>
+<p><img alt="" src="../images/states-border-composite.png" /></p>
 <p>Now, if for example someone makes a WMS call in which the another layer is drawn below this one, the result will look like this:</p>
-<p><img alt="" src="images/ne-states-border-composite1.png" /></p>
+<p><img alt="" src="../images/ne-states-border-composite1.png" /></p>
 <p>This other background layer is hardly visible, because it has been cut by the mask. This shows the risks of using alpha compositing without care in a WMS setting.</p>
 <p>In order to achieve the desired result no matter how the client composes the request, the first FeatureTypeStyle that draws the polygons (the states themselves) needs to be set as a <em>compositing base</em>, ensuring the mask will only be applied to it.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;composite-base&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <p>The result will look like the following (though a multiply blend was added to the base to ensure a nice visual transparency effect on the border lines):</p>
-<p><img alt="" src="images/ne-states-border-composite2.jpg" /></p>
-<p><img alt="" src="images/ne-states-border-composite3.jpg" /></p>
+<p><img alt="" src="../images/ne-states-border-composite2.jpg" /></p>
+<p><img alt="" src="../images/ne-states-border-composite3.jpg" /></p>
 <p><a href="files/statesblend.sld">Download the final style</a></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

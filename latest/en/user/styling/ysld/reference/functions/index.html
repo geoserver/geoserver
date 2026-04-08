@@ -30154,7 +30154,7 @@
 <a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">              </span><span class="nt">shape</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;shape://carrow&#39;</span>
 <a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">              </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;#000000&#39;</span>
 </code></pre></div>
-<p><img alt="" src="img/functions_arrows.png" /></p>
+<p><img alt="" src="../img/functions_arrows.png" /></p>
 <p><em>Endpoint arrows</em></p>
 <h3 id="drop-shadow">Drop shadow<a class="headerlink" href="#drop-shadow" title="Permanent link">&para;</a></h3>
 <p>The <code>offset(geom, x, y)</code> function takes a geometry and two values, and displaces the geometry by those values in the <code>x</code> and <code>y</code> directions. This can be used to create a drop-shadow effect:</p>
@@ -30174,7 +30174,7 @@
 <a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">      </span><span class="nt">stroke-width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
 <a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">      </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;#00FFFF&#39;</span>
 </code></pre></div>
-<p><img alt="" src="img/functions_dropshadow.png" /></p>
+<p><img alt="" src="../img/functions_dropshadow.png" /></p>
 <p><em>Drop shadow</em></p>
 <h3 id="different-colored-outline">Different-colored outline<a class="headerlink" href="#different-colored-outline" title="Permanent link">&para;</a></h3>
 <p>The <code>buffer(geom, buffer)</code> function takes a geometry and a value as arguments, and returns a polygon geometry with a boundary equal to the original geometry plus the value. This can be used to generate an extended outline filled with a different color, for example to style a shoreline:</p>
@@ -30189,7 +30189,7 @@
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">polygon</span><span class="p">:</span>
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">      </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;#00DD00&#39;</span>
 </code></pre></div>
-<p><img alt="" src="img/functions_buffer.png" /></p>
+<p><img alt="" src="../img/functions_buffer.png" /></p>
 <p><em>Buffered outline</em></p>
 <p>See also:</p>
 <ul>
@@ -30204,7 +30204,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">point</span><span class="p">:</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">geometry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vertices(geom)</span>
 </code></pre></div>
-<p><img alt="" src="img/functions_vertices.png" /></p>
+<p><img alt="" src="../img/functions_vertices.png" /></p>
 <p><em>Endpoint arrows</em></p>
 <p>See also:</p>
 <ul>
@@ -30279,7 +30279,7 @@
 <a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>          &#39;&#39;, &#39;#777777&#39;)}
 </code></pre></div>
 <p>In the above example, the attribute is <code>zone</code> , and then each subsequent pair consists of an attribute value followed by a color.</p>
-<p><img alt="" src="img/functions_recode.png" /></p>
+<p><img alt="" src="../img/functions_recode.png" /></p>
 <p><em>Recode Function</em></p>
 <h3 id="color-based-on-categories">Color based on categories<a class="headerlink" href="#color-based-on-categories" title="Permanent link">&para;</a></h3>
 <p>The Categorize function returns a different value depending on which range (category) an attribute value matches. This can also make a style much more simple by reducing the number of filters. This example uses <code>categorize</code> to color based on certain values of the <code>YEARBLT</code> attribute:</p>
@@ -30299,7 +30299,7 @@
 <a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>          1990,&#39;#22DD00&#39;,
 <a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>          2000,&#39;#00FF00&#39;)}
 </code></pre></div>
-<p><img alt="" src="img/filters_categories.png" /></p>
+<p><img alt="" src="../img/filters_categories.png" /></p>
 <p><em>Categorize Function</em></p>
 <h3 id="choropleth-map">Choropleth map<a class="headerlink" href="#choropleth-map" title="Permanent link">&para;</a></h3>
 <p>The <code>interpolate</code> function can be used to create a continuous set of values by interpolating between attribute values. This can be used to create a choropleth map which shows different colors for regions based on some continuous attribute such as area or population:</p>
@@ -30312,7 +30312,7 @@
 <a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">        </span><span class="nt">stroke-width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">        </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${interpolate(PERSONS, 0.0, &#39;#00FF00&#39;, 1e7,&#39;#FF0000&#39;, &#39;color&#39;)}</span>
 </code></pre></div>
-<p><img alt="" src="img/functions_choropleth.png" /></p>
+<p><img alt="" src="../img/functions_choropleth.png" /></p>
 <p><em>Choropleth Map</em></p>
 
 

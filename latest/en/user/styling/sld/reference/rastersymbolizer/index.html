@@ -30033,7 +30033,7 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">      </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#BBBBBB&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;200&quot;</span><span class="w"> </span><span class="na">label=</span><span class="s">&quot;label2&quot;</span><span class="w"> </span><span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nt">&lt;/ColorMap&gt;</span>
 </code></pre></div>
-<p><img alt="" src="img/colormap1.png" /></p>
+<p><img alt="" src="../img/colormap1.png" /></p>
 <p>A more refined example defines a color gradient from color #FFCC32 through color #BBBBBB, running through color #3645CC and color #CC3636. The bottom color #FFCC32 is defined to be transparent This simulates an alpha channel, since pixels with values of -300 and below will not be rendered. Notice that the default opacity is 1 (opaque) when not specified.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;ColorMap&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">      </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#FFCC32&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;-300&quot;</span><span class="w"> </span><span class="na">label=</span><span class="s">&quot;label1&quot;</span><span class="w"> </span><span class="na">opacity=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
@@ -30042,7 +30042,7 @@
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#BBBBBB&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;200&quot;</span><span class="w"> </span><span class="na">label=</span><span class="s">&quot;label4&quot;</span><span class="w"> </span><span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nt">&lt;/ColorMap&gt;</span>
 </code></pre></div>
-<p><img alt="" src="img/colormap2.png" /></p>
+<p><img alt="" src="../img/colormap2.png" /></p>
 <p>GeoServer extends the <code>&lt;ColorMap&gt;</code> element to allow two attributes: <code>type</code> and <code>extended</code>.</p>
 <h4 id="type">type<a class="headerlink" href="#type" title="Permanent link">&para;</a></h4>
 <p>The <code>&lt;ColorMap&gt;</code> <code>type</code> attribute specifies the kind of ColorMap to use. There are three different types of ColorMaps that can be specified: <code>ramp</code>, <code>intervals</code> and <code>values</code>.</p>
@@ -30061,7 +30061,7 @@
 <a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">       </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#DDB02C&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;600&quot;</span><span class="w"> </span><span class="na">label=</span><span class="s">&quot;label&quot;</span><span class="w"> </span><span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="nt">&lt;/ColorMap&gt;</span>
 </code></pre></div>
-<p><img alt="" src="img/colormap3.png" /></p>
+<p><img alt="" src="../img/colormap3.png" /></p>
 <p><code>type="values"</code> means that only pixels with the specified entry quantity values are rendered. Pixels with other values are not rendered. Using the example set of color map entries:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;ColorMap</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;values&quot;</span><span class="nt">&gt;</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">       </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#EEBE2F&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;-300&quot;</span><span class="w"> </span><span class="na">label=</span><span class="s">&quot;label&quot;</span><span class="w"> </span><span class="na">opacity=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
@@ -30070,7 +30070,7 @@
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nt">&lt;/ColorMap&gt;</span>
 </code></pre></div>
 <p>The result image is:</p>
-<p><img alt="" src="img/colormap4.png" /></p>
+<p><img alt="" src="../img/colormap4.png" /></p>
 <p><code>type="intervals"</code> value means that each interval defined by two entries is rendered using the color of the first (lowest-value) entry. No color interpolation is applied across the intervals. Using the example set of color map entries:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;ColorMap</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;intervals&quot;</span><span class="w"> </span><span class="na">extended=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">       </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#EEBE2F&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;-300&quot;</span><span class="w"> </span><span class="na">label=</span><span class="s">&quot;label&quot;</span><span class="w"> </span><span class="na">opacity=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
@@ -30079,12 +30079,12 @@
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nt">&lt;/ColorMap&gt;</span><span class="w">   </span>
 </code></pre></div>
 <p>The result image is:</p>
-<p><img alt="" src="img/colormap5.png" /></p>
+<p><img alt="" src="../img/colormap5.png" /></p>
 <p>The color map type is also reflected in the legend graphic. A typical request for a raster legend is (using the <code>forceRule:true</code> option to force output of the color map):</p>
 <div class="highlight"><pre><span></span><code>http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&amp;VERSION=1.0.0&amp;&amp;STYLE=raster100&amp;FORMAT=image/png&amp;WIDTH=50&amp;HEIGHT=20&amp;LEGEND_OPTIONS=forceRule:true&amp;LAYER=it.geosolutions:di08032_da
 </code></pre></div>
 <p>The legends returned for the different types are:</p>
-<p><img alt="" src="img/rasterlegend.png" /></p>
+<p><img alt="" src="../img/rasterlegend.png" /></p>
 <h4 id="extended">extended<a class="headerlink" href="#extended" title="Permanent link">&para;</a></h4>
 <p>The <code>extended</code> attribute specifies whether the color map gradient uses 256 (8-bit) or 65536 (16-bit) colors. The value <code>false</code> (the default) specifies that the color scale is calculated using 8-bit color, and <code>true</code> specifies using 16-bit color.</p>
 <h4 id="sld_reference_rastersymbolizer_colormap_cql">CQL Expressions<a class="headerlink" href="#sld_reference_rastersymbolizer_colormap_cql" title="Permanent link">&para;</a></h4>
@@ -30114,7 +30114,7 @@
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">     </span><span class="nt">&lt;/BlueChannel&gt;</span>
 <a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="nt">&lt;/ChannelSelection&gt;</span>
 </code></pre></div>
-<p><img alt="" src="img/channelselection.png" /></p>
+<p><img alt="" src="../img/channelselection.png" /></p>
 <p>The next example shows selecting a single band of an RGB image as a grayscale channel, and re-colorizing it via a ColorMap:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">       </span><span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
@@ -30131,7 +30131,7 @@
 <a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">       </span><span class="nt">&lt;/ColorMap&gt;</span>
 <a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="nt">&lt;/RasterSymbolizer&gt;</span>
 </code></pre></div>
-<p><img alt="" src="img/channelselection2.png" /></p>
+<p><img alt="" src="../img/channelselection2.png" /></p>
 <h4 id="channelselection-expressions">ChannelSelection Expressions<a class="headerlink" href="#channelselection-expressions" title="Permanent link">&para;</a></h4>
 <p>Since the previous approach supports Strings only and therefore is static and not suitable when dealing with multispectral imagery that has more than four bands and hyperspectral imagery (hyperspectral sensors have typically hundreds of bands), a dynamical approach is needed.</p>
 <p>By replacing Strings with Expressions in <code>&lt;SourceChannelName&gt;</code>, context free functions like <code>env</code> can be used to indicate which bands are to be used in a particular rendering session.</p>
@@ -30165,7 +30165,7 @@
 <a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="nt">&lt;/ChannelSelection&gt;</span>
 <a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
 </code></pre></div>
-<p><img alt="" src="img/channelsexpression1.png" /></p>
+<p><img alt="" src="../img/channelsexpression1.png" /></p>
 <p>The style Schema supports also the SLD 1.1 and CSS. As a CSS examples:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>*<span class="w"> </span>{<span class="w"> </span>raster-channels:<span class="w"> </span>[env(&#39;B1&#39;,&#39;1&#39;)]<span class="w"> </span>&#39;2&#39;<span class="w"> </span>&#39;3&#39;;<span class="w"> </span>}
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
@@ -30174,7 +30174,7 @@
 <p>One can specify the <code>env</code> request parameters in the WMS request to switch the bands and render the raster layer using the desired bands, for example the 4, 2, 3 as the following:</p>
 <div class="highlight"><pre><span></span><code>http://localhost:8083/geosolutions/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=geosolutions:raster_multichannel&amp;styles=&amp;bbox=-180.0,-90.5,180.0,90.5&amp;width=768&amp;height=386&amp;srs=EPSG:4326&amp;format=application/openlayers&amp;env=B1:4;B2:2;B3:3
 </code></pre></div>
-<p><img alt="" src="img/channelsexpression2.png" /></p>
+<p><img alt="" src="../img/channelsexpression2.png" /></p>
 <p>Now let us suppose that we want to work on a single band and to exclude all the remaining bands in order to render a monochromatic raster. As an SLD example:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/se:Opacity&gt;</span>
@@ -30190,11 +30190,11 @@
 <a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">  </span><span class="nt">&lt;/ChannelSelection&gt;</span>
 <a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="nt">&lt;/RasterSymbolizer&gt;</span>
 </code></pre></div>
-<p><img alt="" src="img/channelsexpression3.png" /></p>
+<p><img alt="" src="../img/channelsexpression3.png" /></p>
 <p>The Schema above will render the channel "7" by default. As before, you can choose to render any channel of the raster by calling the <code>env</code> function in your WMS request and setting the desired band. By adding to the request &amp;env=B1:3 for example:</p>
 <div class="highlight"><pre><span></span><code>http://localhost:8083/geoserver/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=geosolutions:usa&amp;styles=&amp;bbox=-130.85168,20.7052,-62.0054,54.1141&amp;width=768&amp;height=372&amp;srs=EPSG:4326&amp;format=application/openlayers&amp;env=B1:3
 </code></pre></div>
-<p><img alt="" src="img/channelsexpression4.png" /></p>
+<p><img alt="" src="../img/channelsexpression4.png" /></p>
 <p>Finally, you can add a ColorMap on the selected channel as the following:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w"> </span><span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
@@ -30216,7 +30216,7 @@
 <a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="w"> </span><span class="nt">&lt;/ColorMap&gt;</span>
 <a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="nt">&lt;/RasterSymbolizer&gt;</span><span class="w">    </span>
 </code></pre></div>
-<p><img alt="" src="img/channelsexpression5.png" /></p>
+<p><img alt="" src="../img/channelsexpression5.png" /></p>
 <h3 id="contrastenhancement">ContrastEnhancement<a class="headerlink" href="#contrastenhancement" title="Permanent link">&para;</a></h3>
 <p>The <code>&lt;ContrastEnhancement&gt;</code> element is used to adjust the relative brightness of the image data. A <code>&lt;ContrastEnhancement&gt;</code> element can be specified for the entire image, or in individual <code>Channel</code> elements. In this way, different enhancements can be used on each channel.</p>
 <p>There are three types of enhancements possible:</p>

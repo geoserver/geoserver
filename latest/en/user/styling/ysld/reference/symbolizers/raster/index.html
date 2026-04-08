@@ -30077,7 +30077,7 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">contrast-enhancement</span><span class="p">:</span><span class="w"> </span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="nt">gamma</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
 </code></pre></div>
-<p><img alt="" src="img/raster_brightness.png" /></p>
+<p><img alt="" src="../img/raster_brightness.png" /></p>
 <p><em>Lightened image</em></p>
 <h3 id="normalized-output">Normalized output<a class="headerlink" href="#normalized-output" title="Permanent link">&para;</a></h3>
 <p>This example takes a given raster and adjusts the contrast so that the smallest values are darkest and the highest values are lightest:</p>
@@ -30086,7 +30086,7 @@
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">contrast-enhancement</span><span class="p">:</span><span class="w"> </span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">normalize</span>
 </code></pre></div>
-<p><img alt="" src="img/raster_normalize.png" /></p>
+<p><img alt="" src="../img/raster_normalize.png" /></p>
 <p><em>Normalized image</em></p>
 <h3 id="band-selection">Band selection<a class="headerlink" href="#band-selection" title="Permanent link">&para;</a></h3>
 <p>This example takes a raster with multiple bands and outputs band 2 as a grayscale image (This could be used to select a single band in a multi-band image to use with <code>color-map</code>):</p>
@@ -30100,7 +30100,7 @@
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">        </span><span class="nt">channels</span><span class="p">:</span>
 <a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">          </span><span class="nt">gray</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </code></pre></div>
-<p><img alt="" src="img/raster_band_gray.png" /></p>
+<p><img alt="" src="../img/raster_band_gray.png" /></p>
 <p><em>Grayscale band selection</em></p>
 <h3 id="band-selection-with-contrast">Band selection with contrast<a class="headerlink" href="#band-selection-with-contrast" title="Permanent link">&para;</a></h3>
 <p>This example takes an RGB raster, doubles the intensity of the red, and normalizes the green band:</p>
@@ -30122,7 +30122,7 @@
 <a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">          </span><span class="nt">blue</span><span class="p">:</span>
 <a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 </code></pre></div>
-<p><img alt="" src="img/raster_band_contrast.png" /></p>
+<p><img alt="" src="../img/raster_band_contrast.png" /></p>
 <p><em>Band selection with contrast enhancement</em></p>
 <h3 id="color-ramp">Color ramp<a class="headerlink" href="#color-ramp" title="Permanent link">&para;</a></h3>
 <p>This example shows a color ramp from red to green to blue, with raster band values from 0-200:</p>
@@ -30142,7 +30142,7 @@
 <li>Between 100 and 200 will have an output color <strong>interpolated between green and blue</strong></li>
 <li>Greater than 200 will have an output color of <strong>solid blue</strong></li>
 </ul>
-<p><img alt="" src="img/raster_map_ramp.png" /></p>
+<p><img alt="" src="../img/raster_map_ramp.png" /></p>
 <p><em>Color map with ramp</em></p>
 <h3 id="color-intervals">Color intervals<a class="headerlink" href="#color-intervals" title="Permanent link">&para;</a></h3>
 <p>The same example as above, but with the <code>color-map</code> type set to <code>intervals</code>:</p>
@@ -30162,7 +30162,7 @@
 <li>Between 100 and 200 will have an output color of <strong>solid blue</strong></li>
 <li>Greater than 200 will <strong>not be colored</strong> at all (transparent)</li>
 </ul>
-<p><img alt="" src="img/raster_map_intervals.png" /></p>
+<p><img alt="" src="../img/raster_map_intervals.png" /></p>
 <p><em>Color map with intervals</em></p>
 <h3 id="color-values">Color values<a class="headerlink" href="#color-values" title="Permanent link">&para;</a></h3>
 <p>The same example as above, but with the <code>color-map</code> type set to <code>values</code>:</p>
@@ -30182,7 +30182,7 @@
 <li>Equal to 200 will have an output color of <strong>solid blue</strong></li>
 </ul>
 <p>Any other values (even those in between the above values) will not be colored at all.</p>
-<p><img alt="" src="img/raster_map_values.png" /></p>
+<p><img alt="" src="../img/raster_map_values.png" /></p>
 <p><em>Color map with values</em></p>
 
 

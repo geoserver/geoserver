@@ -30271,12 +30271,12 @@
 <p>One example of a raster is a Digital Elevation Model (DEM) layer, which has elevation data encoded numerically at each georeferenced data point.</p>
 <h2 id="example-raster">Example raster<a class="headerlink" href="#example-raster" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../sld/cookbook/artifacts/sld_cookbook_raster.zip">raster layer</a> that is used in the examples below contains elevation data for a fictional world. The data is stored in EPSG:4326 (longitude/latitude) and has a data range from 70 to 256. If rendered in grayscale, where minimum values are colored black and maximum values are colored white, the raster would look like this:</p>
-<p><img alt="" src="../../sld/cookbook/images/raster.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/raster.png" /></p>
 <p><em>Raster file as rendered in grayscale</em></p>
 <p><a href="../../sld/cookbook/artifacts/sld_cookbook_raster.zip">Download the raster file</a></p>
 <h2 id="css_cookbook_raster_twocolorgradient">Two-color gradient<a class="headerlink" href="#css_cookbook_raster_twocolorgradient" title="Permanent link">&para;</a></h2>
 <p>This example shows a two-color style with green at lower elevations and brown at higher elevations.</p>
-<p><img alt="" src="../../sld/cookbook/images/raster_twocolorgradient.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/raster_twocolorgradient.png" /></p>
 <p><em>Two-color gradient</em></p>
 <h3 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
@@ -30298,7 +30298,7 @@
 <p><strong>Line 4</strong> sets the lower value of 70, which is styled a opaque dark green (<code>#008000</code>), and <strong>line 5</strong> sets the upper value of 256, which is styled a opaque dark brown (<code>#663333</code>). All data values in between these two quantities will be linearly interpolated: a value of 163 (the midpoint between 70 and 256) will be colored as the midpoint between the two colors (in this case approximately <code>#335717</code>, a muddy green).</p>
 <h2 id="transparent-gradient">Transparent gradient<a class="headerlink" href="#transparent-gradient" title="Permanent link">&para;</a></h2>
 <p>This example creates the same two-color gradient as in the <a href="../../../sld/cookbook/rasters/#sld_cookbook_raster_twocolorgradient">Two-color gradient</a> as in the example above but makes the entire layer mostly transparent by setting a 30% opacity.</p>
-<p><img alt="" src="../../sld/cookbook/images/raster_transparentgradient.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/raster_transparentgradient.png" /></p>
 <p><em>Transparent gradient</em></p>
 <h3 id="code_1">Code<a class="headerlink" href="#code_1" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
@@ -30312,7 +30312,7 @@
 <p>This example is similar to the <a href="../../../sld/cookbook/rasters/#sld_cookbook_raster_twocolorgradient">Two-color gradient</a> example save for the addition of <strong>line 3</strong>, which sets the opacity of the layer to 0.3 (or 30% opaque). An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is rendered as completely transparent. The value of 0.3 means that the raster partially takes on the color and style of whatever is drawn beneath it. Since the background is white in this example, the colors generated from the "raster-color-map" look lighter, but were the raster imposed on a dark background the resulting colors would be darker.</p>
 <h2 id="brightness-and-contrast">Brightness and contrast<a class="headerlink" href="#brightness-and-contrast" title="Permanent link">&para;</a></h2>
 <p>This example normalizes the color output and then increases the brightness by a factor of 2.</p>
-<p><img alt="" src="../../sld/cookbook/images/raster_brightnessandcontrast.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/raster_brightnessandcontrast.png" /></p>
 <p><em>Brightness and contrast</em></p>
 <h3 id="code_2">Code<a class="headerlink" href="#code_2" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
@@ -30327,7 +30327,7 @@
 <p>This example is similar to the <a href="../../../sld/cookbook/rasters/#sld_cookbook_raster_twocolorgradient">Two-color gradient</a>, save for the addition of the contrast enhancement and gamma attributes on <strong>lines 3-4</strong>. <strong>Line 3</strong> normalizes the output by increasing the contrast to its maximum extent. <strong>Line 4</strong> then adjusts the brightness by a factor of 0.5. Since values less than 1 make the output brighter, a value of 0.5 makes the output twice as bright.</p>
 <h2 id="three-color-gradient">Three-color gradient<a class="headerlink" href="#three-color-gradient" title="Permanent link">&para;</a></h2>
 <p>This example creates a three-color gradient in primary colors. In addition, we want to avoid displaying data outside of the chosen range, leading some data not to be rendered at all.</p>
-<p><img alt="" src="../../sld/cookbook/images/raster_threecolorgradient.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/raster_threecolorgradient.png" /></p>
 <p><em>Three-color gradient</em></p>
 <h3 id="code_3">Code<a class="headerlink" href="#code_3" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
@@ -30344,7 +30344,7 @@
 <p>This example creates a three-color gradient, with two extra rules to make ranges of color disappear. The color map behavior is such that any value below the lowest entry gets the same color as that entry, and any value above the last entry gets the same color as the last entry, while everything in between is linearly interpolated (all values must be provided from lower to higher). <strong>Line 4</strong> associates value 150 and below with a transparent color (0 opacity, that is, fully transparent), and so does <strong>line 8</strong>, which makes transparent every value above 250. The lines in the middle create a gradient going from blue, to yellow, to red.</p>
 <h2 id="alpha-channel">Alpha channel<a class="headerlink" href="#alpha-channel" title="Permanent link">&para;</a></h2>
 <p>This example creates an "alpha channel" effect such that higher values are increasingly transparent.</p>
-<p><img alt="" src="../../sld/cookbook/images/raster_alphachannel.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/raster_alphachannel.png" /></p>
 <p><em>Alpha channel</em></p>
 <h3 id="code_4">Code<a class="headerlink" href="#code_4" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
@@ -30358,7 +30358,7 @@
 <p>In this example, there is a "raster-color-map" with two entries: <strong>line 3</strong> specifies the lower bound of 70 be colored dark green (<code>#008000</code>), while <strong>line 4</strong> specifies the upper bound of 256 also be colored dark green but with an opacity value of 0. This means that values of 256 will be rendered at 0% opacity (entirely transparent). Just like the gradient color, the opacity is also linearly interpolated such that a value of 163 (the midpoint between 70 and 256) is rendered at 50% opacity.</p>
 <h2 id="discrete-colors">Discrete colors<a class="headerlink" href="#discrete-colors" title="Permanent link">&para;</a></h2>
 <p>This example shows a gradient that is not linearly interpolated but instead has values mapped precisely to one of three specific colors.</p>
-<p><img alt="" src="../../sld/cookbook/images/raster_discretecolors.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/raster_discretecolors.png" /></p>
 <p><em>Discrete colors</em></p>
 <h3 id="code_5">Code<a class="headerlink" href="#code_5" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
@@ -30372,7 +30372,7 @@
 <p>Sometimes color bands in discrete steps are more appropriate than a color gradient. The "raster-color-map-type: intervals" attribute sets the display to output discrete colors instead of a gradient. The values in each entry correspond to the upper bound for the color band such that colors are mapped to values less than the value of one entry but greater than or equal to the next lower entry. For example, <strong>line 4</strong> colors all values less than 150 to dark green (<code>#008000</code>) and <strong>line 5</strong> colors all values less than 256 but greater than or equal to 150 to dark brown (<code>#663333</code>).</p>
 <h2 id="many-color-gradient">Many color gradient<a class="headerlink" href="#many-color-gradient" title="Permanent link">&para;</a></h2>
 <p>This example shows a gradient interpolated across eight different colors.</p>
-<p><img alt="" src="../../sld/cookbook/images/raster_manycolorgradient.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/raster_manycolorgradient.png" /></p>
 <p><em>Many color gradient</em></p>
 <h3 id="code_6">Code<a class="headerlink" href="#code_6" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>

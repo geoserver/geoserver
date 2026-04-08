@@ -29932,7 +29932,7 @@
 
 <h1 id="lines">Lines<a class="headerlink" href="#lines" title="Permanent link">&para;</a></h1>
 <p>We will start our tour of YSLD styling by looking at the representation of lines.</p>
-<p><img alt="" src="../style/img/LineSymbology.svg" /></p>
+<p><img alt="" src="../../style/img/LineSymbology.svg" /></p>
 <p><em>LineString Geometry</em></p>
 <p>Review of line symbology:</p>
 <ul>
@@ -29953,7 +29953,7 @@
 <p>A line symbolizer is represented by a <code>line</code> key. You can make a completely default symbolizer by giving it an empty map</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">line</span><span class="p">:</span>
 </code></pre></div>
-<p><img alt="" src="../style/img/LineStringStroke.svg" /></p>
+<p><img alt="" src="../../style/img/LineStringStroke.svg" /></p>
 <p><em>Basic Stroke Properties</em></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30005,7 +30005,7 @@
 <li>
 <p>Click <strong>Layer Preview</strong> to see your new style applied to a layer.</p>
 <p>You can use this tab to follow along as the style is edited, it will refresh each time <strong>Apply</strong> is pressed.</p>
-<p><img alt="image" src="../style/img/line.png" /></p>
+<p><img alt="image" src="../../style/img/line.png" /></p>
 </li>
 <li>
 <p>You can see the equivalent SLD by requesting <code>http://localhost:8080/geoserver/rest/styles/line_example.sld?pretty=true</code> which will currently show the default line symbolizer we created.</p>
@@ -30056,7 +30056,7 @@
 </li>
 <li>
 <p>Check the <strong>Layer Preview</strong> tab to preview the result.</p>
-<p><img alt="image" src="../style/img/line_stroke.png" /></p>
+<p><img alt="image" src="../../style/img/line_stroke.png" /></p>
 </li>
 </ol>
 <div class="admonition note">
@@ -30065,7 +30065,7 @@
 </div>
 <h2 id="multiple-symbolizers">Multiple Symbolizers<a class="headerlink" href="#multiple-symbolizers" title="Permanent link">&para;</a></h2>
 <p>Providing two strokes is often used to provide a contrasting edge (called casing) to thick lines. This can be created using two symbolizers.</p>
-<p><img alt="" src="../style/img/LineStringZOrder.svg" /></p>
+<p><img alt="" src="../../style/img/LineStringZOrder.svg" /></p>
 <ol>
 <li>
 <p>Start by filling in a bit of boilerplate that we'll be using</p>
@@ -30094,7 +30094,7 @@
 </li>
 <li>
 <p>If you look carefully you can see a problem with our initial attempt. The junctions of each line show that the casing outlines each line individually, making the lines appear randomly overlapped. Ideally we would like to control this process, only making use of this effect for overpasses.</p>
-<p><img alt="image" src="../style/img/line_zorder_1.png" /></p>
+<p><img alt="image" src="../../style/img/line_zorder_1.png" /></p>
 <p>This is because the black and blue symbolizers are being drawn on a feature by feature basis. For nice line casing, we want all of the black symbols, and then all of the blue symbols.</p>
 </li>
 <li>
@@ -30115,16 +30115,16 @@
 </li>
 <li>
 <p>If you look carefully you can see the difference.</p>
-<p><img alt="image" src="../style/img/line_zorder_2.png" /></p>
+<p><img alt="image" src="../../style/img/line_zorder_2.png" /></p>
 </li>
 <li>
 <p>By using <strong>feature styles</strong> we have been able to simulate line casing.</p>
-<p><img alt="image" src="../style/img/line_zorder_3.png" /></p>
+<p><img alt="image" src="../../style/img/line_zorder_3.png" /></p>
 </li>
 </ol>
 <h2 id="label">Label<a class="headerlink" href="#label" title="Permanent link">&para;</a></h2>
 <p>Our next example is significant as it introduces how text labels are generated.</p>
-<p><img alt="" src="../style/img/LineStringLabel.svg" /></p>
+<p><img alt="" src="../../style/img/LineStringLabel.svg" /></p>
 <p><em>Use of Label Property</em></p>
 <p>This is also our first example making use of a dynamic style (where a value comes from an attribute from your data).</p>
 <ol>
@@ -30141,7 +30141,7 @@
 </li>
 <li>
 <p>The SLD standard documents the default label position for each kind of Geometry. For LineStrings the initial label is positioned on the midway point of the line.</p>
-<p><img alt="image" src="../style/img/line_label_1.png" /></p>
+<p><img alt="image" src="../../style/img/line_label_1.png" /></p>
 </li>
 <li>
 <p>We have used an expression to calculate a property value for label. The <strong>label</strong> is generated dynamically from the <code>name</code> attribute. Expressions are supplied within curly braces preceded with a dollar sign, and use Extended Constraint Query Language (ECQL) syntax.</p>
@@ -30191,7 +30191,7 @@
 <a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="hll"><span class="w">    </span><span class="nt">placement</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">line</span>
 </span><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="hll"><span class="w">    </span><span class="nt">offset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7px</span>
 </span></code></pre></div>
-<p><img alt="image" src="../style/img/line_label_2.png" /></p>
+<p><img alt="image" src="../../style/img/line_label_2.png" /></p>
 </li>
 <li>
 <p>When using point placement, you can shift the position of the label using <strong>displacement</strong> instead of <strong>offset</strong>. This takes an x value and a y value.</p>
@@ -30242,7 +30242,7 @@
 </li>
 <li>
 <p>Each label is now separated from its neighbor, improving legibility.</p>
-<p><img alt="image" src="../style/img/line_label_3.png" /></p>
+<p><img alt="image" src="../../style/img/line_label_3.png" /></p>
 </li>
 </ol>
 <h2 id="scale">Scale<a class="headerlink" href="#scale" title="Permanent link">&para;</a></h2>
@@ -30283,7 +30283,7 @@ rules:
 <ol>
 <li>As you adjust the scale in the <strong>Layer Preview</strong> (using the mouse scroll wheel) the color will change between black and blue. You can read the current scale in the bottom right corner, and the legend will change to reflect the current style.</li>
 </ol>
-<p><img alt="image" src="../style/img/line_05_scale.png" /></p>
+<p><img alt="image" src="../../style/img/line_05_scale.png" /></p>
 <ol>
 <li>Putting these two ideas together allows control of level detail based on scale:</li>
 </ol>
@@ -30355,7 +30355,7 @@ rules:
 </ol>
 <p>The first rule has <code>else: true</code> instead of a filter. This causes it to be applied after all other rules have been checked if none of them worked.</p>
 <p>Since there are some things we need to specify more than once like the colour and filter for primary and secondary roads, even as they change size at different scales, they are given names with <code>define</code> so they can be reused. The filters are inserted inline using <code>*name</code> while the style is inserted as a block with <code>&lt;&lt;: *name</code></p>
-<p><img alt="image" src="../style/img/line_06_adjust.png" /></p>
+<p><img alt="image" src="../../style/img/line_06_adjust.png" /></p>
 <h2 id="bonus">Bonus<a class="headerlink" href="#bonus" title="Permanent link">&para;</a></h2>
 <p>Finished early? Here are some opportunities to explore what we have learned, and extra challenges requiring creativity and research.</p>
 <p>In a classroom setting please divide the challenges between teams (this allows us to work through all the material in the time available).</p>
@@ -30426,7 +30426,7 @@ rules:
 <ol>
 <li>The result is a new appearance for our roads.</li>
 </ol>
-<p><img alt="image" src="../style/img/line_label_4.png" /></p>
+<p><img alt="image" src="../../style/img/line_label_4.png" /></p>
 <h3 id="ysld.line.q1">Challenge Classification<a class="headerlink" href="#ysld.line.q1" title="Permanent link">&para;</a></h3>
 <ol>
 <li>The roads <strong>type</strong> attribute provides classification information.</li>
@@ -30435,7 +30435,7 @@ rules:
 <ol>
 <li><strong>Challenge:</strong> Create a new style adjust road appearance based on <strong>type</strong>.</li>
 </ol>
-<p><img alt="image" src="../style/img/line_type.png" /></p>
+<p><img alt="image" src="../../style/img/line_type.png" /></p>
 <p>note:: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.</p>
 <p>note:: Answer `provided &lt;ysld.line.a1) at the end of the workbook.</p>
 <h3 id="ysld.line.q2">Challenge One Rule Classification<a class="headerlink" href="#ysld.line.q2" title="Permanent link">&para;</a></h3>
@@ -30460,7 +30460,7 @@ rules:
 <p><em>Challenge:</em> Have a look at the documentation for putting a graphic on a text symbolizer in SLD and reproduce this technique in YSLD.</p>
 </li>
 </ol>
-<p><img alt="image" src="../style/img/line_shield.png" /></p>
+<p><img alt="image" src="../../style/img/line_shield.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Answer <a href="#ysld.line.a3">provided</a> at the end of the workbook.</p>

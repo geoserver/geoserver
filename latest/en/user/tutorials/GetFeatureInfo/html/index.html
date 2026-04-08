@@ -29834,7 +29834,7 @@
 
 <h1 id="html-output-format">HTML output format<a class="headerlink" href="#html-output-format" title="Permanent link">&para;</a></h1>
 <p>The default HTML output is a sequence of titled tables, each one for a different layer. The following example shows the default output for the tiger-ny basemap (included in the above cited releases, and onwards).</p>
-<p><img alt="" src="default.png" /></p>
+<p><img alt="" src="../default.png" /></p>
 <p><em>Default Output</em></p>
 <h2 id="standard-templates">Standard Templates<a class="headerlink" href="#standard-templates" title="Permanent link">&para;</a></h2>
 <p>The following assumes you're already up to speed with FreeMarker templates. If you're not, read the <a href="../../freemarker/">Freemarker Templates</a> tutorial, and the <a href="../../../extensions/kml/tutorials/kmlplacemark/">KML Placemark Templates</a> page, which has simple examples.</p>
@@ -29947,7 +29947,7 @@ Footer section of the GetFeatureInfo HTML output. Should close the body and the 
 <a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
 </code></pre></div>
 <p>With this template in place, the output would be:</p>
-<p><img alt="" src="ul.png" /></p>
+<p><img alt="" src="../ul.png" /></p>
 <p><em>Bulleted List Output</em></p>
 <p>Looking at the output we notice that point of interest features refer to image files, which we know are stored inside the default GeoServer distribution in the <code>demo_app/pics</code> path. So, we could provide a POI specific override that actually loads the images.</p>
 <p>This is easy: just put the following template in the feature type folder, which in this case is <code>workspaces/topp/DS_poi/poi</code> (you should refer to your Internet visible server address instead of localhost, or its IP if you have fixed IPs):</p>
@@ -29960,7 +29960,7 @@ Footer section of the GetFeatureInfo HTML output. Should close the body and the 
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
 </code></pre></div>
 <p>With this additional template, the output is:</p>
-<p><img alt="" src="thumb.png" /></p>
+<p><img alt="" src="../thumb.png" /></p>
 <p><em>Output with Thumbnail Image</em></p>
 <p>As you can see, roads are still using the generic template, whilst POI is using its own custom template.</p>
 <h2 id="advanced-formatting">Advanced Formatting<a class="headerlink" href="#advanced-formatting" title="Permanent link">&para;</a></h2>

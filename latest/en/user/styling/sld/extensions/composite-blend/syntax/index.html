@@ -29791,7 +29791,7 @@
 <li>It breaks the WMS model, where the client can decide freely how to stack layers (the desired compositing effects will be achieved only when a certain stack of layers is used)</li>
 </ul>
 <p>Consider the following example:</p>
-<p><img alt="" src="images/stacking.png" /></p>
+<p><img alt="" src="../images/stacking.png" /></p>
 <p>In this example, the first two layers are drawn on top of each other, forming "Merge1".</p>
 <p>The third layer is a composite base, as such it won't be merged on top of the already drawn map immediately, but it will be drawn to an off-screen buffer, and layer 4 and 5 will be drawn/composited on top of it. Once that happens, "Merge2" is ready, and gets drawn on top of "Merge1",</p>
 <p>The next layer is another base, so "Base2" will be again drawn to an off-screen buffer, and layer 7 and 8 will be drawn/composited on top of it, forming Merge3. Once Merge3 is ready, it will be drawn/composited on top of the already fused Merge1/Merge2, generating the final map.</p>

@@ -29829,7 +29829,7 @@
 <a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
 </code></pre></div>
 <p>The result will be the following:</p>
-<p><img alt="" src="images/roads-no-group.png" /></p>
+<p><img alt="" src="../images/roads-no-group.png" /></p>
 <p>This is happening because while the roads are loaded in the right order, <code>Line.1,Line.3,Line.2</code>, they are all painted with the tick link first, and then the code will start over, and paint them all with the thin line.</p>
 <p>In order to get both casing and z-ordering to work a new vendor option, <code>sortByGroup</code>, needs to be added to both <code>FeatureTypeStyle</code>, grouping them in a single z-ordering paint.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
@@ -29870,7 +29870,7 @@
 <a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
 </code></pre></div>
 <p>The result will be the following:</p>
-<p><img alt="" src="images/roads-group.png" /></p>
+<p><img alt="" src="../images/roads-group.png" /></p>
 <p>When grouping is used, the code will first paint <code>Line.1,Line3</code> with the thick line, then track back and paint them with the thin line, then move to paint <code>Line.2</code> with the thick line, and finally <code>Line.2</code> with the thin line, achieving the desired result.</p>
 <h2 id="z-ordering-across-layers">z-ordering across layers<a class="headerlink" href="#z-ordering-across-layers" title="Permanent link">&para;</a></h2>
 <p>Different layers, such for example roads and rails, can have their features z-ordered together by putting all the <code>FeatureTypeStyle</code> in their styles in the same <code>sortByGroup</code>, provided the following conditions are met:</p>

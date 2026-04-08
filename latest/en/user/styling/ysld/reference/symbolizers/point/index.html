@@ -30217,7 +30217,7 @@
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">        </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">        </span><span class="nt">rotation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45</span>
 </code></pre></div>
-<p><img alt="" src="img/point_basic.png" /></p>
+<p><img alt="" src="../img/point_basic.png" /></p>
 <p><em>Basic point</em></p>
 <h3 id="point-as-image">Point as image<a class="headerlink" href="#point-as-image" title="Permanent link">&para;</a></h3>
 <p>Sometimes it may be useful to use an image to represent certain points. This can be accomplished using the <code>external</code> symbol property, which requires a <code>url</code> and a <code>format</code>. The <code>url</code> should be enclosed in single quotes. The <code>format</code> property is a <a href="http://en.wikipedia.org/wiki/Internet_media_type#Type_image">MIME type image</a>. This example shows a point symbolizer that draws an image centered on each point:</p>
@@ -30233,7 +30233,7 @@
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">            </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image/png</span>
 <a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16</span>
 </code></pre></div>
-<p><img alt="" src="img/point_graphic.png" /></p>
+<p><img alt="" src="../img/point_graphic.png" /></p>
 <p><em>Point as image</em></p>
 <h3 id="point-composition">Point composition<a class="headerlink" href="#point-composition" title="Permanent link">&para;</a></h3>
 <p>Using more than one point symbolizer allows the composition of more complex symbology. This example shows two symbolizers along with the <code>x-composite</code> parameter in order to <em>subtract</em> a shape from a square mark, allowing the background to show through.</p>
@@ -30252,7 +30252,7 @@
 <a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="nt">x-composite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xor</span>
 <a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40</span>
 </code></pre></div>
-<p><img alt="" src="img/point_composition.png" /></p>
+<p><img alt="" src="../img/point_composition.png" /></p>
 <p><em>Point composition</em></p>
 <h3 id="points-as-arrow-heads">Points as arrow heads<a class="headerlink" href="#points-as-arrow-heads" title="Permanent link">&para;</a></h3>
 <p>Sometimes it is useful to generate a point using a CQL expression. The following example generates a point at the end of each line in the shape of an arrow, rotated such that it matches the orientation of the line.</p>
@@ -30270,7 +30270,7 @@
 <a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="nt">rotation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${endAngle(the_geom)}</span>
 </code></pre></div>
-<p><img alt="" src="img/arrow.png" /></p>
+<p><img alt="" src="../img/arrow.png" /></p>
 <p><em>Point as arrow head</em></p>
 
 

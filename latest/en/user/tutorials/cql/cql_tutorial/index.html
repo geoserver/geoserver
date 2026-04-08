@@ -29775,7 +29775,7 @@
 <p>This tutorial introduces the CQL/ECQL language by example. For a full reference, refer to the <a href="../../../filter/ecql_reference/">ECQL Reference</a>.</p>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
 <p>The following examples use the <code>topp:states</code> sample layer shipped with GeoServer. They demonstrate how CQL filters work by using the WMS <a href="../../../services/wms/vendor/">CQL_FILTER vendor parameter</a> to alter the data displayed by WMS requests. The easiest way to follow the tutorial is to open the GeoServer Map Preview for the <code>topp:states</code> layer. Click on the <em>Options</em> button at the top of the map preview to open the advanced options toolbar. The example filters can be entered in the <em>Filter: CQL</em> box.</p>
-<p><img alt="" src="gettingStarted.png" />
+<p><img alt="" src="../gettingStarted.png" />
 <em>topp:states preview with advanced toolbar open.</em></p>
 <p>The attributes used in the filter examples are those included in the layer. For example, the following are the attribute names and values for the Colorado feature:</p>
 <table>
@@ -29878,27 +29878,27 @@
 </table>
 <h2 id="simple-comparisons">Simple comparisons<a class="headerlink" href="#simple-comparisons" title="Permanent link">&para;</a></h2>
 <p>Let's get started with a simple example. In CQL arithmetic and comparisons are expressed using plain text. The filter <code>PERSONS &gt; 15000000</code> will select states that have more than 15 million inhabitants:</p>
-<p><img alt="" src="more15M.png" /></p>
+<p><img alt="" src="../more15M.png" /></p>
 <p><em>PERSONS &gt; 15000000</em></p>
 <p>The full list of comparison operators is: <code>=</code>, <code>&lt;&gt;</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>.</p>
 <p>To select a range of values the BETWEEN operator can be used: <code>PERSONS BETWEEN 1000000 AND 3000000</code>:</p>
-<p><img alt="" src="between.png" /></p>
+<p><img alt="" src="../between.png" /></p>
 <p><em>PERSONS BETWEEN 1000000 AND 3000000</em></p>
 <p>Comparison operators also support text values. For instance, to select only the state of California, the filter is <code>STATE_NAME = 'California'</code>. More general text comparisons can be made using the <code>LIKE</code> operator. <code>STATE_NAME LIKE 'N%'</code> will extract all states starting with an "N":</p>
-<p><img alt="" src="startn.png" /></p>
+<p><img alt="" src="../startn.png" /></p>
 <p><em>STATE_NAME LIKE 'N%'</em></p>
 <p>It is also possible to compare two attributes with each other. <code>MALE &gt; FEMALE</code> selects the states in which the male population surpasses the female one (a rare occurrence):</p>
-<p><img alt="" src="malefemale.png" /></p>
+<p><img alt="" src="../malefemale.png" /></p>
 <p><em>MALE &gt; FEMALE</em></p>
 <p>Arithmetic expressions can be computed using the <code>+, -, *, /</code> operators. The filter <code>UNEMPLOY / (EMPLOYED + UNEMPLOY) &gt; 0.07</code> selects all states whose unemployment ratio is above 7% (remember the sample data is very old, so don't draw any conclusion from the results!)</p>
-<p><img alt="" src="employ.png" /></p>
+<p><img alt="" src="../employ.png" /></p>
 <p><em>UNEMPLOY / (EMPLOYED + UNEMPLOY) &gt; 0.07</em></p>
 <h2 id="id-and-list-comparisons">Id and list comparisons<a class="headerlink" href="#id-and-list-comparisons" title="Permanent link">&para;</a></h2>
 <p>If we want to extract only the states with specific feature ids we can use the <code>IN</code> operator without specifying any attribute, as in <code>IN ('states.1', 'states.12')</code>:</p>
-<p><img alt="" src="idfilter.png" /></p>
+<p><img alt="" src="../idfilter.png" /></p>
 <p><em>IN ('states.1', 'states.12')</em></p>
 <p>If instead we want to extract the states whose name is in a given list we can use the <code>IN</code> operator specifying an attribute name, as in <code>STATE_NAME IN ('New York', 'California', 'Montana', 'Texas')</code>:</p>
-<p><img alt="" src="statenames.png" /></p>
+<p><img alt="" src="../statenames.png" /></p>
 <p><em>STATE_NAME IN ('New York', 'California', 'Montana', 'Texas')</em></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -29907,14 +29907,14 @@
 <h2 id="filter-functions">Filter functions<a class="headerlink" href="#filter-functions" title="Permanent link">&para;</a></h2>
 <p>CQL/ECQL can use any of the <a href="../../../filter/function_reference/">filter functions</a> available in GeoServer. This greatly increases the power of CQL expressions.</p>
 <p>For example, suppose we want to find all states whose name contains an "m", regardless of letter case. We can use the <code>strToLowerCase</code> to turn all the state names to lowercase and then use a like comparison: <code>strToLowerCase(STATE_NAME) like '%m%'</code>:</p>
-<p><img alt="" src="mstates.png" />
+<p><img alt="" src="../mstates.png" />
 <em>strToLowerCase(STATE_NAME) like '%m%'</em></p>
 <h2 id="geometric-filters">Geometric filters<a class="headerlink" href="#geometric-filters" title="Permanent link">&para;</a></h2>
 <p>CQL provides a full set of geometric filter capabilities. Say, for example, you want to display only the states that intersect the (-90,40,-60,45) bounding box. The filter will be <code>BBOX(the_geom, -90, 40, -60, 45)</code></p>
-<p><img alt="" src="bbox.png" /></p>
+<p><img alt="" src="../bbox.png" /></p>
 <p><em>BBOX(the_geom, -90, 40, -60, 45)</em></p>
 <p>Conversely, you can select the states that do <em>not</em> intersect the bounding box with the filter: <code>DISJOINT(the_geom, POLYGON((-90 40, -90 45, -60 45, -60 40, -90 40)))</code>:</p>
-<p><img alt="" src="disjoint.png" /></p>
+<p><img alt="" src="../disjoint.png" /></p>
 <p><em>DISJOINT(the_geom, POLYGON((-90 40, -90 45, -60 45, -60 40, -90 40)))</em></p>
 <p>The full list of geometric predicates is: <code>EQUALS</code>, <code>DISJOINT</code>, <code>INTERSECTS</code>, <code>TOUCHES</code>, <code>CROSSES</code>, <code>WITHIN</code>, <code>CONTAINS</code>, <code>OVERLAPS</code>, <code>RELATE</code>, <code>DWITHIN</code>, <code>BEYOND</code>.</p>
 

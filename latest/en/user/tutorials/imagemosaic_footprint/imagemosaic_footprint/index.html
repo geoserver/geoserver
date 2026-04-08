@@ -30046,7 +30046,7 @@
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="na">footprint_filter</span><span class="o">=</span><span class="s">*filter on the Shapefile searching for the attribute associated to each granule*</span>
 </code></pre></div>
 <p>For example if a Shapefile called <strong>fakeShapeFile</strong> stores the various footprints in a table like this, where each <em>Name</em> attribute is referred to a granule file:</p>
-<p><img alt="" src="img/shp_table.png" /></p>
+<p><img alt="" src="../img/shp_table.png" /></p>
 <p>And the associated granules are:</p>
 <ul>
 <li>ortho_1-1_1n_s_la087_2010_1.tif</li>
@@ -30081,19 +30081,19 @@
 <p>An associated Layer can be created by going to <strong>Layers --&gt; Add New Resource</strong>, choosing the name of the data store created above and then clicking on the <strong>publish</strong> button.</p>
 <h3 id="step-2-configuring-a-new-layer-for-the-mosaic">Step 2: Configuring a new Layer for the Mosaic<a class="headerlink" href="#step-2-configuring-a-new-layer-for-the-mosaic" title="Permanent link">&para;</a></h3>
 <p>Inside the new page the only field which is interesting for this tutorial is <em>FootprintBehavior</em>:</p>
-<p><img alt="" src="img/footprint_behav.png" /></p>
+<p><img alt="" src="../img/footprint_behav.png" /></p>
 <p>The user can set one of the three values for the Footprint behaviour as described above.</p>
 <p>After that, the user must confirm the modification by clicking on the <strong>Save</strong> button on the bottom side of the page.</p>
 <h3 id="step-3-example-results">Step 3: Example Results<a class="headerlink" href="#step-3-example-results" title="Permanent link">&para;</a></h3>
 <p>Here are presented the results for each dataset.</p>
 <h4 id="footprint-configured-with-sidecar-file">Footprint configured with <em>Sidecar File</em><a class="headerlink" href="#footprint-configured-with-sidecar-file" title="Permanent link">&para;</a></h4>
 <p>This is an example of mosaic without applying Footprint:</p>
-<p><img alt="" src="img/footprint_normal.png" /></p>
+<p><img alt="" src="../img/footprint_normal.png" /></p>
 <p>And this is the result of setting <strong>FootprintBehavior</strong> to <em>Cut</em>:</p>
-<p><img alt="" src="img/footprint_cut.png" /></p>
+<p><img alt="" src="../img/footprint_cut.png" /></p>
 <p>Background is gray because in this example the <em>BackgroundValues</em> field has been set to -20000.</p>
 <p>If an Inset is added, the final mosaic is:</p>
-<p><img alt="" src="img/footprint_cut_inset.png" /></p>
+<p><img alt="" src="../img/footprint_cut_inset.png" /></p>
 <p>The <strong>footprints.properties</strong> file is:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">footprint_inset</span><span class="o">=</span><span class="s">0.01</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">footprint_inset_type</span><span class="o">=</span><span class="s">full</span>
@@ -30108,16 +30108,16 @@
 </div>
 <h4 id="footprint-configured-with-footprintsshp">Footprint configured with <em>footprints.shp</em><a class="headerlink" href="#footprint-configured-with-footprintsshp" title="Permanent link">&para;</a></h4>
 <p>This is another example of mosaic without Footprint:</p>
-<p><img alt="" src="img/footprint_mosaic_none.png" /></p>
+<p><img alt="" src="../img/footprint_mosaic_none.png" /></p>
 <p>And now after setting <strong>FootprintBehavior</strong> to <em>Transparent</em> (no Inset is used) on the Layer:</p>
-<p><img alt="" src="img/footprint_mosaic.png" /></p>
+<p><img alt="" src="../img/footprint_mosaic.png" /></p>
 <h4 id="footprint-configured-with-footprintsproperties">Footprint configured with <em>footprints.properties</em><a class="headerlink" href="#footprint-configured-with-footprintsproperties" title="Permanent link">&para;</a></h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For testing this functionality the user must rename all the <em>footprints.xxx</em> files to <em>mask.xxx</em>.</p>
 </div>
 <p>The result of setting <strong>FootprintBehavior</strong> to <em>Transparent</em>, Inset type to <em>border</em> and Inset value to 0.00001 is:</p>
-<p><img alt="" src="img/footprint_mosaic_prop.png" /></p>
+<p><img alt="" src="../img/footprint_mosaic_prop.png" /></p>
 <p>The <strong>footprints.properties</strong> file is:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="na">footprint_source</span><span class="o">=</span><span class="s">mask.shp</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="na">footprint_inset</span><span class="o">=</span><span class="s">0.00001</span>
@@ -30140,13 +30140,13 @@
 <p>Zip file contains two images and their related <strong>.msk</strong> files. For this example the two masks are two simple squares.</p>
 <h3 id="step-2-watch-the-layer-using-layerpreview">Step 2: Watch the layer using LayerPreview<a class="headerlink" href="#step-2-watch-the-layer-using-layerpreview" title="Permanent link">&para;</a></h3>
 <p>Go to <strong>LayerPreview --&gt; rastermask --&gt; OpenLayers</strong>. The result should be similar to the one below.</p>
-<p><img alt="" src="img/footprint_none.png" /></p>
+<p><img alt="" src="../img/footprint_none.png" /></p>
 <h3 id="step-3-change-the-footprint-behavior">Step 3: Change the Footprint Behavior<a class="headerlink" href="#step-3-change-the-footprint-behavior" title="Permanent link">&para;</a></h3>
 <p>Change the <strong>FootprintBehavior</strong> parameter to <em>Transparent</em>. <em>Cut</em> value should not be used since the files are RGB.</p>
-<p><img alt="" src="img/footprint_transparent_setting.png" /></p>
+<p><img alt="" src="../img/footprint_transparent_setting.png" /></p>
 <h3 id="step-4-check-the-result">Step 4: Check the result<a class="headerlink" href="#step-4-check-the-result" title="Permanent link">&para;</a></h3>
 <p>Go to <strong>LayerPreview --&gt; rastermask --&gt; OpenLayers</strong>. The result should be changed now.</p>
-<p><img alt="" src="img/footprint_transparent.png" /></p>
+<p><img alt="" src="../img/footprint_transparent.png" /></p>
 <h2 id="multilevel-geometry-masking">Multilevel Geometry Masking<a class="headerlink" href="#multilevel-geometry-masking" title="Permanent link">&para;</a></h2>
 <p>From 2.14.x version, GeoServer is able to support also multilevel overviews geometries (A geometry footprint for each overview, being stored on a separate sidecar file).</p>
 <p>A <strong>footprints.properties</strong> file that would exploit multiple WKB sidecar files would be as follows:</p>

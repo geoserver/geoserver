@@ -29966,7 +29966,7 @@
 
 <h1 id="feature-styles">Feature Styles<a class="headerlink" href="#feature-styles" title="Permanent link">&para;</a></h1>
 <p>In YSLD, a Feature Style is a block of styling <a href="../rules/">Rules</a>. The Feature Style is applied to a single feature type and drawn in an off-screen buffer.</p>
-<p><img alt="" src="img/feature-style.svg" /></p>
+<p><img alt="" src="../img/feature-style.svg" /></p>
 <p><em>The feature style element</em></p>
 <p><strong>The purpose of a Feature Style is to specify drawing order.</strong> The buffer for the first Feature Style will be drawn first, while buffer for the second Feature Style will be processed after that, etc. When drawing is complete the buffers will composed into the final drawn map.</p>
 <p>A Feature Style is a <strong>top-level element</strong> in a YSLD style.</p>
@@ -29981,7 +29981,7 @@
 <li>Rule 2c</li>
 </ul>
 <p>In this case, the rules contained inside Feature Style 1 will be processed and their <a href="../symbolizers/">symbolizers</a> drawn first. After Rule 1a and 1b are processed, the renderer will move on to Feature Style 2, where Rule 2a, 2b, and 2c will then be processed and their symbolizers drawn.</p>
-<p><img alt="" src="img/feature-style-order.svg" /></p>
+<p><img alt="" src="../img/feature-style-order.svg" /></p>
 <p><em>Feature style order</em></p>
 <h2 id="drawing-order">Drawing order<a class="headerlink" href="#drawing-order" title="Permanent link">&para;</a></h2>
 <p>The order of feature styles is significant, and also the order of rules inside feature styles is significant.</p>
@@ -29994,7 +29994,7 @@
 <li>Rule 1a is applied to the second feature, followed by rule 1b</li>
 <li>Rule 1a is applied to the third feature, followed by rule 1b</li>
 </ol>
-<p><img alt="" src="img/draw-order-buffer1.svg" /></p>
+<p><img alt="" src="../img/draw-order-buffer1.svg" /></p>
 <p><em>Feature style 1 buffer</em></p>
 <p>Feature style 2 will draw an off-screen buffer:</p>
 <ol>
@@ -30002,7 +30002,7 @@
 <li>Rule 2a is applied to the second feature, followed by rule 2b and then rule 2c</li>
 <li>Rule 2a is applied to the third feature, followed by rule 2b and then rule 2c</li>
 </ol>
-<p><img alt="" src="img/draw-order-buffer2.svg" /></p>
+<p><img alt="" src="../img/draw-order-buffer2.svg" /></p>
 <p><em>Feature style 2 buffer</em></p>
 <p>This final map is produced by composition:</p>
 <ol>
@@ -30010,7 +30010,7 @@
 <li>The buffer for feature style 2 is drawn</li>
 <li>Any labeling is drawn on top</li>
 </ol>
-<p><img alt="" src="img/draw-order-map.svg" /></p>
+<p><img alt="" src="../img/draw-order-map.svg" /></p>
 <p><em>Composition of both feature styles</em></p>
 <p><strong>If you need a rule to apply on top of other rules, use a second feature style.</strong> A useful case for this is for lines representing bridges or overpasses. In order to ensure that the bridge lines always display on "top" of other lines (which in a display that includes, they would need to be applied using a second feature style.)</p>
 <h2 id="syntax">Syntax<a class="headerlink" href="#syntax" title="Permanent link">&para;</a></h2>
@@ -30127,47 +30127,47 @@
 <tbody>
 <tr>
 <td><code>copy</code></td>
-<td>Only the source will be present in the output.<br><img alt="image" src="img/composite-source.svg" /></td>
+<td>Only the source will be present in the output.<br><img alt="image" src="../img/composite-source.svg" /></td>
 </tr>
 <tr>
 <td><code>destination</code></td>
-<td>Only the destination will be present in the output.<br><img alt="image" src="img/composite-destination.svg" /></td>
+<td>Only the destination will be present in the output.<br><img alt="image" src="../img/composite-destination.svg" /></td>
 </tr>
 <tr>
 <td><code>source-over</code></td>
-<td>The source is drawn over the destination, and the destination is visible where the source is transparent. Opposite of <code>destination-over</code>. This is the default value for x-composite.<br><img alt="image" src="img/composite-source-over.svg" /></td>
+<td>The source is drawn over the destination, and the destination is visible where the source is transparent. Opposite of <code>destination-over</code>. This is the default value for x-composite.<br><img alt="image" src="../img/composite-source-over.svg" /></td>
 </tr>
 <tr>
 <td><code>destination-over</code></td>
-<td>The source is drawn below the destination, and is visible only when the destination is transparent. Opposite of <code>source-over</code>.<br><img alt="image" src="img/composite-destination-over.svg" /></td>
+<td>The source is drawn below the destination, and is visible only when the destination is transparent. Opposite of <code>source-over</code>.<br><img alt="image" src="../img/composite-destination-over.svg" /></td>
 </tr>
 <tr>
 <td><code>source-in</code></td>
-<td>The source is visible only when overlapping some non-transparent pixel of the destination. This allows the background map to act as a mask for the layer/feature being drawn. Opposite of <code>destination-in</code>.<br><img alt="image" src="img/composite-source-in.svg" /></td>
+<td>The source is visible only when overlapping some non-transparent pixel of the destination. This allows the background map to act as a mask for the layer/feature being drawn. Opposite of <code>destination-in</code>.<br><img alt="image" src="../img/composite-source-in.svg" /></td>
 </tr>
 <tr>
 <td><code>destination-in</code></td>
-<td>The destination is retained only when overlapping some non transparent pixel in the source. This allows the layer/feature to be drawn to act as a mask for the background map. Opposite of <code>source-in</code>.<br><img alt="image" src="img/composite-destination-in.svg" /></td>
+<td>The destination is retained only when overlapping some non transparent pixel in the source. This allows the layer/feature to be drawn to act as a mask for the background map. Opposite of <code>source-in</code>.<br><img alt="image" src="../img/composite-destination-in.svg" /></td>
 </tr>
 <tr>
 <td><code>source-out</code></td>
-<td>The source is retained only in areas where the destination is transparent. This acts as a reverse mask when compared to <code>source-in</code>.<br><img alt="image" src="img/composite-source-out.svg" /></td>
+<td>The source is retained only in areas where the destination is transparent. This acts as a reverse mask when compared to <code>source-in</code>.<br><img alt="image" src="../img/composite-source-out.svg" /></td>
 </tr>
 <tr>
 <td><code>destination-out</code></td>
-<td>The destination is retained only in areas where the source is transparent. This acts as a reverse mask when compared to <code>destination-in</code>.<br><img alt="image" src="img/composite-destination-out.svg" /></td>
+<td>The destination is retained only in areas where the source is transparent. This acts as a reverse mask when compared to <code>destination-in</code>.<br><img alt="image" src="../img/composite-destination-out.svg" /></td>
 </tr>
 <tr>
 <td><code>source-atop</code></td>
-<td>The destination is drawn fully, while the source is drawn only where it intersects the destination.<br><img alt="image" src="img/composite-source-atop.svg" /></td>
+<td>The destination is drawn fully, while the source is drawn only where it intersects the destination.<br><img alt="image" src="../img/composite-source-atop.svg" /></td>
 </tr>
 <tr>
 <td><code>destination-atop</code></td>
-<td>The source is drawn fully, and the destination is drawn over the source only where it intersects it.<br><img alt="image" src="img/composite-destination-atop.svg" /></td>
+<td>The source is drawn fully, and the destination is drawn over the source only where it intersects it.<br><img alt="image" src="../img/composite-destination-atop.svg" /></td>
 </tr>
 <tr>
 <td><code>xor</code></td>
-<td>"Exclusive Or" mode. Each pixel is rendered only if either the source or the destination is not blank, but not both.<br><img alt="image" src="img/composite-xor.svg" /></td>
+<td>"Exclusive Or" mode. Each pixel is rendered only if either the source or the destination is not blank, but not both.<br><img alt="image" src="../img/composite-xor.svg" /></td>
 </tr>
 </tbody>
 </table>
@@ -30183,47 +30183,47 @@
 <tbody>
 <tr>
 <td><code>multiply</code></td>
-<td>The source color is multiplied by the destination color and replaces the destination. The resulting color is always at least as dark as either the source or destination color. Multiplying any color with black results in black. Multiplying any color with white preserves the original color.<br><img alt="image" src="img/blend-multiply.png" /></td>
+<td>The source color is multiplied by the destination color and replaces the destination. The resulting color is always at least as dark as either the source or destination color. Multiplying any color with black results in black. Multiplying any color with white preserves the original color.<br><img alt="image" src="../img/blend-multiply.png" /></td>
 </tr>
 <tr>
 <td><code>screen</code></td>
-<td>Multiplies the complements of the source and destination color values, then complements the result. The end result color is always at least as light as either of the two constituent colors. Screening any color with white produces white; screening with black leaves the original color unchanged.<br><img alt="image" src="img/blend-screen.png" /></td>
+<td>Multiplies the complements of the source and destination color values, then complements the result. The end result color is always at least as light as either of the two constituent colors. Screening any color with white produces white; screening with black leaves the original color unchanged.<br><img alt="image" src="../img/blend-screen.png" /></td>
 </tr>
 <tr>
 <td><code>overlay</code></td>
-<td>Multiplies the colors depending on the destination color value. Source colors overlay the destination while preserving highlights and shadows. The backdrop color is not replaced but is mixed with the source color to reflect the lightness or darkness of the backdrop.<br><img alt="image" src="img/blend-overlay.png" /></td>
+<td>Multiplies the colors depending on the destination color value. Source colors overlay the destination while preserving highlights and shadows. The backdrop color is not replaced but is mixed with the source color to reflect the lightness or darkness of the backdrop.<br><img alt="image" src="../img/blend-overlay.png" /></td>
 </tr>
 <tr>
 <td><code>darken</code></td>
-<td>Selects the darker of the destination and source colors. The destination is replaced with the source only where the source is darker.<br><img alt="image" src="img/blend-darken.png" /></td>
+<td>Selects the darker of the destination and source colors. The destination is replaced with the source only where the source is darker.<br><img alt="image" src="../img/blend-darken.png" /></td>
 </tr>
 <tr>
 <td><code>lighten</code></td>
-<td>Selects the lighter of the destination and source colors. The destination is replaced with the source only where the source is lighter.<br><img alt="image" src="img/blend-lighten.png" /></td>
+<td>Selects the lighter of the destination and source colors. The destination is replaced with the source only where the source is lighter.<br><img alt="image" src="../img/blend-lighten.png" /></td>
 </tr>
 <tr>
 <td><code>color-dodge</code></td>
-<td>Brightens the destination color to reflect the source color. Drawing with black produces no changes.<br><img alt="image" src="img/blend-color-dodge.png" /></td>
+<td>Brightens the destination color to reflect the source color. Drawing with black produces no changes.<br><img alt="image" src="../img/blend-color-dodge.png" /></td>
 </tr>
 <tr>
 <td><code>color-burn</code></td>
-<td>Darkens the destination color to reflect the source color. Drawing with white produces no change.<br><img alt="image" src="img/blend-color-burn.png" /></td>
+<td>Darkens the destination color to reflect the source color. Drawing with white produces no change.<br><img alt="image" src="../img/blend-color-burn.png" /></td>
 </tr>
 <tr>
 <td><code>hard-light</code></td>
-<td>Multiplies the colors, depending on the source color value. The effect is similar to shining a harsh spotlight on the destination.<br><img alt="image" src="img/blend-hard-light.png" /></td>
+<td>Multiplies the colors, depending on the source color value. The effect is similar to shining a harsh spotlight on the destination.<br><img alt="image" src="../img/blend-hard-light.png" /></td>
 </tr>
 <tr>
 <td><code>soft-light</code></td>
-<td>Darkens or lightens the colors, depending on the source color value. The effect is similar to a diffused spotlight on the destination.<br><img alt="image" src="img/blend-soft-light.png" /></td>
+<td>Darkens or lightens the colors, depending on the source color value. The effect is similar to a diffused spotlight on the destination.<br><img alt="image" src="../img/blend-soft-light.png" /></td>
 </tr>
 <tr>
 <td><code>difference</code></td>
-<td>Subtracts the darker of the two constituent colors from the lighter color. White inverts the destination color; black produces no change.<br><img alt="image" src="img/blend-difference.png" /></td>
+<td>Subtracts the darker of the two constituent colors from the lighter color. White inverts the destination color; black produces no change.<br><img alt="image" src="../img/blend-difference.png" /></td>
 </tr>
 <tr>
 <td><code>exclusion</code></td>
-<td>Produces an effect similar to that of difference but lower in contrast. White inverts the destination color; black produces no change.<br><img alt="image" src="img/blend-difference.png" /></td>
+<td>Produces an effect similar to that of difference but lower in contrast. White inverts the destination color; black produces no change.<br><img alt="image" src="../img/blend-difference.png" /></td>
 </tr>
 </tbody>
 </table>
@@ -30289,10 +30289,10 @@
 <a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">        </span><span class="nt">stroke-width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span>
 </code></pre></div>
 <p>To draw the inner lines always on top of the outer lines we need to control the <strong>z-order</strong>. The <code>outer_rule</code> is encased in its own feature style and drawn into a distinct "Outer line" buffer. Next the <code>inner_rule</code> is encased in its own feature style and drawn into a distinct "Inner line" buffer.</p>
-<p><img alt="" src="img/line-casing-buffers.svg" /></p>
+<p><img alt="" src="../img/line-casing-buffers.svg" /></p>
 <p><em>Feature style buffers</em></p>
 <p>During composition these two off-screen buffers are combined into the final map.</p>
-<p><img alt="" src="img/line-casing-map.svg" /></p>
+<p><img alt="" src="../img/line-casing-map.svg" /></p>
 <p><em>Final map composition</em></p>
 <p>When drawn, the outer line has a width of 8 pixels and the inner line has a width of 6 pixels, so the line "border" is 1 pixel (on each side).</p>
 <!-- MISSING IMAGE: img/fs_roadcasing.svg -->
@@ -30357,9 +30357,9 @@
 <p>Specifically, the third rule no longer needs the extra <code>AND industry &lt;&gt; 'fishing'</code>, because the previous two rules imply that any features remaining by this rule have that condition.</p>
 <h3 id="layer-mask">Layer mask<a class="headerlink" href="#layer-mask" title="Permanent link">&para;</a></h3>
 <p>Given two layers (in this case, two three-band rasters), one can mask or "knock out" the other, making visible what's beneath.</p>
-<p><img alt="" src="img/fs_land.png" /></p>
+<p><img alt="" src="../img/fs_land.png" /></p>
 <p><em>Top/source layer</em></p>
-<p><img alt="" src="img/fs_ocean.png" /></p>
+<p><img alt="" src="../img/fs_ocean.png" /></p>
 <p><em>Bottom/destination layer</em></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30382,7 +30382,7 @@
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">raster</span><span class="p">:</span>
 <a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">        </span><span class="nt">opacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
 </code></pre></div>
-<p><img alt="" src="img/fs_xor.png" /></p>
+<p><img alt="" src="../img/fs_xor.png" /></p>
 <p><em>Layer as mask</em></p>
 <h3 id="color-inversion">Color inversion<a class="headerlink" href="#color-inversion" title="Permanent link">&para;</a></h3>
 <p>Given the same two layers as the previous example, one can display the difference of the colors of layers, which can have the effect of a color "inversion".</p>
@@ -30403,7 +30403,7 @@
 <a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">raster</span><span class="p">:</span>
 <a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">        </span><span class="nt">opacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
 </code></pre></div>
-<p><img alt="" src="img/fs_difference.png" /></p>
+<p><img alt="" src="../img/fs_difference.png" /></p>
 <p><em>Layer as color inversion</em></p>
 
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="130px" height="174px" viewBox="0 0 130 174" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>PointSymbology</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PointSymbology">
+            <circle id="Oval-1" stroke="#000000" fill="#FFFFFF" cx="42.5" cy="107.5" r="4.5"></circle>
+            <text id="Geometry" font-family="ProximaNova-Semibold, Proxima Nova" font-size="13" font-weight="500" fill="#000000">
+                <tspan x="51.0955" y="20">Point</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

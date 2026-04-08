@@ -30127,7 +30127,7 @@
 <p>This is a vendor extension of the GeoServer WPS Service. This operation is specific to GeoServer.</p>
 </div>
 <p>This operation allows a client to recognize the list of WPS Executions.</p>
-<p><img alt="" src="images/getExecutions_001.png" /></p>
+<p><img alt="" src="../images/getExecutions_001.png" /></p>
 <p>The client makes a simple "GetExecutions" request to the WPS Server, in order to get back an XML document containing the list of current Execution Statuses.</p>
 <p>It is also possible to filter the "GetExecutions" request along with simple parameters, in order to refine the output and get back only the executions status we are looking for.</p>
 <p>Adding a bit more to this, AUTHORIZATION headers must be sent along with the "GetExecutions" request; the WPS Server will be able, if the security subsystem is available and enable on the latter, to prove the list resources to the client itself.</p>
@@ -30136,24 +30136,24 @@
 <h3 id="statusinfo-document">StatusInfo Document<a class="headerlink" href="#statusinfo-document" title="Permanent link">&para;</a></h3>
 <p>Refers to <a href="http://docs.opengeospatial.org/is/14-065/14-065.html">http://docs.opengeospatial.org/is/14-065/14-065.html</a> section 9.5 and extends it.</p>
 <p>The StatusInfo document is used to provide identification and status information about jobs on a WPS server. The operation adds additional fields to the StatusInfo Document reporting also the WPS Process Identifier and other information on estimated execution and expiration time.</p>
-<p><img alt="" src="images/getExecutions_002.png" /></p>
+<p><img alt="" src="../images/getExecutions_002.png" /></p>
 <h3 id="getexecutionsoperation">GetExecutionsOperation<a class="headerlink" href="#getexecutionsoperation" title="Permanent link">&para;</a></h3>
 <p>The GetExecutions Operation allows WPS clients to retrieve the list of available process jobs running on a WPS instance. The output is returned in the form of an XML document.</p>
 <p>The GetExecutions Operation returns only the list of available Executions the logged in user has started, except in the case it is an Administrator. In that case he will be able to get the whole list.</p>
-<p><img alt="" src="images/getExecutions_003.png" /></p>
+<p><img alt="" src="../images/getExecutions_003.png" /></p>
 <h3 id="getexecutionsrequest">GetExecutionsRequest<a class="headerlink" href="#getexecutionsrequest" title="Permanent link">&para;</a></h3>
 <p>The GetExecutions Request is a common structure for synchronous execution. It inherits basic properties from the RequestBaseType and contains additional elements that allow to filter out, refine and order the list of available Process Jobs.</p>
-<p><img alt="" src="images/getExecutions_004.png" /></p>
-<p><img alt="" src="images/getExecutions_005.png" /></p>
+<p><img alt="" src="../images/getExecutions_004.png" /></p>
+<p><img alt="" src="../images/getExecutions_005.png" /></p>
 <h3 id="getexecutionsresponse">GetExecutionsResponse<a class="headerlink" href="#getexecutionsresponse" title="Permanent link">&para;</a></h3>
 <p>The GetExecutionsResponse it is always in the form of an XML document. Except in case of Exception, the response document will contain a list of StatusInfo elements filtered, refined or ordered accordingly to the specified parameters.</p>
 <h3 id="response-paging">Response paging<a class="headerlink" href="#response-paging" title="Permanent link">&para;</a></h3>
 <p>Response paging is the ability of a client to scroll through a set of response values, N values at-a-time much like one scrolls through the response from a search engine one page at a time.</p>
 <p>Similar to the WFS 2.0.0 response paging mechanism (see section "7.7.4.4 Response paging" of the specification), the output will show to the client the following attributes as part of the response document.</p>
-<p><img alt="" src="images/getExecutions_006.png" /></p>
+<p><img alt="" src="../images/getExecutions_006.png" /></p>
 <h3 id="getexecutionsexceptions">GetExecutionsExceptions<a class="headerlink" href="#getexecutionsexceptions" title="Permanent link">&para;</a></h3>
 <p>When a WPS server encounters an error while performing an GetExecutionsResponse, it shall return an exception report as specified in clause 8 of [OGC 06-121r9]. If appropriate, the server shall use additional exception codes as defined in this section.</p>
-<p><img alt="" src="images/getExecutions_007.png" /></p>
+<p><img alt="" src="../images/getExecutions_007.png" /></p>
 <h3 id="retrieve-the-wps-execute-input-values">Retrieve the WPS Execute Input values<a class="headerlink" href="#retrieve-the-wps-execute-input-values" title="Permanent link">&para;</a></h3>
 <p>The GetExecutions Operations tries (best-effort) to retrieve the Input values specified from the Execute Request <strong>iff</strong> the <code>lineage</code> option has been provided to the Execute Request.</p>
 <p>Example requests with the <code>lineage</code> option active</p>

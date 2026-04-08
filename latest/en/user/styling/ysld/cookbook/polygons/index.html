@@ -30558,7 +30558,7 @@
 <p><a href="artifacts/ysld_cookbook_polygon.zip">Download the polygons shapefile</a></p>
 <h2 id="ysld_cookbook_polygons_simplepolygon">Simple polygon<a class="headerlink" href="#ysld_cookbook_polygons_simplepolygon" title="Permanent link">&para;</a></h2>
 <p>This example shows a polygon filled in blue.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_simplepolygon.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_simplepolygon.png" /></p>
 <p><em>Simple polygon</em></p>
 <h3 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_simplepolygon.ysld">Download the "Simple polygon" YSLD</a></p>
@@ -30578,7 +30578,7 @@
 </div>
 <h2 id="ysld_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke<a class="headerlink" href="#ysld_cookbook_polygons_simplepolygonwithstroke" title="Permanent link">&para;</a></h2>
 <p>This example adds a 2 pixel white stroke to the <a href="#ysld_cookbook_polygons_simplepolygon">Simple polygon</a> example.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_simplepolygonwithstroke.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_simplepolygonwithstroke.png" /></p>
 <p><em>Simple polygon with stroke</em></p>
 <h3 id="code_1">Code<a class="headerlink" href="#code_1" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_simplepolygonwithstroke.ysld">Download the "Simple polygon with stroke" YSLD</a></p>
@@ -30596,7 +30596,7 @@
 <p>This example is similar to the <a href="#ysld_cookbook_polygons_simplepolygon">Simple polygon</a> example above, with the addition of <code>stroke</code> parameters (<strong>lines 7-8</strong>). <strong>Line 7</strong> sets the color of stroke to white (<code>'#FFFFFF'</code>) and <strong>line 8</strong> sets the width of the stroke to 2 pixels.</p>
 <h2 id="transparent-polygon">Transparent polygon<a class="headerlink" href="#transparent-polygon" title="Permanent link">&para;</a></h2>
 <p>This example builds on the <a href="#ysld_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke</a> example and makes the fill partially transparent by setting the opacity to 50%.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_transparentpolygon.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_transparentpolygon.png" /></p>
 <p><em>Transparent polygon</em></p>
 <h3 id="code_2">Code<a class="headerlink" href="#code_2" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_transparentpolygon.ysld">Download the "Transparent polygon" YSLD</a></p>
@@ -30615,7 +30615,7 @@
 <p>This example is similar to the <a href="#ysld_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke</a> example, save for defining the fill's opacity in <strong>line 10</strong>. The value of 0.5 results in partially transparent fill that is 50% opaque. An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill. In this example, since the background is white, the dark blue looks lighter. Were the points imposed on a dark background, the resulting color would be darker.</p>
 <h2 id="ysld_cookbook_polygons_graphicfill">Graphic fill<a class="headerlink" href="#ysld_cookbook_polygons_graphicfill" title="Permanent link">&para;</a></h2>
 <p>This example fills the polygons with a tiled graphic.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_graphicfill.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_graphicfill.png" /></p>
 <p><em>Graphic fill</em></p>
 <h3 id="code_3">Code<a class="headerlink" href="#code_3" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_graphicfill.ysld">Download the "Graphic fill" YSLD</a></p>
@@ -30635,11 +30635,11 @@
 </code></pre></div>
 <h3 id="details_3">Details<a class="headerlink" href="#details_3" title="Permanent link">&para;</a></h3>
 <p>This style fills the polygon with a tiled graphic. This is known as an <code>external</code> in YSLD, to distinguish it from commonly-used shapes such as squares and circles that are "internal" to the renderer. <strong>Lines 11-13</strong> specify details for the graphic, with <strong>line 12</strong> setting the path and file name of the graphic and <strong>line 13</strong> indicating the file format (MIME type) of the graphic (<code>image/png</code>). Although a full URL could be specified if desired, no path information is necessary in <strong>line 12</strong> because this graphic is contained in the same directory as the YSLD. <strong>Line 9</strong> determines the height of the displayed graphic in pixels; if the value differs from the height of the graphic then it will be scaled accordingly while preserving the aspect ratio.</p>
-<p><img alt="" src="../../sld/cookbook/images/colorblocks.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/colorblocks.png" /></p>
 <p><em>Graphic used for fill</em></p>
 <h2 id="hatching-fill">Hatching fill<a class="headerlink" href="#hatching-fill" title="Permanent link">&para;</a></h2>
 <p>This example fills the polygons with a hatching pattern.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_hatchingfill.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_hatchingfill.png" /></p>
 <p><em>Hatching fill</em></p>
 <h3 id="code_4">Code<a class="headerlink" href="#code_4" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_hatchingfill.ysld">Download the "Hatching fill" YSLD</a></p>
@@ -30662,7 +30662,7 @@
 <p>In this example, there is a <code>fill-graphic</code> parameter as in the <a href="#ysld_cookbook_polygons_graphicfill">Graphic fill</a> example, but a <code>mark</code> (<strong>lines 11-14</strong>) is used instead of an <code>external</code>. <strong>Line 12</strong> specifies a "times" symbol (an "x") be tiled throughout the polygon. <strong>Line 13</strong> sets the color to purple (<code>'#990099'</code>), <strong>line 14</strong> sets the width of the hatches to 1 pixel, and <strong>line 9</strong> sets the size of the tile to 16 pixels. Because hatch tiles are always square, the <code>size</code> sets both the width and the height.</p>
 <h2 id="ysld_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label<a class="headerlink" href="#ysld_cookbook_polygons_polygonwithdefaultlabel" title="Permanent link">&para;</a></h2>
 <p>This example shows a text label on the polygon. In the absence of any other customization, this is how a label will be displayed.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_polygonwithdefaultlabel.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_polygonwithdefaultlabel.png" /></p>
 <p><em>Polygon with default label</em></p>
 <h3 id="code_5">Code<a class="headerlink" href="#code_5" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_polygonwithdefaultlabel.ysld">Download the "Polygon with default label" YSLD</a></p>
@@ -30683,7 +30683,7 @@
 <p>In this example there is a polygon symbolizer and a text symbolizer. <strong>Lines 6-9</strong> comprise the polygon symbolizer. The fill of the polygon is set on <strong>line 7</strong> to a light green (<code>'#40FF40'</code>) while the stroke of the polygon is set on <strong>lines 8-9</strong> to white (<code>'#FFFFFF'</code>) with a thickness of 2 pixels. The label is set in the text symbolizer on <strong>lines 10-12</strong>, with <strong>line 11</strong> determining what text to display, in this case the value of the "name" attribute. (Refer to the attribute table in the <a href="#ysld_cookbook_polygons_attributes">Example polygons layer</a> section if necessary.) All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.</p>
 <h2 id="label-halo">Label halo<a class="headerlink" href="#label-halo" title="Permanent link">&para;</a></h2>
 <p>This example alters the look of the <a href="#ysld_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label</a> by adding a white halo to the label.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_labelhalo.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_labelhalo.png" /></p>
 <p><em>Label halo</em></p>
 <h3 id="code_6">Code<a class="headerlink" href="#code_6" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_labelhalo.ysld">Download the "Label halo" YSLD</a></p>
@@ -30708,7 +30708,7 @@
 <p>This example is similar to the <a href="#ysld_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label</a>, with the addition of a halo around the labels on <strong>lines 12-14</strong>. A halo creates a color buffer around the label to improve label legibility. <strong>Line 14</strong> sets the radius of the halo, extending the halo 3 pixels around the edge of the label, and <strong>line 13</strong> sets the color of the halo to white (<code>'#FFFFFF'</code>). Since halos are most useful when set to a sharp contrast relative to the text color, this example uses a white halo around black text to ensure optimum readability.</p>
 <h2 id="ysld_cookbook_polygons_polygonwithstyledlabel">Polygon with styled label<a class="headerlink" href="#ysld_cookbook_polygons_polygonwithstyledlabel" title="Permanent link">&para;</a></h2>
 <p>This example improves the label style from the <a href="#ysld_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label</a> example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_polygonwithstyledlabel.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_polygonwithstyledlabel.png" /></p>
 <p><em>Polygon with styled label</em></p>
 <h3 id="code_7">Code<a class="headerlink" href="#code_7" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_polygonwithstyledlabel.ysld">Download the "Polygon with styled label" YSLD</a></p>
@@ -30739,7 +30739,7 @@
 <p>Finally, there are two added touches for label placement optimization: <strong>line 20</strong> ensures that long labels are split across multiple lines by setting line wrapping on the labels to 60 pixels, and <strong>line 21</strong> allows the label to be displaced by up to 150 pixels. This ensures that labels are compacted and less likely to spill over polygon boundaries. Notice little Massive County in the corner, whose label is now displayed."</p>
 <h2 id="attribute-based-polygon">Attribute-based polygon<a class="headerlink" href="#attribute-based-polygon" title="Permanent link">&para;</a></h2>
 <p>This example styles the polygons differently based on the "pop" (Population) attribute.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_attributebasedpolygon.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_attributebasedpolygon.png" /></p>
 <p><em>Attribute-based polygon</em></p>
 <h3 id="code_8">Code<a class="headerlink" href="#code_8" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_attributebasedpolygon.ysld">Download the "Attribute-based polygon" YSLD</a></p>
@@ -30809,11 +30809,11 @@
 <p>The third rule, on <strong>lines 17-22</strong>, specifies a style for polygons whose population attribute is greater than or equal to 500,000. The filter is set on <strong>line 19</strong>. The color of the polygon fill is the only other difference in this rule, which is set to a dark green (<code>'#009900'</code>) on <strong>line 22</strong>.</p>
 <h2 id="zoom-based-polygon">Zoom-based polygon<a class="headerlink" href="#zoom-based-polygon" title="Permanent link">&para;</a></h2>
 <p>This example alters the style of the polygon at different zoom levels.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_zoombasedpolygonlarge.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_zoombasedpolygonlarge.png" /></p>
 <p><em>Zoom-based polygon: Zoomed in</em></p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_zoombasedpolygonmedium.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_zoombasedpolygonmedium.png" /></p>
 <p><em>Zoom-based polygon: Partially zoomed</em></p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_zoombasedpolygonsmall.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_zoombasedpolygonsmall.png" /></p>
 <p><em>Zoom-based polygon: Zoomed out</em></p>
 <h3 id="code_9">Code<a class="headerlink" href="#code_9" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/polygon_zoombasedpolygon.ysld">Download the "Zoom-based polygon" YSLD</a></p>

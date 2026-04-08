@@ -29911,10 +29911,10 @@
 <h2 id="geoserver-setup">GeoServer setup<a class="headerlink" href="#geoserver-setup" title="Permanent link">&para;</a></h2>
 <p>Login into the GeoServer web administration interface and configure the datastore.</p>
 <p>First, choose the <em>Oracle (JNDI)</em> datastore and give it a name:</p>
-<p><img alt="" src="oracle_start.png" /></p>
+<p><img alt="" src="../oracle_start.png" /></p>
 <p><em>Choosing a JNDI enabled datastore</em></p>
 <p>Then, configure the connection parameters so that the JNDI path matches the one specified in the Tomcat configuration:</p>
-<p><img alt="" src="oracle_conf.png" /></p>
+<p><img alt="" src="../oracle_conf.png" /></p>
 <p><em>Configuring the JNDI connection</em></p>
 <p>When you are doing this, make sure the <em>schema</em> is properly setup, or the datastore will list all the tables it can find in the schema it can access. In the case of Oracle the schema is usually the user name, upper cased.</p>
 <p>Once the datastore is accepted the GeoServer usage proceeds as normal.</p>
@@ -29947,9 +29947,9 @@
 <h4 id="geoserver-setup_1">GeoServer setup<a class="headerlink" href="#geoserver-setup_1" title="Permanent link">&para;</a></h4>
 <p>Login into the GeoServer web administration interface.</p>
 <p>First, choose the <em>PostGIS (JNDI)</em> datastore and give it a name:</p>
-<p><img alt="" src="postgis_start.png" /></p>
+<p><img alt="" src="../postgis_start.png" /></p>
 <p>Then configure the associated parameters. The value for jndiReferenceName corresponds to the Resource name given in <strong><code>{TOMCAT_HOME}/conf/context.xml</code></strong>.</p>
-<p><img alt="" src="postgis_conf.png" /></p>
+<p><img alt="" src="../postgis_conf.png" /></p>
 <h3 id="configuring-a-sqlserver-connection-pool">Configuring a SQLServer connection pool<a class="headerlink" href="#configuring-a-sqlserver-connection-pool" title="Permanent link">&para;</a></h3>
 <p>For configuring the connection pool for SQLServer you need to configure the SQLServer drivers as explained in the <a href="../../../data/database/sqlserver/">Microsoft SQL Server</a> section and put the jar file into the <strong><code>{TOMCAT_HOME}/lib</code></strong> folder.</p>
 <p>Then the following code must be written in the Tomcat configuration file <strong><code>{TOMCAT_HOME}/conf/context.xml</code></strong></p>
@@ -29984,9 +29984,9 @@
 <h4 id="geoserver-setup_2">GeoServer setup<a class="headerlink" href="#geoserver-setup_2" title="Permanent link">&para;</a></h4>
 <p>Login into the GeoServer web administration interface.</p>
 <p>First, choose the <em>Microsoft SQL Server (JNDI)</em> datastore and give it a name:</p>
-<p><img alt="" src="sqlserver_start.png" /></p>
+<p><img alt="" src="../sqlserver_start.png" /></p>
 <p>Then configure the associated params:</p>
-<p><img alt="" src="sqlserver_conf.png" /></p>
+<p><img alt="" src="../sqlserver_conf.png" /></p>
 
 
 

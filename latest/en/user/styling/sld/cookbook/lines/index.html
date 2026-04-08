@@ -30881,7 +30881,7 @@
 <p><a href="artifacts/sld_cookbook_line.zip">Download the lines shapefile</a></p>
 <h2 id="sld_cookbook_lines_simpleline">Simple line<a class="headerlink" href="#sld_cookbook_lines_simpleline" title="Permanent link">&para;</a></h2>
 <p>This example specifies lines be colored black with a thickness of 3 pixels.</p>
-<p><img alt="" src="images/line_simpleline.png" /></p>
+<p><img alt="" src="../images/line_simpleline.png" /></p>
 <p><em>Simple line</em></p>
 <h3 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_simpleline.sld">View and download the full "Simple line" SLD</a></p>
@@ -30900,7 +30900,7 @@
 <p>There is one <code>&lt;Rule&gt;</code> in one <code>&lt;FeatureTypeStyle&gt;</code> for this SLD, which is the simplest possible situation. (All subsequent examples will contain one <code>&lt;Rule&gt;</code> and one <code>&lt;FeatureTypeStyle&gt;</code> unless otherwise specified.) Styling lines is accomplished via the <code>&lt;LineSymbolizer&gt;</code> (<strong>lines 3-8</strong>). <strong>Line 5</strong> specifies the color of the line to be black (<code>#000000</code>), while <strong>line 6</strong> specifies the width of the lines to be 3 pixels.</p>
 <h2 id="line-with-border">Line with border<a class="headerlink" href="#line-with-border" title="Permanent link">&para;</a></h2>
 <p>This example shows how to draw lines with borders (sometimes called "cased lines"). In this case the lines are drawn with a 3 pixel blue center and a 1 pixel wide gray border.</p>
-<p><img alt="" src="images/line_linewithborder.png" /></p>
+<p><img alt="" src="../images/line_linewithborder.png" /></p>
 <p><em>Line with border</em></p>
 <h3 id="code_1">Code<a class="headerlink" href="#code_1" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_linewithborder.sld">View and download the full "Line with border" SLD</a></p>
@@ -30935,7 +30935,7 @@
 <p>The result is a 3 pixel blue line with a 1 pixel gray border, since the 5 pixel gray line will display 1 pixel on each side of the 3 pixel blue line.</p>
 <h2 id="dashed-line">Dashed line<a class="headerlink" href="#dashed-line" title="Permanent link">&para;</a></h2>
 <p>This example alters the <a href="#sld_cookbook_lines_simpleline">Simple line</a> to create a dashed line consisting of 5 pixels of drawn line alternating with 2 pixels of blank space.</p>
-<p><img alt="" src="images/line_dashedline.png" /></p>
+<p><img alt="" src="../images/line_dashedline.png" /></p>
 <p><em>Dashed line</em></p>
 <h3 id="code_2">Code<a class="headerlink" href="#code_2" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_dashedline.sld">View and download the full "Dashed line" SLD</a></p>
@@ -30955,7 +30955,7 @@
 <p>In this example, <strong>line 5</strong> sets the color of the lines to be blue (<code>#0000FF</code>) and <strong>line 6</strong> sets the width of the lines to be 3 pixels. <strong>Line 7</strong> determines the composition of the line dashes. The value of <code>5 2</code> creates a repeating pattern of 5 pixels of drawn line, followed by 2 pixels of omitted line.</p>
 <h2 id="offset-line">Offset line<a class="headerlink" href="#offset-line" title="Permanent link">&para;</a></h2>
 <p>This example alters the <a href="#sld_cookbook_lines_simpleline">Simple line</a> to add a perpendicular offset line on the left side of the line, at five pixels distance.</p>
-<p><img alt="" src="images/line_offset.png" /></p>
+<p><img alt="" src="../images/line_offset.png" /></p>
 <p><em>Offset line</em></p>
 <h3 id="code_3">Code<a class="headerlink" href="#code_3" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_offset.sld">View and download the full "Dashed line" SLD</a></p>
@@ -30984,7 +30984,7 @@
 <p class="admonition-title">Note</p>
 <p>This example leverages an SLD extension in GeoServer. Hatching is not part of the standard SLD 1.0 specification.</p>
 </div>
-<p><img alt="" src="images/line_railroad.png" /></p>
+<p><img alt="" src="../images/line_railroad.png" /></p>
 <p><em>Railroad (hatching)</em></p>
 <h3 id="code_4">Code<a class="headerlink" href="#code_4" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_railroad.sld">View and download the full "Railroad (hatching)" SLD</a></p>
@@ -31024,7 +31024,7 @@
 <p class="admonition-title">Note</p>
 <p>This example may not work in other systems using SLD, since they may not support combining the use of <code>stroke-dasharray</code> and <code>GraphicStroke</code>. While the SLD is spec-compliant, the SLD specification does not state what this combination is supposed to produce.</p>
 </div>
-<p><img alt="" src="images/line_dashspace.png" /></p>
+<p><img alt="" src="../images/line_dashspace.png" /></p>
 <p><em>Spaced symbols along a line</em></p>
 <h3 id="code_5">Code<a class="headerlink" href="#code_5" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_dashspace.sld">View and download the full "Spaced symbols" SLD</a></p>
@@ -31068,7 +31068,7 @@
 <p class="admonition-title">Note</p>
 <p>This example may not work in other systems using SLD, since they may not support combining the use of <code>stroke-dasharray</code> and <code>GraphicStroke</code>. While the SLD is spec-compliant, the SLD specification does not state what this combination is supposed to produce.</p>
 </div>
-<p><img alt="" src="images/line_dashdot.png" /></p>
+<p><img alt="" src="../images/line_dashdot.png" /></p>
 <p><em>Alternating dash and symbol</em></p>
 <h3 id="code_6">Code<a class="headerlink" href="#code_6" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_dashdot.sld">View and download the full "Spaced symbols" SLD</a></p>
@@ -31106,7 +31106,7 @@
 <p>In this example two <code>LineSymbolizer</code>s use <code>stroke-dasharray</code> and different symbology to produce a sequence of alternating dashes and symbols. The first symbolizer (<strong>lines 3-9</strong>) is a simple dashed line alternating 10 pixels of pen-down with 10 pixels of pen-up. The second symbolizer (<strong>lines 10-27</strong>) alternates a 5 pixel empty circle with 15 pixels of white space. The circle symbol is produced by a <code>Mark</code> element, with its symbology specified by <code>stroke</code> parameters (<strong>lines 17-18</strong>). The spacing between symbols is controlled with the <code>stroke-dasharray</code> (<strong>line 24</strong>), which specifies 5 pixels of pen-down (just enough to draw the circle) and 15 pixels of pen-up. In order to have the two sequences positioned correctly the second one uses a <code>stroke-dashoffset</code> of 7.5 (<strong>line 25</strong>). This makes the sequence start with 12.5 pixels of white space, then a circle (which is then centered between the two line segments of the other pattern), then 15 pixels of white space, and so on.</p>
 <h2 id="line-with-default-label">Line with default label<a class="headerlink" href="#line-with-default-label" title="Permanent link">&para;</a></h2>
 <p>This example shows a text label on the simple line. This is how a label will be displayed in the absence of any other customization.</p>
-<p><img alt="" src="images/line_linewithdefaultlabel.png" /></p>
+<p><img alt="" src="../images/line_linewithdefaultlabel.png" /></p>
 <p><em>Line with default label</em></p>
 <h3 id="code_7">Code<a class="headerlink" href="#code_7" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_linewithdefaultlabel.sld">View and download the full "Line with default label" SLD</a></p>
@@ -31139,7 +31139,7 @@
 <p class="admonition-title">Note</p>
 <p>Labels following lines is an SLD extension specific to GeoServer. It is not part of the SLD 1.0 specification.</p>
 </div>
-<p><img alt="" src="images/line_labelfollowingline.png" /></p>
+<p><img alt="" src="../images/line_labelfollowingline.png" /></p>
 <p><em>Label following line</em></p>
 <h3 id="code_8">Code<a class="headerlink" href="#code_8" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_labelfollowingline.sld">View and download the full "Label following line" SLD</a></p>
@@ -31178,7 +31178,7 @@
 <p class="admonition-title">Note</p>
 <p>This example uses options that are specific to GeoServer and are not part of the SLD 1.0 specification.</p>
 </div>
-<p><img alt="" src="images/line_optimizedlabel.png" /></p>
+<p><img alt="" src="../images/line_optimizedlabel.png" /></p>
 <p><em>Optimized label</em></p>
 <h3 id="code_9">Code<a class="headerlink" href="#code_9" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_optimizedlabel.sld">View and download the full "Optimized label" SLD</a></p>
@@ -31212,7 +31212,7 @@
 <p>This example is similar to the previous example, <a href="#sld_cookbook_lines_labelfollowingline">Label following line</a>. The only differences are contained in <strong>lines 18-21</strong>. <strong>Line 19</strong> sets the maximum angle that the label will follow. This sets the label to never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle. <strong>Line 20</strong> sets the maximum displacement of the label to be 400 pixels. In order to resolve conflicts with overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping. This value sets how far the label can be moved relative to its original placement. Finally, <strong>line 21</strong> sets the labels to be repeated every 150 pixels. A feature will typically receive only one label, but this can cause confusion for long lines. Setting the label to repeat ensures that the line is always labeled locally.</p>
 <h2 id="sld_cookbook_lines_optimizedstyledlabel">Optimized and styled label<a class="headerlink" href="#sld_cookbook_lines_optimizedstyledlabel" title="Permanent link">&para;</a></h2>
 <p>This example improves the style of the labels from the <a href="#sld_cookbook_lines_optimizedlabel">Optimized label placement</a> example.</p>
-<p><img alt="" src="images/line_optimizedstyledlabel.png" /></p>
+<p><img alt="" src="../images/line_optimizedstyledlabel.png" /></p>
 <p><em>Optimized and styled label</em></p>
 <h3 id="code_10">Code<a class="headerlink" href="#code_10" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_optimizedstyledlabel.sld">View and download the full "Optimized and styled label" SLD</a></p>
@@ -31251,7 +31251,7 @@
 <p>This example is similar to the <a href="#sld_cookbook_lines_optimizedlabel">Optimized label placement</a>. The only difference is in the font information, which is contained in <strong>lines 18-23</strong>. <strong>Line 19</strong> sets the font family to be "Arial", <strong>line 20</strong> sets the font size to 10, <strong>line 21</strong> sets the font style to "normal" (as opposed to "italic" or "oblique"), and <strong>line 22</strong> sets the font weight to "bold" (as opposed to "normal").</p>
 <h2 id="attribute-based-line">Attribute-based line<a class="headerlink" href="#attribute-based-line" title="Permanent link">&para;</a></h2>
 <p>This example styles the lines differently based on the "type" (Road class) attribute.</p>
-<p><img alt="" src="images/line_attributebasedline.png" /></p>
+<p><img alt="" src="../images/line_attributebasedline.png" /></p>
 <p><em>Attribute-based line</em></p>
 <h3 id="code_11">Code<a class="headerlink" href="#code_11" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_attributebasedline.sld">View and download the full "Attribute-based line" SLD</a></p>
@@ -31349,11 +31349,11 @@
 <p><strong>Lines 36-50</strong> comprise the third and final <code>&lt;Rule&gt;</code>. <strong>Lines 38-43</strong> set the filter for this rule, such that the "type" attribute has a value of "primary". If this condition is true for a particular line, the rule is rendered according to the <code>&lt;LineSymbolizer&gt;</code> which is on <strong>lines 44-49</strong>. <strong>Lines 46-47</strong> set the color of the line to be a bright red (<code>#FF0000</code>) and the width to be 6 pixels, so that these lines are rendered on top of and thicker than the other two road classes. In this way, the "primary" roads are given priority in the map rendering.</p>
 <h2 id="zoom-based-line">Zoom-based line<a class="headerlink" href="#zoom-based-line" title="Permanent link">&para;</a></h2>
 <p>This example alters the <a href="#sld_cookbook_lines_simpleline">Simple line</a> style at different zoom levels.</p>
-<p><img alt="" src="images/line_zoombasedlinelarge.png" /></p>
+<p><img alt="" src="../images/line_zoombasedlinelarge.png" /></p>
 <p><em>Zoom-based line: Zoomed in</em></p>
-<p><img alt="" src="images/line_zoombasedlinemedium.png" /></p>
+<p><img alt="" src="../images/line_zoombasedlinemedium.png" /></p>
 <p><em>Zoom-based line: Partially zoomed</em></p>
-<p><img alt="" src="images/line_zoombasedlinesmall.png" /></p>
+<p><img alt="" src="../images/line_zoombasedlinesmall.png" /></p>
 <p><em>Zoom-based line: Zoomed out</em></p>
 <h3 id="code_12">Code<a class="headerlink" href="#code_12" title="Permanent link">&para;</a></h3>
 <p><a href="artifacts/line_zoombasedline.sld">View and download the full "Zoom-based line" SLD</a></p>

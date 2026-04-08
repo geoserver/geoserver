@@ -30364,7 +30364,7 @@
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="nt">font-style</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">italic</span>
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="nt">font-weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bold</span>
 </code></pre></div>
-<p><img alt="" src="img/text_basic.png" /></p>
+<p><img alt="" src="../img/text_basic.png" /></p>
 <p><em>Basic label</em></p>
 <h3 id="label-with-wrap">Label with wrap<a class="headerlink" href="#label-with-wrap" title="Permanent link">&para;</a></h3>
 <p>Wrapping long labels can improve how well they fit on maps. This can be accomplished using the <code>x-autoWrap</code> property. This example wraps lines longer than 70 pixels:</p>
@@ -30382,7 +30382,7 @@
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">        </span><span class="nt">x-maxDisplacement</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 <a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">        </span><span class="nt">anchor</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.5</span><span class="p p-Indicator">,</span><span class="nv">-1</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<p><img alt="" src="img/text_wrap.png" /></p>
+<p><img alt="" src="../img/text_wrap.png" /></p>
 <p><em>Label with wrap</em></p>
 <h3 id="label-with-halo">Label with halo<a class="headerlink" href="#label-with-halo" title="Permanent link">&para;</a></h3>
 <p>Surrounding labels with a halo will allow them to be visible even on complex maps with various background features. This can be accomplished using the <code>halo</code> family of properties. This example surrounds the label in a partially transparent white halo of radius 2:</p>
@@ -30404,7 +30404,7 @@
 <a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">           </span><span class="nt">fill-opacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
 <a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">        </span><span class="nt">anchor</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.5</span><span class="p p-Indicator">,</span><span class="nv">-1</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<p><img alt="" src="img/text_halo.png" /></p>
+<p><img alt="" src="../img/text_halo.png" /></p>
 <p><em>Label with halo</em></p>
 <h3 id="grouped-labels">Grouped labels<a class="headerlink" href="#grouped-labels" title="Permanent link">&para;</a></h3>
 <p>Grouping and other properties can be used to better control where labels are placed. The <code>x-group</code> option combines all labels with identical text into a single label. This can be useful to show only a single label for a street rather than having a label on every block of the street. The <code>x-goodnesOfFit</code> option determines whether or not to draw labels based on how well they fit into the available space. The <code>x-maxDisplacement</code> option determines the maximum distance a label can be moved to avoid overlaps.</p>
@@ -30425,7 +30425,7 @@
 <a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">        </span><span class="nt">x-goodnessOfFit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
 <a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">        </span><span class="nt">x-maxDisplacement</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">400</span>
 </code></pre></div>
-<p><img alt="" src="img/text_group.png" /></p>
+<p><img alt="" src="../img/text_group.png" /></p>
 <p><em>Grouped labels</em></p>
 <h3 id="labels-following-lines">Labels following lines<a class="headerlink" href="#labels-following-lines" title="Permanent link">&para;</a></h3>
 <p>In order to have a label follow a line (and not be drawn tangent to a line), the <code>x-followLine</code> option can be set. Other properties can be used in conjunction with this to achieve the best visual result. The following example has street names following the line of the street, with a maximum angle of 90 degrees, repeating every 150 pixels:</p>
@@ -30442,7 +30442,7 @@
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">        </span><span class="nt">x-maxDisplacement</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">400</span>
 <a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">        </span><span class="nt">x-repeat</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">150</span>
 </code></pre></div>
-<p><img alt="" src="img/text_follow.png" /></p>
+<p><img alt="" src="../img/text_follow.png" /></p>
 <p><em>Labels following lines</em></p>
 <h3 id="labels-avoiding-obstacles">Labels avoiding obstacles<a class="headerlink" href="#labels-avoiding-obstacles" title="Permanent link">&para;</a></h3>
 <p>The <code>x-labelObstacle</code> option is used to mark a different symbolizer as an obstacle that labels should avoid. This example draws labels and points on a line geometry, and also uses a point symbolizer to draw the vertices of the lines as points. It is those points which are set to be treated as obstacles to be avoided:</p>
@@ -30467,7 +30467,7 @@
 <a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">          </span><span class="nt">x-maxDisplacement</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">400</span>
 <a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">          </span><span class="nt">x-followLine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
-<p><img alt="" src="img/text_labelobstacle.png" /></p>
+<p><img alt="" src="../img/text_labelobstacle.png" /></p>
 <p><em>Labels avoiding obstacles</em></p>
 <h3 id="road-shields">Road Shields<a class="headerlink" href="#road-shields" title="Permanent link">&para;</a></h3>
 <p>The <code>graphic</code> option is used to display a symbol behind a label. A common use for this is to display "highway shields" behind road numbers. This example uses a circle <code>shape</code> to draw state shields, and an <code>external</code> image to draw interstate shields, then draws road names on top. The <code>x-graphic-resize</code> and <code>x-graphic-margin</code> options are used to resize the graphics to fit the label text:</p>
@@ -30518,7 +30518,7 @@
 <a id="__codelineno-7-45" name="__codelineno-7-45" href="#__codelineno-7-45"></a><span class="w">              </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">interstate.png</span>
 <a id="__codelineno-7-46" name="__codelineno-7-46" href="#__codelineno-7-46"></a><span class="w">              </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image/png</span>
 </code></pre></div>
-<p><img alt="" src="img/text_roadshields.png" /></p>
+<p><img alt="" src="../img/text_roadshields.png" /></p>
 <p><em>Road Shields</em></p>
 
 

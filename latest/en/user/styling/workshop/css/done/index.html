@@ -30118,7 +30118,7 @@
 <ol>
 <li>
 <p><strong>Challenge:</strong> Create a new style adjust road appearance based on <strong>type</strong>.</p>
-<p><img alt="image" src="../style/img/line_type.png" /></p>
+<p><img alt="image" src="../../style/img/line_type.png" /></p>
 <p>Hint: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.</p>
 </li>
 <li>
@@ -30172,7 +30172,7 @@
 <ol>
 <li>The traditional presentation of roads in the US is the use of a shield symbol, with the road number marked on top.</li>
 </ol>
-<p><img alt="image" src="../style/img/line_shield.png" /></p>
+<p><img alt="image" src="../../style/img/line_shield.png" /></p>
 <ol>
 <li>
 <p><em>Challenge:</em> Have a look at the documentation and reproduce this technique.</p>
@@ -30201,7 +30201,7 @@
 <ol>
 <li>
 <p>When we rendered our initial preview, without a stroke, thin white gaps (or slivers) are visible between our polygons.</p>
-<p><img alt="image" src="../style/img/polygon_04_preview.png" /></p>
+<p><img alt="image" src="../../style/img/polygon_04_preview.png" /></p>
 <p>This effect is made more pronounced by the rendering engine making use of the Java 2D sub-pixel accuracy. This technique is primarily used to prevent an aliased (stair-stepped) appearance on diagonal lines.</p>
 </li>
 <li>
@@ -30223,7 +30223,7 @@
 </li>
 <li>
 <p><strong>Explore:</strong> Use the <strong>Categorize</strong> function to theme by <strong>datarank</strong>.</p>
-<p><img alt="image" src="../style/img/polygon_categorize.png" /></p>
+<p><img alt="image" src="../../style/img/polygon_categorize.png" /></p>
 <p>Example:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">     </span><span class="k">fill</span><span class="p">:</span><span class="w"> </span><span class="nf">symbol</span><span class="p">(</span><span class="s1">&#39;shape://slash&#39;</span><span class="p">);</span>
@@ -30273,7 +30273,7 @@
 </li>
 <li>
 <p><strong>Challenge:</strong> Combine the <strong>mapcolor9</strong> and <strong>datarank</strong> examples to reproduce the following map.</p>
-<p><img alt="image" src="../style/img/polygon_multitheme.png" /></p>
+<p><img alt="image" src="../../style/img/polygon_multitheme.png" /></p>
 <p>This should be a cut and paste using the <code>recode</code> example, and <code>categorize</code> examples already provided.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">   </span><span class="k">fill</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -30306,7 +30306,7 @@
 </li>
 <li>
 <p><strong>Challenge:</strong> Use what you know of LineString <strong>z-index</strong> to reproduce the following map:</p>
-<p><img alt="image" src="../style/img/polygon_zorder.png" /></p>
+<p><img alt="image" src="../../style/img/polygon_zorder.png" /></p>
 <p>This is a tricky challenge. While it is easy enough to introduce z-index to control stroke what is not immediately obvious is that z-order also controls fill order. The previous examples illustrate how to introduce z-order, some thought is required to untangle fill and stroke z-order (dummy stroke definitions need to be introduced using empty commas).</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="k">fill</span><span class="p">:</span><span class="w"> </span><span class="kc">lightgray</span><span class="p">,</span><span class="w"> </span><span class="nf">symbol</span><span class="p">(</span><span class="s1">&#39;shape://slash&#39;</span><span class="p">);</span>
@@ -30384,7 +30384,7 @@
 <li>
 <p><strong>Challenge:</strong> Do your best to style populated_places over this busy background.</p>
 <p>Here is an example with labels for inspiration:</p>
-<p><img alt="image" src="../style/img/point_challenge_1.png" /></p>
+<p><img alt="image" src="../../style/img/point_challenge_1.png" /></p>
 <p>This should be an opportunity to revisit label halo settings from <a href="../polygon/">Polygon</a>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">   </span><span class="n">mark-size</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="o">+</span><span class="p">((</span><span class="mi">10</span><span class="o">-</span><span class="n">SCALERANK</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="p">)];</span>
@@ -30429,9 +30429,9 @@
 </li>
 <li>
 <p>Can you explain what happens when zoom in to only show a land area (as indicated with the bounding box below)?</p>
-<p><img alt="image" src="../style/img/raster_contrast_1.png" /></p>
+<p><img alt="image" src="../../style/img/raster_contrast_1.png" /></p>
 <p>What happens is insanity, normalize stretches the palette of the output image to use the full dynamic range. As long as we have ocean on the screen (with value 0) the land area was shown with roughly the same presentation.</p>
-<p><img alt="image" src="../style/img/raster_contrast_2.png" /></p>
+<p><img alt="image" src="../../style/img/raster_contrast_2.png" /></p>
 <p>Once we zoom in to show only a land area, the lowest point on the screen (say 100) becomes the new black, radically altering what is displayed on the screen.</p>
 </li>
 </ol>
@@ -30449,7 +30449,7 @@
 <li>
 <p><strong>Challenge:</strong> Update your DEM example to use <strong>intervals</strong> for presentation. What are the advantages of using this approach for elevation data?</p>
 <p>By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.</p>
-<p><img alt="image" src="../style/img/raster_interval.png" /></p>
+<p><img alt="image" src="../../style/img/raster_interval.png" /></p>
 <p>Here is style for you to cut and paste:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="n">raster-channels</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span>
@@ -30477,7 +30477,7 @@
 </li>
 <li>
 <p><strong>Challenge:</strong> Use what you have learned to present the <code>usgs:dem</code> clearly.</p>
-<p><img alt="image" src="../style/img/raster_grayscale.png" /></p>
+<p><img alt="image" src="../../style/img/raster_grayscale.png" /></p>
 <p>The original was a dark mess. Consider making use of mid-tones (or adopting a sequential palette from color brewer) in order to fix this. In the following example the ocean has been left dark, allowing the mountains stand out more.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="n">raster-channels</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span>

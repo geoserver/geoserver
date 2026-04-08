@@ -29748,12 +29748,12 @@
 <p>This section provides access to security settings related to data management and <a href="../../layer/">Layer security</a>. Data access is granted to roles, and roles are granted to users and groups.</p>
 <h2 id="rules">Rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h2>
 <p>There are two rules available by default, but they don't provide any restrictions on access by default. The first rule <code>*.*.r</code>, applied to all roles, states that any operation in any resource in any workspace can be read. The second rule, <code>*.*.w</code>, also applied to all roles, says the same for write access.</p>
-<p><img alt="" src="images/data_rules.png" /></p>
+<p><img alt="" src="../images/data_rules.png" /></p>
 <p><em>Rules for data access</em></p>
 <p>Clicking an existing rule will open it for editing, while clicking the <strong>Add a new rule</strong> link will create a new rule.</p>
-<p><img alt="" src="images/data_newrule.png" /></p>
+<p><img alt="" src="../images/data_newrule.png" /></p>
 <p><em>Creating a new rule</em></p>
-<p><img alt="" src="images/data_lgrule.png" /></p>
+<p><img alt="" src="../images/data_lgrule.png" /></p>
 <p><em>Editing a layer group rule</em></p>
 <table>
 <thead>
@@ -29795,15 +29795,15 @@
 </table>
 <h2 id="catalog-mode">Catalog Mode<a class="headerlink" href="#catalog-mode" title="Permanent link">&para;</a></h2>
 <p>This mode configures how GeoServer will advertise secured layers and behave when a secured layer is accessed without the necessary privileges. There are three options: <strong>HIDE</strong>, <strong>MIXED</strong>, and <strong>CHALLENGE</strong>. For further information on these options, please see the section on <a href="../../layer/">Layer security</a>.</p>
-<p><img alt="" src="images/data_catalogmode.png" /></p>
+<p><img alt="" src="../images/data_catalogmode.png" /></p>
 <p><em>Catalog mode</em></p>
 <h2 id="file-sandbox">File sandbox<a class="headerlink" href="#file-sandbox" title="Permanent link">&para;</a></h2>
 <p>The sandbox allows a GeoServer full administrator to limit file system access to workspace administrators. In particular, both GUI and REST API will sandbox workspace administrators to <code>&lt;sandbox&gt;/&lt;workspace&gt;</code>, and prevent them from accessing files outside of it.</p>
-<p><img alt="" src="images/fs_sandbox.png" /></p>
+<p><img alt="" src="../images/fs_sandbox.png" /></p>
 <p><em>Filesystem sandbox</em></p>
 <p>This part of the page is not visible if the operating system administrator has established a sandbox for the whole GeoServer instance, in which case even the GeoServer full administrators will be limited in the configured sandbox and won't be able to change it.</p>
 <p>When the sandbox is configured, the file system chooser will show the accessible directories as the file system roots. E.g., if a sandbox has been set to <code>/var/lib/geoserver</code>, and the current workspace administrator has access to both the <code>sf</code> and <code>ne</code> workspaces, the file system chooser will look as follows:</p>
-<p><img alt="" src="images/fs_sandbox_chooser.png" /></p>
+<p><img alt="" src="../images/fs_sandbox_chooser.png" /></p>
 <p><em>File system chooser</em></p>
 <p>Any attempt to manually set a path outside of the sandbox will result in a validation error and prevent the store from being saved (both from the UI and the REST API).</p>
 <p>For more information please refer to <a href="../../sandbox/">Filesystem sandboxing</a> for more details.</p>

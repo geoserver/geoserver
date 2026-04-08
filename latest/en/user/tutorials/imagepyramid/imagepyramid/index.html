@@ -29727,7 +29727,7 @@ gdal_retile.py -v -r bilinear -levels 4 -ps 2048 2048 -co &quot;TILED=YES&quot; 
 </ul>
 <p>This will produce a number of TIFF files in bmpyramid along with the sub-directories <code>1</code>, <code>2,</code> <code>3</code>, and <code>4</code>.</p>
 <p>Once that is done, and assuming the GeoServer image pyramid plug-in is already installed, it's possible to create the coverage store by pointing at the directory containing the pyramid and clicking save:</p>
-<p><img alt="" src="configureStore.png" /></p>
+<p><img alt="" src="../configureStore.png" /></p>
 <p><em>Configuring a image pyramid store</em></p>
 <p>When clicking save the store will look into the directory, recognize a <code>gdal_retile</code> generated structure and perform some background operations:</p>
 <ul>
@@ -29736,13 +29736,13 @@ gdal_retile.py -v -r bilinear -levels 4 -ps 2048 2048 -co &quot;TILED=YES&quot; 
 <li>create the root property file describing the whole pyramid structure</li>
 </ul>
 <p>Once that is done the user will be asked to choose a coverage, which will be named after the pyramid root directory:</p>
-<p><img alt="" src="chooseLayer.png" /></p>
+<p><img alt="" src="../chooseLayer.png" /></p>
 <p><em>Choosing the coverage for publishing</em></p>
 <p>Publish the layer, and then setup the layer parameter <code>USE_IMAGEN_IMAGEREAD</code> to <code>false</code> to get better scalability:</p>
-<p><img alt="" src="layerParams.png" /></p>
+<p><img alt="" src="../layerParams.png" /></p>
 <p><em>Tuning the pyramid parameters</em></p>
 <p>Submit and go to the preview, the pyramid should be ready to use:</p>
-<p><img alt="" src="preview.png" /></p>
+<p><img alt="" src="../preview.png" /></p>
 <p><em>Previewing the pyramid</em></p>
 <h2 id="notes-on-big-pyramids">Notes on big pyramids<a class="headerlink" href="#notes-on-big-pyramids" title="Permanent link">&para;</a></h2>
 <p>The code that is auto-creating the pyramid indexes and metadata files might take time to run, especially if:</p>

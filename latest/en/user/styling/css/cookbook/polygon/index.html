@@ -30558,7 +30558,7 @@
 <p><a href="../../sld/cookbook/artifacts/sld_cookbook_polygon.zip">Download the polygons shapefile</a></p>
 <h2 id="css_cookbook_polygons_simplepolygon">Simple polygon<a class="headerlink" href="#css_cookbook_polygons_simplepolygon" title="Permanent link">&para;</a></h2>
 <p>This example shows a polygon filled in blue.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_simplepolygon.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_simplepolygon.png" /></p>
 <p><em>Simple polygon</em></p>
 <h3 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30573,7 +30573,7 @@
 </div>
 <h2 id="css_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke<a class="headerlink" href="#css_cookbook_polygons_simplepolygonwithstroke" title="Permanent link">&para;</a></h2>
 <p>This example adds a 2 pixel white stroke to the <a href="#css_cookbook_polygons_simplepolygon">Simple polygon</a> example.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_simplepolygonwithstroke.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_simplepolygonwithstroke.png" /></p>
 <p><em>Simple polygon with stroke</em></p>
 <h3 id="code_1">Code<a class="headerlink" href="#code_1" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30586,7 +30586,7 @@
 <p>This example is similar to the <a href="#css_cookbook_polygons_simplepolygon">Simple polygon</a> example above, with the addition of the "stroke" and "stroke-width" attributes, that add a white, 2 pixels wide border around each polygon.</p>
 <h2 id="transparent-polygon">Transparent polygon<a class="headerlink" href="#transparent-polygon" title="Permanent link">&para;</a></h2>
 <p>This example builds on the <a href="#css_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke</a> example and makes the fill partially transparent by setting the opacity to 50%.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_transparentpolygon.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_transparentpolygon.png" /></p>
 <p><em>Transparent polygon</em></p>
 <h3 id="code_2">Code<a class="headerlink" href="#code_2" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30600,7 +30600,7 @@
 <p>This example is similar to the <a href="#css_cookbook_polygons_simplepolygonwithstroke">Simple polygon with stroke</a> example, save for defining the fill's opacity in <strong>line 3</strong>. The value of 0.5 results in partially transparent fill that is 50% opaque. An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill. In this example, since the background is white, the dark blue looks lighter. Were the points imposed on a dark background, the resulting color would be darker.</p>
 <h2 id="css_cookbook_polygons_graphicfill">Graphic fill<a class="headerlink" href="#css_cookbook_polygons_graphicfill" title="Permanent link">&para;</a></h2>
 <p>This example fills the polygons with a tiled graphic.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_graphicfill.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_graphicfill.png" /></p>
 <p><em>Graphic fill</em></p>
 <h3 id="code_3">Code<a class="headerlink" href="#code_3" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30610,11 +30610,11 @@
 </code></pre></div>
 <h3 id="details_3">Details<a class="headerlink" href="#details_3" title="Permanent link">&para;</a></h3>
 <p>This style fills the polygon with a tiled graphic. The graphic is selected providing a url for the fill, which in this case is meant to the relative to the <code>styles</code> directory contained within the data directory (an absolute path could have been provided, as well as a internet reference). <strong>Line 3</strong> specifies that the image itself is a png (by default the code assumes jpegs are used and will fail to parse the file unless we specify its mime type). The size of the image is not specified, meaning the native size is going to be used. In case a rescale is desired, the "fill-size" attribute can be used to force a different size.</p>
-<p><img alt="" src="../../sld/cookbook/images/colorblocks.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/colorblocks.png" /></p>
 <p><em>Graphic used for fill</em></p>
 <h2 id="hatching-fill">Hatching fill<a class="headerlink" href="#hatching-fill" title="Permanent link">&para;</a></h2>
 <p>This example fills the polygons with a hatching pattern.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_hatchingfill.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_hatchingfill.png" /></p>
 <p><em>Hatching fill</em></p>
 <h3 id="code_4">Code<a class="headerlink" href="#code_4" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30631,7 +30631,7 @@
 <p>The details of the hatch are specified at <strong>line 3</strong>*, where the pseudo-selector ":fill" is used to match the contents of the fill, and specify that we want a symbol large 16 pixels (the larger the symbol, the coarser the cross hatch will be), and painted with a 1 pixel wide purple stroke.</p>
 <h2 id="css_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label<a class="headerlink" href="#css_cookbook_polygons_polygonwithdefaultlabel" title="Permanent link">&para;</a></h2>
 <p>This example shows a text label on the polygon. In the absence of any other customization, this is how a label will be displayed.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_polygonwithdefaultlabel.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_polygonwithdefaultlabel.png" /></p>
 <p><em>Polygon with default label</em></p>
 <h3 id="code_5">Code<a class="headerlink" href="#code_5" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30646,7 +30646,7 @@
 <p>The single rule in the CSS applies to all feature: first it fills all polygons a light green with white outline, and then applies the "name" attribute as the label, using the default font (Times), with black color and default font size (10 px).</p>
 <h2 id="label-halo">Label halo<a class="headerlink" href="#label-halo" title="Permanent link">&para;</a></h2>
 <p>This example alters the look of the <a href="#css_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label</a> by adding a white halo to the label.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_labelhalo.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_labelhalo.png" /></p>
 <p><em>Label halo</em></p>
 <h3 id="code_6">Code<a class="headerlink" href="#code_6" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30663,7 +30663,7 @@
 <p>This example builds on <a href="#css_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label</a>, with the addition of a halo around the labels on <strong>lines 7-8</strong>. A halo creates a color buffer around the label to improve label legibility. <strong>Line 9</strong> sets the radius of the halo, extending the halo 3 pixels around the edge of the label, and <strong>line 8</strong> sets the color of the halo to white. Since halos are most useful when set to a sharp contrast relative to the text color, this example uses a white halo around black text to ensure optimum readability.</p>
 <h2 id="css_cookbook_polygons_polygonwithstyledlabel">Polygon with styled label<a class="headerlink" href="#css_cookbook_polygons_polygonwithstyledlabel" title="Permanent link">&para;</a></h2>
 <p>This example improves the label style from the <a href="#css_cookbook_polygons_polygonwithdefaultlabel">Polygon with default label</a> example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_polygonwithstyledlabel.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_polygonwithstyledlabel.png" /></p>
 <p><em>Polygon with styled label</em></p>
 <h3 id="code_7">Code<a class="headerlink" href="#code_7" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -30688,7 +30688,7 @@
 <p>Finally, there are two added touches for label placement optimization: The "label-auto-wrap" attribute ensures that long labels are split across multiple lines by setting line wrapping on the labels to 60 pixels, whilst the "label-max-displacement" allows the label to be displaced by up to 150 pixels. This ensures that labels are compacted and less likely to spill over polygon boundaries. Notice little Massive County in the corner, whose label is now displayed.</p>
 <h2 id="attribute-based-polygon">Attribute-based polygon<a class="headerlink" href="#attribute-based-polygon" title="Permanent link">&para;</a></h2>
 <p>This example styles the polygons differently based on the "pop" (Population) attribute.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_attributebasedpolygon.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_attributebasedpolygon.png" /></p>
 <p><em>Attribute-based polygon</em></p>
 <h3 id="code_8">Code<a class="headerlink" href="#code_8" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">[</span><span class="nt">parseLong</span><span class="o">(</span><span class="nt">pop</span><span class="o">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nt">200000</span><span class="o">]</span><span class="w"> </span><span class="p">{</span>
@@ -30745,11 +30745,11 @@
 <p>What's interesting in the filters is the use of the "parseLong" filter function: this function is necessary because the "pop" attribute is a string, leaving it as is we would have a string comparison, whilst the function turns it into a number, ensuring proper numeric comparisons instead.</p>
 <h2 id="zoom-based-polygon">Zoom-based polygon<a class="headerlink" href="#zoom-based-polygon" title="Permanent link">&para;</a></h2>
 <p>This example alters the style of the polygon at different zoom levels.</p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_zoombasedpolygonlarge.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_zoombasedpolygonlarge.png" /></p>
 <p><em>Zoom-based polygon: Zoomed in</em></p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_zoombasedpolygonmedium.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_zoombasedpolygonmedium.png" /></p>
 <p><em>Zoom-based polygon: Partially zoomed</em></p>
-<p><img alt="" src="../../sld/cookbook/images/polygon_zoombasedpolygonsmall.png" /></p>
+<p><img alt="" src="../../../sld/cookbook/images/polygon_zoombasedpolygonsmall.png" /></p>
 <p><em>Zoom-based polygon: Zoomed out</em></p>
 <h3 id="code_9">Code<a class="headerlink" href="#code_9" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>

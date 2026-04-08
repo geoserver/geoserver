@@ -29829,22 +29829,22 @@ Distances             5,10,20,50
 <p>The <strong>dataSourceName</strong> attribute in the XML config is not interpreted as a name, it could be the URL for a shape file or for a property file containing properties for data store creation (e. g. jdbc connect parameters). Remember, this is a hidden deployment and no names are needed. The only <em>official</em> name is the value of the attribute <strong>featureName</strong> in the <strong>GeneralizationInfo</strong> Element.</p>
 </div>
 <p>Start GeoServer and go to <strong>Config--&gt;Data--&gt;DataStores--&gt;New</strong> and fill in the form</p>
-<p><img alt="image" src="createdatastore.png" /></p>
+<p><img alt="image" src="../createdatastore.png" /></p>
 <p>Press <strong>Submit</strong>.</p>
 <p>The next form you see is</p>
-<p><img alt="image" src="editdatastore1.png" /></p>
+<p><img alt="image" src="../editdatastore1.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>RepositoryClassName</strong> and <strong>GeneralizationInfosProviderClassName</strong> have default values which suit for GeoTools, not for GeoServer. Change <strong>GeoTools</strong> to <strong>GeoServer</strong> in the package names to instantiate the correct objects for GeoServer. <strong>GeneralizationInfosProviderParam</strong> could be an URL or a datastore from the GeoServer catalog. A datastore is referenced by using <em>workspacename:datastorename</em>. This makes sense if you have your own implementation for the <strong>GeneralizationInfosProvider</strong> interface and this implementation reads the infos from a database.</p>
 </div>
 <p>The configuration should look like this</p>
-<p><img alt="image" src="editdatastore2.png" /></p>
+<p><img alt="image" src="../editdatastore2.png" /></p>
 <p>Press <strong>Submit</strong>, afterward a form for the feature type opens.</p>
 <p>Alter the <strong>Style</strong> to <em>line</em>, <strong>SRS</strong> is <em>26713</em> and press the <strong>Generate</strong> button labeled by <strong>Bounding Box</strong>.</p>
-<p><img alt="image" src="editfeaturestore1.png" /></p>
+<p><img alt="image" src="../editfeaturestore1.png" /></p>
 <p>Afterward, press <strong>Submit</strong>, <strong>Apply</strong> and <strong>Save</strong>.</p>
 <p>Examine the result by pressing "<strong>My GeoServer</strong>, <strong>Demo</strong> and <strong>Map Preview</strong>. In this list there must be an entry <strong>topp:GenStreams</strong>. Press it and you will see</p>
-<p><img alt="image" src="streams.png" /></p>
+<p><img alt="image" src="../streams.png" /></p>
 <p>Now start zooming in and out and look at the log file of GeoServer. If the deployment is correct you should see something like this:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="err">May 20, 2009 4:53:05 PM org.geotools.data.gen.PreGeneralizedFeatureSource logDistanceInfo</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="err">INFO: Using generalizsation: file:data/streams/20.0/streams.shp streams the_geom 20.0</span>
@@ -29857,7 +29857,7 @@ Distances             5,10,20,50
 </code></pre></div>
 <h2 id="public-deployment">Public Deployment<a class="headerlink" href="#public-deployment" title="Permanent link">&para;</a></h2>
 <p>First we have to configure all our shape files</p>
-<p><img alt="image" src="streams_0_ds.png" /></p>
+<p><img alt="image" src="../streams_0_ds.png" /></p>
 <p>The <strong>Feature Data Set ID</strong> for the other shape files is</p>
 <ol>
 <li>Streams_5</li>
@@ -29865,7 +29865,7 @@ Distances             5,10,20,50
 <li>Streams_20</li>
 <li>Streams_50</li>
 </ol>
-<p><img alt="image" src="streams_0_ds2.png" /></p>
+<p><img alt="image" src="../streams_0_ds2.png" /></p>
 <p>The <strong>URL</strong> needed for the other shape files</p>
 <ol>
 <li><code>file:data/streams/5.0/streams.shp</code></li>
@@ -29873,7 +29873,7 @@ Distances             5,10,20,50
 <li><code>file:data/streams/20.0/streams.shp</code></li>
 <li><code>file:data/streams/50.0/streams.shp</code></li>
 </ol>
-<p><img alt="image" src="streams_0_ds4.png" /></p>
+<p><img alt="image" src="../streams_0_ds4.png" /></p>
 <p>Each feature needs an <strong>Alias</strong>, here it is <em>streams_0</em>. For the other shape files use</p>
 <ol>
 <li>streams_5</li>
@@ -29895,11 +29895,11 @@ Distances             5,10,20,50
 </code></pre></div>
 <p>Save this file as <strong><code>geninfo_shapefile2.xml</code></strong> into <strong><code>{GEOSERVER_DATA_DIR}/data/streams</code></strong>.</p>
 <p>Create the pregeneralized datastore</p>
-<p><img alt="image" src="createdatastore2.png" /></p>
+<p><img alt="image" src="../createdatastore2.png" /></p>
 <p>Now we use the <strong>CatalogRepository</strong> class to find our needed data stores</p>
-<p><img alt="image" src="editdatastore3.png" /></p>
+<p><img alt="image" src="../editdatastore3.png" /></p>
 <p>Last step</p>
-<p><img alt="image" src="editfeaturestore2.png" /></p>
+<p><img alt="image" src="../editfeaturestore2.png" /></p>
 <p>In the <strong>Map Preview</strong> you should find <strong>topp:GenStreams2</strong> and all other generalizations. Test in the same manner we discussed in the hidden deployment and you should see something like this in the GeoServer log:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="err">May 20, 2009 6:11:06 PM org.geotools.data.gen.PreGeneralizedFeatureSource logDistanceInfo</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="err">INFO: Using generalizsation: Streams_20 streams the_geom 20.0</span>

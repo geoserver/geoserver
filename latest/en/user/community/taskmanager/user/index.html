@@ -30607,18 +30607,18 @@
 <p>Currently GeoServer Task Manager can only be configured and operated from the GeoServer WebGUI.</p>
 <h3 id="templates">Templates<a class="headerlink" href="#templates" title="Permanent link">&para;</a></h3>
 <p>From the templates page, new templates can be created (or copied from existing templates), existing templates can be edited and removed.</p>
-<p><img alt="" src="../img/templates.png" />
+<p><img alt="" src="../img/templates.png" /><br />
 <em>templates</em></p>
 <p>Once you open a new or existing template, attributes, tasks and batches can be edited. The attribute table adjusts automatically based on the information in the tasks table; and only the values must be filled in. In the task table, the name and parameters of each task can be edited, and new tasks can be created. Batches can be created and edited from here as well, however the template must exist in order to be able to do that (in case of a new template, you must click <code>apply</code> once before you can create new batches). New tasks must also be saved (again, via the <code>apply</code> button) before they can be added to a batch.</p>
-<p><img alt="" src="../img/template-db-workflow.png" />
+<p><img alt="" src="../img/template-db-workflow.png" /><br />
 <em>template db workflow</em></p>
 <h3 id="configurations">Configurations<a class="headerlink" href="#configurations" title="Permanent link">&para;</a></h3>
 <p>From the <a href="../basic/#configurations">configurations</a> page, new configurations can be created from scratch or from templates (or copied from existing configurations), existing configurations can be edited and removed.</p>
-<p><img alt="" src="../img/configurations.png" />
+<p><img alt="" src="../img/configurations.png" /><br />
 <em>configurations</em></p>
 <p>When removing a configuration, you have to option to do a <em>clean-up</em>, which will attempt to remove all resources (database tables, files, layers) that were created by (tasks of) this configuration. If this (partially) fails, the configuration will still be removed and the user will be notified.</p>
 <p>Once you open a new or existing configuration, attributes, tasks and batches can be edited.</p>
-<p><img alt="" src="../img/template-db-workflow-config2.png" />
+<p><img alt="" src="../img/template-db-workflow-config2.png" /><br />
 <em>workflow config 2</em></p>
 <p>The attribute table adjusts automatically based on the information in the tasks table; and only the values must be filled in. In the task table, the name and parameters of each task can be edited, and new tasks can be created. Tasks can only be removed if they are not part of a batch any longer. Batches can only be removed if they are not running anywhere. When removing a task, you have to option to do a <em>clean-up</em>, which will attempt to remove all resources (database tables, files, layers) that were created by this task. If this (partially) fails, the task will still be removed and the user will be notified.</p>
 <p>Batches can be created and edited from here as well, however the configuration must exist in order to be able to do that (in case of a new configuration, you must click <code>apply</code> once before you can create new batches). New tasks must also be saved (again, via the <code>apply</code> button) before they can be added to a batch. In case that the <a href="../basic/#batches">conditions</a> are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).</p>
@@ -30626,15 +30626,15 @@
 <p>It is also possible to import/export entire configurations to XML, for example to transfer them from one geoserver to another. The import button is on the configurations page, while the export button is on the page of a specific configuration. The user is responsible for making sure that the configuration is compatible with the other geoserver (available task extensions, attribute values,...).</p>
 <h3 id="batches">Batches<a class="headerlink" href="#batches" title="Permanent link">&para;</a></h3>
 <p>From the <a href="../basic/#batches">batches</a> page, new independent batches (not associated with a configuration) can be created, existing batches can be edited and removed. All existing batches - independent as well as belonging to a configuration - are shown, unless they are special (if they start with a <code>@</code>) or if the configuration has not yet been completed (see <a href="../basic/#initializing-templates">initializing templates</a>).</p>
-<p><img alt="" src="../img/batches.png" />
+<p><img alt="" src="../img/batches.png" /><br />
 <em>batches</em></p>
 <p>In case that the <a href="../basic/#batches">conditions</a> are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).</p>
-<p><img alt="" src="../img/batchruns.png" />
+<p><img alt="" src="../img/batchruns.png" /><br />
 <em>batchruns</em></p>
-<p><img alt="" src="../img/batchrun.png" />
+<p><img alt="" src="../img/batchrun.png" /><br />
 <em>batchrun</em></p>
 <p>Once you open a new or existing batch, one can add or remove tasks from it and change the order of the tasks. You can also enable/disable the batch (if disabled, the batch is not scheduled) and choose the scheduling time. The user can choose between a daily schedule (with time), weekly (with day of week and time), monthly (with day of month and time) or specify a custom <a href="http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.md">cron expression</a>.</p>
-<p><img alt="" src="../img/template-db-workflow-batch-sync.png" />
+<p><img alt="" src="../img/template-db-workflow-batch-sync.png" /><br />
 <em>batch synchronize</em></p>
 <h2 id="task-types">Task Types<a class="headerlink" href="#task-types" title="Permanent link">&para;</a></h2>
 <ul>
@@ -30695,28 +30695,28 @@
 <li>Every week, data is synchronised between the three databases and metadata is synchronised between the two geoservers.</li>
 </ol>
 <p>Taskmanager should be installed only on the <code>work geoserver</code>. Then we could make the following template:</p>
-<p><img alt="" src="../img/template-db-workflow.png" />
+<p><img alt="" src="../img/template-db-workflow.png" /><br />
 <em>template db workflow</em></p>
 <p>with the following batches:</p>
-<p><img alt="" src="../img/template-db-workflow-batches.png" />
+<p><img alt="" src="../img/template-db-workflow-batches.png" /><br />
 <em>template db workflow batches</em></p>
 <p>The <code>@Initialize</code> batch:</p>
-<p><img alt="" src="../img/template-db-workflow-batch-init.png" />
+<p><img alt="" src="../img/template-db-workflow-batch-init.png" /><br />
 <em>batch initialize</em></p>
 <p>The <code>PublishRemotely</code> batch:</p>
-<p><img alt="" src="../img/template-db-workflow-batch-pubrem.png" />
+<p><img alt="" src="../img/template-db-workflow-batch-pubrem.png" /><br />
 <em>batch publish remotely</em></p>
 <p>The <code>Synchronize</code> batch:</p>
-<p><img alt="" src="../img/template-db-workflow-batch-sync.png" />
+<p><img alt="" src="../img/template-db-workflow-batch-sync.png" /><br />
 <em>batch synchronize</em></p>
 <p>When we now create a new configuration based on this template we choose a source database, table name and layer name:</p>
-<p><img alt="" src="../img/template-db-workflow-config.png" />
+<p><img alt="" src="../img/template-db-workflow-config.png" /><br />
 <em>workflow config</em></p>
 <p>After clicking apply, the configuration is being initialized (the layer is created locally)...</p>
-<p><img alt="" src="../img/template-db-workflow-initializing.png" />
+<p><img alt="" src="../img/template-db-workflow-initializing.png" /><br />
 <em>initializing...</em></p>
 <p>We can now fill in the rest of the details, save, and make the remote publication. The synchronization is scheduled weekly.</p>
-<p><img alt="" src="../img/template-db-workflow-config2.png" />
+<p><img alt="" src="../img/template-db-workflow-config2.png" /><br />
 <em>workflow config 2</em></p>
 
 

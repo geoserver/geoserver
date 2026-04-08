@@ -29970,7 +29970,7 @@
 <p>This tutorial introduces the CQL/ECQL language by example. For a full reference, refer to the <a href="../../../filter/ecql_reference/">ECQL Reference</a>.</p>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
 <p>The following examples use the <code>topp:states</code> sample layer shipped with GeoServer. They demonstrate how CQL filters work by using the WMS <a href="../../../services/wms/vendor/">CQL_FILTER vendor parameter</a> to alter the data displayed by WMS requests. The easiest way to follow the tutorial is to open the GeoServer Map Preview for the <code>topp:states</code> layer. Click on the <em>Options</em> button at the top of the map preview to open the advanced options toolbar. The example filters can be entered in the <em>Filter: CQL</em> box.</p>
-<p><img alt="" src="../gettingStarted.png" />
+<p><img alt="" src="../gettingStarted.png" /><br />
 <em>topp:states preview with advanced toolbar open.</em></p>
 <p>The attributes used in the filter examples are those included in the layer. For example, the following are the attribute names and values for the Colorado feature:</p>
 <table>
@@ -30102,7 +30102,7 @@
 <h2 id="filter-functions">Filter functions<a class="headerlink" href="#filter-functions" title="Permanent link">&para;</a></h2>
 <p>CQL/ECQL can use any of the <a href="../../../filter/function_reference/">filter functions</a> available in GeoServer. This greatly increases the power of CQL expressions.</p>
 <p>For example, suppose we want to find all states whose name contains an "m", regardless of letter case. We can use the <code>strToLowerCase</code> to turn all the state names to lowercase and then use a like comparison: <code>strToLowerCase(STATE_NAME) like '%m%'</code>:</p>
-<p><img alt="" src="../mstates.png" />
+<p><img alt="" src="../mstates.png" /><br />
 <em>strToLowerCase(STATE_NAME) like '%m%'</em></p>
 <h2 id="geometric-filters">Geometric filters<a class="headerlink" href="#geometric-filters" title="Permanent link">&para;</a></h2>
 <p>CQL provides a full set of geometric filter capabilities. Say, for example, you want to display only the states that intersect the (-90,40,-60,45) bounding box. The filter will be <code>BBOX(the_geom, -90, 40, -60, 45)</code></p>

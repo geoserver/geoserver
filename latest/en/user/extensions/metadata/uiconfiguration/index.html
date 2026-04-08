@@ -30736,7 +30736,7 @@
 <h2 id="feature-catalog-generation">Feature Catalog Generation<a class="headerlink" href="#feature-catalog-generation" title="Permanent link">&para;</a></h2>
 <p>To create a feature catalog for a vector layer, a complex structure is needed to describe all the attributes. A lot of this information is already present in the GeoServer feature type or the database. Metadata supports automatically generating a new structure in the metadata from the information at hands that can be customised afterwards. To create support for this feature in your configuration, define a repeatable <a href="#complex">COMPLEX</a> field with built-in <code>fieldType</code> <code>featureAttribute</code> .</p>
 <p>In the example the featureCatalog object has two attributes. A unique identifier of the type <a href="#uuid">UUID</a> and the feature attribute field.</p>
-<p><img alt="" src="../images/fa01.png" />
+<p><img alt="" src="../images/fa01.png" /><br />
 <em>e.g. Empty Feature attribute field</em></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">typename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">featureCatalog</span>
 <a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="nt">attributes</span><span class="p">:</span>
@@ -30750,17 +30750,17 @@
 <a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="w">        </span><span class="nt">occurrence</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">REPEAT</span>
 </code></pre></div>
 <p>The <code>Generate</code> action will check the database metadata for that layer and generate a feature attribute for each column in the table.</p>
-<p><img alt="" src="../images/fa02.png" />
+<p><img alt="" src="../images/fa02.png" /><br />
 <em>e.g. Feature attribute with generate feature types</em></p>
 <p>Whitin each feature attribute there is another <code>Generate</code> action that will generate the domain.</p>
-<p><img alt="" src="../images/generate_domain.png" />
+<p><img alt="" src="../images/generate_domain.png" /><br />
 <em>e.g. Generate domain dialog</em></p>
 <p>There are two options to do this:</p>
 <ul>
 <li>Using the existing data in the database for this attribute.</li>
 <li>Using data from a look-up table in the same database. In this case you must specify the table, an attribute from which to take values and an attribute from which to take definitions.</li>
 </ul>
-<p><img alt="" src="../images/fa03.png" />
+<p><img alt="" src="../images/fa03.png" /><br />
 <em>e.g. Feature attribute with generate domain</em></p>
 <h2 id="internationalization-support">Internationalization support<a class="headerlink" href="#internationalization-support" title="Permanent link">&para;</a></h2>
 <p>All metadata field labels that appear in the <strong>Metadata fields</strong> can be internationalized. This is performed by creating an internationalization (i18n) file named metadata.properties. Create an entry for each key in the gui configuration following this pattern: <code>PREFIX.attribute-key</code></p>

@@ -99,6 +99,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     /** page class for this page to return to when the page is finished, could be null. */
     protected Class<? extends Page> returnPageClass;
 
+    /** optional page parameters to use when navigating to {@link #returnPageClass}. */
+    protected PageParameters returnPageParams;
+
     public static final String VERSION_3 = "jquery/jquery-3.5.1.js";
 
     protected GeoServerBasePage(final PageParameters parameters) {
@@ -714,6 +717,17 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /**
+     * Sets the return page class and parameters to navigate to when this page is done its task.
+     *
+     * @see #doReturn()
+     */
+    public GeoServerBasePage setReturnPage(Class<? extends Page> returnPageClass, PageParameters returnPageParams) {
+        this.returnPageClass = returnPageClass;
+        this.returnPageParams = returnPageParams;
+        return this;
+    }
+
+    /**
      * Returns from the page by navigating to one of {@link #returnPage} or {@link #returnPageClass}, processed in that
      * order.
      *
@@ -738,19 +752,20 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      */
     protected void doReturn(Class<? extends Page> defaultPageClass) {
         String ws = getPageParameters().get("workspace").toOptionalString();
-        PageParameters params = (ws != null && !ws.isEmpty()) ? new PageParameters().add("workspace", ws) : null;
+        PageParameters currentParams = (ws != null && !ws.isEmpty()) ? new PageParameters().add("workspace", ws) : null;
 
         if (returnPage != null) {
             setResponsePage(returnPage);
             return;
         }
         if (returnPageClass != null) {
+            PageParameters params = returnPageParams != null ? returnPageParams : currentParams;
             setResponsePage(returnPageClass, params);
             return;
         }
 
         defaultPageClass = defaultPageClass != null ? defaultPageClass : GeoServerHomePage.class;
-        setResponsePage(defaultPageClass, params);
+        setResponsePage(defaultPageClass, currentParams);
     }
 
     public void addFeedbackPanels(AjaxRequestTarget target) {

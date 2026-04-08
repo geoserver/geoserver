@@ -707,6 +707,7 @@
     <property name="componentClass" value="org.geoserver.web.data.store.NewDataPage" />
     <property name="order" value="20" />
     <property name="icon" value="../../img/icons/silk/add_store.png" />
+    <property name="includeWorkspaceParam" value="true" />
   </bean>
 
   <!-- Sidebar "New" menu items (used by NavigationTreePanel) -->

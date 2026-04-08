@@ -210,8 +210,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 }
 
                 String redirectUrl = null;
-                if (org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter.class.equals(
-                        info.getFilterClass())) {
+                if (org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter.class
+                        .getName()
+                        .equals(info.getFilterClass().getName())) {
                     String ws = getPageParameters().get("workspace").toOptionalString();
                     if (ws != null && !ws.isEmpty()) {
                         redirectUrl = "/web/?workspace=" + ws;

@@ -8,14 +8,14 @@
                   <wicket:message key="oseoMetadata">specificMetadata</wicket:message>
                </span>
         </legend>
-        <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class">
+        <div class="gs-form">
+            <div class="gs-form-group">
                 <label>
                     <wicket:message key="attribution">attribution</wicket:message>
                 </label>
                 <input type="text" wicket:id="attribution" class="field"/>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
                 <label>
                     <wicket:message key="globalQueryables">queryables</wicket:message>
                 </label>
@@ -29,24 +29,24 @@
                   <wicket:message key="metadataSource">metadataSource</wicket:message>
                </span>
         </legend>
-        <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class">
+        <div class="gs-form">
+            <div class="gs-form-group">
                 <label>
                     <wicket:message key="openSearchAccessId">openSearchAccessId</wicket:message>
                 </label>
-                <select wicket:id="openSearchAccessId"/>
+                <select wicket:id="openSearchAccessId" class="w-md" />
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
                 <label>
                     <wicket:message key="aggregatesCacheTTL">aggregatesCacheTTL</wicket:message>
                 </label>
-                <input type="text" wicket:id="aggregatesCacheTTL" class="field"/>
+                <input type="text" wicket:id="aggregatesCacheTTL" class="w-sm" />
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
                 <label>
                     <wicket:message key="aggregatesCacheTTLUnit">aggregatesCacheTTLUnit</wicket:message>
                 </label>
-                <select wicket:id="aggregatesCacheTTLUnit"/>
+                <select wicket:id="aggregatesCacheTTLUnit" class="w-md" />
             </div>
         </div>
     </fieldset>
@@ -56,18 +56,18 @@
                   <wicket:message key="paging">paging</wicket:message>
                </span>
         </legend>
-        <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class">
+        <div class="gs-form">
+            <div class="gs-form-group">
                 <label>
                     <wicket:message key="recordsPerPage">recordsPerPage</wicket:message>
                 </label>
-                <input type="text" wicket:id="recordsPerPage" class="field"/>
+                <input type="text" wicket:id="recordsPerPage" class="w-sm"/>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
                 <label>
                     <wicket:message key="maximumRecordsPerPage">maxRecordsPerPage</wicket:message>
                 </label>
-                <input type="text" wicket:id="maximumRecordsPerPage" class="field"/>
+                <input type="text" wicket:id="maximumRecordsPerPage" class="w-sm"/>
             </div>
         </div>
     </fieldset>

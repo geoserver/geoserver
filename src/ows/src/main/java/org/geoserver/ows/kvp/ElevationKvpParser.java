@@ -14,7 +14,6 @@ import org.geoserver.ows.KvpParser;
  *
  * @author Ariel Nunez, GeoSolutions S.A.S.
  * @author Simone Giannecchini, GeoSolutions S.A.S.
- * @version $Id$
  */
 public class ElevationKvpParser extends KvpParser {
 

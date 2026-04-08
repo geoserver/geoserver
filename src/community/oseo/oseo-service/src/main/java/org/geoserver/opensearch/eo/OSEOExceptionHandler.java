@@ -4,21 +4,22 @@
  */
 package org.geoserver.opensearch.eo;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.response.RSSExceptionTransformer;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
 import org.geoserver.platform.OWS20Exception;
+import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Returns exceptions as a RSS feed, as suggested in the OpenSearch EO developer guide at
@@ -30,7 +31,7 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
 
     private GeoServer geoServer;
 
-    public OSEOExceptionHandler(List services, GeoServer geoServer) {
+    public OSEOExceptionHandler(List<Service> services, GeoServer geoServer) {
         super(services);
         this.geoServer = geoServer;
     }
@@ -38,8 +39,7 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
     @Override
     public void handleServiceException(ServiceException exception, Request request) {
         HttpServletResponse response = request.getHttpResponse();
-        if (exception instanceof OWS20Exception) {
-            OWS20Exception ex = (OWS20Exception) exception;
+        if (exception instanceof OWS20Exception ex) {
             if (ex.getHttpCode() != null) {
                 response.setStatus(ex.getHttpCode());
             } else {

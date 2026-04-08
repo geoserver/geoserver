@@ -4,14 +4,14 @@
  */
 package org.geoserver.wps.gs.download.vertical.op;
 
-import it.geosolutions.jaiext.range.Range;
 import java.awt.RenderingHints;
 import java.awt.image.RenderedImage;
-import javax.media.jai.JAI;
-import javax.media.jai.OperationDescriptorImpl;
-import javax.media.jai.ParameterBlockJAI;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.registry.RenderedRegistryMode;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.OperationDescriptorImpl;
+import org.eclipse.imagen.ParameterBlockImageN;
+import org.eclipse.imagen.RenderedOp;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.registry.RenderedRegistryMode;
 import org.geotools.api.referencing.operation.MathTransform;
 
 public class VerticalTransformDescriptor extends OperationDescriptorImpl {
@@ -22,7 +22,7 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
     private static final String[][] resources = {
         {"GlobalName", "verticalTransform"},
         {"LocalName", "vertical"},
-        {"Vendor", "it.geosolutions.jaiext"},
+        {"Vendor", "org.eclipse.imagen.media"},
         {"Description", "This class executes the operation selected by the user on each pixel of the source images "},
         {"DocURL", "Not Defined"},
         {"Version", "1.0"},
@@ -36,7 +36,7 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
 
     /** Input Parameter class */
     private static final Class<?>[] paramClasses = {
-        MathTransform.class, MathTransform.class, it.geosolutions.jaiext.range.Range.class
+        MathTransform.class, MathTransform.class, org.eclipse.imagen.media.range.Range.class
     };
 
     /** Input Parameter default values */
@@ -61,7 +61,7 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
             RenderingHints hints,
             RenderedImage... sources) {
 
-        ParameterBlockJAI pb = new ParameterBlockJAI("verticalTransform", RenderedRegistryMode.MODE_NAME);
+        ParameterBlockImageN pb = new ParameterBlockImageN("verticalTransform", RenderedRegistryMode.MODE_NAME);
         RenderedImage img = sources[0];
         pb.setSource(img, 0);
 
@@ -72,6 +72,6 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
         pb.setParameter("coordinatesTransform", coordinatesTransform);
         pb.setParameter("verticalTransform", verticalTransform);
         pb.setParameter("noData", noData);
-        return JAI.create("verticalTransform", pb, hints);
+        return ImageN.create("verticalTransform", pb, hints);
     }
 }

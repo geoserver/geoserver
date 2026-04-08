@@ -1,6 +1,7 @@
 <dataStore>
   <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fda</id>
   <name>nyc</name>
+  <type>Shapefile</type>
   <description>Topologically Integrated Geographic Encoding and Referencing (TIGER) dataset</description>
   <enabled>true</enabled>
   <workspace>

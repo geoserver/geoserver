@@ -357,7 +357,7 @@ public class StructuredCoverageController extends AbstractCatalogController {
         Optional<CoverageInfo> optCoverage = catalog.getCoveragesByStore(store).stream()
                 .filter(si -> coverageName.equals(si.getName()))
                 .findFirst();
-        if (!optCoverage.isPresent()) {
+        if (optCoverage.isEmpty()) {
             throw new ResourceNotFoundException("No such coverage in store: " + coverageName);
         }
         return optCoverage.get();

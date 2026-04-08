@@ -5,6 +5,9 @@
  */
 package org.geoserver.filters;
 
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,9 +25,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import org.geotools.util.Converters;
 
 /** Used to wrap HttpServletRequest to apply {@link BufferedInputStream} on content access. */
@@ -134,8 +134,8 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
 
             for (String key : superParameters.keySet()) {
                 Object value = superParameters.get(key);
-                if (value instanceof String[]) {
-                    myParameterMap.put(key, Arrays.asList(((String[]) value)));
+                if (value instanceof String[] strings) {
+                    myParameterMap.put(key, Arrays.asList(strings));
                 } else if (!(value instanceof List)) {
                     @SuppressWarnings("unchecked")
                     List<String> converted = Converters.convert(value, List.class);

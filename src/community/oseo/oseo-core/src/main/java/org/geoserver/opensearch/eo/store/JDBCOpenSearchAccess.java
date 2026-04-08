@@ -113,9 +113,9 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     public static final String GRANULE = "granule";
 
-    static final String EO_PREFIX = "eo";
+    public static final String EO_PREFIX = "eo";
 
-    static final String EOP_PREFIX = "eop";
+    public static final String EOP_PREFIX = "eop";
 
     static final String SAR_PREFIX = "sar";
 
@@ -167,6 +167,17 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         this.propertyMapper = new SourcePropertyMapper(productFeatureType);
     }
 
+    /**
+     * Returns the property mapper used to map product properties back to source attributes. It's used internally to
+     * back-map filter expressions down to the source store, but also exposed so that other components can perform
+     * back-mapping as needed over the collection granules feature types (e.g. the ones named [collection] or
+     * [collection__band]).
+     */
+    SourcePropertyMapper getProductPropertyMapper() {
+        return propertyMapper;
+    }
+
+    @Override
     public String getNamespaceURI() {
         return namespaceURI;
     }
@@ -201,9 +212,9 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             ab.name(name).namespaceURI(attributeNamespace).userData(SOURCE_ATTRIBUTE, ad.getLocalName());
             ab.userData(PREFIX, prefix);
             AttributeDescriptor mappedDescriptor;
-            if (ad instanceof GeometryDescriptor) {
+            if (ad instanceof GeometryDescriptor descriptor) {
                 GeometryType at = ab.buildGeometryType();
-                ab.setCRS(((GeometryDescriptor) ad).getCoordinateReferenceSystem());
+                ab.setCRS(descriptor.getCoordinateReferenceSystem());
                 mappedDescriptor = ab.buildDescriptor(new NameImpl(attributeNamespace, name), at);
             } else {
                 AttributeType at = ab.buildType();
@@ -324,9 +335,9 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             ab.name(name).namespaceURI(namespaceURI).userData(SOURCE_ATTRIBUTE, ad.getLocalName());
             ab.userData(PREFIX, prefix);
             AttributeDescriptor mappedDescriptor;
-            if (ad instanceof GeometryDescriptor) {
+            if (ad instanceof GeometryDescriptor descriptor) {
                 GeometryType at = ab.buildGeometryType();
-                ab.setCRS(((GeometryDescriptor) ad).getCoordinateReferenceSystem());
+                ab.setCRS(descriptor.getCoordinateReferenceSystem());
                 mappedDescriptor = ab.buildDescriptor(new NameImpl(namespaceURI, name), at);
             } else {
                 AttributeType at = ab.buildType();
@@ -403,6 +414,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Name> getNames() throws IOException {
         // The list of names can be requested multiple times, and involves queries due to
         // layers configured in the OSEO database. Thus the list of names is cached in the
@@ -762,14 +774,12 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     private String getIndexField(Expression expression) throws IOException {
         String indexField;
-        if (expression instanceof AttributeExpressionImpl) {
-            AttributeExpressionImpl aei = (AttributeExpressionImpl) expression;
+        if (expression instanceof AttributeExpressionImpl aei) {
             indexField = propertyMapper.getSourceName(aei.getPropertyName());
-        } else if (expression instanceof JsonPointerFunction) {
-            Function function = (Function) expression;
+        } else if (expression instanceof JsonPointerFunction function) {
             Expression p0 = function.getParameters().get(0);
-            if (p0 instanceof PropertyName) {
-                indexField = propertyMapper.getSourceName(((PropertyName) p0).getPropertyName());
+            if (p0 instanceof PropertyName name) {
+                indexField = propertyMapper.getSourceName(name.getPropertyName());
             } else {
                 throw new IOException("The first argument for the function "
                         + function
@@ -798,14 +808,14 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         StringBuilder out = new StringBuilder();
         Expression json = getParameter(jsonPointer, 0, true);
         Expression pointer = getParameter(jsonPointer, 1, true);
-        if (json instanceof PropertyName && pointer instanceof Literal) {
+        if (json instanceof PropertyName name && pointer instanceof Literal literal) {
             // if not a string need to cast the json attribute
             boolean needCast = !type.equals(Indexable.FieldType.JsonString);
             if (needCast) out.append('(');
             out.append("\"");
-            out.append(((PropertyName) json).getPropertyName());
+            out.append(name.getPropertyName());
             out.append("\"");
-            String strPointer = ((Literal) pointer).getValue().toString();
+            String strPointer = literal.getValue().toString();
             List<String> pointerEl =
                     Stream.of(strPointer.split("/")).filter(p -> !p.equals("")).collect(Collectors.toList());
             for (int i = 0; i < pointerEl.size(); i++) {
@@ -833,7 +843,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     private String cast(String property, Indexable.FieldType type) {
         if (String.class.getSimpleName().equals(type.name())) {
             return property + "::text";
-        } else if (Short.class.getSimpleName().equals(type.name()) || Byte.class.equals(type.name())) {
+        } else if (Short.class.getSimpleName().equals(type.name())) {
             return property + "::smallint";
         } else if (Integer.class.getSimpleName().equals(type.name())) {
             return property + "::integer";
@@ -880,7 +890,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     public SimpleFeatureSource getCollectionGranulesSource(String typeName) throws IOException {
         int idx = typeName.lastIndexOf(OpenSearchAccess.BAND_LAYER_SEPARATOR);
         String collection, band;
-        // the two parts must be non empty in order to have a valid combination
+        // the two parts must be non-empty in order to have a valid combination
         if (idx > 1 && idx < (typeName.length() - 3)) {
             collection = typeName.substring(0, idx);
             band = typeName.substring(idx + OpenSearchAccess.BAND_LAYER_SEPARATOR.length());
@@ -1177,7 +1187,6 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
                     }
                     return delegate.addFeatures(fc);
                 }
-                ;
             };
         } catch (SchemaException e) {
             throw new IOException(e);

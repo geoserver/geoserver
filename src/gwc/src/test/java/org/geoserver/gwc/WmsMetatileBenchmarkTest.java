@@ -10,12 +10,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.ServletResponse;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.servlet.ServletResponse;
 import org.ehcache.impl.internal.concurrent.ConcurrentHashMap;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.test.GeoServerSystemTestSupport;

@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class SecuritySettingsPage$EncryptionPanel
+
+The panel's html will be contained in a <div class='gs-panel-SecuritySettingsPage_EncryptionPanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-SecuritySettingsPage_EncryptionPanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

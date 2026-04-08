@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -21,6 +22,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 
 /** Reusable base class listing layer groups with clickable names */
 public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroupInfo> {
+    @Serial
     private static final long serialVersionUID = -4906590200057066912L;
 
     static Property<LayerGroupInfo> NAME = new BeanProperty<>("name", "name");
@@ -30,6 +32,7 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
     public LayerGroupListPanel(String id, WorkspaceInfo workspace) {
         super(id, new GeoServerDataProvider<>() {
 
+            @Serial
             private static final long serialVersionUID = 6471805356307807737L;
 
             @Override
@@ -61,6 +64,7 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
         IModel<?> model = property.getModel(itemModel);
         if (NAME == property) {
             return new SimpleAjaxLink<>(id, (IModel<String>) model) {
+                @Serial
                 private static final long serialVersionUID = -5189072047640596694L;
 
                 @Override

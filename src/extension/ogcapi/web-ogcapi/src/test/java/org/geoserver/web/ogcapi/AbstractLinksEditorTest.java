@@ -26,8 +26,8 @@ public abstract class AbstractLinksEditorTest extends GeoServerWicketTestSupport
     final String SERVICE = ":itemProperties:6:component:service";
     final String REMOVE = ":itemProperties:7:component:link";
     protected LinkInfoImpl link;
-    String EDITOR = "publishedinfo:tabs:panel:theList:0:content:linksEditor";
-    String EDITOR_FT = "tabs:panel:theList:0:content:linksEditor";
+    String EDITOR = "publishedinfo:tabs:panel:theList:5:content:linksEditor";
+    String EDITOR_FT = "tabs:panel:theList:5:content:linksEditor";
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -46,7 +46,6 @@ public abstract class AbstractLinksEditorTest extends GeoServerWicketTestSupport
         tester.assertModelValue(EDITOR + ITEM1 + SERVICE, link.getService());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testAddLink() throws Exception {
         // create a new link

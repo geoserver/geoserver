@@ -11,9 +11,7 @@
         <constructor-arg ref="catalog"/>
     </bean>
 
-    <bean id="ncWmsGetMapCallback" class="org.geoserver.wms.ncwms.GetMapNcWmsCallback">
-        <constructor-arg ref="GIFMapResponse"/>
-    </bean>
+    <bean id="ncWmsGetMapCallback" class="org.geoserver.wms.ncwms.GetMapNcWmsCallback"/>
 
     <bean id="ncWmsGetTimeSeriesResponse" class="org.geoserver.wms.ncwms.GetTimeSeriesResponse">
         <constructor-arg ref="wms"/>

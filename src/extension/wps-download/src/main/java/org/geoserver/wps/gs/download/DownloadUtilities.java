@@ -85,7 +85,7 @@ final class DownloadUtilities {
      *
      * @param mime the mime-type for which we are searching for a {@link ProcessParameterIO}
      * @param lenient whether or not trying to be lenient when returning a suitable {@link ProcessParameterIO}.
-     * @return either <code>null</code> or the found
+     * @return either {@code null} or the found
      */
     static final ProcessParameterIO find(Parameter<?> p, ApplicationContext context, String mime, boolean lenient) {
         //
@@ -124,8 +124,7 @@ final class DownloadUtilities {
                 LOGGER.log(Level.FINE, "Trying to search for a PPIO for the parameter " + p.getName());
             }
             for (ProcessParameterIO ppio : all) {
-                if (ppio instanceof ComplexPPIO
-                        && ((ComplexPPIO) ppio).getMimeType().equals(mime)) {
+                if (ppio instanceof ComplexPPIO iO && iO.getMimeType().equals(mime)) {
                     return ppio;
                 }
             }

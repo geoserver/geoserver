@@ -1,0 +1,35 @@
+<?xml version="1.0"?><!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_10_0.dtd">
+
+<!-- =============================================================== -->
+<!-- Configure the "ee11" environment deployment defaults            -->
+<!-- =============================================================== -->
+<Configure>
+  <Ref refid="deploymentScanner">
+    <Call name="configureEnvironment">
+      <Arg>ee11</Arg>
+      <Set name="defaultContextHandlerClassName">
+        <Property name="jetty.deploy.defaultContextHandlerClass" default="org.eclipse.jetty.ee11.webapp.WebAppContext" />
+      </Set>
+      <Set name="defaultsDescriptor">
+        <Property>
+          <Name>jetty.deploy.defaultsDescriptorPath</Name>
+          <Deprecated>jetty.deploy.defaultsDescriptor</Deprecated>
+          <Default>
+            <Property name="jetty.home" default="." />/etc/webdefault-ee11.xml
+          </Default>
+        </Property>
+      </Set>
+      <Set name="extractWars" property="jetty.deploy.extractWars" />
+      <Set name="parentLoaderPriority" property="jetty.deploy.parentLoaderPriority" />
+      <Set name="configurationClasses" property="jetty.deploy.configurationClasses" />
+      <Set name="containerScanJarPattern">
+        <Property name="jetty.deploy.containerScanJarPattern">
+          <Default>.*/jakarta.servlet-api-[^/]*\.jar$|.*wasp-.*\.jar$|.*jakarta.servlet.jsp.jstl-.*\.jar$</Default>
+        </Property>
+      </Set>
+      <Set name="webInfScanJarPattern" property="jetty.deploy.webInfScanJarPattern" />
+      <Set name="servletContainerInitializerExclusionPattern" property="jetty.deploy.servletContainerInitializerExclusionPattern" />
+      <Set name="servletContainerInitializerOrder" property="jetty.deploy.servletContainerInitializerOrder" />
+    </Call>
+  </Ref>
+</Configure>

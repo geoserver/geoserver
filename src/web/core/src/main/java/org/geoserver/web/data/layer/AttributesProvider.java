@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 class AttributesProvider extends GeoServerDataProvider<AttributeDescription> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -1478240785822735763L;
 
     List<AttributeDescription> attributes = new ArrayList<>();

@@ -26,6 +26,8 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.TemporalUtils;
+import org.geoserver.json.GeoJSONBuilder;
+import org.geoserver.json.JSONType;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.KvpUtils;
@@ -309,14 +311,14 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
                                 propertyNames.add(ad.getLocalName());
                             }
                         } else {
-                            if ((value instanceof Double && Double.isNaN((Double) value))
-                                    || value instanceof Float && Float.isNaN((Float) value)) {
+                            if ((value instanceof Double double3 && Double.isNaN(double3))
+                                    || value instanceof Float float3 && Float.isNaN(float3)) {
                                 jsonWriter.value(null);
-                            } else if ((value instanceof Double && ((Double) value) == Double.POSITIVE_INFINITY)
-                                    || value instanceof Float && ((Float) value) == Float.POSITIVE_INFINITY) {
+                            } else if ((value instanceof Double double2 && double2 == Double.POSITIVE_INFINITY)
+                                    || value instanceof Float float2 && float2 == Float.POSITIVE_INFINITY) {
                                 jsonWriter.value("Infinity");
-                            } else if ((value instanceof Double && ((Double) value) == Double.NEGATIVE_INFINITY)
-                                    || value instanceof Float && ((Float) value) == Float.NEGATIVE_INFINITY) {
+                            } else if ((value instanceof Double double1 && double1 == Double.NEGATIVE_INFINITY)
+                                    || value instanceof Float float1 && float1 == Float.NEGATIVE_INFINITY) {
                                 jsonWriter.value("-Infinity");
                             } else {
                                 if (value instanceof CharSequence
@@ -580,6 +582,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
 
                         case '^':
                             buf.append("\\^");
+                            break;
 
                         case ']':
                             if (buf.length() == l1) {
@@ -718,7 +721,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
     }
 
     /** Helper class for building a Shared String Table */
-    private class SharedStringTable {
+    private static class SharedStringTable {
 
         /**
          * The string table. This map's keys are the strings stored in the string table. Each mapping's value is the
@@ -887,7 +890,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
      *
      * @see #Context
      */
-    private class GeoJSONBuilderWithContext extends GeoJSONBuilder implements Context {
+    private static class GeoJSONBuilderWithContext extends GeoJSONBuilder implements Context {
 
         private List<String> propertyNames;
 

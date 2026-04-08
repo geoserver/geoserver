@@ -4,10 +4,8 @@
  */
 package org.geoserver.config.datadir;
 
-import static java.lang.String.format;
 import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_THREADS;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -53,7 +51,8 @@ class ExecutorFactory {
     public static ForkJoinPool createExecutor(Authentication admin) {
         final int parallelism = determineParallelism();
         final boolean asyncMode = false;
-        return new ForkJoinPool(parallelism, threadFactory(admin), uncaughtExceptionHandler(), asyncMode);
+        return new ForkJoinPool(
+                parallelism, threadFactory(admin), ExecutorFactory::uncaughtExceptionHandler, asyncMode);
     }
 
     /**
@@ -73,22 +72,16 @@ class ExecutorFactory {
         return pool -> {
             SecurityContextHolder.getContext().setAuthentication(admin);
             ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
-            worker.setName(String.format("DatadirLoader-%d-worker-%d", poolIndex, threadIndex.incrementAndGet()));
+            worker.setName("DatadirLoader-%d-worker-%d".formatted(poolIndex, threadIndex.incrementAndGet()));
             return worker;
         };
     }
 
-    /**
-     * Creates an exception handler to properly log unhandled exceptions in worker threads.
-     *
-     * @return an UncaughtExceptionHandler to log an error message in case of unrecoverable exception
-     */
-    private static UncaughtExceptionHandler uncaughtExceptionHandler() {
-        return (t, ex) -> {
-            String msg = format(
-                    "Uncaught exception loading catalog or config at thread %s: %s", t.getName(), ex.getMessage());
-            LOGGER.log(Level.SEVERE, msg, ex);
-        };
+    /** Exception handler to properly log unhandled exceptions in worker threads. */
+    private static void uncaughtExceptionHandler(Thread t, Throwable ex) {
+        String msg =
+                "Uncaught exception loading catalog or config at thread %s: %s".formatted(t.getName(), ex.getMessage());
+        LOGGER.log(Level.SEVERE, msg, ex);
     }
 
     /**
@@ -119,18 +112,18 @@ class ExecutorFactory {
             }
             if (parseFail || parallelism < 1) {
                 parallelism = defParallelism;
-                LOGGER.log(
-                        Level.WARNING,
-                        () -> String.format(
-                                "Configured parallelism is invalid: %s=%s, using default of %d",
-                                GEOSERVER_DATA_DIR_LOADER_THREADS, configuredParallelism, defParallelism));
+                LOGGER.log(Level.WARNING, () -> "Configured parallelism is invalid: %s=%s, using default of %d"
+                        .formatted(GEOSERVER_DATA_DIR_LOADER_THREADS, configuredParallelism, defParallelism));
             } else if (parallelism > processors) {
                 parallelism = processors;
                 LOGGER.log(
                         Level.WARNING,
-                        () -> String.format(
-                                "Configured parallelism is invalid: %s=%s, using maximum of %d as per available processors",
-                                GEOSERVER_DATA_DIR_LOADER_THREADS, configuredParallelism, defParallelism));
+                        () ->
+                                "Configured parallelism is invalid: %s=%s, using maximum of %d as per available processors"
+                                        .formatted(
+                                                GEOSERVER_DATA_DIR_LOADER_THREADS,
+                                                configuredParallelism,
+                                                defParallelism));
             } else {
                 logTailMessage = "as indicated by the " + GEOSERVER_DATA_DIR_LOADER_THREADS
                         + " environment variable or System property";

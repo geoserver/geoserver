@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.logging.Level;
@@ -26,6 +27,7 @@ import org.geotools.api.feature.simple.SimpleFeature;
  */
 public class DateFormatTransform extends AttributeRemapTransform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     DatePattern datePattern;
@@ -109,7 +111,7 @@ public class DateFormatTransform extends AttributeRemapTransform {
             throws Exception {
         Object val = oldFeature.getAttribute(field);
         if (val != null) {
-            Date parsed = (val instanceof Date ? (Date) val : parseDate(val.toString()));
+            Date parsed = (val instanceof Date d ? d : parseDate(val.toString()));
             if (parsed == null) {
                 task.addMessage(Level.WARNING, "Invalid date '" + val + "' specified for " + feature.getID());
                 feature = null;
@@ -119,7 +121,7 @@ public class DateFormatTransform extends AttributeRemapTransform {
                 if (enddate != null) {
                     val = oldFeature.getAttribute(field);
                     if (val != null) {
-                        parsed = (val instanceof Date ? (Date) val : parseDate(val.toString()));
+                        parsed = (val instanceof Date d ? d : parseDate(val.toString()));
                         if (parsed != null) {
                             feature.setAttribute(enddate, parsed);
                         }

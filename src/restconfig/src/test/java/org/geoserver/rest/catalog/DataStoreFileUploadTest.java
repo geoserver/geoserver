@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.Filter;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,9 +28,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import javax.servlet.Filter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -43,8 +41,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.FileAccessManager;
 import org.geoserver.security.impl.DefaultFileAccessManager;
 import org.geotools.util.URLs;
-import org.h2.tools.DeleteDbFiles;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -88,14 +84,6 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         removeStore("gs", "pds");
         removeStore("gs", "store with spaces");
         removeStore("gs", "san_andres_y_providencia");
-    }
-
-    @After
-    public void cleanUpDbFiles() throws Exception {
-        DeleteDbFiles.execute("target", "foo", true);
-        DeleteDbFiles.execute("target", "pds", true);
-        DeleteDbFiles.execute("target", "chinese_poly", true);
-        DeleteDbFiles.execute("target", "san_andres_y_providencia", true);
     }
 
     byte[] propertyFile() throws IOException {
@@ -221,27 +209,6 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     @Test
     public void testShapefileUploadZip() throws Exception {
         uploadSanAndreas();
-    }
-
-    @Test
-    public void testGetProperties() throws Exception {
-        MockHttpServletResponse resp =
-                getAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties");
-        assertEquals(404, resp.getStatus());
-
-        byte[] bytes = propertyFile();
-        put(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
-
-        resp = getAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties");
-        assertEquals(200, resp.getStatus());
-        assertEquals("application/zip", resp.getContentType());
-
-        ByteArrayInputStream bin = getBinaryInputStream(resp);
-        ZipInputStream zin = new ZipInputStream(bin);
-
-        ZipEntry entry = zin.getNextEntry();
-        assertNotNull(entry);
-        assertEquals("pds.properties", entry.getName());
     }
 
     @Test

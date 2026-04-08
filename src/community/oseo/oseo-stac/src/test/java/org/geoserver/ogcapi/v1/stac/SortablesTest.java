@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIException;
-import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 public class SortablesTest extends STACTestSupport {
@@ -47,13 +46,13 @@ public class SortablesTest extends STACTestSupport {
 
     @Test
     public void testSearchSortablesHTML() throws Exception {
-        Document html = getAsJSoup("ogc/stac/v1/sortables?f=html");
+        getAsJSoup("ogc/stac/v1/sortables?f=html");
         // TODO: add checks, for now it just verifies the template is producing HTML
     }
 
     @Test
     public void testCollectionSortablesHTML() throws Exception {
-        Document html = getAsJSoup("ogc/stac/v1/collections/SENTINEL2/sortables?f=html");
+        getAsJSoup("ogc/stac/v1/collections/SENTINEL2/sortables?f=html");
         // TODO: add checks, for now it just verifies the template is producing HTML
     }
 

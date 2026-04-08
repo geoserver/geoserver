@@ -10,9 +10,11 @@ import static org.geotools.data.DataUtilities.simple;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -37,7 +39,6 @@ import org.geoserver.wfs.request.Update;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
-import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
@@ -152,13 +153,13 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
 
         List<TransactionElement> newElements = new ArrayList<>();
         for (TransactionElement element : request.getElements()) {
-            if (element instanceof Insert) {
+            if (element instanceof Insert insertElement) {
                 List<SimpleFeature> newFeatures = new ArrayList<>();
                 for (Object of : affectedFeatures(element)) {
-                    if (of instanceof SimpleFeature) {
+                    if (of instanceof SimpleFeature feature) {
                         try {
                             LOGGER.fine("Inserting feature: " + of);
-                            SimpleFeature transformed = applyTemplate((SimpleFeature) of);
+                            SimpleFeature transformed = applyTemplate(feature);
                             LOGGER.fine("... transformed: " + transformed);
                             newFeatures.add(transformed);
                         } catch (RuntimeException | IOException e) {
@@ -166,43 +167,14 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                             // AutopopulateTransactionCallback error.
                             // Yell on the logs though
                             LOGGER.log(Level.WARNING, "Error pre computing the transaction's affected attributes", e);
-                            newFeatures.add((SimpleFeature) of);
+                            newFeatures.add(feature);
                         }
                     }
                 }
-                Insert insertElement = (Insert) element;
                 insertElement.setFeatures(newFeatures);
                 newElements.add(element);
-            } else if (element instanceof Update) {
-                FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(element.getTypeName()));
-                try {
-                    Update updateElement = (Update) element;
-                    SimpleFeature feature = getTransactionFeatureTemplate(updateElement);
-                    LOGGER.fine("Updating feature: " + feature);
-                    SimpleFeature transformed = applyTemplate(feature);
-                    LOGGER.fine("... transformed: " + transformed);
-                    List<Property> properties = updateElement.getUpdateProperties();
-                    for (org.geotools.api.feature.Property p : transformed.getProperties()) {
-                        if (properties.stream().anyMatch(prop -> match(p, prop))) {
-                            properties.stream()
-                                    .filter(prop -> match(p, prop))
-                                    .forEach(prop -> prop.setValue(prop.getValue()));
-                        } else {
-                            Property updateProperty = updateElement.createProperty();
-                            updateProperty.setName(new QName(
-                                    featureTypeInfo.getNamespace().getURI(),
-                                    p.getName().getLocalPart()));
-                            updateProperty.setValue(p.getValue());
-                            properties.add(updateProperty);
-                        }
-                    }
-                    updateElement.setUpdateProperties(properties);
-                } catch (IOException e) {
-                    // Do never make the transaction fail due to an
-                    // AutopopulateTransactionCallback error.
-                    // Yell on the logs though
-                    LOGGER.log(Level.WARNING, "Error pre computing the transaction's affected attributes", e);
-                }
+            } else if (element instanceof Update updateElement) {
+                handleUpdate(element, updateElement);
                 newElements.add(element);
             } else if (element instanceof Delete) {
                 newElements.add(element);
@@ -214,20 +186,48 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
         return request;
     }
 
+    private void handleUpdate(TransactionElement element, Update updateElement) {
+        FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(element.getTypeName()));
+        try {
+            SimpleFeature feature = getTransactionFeatureTemplate(updateElement);
+            AutopopulateTemplate template = lookupTemplate(feature.getFeatureType(), TRANSACTION_CUSTOMIZER_PROPERTIES);
+            Set<String> allowedProperties = new HashSet<>();
+            for (Property property : updateElement.getUpdateProperties()) {
+                allowedProperties.add(property.getName().getLocalPart());
+            }
+            if (template != null) {
+                allowedProperties.addAll(template.getAllProperties().keySet());
+            }
+            LOGGER.fine("Updating feature: " + feature);
+            SimpleFeature transformed = applyTemplate(feature);
+            LOGGER.fine("... transformed: " + transformed);
+            List<Property> properties = updateElement.getUpdateProperties();
+            for (org.geotools.api.feature.Property p : transformed.getProperties()) {
+                if (!allowedProperties.contains(p.getName().getLocalPart())) {
+                    continue;
+                }
+                if (properties.stream().anyMatch(prop -> match(p, prop))) {
+                    properties.stream().filter(prop -> match(p, prop)).forEach(prop -> prop.setValue(prop.getValue()));
+                } else {
+                    Property updateProperty = updateElement.createProperty();
+                    updateProperty.setName(new QName(
+                            featureTypeInfo.getNamespace().getURI(), p.getName().getLocalPart()));
+                    updateProperty.setValue(p.getValue());
+                    properties.add(updateProperty);
+                }
+            }
+            updateElement.setUpdateProperties(properties);
+        } catch (IOException e) {
+            // Do never make the transaction fail due to an
+            // AutopopulateTransactionCallback error.
+            // Yell on the logs though
+            LOGGER.log(Level.WARNING, "Error pre computing the transaction's affected attributes", e);
+        }
+    }
+
     /** Utility method to match a feature property with a property. */
     private static boolean match(org.geotools.api.feature.Property p, Property prop) {
         return prop.getName().getLocalPart().equals(p.getName().getLocalPart());
-    }
-
-    /**
-     * Get the feature type info for the given feature type.
-     *
-     * @param featureType the feature type
-     * @return FeatureTypeInfo the feature type info
-     */
-    private FeatureTypeInfo getFeatureTypeInfo(FeatureType featureType) {
-        Name featureTypeName = featureType.getName();
-        return getFeatureTypeInfo(featureTypeName);
     }
 
     /**
@@ -239,24 +239,9 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     private FeatureTypeInfo getFeatureTypeInfo(Name featureTypeName) {
         FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName(featureTypeName);
         if (featureTypeInfo == null) {
-            throw new RuntimeException(String.format("Couldn't find feature type info ''%s.", featureTypeName));
+            throw new RuntimeException("Couldn't find feature type info ''%s.".formatted(featureTypeName));
         }
         return featureTypeInfo;
-    }
-
-    /**
-     * Set the updated attributes for the given feature.
-     *
-     * @param feature the feature
-     * @param update the update
-     */
-    private SimpleFeature prepareUpdateFeature(SimpleFeature feature, Update update) {
-        // run the update
-        for (Object o : update.getUpdateProperties()) {
-            Property p = (Property) o;
-            feature.setAttribute(p.getName().getLocalPart(), p.getValue());
-        }
-        return feature;
     }
 
     /**
@@ -265,6 +250,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * @param update the update transaction element
      * @return SimpleFeature the feature template with the updated properties
      */
+    @SuppressWarnings("unchecked")
     private SimpleFeature getTransactionFeatureTemplate(Update update) throws IOException {
         QName typeName = update.getTypeName();
 
@@ -295,10 +281,10 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * @return List of affected features
      */
     private List affectedFeatures(TransactionElement element) {
-        if (element instanceof Insert) {
-            return ((Insert) element).getFeatures();
-        } else if (element instanceof Replace) {
-            return ((Replace) element).getFeatures();
+        if (element instanceof Insert insert) {
+            return insert.getFeatures();
+        } else if (element instanceof Replace replace) {
+            return replace.getFeatures();
         }
         return new ArrayList<>();
     }

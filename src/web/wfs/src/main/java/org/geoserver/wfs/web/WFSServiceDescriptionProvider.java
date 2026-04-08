@@ -22,6 +22,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSResourceVoter;
 import org.geoserver.wfs.WebFeatureService;
 import org.geoserver.wfs.WebFeatureService20;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
 /** Provide description of WMS services for welcome page. */
@@ -61,9 +62,9 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     @Override
     protected boolean isAvailable(String serviceType, ServiceInfo serviceInfo, PublishedInfo layerInfo) {
-        if (layerInfo != null && layerInfo instanceof LayerInfo) {
+        if (layerInfo != null && layerInfo instanceof LayerInfo info) {
             WFSResourceVoter voter = new WFSResourceVoter();
-            if (voter.hideService(serviceType, ((LayerInfo) layerInfo).getResource())) {
+            if (voter.hideService(serviceType, info.getResource())) {
                 return false;
             }
         }
@@ -97,11 +98,18 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
             return links;
         }
 
+        WFSInfo info = info(workspaceInfo, layerInfo);
+        List<Version> disabledVersions = (info != null) ? info.getDisabledVersions() : null;
+
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
 
         for (Service service : extensions) {
             if ((service.getService() instanceof WebFeatureService20)
                     || (service.getService() instanceof WebFeatureService)) {
+                if (disabledVersions != null && disabledVersions.contains(service.getVersion())) {
+                    continue;
+                }
+
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {
                     link = getCapabilitiesURL(workspaceInfo, layerInfo, service);

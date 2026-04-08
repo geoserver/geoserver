@@ -28,7 +28,7 @@
     Optional, an icon to display alongside the link.
     <property name="icon" value="imgs/some-image.png"/>
     Optional, the category in which the link should be grouped.
-    <property name="category" ref="settingsCategory"/>
+    <property name="category" ref="serverCategory"/>
     Optional, a key used to order the links in the menu.
     <property name="order" value="100"/>
 </bean> -->

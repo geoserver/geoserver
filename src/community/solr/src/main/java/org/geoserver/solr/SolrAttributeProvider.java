@@ -5,6 +5,7 @@
 
 package org.geoserver.solr;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.geotools.data.solr.SolrAttribute;
 /** Provide attributes from SOLR fields */
 public class SolrAttributeProvider extends GeoServerDataProvider<SolrAttribute> {
 
+    @Serial
     private static final long serialVersionUID = -1021780286733349153L;
 
     private List<SolrAttribute> attributes = new ArrayList<>();
@@ -28,6 +30,7 @@ public class SolrAttributeProvider extends GeoServerDataProvider<SolrAttribute> 
     /** Class type of field */
     protected static final Property<SolrAttribute> TYPE = new AbstractProperty<SolrAttribute>("type") {
 
+        @Serial
         private static final long serialVersionUID = 4454312983828267130L;
 
         @Override

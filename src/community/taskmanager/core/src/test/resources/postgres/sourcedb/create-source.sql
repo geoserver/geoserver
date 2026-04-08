@@ -55,7 +55,7 @@ CREATE INDEX grondwaterlichamen_new_sidx ON grondwaterlichamen_new USING gist (s
 
 CREATE INDEX multipleColumns ON gw_beleid.grondwaterlichamen_new (dataengine_id, gwl);
 
-
+CREATE INDEX functionalIndex ON gw_beleid.grondwaterlichamen_new (lower(gwl));
 --
 -- Data for Name: grondwaterlichamen_new;
 --

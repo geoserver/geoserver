@@ -5,6 +5,9 @@
  */
 package org.geoserver.gwc.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +42,21 @@ import org.geowebcache.locks.LockProvider;
 import org.springframework.context.ApplicationContext;
 
 public class CachingOptionsPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CachingOptionsPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private CheckGroup<String> otherFormatsGroup;
@@ -65,6 +83,7 @@ public class CachingOptionsPanel extends Panel {
         container.add(configs);
 
         autoCacheLayers.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -112,6 +131,7 @@ public class CachingOptionsPanel extends Panel {
             vectorFormatsGroup = new CheckGroup<>("vectorFormatsGroup", vectorFormatsModel);
             configs.add(vectorFormatsGroup);
             ListView<String> formatsList = new ListView<>("vectorFromats", formats) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -132,6 +152,7 @@ public class CachingOptionsPanel extends Panel {
             rasterFormatsGroup = new CheckGroup<>("rasterFormatsGroup", rasterFormatsModel);
             configs.add(rasterFormatsGroup);
             ListView<String> formatsList = new ListView<>("rasterFromats", formats) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -150,6 +171,7 @@ public class CachingOptionsPanel extends Panel {
             otherFormatsGroup = new CheckGroup<>("otherFormatsGroup", otherFormatsModel);
             configs.add(otherFormatsGroup);
             ListView<String> formatsList = new ListView<>("otherFromats", formats) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -162,10 +184,6 @@ public class CachingOptionsPanel extends Panel {
             otherFormatsGroup.add(formatsList);
         }
 
-        // Add a new Panel for configuring In Memory caching
-        InMemoryBlobStorePanel storePanel = new InMemoryBlobStorePanel("blobstores", gwcConfigModel);
-        configs.add(storePanel.setOutputMarkupId(true));
-
         IModel<Set<String>> cachedGridsetsModel = new PropertyModel<>(gwcConfigModel, "defaultCachingGridSetIds");
         DefaultGridsetsEditor cachedGridsets = new DefaultGridsetsEditor("cachedGridsets", cachedGridsetsModel);
         configs.add(cachedGridsets);
@@ -176,6 +194,7 @@ public class CachingOptionsPanel extends Panel {
 
         cachedGridsets.add(new IValidator<>() {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -190,6 +209,7 @@ public class CachingOptionsPanel extends Panel {
         });
 
         class FormatsValidator implements IValidator<Collection<String>> {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

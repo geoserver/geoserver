@@ -103,8 +103,8 @@ public class RasterAsPointCollectionTest extends WPSTestSupport {
         SimpleFeature sf = (SimpleFeature) fc.features().next();
         Geometry simplified = ((Geometry) sf.getDefaultGeometry());
         assertTrue(simplified instanceof Point);
-        assertEquals(sf.getID(), "0");
-        assertEquals(sf.getAttributeCount(), 5);
+        assertEquals("0", sf.getID());
+        assertEquals(5, sf.getAttributeCount());
         assertEquals("75", sf.getProperty("GRAY_INDEX").getValue());
 
         // the latter would work only with shapefile or if we had a target schema

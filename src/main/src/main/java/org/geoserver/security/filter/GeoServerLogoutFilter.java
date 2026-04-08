@@ -5,6 +5,12 @@
  */
 package org.geoserver.security.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,12 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.LogoutFilterConfig;
@@ -36,6 +38,8 @@ import org.springframework.util.StringUtils;
  * @author christian
  */
 public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
+
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
 
     public static final String URL_AFTER_LOGOUT = "/web/";
     public static final String LOGOUT_REDIRECT_ATTR = "_logout_redirect";
@@ -82,13 +86,22 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null) {
-            List<LogoutHandler> logoutHandlers = calculateActiveLogoutHandlers(skipHandlerName);
-            for (LogoutHandler h : logoutHandlers) {
-                h.logout(request, response, authentication);
-            }
 
+            // first we tell the client that the `remember-me` token shouldn't be used
             RememberMeServices rms = securityManager.getRememberMeService();
             ((LogoutHandler) rms).logout(request, response, authentication);
+
+            List<LogoutHandler> logoutHandlers = calculateActiveLogoutHandlers(skipHandlerName);
+            for (LogoutHandler h : logoutHandlers) {
+                try {
+                    h.logout(request, response, authentication);
+                } catch (Exception e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Exception during logout handler: " + h.getClass().getName(),
+                            e);
+                }
+            }
 
             logoutHandler.logout(request, response, authentication);
         }

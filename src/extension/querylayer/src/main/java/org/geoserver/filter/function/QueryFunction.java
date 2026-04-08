@@ -83,8 +83,8 @@ public class QueryFunction extends FunctionImpl {
             if (ad == null) {
                 throw new IllegalArgumentException(
                         "Attribute " + attribute + " could not be found in layer " + layerName);
-            } else if (ad instanceof GeometryDescriptor) {
-                crs = ((GeometryDescriptor) ad).getCoordinateReferenceSystem();
+            } else if (ad instanceof GeometryDescriptor descriptor) {
+                crs = descriptor.getCoordinateReferenceSystem();
                 if (crs == null) {
                     crs = ft.getCRS();
                 }
@@ -114,10 +114,9 @@ public class QueryFunction extends FunctionImpl {
                 while (fi.hasNext()) {
                     Feature f = fi.next();
                     Object value = f.getProperty(attribute).getValue();
-                    if (value instanceof Geometry && crs != null) {
+                    if (value instanceof Geometry geom && crs != null) {
                         // if the crs is not associated with the geometry do so, this
                         // way other code will get to know the crs (e.g. for reprojection purposes)
-                        Geometry geom = (Geometry) value;
                         geom.apply(new GeometryCRSFilter(crs));
                     }
                     results.add(value);

@@ -4,6 +4,9 @@
  */
 package org.geoserver.web.netcdf;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,11 +26,11 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.ExtraVariable;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.VariableAttribute;
@@ -38,7 +41,21 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponentPanel<T> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NetCDFPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected final ListView<GlobalAttribute> globalAttributes;
@@ -50,11 +67,10 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
     protected final TextField<Integer> compressionLevel;
 
-    public static final PackageResourceReference ADD_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/add.png");
+    public static final ResourceReference ADD_ICON = new ContextRelativeResourceReference("img/icons/silk/add.png");
 
-    public static final PackageResourceReference DELETE_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/delete.png");
+    public static final ResourceReference DELETE_ICON =
+            new ContextRelativeResourceReference("img/icons/silk/delete.png");
 
     protected final DropDownChoice<DataPacking> dataPacking;
 
@@ -204,8 +220,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
     @Override
     public void convertInput() {
         IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         };
@@ -228,8 +243,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         convertedInput.setCopyGlobalAttributes(copyGlobalAttributes.getModelObject());
 
         extensionPanels.visitChildren((component, visit) -> {
-            if (component instanceof NetCDFExtensionPanel) {
-                NetCDFExtensionPanel extension = (NetCDFExtensionPanel) component;
+            if (component instanceof NetCDFExtensionPanel extension) {
                 extension.convertInput(convertedInput);
             }
         });

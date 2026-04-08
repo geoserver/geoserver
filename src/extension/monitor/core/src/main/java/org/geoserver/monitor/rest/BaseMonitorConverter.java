@@ -32,8 +32,8 @@ public abstract class BaseMonitorConverter extends BaseMessageConverter<MonitorQ
 
     @SuppressWarnings("unchecked")
     static void handleRequests(Object object, RequestDataVisitor visitor, Monitor monitor) {
-        if (object instanceof Query) {
-            monitor.query((Query) object, visitor);
+        if (object instanceof Query query) {
+            monitor.query(query, visitor);
         } else {
             List<RequestData> requests;
             if (object instanceof List) {

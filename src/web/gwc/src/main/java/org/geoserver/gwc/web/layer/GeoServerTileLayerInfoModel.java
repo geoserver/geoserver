@@ -5,10 +5,12 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import org.apache.wicket.model.Model;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 
 public class GeoServerTileLayerInfoModel extends Model<GeoServerTileLayerInfo> {
+    @Serial
     private static final long serialVersionUID = 2246174669786551903L;
 
     private Boolean enabled;

@@ -28,12 +28,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -51,6 +49,8 @@ import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -315,9 +315,9 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         StyleParameterFilter styleFilter = null;
 
         for (ParameterFilter filter : filters) {
-            if (filter instanceof FloatParameterFilter) floatFilter = (FloatParameterFilter) filter;
-            if (filter instanceof StringParameterFilter) stringFilter = (StringParameterFilter) filter;
-            if (filter instanceof StyleParameterFilter) styleFilter = (StyleParameterFilter) filter;
+            if (filter instanceof FloatParameterFilter parameterFilter) floatFilter = parameterFilter;
+            if (filter instanceof StringParameterFilter parameterFilter) stringFilter = parameterFilter;
+            if (filter instanceof StyleParameterFilter parameterFilter) styleFilter = parameterFilter;
         }
 
         assertNotNull(floatFilter);
@@ -510,8 +510,8 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         StyleParameterFilter styleFilter = null;
 
         for (ParameterFilter filter : filters) {
-            if (filter instanceof FloatParameterFilter) floatFilter = (FloatParameterFilter) filter;
-            if (filter instanceof StyleParameterFilter) styleFilter = (StyleParameterFilter) filter;
+            if (filter instanceof FloatParameterFilter parameterFilter) floatFilter = parameterFilter;
+            if (filter instanceof StyleParameterFilter parameterFilter) styleFilter = parameterFilter;
         }
 
         assertNotNull(floatFilter);

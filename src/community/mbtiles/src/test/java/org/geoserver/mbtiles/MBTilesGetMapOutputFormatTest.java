@@ -71,32 +71,31 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
 
         WebMap map = format.produceMap(mapContent);
-        MBTilesFile mbtiles = createMbTilesFiles(map);
+        try (MBTilesFile mbtiles = createMbTilesFiles(map)) {
 
-        MBTilesMetadata metadata = mbtiles.loadMetaData();
+            MBTilesMetadata metadata = mbtiles.loadMetaData();
 
-        assertEquals("World_Lakes", metadata.getName());
-        assertEquals("0", metadata.getVersion());
-        assertEquals("World, null", metadata.getDescription());
-        assertEquals(-0.17578125, metadata.getBounds().getMinimum(0), 0.001);
-        assertEquals(-0.087890625, metadata.getBounds().getMaximum(0), 0.001);
-        assertEquals(0.17578125, metadata.getBounds().getMaximum(1), 0.001);
-        assertEquals(0.087890625, metadata.getBounds().getMinimum(1), 0.001);
-        assertEquals(MBTilesMetadata.t_type.OVERLAY, metadata.getType());
-        assertEquals(MBTilesMetadata.t_format.PNG, metadata.getFormat());
+            assertEquals("World_Lakes", metadata.getName());
+            assertEquals("0", metadata.getVersion());
+            assertEquals("World, null", metadata.getDescription());
+            assertEquals(-0.17578125, metadata.getBounds().getMinimum(0), 0.001);
+            assertEquals(-0.087890625, metadata.getBounds().getMaximum(0), 0.001);
+            assertEquals(0.17578125, metadata.getBounds().getMaximum(1), 0.001);
+            assertEquals(0.087890625, metadata.getBounds().getMinimum(1), 0.001);
+            assertEquals(MBTilesMetadata.t_type.OVERLAY, metadata.getType());
+            assertEquals(MBTilesMetadata.t_format.PNG, metadata.getFormat());
 
-        assertEquals(1, mbtiles.numberOfTiles());
+            assertEquals(1, mbtiles.numberOfTiles());
 
-        MBTilesFile.TileIterator tiles = mbtiles.tiles();
-        assertTrue(tiles.hasNext());
-        MBTilesTile e = tiles.next();
-        assertEquals(10, e.getZoomLevel());
-        assertEquals(511, e.getTileColumn());
-        assertEquals(512, e.getTileRow());
-        assertNotNull(e.getData());
-        tiles.close();
-
-        mbtiles.close();
+            try (MBTilesFile.TileIterator tiles = mbtiles.tiles()) {
+                assertTrue(tiles.hasNext());
+                MBTilesTile e = tiles.next();
+                assertEquals(10, e.getZoomLevel());
+                assertEquals(511, e.getTileColumn());
+                assertEquals(512, e.getTileRow());
+                assertNotNull(e.getData());
+            }
+        }
     }
 
     @Test
@@ -108,36 +107,37 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
         // Create a temporary file for the mbtiles
         File f = File.createTempFile("temp2", ".mbtiles", new File("target"));
-        MBTilesFile mbtiles = new MBTilesFile(f);
-        mbtiles.init();
-        // Add tiles to the file(Internally uses the MBtilesFileWrapper)
-        format.addTiles(mbtiles, mapContent.getRequest(), null, null);
-        // Ensure everything is correct
-        MBTilesMetadata metadata = mbtiles.loadMetaData();
+        try (MBTilesFile mbtiles = new MBTilesFile(f)) {
+            mbtiles.init();
+            // Add tiles to the file(Internally uses the MBtilesFileWrapper)
+            format.addTiles(mbtiles, mapContent.getRequest(), null, null);
+            // Ensure everything is correct
+            MBTilesMetadata metadata = mbtiles.loadMetaData();
 
-        assertEquals("World_Lakes", metadata.getName());
-        assertEquals("0", metadata.getVersion());
-        assertEquals("World, null", metadata.getDescription());
-        assertEquals(-0.17578125, metadata.getBounds().getMinimum(0), 0.001);
-        assertEquals(-0.087890625, metadata.getBounds().getMaximum(0), 0.001);
-        assertEquals(0.17578125, metadata.getBounds().getMaximum(1), 0.001);
-        assertEquals(0.087890625, metadata.getBounds().getMinimum(1), 0.001);
-        assertEquals(MBTilesMetadata.t_type.OVERLAY, metadata.getType());
-        assertEquals(MBTilesMetadata.t_format.PNG, metadata.getFormat());
+            assertEquals("World_Lakes", metadata.getName());
+            assertEquals("0", metadata.getVersion());
+            assertEquals("World, null", metadata.getDescription());
+            assertEquals(-0.17578125, metadata.getBounds().getMinimum(0), 0.001);
+            assertEquals(-0.087890625, metadata.getBounds().getMaximum(0), 0.001);
+            assertEquals(0.17578125, metadata.getBounds().getMaximum(1), 0.001);
+            assertEquals(0.087890625, metadata.getBounds().getMinimum(1), 0.001);
+            assertEquals(MBTilesMetadata.t_type.OVERLAY, metadata.getType());
+            assertEquals(MBTilesMetadata.t_format.PNG, metadata.getFormat());
 
-        assertEquals(1, mbtiles.numberOfTiles());
+            assertEquals(1, mbtiles.numberOfTiles());
 
-        MBTilesFile.TileIterator tiles = mbtiles.tiles();
-        assertTrue(tiles.hasNext());
-        MBTilesTile e = tiles.next();
-        assertEquals(10, e.getZoomLevel());
-        assertEquals(511, e.getTileColumn());
-        assertEquals(512, e.getTileRow());
-        assertNotNull(e.getData());
-        tiles.close();
-        // Closure of the files
-        mbtiles.close();
-        FileUtils.deleteQuietly(f);
+            try (MBTilesFile.TileIterator tiles = mbtiles.tiles()) {
+                assertTrue(tiles.hasNext());
+                MBTilesTile e = tiles.next();
+                assertEquals(10, e.getZoomLevel());
+                assertEquals(511, e.getTileColumn());
+                assertEquals(512, e.getTileRow());
+                assertNotNull(e.getData());
+            }
+            // Closure of the files
+        } finally {
+            FileUtils.deleteQuietly(f);
+        }
     }
 
     @Test
@@ -193,10 +193,10 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
 
         FileBackedRawMap rawMap = (FileBackedRawMap) map;
         File f = File.createTempFile("temp", ".mbtiles", new File("target"));
-        FileOutputStream fout = new FileOutputStream(f);
-        rawMap.writeTo(fout);
-        fout.flush();
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(f)) {
+            rawMap.writeTo(fout);
+            fout.flush();
+        }
 
         return new MBTilesFile(f);
     }
@@ -207,7 +207,6 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         request.setBbox(new Envelope(-180, 180, -90, 90));
         return request;
     }
-    ;
 
     WMSMapContent createMapContent(QName... layers) throws IOException {
         GetMapRequest mapRequest = createGetMapRequest(layers);

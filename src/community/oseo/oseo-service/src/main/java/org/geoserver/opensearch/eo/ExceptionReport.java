@@ -54,7 +54,6 @@ public class ExceptionReport {
     List<Exception> exceptions = new ArrayList<>();
 
     public ExceptionReport(Exception exception) {
-        this.type = type;
         this.exceptions.add(exception);
     }
 

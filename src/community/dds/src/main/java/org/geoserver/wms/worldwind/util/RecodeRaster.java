@@ -12,10 +12,10 @@ import java.awt.image.renderable.ParameterBlock;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import javax.media.jai.*;
-import javax.media.jai.iterator.RectIterFactory;
-import javax.media.jai.iterator.WritableRectIter;
-import javax.media.jai.registry.RenderedRegistryMode;
+import org.eclipse.imagen.*;
+import org.eclipse.imagen.iterator.RectIterFactory;
+import org.eclipse.imagen.iterator.WritableRectIter;
+import org.eclipse.imagen.registry.RenderedRegistryMode;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.image.TransfertRectIter;
 import org.geotools.metadata.i18n.LoggingKeys;
@@ -43,7 +43,7 @@ public class RecodeRaster extends PointOpImage {
 
     public RecodeRaster(
             final RenderedImage image, final double srcVal, final double destVal, final RenderingHints hints) {
-        super(image, (ImageLayout) hints.get(JAI.KEY_IMAGE_LAYOUT), hints, false);
+        super(image, (ImageLayout) hints.get(ImageN.KEY_IMAGE_LAYOUT), hints, false);
 
         this.srcVal = srcVal;
         this.destVal = destVal;
@@ -140,9 +140,9 @@ public class RecodeRaster extends PointOpImage {
         }
     }
 
-    /** Register the "RecodeNoData" image operation to the operation registry of the specified JAI instance. */
-    public static void register(final JAI jai) {
-        final OperationRegistry registry = jai.getOperationRegistry();
+    /** Register the "RecodeNoData" image operation to the operation registry of the specified ImageN instance. */
+    public static void register(final ImageN imagen) {
+        final OperationRegistry registry = imagen.getOperationRegistry();
         try {
             registry.registerDescriptor(new Descriptor());
             registry.registerFactory(RenderedRegistryMode.MODE_NAME, OPERATION_NAME, "geotools.org", new CRIF());

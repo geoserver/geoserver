@@ -1,4 +1,9 @@
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item'><a href='"+serviceLink("collections")+"'>Collections</a></li><li class='breadcrumb-item'>"+model.collection.name.value+"</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item'><a href='${serviceLink("collections")}'>Collections</a></li>
+  <li class='breadcrumb-item active'>${model.collection.name.value}</li>
+</#global>
+
 <#include "common-header.ftl">
   <#assign collection=model.collection>
   <h1 id="title">${collection.name.value}</h1>

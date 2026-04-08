@@ -30,11 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.IntStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.xml.namespace.QName;
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -46,6 +45,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.test.PostGISTestResource;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.data.SimpleFeatureStore;
@@ -64,14 +64,21 @@ import org.geotools.jdbc.VirtualTable;
 import org.geotools.referencing.CRS;
 import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
+
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
 
     private static String BASEPATH = RestBaseController.ROOT_PATH;
 
@@ -86,16 +93,15 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         // new workspace for virtual table tests
         testData.addWorkspace(VT_PREFIX, VT_URI, getCatalog());
 
-        // set up a H2 datastore that we can run virtual table tests against
+        // set up a PostGIS datastore that we can run virtual table tests against
         Catalog cat = getCatalog();
         DataStoreInfo ds = cat.getFactory().createDataStore();
-        ds.setName("h2");
+        ds.setName("postgis");
         ds.setWorkspace(cat.getWorkspaceByName(VT_PREFIX));
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
 
         SimpleFeatureSource geSource = getFeatureSource(ROAD_SEGMENTS);
@@ -272,7 +278,11 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         zout.close();
 
         String q = "configure=first";
-        put(BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q, zbytes.toByteArray(), "application/zip");
+        MockHttpServletResponse response = putAsServletResponse(
+                BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q,
+                zbytes.toByteArray(),
+                "application/zip");
+        assertEquals(201, response.getStatus());
     }
 
     @Test
@@ -443,6 +453,21 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
         FeatureTypeInfo ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
         assertEquals("new title", ft.getTitle());
+    }
+
+    @Test
+    public void testNullifyAbstract() throws Exception {
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
+        ft.setAbstract("the abstract");
+        catalog.save(ft);
+
+        String xml = "<featureType><abstract xsi:nil=\"true\"/></featureType>";
+        MockHttpServletResponse response = putAsServletResponse(
+                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
+        assertNull(ft.getAbstract());
     }
 
     @Test
@@ -676,30 +701,33 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testCreateFeatureType() throws Exception {
-        String xml = "<featureType>\n"
-                + "  <name>states</name>\n"
-                + "  <nativeName>states</nativeName>\n"
-                + "  <namespace>\n"
-                + "    <name>cite</name>\n"
-                + "  </namespace>\n"
-                + "  <title>USA Population</title>\n"
-                + "  <srs>EPSG:4326</srs>\n"
-                + "  <attributes>\n"
-                + "    <attribute>\n"
-                + "      <name>the_geom</name>\n"
-                + "      <binding>org.locationtech.jts.geom.MultiPolygon</binding>\n"
-                + "    </attribute>\n"
-                + "    <attribute>\n"
-                + "      <name>STATE_NAME</name>\n"
-                + "      <binding>java.lang.String</binding>\n"
-                + "      <length>25</length>\n"
-                + "    </attribute>\n"
-                + "    <attribute>\n"
-                + "      <name>LAND_KM</name>\n"
-                + "      <binding>java.lang.Double</binding>\n"
-                + "    </attribute>\n"
-                + "  </attributes>\n"
-                + "</featureType>";
+        String xml =
+                """
+            <featureType>
+              <name>states</name>
+              <nativeName>states</nativeName>
+              <namespace>
+                <name>cite</name>
+              </namespace>
+              <title>USA Population</title>
+              <srs>EPSG:4326</srs>
+              <attributes>
+                <attribute>
+                  <name>the_geom</name>
+                  <binding>org.locationtech.jts.geom.MultiPolygon</binding>
+                </attribute>
+                <attribute>
+                  <name>STATE_NAME</name>
+                  <binding>java.lang.String</binding>
+                  <length>25</length>
+                </attribute>
+                <attribute>
+                  <name>LAND_KM</name>
+                  <binding>java.lang.Double</binding>
+                </attribute>
+              </attributes>
+            </featureType>\
+            """;
 
         MockHttpServletResponse response =
                 postAsServletResponse(BASEPATH + "/workspaces/cite/datastores/default/featuretypes", xml, "text/xml");
@@ -767,8 +795,8 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse layerStore2 =
                 getAsServletResponse(ROOT_PATH + "/workspaces/sf/featuretypes/Geometryless.json");
 
-        assertEquals(layerStore1.getStatus(), 200);
-        assertEquals(layerStore2.getStatus(), 200);
+        assertEquals(200, layerStore1.getStatus());
+        assertEquals(200, layerStore2.getStatus());
     }
 
     public static void assertContains(String message, String contains) {
@@ -940,5 +968,116 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("sf", typeName2);
         assertNotNull(ft.getFeatureType());
+    }
+
+    @Test
+    public void testPostWithRestrictedAttributes() throws Exception {
+        String xml = getAsString(BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature.xml");
+
+        // create a new sibling feature type with restricted attributes
+        String typeWitRestrictedAttributesName = "PrimitiveGeoFeatureRestricted";
+        String xmlWithRestrictedAttributes = xml.replace(
+                        "<name>PrimitiveGeoFeature</name>", "<name>" + typeWitRestrictedAttributesName + "</name>")
+                .replace(
+                        "<name>intProperty</name>",
+                        """
+                    <name>intProperty</name>
+                    <options>
+                        <int>1</int>
+                        <int>2</int>
+                        <int>3</int>
+                    </options>\
+                    """)
+                .replace(
+                        "<name>decimalProperty</name>",
+                        """
+                    <name>decimalProperty</name>
+                    <range>
+                        <min>3.14</min>
+                        <max>99.99</max>
+                    </range>\
+                    """);
+
+        MockHttpServletResponse sr =
+                postAsServletResponse(BASEPATH + "/workspaces/sf/featuretypes", xmlWithRestrictedAttributes);
+        assertEquals(201, sr.getStatus());
+
+        Document dom = getAsDOM(BASEPATH + "/workspaces/sf/featuretypes/" + typeWitRestrictedAttributesName + ".xml");
+
+        /* options restriction */
+        NodeList optionsNodes = xp.getMatchingNodes("//attribute[name='intProperty']/options/int", dom);
+        List<String> options = IntStream.range(0, optionsNodes.getLength())
+                .mapToObj(i -> optionsNodes.item(i).getTextContent().trim())
+                .toList();
+        assertEquals(List.of("1", "2", "3"), options);
+
+        /* range restriction */
+        assertXpathEvaluatesTo("3.14", "//attribute[name='decimalProperty']/range/min", dom);
+        assertXpathEvaluatesTo("99.99", "//attribute[name='decimalProperty']/range/max", dom);
+    }
+
+    @Test
+    public void testPutWithRestrictedAttributes() throws Exception {
+        String xml = getAsString(BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature.xml");
+
+        // update feature type with restricted attributes
+        String xmlWithRestrictedAttributes = xml.replace(
+                        "<name>intProperty</name>",
+                        """
+            <name>intProperty</name>
+            <options>
+                <int>1</int>
+                <int>2</int>
+                <int>3</int>
+            </options>\
+            """)
+                .replace(
+                        "<name>decimalProperty</name>",
+                        """
+                    <name>decimalProperty</name>
+                    <range>
+                        <min>3.14</min>
+                        <max>99.99</max>
+                    </range>\
+                    """)
+                .replace(
+                        "</attributes>",
+                        """
+                        <attribute>
+                            <name>stringProperty</name>
+                            <binding>java.lang.String</binding>
+                            <options>
+                                <string>one</string>
+                                <string>two</string>
+                                <string>three</string>
+                            </options>
+                            <source>name</source>
+                        </attribute>
+                    </attributes>\
+                    """);
+
+        MockHttpServletResponse sr = putAsServletResponse(
+                BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature", xmlWithRestrictedAttributes, "text/xml");
+        assertEquals(200, sr.getStatus());
+
+        Document dom = getAsDOM(BASEPATH + "/workspaces/sf/featuretypes/" + "PrimitiveGeoFeature" + ".xml");
+
+        /* integer options restriction */
+        NodeList intOptionsNodes = xp.getMatchingNodes("//attribute[name='intProperty']/options/int", dom);
+        List<String> intOptions = IntStream.range(0, intOptionsNodes.getLength())
+                .mapToObj(i -> intOptionsNodes.item(i).getTextContent().trim())
+                .toList();
+        assertEquals(List.of("1", "2", "3"), intOptions);
+
+        /* range restriction */
+        assertXpathEvaluatesTo("3.14", "//attribute[name='decimalProperty']/range/min", dom);
+        assertXpathEvaluatesTo("99.99", "//attribute[name='decimalProperty']/range/max", dom);
+
+        /* string options restriction */
+        NodeList stringOptionsNodes = xp.getMatchingNodes("//attribute[name='stringProperty']/options/string", dom);
+        List<String> stringOptions = IntStream.range(0, stringOptionsNodes.getLength())
+                .mapToObj(i -> stringOptionsNodes.item(i).getTextContent().trim())
+                .toList();
+        assertEquals(List.of("one", "two", "three"), stringOptions);
     }
 }

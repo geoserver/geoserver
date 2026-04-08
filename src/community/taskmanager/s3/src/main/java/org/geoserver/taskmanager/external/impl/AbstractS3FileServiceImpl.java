@@ -15,6 +15,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.geotools.util.logging.Logging;
 
 public abstract class AbstractS3FileServiceImpl implements FileService {
 
+    @Serial
     private static final long serialVersionUID = 7307573394786434849L;
 
     private static String ENCODING = "aws-chunked";

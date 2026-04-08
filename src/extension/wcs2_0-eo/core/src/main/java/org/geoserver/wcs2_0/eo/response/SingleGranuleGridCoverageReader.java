@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.media.jai.ImageLayout;
+import org.eclipse.imagen.ImageLayout;
 import org.geoserver.util.ISO8601Formatter;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.coverage.grid.GridEnvelope;
@@ -219,12 +219,12 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IOException {
         return reader.read(parameters);
     }
 
     @Override
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters) throws IOException {
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... parameters) throws IOException {
         return reader.read(coverageName, parameters);
     }
 

@@ -14,6 +14,8 @@ import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageMetadata;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Multipart;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -23,8 +25,6 @@ import java.util.Map;
 import javax.imageio.IIOException;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.FileImageInputStream;
-import javax.mail.BodyPart;
-import javax.mail.Multipart;
 import net.opengis.wcs20.GetCoverageType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -557,11 +557,11 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(
@@ -611,17 +611,17 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file, hints);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(
                     sourceCoverage.getGridGeometry().getGridRange(),
                     targetCoverage.getGridGeometry().getGridRange());
-            assertEquals(CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()), AxisOrder.NORTH_EAST);
+            assertEquals(AxisOrder.NORTH_EAST, CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()));
 
             final GeneralBounds transformedEnvelope =
                     CRS.transform((AffineTransform2D) CoverageUtilities.AXES_SWAP, targetCoverage.getEnvelope());
@@ -673,17 +673,17 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file, hints);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(
                     sourceCoverage.getGridGeometry().getGridRange(),
                     targetCoverage.getGridGeometry().getGridRange());
-            assertEquals(CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()), AxisOrder.EAST_NORTH);
+            assertEquals(AxisOrder.EAST_NORTH, CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()));
 
             assertEquals(sourceCoverage.getEnvelope(), targetCoverage.getEnvelope());
         } finally {

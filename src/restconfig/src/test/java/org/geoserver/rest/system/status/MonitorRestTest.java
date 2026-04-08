@@ -17,14 +17,14 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.system.status.MetricInfo;
 import org.geoserver.system.status.MetricValue;
 import org.geoserver.system.status.Metrics;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -87,7 +87,7 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
         JSONArray metrics =
                 ((JSONObject) json(response)).getJSONObject("metrics").getJSONArray("metric");
         for (Object metric : metrics) {
-            assertNotNull(((JSONObject) metric).containsKey("value"));
+            assertTrue(((JSONObject) metric).containsKey("value"));
         }
     }
 

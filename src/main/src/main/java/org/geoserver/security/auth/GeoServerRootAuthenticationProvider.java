@@ -5,9 +5,9 @@
  */
 package org.geoserver.security.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
@@ -21,8 +21,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * An authentication provider for the superuser called {@link #ROOTUSERNAME}. This user hat the administrator role
- * {@link GeoServerRole#ADMIN_ROLE} No other users are authenticated.
+ * An authentication provider for the superuser called {@link GeoServerUser#ROOT_USERNAME}. This user hat the
+ * administrator role {@link GeoServerRole#ADMIN_ROLE}. No other users are authenticated.
  *
  * <p>The password is checked using {@link GeoServerSecurityManager#checkMasterPassword(String)}
  *

@@ -14,7 +14,7 @@ import org.geoserver.catalog.PublishedInfo;
 /**
  * Extension point for sections of the configuration pages for individual layers.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  * @author Niels Charlier
  */
 public class LayerConfigurationPanelInfo extends PublishedConfigurationPanelInfo<LayerInfo> {
@@ -55,5 +55,16 @@ public class LayerConfigurationPanelInfo extends PublishedConfigurationPanelInfo
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LayerConfigurationPanelInfo{");
+        sb.append("id='").append(getId()).append('\'');
+        sb.append(", componentClass=").append(getComponentClass().getSimpleName());
+        sb.append(", order=").append(order);
+        sb.append(", myHandleableClasses=").append(myHandleableClasses);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -10,7 +10,7 @@ import java.io.Serializable;
 /**
  * A simple bean to represent a sidebar category.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public class Category implements Comparable<Category>, Serializable {
     /** The sort key to determine the order of the categories in the menu. */

@@ -7,9 +7,11 @@ package org.geoserver.importer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 
 public class Archive extends Directory {
 
+    @Serial
     private static final long serialVersionUID = -6007727652626093242L;
 
     /**

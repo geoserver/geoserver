@@ -7,9 +7,9 @@ package org.geoserver.security;
 
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
@@ -78,8 +78,7 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
         @Override
         public Authentication authenticate(Authentication authentication, HttpServletRequest request)
                 throws AuthenticationException {
-            if (authentication instanceof UsernamePasswordAuthenticationToken) {
-                UsernamePasswordAuthenticationToken up = (UsernamePasswordAuthenticationToken) authentication;
+            if (authentication instanceof UsernamePasswordAuthenticationToken up) {
                 if ("foo".equals(up.getPrincipal()) && "bar".equals(up.getCredentials())) {
                     authentication = new UsernamePasswordAuthenticationToken("foo", "bar", Collections.emptyList());
                 }

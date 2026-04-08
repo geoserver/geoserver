@@ -12,7 +12,6 @@ import java.io.OutputStream;
  * underlying destination as ignorable for OWS exception reporting, by throwing a {@link ClientStreamAbortedException}.
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  * @since 1.6.x
  */
 public final class DispatcherOutputStream extends OutputStream {

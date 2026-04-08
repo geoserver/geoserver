@@ -10,9 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -21,6 +18,9 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
 import org.junit.Before;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public abstract class TemplateJSONSimpleTestSupport extends GeoServerSystemTestSupport {
@@ -61,7 +61,7 @@ public abstract class TemplateJSONSimpleTestSupport extends GeoServerSystemTestS
 
     protected JSON getJsonLd(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        assertEquals(response.getContentType(), "application/ld+json");
+        assertEquals(removeCharset(response.getContentType()), "application/ld+json");
         return json(response);
     }
 
@@ -70,8 +70,15 @@ public abstract class TemplateJSONSimpleTestSupport extends GeoServerSystemTestS
         String contentType = response.getContentType();
         // in case of GEOSJSON response with ogcapi, the output format is not
         // set to MockHttpServlet request, so skipping
-        if (contentType != null) assertEquals(contentType, "application/json");
+        if (contentType != null) assertEquals(removeCharset(contentType), "application/json");
         return json(response);
+    }
+
+    private String removeCharset(String contentType) {
+        if (contentType != null && contentType.contains(";")) {
+            return contentType.substring(0, contentType.indexOf(";"));
+        }
+        return contentType;
     }
 
     protected void checkAdditionalInfo(JSONObject result) {

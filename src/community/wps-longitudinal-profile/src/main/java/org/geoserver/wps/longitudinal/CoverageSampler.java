@@ -8,7 +8,7 @@ import java.awt.Rectangle;
 import java.awt.image.Raster;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.PlanarImage;
 import org.geotools.api.coverage.PointOutsideCoverageException;
 import org.geotools.api.referencing.operation.MathTransform2D;
 import org.geotools.api.referencing.operation.TransformException;

@@ -4,6 +4,9 @@
  */
 package org.geoserver.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +46,19 @@ import org.geotools.util.GrowableInternationalString;
  */
 public abstract class InternationalStringPanel<C extends AbstractTextComponent<String>>
         extends FormComponentPanel<GrowableInternationalString> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(InternationalStringPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     GrowableStringModel growableModel;
 
@@ -128,6 +144,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         container.add(
                 geoServerAjaxFormLink = new GeoServerAjaxFormLink("addNew") {
 
+                    @Serial
                     private static final long serialVersionUID = -4136656891019857299L;
 
                     @Override
@@ -290,8 +307,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
     private boolean isSaveSubmit() {
         boolean result = false;
         IFormSubmitter submitBtn = getForm().findSubmitter();
-        if (submitBtn != null && submitBtn instanceof Component) {
-            Component submitLink = (Component) submitBtn;
+        if (submitBtn != null && submitBtn instanceof Component submitLink) {
             String id = submitLink.getId();
             result = id.equals("submit") || id.equals("save");
         }

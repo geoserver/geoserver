@@ -5,6 +5,8 @@
 
 package org.geoserver.ogcapi;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
@@ -12,14 +14,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
@@ -32,7 +33,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
-import org.springframework.lang.Nullable;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -100,9 +101,13 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         response = fireResponseDispatchedCallback(dr, dr.getOperation(), value, response);
 
         // write using the response provided by the callbacks
-        outputMessage
-                .getHeaders()
-                .setContentType(MediaType.parseMediaType(response.getMimeType(value, dr.getOperation())));
+        String contentType = response.getMimeType(value, dr.getOperation());
+        outputMessage.getHeaders().setContentType(MediaType.parseMediaType(contentType));
+        servletResponse.setContentType(contentType);
+        String responseCharset = response.getCharset(dr.getOperation());
+        if (responseCharset != null) {
+            servletResponse.setCharacterEncoding(response.getCharset(dr.getOperation()));
+        }
         response.write(value, servletResponse.getOutputStream(), dr.getOperation());
     }
 
@@ -201,7 +206,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
             // otherwise find something compatible
             if (selectedMediaType == null) {
-                MediaType.sortBySpecificityAndQuality(mediaTypesToUse);
+                MimeTypeUtils.sortBySpecificity(mediaTypesToUse);
 
                 for (MediaType mediaType : mediaTypesToUse) {
                     if (mediaType.isConcrete()) {
@@ -250,10 +255,11 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         // accounting for the capabilities of this class
         List<MediaType> result = new ArrayList<>();
         for (HttpMessageConverter<?> converter : this.messageConverters) {
-            if (converter instanceof ResponseMessageConverter && converter.canWrite(valueClass, null)) {
-                result.addAll(((ResponseMessageConverter) converter).getSupportedMediaTypes(valueClass, value));
-            } else if (converter instanceof GenericHttpMessageConverter && targetType != null) {
-                if (((GenericHttpMessageConverter<?>) converter).canWrite(targetType, valueClass, null)) {
+            if (converter instanceof ResponseMessageConverter messageConverter1
+                    && converter.canWrite(valueClass, null)) {
+                result.addAll(messageConverter1.getSupportedMediaTypes(valueClass, value));
+            } else if (converter instanceof GenericHttpMessageConverter<?> messageConverter && targetType != null) {
+                if (messageConverter.canWrite(targetType, valueClass, null)) {
                     result.addAll(converter.getSupportedMediaTypes());
                 }
             } else if (converter.canWrite(valueClass, null)) {
@@ -265,9 +271,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
     private MediaType getMostSpecificMediaType(MediaType acceptType, MediaType produceType) {
         MediaType produceTypeToUse = produceType.copyQualityValue(acceptType);
-        return (MediaType.SPECIFICITY_COMPARATOR.compare(acceptType, produceTypeToUse) <= 0
-                ? acceptType
-                : produceTypeToUse);
+        return (acceptType.isLessSpecific(produceTypeToUse) ? produceTypeToUse : acceptType);
     }
 
     /** Return the generic type of the {@code returnType} (or of the nested type if it is an {@link HttpEntity}). */
@@ -307,13 +311,12 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         if (selectedMediaType != null) {
             selectedMediaType = selectedMediaType.removeQualityValue();
             for (HttpMessageConverter<?> converter : this.messageConverters) {
-                if (converter instanceof ResponseMessageConverter
-                        && ((ResponseMessageConverter) converter).canWrite(value, selectedMediaType)) {
+                if (converter instanceof ResponseMessageConverter messageConverter
+                        && messageConverter.canWrite(value, selectedMediaType)) {
                     return (HttpMessageConverter<T>) converter;
                 }
-                if (converter instanceof GenericHttpMessageConverter
-                        && ((GenericHttpMessageConverter) converter)
-                                .canWrite(targetType, valueType, selectedMediaType)) {
+                if (converter instanceof GenericHttpMessageConverter messageConverter
+                        && messageConverter.canWrite(targetType, valueType, selectedMediaType)) {
                     return (HttpMessageConverter<T>) converter;
                 } else if (converter.canWrite(valueType, selectedMediaType)) {
                     return (HttpMessageConverter<T>) converter;

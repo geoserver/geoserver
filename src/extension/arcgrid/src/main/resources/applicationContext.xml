@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2025 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>  
+  <bean id="arcgridExtension" class="org.geoserver.platform.ModuleStatusImpl">
+    <property name="module" value="gs-arcgrid" />
+    <property name="name" value="ArcGrid datasource module"/>
+    <property name="component" value="ArcGrid datasource module"/>
+    <property name="documentation" value="extensions/arcgrid/index.html"/>
+    <property name="available" value="true"/>
+    <property name="enabled" value="true"/>
+    <property name="category" value="EXTENSION"/>
+  </bean>
+  <bean id="arcGridStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="arcgridRaster"/>
+    <property name="factoryClass" value="org.geotools.gce.arcgrid.ArcGridFormat"/>
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
+    <property name="icon" value="img/icons/geosilk/page_white_raster.png"/>
+    <property name="componentClass"
+              value="org.geoserver.web.data.store.raster.FileRasterEditPanel"/>
+  </bean>
+</beans>

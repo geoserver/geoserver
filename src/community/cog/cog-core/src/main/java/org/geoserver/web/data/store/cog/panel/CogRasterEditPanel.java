@@ -4,9 +4,11 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -33,25 +35,39 @@ import org.geoserver.web.wicket.browser.ExtensionFileFilter;
 /** A Raster Panel supporting COG settings. */
 public class CogRasterEditPanel extends StoreEditPanel {
 
-    private static final String[] EXTENSIONS = new String[] {".tiff", ".tif"};
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CogRasterEditPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    private static final String[] EXTENSIONS = {".tiff", ".tif"};
 
     private boolean isCog;
 
+    @SuppressWarnings("rawtypes")
     public CogRasterEditPanel(String componentId, Form storeEditForm) {
         super(componentId, storeEditForm);
 
         final IModel model = storeEditForm.getModel();
         setDefaultModel(model);
-        final CheckBox checkBox = new CheckBox("isCog", new PropertyModel<Boolean>(this, "isCog"));
+        final CheckBox checkBox = new CheckBox("isCog", new PropertyModel<>(this, "isCog"));
 
         CogUrlParamPanel file = new CogUrlParamPanel(
                 "url",
-                new PropertyModel(model, "URL"),
+                new PropertyModel<>(model, "URL"),
                 new ResourceModel("url", "URL"),
-                new PropertyModel<Boolean>(this, "isCog"),
+                new PropertyModel<>(this, "isCog"),
                 true);
         file.setOutputMarkupId(true);
-        file.setFileFilter(new Model(new ExtensionFileFilter(EXTENSIONS)));
+        file.setFileFilter(new Model<>(new ExtensionFileFilter(EXTENSIONS)));
         file.getFormComponent().add(new CombinedCogFileExistsValidator(checkBox.getModel()));
 
         add(file);
@@ -61,12 +77,12 @@ public class CogRasterEditPanel extends StoreEditPanel {
         container.setOutputMarkupId(true);
         add(container);
 
-        final PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
 
         // Check if already configured
         MetadataMap metadataObject = metadata.getObject();
         IModel<CogSettings> cogSettingsModel =
-                new MetadataMapModel(metadata, CogSettings.COG_SETTINGS_KEY, CogSettings.class);
+                new MetadataMapModel<>(metadata, CogSettings.COG_SETTINGS_KEY, CogSettings.class);
         if (metadataObject != null && metadataObject.containsKey(CogSettings.COG_SETTINGS_KEY)) {
             cogSettingsModel.setObject((CogSettings) metadataObject.get(CogSettings.COG_SETTINGS_KEY));
             isCog = true;
@@ -74,17 +90,18 @@ public class CogRasterEditPanel extends StoreEditPanel {
         }
 
         CogSettingsStorePanel cogSettingsPanel =
-                new CogSettingsStorePanel("cogSettings", cogSettingsModel, storeEditForm);
+                new CogSettingsStorePanel<>("cogSettings", cogSettingsModel, storeEditForm);
 
         cogSettingsPanel.setOutputMarkupId(true);
-        cogSettingsPanel.setVisible(checkBox.getModelObject().booleanValue());
+        cogSettingsPanel.setVisible(checkBox.getModelObject());
         container.add(cogSettingsPanel);
         checkBox.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                boolean isCog = checkBox.getModelObject().booleanValue();
+                boolean isCog = checkBox.getModelObject();
                 cogSettingsPanel.setVisible(isCog);
                 target.add(container);
                 if (isCog) {
@@ -99,7 +116,9 @@ public class CogRasterEditPanel extends StoreEditPanel {
                     }
                     cogSettingsModel.setObject(cogSettings);
                 } else {
-                    metadataObject.remove(CogSettings.COG_SETTINGS_KEY);
+                    if (metadataObject != null) {
+                        metadataObject.remove(CogSettings.COG_SETTINGS_KEY);
+                    }
                 }
             }
         });
@@ -156,12 +175,7 @@ public class CogRasterEditPanel extends StoreEditPanel {
 
         @Override
         public String getObject() {
-            Object obj = delegate.getObject();
-            if (obj instanceof URL) {
-                URL url = (URL) obj;
-                return url.toExternalForm();
-            }
-            return (String) obj;
+            return delegate.getObject();
         }
 
         @Override

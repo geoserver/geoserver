@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -33,9 +34,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 import net.minidev.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.rest.ProductsController.ProductPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
@@ -49,7 +50,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.locationtech.jts.geom.Envelope;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -62,9 +65,12 @@ public class ProductsControllerTest extends OSEORestTestSupport {
             "S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04";
     public static final String PRODUCT_ATM_CREATE_UPDATE_ID = "SAS1_20180101T000000.01";
 
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(true);
+
     @Override
-    protected boolean populateGranulesTable() {
-        return true;
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
     }
 
     @Before
@@ -187,9 +193,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
     private JSONArray jsonArray(Object... values) {
         JSONArray array = new JSONArray();
-        for (int i = 0; i < values.length; i++) {
-            array.add(values[i]);
-        }
+        Collections.addAll(array, values);
         return array;
     }
 
@@ -473,6 +477,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals("6881text", json.read("$.links[0].varcharTest").toString());
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
+    }
+
     @Test
     public void testPutProductLinks() throws Exception {
         testCreateProductPost();
@@ -492,6 +501,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         DocumentContext json = getAsJSONPath(
                 "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/ogcLinks",
                 200);
+
         assertEquals("http://www.opengis.net/spec/owc/1.0/req/atom/wms", json.read("$.links[0].offering"));
         assertEquals("GET", json.read("$.links[0].method"));
         assertEquals("GetCapabilities", json.read("$.links[0].code"));
@@ -645,11 +655,12 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         // parse the geojson, check the geometries have been parsed correctly
         SimpleFeatureCollection fc = GeoJSONReader.parseFeatureCollection(json.jsonString());
         assertEquals(2, fc.size());
-        final SimpleFeatureIterator it = fc.features();
-        SimpleFeature sf = it.next();
-        assertTrue(new Envelope(10, 12, 40, 42).contains(ReferencedEnvelope.reference(sf.getBounds())));
-        sf = it.next();
-        assertTrue(new Envelope(10, 12, 40, 42).contains(ReferencedEnvelope.reference(sf.getBounds())));
+        try (SimpleFeatureIterator it = fc.features()) {
+            SimpleFeature sf = it.next();
+            assertTrue(new Envelope(10, 12, 40, 42).contains(ReferencedEnvelope.reference(sf.getBounds())));
+            sf = it.next();
+            assertTrue(new Envelope(10, 12, 40, 42).contains(ReferencedEnvelope.reference(sf.getBounds())));
+        }
 
         // check no other granule has been harmed
         json = getAsJSONPath(
@@ -824,10 +835,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
                 ZipEntry entry = new ZipEntry(name);
                 zos.putNextEntry(entry);
-                InputStream stream = getClass().getResourceAsStream(resource);
-                assertNotNull("Could not find " + resource, stream);
-                int copied = IOUtils.copy(stream, zos);
-                assertThat(copied, Matchers.greaterThan(0));
+                try (InputStream stream = getClass().getResourceAsStream(resource)) {
+                    assertNotNull("Could not find " + resource, stream);
+                    int copied = IOUtils.copy(stream, zos);
+                    assertThat(copied, Matchers.greaterThan(0));
+                }
                 zos.closeEntry();
                 zos.flush();
             }

@@ -28,8 +28,8 @@ public class LinkInfoCallback implements DocumentCallback {
 
     @Override
     public void apply(Request dr, AbstractDocument document) {
-        if (document instanceof AbstractCollectionDocument) {
-            decorateCollection(dr, (AbstractCollectionDocument) document);
+        if (document instanceof AbstractCollectionDocument collectionDocument) {
+            decorateCollection(dr, collectionDocument);
         } else if (isCollectionsDocument(dr)) {
             decorateCollections(dr, document);
         }
@@ -48,11 +48,9 @@ public class LinkInfoCallback implements DocumentCallback {
     private void decorateCollection(Request dr, AbstractCollectionDocument document) {
         Object subject = document.getSubject();
         Class<?> serviceClass = getServiceClass(dr);
-        if (subject instanceof ResourceInfo) {
-            ResourceInfo resource = (ResourceInfo) subject;
+        if (subject instanceof ResourceInfo resource) {
             LinkInfoConverter.addLinksToDocument(document, resource, serviceClass);
-        } else if (subject instanceof PublishedInfo) {
-            PublishedInfo layer = (PublishedInfo) subject;
+        } else if (subject instanceof PublishedInfo layer) {
             LinkInfoConverter.addLinksToDocument(document, layer, serviceClass);
         }
     }

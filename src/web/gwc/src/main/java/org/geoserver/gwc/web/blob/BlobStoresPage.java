@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.geowebcache.layer.TileLayer;
  */
 public class BlobStoresPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 6076989713813458347L;
 
     private AjaxLink<Object> remove;
@@ -54,6 +56,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
 
         // the add button
         header.add(new AjaxLink<>("addNew") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -75,6 +78,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
     }
 
     private class RemoveSelectedLink extends AjaxLink<Object> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         public RemoveSelectedLink() {
@@ -105,6 +109,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
             }
             if (!assignedLayers.isEmpty()) {
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = 5257987095800108993L;
 
                     private String error = null;
@@ -158,6 +163,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
     }
 
     private class BlobStoreTable extends GeoServerTablePanel<BlobStoreInfo> {
+        @Serial
         private static final long serialVersionUID = -5380703588873422601L;
 
         public BlobStoreTable() {
@@ -170,6 +176,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
             final BlobStoreInfo blobStore = itemModel.getObject();
             if (property == BlobStoresProvider.ID) {
                 return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override

@@ -6,14 +6,15 @@ package org.geotools.process.raster;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
-import it.geosolutions.jaiext.classifier.LinearColorMap;
-import it.geosolutions.jaiext.piecewise.TransformationException;
 import java.awt.Color;
 import java.awt.image.IndexColorModel;
 import java.security.InvalidParameterException;
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.imagen.media.classifier.LinearColorMap;
+import org.eclipse.imagen.media.piecewise.TransformationException;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
@@ -215,10 +216,7 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
         final SLDColorMapBuilder builder = new SLDColorMapBuilder();
         final ColorMapEntry[] entries = cm.getColorMapEntries();
         builder.setLinearColorMapType(ColorMap.TYPE_RAMP).setNumberColorMapEntries(entries.length);
-        for (int i = 0; i < entries.length; i++) {
-            builder.addColorMapEntry(entries[i]);
-        }
-        LinearColorMap lcm = builder.buildLinearColorMap();
-        return lcm;
+        Arrays.stream(entries).forEach(builder::addColorMapEntry);
+        return builder.buildLinearColorMap();
     }
 }

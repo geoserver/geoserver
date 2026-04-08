@@ -191,10 +191,9 @@ public abstract class AbstractLayerOrTable extends AbstractGSRModel implements G
         ResourceInfo resource = layer.getResource();
         if (resource instanceof CoverageInfo) {
             return GeometryTypeEnum.POLYGON;
-        } else if (resource instanceof FeatureTypeInfo) {
+        } else if (resource instanceof FeatureTypeInfo info) {
             final GeometryTypeEnum gtype;
-            GeometryDescriptor gDesc =
-                    ((FeatureTypeInfo) resource).getFeatureType().getGeometryDescriptor();
+            GeometryDescriptor gDesc = info.getFeatureType().getGeometryDescriptor();
 
             if (gDesc == null) {
                 gtype = null;

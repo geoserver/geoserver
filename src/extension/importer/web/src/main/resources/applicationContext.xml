@@ -6,13 +6,14 @@
     <constructor-arg index="0" value="gs-importer-web"/>
     <constructor-arg index="1" value="Importer Web UI"/>
     <constructor-arg index="2" value="Importer Page"/>
+    <property name="category" value="EXTENSION"/>
   </bean>
   <!-- 
     wicket ui stuff
    -->
   <bean id="importDataMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="importData" />
-    <property name="category" ref="dataCategory"/>
+    <property name="category" ref="utilitiesCategory"/>
     <property name="titleKey" value="ImportDataPage.menu" />
     <property name="descriptionKey" value="ImportDataPage.description" />
     <property name="componentClass" value="org.geoserver.importer.web.ImportDataPage" />
@@ -24,7 +25,7 @@
     <property name="titleKey" value="ImporterConfigPage.title"/>
     <property name="descriptionKey" value="ImporterConfigPage.description"/>
     <property name="componentClass" value="org.geoserver.importer.web.ImporterConfigPage"/>
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="order" value="50" />
     <property name="icon" value="map_cog.png" />
   </bean>

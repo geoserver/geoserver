@@ -31,12 +31,6 @@ public class ConformanceClass {
     /** Ids filter conformance class for "OGC API - Features - Part n: Query by IDs" */
     public static final String IDS = "http://www.opengis.net/spec/ogcapi-features-1/1.1/req/ids";
 
-    /**
-     * A custom conformance class for GeoServer own ECQL, not further split into parts (as only GeoServer implements it
-     * anyways
-     */
-    public static final String ECQL = "http://geoserver.org/spec/ecql/1.0/req/gs-ecql";
-
     public static final String ECQL_TEXT = "http://geoserver.org/spec/ecql/1.0/req/ecql-text";
 
     /** Search conformance class for "OGC API - Features - Part 5: Search (PROPOSAL DRAFT)" */
@@ -63,4 +57,8 @@ public class ConformanceClass {
     public static final String CQL2_PROPERTY_PROPERTY = "http://www.opengis.net/spec/cql2/1.0/req/property-property";
     public static final String CQL2_FUNCTIONS = "http://www.opengis.net/spec/cql2/1.0/req/functions";
     public static final String CQL2_ARITHMETIC = "http://www.opengis.net/spec/cql2/1.0/req/arithmetic";
+
+    /** Property selection */
+    public static final String PROPERTY_SELECTION =
+            "http://www.opengis.net/spec/ogcapi-features-6/1.0/conf/properties-features";
 }

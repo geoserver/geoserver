@@ -26,9 +26,7 @@ public class TilesDocument extends AbstractDocument {
         this.tilesets = tileLayer.getGridSubsets().stream()
                 .map(subsetId -> new Tileset(wms, tileLayer, dataType, subsetId, styleId, false))
                 .collect(Collectors.toList());
-        this.id = tileLayer instanceof GeoServerTileLayer
-                ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                : tileLayer.getName();
+        this.id = tileLayer instanceof GeoServerTileLayer gstl ? gstl.getContextualName() : tileLayer.getName();
         this.styleId = styleId;
         this.dataType = dataType;
 

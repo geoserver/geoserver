@@ -66,7 +66,7 @@ public class SortFunction extends FunctionExpressionImpl implements VolatileFunc
     private List<Object> doSortNaturalOrder(Object object, Order order, Expression propertyName) {
         List<Object> objectList;
         if (object instanceof Collection) objectList = new ArrayList<>((Collection<Object>) object);
-        else if (object instanceof Object[]) objectList = Arrays.asList((Object[]) object);
+        else if (object instanceof Object[] object1s) objectList = Arrays.asList(object1s);
         else objectList = Arrays.asList(object);
         Comparator<Object> comparator = new ComparableOrToStringComparator(propertyName);
         if (order.equals(Order.DESC)) comparator = comparator.reversed();
@@ -95,9 +95,9 @@ public class SortFunction extends FunctionExpressionImpl implements VolatileFunc
             if (o1 == null && o2 == null) return 0;
             if (o1 == null) return -1;
             if (o2 == null) return 1;
-            if (o1 instanceof Comparable && o2 instanceof Comparable) {
+            if (o1 instanceof Comparable comparable && o2 instanceof Comparable) {
                 @SuppressWarnings("unchecked")
-                int result = ((Comparable) o1).compareTo(o2);
+                int result = comparable.compareTo(o2);
                 return result;
             } else return o1.toString().compareTo(o2.toString());
         }

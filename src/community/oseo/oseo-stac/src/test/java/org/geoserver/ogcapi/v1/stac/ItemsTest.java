@@ -4,9 +4,12 @@
  */
 package org.geoserver.ogcapi.v1.stac;
 
+import static org.geoserver.ogcapi.APIException.NOT_FOUND;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
@@ -27,6 +30,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfo;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfoImpl;
+import org.geoserver.opensearch.eo.security.EOProductAccessLimitInfo;
+import org.geoserver.opensearch.eo.security.EOProductAccessLimitInfoImpl;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -49,10 +56,21 @@ public class ItemsTest extends STACTestSupport {
     @Test
     public void testSentinelItemsJSON() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
+        checkSentinelItemsJSON(json, Integer.valueOf(19));
+    }
 
+    @Test
+    public void testSentinelItemsJSONSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+
+        DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
+        checkSentinelItemsJSON(json, null /* numberMatched not present */);
+    }
+
+    private void checkSentinelItemsJSON(DocumentContext json, Integer expectedNumberMatched) {
         // global properties
         assertEquals("FeatureCollection", json.read("type"));
-        assertEquals(Integer.valueOf(19), json.read("numberMatched"));
+        assertEquals(expectedNumberMatched, json.read("numberMatched"));
         assertEquals(Integer.valueOf(19), json.read("numberReturned"));
         assertEquals(STACService.STAC_VERSION, json.read("stac_version"));
 
@@ -76,8 +94,8 @@ public class ItemsTest extends STACTestSupport {
         // a sample image that does have an actual time range
         DocumentContext s2Range = readSingleContext(
                 json, "features[?(@.id == 'S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04')]");
-        assertEquals("2017-02-26T10:20:21.026+00:00", s2Range.read("properties.start_datetime"));
-        assertEquals("2017-02-26T10:30:00.031+00:00", s2Range.read("properties.end_datetime"));
+        assertEquals("2017-02-26T10:20:21.026Z", s2Range.read("properties.start_datetime"));
+        assertEquals("2017-02-26T10:30:00.031Z", s2Range.read("properties.end_datetime"));
     }
 
     @Test
@@ -89,7 +107,7 @@ public class ItemsTest extends STACTestSupport {
                 getAsJSONPath("sf/ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
         assertEquals(Integer.valueOf(19), docMatchingWorkspace.read("numberReturned"));
         // No match, but has null in workspace array and this is the global workspace
-        DocumentContext docNullWorkspace = getAsJSONPath("ogc/stac/v1/collections/SAS1/items?limit=50", 200);
+        getAsJSONPath("ogc/stac/v1/collections/SAS1/items?limit=50", 200);
         assertEquals(Integer.valueOf(19), docMatchingWorkspace.read("numberReturned"));
     }
 
@@ -113,7 +131,7 @@ public class ItemsTest extends STACTestSupport {
     @Test
     public void testSentinelItemJSONWorkspace() throws Exception {
         // matched workspace
-        DocumentContext json = getAsJSONPath(
+        getAsJSONPath(
                 "sf/ogc/stac/v1/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
                 200);
 
@@ -122,16 +140,13 @@ public class ItemsTest extends STACTestSupport {
                 "cite/ogc/stac/v1/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
                 404);
         // No workspace set
-        DocumentContext jsonNoWorkspaceSet =
-                getAsJSONPath("sf/ogc/stac/v1/collections/SAS1/items/SAS1_20180227102021.02", 200);
+        getAsJSONPath("sf/ogc/stac/v1/collections/SAS1/items/SAS1_20180227102021.02", 200);
     }
 
     @Test
     public void testDisabledItem() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/LANDSAT8/items/LS8_TEST.DISABLED", 404);
-
-        assertEquals("InvalidParameterValue", json.read("code"));
-        assertEquals("Could not locate item LS8_TEST.DISABLED", json.read("description"));
+        checkOGCAPIException(json, NOT_FOUND, "Could not locate item LS8_TEST.DISABLED");
     }
 
     @Test
@@ -173,13 +188,20 @@ public class ItemsTest extends STACTestSupport {
 
         // test the Sentinel2 entry
         Elements s2Body = doc.select(
-                "div.card-header:has(a:contains(S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04)) ~ div.card-body");
+                "div.card-header:has(a:contains(S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04)) ~"
+                        + " div.card-body");
         testSentinel2SampleHTML(s2Body);
     }
 
     private void testSentinel2SampleHTML(Elements elements) {
         assertTextContains(elements, "[data-tid='gbounds']", "-119.174, 33.333, -117.969, 34.338.");
         assertTextContains(elements, "[data-tid='ccover']", "7");
+    }
+
+    @Test
+    public void testPagingLinksFirstPageSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingLinksFirstPage();
     }
 
     @Test
@@ -201,6 +223,12 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/items?limit=5&startIndex=5",
                 next.read("href"));
+    }
+
+    @Test
+    public void testPagingLinksSecondPageSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingLinksSecondPage();
     }
 
     @Test
@@ -230,6 +258,12 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/items?startIndex=10&limit=5",
                 next.read("href"));
+    }
+
+    @Test
+    public void testPagingLinksLastPageSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingLinksLastPage();
     }
 
     @Test
@@ -328,7 +362,8 @@ public class ItemsTest extends STACTestSupport {
     public void testSpaceCQLFilter() throws Exception {
         // only one feature matching.
         DocumentContext json = getAsJSONPath(
-                "ogc/stac/v1/collections/SENTINEL2/items?filter=eo:cloud_cover = 1&filter-lang=cql-text&bbox=16,42,17,43",
+                "ogc/stac/v1/collections/SENTINEL2/items?filter=eo:cloud_cover ="
+                        + " 1&filter-lang=cql-text&bbox=16,42,17,43",
                 200);
 
         assertEquals(Integer.valueOf(1), json.read("numberMatched"));
@@ -446,11 +481,12 @@ public class ItemsTest extends STACTestSupport {
     @Test
     public void testSearchSortByTimeAscending() throws Exception {
         DocumentContext doc = getAsJSONPath(
-                "ogc/stac/v1/collections/SENTINEL2/items?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=datetime",
+                "ogc/stac/v1/collections/SENTINEL2/items?filter=datetime > DATE('2017-02-25') and datetime <"
+                        + " DATE('2017-03-31')&sortby=datetime",
                 200);
 
         assertThat(
-                (List<String>) doc.read("features[*].id"),
+                doc.read("features[*].id"),
                 contains(
                         "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
                         "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
@@ -459,11 +495,12 @@ public class ItemsTest extends STACTestSupport {
     @Test
     public void testSearchSortByTimeDescending() throws Exception {
         DocumentContext doc = getAsJSONPath(
-                "ogc/stac/v1/collections/SENTINEL2/items?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=-datetime",
+                "ogc/stac/v1/collections/SENTINEL2/items?filter=datetime > DATE('2017-02-25') and datetime <"
+                        + " DATE('2017-03-31')&sortby=-datetime",
                 200);
 
         assertThat(
-                (List<String>) doc.read("features[*].id"),
+                doc.read("features[*].id"),
                 contains(
                         "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
                         "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04"));
@@ -472,11 +509,12 @@ public class ItemsTest extends STACTestSupport {
     @Test
     public void testSearchSortByCloudCover() throws Exception {
         DocumentContext doc = getAsJSONPath(
-                "ogc/stac/v1/collections/SENTINEL2/items?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=eo:cloud_cover",
+                "ogc/stac/v1/collections/SENTINEL2/items?filter=datetime > DATE('2017-02-25') and datetime <"
+                        + " DATE('2017-03-31')&sortby=eo:cloud_cover",
                 200);
 
         assertThat(
-                (List<String>) doc.read("features[*].id"),
+                doc.read("features[*].id"),
                 contains(
                         "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
                         "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
@@ -486,10 +524,11 @@ public class ItemsTest extends STACTestSupport {
     public void testQueryByDynamicProperty() throws Exception {
         // s2:datastrip_id is in a dynamically included JSON
         DocumentContext doc = getAsJSONPath(
-                "ogc/stac/v1/collections/SAS1/items?filter=s2:datastrip_id = 'S2A_OPER_MSI_L2A_DS_VGS1_20201206T095713_S20201206T074838_N02.14'",
+                "ogc/stac/v1/collections/SAS1/items?filter=s2:datastrip_id ="
+                        + " 'S2A_OPER_MSI_L2A_DS_VGS1_20201206T095713_S20201206T074838_N02.14'",
                 200);
 
-        assertThat((List<String>) doc.read("features[*].id"), contains("SAS1_20180226102021.01"));
+        assertThat(doc.read("features[*].id"), contains("SAS1_20180226102021.01"));
     }
 
     @Test
@@ -549,12 +588,12 @@ public class ItemsTest extends STACTestSupport {
         assertFalse(properties.containsKey("datetime"));
 
         // asserts some of the properties value included.
-        assertEquals(properties.get("platform"), "LANDSAT_8");
-        assertEquals(properties.get("constellation"), "landsat8");
-        assertEquals(properties.get("eo:cloud_cover"), 0d);
-        assertEquals(properties.get("sat:orbit_state"), "descending");
-        assertEquals(properties.get("gsd"), 30);
-        assertEquals(properties.get("landsat:orbit"), 65);
+        assertEquals("LANDSAT_8", properties.get("platform"));
+        assertEquals("landsat8", properties.get("constellation"));
+        assertEquals(0d, properties.get("eo:cloud_cover"));
+        assertEquals("descending", properties.get("sat:orbit_state"));
+        assertEquals(30, properties.get("gsd"));
+        assertEquals(65, properties.get("landsat:orbit"));
 
         assertNotNull(assets);
         assertFalse(assets.isEmpty());
@@ -590,12 +629,12 @@ public class ItemsTest extends STACTestSupport {
         // asserts some of the properties value included.
         assertTrue(properties.containsKey("created"));
         assertTrue(properties.containsKey("datetime"));
-        assertEquals(properties.get("s1:frame_number"), 218);
-        assertEquals(properties.get("s1:start_anxtime"), 1090739);
-        assertEquals(properties.get("s1:stop_anxtime"), 1117820);
-        assertEquals(properties.get("s1:processing_date"), "2019-07-07T18: 33: 12.592265Z");
-        assertEquals(properties.get("s1:processing_site"), "Airbus DS-Newport");
-        assertEquals(properties.get("s1:ipf_version"), 3.1);
+        assertEquals(218, properties.get("s1:frame_number"));
+        assertEquals(1090739, properties.get("s1:start_anxtime"));
+        assertEquals(1117820, properties.get("s1:stop_anxtime"));
+        assertEquals("2019-07-07T18: 33: 12.592265Z", properties.get("s1:processing_date"));
+        assertEquals("Airbus DS-Newport", properties.get("s1:processing_site"));
+        assertEquals(3.1, properties.get("s1:ipf_version"));
 
         assertNotNull(assets);
         assertFalse(assets.isEmpty());
@@ -611,43 +650,41 @@ public class ItemsTest extends STACTestSupport {
     public void testQueryByDynamicPropertyNonQueryable() throws Exception {
         // s2:granule_id is in a dynamically included JSON but is not in the queryables array
         DocumentContext doc = getAsJSONPath(
-                "ogc/stac/v1/collections/SAS1/items?filter=s2:granule_id = 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
+                "ogc/stac/v1/collections/SAS1/items?filter=s2:granule_id ="
+                        + " 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
                 200);
-        assertEquals(new Integer(0), doc.read("numberMatched", Integer.class));
+        assertEquals(Integer.valueOf(0), doc.read("numberMatched", Integer.class));
 
         GeoServer gs = getGeoServer();
         OSEOInfo service = gs.getService(OSEOInfo.class);
         service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection", "s2:granule_id"));
         gs.save(service);
         DocumentContext doc2 = getAsJSONPath(
-                "ogc/stac/v1/collections/SAS1/items?filter=s2:granule_id = 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
+                "ogc/stac/v1/collections/SAS1/items?filter=s2:granule_id ="
+                        + " 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
                 200);
-        assertThat((List<String>) doc2.read("features[*].id"), contains("SAS1_20180227102021.02"));
-
-        service.getGlobalQueryables().clear();
-        service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
-        gs.save(service);
+        assertThat(doc2.read("features[*].id"), contains("SAS1_20180227102021.02"));
     }
 
     @Test
     public void testTopLevelArrayProperty() throws Exception {
         // query with an existing keyword
         DocumentContext doc = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?filter=keywords = 'k1'", 200);
-        assertEquals(new Integer(1), doc.read("numberMatched", Integer.class));
+        assertEquals(Integer.valueOf(1), doc.read("numberMatched", Integer.class));
         assertEquals(
                 "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
                 readSingleContext(doc, "features").read("id"));
 
         // query with an existing keyword (
         doc = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?filter=keywords = 'k2'", 200);
-        assertEquals(new Integer(1), doc.read("numberMatched", Integer.class));
+        assertEquals(Integer.valueOf(1), doc.read("numberMatched", Integer.class));
         assertEquals(
                 "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
                 readSingleContext(doc, "features").read("id"));
 
         // query with a missing keyword
         doc = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?filter=keywords = 'notAKeyword'", 200);
-        assertEquals(new Integer(0), doc.read("numberMatched", Integer.class));
+        assertEquals(Integer.valueOf(0), doc.read("numberMatched", Integer.class));
     }
 
     @Test
@@ -686,6 +723,7 @@ public class ItemsTest extends STACTestSupport {
         assertNotEquals(-1, i);
         array.remove(i);
 
+        @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) array.get(0);
         assertEquals(1, map.size());
         assertFalse(map.containsKey("titleMTL"));
@@ -701,7 +739,97 @@ public class ItemsTest extends STACTestSupport {
                 json.read("assetsb").toString());
         // assets object is json, not jsonb, so it is not sorted
         assertEquals(
-                "{g=1, m=2, f=3, h=4, c=5, a={hello=6, archive=7, meh={working=8, aver=9}}, opt:cloudCover=34, thumbnail={additional=0, href=will replace, type=will replace}}",
+                "{g=1, m=2, f=3, h=4, c=5, a={hello=6, archive=7, meh={working=8, aver=9}}, opt:cloudCover=34,"
+                        + " thumbnail={additional=0, href=will replace, type=will replace}}",
                 json.read("assets").toString());
+    }
+
+    @Test
+    public void testRestrictedProducts() throws Exception {
+        // set a product limit on clod cover. Reminder, the filter uses internal properties like opt:cloudCover,
+        // while the JSON returned uses the mapped properties like eo:cloud_cover
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        List<EOProductAccessLimitInfo> productLimits = service.getProductLimits();
+        productLimits.add(new EOProductAccessLimitInfoImpl("SENTINEL2", "opt:cloudCover = 0", List.of(ROLE_NOCLOUD)));
+        gs.save(service);
+
+        // test without roles, only products with cloud cover should be visible
+        DocumentContext jsAnonymous = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items", 200);
+        assertThat(getJsonListSize(jsAnonymous, "features[?(@.properties.eo:cloud_cover > 0)]"), greaterThan(0));
+        assertThat(getJsonListSize(jsAnonymous, "features[?(@.properties.eo:cloud_cover == 0)]"), equalTo(0));
+
+        // also accessing a single product with no cloud cover should fail
+        DocumentContext jsNotFound = getAsJSONPath(
+                "ogc/stac/v1/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
+                404);
+        checkOGCAPIException(
+                jsNotFound,
+                NOT_FOUND,
+                "Could not locate item S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04");
+
+        login("clearUser", "secret", ROLE_NOCLOUD);
+        DocumentContext jsClear = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items", 200);
+        assertThat(getJsonListSize(jsClear, "features[?(@.properties.eo:cloud_cover > 0)]"), greaterThan(0));
+        assertThat(getJsonListSize(jsClear, "features[?(@.properties.eo:cloud_cover == 0)]"), greaterThan(0));
+    }
+
+    @Test
+    public void testRestrictedCollections() throws Exception {
+        // set a collection limit on proprietary collections
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        List<EOCollectionAccessLimitInfo> collectionLimits = service.getCollectionLimits();
+        collectionLimits.add(new EOCollectionAccessLimitInfoImpl("license = 'proprietary'", List.of(ROLE_PROPRIETARY)));
+        // the sensor type is not exposed in JSON, will have to use the collection identifiers for JSON tests
+        collectionLimits.add(new EOCollectionAccessLimitInfoImpl("eo:sensorType = 'ATMOSPHERIC'", List.of(ROLE_ATM)));
+        gs.save(service);
+
+        // warning about test data oddity, SAS1 and SAS9 are the eoIdentifiers of the two atm collections
+
+        // test without roles, propietary and atm collections items should return a 404
+        checkCollectionAvailable("SENTINEL2");
+        checkCollectionNotAvailable("LANDSAT8");
+        checkCollectionNotAvailable("SAS1");
+        checkCollectionNotAvailable("SAS9");
+
+        // with role, non-disabled proprietary collections show up (only one at the moment)
+        login("propuser", "secret", ROLE_PROPRIETARY);
+        checkCollectionAvailable("SENTINEL2");
+        checkCollectionAvailable("LANDSAT8");
+        checkCollectionNotAvailable("SAS1");
+        checkCollectionNotAvailable("SAS9");
+
+        // now try with atm role, should get the other proprietary collection (2 of them) but not the proprietary one
+        login("atmuser", "secret", ROLE_ATM);
+        checkCollectionAvailable("SENTINEL2");
+        checkCollectionNotAvailable("LANDSAT8");
+        checkCollectionAvailable("SAS1");
+        checkCollectionAvailable("SAS9");
+
+        // now use both roles, should get both proprietary and atm collections
+        login("bothuser", "secret", ROLE_ATM, ROLE_PROPRIETARY);
+        checkCollectionAvailable("SENTINEL2");
+        checkCollectionAvailable("LANDSAT8");
+        checkCollectionAvailable("SAS1");
+        checkCollectionAvailable("SAS9");
+
+        // finally, become all powerful admin and get them all
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+        checkCollectionAvailable("SENTINEL2");
+        checkCollectionAvailable("LANDSAT8");
+        checkCollectionAvailable("SAS1");
+        checkCollectionAvailable("SAS9");
+    }
+
+    /** Checking the response is a 404 and the exception reports the collection is not found */
+    private void checkCollectionNotAvailable(String collectionName) throws Exception {
+        DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/" + collectionName + "/items", 404);
+        checkOGCAPIException(json, NOT_FOUND, "Collection not found: " + collectionName);
+    }
+
+    /** Just checking the response is a 200 */
+    private void checkCollectionAvailable(String collectionName) throws Exception {
+        getAsJSONPath("ogc/stac/v1/collections/" + collectionName + "/items", 200);
     }
 }

@@ -9,7 +9,9 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.FeatureChainingMockData;
+import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport {
@@ -83,6 +85,25 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
                         + MF_GML32_PARAM);
         assertXpathCount(1, "//gsml:MappedFeature", doc);
         assertXpathCount(1, "//gsml:MappedFeature[@gml:id='mf1']", doc);
+    }
+
+    @Test
+    public void getMappedFeatureContentType() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/features/v1/collections/gsml:MappedFeature/items/mf1?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        + "&"
+                        + MF_GML32_PARAM);
+        Assert.assertEquals("UTF-8", response.getCharacterEncoding());
+        assertContentType("application/gml+xml;version=3.2;charset=UTF-8", response);
+    }
+
+    @Test
+    public void getMappedFeatureCQL2IntersectionFilter() throws IOException {
+        Document doc = getAsDOM(
+                "ogc/features/v1/collections/gsml:MappedFeature/items?filter-lang=cql2-text&f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        + "&filter=S_INTERSECTS(gsml%3Ageometry,%20POLYGON((-180%20-90,%20-180%2090,%20180%2090,%20180%20-90,%20-180%20-90)))"
+                        + MF_GML32_PARAM);
+        assertXpathCount(5, "//gsml:MappedFeature", doc);
     }
 
     @Override

@@ -4,6 +4,7 @@
  */
 package org.geoserver.params.extractor.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 import org.geoserver.params.extractor.EchoParameter;
@@ -13,6 +14,7 @@ import org.geoserver.params.extractor.RuleBuilder;
 
 public class RuleModel implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String id;

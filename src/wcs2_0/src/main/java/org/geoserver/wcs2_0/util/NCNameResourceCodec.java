@@ -27,8 +27,8 @@ import org.geotools.util.logging.Logging;
  * not unique, so the {@link #decode(java.lang.String) decode} method return a list of possible workspace,name
  * combinations. You'll need to check which workspace is really existing.
  *
- * <p>You may use the {@link #getLayer(org.geoserver.catalog.Catalog, java.lang.String) getLayer()} method to just
- * retrieve the matching layers.
+ * <p>You may use the {@link #getLayers(org.geoserver.catalog.Catalog, java.lang.String)} method to just retrieve the
+ * matching layers.
  *
  * @author ETj (etj at geo-solutions.it)
  */

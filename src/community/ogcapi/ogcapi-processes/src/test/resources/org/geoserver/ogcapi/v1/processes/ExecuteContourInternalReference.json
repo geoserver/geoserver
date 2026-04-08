@@ -1,0 +1,16 @@
+{
+  "inputs": {
+    "data": {
+      "href": "http://geoserver/wcs?service=WCS&version=2.0.1&request=GetCoverage&coverageId=wcs__DEM",
+      "type": "image/tiff"
+    },
+    "levels": [100, 200, 300]
+  },
+  "outputs": {
+    "result": {
+      "format": {
+        "mediaType": "application/json"
+      }
+    }
+  }
+}

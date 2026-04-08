@@ -40,6 +40,11 @@ public class ByteArrayMessageConverter extends AbstractGenericHttpMessageConvert
     }
 
     @Override
+    public boolean canRead(MediaType mediaType) {
+        return false;
+    }
+
+    @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return byte[].class.equals(clazz);
     }

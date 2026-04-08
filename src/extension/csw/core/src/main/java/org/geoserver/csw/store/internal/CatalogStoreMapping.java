@@ -27,7 +27,7 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.util.logging.Logging;
 
 /**
- * Catalog Store Mapping An instance from this class provides a mapping from the data in the Internal Geoserver Catalog
+ * Catalog Store Mapping An instance from this class provides a mapping from the data in the Internal GeoServer Catalog
  * to a particular CSW Record Type
  *
  * @author Niels Charlier

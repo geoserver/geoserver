@@ -11,6 +11,7 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
@@ -23,12 +24,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.media.jai.PlanarImage;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.xml.XMLSerializer;
+import org.eclipse.imagen.PlanarImage;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -80,6 +77,9 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.styling.SLDTransformer;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.xml.XMLSerializer;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPoint;
@@ -302,7 +302,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Error generating Classification!")
-    private class InvalidRules extends RuntimeException {
+    private static class InvalidRules extends RuntimeException {
         private static final long serialVersionUID = -5538194136398411147L;
     }
 
@@ -660,7 +660,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     /** @author Fabiani */
-    public class RulesList {
+    public static class RulesList {
         private String layerName;
 
         private List<JSONObject> rules = new ArrayList<>();
@@ -689,7 +689,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     /** @author Fabiani */
-    public class StyleConverter implements Converter {
+    public static class StyleConverter implements Converter {
 
         /** @see com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java .lang.Class) */
         @Override

@@ -29,7 +29,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected String type;
 
-    protected boolean enabled;
+    protected volatile boolean enabled;
 
     protected WorkspaceInfo workspace;
 
@@ -41,13 +41,15 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected Throwable error;
 
-    protected boolean _default;
+    protected volatile boolean _default;
 
     protected Date dateCreated;
 
     protected Date dateModified;
 
-    protected boolean disableOnConnFailure;
+    protected String modifiedBy;
+
+    protected volatile boolean disableOnConnFailure;
 
     protected StoreInfoImpl() {}
 
@@ -150,7 +152,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
     }
 
     @Override
-    public <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
+    public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         // subclasses should override
         return null;
     }
@@ -258,5 +260,15 @@ public abstract class StoreInfoImpl implements StoreInfo {
     @Override
     public void setDisableOnConnFailure(boolean disableOnConnFailure) {
         this.disableOnConnFailure = disableOnConnFailure;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        this.modifiedBy = userName;
     }
 }

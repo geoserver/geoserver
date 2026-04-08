@@ -5,9 +5,9 @@
  */
 package org.geoserver.config;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.ReadOnlyConfiguration;

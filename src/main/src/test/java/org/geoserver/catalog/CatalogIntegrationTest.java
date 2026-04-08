@@ -233,8 +233,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         catalog.add(lg);
         // ... make sure we get a proxy
         lg = catalog.getLayerGroupByName("test-lg");
-        if (lg instanceof SecuredLayerGroupInfo) {
-            lg = ((SecuredLayerGroupInfo) lg).unwrap(LayerGroupInfo.class);
+        if (lg instanceof SecuredLayerGroupInfo info) {
+            lg = info.unwrap(LayerGroupInfo.class);
         }
         LayerGroupInfo lg2 = serialize(lg);
         assertSame(ModificationProxy.unwrap(lg), ModificationProxy.unwrap(lg2));

@@ -24,9 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -38,6 +35,9 @@ import org.geotools.filter.text.cql2.CQL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
 
@@ -87,7 +87,7 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
         ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
         new GeoJSONPPIO.Geometries(gs).encode(point, os);
         String output = os.toString();
-        assertEquals(output, "{\"type\":\"Point\",\"coordinates\":[1.12345679,2]}");
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[1.12345679,2]}", output);
 
         int dec = global.getSettings().getNumDecimals();
         global.getSettings().setNumDecimals(4);
@@ -96,7 +96,7 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
         ByteArrayOutputStream os2 = new ByteArrayOutputStream(1024);
         new GeoJSONPPIO.Geometries(gs).encode(point, os2);
         String output2 = os2.toString();
-        assertEquals(output2, "{\"type\":\"Point\",\"coordinates\":[1.1235,2]}");
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[1.1235,2]}", output2);
 
         global.getSettings().setNumDecimals(dec);
         getGeoServer().save(global);

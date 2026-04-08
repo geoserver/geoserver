@@ -1,0 +1,20 @@
+server:
+  url: "http://localhost:19090/geoserver"
+  verifytls: true
+
+credentials:
+  user: "admin"
+  pass: "geoserver"
+
+db:
+  pg_host:
+    docker: "geodatabase"
+    local: "localhost"
+  pg_port:
+    docker: 5432
+    local: 6432
+  pg_db: "acceptance"
+  pg_user: "geoserver"
+  pg_password: "geoserver"
+  pg_schema: "test1"
+

@@ -31,10 +31,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
-import javax.media.jai.operator.ConstantDescriptor;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.operator.ConstantDescriptor;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.resource.WPSFileResource;
@@ -152,8 +152,8 @@ public class GeorectifyCoverage implements GeoServerProcess {
             //
             // //
             final Object fileSource = coverage.getProperty(GridCoverage2DReader.FILE_SOURCE_PROPERTY);
-            if (fileSource != null && fileSource instanceof String) {
-                location = (String) fileSource;
+            if (fileSource != null && fileSource instanceof String string) {
+                location = string;
             }
             if (location == null) {
                 RenderedImage image = coverage.getRenderedImage();
@@ -166,7 +166,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
                             Float.valueOf(image.getWidth()),
                             Float.valueOf(image.getHeight()),
                             new Byte[] {Byte.valueOf((byte) 255)},
-                            new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+                            new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, tempLayout));
                     iw.addBand(alpha, false);
                     image = iw.getRenderedImage();
                     cm = image.getColorModel();
@@ -254,7 +254,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             //
             // //
             reader = new GeoTiffReader(warpedFile);
-            GridCoverage2D cov = addLocationProperty(reader.read(null), warpedFile);
+            GridCoverage2D cov = addLocationProperty(reader.read(), warpedFile);
 
             Map<String, Object> result = new HashMap<>();
             result.put("result", cov);
@@ -368,7 +368,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
      * @param inputFilePath the path of the file referring to the dataset to be warped
      * @param outputFilePath the path of the file referring to the produced dataset
      */
-    @SuppressWarnings("serial")
     private static final List<String> buildWarpArguments(
             final List<String> targetEnvelope,
             final Integer width,
@@ -419,7 +418,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
     }
 
     /** Parse the bounding box to be used by gdalwarp command */
-    @SuppressWarnings("serial")
     private static List<String> parseBBox(Envelope re) {
         if (re == null) {
             return Collections.emptyList();
@@ -449,7 +447,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
     private File addGroundControlPoints(
             final String originalFilePath, final List<String> gcp, final List<String> parameters) throws IOException {
         final File vrtFile = File.createTempFile("vrt_", ".vrt", config.getTempFolder());
-        @SuppressWarnings("serial")
         final List<String> arguments = new ArrayList<>();
         arguments.add("-of");
         arguments.add("VRT");
@@ -572,7 +569,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
         int gcpPoints = 0;
         // Setting up gcp command arguments
         while (gcpMatcher.find()) {
-            @SuppressWarnings("serial")
             List<String> gcp = new ArrayList<>();
             gcp.add("-gcp");
 

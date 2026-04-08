@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.web.publish;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -19,6 +20,7 @@ import org.geoserver.catalog.impl.LayerIdentifier;
 
 public class LayerIdentifierFormField extends FormComponentPanel<LayerIdentifierInfo> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private TextField<String> authority;
@@ -32,6 +34,7 @@ public class LayerIdentifierFormField extends FormComponentPanel<LayerIdentifier
         add((identifier = new TextField<>("identifier", new PropertyModel<>(identifierModel, "identifier"))));
 
         add(new IValidator<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

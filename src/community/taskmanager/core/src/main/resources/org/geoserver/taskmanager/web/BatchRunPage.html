@@ -4,7 +4,7 @@
   xmlns:wicket="http://wicket.apache.org/">
 <wicket:head>
    <wicket:link>
-      <link rel="stylesheet" href="styleTaskManager.css" type="text/css">
+      <link rel="stylesheet" href="styleTaskManager.css" type="text/css"/>
    </wicket:link>
 </wicket:head> 
 <body>
@@ -21,9 +21,9 @@
 		</div>		
 		<br />		
 		
-		<ul class="links-above-table">
-			<li><a class="refresh-link" href="#" wicket:id="refresh"><wicket:message key="refresh" /></a></li>
-		</ul>
+		<div class="gs-unordered-list-class links-above-table">
+			<div class="gs-list-item-class"> <a class="refresh-link" href="#" wicket:id="refresh"><wicket:message key="refresh" /></a></div>
+		</div>
 		
 		<div wicket:id="runPanel"></div>
 					 

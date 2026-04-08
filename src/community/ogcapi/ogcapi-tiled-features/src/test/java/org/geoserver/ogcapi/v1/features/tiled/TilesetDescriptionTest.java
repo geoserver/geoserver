@@ -53,7 +53,6 @@ public class TilesetDescriptionTest extends TiledFeaturesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // varargs generic in matcher
     public void testGetTileMatrixSet() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/features/v1/tileMatrixSets/EPSG:4326", 200);
 

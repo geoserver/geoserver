@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
@@ -40,6 +43,21 @@ import org.geoserver.web.GeoServerApplication;
  */
 // TODO WICKET8 - Verify this page works OK
 public class MetadataLinkEditor extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MetadataLinkEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -5721941745847988670L;
     /**
      * Can't depend on the wms module here, but beware links of type ISO19115:2003 won't show up in WMS 1.1.1 GetCaps
@@ -76,6 +94,7 @@ public class MetadataLinkEditor extends Panel {
         container.add(table);
         links = new ListView<>("links", metadataLinksModel) {
 
+            @Serial
             private static final long serialVersionUID = -3241009112151911288L;
 
             @Override
@@ -112,6 +131,7 @@ public class MetadataLinkEditor extends Panel {
                 // remove link
                 AjaxLink<MetadataLinkInfo> link = new AjaxLink<>("removeLink", item.getModel()) {
 
+                    @Serial
                     private static final long serialVersionUID = -6204300287066695521L;
 
                     @Override
@@ -135,6 +155,7 @@ public class MetadataLinkEditor extends Panel {
 
         // add new link button
         AjaxButton button = new AjaxButton("addlink") {
+            @Serial
             private static final long serialVersionUID = -695617463194724617L;
 
             @Override
@@ -157,7 +178,8 @@ public class MetadataLinkEditor extends Panel {
         noMetadata.setVisible(!anyLink);
     }
 
-    public class UrlValidator implements IValidator<String> {
+    public static class UrlValidator implements IValidator<String> {
+        @Serial
         private static final long serialVersionUID = 8435726308689930141L;
 
         @Override

@@ -16,6 +16,8 @@ import static org.junit.Assert.assertTrue;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsServer;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,8 +26,9 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Collections;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
+import org.apereo.cas.client.proxy.ProxyGrantingTicketStorage;
+import org.apereo.cas.client.validation.Assertion;
+import org.apereo.cas.client.validation.Cas20ProxyTicketValidator;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -42,9 +45,6 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.hamcrest.CoreMatchers;
-import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
-import org.jasig.cas.client.validation.Assertion;
-import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -270,7 +270,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         MockFilterChain chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
 
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         String redirectURL = response.getHeader("Location");
         assertTrue(redirectURL.contains(GeoServerCasConstants.LOGIN_URI));
         assertTrue(redirectURL.endsWith("bar"));
@@ -364,7 +364,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         ticket = loginUsingTicket(helper, request, response, chain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         redirectURL = response.getHeader("Location");
         assertTrue(redirectURL.contains("login"));
         ctx = (SecurityContext)
@@ -402,7 +402,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         request.setQueryString("ticket=" + ticket);
 
         getProxy().doFilter(request, response, chain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         redirectURL = response.getHeader("Location");
         assertTrue(redirectURL.contains(GeoServerCasConstants.LOGIN_URI));
         ctx = (SecurityContext)
@@ -510,7 +510,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         GeoServerLogoutFilter logoutFilter = (GeoServerLogoutFilter)
                 getSecurityManager().loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         logoutFilter.doFilter(request, response, chain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         String redirectUrl = response.getHeader("Location");
         assertNotNull(redirectUrl);
         assertTrue(redirectUrl.contains(GeoServerCasConstants.LOGOUT_URI));
@@ -549,7 +549,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                 (GeoServerCasAuthenticationFilter) getSecurityManager().loadFilter(casFilterName);
         // getProxy().doFilter(request, response, chain);
         casFilter.doFilter(request, response, chain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         redirectUrl = response.getHeader("Location");
         assertNotNull(redirectUrl);
         assertThat(redirectUrl, CoreMatchers.not(CoreMatchers.containsString(GeoServerCasConstants.LOGOUT_URI)));

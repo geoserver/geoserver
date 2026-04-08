@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
@@ -52,6 +53,7 @@ public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilte
         }
     }
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public RoleSource getRoleSource() {

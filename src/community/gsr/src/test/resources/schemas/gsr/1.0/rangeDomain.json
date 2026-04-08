@@ -1,5 +1,5 @@
 {
-   "$schema":"http://json-schema.org/draft-03/schema#",
+   "$schema":"https://json-schema.org/draft/2020-12/schema",
 
     "title":"range domain",
     "type":"object",
@@ -10,23 +10,21 @@
         "type":{
             "title":"domain type",
             "type":"string",
-            "required":true,
             "enum":["range"]
         },
         "name":{
             "title":"domain name",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "range":{
             "title":"range (min, max)",
             "type":"array",
-            "required":true,
             "minItems":2,
             "maxItems":2,
             "items":{
                 "type":"number"
             }
         }
-    }
+    },
+    "required":["type","name","range"]
 }

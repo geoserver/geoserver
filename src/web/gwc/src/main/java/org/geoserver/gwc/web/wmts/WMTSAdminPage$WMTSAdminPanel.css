@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class WMTSAdminPage$WMTSAdminPanel
+
+The panel's html will be contained in a <div class='gs-panel-WMTSAdminPage_WMTSAdminPanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-WMTSAdminPage_WMTSAdminPanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

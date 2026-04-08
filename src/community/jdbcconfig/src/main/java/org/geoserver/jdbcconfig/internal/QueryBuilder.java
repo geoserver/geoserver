@@ -262,8 +262,8 @@ class QueryBuilder<T extends Info> {
     private void splitPublishedInfoFilter() {
         // the published info filter may be AND'ed with other filters such as from
         // org.geoserver.security.SecureCatalogFacade
-        List<Filter> children = this.unsupportedFilter instanceof And
-                ? ((And) this.unsupportedFilter).getChildren()
+        List<Filter> children = this.unsupportedFilter instanceof And a
+                ? a.getChildren()
                 : Collections.singletonList(this.unsupportedFilter);
         Or or = children.stream()
                 .filter(Or.class::isInstance)
@@ -298,8 +298,8 @@ class QueryBuilder<T extends Info> {
      * @return whether the filter contains an IsInstanceOf filter
      */
     private static boolean hasIsInstanceOf(Filter filter) {
-        if (filter instanceof And) {
-            List<Filter> children = ((And) filter).getChildren();
+        if (filter instanceof And and) {
+            List<Filter> children = and.getChildren();
             return children.stream().filter(QueryBuilder::isIsInstanceOf).count() == 1;
         }
         return false;
@@ -313,8 +313,7 @@ class QueryBuilder<T extends Info> {
      * @return whether the filter is an IsInstanceOf filter
      */
     private static boolean isIsInstanceOf(Filter filter) {
-        if (filter instanceof PropertyIsEqualTo) {
-            PropertyIsEqualTo eq = (PropertyIsEqualTo) filter;
+        if (filter instanceof PropertyIsEqualTo eq) {
             return eq.getExpression1() instanceof Function
                     && IsInstanceOf.NAME.equals(((Function) eq.getExpression1()).getFunctionName());
         }

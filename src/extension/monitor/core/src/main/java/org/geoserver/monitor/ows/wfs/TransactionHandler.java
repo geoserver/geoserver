@@ -87,8 +87,8 @@ public class TransactionHandler extends WFSRequestObjectHandler {
                     List<Feature> features = (List<Feature>) EMFUtils.get((EObject) e, "feature");
                     Set<String> set = new LinkedHashSet<>();
                     for (Feature f : features) {
-                        if (f instanceof SimpleFeature) {
-                            set.add(((SimpleFeature) f).getType().getTypeName());
+                        if (f instanceof SimpleFeature feature) {
+                            set.add(feature.getType().getTypeName());
                         } else {
                             set.add(f.getType().getName().toString());
                         }

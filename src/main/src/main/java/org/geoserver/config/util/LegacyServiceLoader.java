@@ -16,8 +16,6 @@ import org.geoserver.config.ServiceLoader;
 /**
  * Base class for service loaders loading from the legacy service.xml file.
  *
- * <p>
- *
  * @author Justin Deoliveira, The Open Planning Project
  */
 public abstract class LegacyServiceLoader<T extends ServiceInfo> implements ServiceLoader<T> {
@@ -59,7 +57,8 @@ public abstract class LegacyServiceLoader<T extends ServiceInfo> implements Serv
      *
      * <p>This method is intended to be called by subclasses after creating an instance of ServiceInfo. Example:
      *
-     * <pre>
+     *
+     *  {@code
      *   // read properties
      *   Map<String,Object> props = reader.wfs();
      *
@@ -72,7 +71,8 @@ public abstract class LegacyServiceLoader<T extends ServiceInfo> implements Serv
      *   //load wfs specific properties
      *   wfs.setServiceLevel( map.get( "serviceLevel") );
      *   ...
-     * </pre>
+     *   }
+     *
      */
     protected void readCommon(ServiceInfo service, Map<String, Object> properties, GeoServer gs) throws Exception {
 

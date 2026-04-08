@@ -9,7 +9,7 @@ import it.geosolutions.imageio.maskband.DatasetLayout;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import javax.media.jai.ImageLayout;
+import org.eclipse.imagen.ImageLayout;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.parameter.GeneralParameterValue;
@@ -97,12 +97,12 @@ public abstract class DecoratingGridCoverage2DReader implements GridCoverage2DRe
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
         return delegate.read(parameters);
     }
 
     @Override
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... parameters)
             throws IllegalArgumentException, IOException {
         return delegate.read(coverageName, parameters);
     }

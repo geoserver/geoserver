@@ -5,6 +5,7 @@
 package org.geoserver.web.data.layer;
 
 import java.io.IOException;
+import java.io.Serial;
 import net.opengis.wfs20.ParameterExpressionType;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -19,6 +20,7 @@ import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 public class CascadedWFSStoredQueryEditPage extends CascadedWFSStoredQueryAbstractPage {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 7254877970765799559L;
 
     private ResourceConfigurationPage previousPage;
@@ -77,16 +79,14 @@ public class CascadedWFSStoredQueryEditPage extends CascadedWFSStoredQueryAbstra
 
             if (mapping instanceof ParameterMappingBlockValue) {
                 type = ParameterMappingType.BLOCKED;
-            } else if (mapping instanceof ParameterMappingDefaultValue) {
-                ParameterMappingDefaultValue pmdv = (ParameterMappingDefaultValue) mapping;
+            } else if (mapping instanceof ParameterMappingDefaultValue pmdv) {
                 if (pmdv.isForcible()) {
                     type = ParameterMappingType.STATIC;
                 } else {
                     type = ParameterMappingType.DEFAULT;
                 }
                 value = pmdv.getDefaultValue();
-            } else if (mapping instanceof ParameterMappingExpressionValue) {
-                ParameterMappingExpressionValue pmev = (ParameterMappingExpressionValue) mapping;
+            } else if (mapping instanceof ParameterMappingExpressionValue pmev) {
                 if (pmev.getExpressionLanguage().equals("CQL")) {
                     type = ParameterMappingType.EXPRESSION_CQL;
                     value = pmev.getExpression();

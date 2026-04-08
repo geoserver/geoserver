@@ -1,0 +1,2 @@
+geom,area,path,name,population,last_census_date,density,visited,null_field
+POINT (9.19 45.46),"MULTIPOLYGON (((9.13 45.52, 9.13 45.42, 9.3 45.42, 9.3 45.52, 9.13 45.52)))","LINESTRING (9.18 45.48, 9.19 45.47, 9.2 45.46)",Milan,1378000,2025-01-01T00:00:00Z,1.7976931348623157E308,true,

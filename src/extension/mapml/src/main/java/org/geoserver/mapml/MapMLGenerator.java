@@ -21,6 +21,7 @@ import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Coordinates;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.GeometryContent;
+import org.geoserver.mapml.xml.MapMLElement;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.ObjectFactory;
 import org.geoserver.mapml.xml.PropertyContent;
@@ -45,7 +46,6 @@ import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.linearref.LengthIndexedLine;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
-import org.springframework.core.Constants;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 /**
@@ -161,7 +161,7 @@ public class MapMLGenerator {
                 geometryContent =
                         templateOptional.get().getBody().getFeatures().get(0).getGeometry();
                 // format the geometry coming from the template using the formatter
-                Object geometry = geometryContent.getGeometryContent().getValue();
+                Object geometry = geometryContent.getGeometryContent();
                 formatGeometry(geometry);
             } else {
                 geometryContent = buildGeometry(g);
@@ -197,37 +197,31 @@ public class MapMLGenerator {
      * @param geometry the geometry
      */
     private void formatGeometry(Object geometry) {
-        if (geometry instanceof org.geoserver.mapml.xml.Point) {
-            org.geoserver.mapml.xml.Point point = (org.geoserver.mapml.xml.Point) geometry;
+        if (geometry instanceof org.geoserver.mapml.xml.Point point) {
             formatCoordinates(point.getCoordinates());
-        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPoint) {
-            org.geoserver.mapml.xml.MultiPoint multiPoint = (org.geoserver.mapml.xml.MultiPoint) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPoint multiPoint) {
             formatCoordinates(multiPoint.getCoordinates());
-        } else if (geometry instanceof org.geoserver.mapml.xml.LineString) {
-            org.geoserver.mapml.xml.LineString lineString = (org.geoserver.mapml.xml.LineString) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.LineString lineString) {
             formatCoordinates(lineString.getCoordinates());
-        } else if (geometry instanceof org.geoserver.mapml.xml.MultiLineString) {
-            org.geoserver.mapml.xml.MultiLineString multiLineString =
-                    (org.geoserver.mapml.xml.MultiLineString) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.MultiLineString multiLineString) {
             formatCoordinates(multiLineString.getTwoOrMoreCoordinatePairs());
-        } else if (geometry instanceof org.geoserver.mapml.xml.Polygon) {
-            org.geoserver.mapml.xml.Polygon polygon = (org.geoserver.mapml.xml.Polygon) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.Polygon polygon) {
             formatCoordinates(polygon.getThreeOrMoreCoordinatePairs());
-        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPolygon) {
-            org.geoserver.mapml.xml.MultiPolygon multiPolygon = (org.geoserver.mapml.xml.MultiPolygon) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPolygon multiPolygon) {
             for (org.geoserver.mapml.xml.Polygon polygon : multiPolygon.getPolygon()) {
                 formatCoordinates(polygon.getThreeOrMoreCoordinatePairs());
             }
 
-        } else if (geometry instanceof org.geoserver.mapml.xml.GeometryCollection) {
-            org.geoserver.mapml.xml.GeometryCollection geometryCollection =
-                    (org.geoserver.mapml.xml.GeometryCollection) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.GeometryCollection geometryCollection) {
             for (Object geom : geometryCollection.getPointOrLineStringOrPolygon()) {
                 formatGeometry(geom);
             }
-        } else if (geometry instanceof org.geoserver.mapml.xml.A) {
-            org.geoserver.mapml.xml.A a = (org.geoserver.mapml.xml.A) geometry;
-            formatGeometry(a.getGeometryContent().getValue());
+        } else if (geometry instanceof org.geoserver.mapml.xml.A a) {
+            // Extract value from JAXBElement
+            jakarta.xml.bind.JAXBElement<?> geometryElement = a.getGeometryContent();
+            if (geometryElement != null) {
+                formatGeometry(geometryElement.getValue());
+            }
         }
     }
 
@@ -239,9 +233,25 @@ public class MapMLGenerator {
     private void formatCoordinates(List<Coordinates> coordinates) {
         for (Coordinates coords : coordinates) {
             List<Object> coordList = coords.getCoordinates();
-            for (Object coord : coordList) {
-                if (coord instanceof Span) {
-                    Span span = (Span) coord;
+            for (int j = 0; j < coordList.size(); j++) {
+                Object coord = coordList.get(j);
+                // Handle JAXBElement wrappers from unmarshalling
+                if (coord instanceof jakarta.xml.bind.JAXBElement<?> jaxbElement) {
+                    Object value = jaxbElement.getValue();
+                    if (value instanceof Span span) {
+                        List<String> spanCoords = span.getCoordinates();
+                        for (int i = 0; i < spanCoords.size(); i++) {
+                            String[] xyArray = formatCoordStrings(spanCoords.get(i));
+                            spanCoords.set(i, String.join(" ", xyArray));
+                        }
+                        // Update the list with unwrapped Span
+                        coordList.set(j, span);
+                    } else {
+                        String xy = value.toString();
+                        String[] xyArray = formatCoordStrings(xy);
+                        coordList.set(j, String.join(" ", xyArray));
+                    }
+                } else if (coord instanceof Span span) {
                     List<String> spanCoords = span.getCoordinates();
                     for (int i = 0; i < spanCoords.size(); i++) {
                         String[] xyArray = formatCoordStrings(spanCoords.get(i));
@@ -250,7 +260,7 @@ public class MapMLGenerator {
                 } else {
                     String xy = coord.toString();
                     String[] xyArray = formatCoordStrings(xy);
-                    coord = String.join(" ", xyArray);
+                    coordList.set(j, String.join(" ", xyArray));
                 }
             }
         }
@@ -397,20 +407,20 @@ public class MapMLGenerator {
 
     private static class AttributeValueResolver {
 
-        private final Constants constants = new Constants(PlaceholderConfigurerSupport.class);
         private final PropertyPlaceholderHelper helper = new PropertyPlaceholderHelper(
-                constants.asString("DEFAULT_PLACEHOLDER_PREFIX"),
-                constants.asString("DEFAULT_PLACEHOLDER_SUFFIX"),
-                constants.asString("DEFAULT_VALUE_SEPARATOR"),
+                PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX,
+                PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_SUFFIX,
+                PlaceholderConfigurerSupport.DEFAULT_VALUE_SEPARATOR,
+                null,
                 true);
         private final String nullValue = "null";
         private final SimpleFeature feature;
-        private final PropertyPlaceholderHelper.PlaceholderResolver resolver = (name) -> resolveAttributeNames(name);
+        private final PropertyPlaceholderHelper.PlaceholderResolver resolver = this::resolveAttributeNames;
 
         /**
          * Wrap the feature to caption via this constructor
          *
-         * @param feature
+         * @param feature - feature to resolve attributes from
          */
         protected AttributeValueResolver(SimpleFeature feature) {
             this.feature = feature;
@@ -421,7 +431,7 @@ public class MapMLGenerator {
          * them, but these seem to require that the space be replaced by an underscore, so this function performs that
          * transformation.
          *
-         * @param attributeName
+         * @param attributeName - name of attribute to resolve
          * @return null-signifying token (nullValue) or the attribute value
          */
         private String resolveAttributeNames(String attributeName) {
@@ -436,7 +446,7 @@ public class MapMLGenerator {
          * Invokes PropertyPlaceholderHelper.replacePlaceholders, which iterates over the userTemplate string to replace
          * placeholders with attribute values of the attribute of that name, if found.
          *
-         * @param userTemplate
+         * @param userTemplate - template string possibly containing ${placeholders}
          * @return A possibly null string with placeholders resolved
          * @throws BeansException if something goes wrong
          */
@@ -449,32 +459,32 @@ public class MapMLGenerator {
     /**
      * Build a MapML geometry from a JTS geometry
      *
-     * @param g
-     * @return
+     * @param g a JTS Geometry
+     * @return the geometry content
      * @throws IOException - IOException
      */
     public GeometryContent buildGeometry(Geometry g) throws IOException {
         GeometryContent geom = new GeometryContent();
-        if (g instanceof Point) {
-            org.geoserver.mapml.xml.Point point = buildPoint((Point) g);
-            geom.setGeometryContent(factory.createPoint(point));
-        } else if (g instanceof MultiPoint) {
-            org.geoserver.mapml.xml.MultiPoint multiPoint = buildMultiPoint((MultiPoint) g);
-            geom.setGeometryContent(factory.createMultiPoint(multiPoint));
-        } else if (g instanceof LineString) {
-            org.geoserver.mapml.xml.LineString lineString = buildLineString((LineString) g);
-            geom.setGeometryContent(factory.createLineString(lineString));
-        } else if (g instanceof MultiLineString) {
-            org.geoserver.mapml.xml.MultiLineString multiLineString = buildMultiLineString((MultiLineString) g);
-            geom.setGeometryContent(factory.createMultiLineString(multiLineString));
-        } else if (g instanceof Polygon) {
-            org.geoserver.mapml.xml.Polygon polygon = buildPolygon((Polygon) g);
-            geom.setGeometryContent(factory.createPolygon(polygon));
-        } else if (g instanceof MultiPolygon) {
-            org.geoserver.mapml.xml.MultiPolygon multiPolygon = buildMultiPolygon((MultiPolygon) g);
-            geom.setGeometryContent(factory.createMultiPolygon(multiPolygon));
-        } else if (g instanceof GeometryCollection) {
-            geom.setGeometryContent(factory.createGeometryCollection(buildGeometryCollection((GeometryCollection) g)));
+        if (g instanceof Point point1) {
+            org.geoserver.mapml.xml.Point point = buildPoint(point1);
+            geom.setGeometryContent(point);
+        } else if (g instanceof MultiPoint point) {
+            org.geoserver.mapml.xml.MultiPoint multiPoint = buildMultiPoint(point);
+            geom.setGeometryContent(multiPoint);
+        } else if (g instanceof LineString string1) {
+            org.geoserver.mapml.xml.LineString lineString = buildLineString(string1);
+            geom.setGeometryContent(lineString);
+        } else if (g instanceof MultiLineString string) {
+            org.geoserver.mapml.xml.MultiLineString multiLineString = buildMultiLineString(string);
+            geom.setGeometryContent(multiLineString);
+        } else if (g instanceof Polygon polygon1) {
+            org.geoserver.mapml.xml.Polygon polygon = buildPolygon(polygon1);
+            geom.setGeometryContent(polygon);
+        } else if (g instanceof MultiPolygon polygon) {
+            org.geoserver.mapml.xml.MultiPolygon multiPolygon = buildMultiPolygon(polygon);
+            geom.setGeometryContent(multiPolygon);
+        } else if (g instanceof GeometryCollection collection) {
+            geom.setGeometryContent(buildGeometryCollection(collection));
         } else if (g != null) {
             throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }
@@ -484,7 +494,7 @@ public class MapMLGenerator {
 
     /**
      * @param g a JTS Geometry
-     * @return
+     * @return the specific geometry object
      * @throws IOException - IOException
      */
     private Object buildSpecificGeom(Geometry g) throws IOException {
@@ -517,9 +527,9 @@ public class MapMLGenerator {
     private org.geoserver.mapml.xml.GeometryCollection buildGeometryCollection(GeometryCollection gc)
             throws IOException {
         org.geoserver.mapml.xml.GeometryCollection geomColl = new org.geoserver.mapml.xml.GeometryCollection();
-        List<Object> geoms = geomColl.getPointOrLineStringOrPolygon();
+        List<MapMLElement> geoms = geomColl.getPointOrLineStringOrPolygon();
         for (int i = 0; i < gc.getNumGeometries(); i++) {
-            geoms.add(buildSpecificGeom(gc.getGeometryN(i)));
+            geoms.add((MapMLElement) buildSpecificGeom(gc.getGeometryN(i)));
         }
         return geomColl;
     }
@@ -621,6 +631,7 @@ public class MapMLGenerator {
             TaggedPolygon.TaggedCoordinateSequence cs = coordinates.get(i);
             Object value = buildTaggedCoordinateSequence(cs);
             // client oddity: needs spaces before and after the map-span elements to work
+            // JAXBElement wraps Span, so check for String (not wrapped)
             if (value instanceof String) {
                 if (i > 0) {
                     value = " " + value;

@@ -6,9 +6,9 @@
 
 package org.geoserver.security.filter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor;
 import org.springframework.security.web.authentication.preauth.x509.X509PrincipalExtractor;
@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Principa
  *
  * @author mcr
  */
+@SuppressWarnings("deprecation") // TODO: remove and provide a X500 provider instead?
 public class GeoServerX509CertificateAuthenticationFilter extends GeoServerJ2eeBaseAuthenticationFilter {
 
     private X509PrincipalExtractor principalExtractor;

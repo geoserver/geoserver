@@ -18,10 +18,9 @@ public class StringBBoxConverter implements Converter {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T convert(Object source, Class<T> target) throws Exception {
-        if (source instanceof ReferencedEnvelope) {
+        if (source instanceof ReferencedEnvelope envelope) {
             if (String.class.isAssignableFrom(target)) {
                 try {
-                    ReferencedEnvelope envelope = (ReferencedEnvelope) source;
 
                     StringBuilder str = new StringBuilder();
                     str.append(envelope.getMinimum(0)).append(SEPARATOR);

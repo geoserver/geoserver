@@ -5,6 +5,7 @@
 
 package org.geoserver.wps.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,7 +18,9 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteR
 /** Implements auto complete behavior to manage the roles choice as a list of string separated by ";" */
 public class RolesAutoCompleteBehavior extends AutoCompleteBehavior<String> {
 
+    @Serial
     private static final long serialVersionUID = -6743826046815447371L;
+
     private StringBuilder selectedRoles;
     private List<String> availableRoles;
 

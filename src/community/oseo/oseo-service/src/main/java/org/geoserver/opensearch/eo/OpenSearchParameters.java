@@ -48,7 +48,7 @@ public class OpenSearchParameters {
         during,
         disjoint,
         equals
-    };
+    }
 
     public static final String OS_PREFIX = "os";
 

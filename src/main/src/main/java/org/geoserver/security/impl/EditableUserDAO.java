@@ -32,7 +32,7 @@ import org.vfny.geoserver.global.ConfigurationException;
  * The EditableUserDAO class provides a UserDetailsService implementation that allows modifying user information
  * programmatically.
  *
- * @author David Winslow - <dwinslow@openplans.org>
+ * @author David Winslow - dwinslow@openplans.org
  */
 public class EditableUserDAO implements UserDetailsService {
 
@@ -211,7 +211,7 @@ public class EditableUserDAO implements UserDetailsService {
         }
 
         try (OutputStream os = new BufferedOutputStream(getUserFile().out())) {
-            prop.store(os, "Geoserver user data. Format is username=password,role1,role2,...[enabled|disabled]");
+            prop.store(os, "GeoServer user data. Format is username=password,role1,role2,...[enabled|disabled]");
         }
     }
 
@@ -233,11 +233,7 @@ public class EditableUserDAO implements UserDetailsService {
         this.geoServer = geoServer;
     }
 
-    /**
-     * TODO: Actually document this!
-     *
-     * @author David Winslow
-     */
+    /** TODO: Actually document this! */
     public Set<String> getNameSet() {
         return myDetailStorage.keySet();
     }

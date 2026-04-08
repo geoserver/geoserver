@@ -16,21 +16,21 @@ jobs:
     name: Build GeoServer WAR
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'        # only build the oldest Java version, but below run against the matrix of LTS versions
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
           maven-version: 3.9.8
       - name: Maven repository caching
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository
           key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -42,7 +42,7 @@ jobs:
         run: make war
 
       - name: Upload geoserver.war as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: geoserver-war
           path: build/cite/geoserver/geoserver.war
@@ -52,31 +52,18 @@ jobs:
     runs-on: ubuntu-latest
     name: CITE
     strategy:
-      fail-fast: false  # Prevents other matrix jobs from being canceled if one fails
+      fail-fast: false  # Prevents other matrix jobs from being cancelled if one fails
       matrix:
-        suite: [ogcapi-features10, wms11, wms13, wmts10, wfs10, wfs11, wfs20, wcs11, geotiff11, gpkg12]
-        include: # Variation for wcs20, which requires Java 17 due to Teamengine 6
-          - suite: wcs20
-            java-version: 17
+        suite: [ogcapi-features10, ogcapi-tiles10, wms11, wms13, wmts10, wfs10, wfs11, wfs20, wcs11, geotiff11, gpkg12]
+        java-version: [17, 21, 25]
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.java-version || '11' }}
-
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v5
-        with:
-          maven-version: 3.9.8
-
       - name: Download geoserver.war artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: geoserver-war
           path: build/cite/geoserver/
@@ -94,7 +81,7 @@ jobs:
 
       - name: Build ogccite/geoserver:${{ matrix.suite }} docker image
         working-directory: build/cite
-        run: make build-geoserver-image suite=${{ matrix.suite }}
+        run: make build-geoserver-image suite=${{ matrix.suite }} java-version=${{ matrix.java-version }}
 
       - name: Build the ETS docker image
         working-directory: build/cite
@@ -105,11 +92,25 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y xmlstarlet
 
-      - name: Run the ${{ matrix.suite }} CITE test suite
+      - name: Run the ${{ matrix.suite }} CITE test suite (against Java ${{ matrix.java-version }})
         working-directory: build/cite
         run: |
           chmod o+w logs
-          make test suite=${{ matrix.suite }}
+          # WFS 2.0 lock tests can randomly fail due to timing issues, retry them
+          if [ "${{ matrix.suite }}" = "wfs20" ]; then
+            MAX_RETRIES=5
+            COUNT=0
+            until make test suite=${{ matrix.suite }}; do
+              COUNT=$((COUNT+1))
+              if [ "$COUNT" -ge "$MAX_RETRIES" ]; then
+                echo "WFS 2.0 tests failed after $COUNT attempts."
+                exit 1
+              fi
+              echo "Retrying WFS 2.0... attempt $((COUNT+1)) of $MAX_RETRIES"
+            done
+          else
+            make test suite=${{ matrix.suite }}
+          fi
 
       - name: Print full failures report
         if: always()
@@ -139,7 +140,7 @@ jobs:
 
       - name: Upload logs folder
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: cite-${{ matrix.suite }}-logs
+          name: cite-${{ matrix.suite }}-java-${{ matrix.java-version }}-logs
           path: build/cite/logs/

@@ -4,13 +4,16 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geotools.api.util.CodeList;
 
 /** Event Types for OSEO Data Store */
 public class OseoEventType extends CodeList<OseoEventType> {
+    @Serial
     private static final long serialVersionUID = -4218786755116808448L;
+
     private static final List<OseoEventType> VALUES = new ArrayList<>(5);
 
     /**

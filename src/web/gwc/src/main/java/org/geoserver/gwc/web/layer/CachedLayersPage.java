@@ -14,6 +14,7 @@ import static org.geoserver.gwc.web.layer.CachedLayerProvider.QUOTA_LIMIT;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.QUOTA_USAGE;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.TYPE;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,16 +22,14 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -39,13 +38,15 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.DynamicImageResource;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.web.GWCIconFactory;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -67,9 +68,35 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
     private static Logger log = Logging.getLogger(CachedLayersPage.class);
 
+    @Serial
     private static final long serialVersionUID = -6795610175856538774L;
 
-    private CachedLayerProvider provider = new CachedLayerProvider();
+    private static final PackageResourceReference JS_FILE =
+            new PackageResourceReference(CachedLayersPage.class, "CachedLayersPage.js");
+
+    private CachedLayerProvider provider = new CachedLayerProvider() {
+        @Override
+        protected List<TileLayer> getItems() {
+            List<TileLayer> base = super.getItems();
+            PageParameters params = getPageParameters();
+            String workspace = params.get("workspace").toOptionalString();
+            if (workspace == null || workspace.isEmpty()) {
+                return base;
+            }
+            List<TileLayer> filtered = new ArrayList<>();
+            for (TileLayer layer : base) {
+                String name = layer.getName();
+                int idx = name.indexOf(':');
+                if (idx > 0) {
+                    String wsPrefix = name.substring(0, idx);
+                    if (workspace.equals(wsPrefix)) {
+                        filtered.add(layer);
+                    }
+                }
+            }
+            return filtered;
+        }
+    };
 
     private GeoServerTablePanel<TileLayer> table;
 
@@ -80,6 +107,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     public CachedLayersPage() {
 
         table = new GeoServerTablePanel<>("table", provider, true) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @SuppressWarnings({"unchecked"})
@@ -89,8 +117,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", CachedLayersPage.this);
-                    DynamicImageResource dynamicImage = new DelayedImageResource(itemModel);
-                    f.add(new Image("layerIcon", dynamicImage));
+                    TileLayer layer = itemModel.getObject();
+                    ResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
+                    f.add(CatalogIconFactory.get().getIcon("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
                     return nameLink(id, itemModel);
@@ -103,14 +132,14 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = itemModel.getObject();
                     boolean enabled = layerInfo.isEnabled();
-                    PackageResourceReference icon;
+                    ResourceReference iconReference;
                     if (enabled) {
-                        icon = GWCIconFactory.getEnabledIcon();
+                        iconReference = GWCIconFactory.getEnabledIcon();
                     } else {
-                        icon = GWCIconFactory.getDisabledIcon();
+                        iconReference = GWCIconFactory.getDisabledIcon();
                     }
                     Fragment f = new Fragment(id, "iconFragment", CachedLayersPage.this);
-                    f.add(new Image("layerIcon", icon));
+                    f.add(CatalogIconFactory.get().getIcon("layerIcon", iconReference));
                     return f;
                 } else if (property == PREVIEW_LINKS) {
                     return previewLinks(id, itemModel);
@@ -129,8 +158,8 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 target.add(removal);
             }
         };
-        table.setOutputMarkupId(true);
-        add(table);
+        table.setTableChangeJS("CachedLayersPage_SetOnChange();");
+        add(table.setOutputMarkupId(true));
 
         // the confirm dialog
         add(dialog = new GeoServerDialog("dialog"));
@@ -148,11 +177,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        String script = "$('.tile-layers-page-menu-select').on('change', function(event) {\n"
-                + "    window.open(this.options[this.selectedIndex].value);\n"
-                + "    this.selectedIndex=0;\n"
-                + "});";
-        response.render(OnDomReadyHeaderItem.forScript(script));
+        response.render(JavaScriptReferenceHeaderItem.forReference(JS_FILE));
     }
 
     private Component quotaLink(String id, IModel<Quota> quotaModel) {
@@ -203,6 +228,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         IModel<String> labelModel = new ResourceModel("truncate");
 
         SimpleAjaxLink<String> link = new SimpleAjaxLink<>(id, model, labelModel) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -212,6 +238,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 dialog.setDefaultModel(getDefaultModel());
 
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -320,27 +347,6 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         return header;
     }
 
-    private static class DelayedImageResource extends DynamicImageResource {
-        private final IModel<TileLayer> itemModel;
-
-        public DelayedImageResource(IModel<TileLayer> itemModel) {
-            super("image/png");
-            this.itemModel = itemModel;
-        }
-
-        @Override
-        protected byte[] getImageData(Attributes attributes) {
-            TileLayer layer = itemModel.getObject();
-            PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
-            try {
-                return IOUtils.toByteArray(
-                        layerIcon.getResource().getResourceStream().getInputStream());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     private class CachedLayerSelectionRemovalLink extends AjaxLink<TileLayer> {
 
         public CachedLayerSelectionRemovalLink(String string) {
@@ -364,6 +370,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             // if there is something to cancel, let's warn the user about what
             // could go wrong, and if the user accepts, let's delete what's needed
             dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override

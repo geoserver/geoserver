@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class RepeatableAttributesTablePanel
+
+The panel's html will be contained in a <div class='gs-panel-RepeatableAttributesTablePanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-RepeatableAttributesTablePanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

@@ -8,7 +8,7 @@ package org.geoserver.catalog;
 /**
  * The AttributionInfo interface describes a data provider for attribution, such as in the WMS Capabilities document.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public interface AttributionInfo extends Info {
     /**

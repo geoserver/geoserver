@@ -146,7 +146,6 @@ class MinimalConfigLoaderSupport {
         } else {
             LoggingInfo config = geoServer.getFactory().createLogging();
             config.setLevel("DEFAULT_LOGGING");
-            config.setLocation("logs/geoserver.log");
             config.setStdOutLogging(true);
 
             geoServer.addListener(persister);

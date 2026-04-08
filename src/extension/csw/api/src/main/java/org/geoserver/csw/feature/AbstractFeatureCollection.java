@@ -23,7 +23,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
  *
  * @author Jody Garnett (Refractions Research Inc)
  * @author Andrea Aime - GeoSolutions
- * @source $URL$
  */
 public abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature>
         implements FeatureCollection<T, F> {
@@ -106,7 +105,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
      *
      * <p>Subclass must call super.close( close ) to allow the list of open iterators to be adjusted.
      *
-     * @param close Iterator, will not be <code>null</code>
+     * @param close Iterator, will not be {@code null}
      */
     protected abstract void closeIterator(Iterator<F> close);
 
@@ -129,8 +128,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     public void purge() {
         for (Iterator i = open.iterator(); i.hasNext(); ) {
             Object resource = i.next();
-            if (resource instanceof Iterator) {
-                Iterator resourceIterator = (Iterator) resource;
+            if (resource instanceof Iterator resourceIterator) {
                 try {
                     closeIterator(resourceIterator);
                 } catch (Throwable e) {

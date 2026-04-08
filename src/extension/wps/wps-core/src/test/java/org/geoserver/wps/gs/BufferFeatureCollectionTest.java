@@ -30,7 +30,6 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecutePoint() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -61,7 +60,6 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecuteLineString() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -103,7 +101,6 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecutePolygon() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -150,7 +147,6 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecuteBufferAttribute() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");

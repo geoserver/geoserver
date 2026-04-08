@@ -5,6 +5,7 @@
 
 package org.geoserver.mapml;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -17,9 +18,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.TypeInfoCollectionWrapper;
 import org.geoserver.mapml.tcrs.MapMLProjection;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -27,7 +28,6 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.api.referencing.FactoryException;
@@ -144,8 +144,7 @@ public class MapMLHTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
             bbox = fc.getBounds();
         }
         if (bbox == null) {
-            if (fc instanceof TypeInfoCollectionWrapper) {
-                TypeInfoCollectionWrapper wrapper = (TypeInfoCollectionWrapper) fc;
+            if (fc instanceof TypeInfoCollectionWrapper wrapper) {
                 try {
                     bbox = wrapper.getFeatureTypeInfo().boundingBox();
                 } catch (Exception e) {

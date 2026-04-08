@@ -5,14 +5,13 @@
  */
 package org.geoserver.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.apache.wicket.RestartResponseException;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.PortResolverImpl;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
@@ -38,7 +37,7 @@ public class GeoServerSecuredPage extends GeoServerBasePage {
             HttpServletRequest httpRequest = (HttpServletRequest) getRequest().getContainerRequest();
             // ExceptionTranslationFilter translator = (ExceptionTranslationFilter)
             // getGeoServerApplication().getBean("consoleExceptionTranslationFilter");
-            SavedRequest savedRequest = new DefaultSavedRequest(httpRequest, new PortResolverImpl());
+            SavedRequest savedRequest = new DefaultSavedRequest(httpRequest);
 
             HttpSession session = httpRequest.getSession();
             // TODO, Justin, WebAttributes.SAVED_REQUEST has disappeared in spring security

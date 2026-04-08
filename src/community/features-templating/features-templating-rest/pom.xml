@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-features-templating</artifactId>
-    <version>2.28-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -56,6 +56,10 @@
       <groupId>com.github.java-json-tools</groupId>
       <artifactId>json-patch</artifactId>
       <version>1.12</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
   </dependencies>
 

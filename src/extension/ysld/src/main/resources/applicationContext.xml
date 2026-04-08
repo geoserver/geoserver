@@ -17,6 +17,7 @@
 		<property name="component" value="YSLD GeoServer Plugin" />
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
+        <property name="category" value="EXTENSION"/>
   </bean>
 
 </beans>

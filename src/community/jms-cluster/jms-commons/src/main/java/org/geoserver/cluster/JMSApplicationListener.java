@@ -5,9 +5,9 @@
  */
 package org.geoserver.cluster;
 
+import jakarta.annotation.PostConstruct;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.ToggleConfiguration;
 import org.geoserver.cluster.events.ToggleEvent;
@@ -75,10 +75,8 @@ public class JMSApplicationListener implements ApplicationListener<ApplicationEv
             LOGGER.fine("Incoming event of type " + event.getClass().getSimpleName());
         }
 
-        if (event instanceof ToggleEvent) {
-
+        if (event instanceof ToggleEvent tEv) {
             // enable/disable the producer
-            final ToggleEvent tEv = (ToggleEvent) event;
             if (tEv.getType().equals(this.type)) {
                 setStatus(tEv.toggleTo());
             }

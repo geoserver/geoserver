@@ -6,7 +6,6 @@
 package org.geoserver.catalog;
 
 import it.geosolutions.imageio.maskband.DatasetLayout;
-import it.geosolutions.jaiext.range.NoDataContainer;
 import java.awt.Color;
 import java.awt.image.ColorModel;
 import java.io.IOException;
@@ -19,9 +18,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.PropertySource;
-import javax.media.jai.PropertySourceImpl;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.PropertySource;
+import org.eclipse.imagen.PropertySourceImpl;
+import org.eclipse.imagen.media.range.NoDataContainer;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geotools.api.coverage.SampleDimension;
@@ -144,9 +144,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         if (coverageName != null) {
             reader = SingleGridCoverage2DReader.wrap(delegate, coverageName);
         }
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            return new CoverageDimensionCustomizerStructuredReader(
-                    (StructuredGridCoverage2DReader) reader, coverageName, info);
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+            return new CoverageDimensionCustomizerStructuredReader(dReader, coverageName, info);
         } else {
             return new CoverageDimensionCustomizerReader(reader, coverageName, info);
         }
@@ -165,9 +164,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         if (coverageName != null) {
             reader = SingleGridCoverage2DReader.wrap(delegate, coverageName);
         }
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            return new CoverageDimensionCustomizerStructuredReader(
-                    (StructuredGridCoverage2DReader) reader, coverageName, info);
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+            return new CoverageDimensionCustomizerStructuredReader(dReader, coverageName, info);
         } else {
             return new CoverageDimensionCustomizerReader(reader, coverageName, info);
         }
@@ -206,7 +204,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
         return read(this.coverageName, parameters);
     }
 
@@ -215,7 +213,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
      * This specific read operation is a customized one since we need to wrap the coverage properties (null values,
      * ranges, sampleDimensions...)
      */
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... parameters)
             throws IllegalArgumentException, IOException {
         final GridCoverage2D coverage =
                 coverageName != null ? delegate.read(coverageName, parameters) : delegate.read(parameters);
@@ -489,8 +487,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             super(name, coverage);
             this.gridCoverage = coverage;
             this.wrappedSampleDimensions = sampleDimensions;
-            wrappedPropertySource =
-                    new PropertySourceImpl(properties, coverage instanceof PropertySource ? coverage : null);
+            wrappedPropertySource = new PropertySourceImpl(properties, (PropertySource) coverage);
         }
 
         @Override
@@ -531,8 +528,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
         @Override
         public boolean isWrapperFor(Class<?> iface) {
-            if (gridCoverage instanceof Wrapper) {
-                return ((Wrapper) gridCoverage).isWrapperFor(iface);
+            if (gridCoverage instanceof Wrapper wrapper) {
+                return wrapper.isWrapperFor(iface);
             }
             return iface.isInstance(gridCoverage);
         }
@@ -540,8 +537,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         @Override
         @SuppressWarnings("unchecked")
         public <T> T unwrap(Class<T> iface) throws IllegalArgumentException {
-            if (gridCoverage instanceof Wrapper) {
-                return ((Wrapper) gridCoverage).unwrap(iface);
+            if (gridCoverage instanceof Wrapper wrapper) {
+                return wrapper.unwrap(iface);
             }
             if (iface.isInstance(gridCoverage)) {
                 return (T) gridCoverage;

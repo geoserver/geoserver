@@ -10,14 +10,14 @@ import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFe
 import static org.geoserver.featurestemplating.builders.VendorOptions.COLLECTION_NAME;
 import static org.geoserver.featurestemplating.builders.VendorOptions.JSONLD_TYPE;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.math.BigInteger;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geotools.filter.function.FilterFunction_toWKT;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.JsonNode;
 
 /** Implements its superclass methods to write a valid json-ld output */
 public class JSONLDWriter extends CommonJSONWriter {
@@ -56,14 +56,14 @@ public class JSONLDWriter extends CommonJSONWriter {
             else writeValueNode(contextName, context);
         }
         if (!isSingleFeatureRequest()) {
-            generator.writeFieldName("type");
+            generator.writeName("type");
             generator.writeString("FeatureCollection");
 
             String jsonLdType = encodingHints.get(JSONLD_TYPE, String.class, "FeatureCollection");
-            generator.writeFieldName("@type");
+            generator.writeName("@type");
             generator.writeString(jsonLdType);
             String collectionName = encodingHints.get(COLLECTION_NAME, String.class, "features");
-            generator.writeFieldName(collectionName);
+            generator.writeName(collectionName);
             writeStartArray();
         }
     }

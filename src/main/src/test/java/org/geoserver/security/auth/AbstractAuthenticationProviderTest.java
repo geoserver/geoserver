@@ -286,6 +286,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
             }
 
             @Override
+            @SuppressWarnings("deprecation")
             public Principal getIssuerDN() {
                 return null;
             }
@@ -336,6 +337,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
             }
 
             @Override
+            @SuppressWarnings("deprecation")
             public Principal getSubjectDN() {
                 return () -> "cn=" + userName + ",ou=ou1";
             }
@@ -367,7 +369,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
 
             @Override
             public String toString() {
-                return null;
+                return "";
             }
 
             @Override

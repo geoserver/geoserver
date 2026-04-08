@@ -5,6 +5,7 @@
 
 package org.geoserver.wcs.response;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
@@ -17,7 +18,7 @@ public class GdalWrapperTest {
     private GdalWrapper gdal;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Assume.assumeTrue(GdalTestUtil.isGdalAvailable());
         gdal = new GdalWrapper(GdalTestUtil.getGdalTranslate(), GdalTestUtil.getGdalData());
     }
@@ -33,7 +34,7 @@ public class GdalWrapperTest {
         Set<String> formats = gdal.getSupportedFormats();
         // well, we can't know which formats GDAL was complied with, but at least there will be one,
         // right?
-        assertTrue(formats.size() > 0);
+        assertFalse(formats.isEmpty());
 
         // these work on my machine, with gdal 1.11.2, libgeotiff 1.4.0, libpng 1.6
         // and libjpeg-turbo 1.3.1

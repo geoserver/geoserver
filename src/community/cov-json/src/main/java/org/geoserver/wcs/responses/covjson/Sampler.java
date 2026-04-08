@@ -5,7 +5,7 @@
 package org.geoserver.wcs.responses.covjson;
 
 import java.awt.image.DataBuffer;
-import javax.media.jai.iterator.RandomIter;
+import org.eclipse.imagen.iterator.RandomIter;
 
 /**
  * Class used to return samples from an underlying randomIter, returning proper type of number (integer, float, double),
@@ -51,7 +51,6 @@ abstract class Sampler {
             return randomIter.getSampleFloat(x, y, b);
         }
     }
-    ;
 
     static class IntSampler extends Sampler {
         public IntSampler(RandomIter iter) {
@@ -63,7 +62,6 @@ abstract class Sampler {
             return randomIter.getSample(x, y, b);
         }
     }
-    ;
 
     static class DoubleSampler extends Sampler {
         public DoubleSampler(RandomIter iter) {
@@ -75,5 +73,4 @@ abstract class Sampler {
             return randomIter.getSampleDouble(x, y, b);
         }
     }
-    ;
 }

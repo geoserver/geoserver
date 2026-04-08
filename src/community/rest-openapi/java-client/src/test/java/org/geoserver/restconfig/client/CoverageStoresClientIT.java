@@ -42,7 +42,7 @@ public class CoverageStoresClientIT {
         Assume.assumeTrue(this.support.isAlive());
         this.workspaces = this.support.client().workspaces();
         this.coverages = this.support.client().coverageStores();
-        String wsname = String.format("%s-%d", this.testName.getMethodName(), this.rnd.nextInt((int) 1e6));
+        String wsname = "%s-%d".formatted(this.testName.getMethodName(), this.rnd.nextInt((int) 1e6));
         String wsname2 = wsname + "_2";
 
         this.workspaces.create(wsname);

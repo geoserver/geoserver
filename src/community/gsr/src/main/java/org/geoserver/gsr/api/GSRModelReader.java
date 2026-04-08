@@ -14,13 +14,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import net.sf.json.*;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.gsr.model.GSRModel;
 import org.geoserver.gsr.model.feature.Feature;
 import org.geoserver.gsr.model.feature.FeatureArray;
 import org.geoserver.gsr.translate.feature.FeatureEncoder;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.kordamp.json.*;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -63,9 +63,8 @@ public class GSRModelReader extends BaseMessageConverter<GSRModel> {
         IOUtils.copy(inputMessage.getBody(), bout);
         JSON json = JSONSerializer.toJSON(new String(bout.toByteArray()));
         if (FeatureArray.class.isAssignableFrom(clazz)) {
-            if (json instanceof JSONArray) {
+            if (json instanceof JSONArray jsonArray) {
                 List<Feature> features = new ArrayList<>();
-                JSONArray jsonArray = (JSONArray) json;
                 for (Object o : jsonArray) {
                     try {
                         features.add(FeatureEncoder.fromJson((JSONObject) o));

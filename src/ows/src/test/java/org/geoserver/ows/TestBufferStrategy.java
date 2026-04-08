@@ -4,10 +4,10 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Copy of the BufferStrategy in main, for testing purposes

@@ -7,7 +7,6 @@ package org.geoserver.opensearch.rest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -26,9 +25,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
@@ -78,9 +74,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Base class for OpenSearch related REST controllers
@@ -223,7 +216,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
 
         Map<String, Object> unknownFields = new HashMap<>();
 
-        if (linkProperties != null && linkProperties.size() > 0) {
+        if (linkProperties != null && !linkProperties.isEmpty()) {
             SimpleFeatureImpl simpleFeature = (SimpleFeatureImpl) ((ArrayList) linkProperties).get(0);
 
             // iterate over feature to get unknown properties from OgcLink
@@ -287,8 +280,8 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                     } else {
                         fb.set(ad.getLocalName(), value);
                         if (("eo:identifier".equals(ad.getLocalName()) || "eop:identifier".equals(ad.getLocalName()))
-                                && value instanceof String) {
-                            identifier = (String) value;
+                                && value instanceof String string) {
+                            identifier = string;
                         }
                     }
                 }
@@ -310,6 +303,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
 
             @Override
             public SimpleFeatureIterator features() {
+                @SuppressWarnings("PMD.CloseResource")
                 FeatureIterator<Feature> features = fc.features();
                 return new SimpleFeatureIterator() {
 
@@ -331,18 +325,6 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                 };
             }
         };
-    }
-
-    /** Checks XML well formedness (TODO: check against actual schemas) */
-    protected void checkWellFormedXML(String xml) {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder;
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(new InputSource(new StringReader(xml)));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RestException("XML document is not well formed: " + e.getMessage(), HttpStatus.BAD_REQUEST, e);
-        }
     }
 
     /**
@@ -395,8 +377,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             Object converted = convert(originalValue, pd.getType().getBinding());
             // features need to have an identifier for the creation to work, if null must be skipped
             if (pd.getType() instanceof FeatureType) {
-                if (converted instanceof Feature) {
-                    Feature f = (Feature) converted;
+                if (converted instanceof Feature f) {
                     Attribute attribute = ab.buildSimple(f.getIdentifier().getID(), converted);
                     builder.append(pd.getName(), attribute);
                 }
@@ -424,9 +405,8 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         // might have too many side effects as a globally available converter
         // we might revisit this decision later
         if (converted == null) {
-            if (targetClass.isArray() && value instanceof List) {
+            if (targetClass.isArray() && value instanceof List list) {
                 Class<?> componentType = targetClass.getComponentType();
-                List list = (List) value;
                 converted = Array.newInstance(componentType, list.size());
                 int i = 0;
                 for (Object o : list) {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import org.geotools.referencing.CRS;
  */
 public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
+    @Serial
     private static final long serialVersionUID = 3731647638872356912L;
 
     /**
@@ -41,6 +43,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
      */
     public static class SRS implements Serializable, Comparable<SRS> {
 
+        @Serial
         private static final long serialVersionUID = -4155644876049747585L;
 
         private String identifier;
@@ -93,6 +96,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
     public static final Property<SRS> IDENTIFIER = new BeanProperty<>("identifier", "identifier") {
 
+        @Serial
         private static final long serialVersionUID = -1638823520421390286L;
 
         @Override
@@ -103,6 +107,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
     public static final Property<SRS> DESCRIPTION = new BeanProperty<>("description", "description") {
 
+        @Serial
         private static final long serialVersionUID = 3549074714488486991L;
 
         @Override

@@ -115,12 +115,10 @@ class TimeDimensionHelper {
     }
 
     private String format(Object time) {
-        if (time instanceof Date) {
-            return format((Date) time);
-        } else if (time instanceof DateRange) {
-            // hack, we should probably look into description of partitioned coverages?
-            // or report the mid time?
-            DateRange range = (DateRange) time;
+        if (time instanceof Date date) {
+            return format(date);
+        } else if (time instanceof DateRange range) {
+            // hack, we should probably look into description of partitioned coverages? or report the mid time?
             return timeStampFormatter.format(range.getMinValue())
                     + "/"
                     + timeStampFormatter.format(range.getMaxValue());

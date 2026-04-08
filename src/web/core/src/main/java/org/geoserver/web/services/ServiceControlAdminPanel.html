@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <fieldset>
+        <legend><wicket:message key="serviceControl">Service Control</wicket:message></legend>
+        <div class="gs-form">
+          <div class="choiceItem">
+            <input id="enabled" wicket:id="enabled" type="checkbox"/>
+            <label for="enabled"><span wicket:id="service.enabled">enable</span></label>
+          </div>
+          <div class="choiceItem">
+            <input id="citeCompliant" wicket:id="citeCompliant" type="checkbox"/>
+            <label for="citeCompliant"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
+          </div>
+        </div>
+        <!-- optional disabled versions -->
+        <div wicket:id="disabledVersions"></div>
+      </fieldset>
+    </wicket:panel>
+  </body>
+</html>

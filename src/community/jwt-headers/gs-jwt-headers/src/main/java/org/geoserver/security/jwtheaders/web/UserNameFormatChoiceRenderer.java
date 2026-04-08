@@ -5,6 +5,7 @@
 
 package org.geoserver.security.jwtheaders.web;
 
+import java.io.Serial;
 import org.apache.wicket.Application;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.security.jwtheaders.JwtConfiguration;
@@ -13,6 +14,7 @@ import org.geoserver.security.jwtheaders.JwtConfiguration;
 public class UserNameFormatChoiceRenderer extends ChoiceRenderer<JwtConfiguration.UserNameHeaderFormat> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override

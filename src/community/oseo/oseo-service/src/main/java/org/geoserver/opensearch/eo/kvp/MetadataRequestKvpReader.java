@@ -20,7 +20,7 @@ public class MetadataRequestKvpReader extends AbstractProductRequestKvpReader {
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         MetadataRequest mr = (MetadataRequest) super.read(request, kvp, rawKvp);
 
         // check httpAccept

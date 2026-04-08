@@ -1,10 +1,17 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head>
-<title><wicket:message key="simpleExtLinkWithLabel">A simple external link with a label inside</wicket:message></title>
-</head>
-<body>
-<wicket:panel>
-<a wicket:id="link"><span wicket:id="label"></span></a>
-</wicket:panel>
-</body>
+  <head>
+    <title>
+      <wicket:message key="simpleExtLinkWithLabel">A simple external link with a label inside</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SimpleExternalLink">
+        <a wicket:id="link">
+          <span wicket:id="label"/>
+        </a>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

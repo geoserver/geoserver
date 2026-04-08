@@ -7,7 +7,8 @@
 <beans>
 	<bean id="backupRestoreExtensionsExtension" class="org.geoserver.platform.ModuleStatusImpl">
 		<constructor-arg index="0" value="gs-backup-restore-extension," />
-		<constructor-arg index="1" value="Backup Rstore Extensions" />
+		<constructor-arg index="1" value="Backup Restore Extensions" />
+        <property name="category" value="COMMUNITY"/>
 	</bean>
 
 	<!-- CatalogAdditionalResourcesWriter extensions: those can be triggered by the CatalogWriter -->

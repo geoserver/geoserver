@@ -24,7 +24,7 @@ public class DirectoryResourceLoader extends DefaultResourceLoader {
         return new FileSystemContextResource(root, path);
     }
 
-    private class FileSystemContextResource extends FileSystemResource implements ContextResource {
+    private static class FileSystemContextResource extends FileSystemResource implements ContextResource {
 
         public FileSystemContextResource(File root, String path) {
             super(new File(root, path).getAbsolutePath());

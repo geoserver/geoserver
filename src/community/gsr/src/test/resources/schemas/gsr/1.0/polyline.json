@@ -1,5 +1,5 @@
 {
-    "$schema":"http://json-schema.org/draft-03/schema#",
+    "$schema":"https://json-schema.org/draft/2020-12/schema",
 
     "title":"polyline",
     "type":"object",
@@ -10,7 +10,6 @@
         "paths":{
             "title":"paths",
             "type":"array",
-             "required":true,
             "items":{
                  "title":"path",
                  "type":"array",
@@ -22,5 +21,6 @@
                          "type":"number"}}}},
         "spatialReference":{
             "$ref" : "spatialreference.json"}
-    }
+    },
+    "required":["paths"]
 }

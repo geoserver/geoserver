@@ -7,11 +7,11 @@ package org.geoserver.filters;
 
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Map;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.util.WebUtils;
@@ -32,7 +32,6 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         }
     }
 
-    @SuppressWarnings("PMD.EmptyWhileStmt")
     public void doInputStreamTest(String testString) throws Exception {
         HttpServletRequest req = makeRequest(testString, null);
 
@@ -91,7 +90,6 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         assertEquals("4", ((String[]) params.get("d"))[0]);
     }
 
-    @SuppressWarnings("PMD.EmptyWhileStmt")
     private void clearOutBody(HttpServletRequest req) throws IOException {
         try (BufferedReader br = req.getReader()) {
             while ((br.readLine()) != null) { // NOPMD

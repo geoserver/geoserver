@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.Interpolation;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.operator.ConstantDescriptor;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.RenderedOp;
+import org.eclipse.imagen.operator.ConstantDescriptor;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ows.Dispatcher;
@@ -121,7 +121,7 @@ public class WCSUtils {
             return coverage;
         }
         // if the intersection is so small that we'll end up reading nothing, return null
-        // instead of failing at the JAI level
+        // instead of failing at the ImageN level
         ReferencedEnvelope intersection = cropBounds.intersection(coverageBounds);
         if (getEnvelopeInRasterSpace(intersection, coverage.getGridGeometry()).isEmpty()) return null;
         Polygon polygon = JTS.toGeometry(cropBounds);
@@ -153,13 +153,12 @@ public class WCSUtils {
         }
 
         // if the intersection is so small that we'll end up reading nothing, return null
-        // instead of failing at the JAI level
+        // instead of failing at the ImageN level
         ReferencedEnvelope intersection = cropBounds.intersection(coverageBounds);
         if (getEnvelopeInRasterSpace(intersection, coverage.getGridGeometry()).isEmpty()) return null;
 
         Geometry roi;
-        if (crop instanceof Polygon) {
-            Polygon polygon = (Polygon) crop;
+        if (crop instanceof Polygon polygon) {
             roi = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
         } else if (crop instanceof MultiPolygon) {
             roi = crop;
@@ -380,10 +379,10 @@ public class WCSUtils {
     }
 
     /**
-     * Checks the coverage read is below the input limits. Mind, at this point the reader might have have subsampled the
+     * Checks the coverage read is below the input limits. Mind, at this point the reader might have subsampled the
      * original image in some way so it is expected the coverage is actually smaller than what computed but
-     * {@link #checkInputLimits(CoverageInfo, GridCoverage2DReader, GeneralBounds)}, however that method might have
-     * failed the computation due to lack of metadata (or wrong metadata) so it's safe to double check the actual
+     * {@link #checkInputLimits(WCSInfo, CoverageInfo, GridCoverage2DReader, GridGeometry2D)}, however that method might
+     * have failed the computation due to lack of metadata (or wrong metadata) so it's safe to double-check the actual
      * coverage wit this one. Mind, this method might cause the coverage to be fully read in memory (if that is the
      * case, the actual WCS processing chain would result in the same behavior so this is not causing any extra memory
      * usage, just makes it happen sooner)
@@ -634,8 +633,7 @@ public class WCSUtils {
         Object filter = request.getKvp().get("FILTER");
         if (!(filter instanceof Filter)) {
             filter = request.getKvp().get("CQL_FILTER");
-            if (filter instanceof List) {
-                List list = (List) filter;
+            if (filter instanceof List list) {
                 if (!list.isEmpty()) {
                     filter = list.get(0);
                 }
@@ -645,8 +643,8 @@ public class WCSUtils {
             filter = request.getKvp().get("FEATURE_ID");
         }
 
-        if (filter instanceof Filter) {
-            return (Filter) filter;
+        if (filter instanceof Filter filter1) {
+            return filter1;
         } else {
             return null;
         }
@@ -859,7 +857,7 @@ public class WCSUtils {
     private static GridGeometry2D reprojectGridGeometryFit(GridCoverage2DReader reader, ReferencedEnvelope envelope) {
         // build a fake coverage in the same area as the original one, with
         // the same pixel size and raster size, but without actually pushing it in memory:
-        // ConstantDescriptor is a JAI operation, will produce tiles only on pull.
+        // ConstantDescriptor is a ImageN operation, will produce tiles only on pull.
         AffineTransform2D originalG2W = (AffineTransform2D) reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
         double scale = XAffineTransform.getScale(originalG2W);
         GeneralBounds originalEnvelope = reader.getOriginalEnvelope();
@@ -872,7 +870,7 @@ public class WCSUtils {
         GridCoverage2D sampleCoverage =
                 factory.create("sample", image, originalEnvelope.getCoordinateReferenceSystem(), g2w, null, null, null);
 
-        // reproject to target CRS (again does not really compute pixels, just set up a JAI chain)
+        // reproject to target CRS (again does not really compute pixels, just set up a ImageN chain)
         CoverageProcessor processor = CoverageProcessor.getInstance();
         final Operation operation = processor.getOperation("Resample");
         final ParameterValueGroup param = operation.getParameters().clone();
@@ -906,8 +904,8 @@ public class WCSUtils {
     }
 
     /**
-     * Checks if the coverage rendered image is deferred loaded, that is, if it's a JAI chain originating in a ImageRead
-     * operation
+     * Checks if the coverage rendered image is deferred loaded, that is, if it's a ImageN chain originating in a
+     * ImageRead operation
      */
     public static boolean isDeferredLoaded(GridCoverage2D coverage) {
         RenderedImage ri = coverage.getRenderedImage();
@@ -915,20 +913,19 @@ public class WCSUtils {
     }
 
     /**
-     * Checks if the rendered image is based on a ImageRead operation, or if the potential JAI chain backing it results
-     * in a deferred loading. The method recursively calls itself and check the sources of the rendered image. Naively
-     * assumes that if one source is using ImageRead, then the whole chain is deferred loaded (which is true in all
-     * existing GeoTools readers)
+     * Checks if the rendered image is based on a ImageRead operation, or if the potential ImageN chain backing it
+     * results in a deferred loading. The method recursively calls itself and check the sources of the rendered image.
+     * Naively assumes that if one source is using ImageRead, then the whole chain is deferred loaded (which is true in
+     * all existing GeoTools readers)
      */
     private static boolean isDeferredLoaded(RenderedImage ri) {
-        if (ri instanceof RenderedOp) {
-            RenderedOp rop = (RenderedOp) ri;
+        if (ri instanceof RenderedOp rop) {
             if ("ImageRead".equals(rop.getOperationName())) {
                 return true;
             }
             for (Object source : rop.getSources()) {
-                if (source instanceof RenderedImage) {
-                    if (isDeferredLoaded((RenderedImage) source)) {
+                if (source instanceof RenderedImage image) {
+                    if (isDeferredLoaded(image)) {
                         return true;
                     }
                 }

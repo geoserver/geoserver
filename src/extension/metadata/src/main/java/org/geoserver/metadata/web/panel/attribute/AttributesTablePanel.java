@@ -4,6 +4,9 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Map;
 import org.apache.wicket.Component;
@@ -28,6 +31,21 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class AttributesTablePanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AttributesTablePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private ResourceInfo rInfo;
@@ -56,6 +74,7 @@ public class AttributesTablePanel extends Panel {
             GeoServerDataProvider<AttributeConfiguration> dataProvider, Map<String, List<Integer>> derivedAtts) {
 
         return new GeoServerTablePanel<>("attributesTablePanel", dataProvider) {
+            @Serial
             private static final long serialVersionUID = 5267842353156378075L;
 
             @Override

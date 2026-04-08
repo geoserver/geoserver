@@ -69,11 +69,11 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
         return SecuredGridCoverage2DReader.read(delegate, policy, parameters);
     }
 
-    static GridCoverage2D read(GridCoverage2DReader delegate, WrapperPolicy policy, GeneralParameterValue[] parameters)
+    static GridCoverage2D read(GridCoverage2DReader delegate, WrapperPolicy policy, GeneralParameterValue... parameters)
             throws IllegalArgumentException, IOException {
         // Package private static method to share reading code with Structured reader
         MultiPolygon rasterFilter = null;
@@ -86,7 +86,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
 
             // update the read params
             final GeneralParameterValue[] limitParams = limits.getParams();
-            if (parameters == null) {
+            if (parameters == null || parameters.length == 0) { // beware a no-args call means an empty array
                 parameters = limitParams;
             } else if (limitParams != null) {
                 // scan the input params, add and overwrite with the limits params as needed

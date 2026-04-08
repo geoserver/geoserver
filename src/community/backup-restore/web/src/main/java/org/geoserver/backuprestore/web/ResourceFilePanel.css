@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class ResourceFilePanel
+
+The panel's html will be contained in a <div class='gs-panel-ResourceFilePanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-ResourceFilePanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

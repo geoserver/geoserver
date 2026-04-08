@@ -5,9 +5,9 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -15,6 +15,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * Handler mapping for OWS services.
@@ -107,5 +108,18 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
     @Override
     public String toString() {
         return "OWSHandlerMapping[" + this.getHandlerMap() + "]";
+    }
+
+    /**
+     * Override to disable pattern parser usage. We do this to match the behavior of Spring 5.x. With pattern parser
+     * enabled, Spring will strip path elements and will match only against a portion of the path, e.g., <code>/wms/**
+     * </code> will not really match <code>wms/reflect</code> because it's trying to match <code>reflect</code> only,
+     * rather than <code>wms/reflect</code>.
+     *
+     * @return <code>null</code> to disable pattern parser usage
+     */
+    @Override
+    public PathPatternParser getPatternParser() {
+        return null;
     }
 }

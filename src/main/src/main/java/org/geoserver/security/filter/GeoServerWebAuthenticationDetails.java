@@ -6,7 +6,8 @@
 
 package org.geoserver.security.filter;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.Serial;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 /**
@@ -16,7 +17,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
  */
 public class GeoServerWebAuthenticationDetails extends WebAuthenticationDetails {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private String userGroupServiceName;
 
     public String getUserGroupServiceName() {

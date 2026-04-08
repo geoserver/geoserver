@@ -52,8 +52,8 @@ public class ImporterUtils {
             }
         }
 
-        if (s != null && s.getCatalog() == null && s instanceof StoreInfoImpl) {
-            ((StoreInfoImpl) s).setCatalog(cat);
+        if (s != null && s.getCatalog() == null && s instanceof StoreInfoImpl impl) {
+            impl.setCatalog(cat);
         }
         return resolveCollections(s);
     }

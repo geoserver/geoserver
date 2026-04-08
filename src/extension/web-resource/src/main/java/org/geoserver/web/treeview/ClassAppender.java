@@ -4,11 +4,13 @@
  */
 package org.geoserver.web.treeview;
 
+import java.io.Serial;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.model.IModel;
 
 public class ClassAppender extends AttributeAppender {
 
+    @Serial
     private static final long serialVersionUID = 4717967910213677953L;
 
     public ClassAppender(IModel<?> appendModel) {
@@ -17,8 +19,7 @@ public class ClassAppender extends AttributeAppender {
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof ClassAppender
-                && ((ClassAppender) other).getReplaceModel().equals(getReplaceModel());
+        return other instanceof ClassAppender ca && ca.getReplaceModel().equals(getReplaceModel());
     }
 
     @Override

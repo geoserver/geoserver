@@ -21,10 +21,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
-import javax.media.jai.operator.MosaicDescriptor;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.media.mosaic.MosaicDescriptor;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.map.JpegOrPngChooser;
@@ -79,8 +79,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                 te.setTableName(coverage.getName().toString());
 
                 // setup the meta information
-                if (coverage instanceof MetaGridCoverage2D) {
-                    MetaGridCoverage2D meta = (MetaGridCoverage2D) coverage;
+                if (coverage instanceof MetaGridCoverage2D meta) {
                     Object resourceInfo = meta.getUserData().get(ResourceInfo.class);
                     setupEntryMetadata(te, resourceInfo);
                 }
@@ -164,12 +163,11 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                     RenderedImage finalImage = iw.getRenderedImage();
                     JpegOrPngChooser chooser = new JpegOrPngChooser(finalImage);
                     if (chooser.isJpegPreferred()) {
-                        iw.writeJPEG(bos, "JPEG", 0.75f, false);
+                        iw.writeJPEG(bos, "JPEG", 0.75f);
                     } else {
                         // tried PNGJ too but got weird output with the built-in nurc:mosaic
                         // empty tiles, repeated ones, it does not happen with IW
-                        iw.writePNG(
-                                bos, "FILTERED", 0.75F, false, finalImage.getColorModel() instanceof IndexColorModel);
+                        iw.writePNG(bos, "FILTERED", 0.75F, finalImage.getColorModel() instanceof IndexColorModel);
                     }
 
                     // finally add to the geopackage
@@ -188,8 +186,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
         if (cm.getTransparency() == Transparency.OPAQUE && iw.getNoData() == null) return false;
 
         // in case of index color model, there could be a transparent pixel
-        if (cm instanceof IndexColorModel) {
-            IndexColorModel icm = (IndexColorModel) cm;
+        if (cm instanceof IndexColorModel icm) {
             int transparentPixel = icm.getTransparentPixel();
             if (transparentPixel != -1) {
                 // are all pixels equal to the transparent pixel?
@@ -248,7 +245,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
         ImageLayout layout = new ImageLayout(ri);
         layout.setWidth(TILE_SIZE);
         layout.setHeight(TILE_SIZE);
-        iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+        iw.setRenderingHint(ImageN.KEY_IMAGE_LAYOUT, layout);
         iw.mosaic(new RenderedImage[] {ri}, MosaicDescriptor.MOSAIC_TYPE_OVERLAY, null, null, thresholds, null);
     }
 

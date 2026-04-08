@@ -23,7 +23,7 @@ public class GdalPPIOFactory implements PPIOFactory {
 
     @Override
     public List<ProcessParameterIO> getProcessParameterIO() {
-        List<ProcessParameterIO> gdalParams = new ArrayList<ProcessParameterIO>();
+        List<ProcessParameterIO> gdalParams = new ArrayList<>();
         for (Format of : this.delegate.getFormats()) {
             ProcessParameterIO ppio = null;
             String computedMimeType = delegate.getMimeType(of.getGeoserverFormat());

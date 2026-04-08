@@ -4,32 +4,30 @@
  */
 package org.geoserver.opensearch.rest;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-import org.springframework.stereotype.Component;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 /** This class is responsible for serializing date into ISO format and writing other fields to the JSON */
-@Component
-public class UnknownFieldsSerializer extends JsonSerializer {
-
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+public class UnknownFieldsSerializer extends ValueSerializer<Object> {
 
     @Override
-    public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    @SuppressWarnings("unchecked")
+    public void serialize(Object value, JsonGenerator gen, SerializationContext serializers) {
         if (value instanceof Map) {
             for (Map.Entry<String, Object> entry : ((Map<String, Object>) value).entrySet()) {
                 String key = entry.getKey();
                 Object valuePair = entry.getValue();
+                gen.writeName(key);
                 if (valuePair instanceof Date) {
-                    gen.writeObjectField(key, DATE_FORMAT.format(valuePair));
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    gen.writeString(dateFormat.format(valuePair));
                 } else {
-                    gen.writeObjectField(key, valuePair);
+                    gen.writePOJO(valuePair);
                 }
             }
         }

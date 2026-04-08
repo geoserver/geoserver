@@ -100,6 +100,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.kvp.PaletteManager;
+import org.geoserver.wms.map.MetaTilingOutputFormat;
 import org.geoserver.wms.map.RawMap;
 import org.geotools.api.filter.Filter;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -233,7 +234,6 @@ public class GWCTest {
         when(gwcConfigPersister.getConfig()).thenReturn(defaults);
 
         storageBroker = mock(StorageBroker.class);
-
         tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         tileLayerGroupInfo = TileLayerInfoUtil.loadOrCreate(layerGroup, defaults);
 
@@ -267,6 +267,10 @@ public class GWCTest {
         mockTileLayerDispatcher();
 
         ApplicationContext appContext = createMock(ApplicationContext.class);
+        expect(appContext.getBeanNamesForType(MetaTilingOutputFormat.class))
+                .andReturn(new String[0])
+                .anyTimes();
+
         GeoWebCacheEnvironment genv = createMockBuilder(GeoWebCacheEnvironment.class)
                 .withConstructor()
                 .createMock();
@@ -376,7 +380,8 @@ public class GWCTest {
         assertTrue(extensions.contains(genv));
 
         JDBCConfiguration jdbcConfiguration = new JDBCConfiguration();
-        if (GeoWebCacheEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+        boolean allowEnvParam = new GeoWebCacheEnvironment().isAllowEnvParametrization();
+        if (allowEnvParam) {
             jdbcConfiguration.setDialect("${TEST_ENV_PROPERTY}");
         } else {
             jdbcConfiguration.setDialect("HSQL");

@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.store.dggs;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,19 @@ import org.geotools.dggs.gstore.DGGSGeometryStoreFactory;
  * @author Andrea Aime - GeoSolution
  */
 public class DGGSGeometryStoreEditPanel extends StoreEditPanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DGGSGeometryStoreEditPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     public DGGSGeometryStoreEditPanel(final String componentId, final Form storeEditForm) {
         super(componentId, storeEditForm);

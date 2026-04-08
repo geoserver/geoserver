@@ -63,7 +63,7 @@ public class GeoServerResourcePersister implements CatalogListener {
 
         try {
             // handle the case of a style changing workspace
-            if (source instanceof StyleInfo) {
+            if (source instanceof StyleInfo info) {
                 int i = event.getPropertyNames().indexOf("workspace");
                 if (i > -1) {
                     WorkspaceInfo oldWorkspace =
@@ -76,7 +76,7 @@ public class GeoServerResourcePersister implements CatalogListener {
 
                     // look for any resource files (image, etc...) and copy them over, don't move
                     // since they could be shared among other styles
-                    for (Resource old : dd.additionalStyleResources((StyleInfo) source)) {
+                    for (Resource old : dd.additionalStyleResources(info)) {
                         if (old.getType() != Type.UNDEFINED) {
                             URI oldURI = new URI(old.path());
                             final URI relative = oldDirURI.relativize(oldURI);
@@ -87,7 +87,7 @@ public class GeoServerResourcePersister implements CatalogListener {
                     }
 
                     // move over the config file and the sld
-                    for (Resource old : baseResources((StyleInfo) source)) {
+                    for (Resource old : baseResources(info)) {
                         if (old.getType() != Type.UNDEFINED) {
                             moveResToDir(old, newDir);
                         }
@@ -103,8 +103,8 @@ public class GeoServerResourcePersister implements CatalogListener {
     public void handleRemoveEvent(CatalogRemoveEvent event) {
         Object source = event.getSource();
         try {
-            if (source instanceof StyleInfo) {
-                removeStyle((StyleInfo) source);
+            if (source instanceof StyleInfo info) {
+                removeStyle(info);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

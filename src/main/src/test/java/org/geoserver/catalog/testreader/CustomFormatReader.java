@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.TreeSet;
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.ImageInputStream;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.PlanarImage;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterValue;
@@ -61,8 +61,8 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
     public CustomFormatReader(Object source, Hints hints) throws IOException {
         super(source, hints);
-        if (source instanceof File) {
-            this.dataDirectory = (File) source;
+        if (source instanceof File file) {
+            this.dataDirectory = file;
             initReaderFromFile(hints);
         } else {
             throw new IllegalArgumentException("Invalid source object");
@@ -75,7 +75,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] params) throws IOException {
+    public GridCoverage2D read(GeneralParameterValue... params) throws IOException {
         boolean haveDimension = false;
         final List<GridCoverage2D> returnValues = new ArrayList<>();
         for (GeneralParameterValue p : params) {
@@ -208,7 +208,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     private static synchronized RenderedImage readImage(File inFile) throws IOException {
         final ParameterBlock readParams = new ParameterBlock();
         ImageInputStreamSpi lSpi = ImageIOExt.getImageInputStreamSPI(inFile);
-        @SuppressWarnings("PMD.CloseResource") // stream will be closed along with JAI op
+        @SuppressWarnings("PMD.CloseResource") // stream will be closed along with ImageN op
         ImageInputStream lImgIn = lSpi.createInputStreamInstance(inFile, false, null);
         readParams.add(lImgIn);
         readParams.add(0);
@@ -219,7 +219,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         readParams.add(null);
         readParams.add(null);
         readParams.add(READER_SPI.createReaderInstance());
-        PlanarImage lImage = JAI.create("ImageRead", readParams, null);
+        PlanarImage lImage = ImageN.create("ImageRead", readParams, null);
         final String lFileName = inFile.getName();
         final int lExtIndex = lFileName.lastIndexOf('.');
         final String lFileNameNoExt = lExtIndex < 0 ? lFileName : lFileName.substring(0, lExtIndex);
@@ -254,11 +254,10 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
     /** Helper for read method. */
     private static List<?> extractValue(GeneralParameterValue param) {
-        if (param instanceof ParameterValue<?>) {
-            final Object paramVal = ((ParameterValue<?>) param).getValue();
+        if (param instanceof ParameterValue<?> value) {
+            final Object paramVal = value.getValue();
             if (paramVal != null) {
-                if (paramVal instanceof List) {
-                    final List<?> list = (List<?>) paramVal;
+                if (paramVal instanceof List<?> list) {
                     return list;
                 } else {
                     throw new UnsupportedOperationException("Custom dimension value must be a list");

@@ -20,8 +20,8 @@ public class ResourceHasContents extends BaseMatcher<Resource> {
 
     @Override
     public boolean matches(Object item) {
-        if (item instanceof Resource) {
-            try (InputStream in = ((Resource) item).in()) {
+        if (item instanceof Resource resource) {
+            try (InputStream in = resource.in()) {
                 byte[] result = new byte[contents.length];
                 int len = in.read(result);
                 if (len != contents.length) {

@@ -206,8 +206,7 @@ public class WCSDimensionsValueParser {
             if (item instanceof Number) {
                 Double number = (Double) item;
                 results.add(number);
-            } else if (item instanceof NumberRange) {
-                NumberRange range = (NumberRange) item;
+            } else if (item instanceof NumberRange range) {
                 results.add(range.getMinimum());
                 results.add(range.getMaximum());
             } else {

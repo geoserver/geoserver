@@ -4,11 +4,11 @@
  */
 package org.geoserver.util;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;

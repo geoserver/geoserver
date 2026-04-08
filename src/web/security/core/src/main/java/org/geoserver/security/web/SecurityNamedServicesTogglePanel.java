@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -32,6 +34,19 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
  */
 public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedServiceConfig> extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityNamedServicesTogglePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     public SecurityNamedServicesTogglePanel(String id, IModel<List<T>> model) {
         super(id);
 
@@ -45,16 +60,28 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
 
     protected static class ContentPanel<T> extends Panel {
 
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(SecurityNamedServicesTogglePanel.ContentPanel.class);
+
         @Override
         public void renderHead(IHeaderResponse response) {
             super.renderHead(response);
             // Content-Security-Policy: inline styles must be nonce=...
-            String css = " #edit {\n"
-                    + "   margin-top: -20px; \n"
-                    + "   padding-bottom: 0.5em; \n"
-                    + "   padding-right:1em;\n"
-                    + " }";
+            String css =
+                    """
+                     #edit {
+                       margin-top: -20px;\s
+                       padding-bottom: 0.5em;\s
+                       padding-right:1em;
+                     }\
+                    """;
             response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataSecurityPage-1"));
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
         }
 
         public ContentPanel(String id, final IModel<T> model) {

@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.monitor.MemoryMonitorDAO;
@@ -201,9 +202,9 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
 
     private final class RequestDumper extends Thread {
 
-        private long lineCounter = 0;
+        private AtomicLong lineCounter = new AtomicLong(0);
 
-        private long fileRollCounter = 0;
+        private AtomicLong fileRollCounter = new AtomicLong(0);
 
         /**
          * We use a {@link BlockingQueue} to decouple to incoming flux of {@link RequestData} to audit with the thread
@@ -277,7 +278,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
                         }
 
                         template.process(rd, writer);
-                        this.lineCounter++;
+                        lineCounter.incrementAndGet();
                     }
 
                     // flush the writer so that the file is up to date, otherwise a request
@@ -305,14 +306,14 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
             final GregorianCalendar current = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 
             // check if we have to close the file and reopen it for rolling
-            if (this.lineCounter >= lineRollingLimit
+            if (this.lineCounter.get() >= lineRollingLimit
                     || (day > 0 && day != current.get(GregorianCalendar.DAY_OF_YEAR))
                     || (logFile != null && !logFile.exists())) {
                 closeWriter(writer);
 
                 // play with counters
-                this.fileRollCounter++;
-                this.lineCounter = 0;
+                this.fileRollCounter.incrementAndGet();
+                this.lineCounter.set(0);
 
                 // clean
                 writer = null;
@@ -326,7 +327,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
                 final String auditFileName = "geoserver_audit_" + dateFormat.format(current.getTime()) + "_";
 
                 // look for similar files to pick up numbering
-                if (fileRollCounter == 0) {
+                if (fileRollCounter.get() == 0) {
                     final String[] files = path.list(
                             makeFileOnly(and(prefixFileFilter("geoserver_audit_"), suffixFileFilter(".log"))));
                     if (files != null && files.length > 0) {
@@ -352,9 +353,9 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
                         final String target = files[files.length - 1];
                         int start = target.lastIndexOf("_") + 1;
                         int end = target.lastIndexOf(".");
-                        fileRollCounter = Integer.parseInt(target.substring(start, end));
+                        fileRollCounter.set(Long.parseLong(target.substring(start, end)));
                         // move to the next one
-                        fileRollCounter++;
+                        fileRollCounter.incrementAndGet();
                     }
                 }
 

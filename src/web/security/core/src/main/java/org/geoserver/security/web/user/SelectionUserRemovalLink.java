@@ -6,6 +6,7 @@
 package org.geoserver.security.web.user;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -29,6 +30,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 public class SelectionUserRemovalLink extends AjaxLink<Object> {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     GeoServerTablePanel<GeoServerUser> users;

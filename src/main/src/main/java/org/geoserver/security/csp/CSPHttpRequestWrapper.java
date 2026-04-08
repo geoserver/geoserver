@@ -4,8 +4,8 @@
  */
 package org.geoserver.security.csp;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 
 /** {@link HttpServletRequest} wrapper that provides access to the CSP configuration. */
 public class CSPHttpRequestWrapper extends HttpServletRequestWrapper {

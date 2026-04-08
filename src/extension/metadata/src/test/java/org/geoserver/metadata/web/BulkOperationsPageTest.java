@@ -13,6 +13,7 @@ import org.geoserver.metadata.AbstractWicketMetadataTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.wicketstuff.progressbar.ProgressBar;
 
 /**
  * Test bulk page.
@@ -45,6 +46,8 @@ public class BulkOperationsPageTest extends AbstractWicketMetadataTest {
         tester.assertModelValue(
                 "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel",
                 "This will update 1 layers and might take a while.");
+        tester.clickLink("dialog:dialog:modal:overlay:dialog:content:content:form:submit");
+        tester.assertComponent("progress:dialog:modal:overlay:dialog:content:content", ProgressBar.class);
     }
 
     @Test

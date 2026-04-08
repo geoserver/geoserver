@@ -20,12 +20,12 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
 import org.geoserver.opensearch.eo.response.DescriptionResponse;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.api.data.DataStore;
@@ -33,13 +33,18 @@ import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.filter.text.cql2.CQL;
 import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class SearchTest extends OSEOTestSupport {
 
     private static final String ENCODED_ATOM_MIME = ResponseUtils.urlEncode(AtomSearchResponse.MIME);
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -56,6 +61,11 @@ public class SearchTest extends OSEOTestSupport {
         File nestedFile = dd.getResourceLoader().createFile("/workspaces/readAndEvalNestedDir.json");
         dd.getResourceLoader().copyFromClassPath("readAndEval.json", file, getClass());
         dd.getResourceLoader().copyFromClassPath("readAndEvalNestedDir.json", nestedFile, getClass());
+    }
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
     }
 
     @Test
@@ -245,12 +255,22 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testPagingFullPages() throws Exception {
+        testPagingFullPages(false);
+    }
+
+    @Test
+    public void testPagingFullPagesSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingFullPages(true);
+    }
+
+    private void testPagingFullPages(boolean skipMatched) throws Exception {
         // first page
         Document dom = getAsDOM("oseo/search?count=1");
         assertHasLink(dom, "self", 1, 1);
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "next", 2, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS1")));
@@ -261,7 +281,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 1, 1);
         assertHasLink(dom, "next", 3, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS9")));
 
@@ -271,7 +291,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 2, 1);
         assertHasLink(dom, "next", 4, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
 
@@ -281,7 +301,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 3, 1);
         assertHasLink(dom, "next", 5, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("gsTestCollection")));
 
@@ -291,7 +311,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 4, 1);
         assertHasLink(dom, "next", 6, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
 
@@ -300,7 +320,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "self", 6, 1);
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 5, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
@@ -308,12 +328,22 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testPagingPartialPages() throws Exception {
+        testPagingPartialPages(false);
+    }
+
+    @Test
+    public void testPagingPartialPagesSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingPartialPages(true);
+    }
+
+    private void testPagingPartialPages(boolean skipMatched) throws Exception {
         // first page
         Document dom = getAsDOM("oseo/search?count=2");
         assertHasLink(dom, "self", 1, 2);
         assertHasLink(dom, "first", 1, 2);
         assertHasLink(dom, "next", 3, 2);
-        assertHasLink(dom, "last", 5, 2);
+        if (!skipMatched) assertHasLink(dom, "last", 5, 2);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS1")));
@@ -325,7 +355,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "self", 3, 2);
         assertHasLink(dom, "first", 1, 2);
         assertHasLink(dom, "previous", 1, 2);
-        assertHasLink(dom, "last", 5, 2);
+        if (!skipMatched) assertHasLink(dom, "last", 5, 2);
         assertHasLink(dom, "next", 5, 2);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
@@ -337,7 +367,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "self", 5, 2);
         assertHasLink(dom, "first", 1, 2);
         assertHasLink(dom, "previous", 3, 2);
-        assertHasLink(dom, "last", 5, 2);
+        if (!skipMatched) assertHasLink(dom, "last", 5, 2);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
@@ -447,6 +477,30 @@ public class SearchTest extends OSEOTestSupport {
         // print(dom);
 
         assertFirstPageSentinel2Products(dom);
+    }
+
+    @Test
+    public void testDispatcherCallBackAliasAndParamsCleanup() throws Exception {
+        Document dom = getAsDOM("oseo/search?parentIdentifier=SENTINEL2&searchTerms=&startIndex=&count=1&uid=&box="
+                + "&name=&lat=&lon=&radius=&geometry=&geoRelation="
+                + "&timeStart=&timeEnd=&timeRelation=&illuminationAzimuthAngle="
+                + "&illuminationZenithAngle=&illuminationElevationAngle=&resolution=&identifier="
+                + "&productQualityDegradationStatus=&archivingCenter="
+                + "&productionStatus=&acquisitionSubtype=&acquisitionType=&productQualityStatus="
+                + "&processorName=&orbitDirection=&processingCenter=&sensorMode=&processingMode="
+                + "&swathIdentifier=&creationDate=&modificationDate=&processingDate="
+                + "&availabilityTime=&acquisitionStation=&orbitNumber=&track=&frame="
+                + "&startTimeFromAscendingNode=&completionTimeFromAscendingNode="
+                // Note here we are repeating the parentIdentifier with empty value
+                // we are also requesting "atom" alias instead of the mimeType
+                + "&cloudCover=&snowCover=&parentIdentifier=&parentIdentifier=&httpAccept=atom");
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("19")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry/at:link[@rel='self' and  @type='application/atom+xml']/@href",
+                        equalTo(
+                                "http://localhost:8080/geoserver/oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fatom%2Bxml")));
     }
 
     private void assertFirstPageSentinel2Products(Document dom) {
@@ -976,7 +1030,6 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo(uid)));
 
         // checking HTML bits, should have a customized title
-        String oseo = "http://localhost:8080/geoserver/oseo/";
         assertThat(
                 dom,
                 hasXPath("/at:feed/at:entry[1]/at:summary", containsString("<h1>This is a LANDSAT product!</h1>")));

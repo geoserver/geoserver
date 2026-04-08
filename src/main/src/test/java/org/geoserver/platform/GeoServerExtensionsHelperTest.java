@@ -52,9 +52,8 @@ public class GeoServerExtensionsHelperTest {
         assertNull(GeoServerExtensions.bean(GeoServerExtensionsHelperTest.class));
     }
 
-    class TestClass {}
+    static class TestClass {}
 
-    @SuppressWarnings("unchecked")
     @Test
     public void helperMultipleSingleton() {
         TestClass o1 = new TestClass();

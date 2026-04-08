@@ -6,8 +6,8 @@
 package org.geoserver.web.data.layer;
 
 import static org.geoserver.catalog.CoverageView.BAND_SEPARATOR;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
-import it.geosolutions.jaiext.JAIExt;
 import java.awt.image.DataBuffer;
 import java.awt.image.SampleModel;
 import java.io.IOException;
@@ -19,12 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.media.jai.ImageLayout;
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
@@ -35,6 +36,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.util.ListModel;
+import org.eclipse.imagen.ImageLayout;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.CoverageView.CompositionType;
@@ -53,12 +56,27 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
  */
 public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CoverageViewEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     private static final List<CompositionType> SUPPORTED_MODES = Arrays.stream(CompositionType.values())
             .filter(v -> v != CompositionType.UNSUPPORTED)
             .collect(Collectors.toList());
 
     IModel<List<String>> coverages;
     IModel<List<CoverageBand>> outputBands;
+    IModel<String> referenceInputModel = new Model<>();
+    IModel<List<String>> inputCoverageNamesModel = new ListModel<>(new ArrayList<>());
     List<String> availableCoverages;
     List<CoverageBand> currentOutputBands;
     ListMultipleChoice<String> coveragesChoice;
@@ -67,6 +85,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
     IModel<SelectedResolution> selectedResolution;
     IModel<String> resolutionReferenceCoverage;
     ListMultipleChoice<CoverageBand> outputBandsChoice;
+    DropDownChoice<String> referenceInputChoice;
     Map<String, Integer> inputCoverageBands = new HashMap<>();
     String storeId;
     WebMarkupContainer bandChoiceContainer;
@@ -76,6 +95,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
     TextField<String> jiffleOutputNameField;
     IModel<String> jiffleFormulaModel = Model.of("");
     IModel<String> jiffleOutputNameModel = Model.of("");
+    IModel<Boolean> fillMissingBands;
 
     /** Creates a new editor. */
     public CoverageViewEditor(
@@ -89,7 +109,8 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
             List<String> availableCoverages,
             String definition,
             String outputName,
-            String storeId) {
+            String storeId,
+            IModel<Boolean> fillMissingBands) {
         super(id, inputCoverages);
         this.storeId = storeId;
         this.coverages = inputCoverages;
@@ -99,6 +120,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         this.compositionType = compositionType;
         this.resolutionReferenceCoverage = resolutionReferenceCoverage;
         this.availableCoverages = availableCoverages;
+        this.fillMissingBands = fillMissingBands;
 
         coveragesChoice = new ListMultipleChoice<>(
                 "coveragesChoice", new Model<>(), new ArrayList<>(coverages.getObject()), new ChoiceRenderer<>() {
@@ -119,6 +141,12 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 });
         outputBandsChoice.setOutputMarkupId(true);
         currentOutputBands = new ArrayList<>(outputBandsChoice.getChoices());
+        if (currentOutputBands != null
+                && !currentOutputBands.isEmpty()
+                && compositionType.getObject() == CompositionType.JIFFLE) {
+            referenceInputModel.setObject(
+                    currentOutputBands.get(0).getInputCoverageBands().get(0).getCoverageName());
+        }
 
         DropDownChoice<CompositionType> compositionModeChoice =
                 new DropDownChoice<>("compositionMode", SUPPORTED_MODES);
@@ -136,6 +164,8 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 if (selectedMode == CompositionType.JIFFLE) {
                     inputBandSummary.modelChanged();
                     target.add(inputBandSummary);
+                    target.add(referenceInputChoice);
+                    inputCoverageNamesModel.setObject(new ArrayList<>(inputCoverageBands.keySet()));
                 } else {
                     currentOutputBands.clear();
                     outputBandsChoice.setChoices(currentOutputBands);
@@ -181,6 +211,11 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         jiffleEditorContainer.add(jiffleFormulaArea);
         jiffleEditorContainer.setOutputMarkupId(true);
 
+        referenceInputChoice = new DropDownChoice<>("referenceInput", referenceInputModel, inputCoverageNamesModel);
+        referenceInputChoice.setNullValid(false);
+        referenceInputChoice.setOutputMarkupId(true);
+        jiffleEditorContainer.add(referenceInputChoice);
+
         add(jiffleEditorContainer);
         bandChoiceContainer.setOutputMarkupPlaceholderTag(true);
         jiffleEditorContainer.setOutputMarkupPlaceholderTag(true);
@@ -193,6 +228,8 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
             jiffleFormulaModel.setObject(definition);
             jiffleOutputNameModel.setObject(outputName);
         }
+        CheckBox checkBox = new CheckBox("fillMissingBands", fillMissingBands);
+        add(checkBox);
 
         // heterogeneous coverage controls
         WebMarkupContainer heterogeneousControlsContainer = new WebMarkupContainer("heterogeneousControlsContainer");
@@ -200,8 +237,6 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         add(heterogeneousControlsContainer);
         WebMarkupContainer heterogeneousControls = new WebMarkupContainer("heterogeneousControls");
         heterogeneousControlsContainer.add(heterogeneousControls);
-        // need the band-merge from JAI-EXT to work in heterogeneous mode
-        heterogeneousControls.setVisible(JAIExt.isJAIExtOperation("BandMerge"));
 
         DropDownChoice<EnvelopeCompositionType> envelopePolicy =
                 new DropDownChoice<>("envelopeCompositionType", Arrays.asList(EnvelopeCompositionType.values()));
@@ -306,14 +341,17 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
     private String parseAndSetOutput() throws IllegalArgumentException {
         String outputVar = jiffleOutputNameModel.getObject();
-        if (outputVar == null || outputVar.isBlank()) return "Output variable name is required";
+        if (outputVar == null || outputVar.isBlank()) return "Output Name is required";
 
         String formulaText = jiffleFormulaModel.getObject();
-        if (formulaText == null || formulaText.isBlank()) return "Formula is required";
+        if (formulaText == null || formulaText.isBlank()) return "Formula is required in Jiffle Script section";
 
         // Extract the output variables
         JiffleParser.JiffleParsingResult parsed = JiffleParser.parse(outputVar, formulaText, availableCoverages);
         if (parsed.outputVar == null) return parsed.error;
+
+        String selectedBand = referenceInputModel.getObject();
+        if (StringUtils.isBlank(selectedBand)) return "Reference Band is required";
 
         // Extract the input coverages/bands
         Set<InputCoverageBand> inputBands = parsed.inputBands;
@@ -321,9 +359,26 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         // We are going to setup the list of inputBands anyway,
         // This will be used to identify the setup of the inputbands
         // on the Jiffle script, afterwards, as part of the read
+        int referenceInputMatching = -1;
         List<InputCoverageBand> icbs = new ArrayList<>();
+        int j = 0;
         for (InputCoverageBand input : inputBands) {
             icbs.add(input);
+            // here we are marking if the reference input is referenced in the formula
+            if (input.getCoverageName().equals(selectedBand)) {
+                referenceInputMatching = j;
+            }
+            j++;
+        }
+
+        if (referenceInputMatching < 0)
+            return "The selected reference input is not referenced in the formula. "
+                    + "Please select a band that is used in the expressions.";
+
+        // Put the reference band at the beginning of the list
+        if (referenceInputMatching > 0 && referenceInputMatching < icbs.size()) {
+            InputCoverageBand element = icbs.remove(referenceInputMatching);
+            icbs.add(0, element);
         }
 
         List<CoverageBand> newBands = new ArrayList<>();
@@ -360,8 +415,9 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
             final int numBands = sampleModel.getNumBands();
             inputCoverageBands.put(coverage, numBands);
             String coverageBand =
-                    String.format("%s (%d band, %s)", coverage, numBands, getDataTypeName(sampleModel.getDataType()));
+                    "%s (%d band, %s)".formatted(coverage, numBands, getDataTypeName(sampleModel.getDataType()));
             bands.add(coverageBand);
+            inputCoverageNamesModel.setObject(new ArrayList<>(inputCoverageBands.keySet()));
         }
         sb.append(String.join("\n", bands)).append("\n");
         return sb.toString();

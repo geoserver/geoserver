@@ -12,8 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.operator.ExtremaDescriptor;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -33,6 +31,7 @@ import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.jts.WKTReader2;
+import org.geotools.image.ImageWorker;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.junit.AfterClass;
@@ -188,14 +187,15 @@ public class VerticalResampleTest extends WPSTestSupport {
                         new DownloadProcessTest.AutoDisposableGeoTiffReader(resource.getFile());
                 DownloadProcessTest.AutoDisposableGridCoverage2D gc = reader.read()) {
             RenderedImage ri = gc.getRenderedImage();
-            RenderedOp extremaOp = ExtremaDescriptor.create(ri, null, 1, 1, false, 1, null);
+            ImageWorker iw = new ImageWorker(ri);
+            double[] minimum = iw.getMinimums();
+            double[] maximum = iw.getMaximums();
 
             // The original file has only pixel with values in range [1 , 2]
             // Check that the vertical resampling didn't happen due to the vertical grid not
             // covering that area
-            double[][] extrema = (double[][]) extremaOp.getProperty("Extrema");
-            assertEquals(extrema[0][0], 1, DELTA);
-            assertEquals(extrema[1][0], 2, DELTA);
+            assertEquals(minimum[0], 1, DELTA);
+            assertEquals(maximum[0], 2, DELTA);
         }
     }
 
@@ -243,7 +243,6 @@ public class VerticalResampleTest extends WPSTestSupport {
                 DownloadProcessTest.AutoDisposableGridCoverage2D gc = reader.read()) {
 
             RenderedImage ri = gc.getRenderedImage();
-            RenderedOp extremaOp = ExtremaDescriptor.create(ri, null, 1, 1, false, 1, null);
 
             // The original file has only pixel with values in range [1 , 2]
             // On that ROI, the vertical grid has values around [60 , 160]
@@ -252,9 +251,11 @@ public class VerticalResampleTest extends WPSTestSupport {
             // Check that the vertically interpolated values are coherent.
             // Not using equals check to allow some tolerance for the bilinear interpolation on the
             // grid values
-            double[][] extrema = (double[][]) extremaOp.getProperty("Extrema");
-            assertTrue(extrema[0][0] > 60);
-            assertTrue(extrema[1][0] < 163);
+            ImageWorker iw = new ImageWorker(ri);
+            double[] minimum = iw.getMinimums();
+            double[] maximum = iw.getMaximums();
+            assertTrue(minimum[0] > 60);
+            assertTrue(maximum[0] < 163);
         }
     }
 

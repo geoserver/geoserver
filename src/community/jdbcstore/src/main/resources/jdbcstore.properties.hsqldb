@@ -1,0 +1,19 @@
+enabled=true
+
+initdb=true
+initScript=jdbcstore/scripts/init.hsqldb.sql
+import=true
+
+jdbcUrl=jdbc:hsqldb:file:${GEOSERVER_DATA_DIR}/jdbcstore/store
+driverClassName=org.hsqldb.jdbc.JDBCDriver
+username=sa
+password=
+
+pool.minIdle=4
+pool.maxActive=10
+pool.poolPreparedStatements=true
+pool.maxOpenPreparedStatements=50
+pool.testOnBorrow=true
+pool.validationQuery=SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS
+pool.testWhileIdle=false
+pool.timeBetweenEvictionRunsMillis=-1L

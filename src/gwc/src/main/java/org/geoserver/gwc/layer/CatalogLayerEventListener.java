@@ -136,12 +136,10 @@ public class CatalogLayerEventListener implements CatalogListener {
         }
         Object obj = event.getSource();
         // We only handle layers here. Layer groups are initially empty
-        if (obj instanceof LayerInfo) {
+        if (obj instanceof LayerInfo layerInfo) {
             log.finer("Handling add event: " + obj);
-            LayerInfo layerInfo = (LayerInfo) obj;
             createTileLayer(layerInfo);
-        } else if (obj instanceof LayerGroupInfo) {
-            LayerGroupInfo lgi = (LayerGroupInfo) obj;
+        } else if (obj instanceof LayerGroupInfo lgi) {
             createTileLayer(lgi);
         }
     }
@@ -247,8 +245,8 @@ public class CatalogLayerEventListener implements CatalogListener {
              * Handle changing the filter definition, this is the kind of change that affects the
              * full output contents
              */
-            if (changedProperties.contains("cqlFilter") && source instanceof FeatureTypeInfo) {
-                mediator.truncate(((FeatureTypeInfo) source).prefixedName());
+            if (changedProperties.contains("cqlFilter") && source instanceof FeatureTypeInfo info) {
+                mediator.truncate(info.prefixedName());
             }
 
             /*
@@ -273,13 +271,11 @@ public class CatalogLayerEventListener implements CatalogListener {
             }
         }
 
-        if (source instanceof LayerInfo) {
-            final LayerInfo li = (LayerInfo) source;
+        if (source instanceof LayerInfo li) {
 
             handleLayerInfoChange(changedProperties, oldValues, newValues, li, tileLayerInfo);
 
-        } else if (source instanceof LayerGroupInfo) {
-            LayerGroupInfo lgInfo = (LayerGroupInfo) source;
+        } else if (source instanceof LayerGroupInfo lgInfo) {
             handleLayerGroupInfoChange(changedProperties, oldValues, newValues, lgInfo, tileLayerInfo);
         }
     }
@@ -499,8 +495,7 @@ public class CatalogLayerEventListener implements CatalogListener {
                 }
 
                 try {
-                    if (tl instanceof GeoServerTileLayer) {
-                        GeoServerTileLayer gstl = (GeoServerTileLayer) tl;
+                    if (tl instanceof GeoServerTileLayer gstl) {
                         renameTileLayer(gstl.getInfo(), oldName, newName);
                     }
                 } catch (Exception e) {
@@ -540,8 +535,7 @@ public class CatalogLayerEventListener implements CatalogListener {
                 }
 
                 try {
-                    if (tl instanceof GeoServerTileLayer) {
-                        GeoServerTileLayer gstl = (GeoServerTileLayer) tl;
+                    if (tl instanceof GeoServerTileLayer gstl) {
                         renameTileLayer(gstl.getInfo(), oldName, newName);
                     }
                 } catch (Exception e) {
@@ -572,9 +566,8 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         String oldLayerName;
         String newLayerName;
-        if (source instanceof ResourceInfo) { // covers LayerInfo, CoverageInfo, and WMSLayerInfo
+        if (source instanceof ResourceInfo resourceInfo) { // covers LayerInfo, CoverageInfo, and WMSLayerInfo
             // must cover prefix:name
-            final ResourceInfo resourceInfo = (ResourceInfo) source;
             final NamespaceInfo currNamespace = resourceInfo.getNamespace();
             final NamespaceInfo oldNamespace;
             if (namespaceIndex > -1) {
@@ -633,11 +626,9 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         String prefixedName = null;
 
-        if (obj instanceof LayerGroupInfo) {
-            LayerGroupInfo lgInfo = (LayerGroupInfo) obj;
+        if (obj instanceof LayerGroupInfo lgInfo) {
             prefixedName = tileLayerName(lgInfo);
-        } else if (obj instanceof LayerInfo) {
-            LayerInfo layerInfo = (LayerInfo) obj;
+        } else if (obj instanceof LayerInfo layerInfo) {
             prefixedName = tileLayerName(layerInfo);
         }
 

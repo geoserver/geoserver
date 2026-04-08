@@ -8,6 +8,7 @@ package org.geoserver.cluster;
 import static com.google.common.base.Objects.equal;
 
 import com.google.common.base.Objects;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -63,8 +64,7 @@ import org.geoserver.config.impl.SettingsInfoImpl;
  */
 public class ConfigChangeEvent extends Event {
 
-    static Map<Class<? extends Info>, Class<? extends Info>> INTERFACES =
-            new HashMap<Class<? extends Info>, Class<? extends Info>>();
+    static Map<Class<? extends Info>, Class<? extends Info>> INTERFACES = new HashMap<>();
 
     static {
         INTERFACES.put(GeoServerInfoImpl.class, GeoServerInfo.class);
@@ -92,6 +92,7 @@ public class ConfigChangeEvent extends Event {
     }
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public enum Type {
@@ -161,9 +162,9 @@ public class ConfigChangeEvent extends Event {
      */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ConfigChangeEvent)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
         ConfigChangeEvent e = (ConfigChangeEvent) o;
         return equal(id, e.id) && equal(type, e.type);
     }

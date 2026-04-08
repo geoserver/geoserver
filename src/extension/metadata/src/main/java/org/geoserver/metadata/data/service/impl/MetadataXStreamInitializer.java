@@ -15,7 +15,7 @@ public class MetadataXStreamInitializer implements XStreamPersisterInitializer {
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("map", HashMap.class);
-        persister.registerBreifMapComplexType("date", Date.class);
+        persister.registerBriefMapComplexType("map", HashMap.class);
+        persister.registerBriefMapComplexType("date", Date.class);
     }
 }

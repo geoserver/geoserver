@@ -85,15 +85,15 @@ public class Mosaic extends Directory {
 
     @Override
     protected SpatialFile newSpatialFile(File f, DataFormat format) {
-        if (format instanceof GridFormat) {
+        if (format instanceof GridFormat gridFormat) {
             Granule g = new Granule(super.newSpatialFile(f, format));
 
             // process the granule
             try {
-                AbstractGridCoverage2DReader r = ((GridFormat) format).gridReader(g);
+                AbstractGridCoverage2DReader r = gridFormat.gridReader(g);
                 try {
                     // get the envelope
-                    GridCoverage2D cov = r.read(null);
+                    GridCoverage2D cov = r.read();
 
                     g.setEnvelope(cov.getEnvelope2D());
                     g.setGrid(cov.getGridGeometry());

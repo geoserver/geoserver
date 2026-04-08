@@ -159,8 +159,11 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
             Document dom = dom(new ByteArrayInputStream(data));
             // print(dom);
             assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:GroundOverlay)", dom);
-            String href = XMLUnit.newXpathEngine().evaluate("//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
-            assertEquals("image.png", href);
+            assertXpathEvaluatesTo("image.png", "//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
+            // axis order check
+            assertXpathEvaluatesTo("-0.003", "//kml:Folder/kml:GroundOverlay/kml:LatLonBox/kml:west", dom);
+            assertXpathEvaluatesTo("0.003", "//kml:Folder/kml:GroundOverlay/kml:LatLonBox/kml:east", dom);
+
             zis.closeEntry();
 
             // the ground overlay for the raster layer
@@ -480,5 +483,40 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
                 "true",
                 "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/DownloadMetadata/WarningsFound",
                 dom);
+    }
+
+    @Test
+    public void testSimpleGrayTransparent() throws Exception {
+        String xml = getTestRequest("mapGrayTransparent.xml");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertEquals(ColorModel.TRANSLUCENT, image.getColorModel().getTransparency());
+        ImageAssert.assertEquals(new File(SAMPLES + "mapGrayTransparent.png"), image, 100);
+    }
+
+    @Test
+    public void testSimpleGrayTransparentExplicitOpacity() throws Exception {
+        // with an express opacity set the code used to take a different path that without it
+        String xml = getTestRequest("mapGrayTransparentExplicitOpacity.xml");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertEquals(ColorModel.TRANSLUCENT, image.getColorModel().getTransparency());
+        ImageAssert.assertEquals(new File(SAMPLES + "mapGrayTransparent.png"), image, 100);
+    }
+
+    @Test
+    public void testMultilayerGrayTransparent() throws Exception {
+        // testing overlay with a base layer that adds opacity
+        String xml = getTestRequest("mapGrayTransparentMultilayer.xml");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertEquals(ColorModel.TRANSLUCENT, image.getColorModel().getTransparency());
+        ImageAssert.assertEquals(new File(SAMPLES + "mapGrayTransparentMultilayer.png"), image, 100);
     }
 }

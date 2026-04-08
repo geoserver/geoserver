@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.model.ResourceModel;
@@ -24,6 +25,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 public abstract class SecurityNamedServiceProvider<T extends SecurityNamedServiceConfig>
         extends GeoServerDataProvider<T> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** name of the config */

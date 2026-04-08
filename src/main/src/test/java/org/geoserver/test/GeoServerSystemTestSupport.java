@@ -14,6 +14,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -41,14 +49,6 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.servlet.Filter;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -62,12 +62,10 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import net.sf.json.JSON;
-import net.sf.json.JSONException;
-import net.sf.json.JSONSerializer;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.HeaderElement;
-import org.apache.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.HeaderElement;
+import org.apache.hc.core5.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.message.ParserCursor;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -98,6 +96,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoaderProxy;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
@@ -136,6 +135,9 @@ import org.geotools.xsd.XSD;
 import org.jsoup.Jsoup;
 import org.junit.After;
 import org.junit.Before;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONSerializer;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mock.web.MockFilterChain;
@@ -190,7 +192,6 @@ import org.xml.sax.SAXParseException;
  * @author Justin Deoliveira, OpenGeo
  */
 @TestSetup(run = TestSetupFrequency.ONCE)
-@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemTestData> {
 
     private MockHttpServletResponse lastResponse;
@@ -221,7 +222,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     public static final EntityResolver RESOLVE_DISABLED_PROVIDER_DEVMODE = new PreventLocalEntityResolver() {
         @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(null, systemId)) {
+            if (isLocalGeoToolsSchema(null, systemId) || isDataDirectory(systemId)) {
                 return null;
             }
 
@@ -231,7 +232,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         @Override
         public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
                 throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(baseURI, systemId)) {
+            if (isLocalGeoToolsSchema(baseURI, systemId) || isDataDirectory(systemId)) {
                 return null;
             }
 
@@ -256,6 +257,21 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                     || path.matches(".*modules[\\\\/]ogc[\\\\/].*\\.xsd");
         }
 
+        private boolean isDataDirectory(String systemId) {
+            if (applicationContext != null) {
+                GeoServerDataDirectory dd = applicationContext.getBean(GeoServerDataDirectory.class);
+                try {
+                    String path = dd.getRoot("workspaces").dir().getCanonicalPath();
+                    if (systemId.startsWith("file:")) systemId = systemId.substring(5);
+                    String canonicalSystemId = new File(systemId).getCanonicalPath();
+                    return canonicalSystemId.startsWith(path);
+                } catch (IOException e) {
+                    return false;
+                }
+            }
+            return false;
+        }
+
         @Override
         public String toString() {
             return "PreventLocalEntityResolver";
@@ -275,10 +291,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         } catch (Exception e) {
             // ignore on VM where this optimization does not apply
         }
-
-        // disable security manager to speed up tests, we are spending a lot of time in privileged
-        // blocks
-        System.setSecurityManager(null);
 
         // setup quiet logging (we need to to this here because Data
         // is loaded before GeoServer has a chance to setup logging for good)
@@ -336,8 +348,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             // Allow resolution of XSDs from local file system
             EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
 
-            // Use GeoServer's JAI ImagingListener
-            GeoserverInitStartupListener.initJAIDefaultInstance();
+            // Use GeoServer's ImageN ImagingListener
+            GeoserverInitStartupListener.initImageNDefaultInstance();
 
             getSecurityManager().setAuthenticationCache(new TestingAuthenticationCache());
             onSetUp(testData);
@@ -402,7 +414,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Subclass hook called after the system (ie spring context) has been fully initialized.
+     * Subclass hook called after the system (ie spring context) has been fully initialized. Called by
+     * {@link #onSetUp(SystemTestData)}
      *
      * <p>Subclasses should override for post setup that is needed. The default implementation does nothing.
      */
@@ -675,7 +688,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * <p>This method is intended to be called after system startup. Typically from {@link #onSetUp(SystemTestData)} or
      * a {@literal @}Before hook.
      *
-     * @param workspaceName The optional workspace of the style, may be <code>null</code>.
+     * @param workspaceName The optional workspace of the style, may be {@code null}.
      * @param name Name of the style.
      */
     protected void removeStyle(String workspaceName, String name) throws IOException {
@@ -706,7 +719,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * <p>This method is intended to be called after system startup. Typically from {@link #onSetUp(SystemTestData)} or
      * a {@literal @}Before hook.
      *
-     * @param workspaceName The optional workspace of the layer group, may be <code>null</code>.
+     * @param workspaceName The optional workspace of the layer group, may be {@code null}.
      * @param name Name of the layer group.
      */
     protected void removeLayerGroup(String workspaceName, String name) {
@@ -827,13 +840,30 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param roles Roles to assign.
      */
     protected Authentication login(String username, String password, String... roles) {
+        return createAuthentication(username, password, roles);
+    }
+
+    /**
+     * Sets up the authentication context for the test.
+     *
+     * <p>This context lasts only for a single test case, it is cleared after every test has completed.
+     *
+     * @param user The user to set as principal.
+     * @param password The password.
+     * @param roles Roles to assign.
+     */
+    protected Authentication login(GeoServerUser user, String password, String... roles) {
+        return createAuthentication(user, password, roles);
+    }
+
+    private Authentication createAuthentication(Object principal, String credentials, String... roles) {
         SecurityContextHolder.setContext(new SecurityContextImpl());
-        List<GrantedAuthority> l = new ArrayList<>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
         for (String role : roles) {
-            l.add(new SimpleGrantedAuthority(role));
+            authorities.add(new SimpleGrantedAuthority(role));
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password, l);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, credentials, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }
@@ -1586,7 +1616,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         if (mimeType == null) {
             return null;
         }
-        HeaderElement headerElement = BasicHeaderValueParser.parseHeaderElement(mimeType, null);
+        BasicHeaderValueParser parser = new BasicHeaderValueParser();
+        ParserCursor cursor = new ParserCursor(0, mimeType.length());
+        HeaderElement headerElement = parser.parseHeaderElement(mimeType, cursor);
         return headerElement.getName();
     }
 
@@ -1669,8 +1701,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         Map<String, Object> params = KvpUtils.parseQueryString(path);
         for (String key : params.keySet()) {
             Object value = params.get(key);
-            if (value instanceof String) {
-                request.addParameter(key, (String) value);
+            if (value instanceof String string) {
+                request.addParameter(key, string);
             } else {
                 String[] values = (String[]) value;
                 request.addParameter(key, values);
@@ -2195,7 +2227,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Performs basic checks on an OWS 2.0 exception. The check for status, exception code and locator is optional,
      * leave null if you don't want to check it.
      *
-     * @returns Returns the message of the inner exception.
+     * @return Returns the message of the inner exception.
      */
     protected String checkOws20Exception(
             MockHttpServletResponse response, Integer status, String exceptionCode, String locator) throws Exception {
@@ -2349,10 +2381,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     /**
      * Subclasses needed to do integration tests with servlet filters can override this method and return the list of
-     * filters to be used during mocked requests
+     * filters to be used during mocked requests. By default it returns a list with a single SpringDelegatingFilter
      */
     protected List<Filter> getFilters() {
-        return null;
+        try {
+            SpringDelegatingFilter filter = new SpringDelegatingFilter();
+            filter.init(null);
+            return List.of(filter);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -2532,7 +2570,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(layerGroupName);
         if (layerGroup == null) {
             // targeted layer group doesn't exists
-            throw new RuntimeException(String.format("Layer group '%s' doesn't exists.", layerGroupName));
+            throw new RuntimeException("Layer group '%s' doesn't exists.".formatted(layerGroupName));
         }
         layerGroup.getKeywords().addAll(keywords);
         getCatalog().save(layerGroup);
@@ -2560,7 +2598,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         LayerInfo originalLayerInfo = catalog.getLayerByName(layerName);
         if (originalLayerInfo == null) {
             // layer don't exists
-            throw new RuntimeException(String.format("Could not retrieve a layer for name '%s'.", layerName));
+            throw new RuntimeException("Could not retrieve a layer for name '%s'.".formatted(layerName));
         }
         FeatureTypeInfo originalFeatureTypeInfo = (FeatureTypeInfo) originalLayerInfo.getResource();
         DataStoreInfo originalStoreInfo = originalFeatureTypeInfo.getStore();
@@ -2607,5 +2645,17 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             }
         }
         assertTrue("Module " + moduleId + " not found", requiredModuleWasFound);
+    }
+
+    /**
+     * Checks if the current build is running as a Github action, using the <code>GITHUB_ACTIONS</code> environment
+     * variable. See the <a
+     * href="https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables">
+     * default variables available in Github</a> too.
+     *
+     * @return
+     */
+    public static final boolean isGitHubAction() {
+        return Boolean.getBoolean("GITHUB_ACTIONS");
     }
 }

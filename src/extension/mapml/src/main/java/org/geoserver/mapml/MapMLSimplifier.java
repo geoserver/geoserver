@@ -29,10 +29,10 @@ import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 class MapMLSimplifier {
 
     /**
-     * The tolerance in pixels, two vertices at less than this distance will be considered the same. It's smaller
-     * compared to the server side renderer, the client side seems to render thinner lines.
+     * The tolerance in pixels, two vertices at less than this distance will be considered the same. The MapML client
+     * side seems to render thinner lines, we might want to use a smaller value.
      */
-    public static final double PIXEL_TOLERANCE = 0.1;
+    public static final double PIXEL_TOLERANCE = 0.8;
 
     private final double querySimplificationDistance;
     private final double simplificationDistance;

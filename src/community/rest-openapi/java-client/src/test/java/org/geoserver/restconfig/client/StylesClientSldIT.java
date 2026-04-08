@@ -64,8 +64,8 @@ public class StylesClientSldIT {
         this.dataStores = support.client().dataStores();
         this.stylesClient = support.client().styles();
 
-        String wsname1 = String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
-        String wsname2 = String.format("%s-ws2-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname1 = "%s-ws1-%d".formatted(testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname2 = "%s-ws2-%d".formatted(testName.getMethodName(), rnd.nextInt((int) 1e6));
 
         this.workspaces.create(wsname1);
         this.workspaces.create(wsname2);

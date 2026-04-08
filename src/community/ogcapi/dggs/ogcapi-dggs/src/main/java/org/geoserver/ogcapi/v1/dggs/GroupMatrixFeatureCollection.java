@@ -23,6 +23,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.dggs.GroupedMatrixAggregate;
 import org.geotools.dggs.GroupedMatrixAggregate.GroupByResult;
+import org.geotools.dggs.IterableCalcResult;
 import org.geotools.feature.collection.FilteringSimpleFeatureCollection;
 import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -41,12 +42,12 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 class GroupMatrixFeatureCollection implements SimpleFeatureCollection {
 
     private final SimpleFeatureType schema;
-    private final GroupedMatrixAggregate.IterableResult result;
+    private final IterableCalcResult<GroupByResult> result;
     private final Function<GroupByResult, SimpleFeature> featureMapper;
 
     public GroupMatrixFeatureCollection(
             SimpleFeatureType schema,
-            GroupedMatrixAggregate.IterableResult result,
+            IterableCalcResult<GroupedMatrixAggregate.GroupByResult> result,
             Function<GroupByResult, SimpleFeature> featureMapper) {
         this.schema = schema;
         this.result = result;

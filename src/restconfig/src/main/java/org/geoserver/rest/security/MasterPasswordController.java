@@ -43,7 +43,6 @@ public class MasterPasswordController extends RestBaseController {
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
-    @SuppressWarnings("PMD.StringInstantiation")
     public NamedMap<String, String> masterPasswordGet() throws IOException {
 
         if (!getManager().checkAuthenticationForAdminRole()) {
@@ -97,7 +96,7 @@ public class MasterPasswordController extends RestBaseController {
         try {
             m.saveMasterPasswordConfig(m.loadMasterPasswordConfig(), currentArray, newpassArray, newpassArray);
         } catch (Exception e) {
-            throw new RestException("Cannot change master password", HttpStatus.UNPROCESSABLE_ENTITY, e);
+            throw new RestException("Cannot change master password", HttpStatus.UNPROCESSABLE_CONTENT, e);
         } finally {
             m.disposePassword(currentArray);
             m.disposePassword(newpassArray);

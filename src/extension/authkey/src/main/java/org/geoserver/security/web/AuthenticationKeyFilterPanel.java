@@ -4,6 +4,9 @@
  */
 package org.geoserver.security.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +47,7 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 public class AuthenticationKeyFilterPanel extends AuthenticationFilterPanel<AuthenticationKeyFilterConfig> {
 
+    @Serial
     private static final long serialVersionUID = 1;
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
@@ -117,7 +121,20 @@ public class AuthenticationKeyFilterPanel extends AuthenticationFilterPanel<Auth
                 }.setDefaultFormProcessing(true));
     }
 
-    class ParamsPanel extends FormComponentPanel<Serializable> {
+    static class ParamsPanel extends FormComponentPanel<Serializable> {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(AuthenticationKeyFilterPanel.ParamsPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public ParamsPanel(String id, String authMapperName, Map<String, String> parameters) {
             super(id, new Model<>());

@@ -202,11 +202,7 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-                .append('[')
-                .append(delegate)
-                .append(']')
-                .toString();
+        return getClass().getSimpleName() + '[' + delegate + ']';
     }
 
     @Override
@@ -292,5 +288,15 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     @Override
     public void setLayerGroupStyles(List<LayerGroupStyle> styles) {
         delegate.setLayerGroupStyles(styles);
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return delegate.getModifiedBy();
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        delegate.setModifiedBy(userName);
     }
 }

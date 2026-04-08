@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.workspace;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,6 +17,7 @@ import org.geoserver.web.GeoServerApplication;
 
 /** Simple detachable model listing all the available workspaces from the {@link Catalog#getWorkspaces()}. */
 public class WorkspacesModel extends LoadableDetachableModel<List<WorkspaceInfo>> {
+    @Serial
     private static final long serialVersionUID = -2014677058862746780L;
 
     @Override

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,6 @@ import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -50,6 +50,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      */
     private static final Pattern EXACT_TERM_KEYWORD_PATTERN = Pattern.compile("^([\"'])(?<keyword>.+)\\1$");
 
+    @Serial
     private static final long serialVersionUID = -6876929036365601443L;
 
     static final Logger LOGGER = Logging.getLogger(GeoServerDataProvider.class);
@@ -64,7 +65,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * A cache used to avoid recreating models over and over, this make it possible to make {@link GeoServerTablePanel}
      * editable
      */
-    Map<T, IModel<T>> modelCache = new IdentityHashMap<>();
+    IdentityHashMap<T, IModel<T>> modelCache = new IdentityHashMap<>();
 
     /** Sets the data provider as editable, in that case the models should be preserved */
     boolean editable = false;
@@ -389,7 +390,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
     /** Base property class. Assumes T is serializable, if it's not, manually override the getModel() method */
     public abstract static class AbstractProperty<T> implements Property<T> {
+        @Serial
         private static final long serialVersionUID = 6286992721731224988L;
+
         String name;
         boolean visible;
 
@@ -415,8 +418,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         @Override
         public IModel<?> getModel(IModel<T> itemModel) {
             Object value = getPropertyValue(itemModel.getObject());
-            if (value instanceof IModel) {
-                return (IModel<?>) value;
+            if (value instanceof IModel<?> model) {
+                return model;
             } else {
                 return new Model<>((Serializable) value);
             }
@@ -450,7 +453,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * @param <T>
      */
     public static class BeanProperty<T> extends AbstractProperty<T> {
+        @Serial
         private static final long serialVersionUID = 5532661316457341748L;
+
         String propertyPath;
 
         public BeanProperty(String key) {
@@ -508,7 +513,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * @param <T>
      */
     public static class PropertyPlaceholder<T> implements Property<T> {
+        @Serial
         private static final long serialVersionUID = -6605207892648199453L;
+
         String name;
 
         public PropertyPlaceholder(String name) {

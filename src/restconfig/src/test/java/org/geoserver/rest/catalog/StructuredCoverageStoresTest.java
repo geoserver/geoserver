@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -50,10 +48,10 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.util.IOUtils;
 import org.geotools.util.URLs;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -73,20 +71,9 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
     private File mosaic;
 
-    @BeforeClass
-    public static void setupTimeZone() {
-        System.setProperty("user.timezone", "GMT");
-        System.setProperty("gt2.jdbc.trace", "true");
-    }
-
     @Before
     public void prepare() {
         xpath = XMLUnit.newXpathEngine();
-    }
-
-    @AfterClass
-    public static void cleanupTimeZone() {
-        System.clearProperty("user.timezone");
     }
 
     @Before
@@ -126,7 +113,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(WATER_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
 
         // setup the hetero_s2_ovr mosaic
@@ -172,7 +159,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
     }
 

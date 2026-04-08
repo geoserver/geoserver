@@ -36,7 +36,8 @@ public class MetaDataTest extends MDTestSupport {
 
     @Test
     public void testBuildMDRecord() throws MismatchedDimensionException, Exception {
-        GenericRecordBuilder rb = new GenericRecordBuilder(MetaDataDescriptor.getInstance());
+        MetaDataDescriptor mdDescriptor = applicationContext.getBean(MetaDataDescriptor.class);
+        GenericRecordBuilder rb = new GenericRecordBuilder(mdDescriptor);
         rb.addElement(
                 PropertyPath.fromDotPath("fileIdentifier.CharacterString"), "00180e67-b7cf-40a3-861d-b3a09337b195");
         rb.addElement(

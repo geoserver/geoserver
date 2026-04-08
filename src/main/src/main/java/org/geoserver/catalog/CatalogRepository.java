@@ -41,8 +41,8 @@ public class CatalogRepository implements Repository, Serializable {
     @Override
     public DataStore dataStore(Name name) {
         DataAccess da = access(name);
-        if (da instanceof DataStore) {
-            return (DataStore) da;
+        if (da instanceof DataStore store) {
+            return store;
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {
@@ -80,8 +80,8 @@ public class CatalogRepository implements Repository, Serializable {
 
             try {
                 DataAccess da = ds.getDataStore(null);
-                if (da instanceof DataStore) {
-                    dataStores.add((DataStore) da);
+                if (da instanceof DataStore store) {
+                    dataStores.add(store);
                 }
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Unable to get datastore '" + ds.getName() + "'", e);

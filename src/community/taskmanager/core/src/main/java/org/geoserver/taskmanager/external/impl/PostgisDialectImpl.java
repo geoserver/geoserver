@@ -52,7 +52,8 @@ public class PostgisDialectImpl extends DefaultDialectImpl {
 
         sb.append(" (");
         for (String columnName : columnNames) {
-            sb.append(quote(columnName));
+            // if the "column" is functional, we don't quote.
+            sb.append(columnName.contains("(") ? columnName : quote(columnName));
             sb.append(",");
         }
         sb.setLength(sb.length() - 1);

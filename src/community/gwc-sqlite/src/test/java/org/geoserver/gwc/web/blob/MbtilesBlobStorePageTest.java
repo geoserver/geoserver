@@ -159,9 +159,9 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
     private MbtilesInfo findStore(String storeId) {
         List<BlobStoreInfo> configurations = GWC.get().getBlobStores();
         for (BlobStoreInfo candidateConfiguration : configurations) {
-            if (candidateConfiguration instanceof MbtilesInfo
+            if (candidateConfiguration instanceof MbtilesInfo info
                     && candidateConfiguration.getId().equals(storeId)) {
-                return (MbtilesInfo) candidateConfiguration;
+                return info;
             }
         }
         return null;

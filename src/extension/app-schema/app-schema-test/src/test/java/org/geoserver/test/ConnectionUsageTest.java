@@ -245,7 +245,6 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
         }
     }
 
-    @SuppressWarnings("PMD.CloseResource")
     private void testNestedIterators(FeatureIterator iterator) throws IOException {
         assertTrue(iterator instanceof DataAccessMappingFeatureIterator);
         DataAccessMappingFeatureIterator mappingIt = (DataAccessMappingFeatureIterator) iterator;
@@ -270,10 +269,8 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
         assertFalse(attrs.isEmpty());
 
         for (AttributeMapping attr : attrs) {
-            if (attr instanceof JoiningNestedAttributeMapping) {
+            if (attr instanceof JoiningNestedAttributeMapping joiningNestedAttr) {
                 nestedFeaturesCount++;
-
-                JoiningNestedAttributeMapping joiningNestedAttr = (JoiningNestedAttributeMapping) attr;
                 Map<Name, DataAccessMappingFeatureIterator> nestedFeatureIterators =
                         joiningNestedAttr.getNestedFeatureIterators(mappingIt);
                 assertNotNull(nestedFeatureIterators);

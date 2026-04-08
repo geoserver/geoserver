@@ -7,7 +7,7 @@ package org.geoserver.ogcapi;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -28,6 +28,7 @@ public class LinksBuilder {
     private BiConsumer<MediaType, Link> updater;
     private Function<List<MediaType>, List<MediaType>> mediaTypeCustomizer;
     private boolean appendToHead = true;
+    private Map<String, String> params = new HashMap<>();
 
     public LinksBuilder(Class<?> responseType) {
         this.responseType = responseType;
@@ -41,6 +42,11 @@ public class LinksBuilder {
     /** Adds a path segment for the resource. Can be called multiple times, the segments will be chained. */
     public LinksBuilder segment(String segment) {
         this.segments.add(segment);
+        return this;
+    }
+
+    public LinksBuilder param(String name, String value) {
+        params.put(name, value);
         return this;
     }
 
@@ -112,7 +118,8 @@ public class LinksBuilder {
         }
         for (MediaType mediaType : mediaTypes) {
             String format = mediaType.toString();
-            Map<String, String> params = Collections.singletonMap("f", format);
+            Map<String, String> params = new HashMap<>(this.params);
+            params.put("f", format);
             String url = buildURL(APIRequestInfo.get().getBaseURL(), getPath(), params, URLMangler.URLType.SERVICE);
             String linkTitle = title + format;
             Link link = new Link(url, rel, format, linkTitle);

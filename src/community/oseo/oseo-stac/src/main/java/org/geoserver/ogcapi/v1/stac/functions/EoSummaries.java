@@ -7,12 +7,9 @@ package org.geoserver.ogcapi.v1.stac.functions;
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 import java.io.IOException;
-import java.util.*;
 import org.geoserver.ogcapi.v1.stac.AggregatesCache;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.capability.FunctionName;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.FunctionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 
@@ -24,9 +21,6 @@ public class EoSummaries extends FunctionImpl {
             parameter("aggregate", String.class),
             parameter("collectionIdentifier", String.class),
             parameter("property", String.class));
-    static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
-    static final String DELEGATE_PARENT_ID_FIELD = "eoParentIdentifier";
-    private static final String DELEGATE_GEOMETRY_FIELD = "footprint";
     public static final String MIN = "min";
     public static final String MAX = "max";
     public static final String DISTINCT = "distinct";

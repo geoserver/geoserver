@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.jdbc.config;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -18,6 +19,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfig
         implements SecurityAuthProviderConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String driverClassName;
@@ -36,7 +38,7 @@ public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfi
     /**
      * The JDBC driver class name.
      *
-     * <p>Used only if {@link #isJndi()} is false.
+     * <p>Used only if {@link JDBCSecurityServiceConfig#isJndi()} is false.
      */
     public String getDriverClassName() {
         return driverClassName;
@@ -50,7 +52,7 @@ public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfi
     /**
      * The JDBC url with which to obtain a database connection with.
      *
-     * <p>Used only if {@link #isJndi()} is false.
+     * <p>Used only if {@link JDBCSecurityServiceConfig#isJndi()} is false.
      */
     public String getConnectURL() {
         return connectURL;

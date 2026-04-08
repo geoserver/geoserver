@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.28-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -26,7 +26,6 @@
     <module>ogcapi-tiles-assembly</module>
     <module>ogcapi-images</module>
     <module>ogcapi-images-assembly</module>
-    <module>ogcapi-changeset</module>
     <module>ogcapi-tiled-features</module>
     <module>ogcapi-tiled-features-assembly</module>
     <module>dggs</module>
@@ -34,14 +33,15 @@
     <module>ogcapi-coverages-assembly</module>
     <module>ogcapi-processes</module>
     <module>ogcapi-processes-assembly</module>
-
+    <module>ogcapi-3d-geovolumes</module>
+    <module>ogcapi-3d-geovolumes-assembly</module>
     <module>web-coverages</module>
     <module>web-images</module>
     <module>web-maps</module>
     <module>web-styles</module>
     <module>web-tiles</module>
     <module>web-processes</module>
-
+    <module>web-3d-geovolumes</module>
   </modules>
 
   <dependencies>

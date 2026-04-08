@@ -12,6 +12,7 @@ services:
         SOURCE_FILE: "https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip"
         # override as appropriate (e.g. ./wfs11/citewfs-1.1)
         GEOSERVER_DATA_DIR_SRC:
+        JAVA_VERSION: ${JAVA_VERSION:-17}
     ports:
       - 18090:8080
     env_file:

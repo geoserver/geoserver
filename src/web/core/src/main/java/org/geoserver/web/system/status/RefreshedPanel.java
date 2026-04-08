@@ -4,6 +4,9 @@
  */
 package org.geoserver.web.system.status;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.Collections;
@@ -34,6 +37,20 @@ import org.geotools.util.logging.Logging;
 /** Panel displaying system resources monitoring values that is refreshed periodically. */
 public class RefreshedPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RefreshedPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -5616622546856772557L;
 
     public static final String datePattern = "yyyy-MM-dd HH:mm:ss.SSS";
@@ -64,6 +81,7 @@ public class RefreshedPanel extends Panel {
         add(time);
 
         ListView<MetricValue> list = new ListView<>("metrics", metricMdl) {
+            @Serial
             private static final long serialVersionUID = -5654700538264617274L;
 
             private int counter;
@@ -106,6 +124,7 @@ public class RefreshedPanel extends Panel {
          * Refresh every seconds
          */
         this.add(new AjaxSelfUpdatingTimerBehavior(updateInterval) {
+            @Serial
             private static final long serialVersionUID = -7009847252782601466L;
 
             @Override
@@ -120,7 +139,9 @@ public class RefreshedPanel extends Panel {
 
     /** An internal wrapper for getting optional localization string on description values. */
     private static class MetricValueI18nDescriptionWrapper implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
+
         private static final Logger LOGGER = Logging.getLogger(MetricValueI18nDescriptionWrapper.class);
 
         private final MetricValue value;

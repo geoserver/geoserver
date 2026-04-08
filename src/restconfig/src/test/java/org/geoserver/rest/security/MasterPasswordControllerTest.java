@@ -10,11 +10,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import net.sf.json.JSONObject;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.w3c.dom.Document;
 
 /**
@@ -134,11 +134,11 @@ public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
     @Test
     public void testPutAsJSON() throws Exception {
 
-        String body = String.format(jsonTemplate, "geoserver", "geoserver1");
+        String body = jsonTemplate.formatted("geoserver", "geoserver1");
         assertEquals(200, putAsServletResponse(MP_URI_JSON, body, "text/json").getStatus());
         assertTrue(getSecurityManager().checkMasterPassword("geoserver1"));
 
-        body = String.format(jsonTemplate, "geoserver1", "geoserver");
+        body = jsonTemplate.formatted("geoserver1", "geoserver");
         assertEquals(200, putAsServletResponse(MP_URI_JSON, body, "text/json").getStatus());
         assertTrue(getSecurityManager().checkMasterPassword("geoserver"));
     }

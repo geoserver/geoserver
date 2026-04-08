@@ -1,5 +1,5 @@
 {
-   "$schema":"http://json-schema.org/draft-03/schema#",
+   "$schema":"https://json-schema.org/draft/2020-12/schema",
 
     "title":"text symbol",
     "type":"object",
@@ -10,7 +10,6 @@
         "type":{
             "title":"marker type",
             "type":"string",
-            "required":true,
             "enum":["esriTS"]
         },
         "color":{
@@ -56,5 +55,6 @@
             "title":"font",
             "$ref":"font.json"
         }
-    }
+    },
+    "required":["type"]
 }

@@ -5,6 +5,13 @@
  */
 package org.geoserver.flow.controller;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,13 +19,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -76,8 +76,7 @@ public class IpBlacklistFilter implements GeoServerFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         if (isBlackListed(httpRequest)) {
-            if (response instanceof HttpServletResponse) {
-                HttpServletResponse httpResponse = (HttpServletResponse) response;
+            if (response instanceof HttpServletResponse httpResponse) {
                 httpResponse.sendError(
                         HttpServletResponse.SC_FORBIDDEN,
                         "This IP has been blocked. Please contact the server administrator");

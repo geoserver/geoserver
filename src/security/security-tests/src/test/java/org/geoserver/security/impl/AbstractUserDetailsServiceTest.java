@@ -56,12 +56,19 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         assertTrue(usergroupService.canCreateStore());
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "VERBOSE_LOGGING";
+    }
+
     @Test
     public void testRoleCalculation() throws Exception {
         setServices("rolecalulation");
         // populate with values
         insertValues(roleStore);
+        roleStore.store();
         insertValues(usergroupStore);
+        usergroupStore.store();
 
         String username = "theUser";
         GeoServerUser theUser = null;

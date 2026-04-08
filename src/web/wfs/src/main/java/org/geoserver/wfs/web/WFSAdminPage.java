@@ -5,6 +5,8 @@
  */
 package org.geoserver.wfs.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,13 +38,16 @@ import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.web.data.resource.LocalesDropdown;
+import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
+import org.geoserver.web.services.DisabledVersionsPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SRSListTextArea;
@@ -76,120 +81,24 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     TreeSet<String> getFeatureAvailable;
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected void build(final IModel info, Form form) {
-        // max features
-        form.add(new TextField<>("maxFeatures").add(RangeValidator.minimum(0)));
-        form.add(new TextField<>("maxNumberOfFeaturesForPreview"));
-        TextField<String> dateFormatField = new TextField<>("csvDateFormat");
-        dateFormatField.setModel(new PropertyModel<>(info, "csvDateFormat"));
-        form.add(dateFormatField);
-        form.add(new CheckBox("featureBounding"));
-        form.add(new CheckBox("hitsIgnoreMaxFeatures"));
-        form.add(new CheckBox("simpleConversionEnabled"));
-
-        // service level
-        RadioGroup sl = new RadioGroup<>("serviceLevel");
-        form.add(sl);
-        sl.add(new Radio<>("basic", new Model<>(WFSInfo.ServiceLevel.BASIC)));
-        sl.add(new Radio<>("transactional", new Model<>(WFSInfo.ServiceLevel.TRANSACTIONAL)));
-        sl.add(new Radio<>("complete", new Model<>(WFSInfo.ServiceLevel.COMPLETE))); // mime types for GetMap
-
-        getFeatureAvailable = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (WFSGetFeatureOutputFormat format : GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class)) {
-            getFeatureAvailable.addAll(format.getOutputFormats());
-        }
-
-        List<String> getFeatureSelected = new ArrayList<>();
-        getFeatureSelected.addAll(new PropertyModel<Set<String>>(info, "getFeatureOutputTypes").getObject());
-        List<String> getFeatureChoices = new ArrayList<>();
-        getFeatureChoices.addAll(getFeatureAvailable);
-
-        form.add(
-                getFeatureOutputTypesComponent = new OutputTypesFormComponent(
-                        "getFeatureOutputTypes",
-                        new ListModel<>(getFeatureSelected),
-                        new CollectionModel<>(getFeatureChoices),
-                        new PropertyModel<Boolean>(info, "getFeatureOutputTypeCheckingEnabled").getObject()));
-
-        IModel gml2Model = new LoadableDetachableModel() {
-            @Override
-            public Object load() {
-                return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_10);
-            }
-        };
-
-        IModel gml3Model = new LoadableDetachableModel() {
-            @Override
-            public Object load() {
-                return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_11);
-            }
-        };
-
-        IModel gml32Model = new LoadableDetachableModel() {
-            @Override
-            protected Object load() {
-                return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_20);
-            }
-        };
-
-        form.add(new GMLPanel("gml2", gml2Model));
-        form.add(new GMLPanel("gml3", gml3Model));
-        // add GML 3.2. configuration panel with alternative MIME types
-        form.add(new GMLPanel(
-                "gml32", gml32Model, "application/gml+xml; version=3.2", "text/xml; subtype=gml/3.2", "text/xml"));
-
-        form.add(new CheckBox("canonicalSchemaLocation"));
-
-        // Encode response with one featureMembers element or multiple featureMember elements
-        RadioGroup eo = new RadioGroup<>("encodeFeatureMember");
-        form.add(eo);
-        eo.add(new Radio<>("featureMembers", new Model<>(Boolean.FALSE)));
-        eo.add(new Radio<>("featureMember", new Model<>(Boolean.TRUE)));
-
-        PropertyModel metadataModel = new PropertyModel<>(info, "metadata");
-        IModel<Boolean> prjFormatModel =
-                new MapModel(metadataModel, ShapeZipOutputFormat.SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI);
-        CheckBox defaultPrjFormat = new CheckBox("shapeZipPrjFormat", prjFormatModel);
-        form.add(defaultPrjFormat);
-        form.add(new CheckBox("includeWFSRequestDumpFile"));
-        try {
-            // This is a temporary meassure until we fully implement ESRI WKT support in GeoTools.
-            // See discussion in GEOS-4503
-            GeoServerResourceLoader resourceLoader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            Resource esriProjs = resourceLoader.get(Paths.path("user_projections", "esri.properties"));
-            if (esriProjs.getType() != Type.RESOURCE) {
-                defaultPrjFormat.setEnabled(false);
-                defaultPrjFormat.getModel().setObject(Boolean.FALSE);
-                defaultPrjFormat.add(new AttributeModifier(
-                        "title",
-                        new Model<>("No esri.properties file "
-                                + "found in the data directory's user_projections folder. "
-                                + "This option is not available")));
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, e.getMessage(), e);
-        }
-
-        // other srs list
-        TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
-        form.add(srsList);
-        form.add(new AjaxLink<>("otherSRSHelp") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                dialog.showInfo(
-                        target,
-                        new StringResourceModel("otherSRS", WFSAdminPage.this, null),
-                        new StringResourceModel("otherSRS.message", WFSAdminPage.this, null));
-            }
-        });
-
-        // allowGlobalQueries checkbox
-        form.add(new CheckBox("allowGlobalQueries"));
-        form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
+    protected AdminPagePanel buildPanel(String id, IModel<WFSInfo> info, Form form) {
+        return new WFSAdminPanel(id, info);
     }
 
     static class GMLPanel extends Panel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WFSAdminPage.GMLPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public GMLPanel(String id, IModel<GMLInfo> gmlModel, String... mimeTypes) {
             super(id, new CompoundPropertyModel<>(gmlModel));
@@ -262,6 +171,11 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
     @Override
     protected String getServiceName() {
+        return "WFS"; // Features
+    }
+
+    @Override
+    protected String getServiceType() {
         return "WFS";
     }
 
@@ -283,5 +197,138 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         }
 
         super.handleSubmit(info);
+    }
+
+    private class WFSAdminPanel extends AdminPagePanel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WFSAdminPage.WFSAdminPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        public WFSAdminPanel(String id, IModel info) {
+            super(id, info);
+            // service control
+            add(new DisabledVersionsPanel(
+                    "disabledVersions", new PropertyModel<>(info, "disabledVersions"), getServiceType()));
+            // max features
+            add(new TextField<>("maxFeatures").add(RangeValidator.minimum(0)));
+            add(new TextField<>("maxNumberOfFeaturesForPreview"));
+            TextField<String> dateFormatField = new TextField<>("csvDateFormat");
+            dateFormatField.setModel(new PropertyModel<>(info, "csvDateFormat"));
+            add(dateFormatField);
+            add(new CheckBox("featureBounding"));
+            add(new CheckBox("hitsIgnoreMaxFeatures"));
+            add(new CheckBox("simpleConversionEnabled"));
+
+            // service level
+            RadioGroup sl = new RadioGroup<>("serviceLevel");
+            add(sl);
+            sl.add(new Radio<>("basic", new Model<>(WFSInfo.ServiceLevel.BASIC)));
+            sl.add(new Radio<>("transactional", new Model<>(WFSInfo.ServiceLevel.TRANSACTIONAL)));
+            sl.add(new Radio<>("complete", new Model<>(WFSInfo.ServiceLevel.COMPLETE))); // mime types for GetMap
+
+            getFeatureAvailable = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            for (WFSGetFeatureOutputFormat format : GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class)) {
+                getFeatureAvailable.addAll(format.getOutputFormats());
+            }
+
+            List<String> getFeatureSelected = new ArrayList<>();
+            getFeatureSelected.addAll(new PropertyModel<Set<String>>(info, "getFeatureOutputTypes").getObject());
+            List<String> getFeatureChoices = new ArrayList<>();
+            getFeatureChoices.addAll(getFeatureAvailable);
+
+            add(
+                    getFeatureOutputTypesComponent = new OutputTypesFormComponent(
+                            "getFeatureOutputTypes",
+                            new ListModel<>(getFeatureSelected),
+                            new CollectionModel<>(getFeatureChoices),
+                            new PropertyModel<Boolean>(info, "getFeatureOutputTypeCheckingEnabled").getObject()));
+
+            IModel<GMLInfo> gml2Model = new LoadableDetachableModel<>() {
+                @Override
+                public GMLInfo load() {
+                    return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_10);
+                }
+            };
+
+            IModel<GMLInfo> gml3Model = new LoadableDetachableModel<>() {
+                @Override
+                public GMLInfo load() {
+                    return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_11);
+                }
+            };
+
+            IModel<GMLInfo> gml32Model = new LoadableDetachableModel<>() {
+                @Override
+                protected GMLInfo load() {
+                    return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_20);
+                }
+            };
+
+            add(new GMLPanel("gml2", gml2Model));
+            add(new GMLPanel("gml3", gml3Model));
+            // add GML 3.2. configuration panel with alternative MIME types
+            add(new GMLPanel(
+                    "gml32", gml32Model, "application/gml+xml; version=3.2", "text/xml; subtype=gml/3.2", "text/xml"));
+
+            add(new CheckBox("canonicalSchemaLocation"));
+
+            // Encode response with one featureMembers element or multiple featureMember elements
+            RadioGroup eo = new RadioGroup<>("encodeFeatureMember");
+            add(eo);
+            eo.add(new Radio<>("featureMembers", new Model<>(Boolean.FALSE)));
+            eo.add(new Radio<>("featureMember", new Model<>(Boolean.TRUE)));
+
+            PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(info, "metadata");
+            IModel<Boolean> prjFormatModel =
+                    new MapModel<>(metadataModel, ShapeZipOutputFormat.SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI);
+            CheckBox defaultPrjFormat = new CheckBox("shapeZipPrjFormat", prjFormatModel);
+            add(defaultPrjFormat);
+            add(new CheckBox("includeWFSRequestDumpFile"));
+            try {
+                // This is a temporary meassure until we fully implement ESRI WKT support in GeoTools.
+                // See discussion in GEOS-4503
+                GeoServerResourceLoader resourceLoader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+                Resource esriProjs = resourceLoader.get(Paths.path("user_projections", "esri.properties"));
+                if (esriProjs.getType() != Type.RESOURCE) {
+                    defaultPrjFormat.setEnabled(false);
+                    defaultPrjFormat.getModel().setObject(Boolean.FALSE);
+                    defaultPrjFormat.add(new AttributeModifier(
+                            "title",
+                            new Model<>("No esri.properties file "
+                                    + "found in the data directory's user_projections folder. "
+                                    + "This option is not available")));
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.INFO, e.getMessage(), e);
+            }
+
+            // other srs list
+            TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
+            add(srsList);
+            add(new AjaxLink<>("otherSRSHelp") {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    dialog.showInfo(
+                            target,
+                            new StringResourceModel("otherSRS", WFSAdminPage.this, null),
+                            new StringResourceModel("otherSRS.message", WFSAdminPage.this, null));
+                }
+            });
+
+            // allowGlobalQueries checkbox
+            add(new CheckBox("allowGlobalQueries"));
+            add(new CheckBox("disableStoredQueriesManagement"));
+            add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
+        }
     }
 }

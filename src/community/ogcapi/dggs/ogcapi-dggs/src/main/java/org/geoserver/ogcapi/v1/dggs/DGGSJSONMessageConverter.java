@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.xml.namespace.QName;
-import net.sf.json.util.JSONBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.TemporalUtils;
@@ -41,6 +40,7 @@ import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
+import org.kordamp.json.util.JSONBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -164,14 +164,14 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
                         jsonWriter.value(TemporalUtils.printDate((Date) value));
                     } else {
                         jsonWriter.key(attributeName);
-                        if ((value instanceof Double && Double.isNaN((Double) value))
-                                || value instanceof Float && Float.isNaN((Float) value)) {
+                        if ((value instanceof Double double3 && Double.isNaN(double3))
+                                || value instanceof Float float3 && Float.isNaN(float3)) {
                             jsonWriter.value(null);
-                        } else if ((value instanceof Double && ((Double) value) == Double.POSITIVE_INFINITY)
-                                || value instanceof Float && ((Float) value) == Float.POSITIVE_INFINITY) {
+                        } else if ((value instanceof Double double2 && double2 == Double.POSITIVE_INFINITY)
+                                || value instanceof Float float2 && float2 == Float.POSITIVE_INFINITY) {
                             jsonWriter.value("Infinity");
-                        } else if ((value instanceof Double && ((Double) value) == Double.NEGATIVE_INFINITY)
-                                || value instanceof Float && ((Float) value) == Float.NEGATIVE_INFINITY) {
+                        } else if ((value instanceof Double double1 && double1 == Double.NEGATIVE_INFINITY)
+                                || value instanceof Float float1 && float1 == Float.NEGATIVE_INFINITY) {
                             jsonWriter.value("-Infinity");
                         } else {
                             jsonWriter.value(value);
@@ -243,7 +243,7 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
             writeLink(jw, linkTitle, format.toString(), linkType, href);
         }
         // backpointer to the collection
-        String basePath = "ogc/dggs/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
+        String basePath = "ogc/dggs/v1/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
         for (MediaType format : requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
             String href = ResponseUtils.buildURL(
                     baseUrl, basePath, Collections.singletonMap("f", format.toString()), URLMangler.URLType.SERVICE);

@@ -98,7 +98,7 @@ class StyleWorker {
         return Optional.ofNullable(sld.getStyledLayers())
                 .filter(layers -> layers.length > 0)
                 .map(layers -> layers[0])
-                .map(l -> l instanceof UserLayer ? ((UserLayer) l).getUserStyles() : ((NamedLayer) l).getStyles())
+                .map(l -> l instanceof UserLayer ul ? ul.getUserStyles() : ((NamedLayer) l).getStyles())
                 .filter(styles -> styles != null && styles.length > 0)
                 .map(styles -> styles[0])
                 .map(s -> s.getDescription());

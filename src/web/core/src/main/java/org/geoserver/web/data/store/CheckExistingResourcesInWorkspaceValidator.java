@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
@@ -21,6 +22,7 @@ import org.geoserver.web.GeoServerApplication;
  * registered resources for the datastore being edited and any other resource configured for the workspace
  */
 public class CheckExistingResourcesInWorkspaceValidator implements IValidator<WorkspaceInfo> {
+    @Serial
     private static final long serialVersionUID = -3520867380372087997L;
 
     private String wsId;

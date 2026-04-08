@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.security.ldap;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -40,6 +43,7 @@ import org.springframework.security.core.Authentication;
 // TODO WICKET8 - Verify this page works OK
 public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecurityServiceConfig> {
 
+    @Serial
     private static final long serialVersionUID = 4772173006888418298L;
 
     public LDAPAuthProviderPanel(String id, IModel<LDAPSecurityServiceConfig> model) {
@@ -54,6 +58,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         boolean useLdapAuth = model.getObject().getUserGroupServiceName() == null;
         add(new AjaxCheckBox("useLdapAuthorization", new Model<>(useLdapAuth)) {
 
+            @Serial
             private static final long serialVersionUID = 2060279075143716273L;
 
             @Override
@@ -84,8 +89,9 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         return useLDAP ? new LDAPAuthorizationPanel(id) : new UserGroupAuthorizationPanel(id);
     }
 
-    abstract class AuthorizationPanel extends FormComponentPanel<HashMap<String, Object>> {
+    abstract static class AuthorizationPanel extends FormComponentPanel<HashMap<String, Object>> {
 
+        @Serial
         private static final long serialVersionUID = -2021795762927385164L;
 
         public AuthorizationPanel(String id) {
@@ -95,8 +101,23 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         public abstract void resetModel();
     }
 
-    class UserGroupAuthorizationPanel extends AuthorizationPanel {
+    static class UserGroupAuthorizationPanel extends AuthorizationPanel {
 
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(LDAPAuthProviderPanel.UserGroupAuthorizationPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = 2464048864034610244L;
 
         public UserGroupAuthorizationPanel(String id) {
@@ -113,7 +134,23 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
     class LDAPAuthorizationPanel extends AuthorizationPanel {
 
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(LDAPAuthProviderPanel.LDAPAuthorizationPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = 7541432269535150812L;
+
         private static final String USE_NESTED_PARENT_GROUPS = "useNestedParentGroups";
         private static final String MAX_GROUP_SEARCH_LEVEL = "maxGroupSearchLevel";
         private static final String NESTED_GROUP_SEARCH_FILTER = "nestedGroupSearchFilter";
@@ -164,6 +201,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
             final TextField<String> maxLevelField = new TextField<>(MAX_GROUP_SEARCH_LEVEL);
             final TextField<String> nestedGroupSearchFilterField = new TextField<>(NESTED_GROUP_SEARCH_FILTER);
             final AjaxCheckBox useNestedCheckbox = new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -194,6 +232,21 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
     class TestLDAPConnectionPanel extends FormComponentPanel<HashMap<String, Object>> {
 
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(LDAPAuthProviderPanel.TestLDAPConnectionPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = 5433983389877706266L;
 
         public TestLDAPConnectionPanel(String id) {
@@ -207,6 +260,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
         private class TestLink extends AjaxSubmitLink {
 
+            @Serial
             private static final long serialVersionUID = 2373404292655355758L;
 
             public TestLink() {

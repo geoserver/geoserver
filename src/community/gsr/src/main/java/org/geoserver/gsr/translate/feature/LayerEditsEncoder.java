@@ -13,13 +13,13 @@ package org.geoserver.gsr.translate.feature;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
 import org.geoserver.gsr.model.feature.Feature;
 import org.geoserver.gsr.model.feature.FeatureArray;
 import org.geoserver.gsr.model.feature.LayerEdits;
 import org.geoserver.gsr.model.feature.ServiceEdits;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONObject;
 
 public class LayerEditsEncoder {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayerEditsEncoder.class);

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.ProcessListener;
@@ -57,7 +57,7 @@ public class ProcessListenerNotifier {
     }
 
     public void fireProgress(float progress, String task) {
-        if (progress > status.progress || StringUtils.equals(task, status.task)) {
+        if (progress > status.progress || Strings.CS.equals(task, status.task)) {
             if (status.getPhase() == ProcessState.QUEUED) {
                 status.setPhase(ProcessState.RUNNING);
             }

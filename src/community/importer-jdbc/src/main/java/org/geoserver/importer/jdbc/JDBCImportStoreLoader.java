@@ -51,14 +51,14 @@ public class JDBCImportStoreLoader implements DisposableBean {
     public Properties getParameters() throws IOException {
         Resource resource = dataDir.get(JDBCSTATUS_NAME);
         if (resource.getType() == Type.UNDEFINED) {
-            // setup a H2
+            // setup a GeoPackage
             Properties fixture = new Properties();
-            fixture.put("user", "geotools");
-            fixture.put("password", "geotools");
-            fixture.put("database", dataDir.getRoot().dir().getAbsolutePath() + "/importer/h2-store");
-            fixture.put("dbtype", "h2");
+            dataDir.get("importer").dir();
+            fixture.put("database", dataDir.getRoot().dir().getAbsolutePath() + "/importer/gpkg-store.gpkg");
+            fixture.put("dbtype", "geopkg");
+            fixture.put("read_only", "false");
             try (OutputStream os = resource.out()) {
-                fixture.store(os, "Defaulting to local H2 database");
+                fixture.store(os, "Defaulting to local GeoPackage database");
             }
         }
         Properties params = new Properties();

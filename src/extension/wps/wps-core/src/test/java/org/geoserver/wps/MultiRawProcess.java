@@ -25,7 +25,7 @@ import org.geotools.util.SimpleInternationalString;
 @DescribeProcess(title = "MultiRaw", description = "Process used to test processes with multiple raw outputs")
 public class MultiRawProcess {
 
-    static final ProcessFactory getFactory() {
+    public static final ProcessFactory getFactory() {
         return new MultiRawProcessFactory();
     }
 

@@ -9,8 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
@@ -19,6 +17,8 @@ import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
 
 public class AttributesToPointGeometryTransformTest extends ImporterTestSupport {
 

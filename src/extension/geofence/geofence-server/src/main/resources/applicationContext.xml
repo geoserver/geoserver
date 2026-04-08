@@ -54,7 +54,6 @@
         <property name="ignoreResourceNotFound" value="true"/>
         <property name="locations">
             <list>
-                <!-- Default values for an embedded file-based H2 db -->
                 <value>classpath*:geofence-default-override.properties</value>
                 <!-- Optional overriding values for custom db. Path relative to data dir -->
                 <value>file:geofence/geofence-datasource-ovr.properties</value>
@@ -66,8 +65,7 @@
             <props>
                 <!-- This value is used to find out if we are using an embedded geofence instance -->
                 <prop key="geofenceConfigurationManager.configuration.servicesUrl">internal:/</prop>
-                <!--  db inside data directory -->
-                <prop key="geofenceDataSource.url">jdbc:h2:${GEOSERVER_DATA_DIR}/geofence/geofence_db/geofence</prop>
+                <prop key="geofenceDataSource.url">jdbc:postgresql://localhost:5432/geofence</prop>
                 <!-- "update" is not a good option in production -->
                 <prop key="geofenceEntityManagerFactory.jpaPropertyMap[hibernate.hbm2ddl.auto]">update</prop>
             </props>

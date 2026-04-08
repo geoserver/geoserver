@@ -59,13 +59,13 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
 
     private ReferencedEnvelope getSpatialExtents(PublishedInfo published) {
         try {
-            if (published instanceof LayerInfo) {
-                if (((LayerInfo) published).getResource().getLatLonBoundingBox() == null) {
+            if (published instanceof LayerInfo info1) {
+                if (info1.getResource().getLatLonBoundingBox() == null) {
                     throw new RuntimeException("Layer has no bounding box: " + published);
                 }
-                return ((LayerInfo) published).getResource().getLatLonBoundingBox();
-            } else if (published instanceof LayerGroupInfo) {
-                ReferencedEnvelope bounds = ((LayerGroupInfo) published).getBounds();
+                return info1.getResource().getLatLonBoundingBox();
+            } else if (published instanceof LayerGroupInfo info) {
+                ReferencedEnvelope bounds = info.getBounds();
                 return bounds.transform(DefaultGeographicCRS.WGS84, true);
             } else {
                 throw new RuntimeException("Unexpected, don't know how to handle: " + published);
@@ -80,8 +80,8 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
     }
 
     private DateRange getTimeExtent(PublishedInfo published) throws IOException {
-        if (published instanceof LayerInfo) {
-            return TimeExtentCalculator.getTimeExtent(((LayerInfo) published).getResource());
+        if (published instanceof LayerInfo info) {
+            return TimeExtentCalculator.getTimeExtent(info.getResource());
         } else if (published instanceof LayerGroupInfo) {
             LOGGER.fine("Time extent not supported for Layer Groups");
         } else {

@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -419,12 +419,11 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.setLayer("layer");
         rule.setAccess("ALLOW");
 
-        long id = prepareGeoFenceTestRules(rule);
+        prepareGeoFenceTestRules(rule);
 
         JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
         // print(json);
 
-        assertNotNull(id);
         assertEquals(1, json.getInt("count"));
 
         json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
@@ -438,62 +437,65 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertNotNull(jsonRules);
         assertEquals(1, jsonRules.size());
 
-        final String jsonRuleBody = "{\n"
-                + "  'Rule': {\n"
-                + "    'priority': 0,\n"
-                + "    'userName': null,\n"
-                + "    'roleName': null,\n"
-                + "    'addressRange': null,\n"
-                + "    'workspace': 'geonode',\n"
-                + "    'layer': 'DE_USNG_UTM18',\n"
-                + "    'service': null,\n"
-                + "    'request': null,\n"
-                + "    'subfield': null,\n"
-                + "    'access': 'ALLOW',\n"
-                + "    'limits': null,\n"
-                + "    'layerDetails': {\n"
-                + "      'layerType': 'VECTOR',\n"
-                + "      'defaultStyle': 'DE_USNG_UTM18',\n"
-                + "      'cqlFilterRead': 'Northings >= 100',\n"
-                + "      'cqlFilterWrite': null,\n"
-                + "      'allowedArea': 'SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))',\n"
-                + "      'catalogMode': null,\n"
-                + "      'allowedStyles': [],\n"
-                + "      'attributes': [\n"
-                + "        {\n"
-                + "          'name': 'Eastings',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'READWRITE'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'the_geom',\n"
-                + "          'dataType': 'org.locationtech.jts.geom.MultiPolygon',\n"
-                + "          'accessType': 'READONLY'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'GRID1MIL',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'NONE'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'GRID100K',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'READONLY'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'Northings',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'NONE'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'USNG',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'NONE'\n"
-                + "        }\n"
-                + "      ]\n"
-                + "    }\n"
-                + "  }\n"
-                + "}";
+        final String jsonRuleBody =
+                """
+                {
+                  'Rule': {
+                    'priority': 0,
+                    'userName': null,
+                    'roleName': null,
+                    'addressRange': null,
+                    'workspace': 'geonode',
+                    'layer': 'DE_USNG_UTM18',
+                    'service': null,
+                    'request': null,
+                    'subfield': null,
+                    'access': 'ALLOW',
+                    'limits': null,
+                    'layerDetails': {
+                      'layerType': 'VECTOR',
+                      'defaultStyle': 'DE_USNG_UTM18',
+                      'cqlFilterRead': 'Northings >= 100',
+                      'cqlFilterWrite': null,
+                      'allowedArea': 'SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))',
+                      'catalogMode': null,
+                      'allowedStyles': [],
+                      'attributes': [
+                        {
+                          'name': 'Eastings',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'READWRITE'
+                        },
+                        {
+                          'name': 'the_geom',
+                          'dataType': 'org.locationtech.jts.geom.MultiPolygon',
+                          'accessType': 'READONLY'
+                        },
+                        {
+                          'name': 'GRID1MIL',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'NONE'
+                        },
+                        {
+                          'name': 'GRID100K',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'READONLY'
+                        },
+                        {
+                          'name': 'Northings',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'NONE'
+                        },
+                        {
+                          'name': 'USNG',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'NONE'
+                        }
+                      ]
+                    }
+                  }
+                }\
+                """;
 
         MockHttpServletResponse response =
                 postAsServletResponse(RestBaseController.ROOT_PATH + "/geofence/rules", jsonRuleBody, "text/json");
@@ -574,7 +576,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 rule.getLimits().getCatalogMode(),
                 realRule.getRuleLimits().getCatalogMode().toString());
 
-        assertEquals(realRule.getRuleLimits().getAllowedArea().getSRID(), 3003);
+        assertEquals(3003, realRule.getRuleLimits().getAllowedArea().getSRID());
 
         assertTrue(rule.getLimits().getAllowedArea().contains("SRID=3003"));
 
@@ -595,7 +597,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 null, null, null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.Limits limits = r.getLimits();
-        assertEquals(limits.getSpatialFilterType(), "INTERSECT");
+        assertEquals("INTERSECT", limits.getSpatialFilterType());
         assertTrue(limits.getAllowedArea().contains("SRID"));
     }
 
@@ -617,7 +619,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         long id = prepareGeoFenceTestRules(rule);
 
         Rule realRule = adminService.get(id);
-        assertEquals(realRule.getLayerDetails().getArea().getSRID(), 3002);
+        assertEquals(3002, realRule.getLayerDetails().getArea().getSRID());
         assertTrue(rule.getLayerDetails().getAllowedArea().contains("SRID=3002"));
         assertEquals(
                 rule.getLayerDetails().getSpatialFilterType(),
@@ -635,7 +637,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 null, null, null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.LayerDetails details = r.getLayerDetails();
-        assertEquals(details.getSpatialFilterType(), "CLIP");
+        assertEquals("CLIP", details.getSpatialFilterType());
         assertTrue(details.getAllowedArea().contains("SRID"));
     }
 
@@ -726,17 +728,19 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
         XStreamPersister persister = xpf.createXMLPersister();
         controller.configurePersister(persister, null);
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<Rule>"
-                + "<access>LIMIT</access>"
-                + "<layer>DE_USNG_UTM18</layer>"
-                + "<limits>"
-                + "     <allowedArea>SRID=4326;MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))</allowedArea>"
-                + "     <catalogMode>HIDDEN</catalogMode>"
-                + "</limits>"
-                + "<priority>1</priority>"
-                + "<workspace>geonode</workspace>"
-                + "</Rule>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <Rule>\
+                <access>LIMIT</access>\
+                <layer>DE_USNG_UTM18</layer>\
+                <limits>\
+                     <allowedArea>SRID=4326;MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))</allowedArea>\
+                     <catalogMode>HIDDEN</catalogMode>\
+                </limits>\
+                <priority>1</priority>\
+                <workspace>geonode</workspace>\
+                </Rule>""";
 
         ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(UTF_8));
 
@@ -747,7 +751,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertEquals("LIMIT", rule.getAccess());
         assertEquals("DE_USNG_UTM18", rule.getLayer());
         assertEquals("geonode", rule.getWorkspace());
-        assertEquals(1, rule.getPriority().intValue());
+        assertEquals(Long.valueOf(1), rule.getPriority());
 
         assertNotNull(rule.getLimits());
 

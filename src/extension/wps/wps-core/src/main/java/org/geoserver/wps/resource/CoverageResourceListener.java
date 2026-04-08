@@ -68,8 +68,8 @@ public class CoverageResourceListener extends ProcessListenerAdapter {
         if ((inputs != null) && (inputsChecked.size() < inputs.size())) {
             for (Entry<String, Object> entry : inputs.entrySet()) {
                 Object input = entry.getValue();
-                if ((input != null) && inputsChecked.add(entry.getKey()) && (input instanceof GridCoverage)) {
-                    resourceManager.addResource(new GridCoverageResource((GridCoverage) input));
+                if ((input != null) && inputsChecked.add(entry.getKey()) && (input instanceof GridCoverage coverage)) {
+                    resourceManager.addResource(new GridCoverageResource(coverage));
                 }
             }
         }
@@ -79,8 +79,10 @@ public class CoverageResourceListener extends ProcessListenerAdapter {
         if ((outputs != null) && (outputsChecked.size() < outputs.size())) {
             for (Entry<String, Object> entry : outputs.entrySet()) {
                 Object output = entry.getValue();
-                if ((output != null) && outputsChecked.add(entry.getKey()) && (output instanceof GridCoverage)) {
-                    resourceManager.addResource(new GridCoverageResource((GridCoverage) output));
+                if ((output != null)
+                        && outputsChecked.add(entry.getKey())
+                        && (output instanceof GridCoverage coverage)) {
+                    resourceManager.addResource(new GridCoverageResource(coverage));
                 }
             }
         }

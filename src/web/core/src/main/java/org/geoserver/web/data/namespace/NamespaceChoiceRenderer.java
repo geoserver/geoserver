@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.namespace;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.NamespaceInfo;
 
@@ -15,6 +16,7 @@ import org.geoserver.catalog.NamespaceInfo;
  */
 public class NamespaceChoiceRenderer extends ChoiceRenderer<NamespaceInfo> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override

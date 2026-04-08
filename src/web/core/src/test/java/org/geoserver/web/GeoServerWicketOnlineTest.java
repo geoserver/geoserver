@@ -7,12 +7,12 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.security.impl.ServiceAccessRule;
 import org.geotools.util.Base64;
 import org.junit.Assert;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 
 /**
  * Online integration test for the Web GUI

@@ -157,12 +157,12 @@ public class MapMLStyleVisitor extends AbstractStyleVisitor {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "MapML feature styling does not currently support Raster Symbolizers");
             }
-        } else if (sym instanceof LineSymbolizer) {
-            visit((LineSymbolizer) sym);
-        } else if (sym instanceof PolygonSymbolizer) {
-            visit((PolygonSymbolizer) sym);
-        } else if (sym instanceof PointSymbolizer) {
-            visit((PointSymbolizer) sym);
+        } else if (sym instanceof LineSymbolizer symbolizer2) {
+            visit(symbolizer2);
+        } else if (sym instanceof PolygonSymbolizer symbolizer1) {
+            visit(symbolizer1);
+        } else if (sym instanceof PointSymbolizer symbolizer) {
+            visit(symbolizer);
         } else if (sym instanceof TextSymbolizer) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "MapML feature styling does not currently support Text Symbolizers");

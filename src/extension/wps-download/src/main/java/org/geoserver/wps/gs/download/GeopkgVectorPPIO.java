@@ -32,8 +32,7 @@ public class GeopkgVectorPPIO extends GeopkgPPIO {
 
                 FeatureEntry e = new FeatureEntry();
                 Object ri = fc.getSchema().getUserData().get(ResourceInfo.class);
-                if (ri instanceof FeatureTypeInfo) {
-                    FeatureTypeInfo meta = (FeatureTypeInfo) ri;
+                if (ri instanceof FeatureTypeInfo meta) {
                     // initialize entry metadata
                     e.setIdentifier(meta.getTitle());
                     e.setDescription(abstractOrDescription(meta));

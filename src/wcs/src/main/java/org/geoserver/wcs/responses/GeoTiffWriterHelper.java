@@ -8,9 +8,9 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.media.jai.OpImage;
-import javax.media.jai.RenderedOp;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.imagen.OpImage;
+import org.eclipse.imagen.RenderedOp;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.geometry.Bounds;
@@ -67,8 +67,8 @@ public class GeoTiffWriterHelper {
     /** Returns the original source file, is present in the metadata, and if the coverage */
     private File getSourceFile(GridCoverage2D coverage) {
         final Object fileSource = coverage.getProperty(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY);
-        if (fileSource != null && fileSource instanceof String) {
-            File file = new File((String) fileSource);
+        if (fileSource != null && fileSource instanceof String string) {
+            File file = new File(string);
             if (file.exists()) {
                 GeoTiffReader reader = null;
                 try {
@@ -76,7 +76,7 @@ public class GeoTiffWriterHelper {
                     GeneralBounds originalEnvelope = reader.getOriginalEnvelope();
                     Bounds envelope = coverage.getEnvelope();
                     if (originalEnvelope.equals(envelope, 1e-9, false)) {
-                        GridCoverage2D test = reader.read(null);
+                        GridCoverage2D test = reader.read();
                         ImageUtilities.disposeImage(test.getRenderedImage());
                         return file;
                     }
@@ -190,8 +190,7 @@ public class GeoTiffWriterHelper {
     /** Returns true if the coverage has not been processed in any way since it has been read */
     private boolean isUnprocessed(GridCoverage2D coverage) {
         RenderedImage ri = coverage.getRenderedImage();
-        if (ri instanceof RenderedOp) {
-            RenderedOp op = (RenderedOp) ri;
+        if (ri instanceof RenderedOp op) {
             return op.getOperationName().startsWith("ImageRead");
         } else if (ri instanceof OpImage) {
             return ri.getClass().getSimpleName().startsWith("ImageRead");

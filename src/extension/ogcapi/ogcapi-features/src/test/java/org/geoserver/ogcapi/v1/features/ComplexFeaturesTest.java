@@ -21,8 +21,15 @@ public class ComplexFeaturesTest extends AbstractAppSchemaTestSupport {
         return new FeatureChainingMockData();
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
+    }
+
     @Test
     public void testHTMLMappedFeature() throws Exception {
+        print(getAsJSON("ogc/features/v1/collections/"));
+
         Document doc = getAsJSoup("ogc/features/v1/collections/gsml:MappedFeature/items?f=text/html");
 
         // all the five root feature are present

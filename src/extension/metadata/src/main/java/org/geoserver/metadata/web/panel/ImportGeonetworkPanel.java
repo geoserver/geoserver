@@ -4,6 +4,9 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -32,6 +35,21 @@ import org.geoserver.web.wicket.ParamResourceModel;
  */
 // TODO WICKET8 - Verify this page works OK
 public abstract class ImportGeonetworkPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ImportGeonetworkPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     public ImportGeonetworkPanel(String id) {
@@ -60,6 +78,7 @@ public abstract class ImportGeonetworkPanel extends Panel {
     private AjaxSubmitLink createImportAction(
             final DropDownChoice<String> dropDown, final TextField<String> inputUUID, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
+            @Serial
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override
@@ -78,6 +97,7 @@ public abstract class ImportGeonetworkPanel extends Panel {
                     dialog.setTitle(new ParamResourceModel("confirmImportDialog.title", ImportGeonetworkPanel.this));
                     dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                        @Serial
                         private static final long serialVersionUID = -5552087037163833563L;
 
                         @Override

@@ -116,7 +116,7 @@ public class Domains {
                 return dimension.getHistogram(filter, resolution);
             }
         }
-        throw new RuntimeException(String.format("Dimension '%s' could not be found.", histogram));
+        throw new RuntimeException("Dimension '%s' could not be found.".formatted(histogram));
     }
 
     /** Returns the feature collection associated with these domains. */
@@ -130,7 +130,7 @@ public class Domains {
             return getFeatureCollection((CoverageInfo) resourceInfo);
         } catch (IOException exception) {
             throw new RuntimeException(
-                    String.format("Error getting features of layer '%s'.", layerInfo.getName()), exception);
+                    "Error getting features of layer '%s'.".formatted(layerInfo.getName()), exception);
         }
     }
 

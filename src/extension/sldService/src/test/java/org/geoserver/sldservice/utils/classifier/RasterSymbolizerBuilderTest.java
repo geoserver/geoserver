@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
 import javax.imageio.ImageIO;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.PlanarImage;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.sldservice.rest.ClassifierTest;
 import org.geotools.api.filter.expression.Expression;
@@ -231,13 +231,13 @@ public class RasterSymbolizerBuilderTest {
         // using a proper DEM_FLOAT with nodata values here
         try (InputStream is = ClassifierTest.class.getResourceAsStream("srtm.tif")) {
             GeoTiffReader reader = new GeoTiffReader(is);
-            GridCoverage2D coverage = reader.read(null);
+            GridCoverage2D coverage = reader.read();
             RenderedImage image = coverage.getRenderedImage();
             try {
                 performAssert.accept(image);
             } finally {
-                if (image instanceof PlanarImage) {
-                    ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+                if (image instanceof PlanarImage planarImage) {
+                    ImageUtilities.disposePlanarImageChain(planarImage);
                 }
             }
         }

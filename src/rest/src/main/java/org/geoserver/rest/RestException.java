@@ -4,11 +4,13 @@
  */
 package org.geoserver.rest;
 
+import java.io.Serial;
 import org.springframework.http.HttpStatus;
 
 /** Rest Exception including {@link HttpStatus} code. */
 public class RestException extends RuntimeException {
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 5762645820684796082L;
 
     private final HttpStatus status;

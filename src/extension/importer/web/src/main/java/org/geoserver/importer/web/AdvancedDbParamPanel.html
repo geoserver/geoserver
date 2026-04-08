@@ -1,36 +1,42 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <!--ul wicket:id="basicParams">
-    <li>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-AdvancedDbParamPanel">
+        <!--ul wicket:id="basicParams">
+    <div class="gs-list-item-class">
       <label class="choice" for="excludeGeometryless">
         <wicket:message key="excludeGeometryless">excludeGeometryless</wicket:message>
       </label>
-      <input type="checkbox" id="excludeGeometryless" wicket:id="excludeGeometryless" size="6" class="field checkbox" /> 
-    </li>
+      <input type="checkbox" id="excludeGeometryless" wicket:id="excludeGeometryless" size="6" class="field" /> 
+    </div>
   </ul-->
-  
-  <a href="#" wicket:id="advancedLink"><wicket:message key="advanced">advanced</wicket:message></a>
-  <div wicket:id="advancedContainer">
-    <ul wicket:id="advanced">
-      <li class="choiceItem" wicket:id="excludeGeometrylessContainer">
-        <input type="checkbox" wicket:id="excludeGeometryless" size="6" /> 
-        <label for="excludeGeometrylessContainer">
-          <wicket:message key="excludeGeometryless">excludeGeometryless</wicket:message>
-        </label>
-      </li>
-      <li class="choiceItem" wicket:id="looseBBoxContainer">
-        <input type="checkbox" wicket:id="looseBBox" size="6" /> 
-        <label for="looseBBoxContainer">
-          <wicket:message key="looseBBox">looseBBox</wicket:message>
-        </label>
-      </li>
-      <li>
-        <label for="pkMetadata"><wicket:message key="pkMetadata">pkMetadata</wicket:message></label>
-        <input class="text" type="text" wicket:id="pkMetadata" />
-      </li>
-    </ul>
-  </div>
-</wicket:panel>
-</body>
+        <a href="#" wicket:id="advancedLink">
+          <wicket:message key="advanced">advanced</wicket:message>
+        </a>
+        <div wicket:id="advancedContainer">
+          <div class="gs-unordered-list-class" wicket:id="advanced">
+            <div class="gs-list-item-class choiceItem" wicket:id="excludeGeometrylessContainer">
+              <input type="checkbox" wicket:id="excludeGeometryless" size="6"/>
+              <label for="excludeGeometrylessContainer">
+                <wicket:message key="excludeGeometryless">excludeGeometryless</wicket:message>
+              </label>
+            </div>
+            <div class="gs-list-item-class choiceItem" wicket:id="looseBBoxContainer">
+              <input type="checkbox" wicket:id="looseBBox" size="6"/>
+              <label for="looseBBoxContainer">
+                <wicket:message key="looseBBox">looseBBox</wicket:message>
+              </label>
+            </div>
+            <div class="gs-list-item-class">
+              <label for="pkMetadata">
+                <wicket:message key="pkMetadata">pkMetadata</wicket:message>
+              </label>
+              <input type="text" wicket:id="pkMetadata"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

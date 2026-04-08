@@ -176,7 +176,7 @@ public class GeoServerUserDao implements UserDetailsService {
         try (OutputStream os = propFile.out()) {
             p.store(os, null);
         } catch (Exception e) {
-            if (e instanceof IOException) throw (IOException) e;
+            if (e instanceof IOException exception) throw exception;
             else throw (IOException) new IOException("Could not write updated users list to file system").initCause(e);
         }
     }

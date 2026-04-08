@@ -96,7 +96,7 @@ public class StylePageFormatColumnTest extends StylePageTest {
 
         DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
-        assertEquals(dv.size(), 1);
+        assertEquals(1, dv.size());
 
         int formatColumnIndex = findFormatColumnIndex(dv);
         assertTrue(formatColumnIndex > -1);
@@ -114,7 +114,7 @@ public class StylePageFormatColumnTest extends StylePageTest {
 
         DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
-        assertEquals(dv.size(), 1);
+        assertEquals(1, dv.size());
 
         int formatColumnIndex = findFormatColumnIndex(dv);
         assertTrue(formatColumnIndex > -1);

@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.model;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class ConfigurationsModel extends GeoServerDataProvider<Configuration> {
 
+    @Serial
     private static final long serialVersionUID = -8246320435114536132L;
 
     public static final Property<Configuration> WORKSPACE = new BeanProperty<Configuration>("workspace", "workspace");

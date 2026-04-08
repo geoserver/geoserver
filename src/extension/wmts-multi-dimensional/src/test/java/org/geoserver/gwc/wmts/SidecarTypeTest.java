@@ -65,8 +65,8 @@ public class SidecarTypeTest extends TestsSupport {
         setupVectorSidecar();
 
         // perform the get describe domains operation request
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326", getTestLayerId());
+        String queryRequest =
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326".formatted(getTestLayerId());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -96,9 +96,9 @@ public class SidecarTypeTest extends TestsSupport {
         setupVectorSidecar();
 
         // perform the get histogram operation request
-        String queryRequest = String.format(
-                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M",
-                getTestLayerId());
+        String queryRequest =
+                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M"
+                        .formatted(getTestLayerId());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -116,7 +116,7 @@ public class SidecarTypeTest extends TestsSupport {
 
         // perform the get histogram operation request
         String queryRequest =
-                String.format("request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326", getTestLayerId());
+                "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326".formatted(getTestLayerId());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features

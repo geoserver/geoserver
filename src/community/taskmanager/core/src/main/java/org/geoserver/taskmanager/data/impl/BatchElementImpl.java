@@ -5,30 +5,38 @@
 package org.geoserver.taskmanager.data.impl;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.Task;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"task", "batch"})})
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"task", "batch"})},
+        indexes = {
+            @Index(name = "idx_batchelementimpl_batch", columnList = "batch", unique = false),
+            @Index(name = "idx_batchelementimpl_task", columnList = "task", unique = false)
+        })
 public class BatchElementImpl extends BaseImpl implements BatchElement {
 
+    @Serial
     private static final long serialVersionUID = 7690398584400545752L;
 
     @Id
@@ -113,5 +121,10 @@ public class BatchElementImpl extends BaseImpl implements BatchElement {
     @Override
     public long getRemoveStamp() {
         return removeStamp;
+    }
+
+    @Override
+    public void setRuns(ArrayList<Run> runs) {
+        this.runs = runs;
     }
 }

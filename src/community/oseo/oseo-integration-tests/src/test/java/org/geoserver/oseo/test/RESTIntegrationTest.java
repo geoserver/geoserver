@@ -8,11 +8,21 @@ import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.ogcapi.v1.stac.STACQueryablesBuilder;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.rest.OSEORestTestSupport;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 /** Checks integration between STAC and the OpenSearch REST management API */
 public class RESTIntegrationTest extends OSEORestTestSupport {
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     @Test
     public void testEmptyCollectionQueriables() throws Exception {

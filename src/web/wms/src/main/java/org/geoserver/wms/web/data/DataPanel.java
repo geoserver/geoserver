@@ -5,7 +5,10 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -35,6 +38,21 @@ import org.locationtech.jts.geom.Geometry;
 
 /** Panel for listing sample attributes of a FeatureTypeInfo resource. */
 public class DataPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DataPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -2635691554700860434L;
 
     static final Logger LOGGER = Logging.getLogger(DataPanel.class);
@@ -64,6 +82,7 @@ public class DataPanel extends Panel {
 
         final GeoServerTablePanel<DataAttribute> attributes = new GeoServerTablePanel<>("attributes", summaries) {
 
+            @Serial
             private static final long serialVersionUID = 7753093373969576568L;
 
             @Override
@@ -73,6 +92,7 @@ public class DataPanel extends Panel {
                     Fragment f = new Fragment(id, "computeStatsFragment", DataPanel.this);
                     f.add(new AjaxLink<Void>("computeStats") {
 
+                        @Serial
                         private static final long serialVersionUID = 1L;
 
                         @Override

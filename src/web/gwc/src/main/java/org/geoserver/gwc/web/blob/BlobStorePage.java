@@ -4,6 +4,10 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import com.google.common.annotations.VisibleForTesting;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.text.StringEscapeUtils;
@@ -30,6 +34,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.ConfigurationPersistenceException;
 import org.geowebcache.layer.TileLayer;
 
 /**
@@ -40,6 +45,20 @@ import org.geowebcache.layer.TileLayer;
 // TODO WICKET8 - Verify this page works OK
 public class BlobStorePage extends GeoServerSecuredPage {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(BlobStorePage.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -59024268194792891L;
 
     private DropDownChoice<BlobStoreType> typeOfBlobStore;
@@ -71,6 +90,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
         typeOfBlobStore.setOutputMarkupId(true);
         typeOfBlobStore.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 359589121400814043L;
 
             @Override
@@ -118,7 +138,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                     typeOfBlobStore.getModelObject().createPanel("blobSpecificPanel", blobStoreForm.getModel()));
             typeOfBlobStore.setEnabled(false);
 
-            for (TileLayer layer : GWC.get().getTileLayers()) {
+            for (TileLayer layer : getGWC().getTileLayers()) {
                 if (originalStore.getName().equals(layer.getBlobStoreId())) {
                     assignedLayers.add(layer.getName());
                 }
@@ -126,6 +146,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         }
 
         blobStoreForm.add(new AbstractFormValidator() {
+            @Serial
             private static final long serialVersionUID = 5240602030478856537L;
 
             @Override
@@ -145,6 +166,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         });
 
         blobStoreForm.add(new AbstractFormValidator() {
+            @Serial
             private static final long serialVersionUID = 5240602030478856537L;
 
             @Override
@@ -154,7 +176,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
             @Override
             public void validate(Form<?> form) {
-                for (BlobStoreInfo otherBlobStore : GWC.get().getBlobStores()) {
+                for (BlobStoreInfo otherBlobStore : getGWC().getBlobStores()) {
                     if (!otherBlobStore.equals(originalStore)
                             && otherBlobStore.getName().equals(tfId.getConvertedInput())) {
                         form.error(new ParamResourceModel("duplicateIdError", getPage()).getString());
@@ -168,31 +190,37 @@ public class BlobStorePage extends GeoServerSecuredPage {
         blobStoreForm.add(new BookmarkablePageLink<>("cancel", BlobStoresPage.class));
     }
 
-    protected void save(BlobStoreInfo originalStore, BlobStoreInfo blobStore, List<String> assignedLayers)
-            throws ConfigurationException {
+    @VisibleForTesting
+    GWC getGWC() {
+        return GWC.get();
+    }
 
+    protected void save(BlobStoreInfo originalStore, BlobStoreInfo blobStore, List<String> assignedLayers)
+            throws ConfigurationException, ConfigurationPersistenceException {
+
+        GWC gwc = getGWC();
         // remove default if necessary
         BlobStoreInfo defaultStore = null;
         if (blobStore.isDefault() && (originalStore == null || !originalStore.isDefault())) {
-            defaultStore = GWC.get().getDefaultBlobStore();
+            defaultStore = gwc.getDefaultBlobStore();
             if (defaultStore != null) {
                 defaultStore.setDefault(false);
-                GWC.get().modifyBlobStore(defaultStore.getName(), defaultStore);
+                gwc.modifyBlobStore(defaultStore.getName(), defaultStore);
             }
         }
 
         // save
         try {
             if (originalStore == null) {
-                GWC.get().addBlobStore(blobStore);
+                gwc.addBlobStore(blobStore);
             } else {
-                GWC.get().modifyBlobStore(originalStore.getName(), blobStore);
+                gwc.modifyBlobStore(originalStore.getName(), blobStore);
             }
-        } catch (ConfigurationException e) {
+        } catch (ConfigurationException | ConfigurationPersistenceException e) {
             // reverse default
             if (defaultStore != null) {
                 defaultStore.setDefault(true);
-                GWC.get().modifyBlobStore(defaultStore.getName(), defaultStore);
+                gwc.modifyBlobStore(defaultStore.getName(), defaultStore);
             }
             throw e;
         }
@@ -204,21 +232,23 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
             if (updateId || disable) {
                 for (String layerName : assignedLayers) {
-                    TileLayer layer = GWC.get().getTileLayerByName(layerName);
+                    TileLayer layer = gwc.getTileLayerByName(layerName);
                     if (updateId) {
                         layer.setBlobStoreId(blobStore.getName());
                     }
                     if (disable) {
                         layer.setEnabled(false);
                     }
-                    GWC.get().save(layer);
+                    gwc.save(layer);
                 }
             }
         }
     }
 
     private class SaveLink extends AjaxSubmitLink {
+        @Serial
         private static final long serialVersionUID = 3735176778941168701L;
+
         private final BlobStoreInfo originalStore;
         private final List<String> assignedLayers;
 
@@ -238,6 +268,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                     && !blobStore.isEnabled()
                     && !assignedLayers.isEmpty()) {
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = 5257987095800108993L;
 
                     private boolean success;
@@ -260,8 +291,12 @@ public class BlobStorePage extends GeoServerSecuredPage {
                         try {
                             save(originalStore, blobStore, assignedLayers);
                             success = true;
-                        } catch (ConfigurationException e) {
+                        } catch (ConfigurationException | ConfigurationPersistenceException e) {
                             error = e.getMessage();
+                            if (e instanceof ConfigurationPersistenceException && e.getCause() != null) {
+                                // show the useful message instead of the BlobStoreInfo.toString()
+                                error = e.getCause().getMessage();
+                            }
                         }
                         return true;
                     }
@@ -280,8 +315,14 @@ public class BlobStorePage extends GeoServerSecuredPage {
                 try {
                     save(originalStore, blobStore, assignedLayers);
                     doReturn(BlobStoresPage.class);
-                } catch (ConfigurationException e) {
-                    error(e.getMessage());
+                } catch (ConfigurationException | ConfigurationPersistenceException e) {
+                    String message = e.getMessage();
+                    if (e instanceof ConfigurationPersistenceException && e.getCause() != null) {
+                        // show the useful message instead of the BlobStoreInfo.toString()
+                        message = e.getCause().getMessage();
+                    }
+
+                    error(message);
                     addFeedbackPanels(target);
                 }
             }

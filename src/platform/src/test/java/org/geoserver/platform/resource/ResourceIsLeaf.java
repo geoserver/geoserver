@@ -13,8 +13,7 @@ public class ResourceIsLeaf extends BaseMatcher<Resource> {
 
     @Override
     public boolean matches(Object item) {
-        if (item instanceof Resource) {
-            Resource res = (Resource) item;
+        if (item instanceof Resource res) {
             return res.getType() == Type.RESOURCE;
         }
         return false;

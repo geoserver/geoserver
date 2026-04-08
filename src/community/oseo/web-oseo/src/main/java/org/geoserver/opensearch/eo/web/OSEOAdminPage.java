@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,26 +14,25 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.ProductClass;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.data.store.StoreListChoiceRenderer;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
@@ -44,6 +44,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
 
+    @Serial
     private static final long serialVersionUID = 3056925400600634877L;
 
     private static class QueryablesConverter implements IConverter<List<String>> {
@@ -85,16 +86,16 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
 
     @Override
     @SuppressWarnings({"unchecked", "serial"})
-    protected void build(final IModel info, Form form) {
+    protected void build(final IModel<OSEOInfo> info, Form form) {
         this.model = info;
-        OSEOInfo oseo = (OSEOInfo) info.getObject();
+        OSEOInfo oseo = info.getObject();
 
         TextField<String> attribution = new TextField<>("attribution");
         form.add(attribution);
 
         TextArea<List<String>> globalQueryables =
-                new TextArea<List<String>>(
-                        "globalQueryables", LiveCollectionModel.list(new PropertyModel(info, "globalQueryables"))) {
+                new TextArea<>(
+                        "globalQueryables", LiveCollectionModel.list(new PropertyModel<>(info, "globalQueryables"))) {
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
                         if (type.isAssignableFrom(ArrayList.class)) return (IConverter<C>) new QueryablesConverter();
@@ -110,7 +111,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         }
         DropDownChoice<DataStoreInfo> openSearchAccessReference = new DropDownChoice<>(
                 "openSearchAccessId",
-                new PropertyModel<DataStoreInfo>(this, "backend"),
+                new PropertyModel<>(this, "backend"),
                 new OpenSearchAccessListModel(),
                 new StoreListChoiceRenderer());
         form.add(openSearchAccessReference);
@@ -118,9 +119,8 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         aggregatesCacheTTL.add(RangeValidator.minimum(0));
         aggregatesCacheTTL.setRequired(true);
         form.add(aggregatesCacheTTL);
-        List<String> units =
-                Arrays.asList(new String[] {TimeUnit.HOURS.name(), TimeUnit.MINUTES.name(), TimeUnit.SECONDS.name()});
-        DropDownChoice<String> aggregatesCacheTTLUnit = new DropDownChoice<String>("aggregatesCacheTTLUnit", units);
+        List<String> units = Arrays.asList(TimeUnit.HOURS.name(), TimeUnit.MINUTES.name(), TimeUnit.SECONDS.name());
+        DropDownChoice<String> aggregatesCacheTTLUnit = new DropDownChoice<>("aggregatesCacheTTLUnit", units);
         aggregatesCacheTTLUnit.setRequired(true);
         form.add(aggregatesCacheTTLUnit);
         final TextField<Integer> recordsPerPage = new TextField<>("recordsPerPage", Integer.class);
@@ -162,29 +162,26 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
             }
         });
 
-        productClasses =
-                new GeoServerTablePanel<ProductClass>("productClasses", new ProductClassesProvider(info), true) {
+        productClasses = new GeoServerTablePanel<>("productClasses", new ProductClassesProvider(info), true) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<ProductClass> itemModel,
-                            GeoServerDataProvider.Property<ProductClass> property) {
-                        if (ProductClassesProvider.REMOVE.equals(property)) {
-                            return removeLink(id, itemModel);
-                        } else {
-                            Fragment f;
-                            if ("namespace".equals(property.getName())) {
-                                f = new Fragment(id, "longtext", OSEOAdminPage.this);
-                            } else {
-                                f = new Fragment(id, "text", OSEOAdminPage.this);
-                            }
-                            TextField<?> text = new TextField("text", property.getModel(itemModel));
-                            f.add(text);
-                            return f;
-                        }
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<ProductClass> itemModel, GeoServerDataProvider.Property<ProductClass> property) {
+                if (ProductClassesProvider.REMOVE.equals(property)) {
+                    return removeLink(id, itemModel);
+                } else {
+                    Fragment f;
+                    if ("namespace".equals(property.getName())) {
+                        f = new Fragment(id, "longtext", OSEOAdminPage.this);
+                    } else {
+                        f = new Fragment(id, "text", OSEOAdminPage.this);
                     }
-                };
+                    TextField<?> text = new TextField<>("text", property.getModel(itemModel));
+                    f.add(text);
+                    return f;
+                }
+            }
+        };
         productClasses.setFilterVisible(false);
         productClasses.setSortable(false);
         productClasses.setPageable(false);
@@ -196,6 +193,9 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         form.add(new HelpLink("productClassesHelp", this).setDialog(dialog));
 
         form.add(addLink());
+
+        CheckBox skipNumberMatched = new CheckBox("skipNumberMatched", new PropertyModel<>(info, "skipNumberMatched"));
+        form.add(skipNumberMatched);
     }
 
     private GeoServerAjaxFormLink addLink() {
@@ -211,7 +211,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
     }
 
     private Component removeLink(String id, IModel<ProductClass> itemModel) {
-        Fragment f = new Fragment(id, "imageLink", OSEOAdminPage.this);
+        Fragment f = new Fragment(id, "imageLink", this);
         final ProductClass entry = itemModel.getObject();
         GeoServerAjaxFormLink link = new GeoServerAjaxFormLink("link") {
 
@@ -224,14 +224,18 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
             }
         };
         f.add(link);
-        Image image =
-                new Image("image", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/delete.png"));
+        ContextImage image = new ContextImage("image", "img/icons/silk/delete.png");
         link.add(image);
         return f;
     }
 
     @Override
     protected String getServiceName() {
+        return "OSEO";
+    }
+
+    @Override
+    protected String getServiceType() {
         return "OSEO";
     }
 

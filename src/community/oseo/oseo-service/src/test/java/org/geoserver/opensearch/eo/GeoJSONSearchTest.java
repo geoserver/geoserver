@@ -11,19 +11,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.TimeZone;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.response.GeoJSONSearchResponse;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Resource;
 import org.hamcrest.CoreMatchers;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 
 public class GeoJSONSearchTest extends OSEOTestSupport {
 
     private static final String ENCODED_GEOJSON = ResponseUtils.urlEncode(GeoJSONSearchResponse.MIME);
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -32,6 +37,11 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
         copyTemplate("products-LANDSAT8.json");
         copyTemplate("collections-LANDSAT8.json");
+    }
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
     }
 
     @Test
@@ -131,11 +141,11 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
         JSONObject ogcLink =
                 (JSONObject) sp.getJSONObject("links").getJSONArray("ogc").get(0);
-        assertEquals(ogcLink.get("intTest").toString(), "2");
-        assertEquals(ogcLink.get("floatTest").toString(), "2.1");
-        assertEquals(ogcLink.get("booleanTest").toString(), "false");
-        assertEquals(ogcLink.get("dateTest").toString(), "2015-07-01T07:20:21.000Z");
-        assertEquals(ogcLink.get("varcharTest").toString(), "text2");
+        assertEquals("2", ogcLink.get("intTest").toString());
+        assertEquals("2.1", ogcLink.get("floatTest").toString());
+        assertEquals("false", ogcLink.get("booleanTest").toString());
+        assertEquals("2015-07-01T07:20:21.000Z", ogcLink.get("dateTest").toString());
+        assertEquals("text2", ogcLink.get("varcharTest").toString());
     }
 
     @Test
@@ -187,7 +197,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         assertEquals(featureId, sp.getString("identifier"));
         assertEquals("SENTINEL2", sp.getString("parentIdentifier"));
         assertEquals("2016-09-29T10:20:22.026Z/2016-09-29T10:23:44.107Z", sp.getString("date"));
-        assertEquals("2016-09-29T18:59:02.000+00:00", sp.getString("created"));
+        assertEquals("2016-09-29T18:59:02.000Z", sp.getString("created"));
 
         // check properties derived from the collection
         JSONObject ai = sp.getJSONArray("acquisitionInformation").getJSONObject(0);
@@ -244,6 +254,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
         // check features
         JSONArray features = json.getJSONArray("features");
+        assertNotNull(features);
     }
 
     private void assertLink(JSONObject links, String name, String href, String type, String title) {
@@ -288,7 +299,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         JSONObject sp = sample.getJSONObject("properties");
 
         assertEquals(featureId, sp.getString("identifier"));
-        assertEquals("2018-02-27T10:20:21.000+00:00", sp.getString("date"));
+        assertEquals("2018-02-27T10:20:21.000Z", sp.getString("date"));
         JSONObject acquisition = sp.getJSONObject("acquisitionInformation").getJSONObject("acquisitionParameters");
         assertEquals("DESCENDING", acquisition.getString("orbitDirection"));
         assertEquals(65, acquisition.getInt("orbitNumber"));

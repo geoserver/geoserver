@@ -1,0 +1,154 @@
+{
+    "collections": [
+      {
+        "id": "NewYork",
+        "title": "NewYork",
+        "description": "All Supported 3D Containers for the city of NewYork",
+        "collectiontype": "3d-container",
+        "extent": {
+          "spatial": {
+            "bbox": [
+              [
+                -74.01900887327089,
+                40.700475291581974,
+                -11.892070104139751,
+                -73.9068954348699,
+                40.880256294183646,
+                547.7591871983744
+              ]
+            ],
+            "crs": "http://www.opengis.net/def/crs/OGC/0/CRS84h"
+          }
+        },
+        "content": [
+          {
+            "title": "NewYork - 3D Buildings Manhattan: 3D Tiles",
+            "rel": "original",
+            "href": "NewYork/3dtiles/tileset.json",
+            "type": "application/json+3dtiles"
+          },
+          {
+            "title": "NewYork - 3D Buildings Manhattan: i3s",
+            "rel": "original",
+            "href": "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0/",
+            "type": "application/json+i3s"
+          }
+        ]
+      },
+      {
+        "id": "Stuttgart",
+        "title": "Stuttgart",
+        "description": "All Supported 3D Containers for the city of Stuttgart LoD 1 from OSM with Textures",
+        "collectiontype": "3d-container",
+        "extent": {
+          "spatial": {
+            "bbox": [
+              [9.161434,48.771841,-10,9.183426,48.786318,550]
+            ],
+            "crs": "http://www.opengis.net/def/crs/OGC/0/CRS84h"
+          }
+        },
+        "children": [
+          {
+            "id": "HFTBuilding2_3DModel",
+            "title": "HFT Building 2 - 3D Model",
+            "description": "3D Building Model of the HFT Stuttgart created by SketchUp and converted with CityEngine and FME.",
+            "collectiontype": "3d-container",
+            "extent": {
+              "spatial": {
+                "bbox": [
+                  [
+                    9.1729205436,
+                    48.7794377214,
+                    -10,
+                    9.1738475153,
+                    48.7802408522,
+                    550
+                  ]
+                ],
+                "crs": "http://www.opengis.net/def/crs/OGC/0/CRS84h"
+              }
+            },
+            "links": [
+              {
+                "rel": "collections",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/",
+                "type": "application/json"
+              },
+              {
+                "title": "HFT Building 2 - Collections",
+                "rel": "self",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart",
+                "type": "application/json"
+              },
+              {
+                "title": "HFT Building 2 - 3D Model: i3s",
+                "rel": "items",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart/HFTBuilding2_3DModel/i3s",
+                "type": "application/json+i3s"
+              },
+              {
+                "title": "HFT Building 2 - 3D Model: 3D Tiles",
+                "rel": "items",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart/HFTBuilding2_3DModel/3dtiles",
+                "type": "application/json+3dtiles"
+              },
+              {
+                "title": "HFT Building 2 - 3D Model: USDZ",
+                "rel": "items",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart/HFTBuilding2_3DModel/usdz",
+                "type": "application/usdz"
+              },
+              {
+                "title": "HFT Building 2 - 3D Model: gltf",
+                "rel": "items",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart/HFTBuilding2_3DModel/gltf",
+                "type": "application/gltf"
+              }
+            ],
+            "children": [],
+            "content": [
+              {
+                "title": "HFT Building 2 - 3D Model: i3s",
+                "rel": "items",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart/HFTBuilding2_3DModel/i3s",
+                "type": "application/json+i3s"
+              },
+              {
+                "title": "HFT Building 2 - 3D Model: 3D Tiles",
+                "rel": "original",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart/HFTBuilding2_3DModel/3dtiles",
+                "type": "application/json+3dtiles"
+              },
+              {
+                "title": "HFT Building 2 - 3D Model: USDZ",
+                "rel": "original",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart/HFTBuilding2_3DModel/usdz",
+                "type": "application/usdz"
+              },
+              {
+                "title": "HFT Building 2 - 3D Model: gltf",
+                "rel": "original",
+                "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart/HFTBuilding2_3DModel/gltf",
+                "type": "application/gltf"
+              }
+            ]
+          }
+        ],
+        "content": [
+          {
+            "title": "Stuttgart Collection",
+            "rel": "original",
+            "href": "",
+            "type": "application/json"
+          },
+          {
+            "title": "Stuttgart 3D Building Model (LoD 1) : 3D Tiles",
+            "rel": "original",
+            "href": "https://steinbeis-3dps.eu/3DGeoVolumes/collections/Stuttgart/Stuttgart_3DBuildings_LoD1/3dtiles/",
+            "type": "application/json+3dtiles"
+          }
+        ]
+      }
+    ]
+  }

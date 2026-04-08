@@ -27,9 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -42,8 +39,11 @@ import org.geoserver.catalog.PropertyStyleHandler;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.config.CatalogModificationUserUpdater;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -55,6 +55,9 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -280,32 +283,33 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     }
 
     String newSLD11XML() {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis"
-                + ".net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1.0\" "
-                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/sld"
-                + " http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd\" xmlns:se=\"http://www"
-                + ".opengis.net/se\">\n"
-                + "  <NamedLayer>\n"
-                + "    <se:Name>foo</se:Name>\n"
-                + "    <UserStyle>\n"
-                + "      <se:Name>foo</se:Name>\n"
-                + "      <se:FeatureTypeStyle>\n"
-                + "        <se:Rule>\n"
-                + "          <se:Name>Single symbol</se:Name>\n"
-                + "          <se:LineSymbolizer>\n"
-                + "            <se:Stroke>\n"
-                + "              <se:SvgParameter name=\"stroke\">#aa6e8e</se:SvgParameter>\n"
-                + "              <se:SvgParameter name=\"stroke-width\">2</se:SvgParameter>\n"
-                + "              <se:SvgParameter name=\"stroke-linejoin\">round</se:SvgParameter>\n"
-                + "              <se:SvgParameter name=\"stroke-linecap\">round</se:SvgParameter>\n"
-                + "            </se:Stroke>\n"
-                + "          </se:LineSymbolizer>\n"
-                + "        </se:Rule>\n"
-                + "      </se:FeatureTypeStyle>\n"
-                + "    </UserStyle>\n"
-                + "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>";
+        return """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis\
+                .net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" \
+                xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld\
+                 http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" xmlns:se="http://www\
+                .opengis.net/se">
+                  <NamedLayer>
+                    <se:Name>foo</se:Name>
+                    <UserStyle>
+                      <se:Name>foo</se:Name>
+                      <se:FeatureTypeStyle>
+                        <se:Rule>
+                          <se:Name>Single symbol</se:Name>
+                          <se:LineSymbolizer>
+                            <se:Stroke>
+                              <se:SvgParameter name="stroke">#aa6e8e</se:SvgParameter>
+                              <se:SvgParameter name="stroke-width">2</se:SvgParameter>
+                              <se:SvgParameter name="stroke-linejoin">round</se:SvgParameter>
+                              <se:SvgParameter name="stroke-linecap">round</se:SvgParameter>
+                            </se:Stroke>
+                          </se:LineSymbolizer>
+                        </se:Rule>
+                      </se:FeatureTypeStyle>
+                    </UserStyle>
+                  </NamedLayer>
+                </StyledLayerDescriptor>""";
     }
 
     @Test
@@ -455,6 +459,21 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         style = catalog.getStyleByName("Ponds");
         assertEquals("Forests.sld", style.getFilename());
         assertNotNull(style.getDateModified());
+    }
+
+    @Test
+    public void testNullifyVersion() throws Exception {
+        StyleInfo style = catalog.getStyleByName("Ponds");
+        assertNotNull(style.getFormatVersion());
+
+        String xml = "<style><name>Ponds</name><formatVersion xsi:nil=\"true\"/></style>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/Ponds", xml.getBytes(), "text/xml");
+        assertEquals(200, response.getStatus());
+
+        style = catalog.getStyleByName("Ponds");
+        assertNull(style.getFormatVersion());
     }
 
     /** Test for getting style with metadataMap value via Rest GET, XML format. */
@@ -732,19 +751,19 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAsSLDNamedLayer() throws Exception {
-        String xml = "<StyledLayerDescriptor version='1.0.0' "
-                + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
-                + " xmlns='http://www.opengis.net/sld' "
-                + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
-                + "  <NamedLayer>\n"
-                + "    <Name>Streams</Name>\n"
-                + // Reference the Streams layer
-                "  </NamedLayer>\n"
-                + "  <NamedLayer>\n"
-                + "    <Name>RoadSegments</Name>\n"
-                + // 2nd, valid layer
-                "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>";
+        String xml =
+                """
+                <StyledLayerDescriptor version='1.0.0' \
+                 xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' \
+                 xmlns='http://www.opengis.net/sld' \
+                 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\
+                  <NamedLayer>
+                    <Name>Streams</Name>
+                  </NamedLayer>
+                  <NamedLayer>
+                    <Name>RoadSegments</Name>
+                  </NamedLayer>
+                </StyledLayerDescriptor>""";
 
         MockHttpServletResponse response =
                 putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/Ponds", xml, SLDHandler.MIMETYPE_10);
@@ -756,19 +775,19 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAsSLDNamedLayerInvalid() throws Exception {
-        String xml = "<StyledLayerDescriptor version='1.0.0' "
-                + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
-                + " xmlns='http://www.opengis.net/sld' "
-                + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
-                + "  <NamedLayer>\n"
-                + "    <Name>Stream</Name>\n"
-                + // invalid layer
-                "  </NamedLayer>\n"
-                + "  <NamedLayer>\n"
-                + "    <Name>Streams</Name>\n"
-                + // valid layer
-                "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>";
+        String xml =
+                """
+                <StyledLayerDescriptor version='1.0.0' \
+                 xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' \
+                 xmlns='http://www.opengis.net/sld' \
+                 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\
+                  <NamedLayer>
+                    <Name>Stream</Name>
+                  </NamedLayer>
+                  <NamedLayer>
+                    <Name>Streams</Name>
+                  </NamedLayer>
+                </StyledLayerDescriptor>""";
 
         MockHttpServletResponse response =
                 putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/Ponds", xml, SLDHandler.MIMETYPE_10);
@@ -969,7 +988,6 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
-    @SuppressWarnings("PMD.CloseResource")
     public void testPostAsPSL() throws Exception {
         Properties props = new Properties();
         props.put("type", "point");
@@ -1004,7 +1022,6 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
-    @SuppressWarnings("PMD.CloseResource")
     public void testPostAsPSLRaw() throws Exception {
         Properties props = new Properties();
         props.put("type", "point");
@@ -1042,7 +1059,6 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
-    @SuppressWarnings("PMD.CloseResource")
     public void testPutAsPSL() throws Exception {
         testPostAsPSL();
 
@@ -1073,7 +1089,6 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
-    @SuppressWarnings("PMD.CloseResource")
     public void testPutAsPSLRaw() throws Exception {
         testPostAsPSL();
 
@@ -1313,6 +1328,71 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         // check the version has been updated to 1.0
         StyleInfo style10 = catalog.getStyleByName("foo");
         assertEquals(new Version("1.0.0"), style10.getFormatVersion());
+    }
+
+    @Test
+    public void testPostToWorkspaceWithModifiedUserTrue() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(false);
+        getGeoServer().save(info);
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
+        MockHttpServletResponse response =
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", xml);
+        assertEquals(201, response.getStatus());
+        assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
+        assertNotNull(cat.getStyleByName("gs", "foo").getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostToWorkspaceWithModifiedUserFalse() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "false");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", xml);
+        assertNull(cat.getStyleByName("gs", "foo").getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostToWorkspaceWithoutModifiedUser() throws Exception {
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", xml);
+        assertNotNull(cat.getStyleByName("gs", "foo").getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPutWithModifiedUser() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        StyleInfo style = catalog.getStyleByName("Ponds");
+        assertEquals("Ponds.sld", style.getFilename());
+
+        String xml = "<style>" + "<name>Ponds</name>" + "<filename>Forests.sld</filename>" + "</style>";
+
+        putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/Ponds", xml.getBytes(), "text/xml");
+
+        style = catalog.getStyleByName("Ponds");
+        assertNotNull(style.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
     }
 
     /**

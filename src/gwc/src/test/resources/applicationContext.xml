@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Used for workspace-based demo requests so the requests to GS stay workspace-based -->
+  <bean id="gwcDemoUrlHandlerMapping" class="org.geoserver.gwc.controller.GwcUrlHandlerMapping">
+    <constructor-arg ref="catalog" />
+    <constructor-arg value="/gwc/demo"/>
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="order" value="10" />
+  </bean>
+
+
+</beans>

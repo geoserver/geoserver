@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import javax.naming.directory.DirContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -49,7 +50,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     private String rolePrefix = LDAPBaseSecurityServiceConfig.ROLE_PREFIX_DEFAULT;
-    private boolean convertToUpperCase = LDAPBaseSecurityServiceConfig.CONVERT_ROLE_UPPERCASE_DEFAULT;
+    private volatile boolean convertToUpperCase = LDAPBaseSecurityServiceConfig.CONVERT_ROLE_UPPERCASE_DEFAULT;
 
     private String adminGroup;
     private String groupAdminGroup;
@@ -217,7 +218,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
                         user = m.group(1);
                     }
                     // only if hierarchical groups are activated, filter for full user dn group
-                    if (!(useNestedGroups && !StringUtils.containsIgnoreCase(username.toString(), userSearchBase))) {
+                    if (!(useNestedGroups && !Strings.CI.contains(username.toString(), userSearchBase))) {
                         user = removeBaseDN(user);
                         users.add(getUserNameFromMembership(user));
                     }
@@ -339,7 +340,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     }
 
     private Set<GeoServerRole> getChildrenRoles(final GeoServerRole role) {
-        Assert.notNull(role, "Geoserver role shouldn't be null.");
+        Assert.notNull(role, "GeoServer role shouldn't be null.");
         String roleName = normalizeGroupName(role.getAuthority());
         String roleDn = getRoleDn(role);
         final Set<String> membersDns = new HashSet<>();
@@ -394,6 +395,6 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
                     .getNameInNamespace();
             roleDnReference.setValue(dn);
         });
-        return roleDnReference.getValue();
+        return roleDnReference.get();
     }
 }

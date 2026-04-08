@@ -16,6 +16,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
@@ -39,8 +40,10 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected String maintainer;
 
+    @PatchProperty("abstract")
     protected String abstrct;
 
+    @PatchProperty("abstract")
     protected GrowableInternationalString internationalAbstract;
 
     protected String accessConstraints;
@@ -48,6 +51,8 @@ public class ServiceInfoImpl implements ServiceInfo {
     protected String fees;
 
     protected List<Version> versions = new ArrayList<>();
+
+    protected List<Version> disabledVersions = new ArrayList<>();
 
     protected List<KeywordInfo> keywords = new ArrayList<>();
 
@@ -239,6 +244,16 @@ public class ServiceInfoImpl implements ServiceInfo {
     }
 
     @Override
+    public List<Version> getDisabledVersions() {
+        return disabledVersions;
+    }
+
+    @Override
+    public void setDisabledVersions(List<Version> disabledVersions) {
+        this.disabledVersions = disabledVersions;
+    }
+
+    @Override
     public List<String> getExceptionFormats() {
         return exceptionFormats;
     }
@@ -359,6 +374,7 @@ public class ServiceInfoImpl implements ServiceInfo {
         result = prime * result + ((title == null) ? 0 : title.hashCode());
         result = prime * result + (verbose ? 1231 : 1237);
         result = prime * result + ((versions == null) ? 0 : versions.hashCode());
+        result = prime * result + ((disabledVersions == null) ? 0 : disabledVersions.hashCode());
         return result;
     }
 
@@ -416,6 +432,9 @@ public class ServiceInfoImpl implements ServiceInfo {
         if (versions == null) {
             if (other.getVersions() != null) return false;
         } else if (!versions.equals(other.getVersions())) return false;
+        if (disabledVersions == null) {
+            if (other.getDisabledVersions() != null) return false;
+        } else if (!disabledVersions.equals(other.getDisabledVersions())) return false;
         if (workspace == null) {
             if (other.getWorkspace() != null) return false;
         } else if (!workspace.equals(other.getWorkspace())) return false;

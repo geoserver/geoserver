@@ -20,6 +20,7 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
 /** @author Chris Berry http://opensource.atlassian.com/projects/spring/browse/SEC-531 */
+@SuppressWarnings({"deprecation", "removal"})
 public class RESTfulDefinitionSourceDelegateMap {
 
     private static Logger log = Logging.getLogger(RESTfulDefinitionSourceDelegateMap.class);
@@ -127,7 +128,7 @@ public class RESTfulDefinitionSourceDelegateMap {
     // ~ Inner Classes
     // ==================================================================================================
 
-    protected class EntryHolder {
+    protected static class EntryHolder {
         private Collection<ConfigAttribute> configAttributes;
         private String antPath;
         private String[] httpMethodList;

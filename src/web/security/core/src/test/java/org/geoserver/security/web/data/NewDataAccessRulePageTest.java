@@ -91,7 +91,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         // now save
         form.submit("save");
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
         tester.assertRenderedPage(DataSecurityPage.class);
 
         DataAccessRule foundRule = null;

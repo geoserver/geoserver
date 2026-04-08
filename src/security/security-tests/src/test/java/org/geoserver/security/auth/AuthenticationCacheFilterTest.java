@@ -10,11 +10,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -78,15 +78,15 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             Authentication auth = getCache().deserializeAuthentication(entry.getValue());
             Object o = auth.getPrincipal();
 
-            if (o instanceof UserDetails) {
-                if (user.equals(((UserDetails) o).getUsername())) {
+            if (o instanceof UserDetails details) {
+                if (user.equals(details.getUsername())) {
                     result = auth;
                     cacheKey = entry.getKey();
                     break;
                 }
             }
-            if (o instanceof Principal) {
-                if (user.equals(((Principal) o).getName())) {
+            if (o instanceof Principal principal) {
+                if (user.equals(principal.getName())) {
                     result = auth;
                     cacheKey = entry.getKey();
                     break;

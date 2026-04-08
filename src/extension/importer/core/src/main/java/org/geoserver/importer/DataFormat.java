@@ -7,6 +7,7 @@ package org.geoserver.importer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -40,6 +41,7 @@ import org.vfny.geoserver.util.DataStoreUtils;
 public abstract class DataFormat implements Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     static Logger LOG = Logging.getLogger(DataFormat.class);

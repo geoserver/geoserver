@@ -95,6 +95,8 @@ public class LayerInfoImpl implements LayerInfo {
 
     protected Date dateModified;
 
+    protected String modifiedBy;
+
     protected GrowableInternationalString internationalTitle;
 
     protected InternationalString internationalAbstract;
@@ -480,5 +482,15 @@ public class LayerInfoImpl implements LayerInfo {
     @Override
     public void setInternationalAbstract(InternationalString internationalAbstract) {
         this.resource.setInternationalAbstract(internationalAbstract);
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userModified) {
+        this.modifiedBy = userModified;
     }
 }

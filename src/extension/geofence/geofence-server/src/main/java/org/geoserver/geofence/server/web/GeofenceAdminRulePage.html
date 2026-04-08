@@ -6,32 +6,32 @@
 <wicket:extend>
   <form wicket:id="form">
   <fieldset>
-    <ul>
-      <li>
+    <div class="gs-unordered-list-class">
+      <div class="gs-list-item-class">
         <label for="priority"><wicket:message key="priority"></wicket:message></label>
-        <input id="priority" wicket:id="priority" type="text" class="text" />
-      </li>
-      <li>
+        <input id="priority" wicket:id="priority" type="text" />
+      </div>
+      <div class="gs-list-item-class">
         <label for="roleName"><wicket:message key="roleName"></wicket:message></label>
         <select wicket:id="roleName" id="roleName" />
-      </li>
-      <li>
+      </div>
+      <div class="gs-list-item-class">
         <label for="userName"><wicket:message key="username"></wicket:message></label>
         <select wicket:id="userName" id="userName" />
-      </li>
-      <li>
+      </div>
+      <div class="gs-list-item-class">
         <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
         <select wicket:id="workspace" id="workspace" />
-      </li>
-      <li>
+      </div>
+      <div class="gs-list-item-class">
         <label for="access"><wicket:message key="access"></wicket:message></label>
         <select wicket:id="access" id="access" />
-      </li>
-    </ul>
+      </div>
+    </div>
   </fieldset>
   <div class="button-group toolbar-sticky selfclear">
-    <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-    <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+    <a href="#" class="form-button-save button primary" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+    <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
   </div>
   </form>
 </wicket:extend>

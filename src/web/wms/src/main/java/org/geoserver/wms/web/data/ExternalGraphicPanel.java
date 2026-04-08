@@ -7,12 +7,15 @@ package org.geoserver.wms.web.data;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -21,7 +24,6 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -61,6 +63,21 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ExternalGraphicPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ExternalGraphicPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 5098470683723890874L;
 
     static final Logger LOGGER = Logging.getLogger(ExternalGraphicPanel.class);
@@ -166,6 +183,7 @@ public class ExternalGraphicPanel extends Panel {
         showhideForm.setMultiPart(true);
 
         show = new AjaxButton("show") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -178,6 +196,7 @@ public class ExternalGraphicPanel extends Panel {
         showhideForm.add(show);
 
         hide = new AjaxButton("hide") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

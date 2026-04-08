@@ -56,21 +56,23 @@ public class TemplateInfoPageTest extends GeoServerWicketTestSupport {
             + "  ]"
             + "}";
 
-    private static final String GML_TEMPLATE = "<gft:Template>\n"
-            + "<gft:Options>\n"
-            + "  <gft:Namespaces xmlns:topp=\"http://www.openplans.org/topp\"/>\n"
-            + "  <gft:SchemaLocation xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd\"/>\n"
-            + "</gft:Options>\n"
-            + "  <topp:states gml:id=\"${@id}\">\n"
-            + "  \t<topp:name code=\"${STATE_ABBR}\">${STATE_NAME}</topp:name>\n"
-            + "  \t<topp:region>${SUB_REGION}</topp:region>\n"
-            + "    <topp:population>${PERSONS}</topp:population>\n"
-            + "    <topp:males>${MALE}</topp:males>\n"
-            + "  \t<topp:females>${FEMALE}</topp:females>\n"
-            + "  \t<topp:active_population>${WORKERS}</topp:active_population>\n"
-            + "  \t<topp:wkt_geom>$${toWKT(the_geom)}</topp:wkt_geom>\n"
-            + "  </topp:states>\n"
-            + "</gft:Template>";
+    private static final String GML_TEMPLATE =
+            """
+            <gft:Template>
+            <gft:Options>
+              <gft:Namespaces xmlns:topp="http://www.openplans.org/topp"/>
+              <gft:SchemaLocation xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+            </gft:Options>
+              <topp:states gml:id="${@id}">
+              	<topp:name code="${STATE_ABBR}">${STATE_NAME}</topp:name>
+              	<topp:region>${SUB_REGION}</topp:region>
+                <topp:population>${PERSONS}</topp:population>
+                <topp:males>${MALE}</topp:males>
+              	<topp:females>${FEMALE}</topp:females>
+              	<topp:active_population>${WORKERS}</topp:active_population>
+              	<topp:wkt_geom>$${toWKT(the_geom)}</topp:wkt_geom>
+              </topp:states>
+            </gft:Template>""";
 
     @Test
     public void testDelete() {

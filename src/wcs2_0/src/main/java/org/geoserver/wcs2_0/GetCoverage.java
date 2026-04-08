@@ -24,11 +24,6 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.media.jai.BorderExtender;
-import javax.media.jai.Interpolation;
-import javax.media.jai.InterpolationNearest;
-import javax.media.jai.JAI;
-import javax.media.jai.WarpAffine;
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.ExtensionType;
 import net.opengis.wcs20.GetCoverageType;
@@ -41,6 +36,11 @@ import net.opengis.wcs20.RangeItemType;
 import net.opengis.wcs20.RangeSubsetType;
 import net.opengis.wcs20.ScalingType;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.imagen.BorderExtender;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.InterpolationNearest;
+import org.eclipse.imagen.WarpAffine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageInfo;
@@ -246,9 +246,9 @@ public class GetCoverage {
             final Hints hints = GeoTools.getDefaultHints();
             hints.add(WCSUtils.getReaderHints(wcs));
             hints.add(new RenderingHints(
-                    JAI.KEY_BORDER_EXTENDER, BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
+                    ImageN.KEY_BORDER_EXTENDER, BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
             //            hints.add(new
-            // RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO check
+            // RenderingHints(ImageN.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO check
             // interpolation
 
             // get a reader for this coverage
@@ -276,7 +276,7 @@ public class GetCoverage {
                 final String nativeName = cinfo.getNativeCoverageName();
                 final String coverageName = nativeName != null ? nativeName : reader.getGridCoverageNames()[0];
                 final GranuleStackImpl stack = new GranuleStackImpl(coverageName, cinfo.getCRS(), dimensions);
-                // Geoserver max memory limit definition
+                // GeoServer max memory limit definition
                 long outputLimit = wcs.getMaxOutputMemory() * 1024;
                 long inputLimit = wcs.getMaxInputMemory() * 1024;
                 // Object value used for storing the sum of the output size of each internal
@@ -583,8 +583,8 @@ public class GetCoverage {
             for (Object o : elevationDomain) {
                 if (o instanceof Number) {
                     intersectionFound |= requestedElevationRange.contains((Comparable<?>) o);
-                } else if (o instanceof NumberRange) {
-                    intersectionFound |= requestedElevationRange.intersects((Range<?>) o);
+                } else if (o instanceof Range<?> range) {
+                    intersectionFound |= requestedElevationRange.intersects(range);
                 }
                 if (intersectionFound) {
                     break;
@@ -625,10 +625,10 @@ public class GetCoverage {
             TreeSet<Object> timeDomain = accessor.getTimeDomain();
             boolean intersectionFound = false;
             for (Object o : timeDomain) {
-                if (o instanceof Date) {
-                    intersectionFound |= requestedTimeSubset.contains((Date) o);
-                } else if (o instanceof DateRange) {
-                    intersectionFound |= requestedTimeSubset.intersects((Range<?>) o);
+                if (o instanceof Date date) {
+                    intersectionFound |= requestedTimeSubset.contains(date);
+                } else if (o instanceof Range<?> range) {
+                    intersectionFound |= requestedTimeSubset.intersects(range);
                 }
                 if (intersectionFound) {
                     break;
@@ -1106,8 +1106,9 @@ public class GetCoverage {
         GeneralParameterValue[] readParameters =
                 CoverageUtils.getParameters(readParametersDescriptor, cinfo.getParameters());
         readParameters = (readParameters != null ? readParameters : new GeneralParameterValue[0]);
-        // work in streaming fashion when JAI is involved
-        readParameters = WCSUtils.replaceParameter(readParameters, Boolean.TRUE, AbstractGridFormat.USE_JAI_IMAGEREAD);
+        // work in streaming fashion when ImageN is involved
+        readParameters =
+                WCSUtils.replaceParameter(readParameters, Boolean.TRUE, AbstractGridFormat.USE_IMAGEN_IMAGEREAD);
 
         // handle "time"
         if (request.getTemporalSubset() != null) {
@@ -1673,8 +1674,7 @@ public class GetCoverage {
                 // loop
                 boolean add = false;
                 for (SampleDimension sd : bands) {
-                    if (sd instanceof GridSampleDimension) {
-                        final GridSampleDimension band = (GridSampleDimension) sd;
+                    if (sd instanceof GridSampleDimension band) {
                         final String name = band.getDescription().toString();
                         if (name.equals(startRangeComponent)) {
                             returnValue.add(startRangeComponent);

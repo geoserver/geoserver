@@ -5,12 +5,14 @@
  */
 package org.geoserver.web.data.style;
 
+import java.io.Serial;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerApplication;
 
 public class StyleDetachableModel extends LoadableDetachableModel<StyleInfo> {
 
+    @Serial
     private static final long serialVersionUID = 1429186780251933703L;
 
     String id;

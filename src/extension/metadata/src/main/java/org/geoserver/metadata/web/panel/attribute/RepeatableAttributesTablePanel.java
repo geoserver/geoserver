@@ -4,6 +4,9 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Map;
 import org.apache.wicket.Component;
@@ -30,6 +33,21 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
  */
 // TODO WICKET8 - Verify this page works OK
 public class RepeatableAttributesTablePanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RepeatableAttributesTablePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel;
@@ -68,6 +86,7 @@ public class RepeatableAttributesTablePanel extends Panel {
         add(
                 new AjaxSubmitLink("addNew") {
 
+                    @Serial
                     private static final long serialVersionUID = 6840006565079316081L;
 
                     @Override
@@ -89,6 +108,7 @@ public class RepeatableAttributesTablePanel extends Panel {
 
                     private IModel<ComplexMetadataAttribute<String>> disabledValue = null;
 
+                    @Serial
                     private static final long serialVersionUID = 4333335931795175790L;
 
                     @SuppressWarnings("unchecked")
@@ -131,6 +151,7 @@ public class RepeatableAttributesTablePanel extends Panel {
                             } else {
                                 AjaxSubmitLink deleteAction = new AjaxSubmitLink(id) {
 
+                                    @Serial
                                     private static final long serialVersionUID = -8829474855848647384L;
 
                                     @Override

@@ -5,12 +5,14 @@
  */
 package org.geoserver.config.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.geoserver.config.CoverageAccessInfo;
 
 public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo {
 
+    @Serial
     private static final long serialVersionUID = 8909514231467268331L;
 
     transient ThreadPoolExecutor threadPoolExecutor;

@@ -27,7 +27,7 @@ abstract class QueryCapabilitiesDecorator extends QueryCapabilities {
     }
 
     @Override
-    public boolean supportsSorting(SortBy[] sortAttributes) {
+    public boolean supportsSorting(SortBy... sortAttributes) {
         return delegate.supportsSorting(sortAttributes);
     }
 

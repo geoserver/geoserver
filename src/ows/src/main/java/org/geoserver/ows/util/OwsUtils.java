@@ -34,7 +34,7 @@ public class OwsUtils {
      *
      * @param object The target object.
      * @param property The property to set.
-     * @param value The value to set, may be <code>null</code>.
+     * @param value The value to set, may be {@code null}.
      * @throws IllegalArgumentException If no such property exists.
      * @throws RuntimeException If an error occurs setting the property
      * @throws NullPointerException If the property specifies a property that results in null.
@@ -87,13 +87,13 @@ public class OwsUtils {
     /**
      * Returns a setter method for a property of java bean.
      *
-     * <p>The <tt>type</tt> parameter may be <code>null</code> to indicate the setter for the property should be
-     * returned regardless of the type. If not null it will be used to filter the returned method.
+     * <p>The <tt>type</tt> parameter may be {@code null} to indicate the setter for the property should be returned
+     * regardless of the type. If not null it will be used to filter the returned method.
      *
      * @param clazz The type of the bean.
      * @param property The property name.
-     * @param type The type of the property, may be <code>null</code>.
-     * @return The setter method, or <code>null</code> if not found.
+     * @param type The type of the property, may be {@code null}.
+     * @return The setter method, or {@code null} if not found.
      */
     public static Method setter(Class<?> clazz, String property, Class<?> type) {
         return classProperties(clazz).setter(property, type);
@@ -134,7 +134,7 @@ public class OwsUtils {
                 throw new IllegalArgumentException("No such property '" + prop + "' for object " + result);
             }
             try {
-                result = g.invoke(result, null);
+                result = g.invoke(result);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -174,7 +174,7 @@ public class OwsUtils {
      * @param clazz The type of the bean.
      * @param property The property name.
      * @param type The type of the property, may be null.
-     * @return The setter method, or <code>null</code> if not found.
+     * @return The setter method, or {@code null} if not found.
      */
     public static Method getter(Class<?> clazz, String property, Class<?> type) {
         return classProperties(clazz).getter(property, type);
@@ -208,7 +208,7 @@ public class OwsUtils {
      *
      * @param clazz The class
      * @param name The name of the method.
-     * @return The method, or <code>null</code> if it could not be found.
+     * @return The method, or {@code null} if it could not be found.
      */
     public static Method method(Class<?> clazz, String name) {
         return classProperties(clazz).method(name);
@@ -219,10 +219,10 @@ public class OwsUtils {
      *
      * @param parameters A list of objects, of various types.
      * @param type The type of paramter to be returned.
-     * @return The object of the specified type, or <code>null</code>
+     * @return The object of the specified type, or {@code null}
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Object> T parameter(Object[] parameters, Class<T> type) {
+    public static <T> T parameter(Object[] parameters, Class<T> type) {
         for (Object parameter : parameters) {
             if ((parameter != null) && type.isAssignableFrom(parameter.getClass())) {
                 return (T) parameter;
@@ -242,8 +242,8 @@ public class OwsUtils {
             if (message != null && !"".equals(message)) {
                 if (xmlEscape) s.append(ResponseUtils.encodeXML(message));
                 else s.append(message);
-                if (ex instanceof ServiceException) {
-                    for (String value : ((ServiceException) ex).getExceptionText()) {
+                if (ex instanceof ServiceException exception) {
+                    for (String value : exception.getExceptionText()) {
                         s.append("\n");
                         String msg = value;
                         if (!lastMessage.equals(msg)) {
@@ -276,6 +276,17 @@ public class OwsUtils {
      * @param clazz The class of source and target.
      */
     public static <T> void copy(T source, T target, Class<? extends T> clazz) {
+        copy(source, target, clazz, PropertyCopyPolicy.DEFAULT_POLICY);
+    }
+
+    /**
+     * Copies properties from one object to another.
+     *
+     * @param source The source object.
+     * @param target The target object.
+     * @param clazz The class of source and target.
+     */
+    public static <T> void copy(T source, T target, Class<? extends T> clazz, PropertyCopyPolicy copyPolicy) {
         ClassProperties properties = getClassProperties(clazz);
         for (String p : properties.properties()) {
             Method getter = properties.getter(p, null);
@@ -293,11 +304,14 @@ public class OwsUtils {
             }
 
             try {
-                Object newValue = getter.invoke(source, null);
-                if (newValue == null) {
+                Object newValue = getter.invoke(source);
+                // check with the copy policy if we should copy this value over or not, and then allow the policy to map
+                // the value before copying it if needed (e.g. to handle explicit nulls in patch operations)
+                if (!copyPolicy.shouldCopy(p, source, target, newValue)) {
                     continue;
-                    // TODO: make this a flag whether to overwrite with null values
                 }
+                newValue = copyPolicy.mapValue(p, source, target, newValue);
+
                 if (setter == null) {
                     if (Collection.class.isAssignableFrom(type)) {
                         updateCollectionProperty(target, (Collection) newValue, getter);
@@ -337,7 +351,7 @@ public class OwsUtils {
 
             // if the getter returns null, call the setter
             try {
-                Object value = g.invoke(object, null);
+                Object value = g.invoke(object);
                 if (value == null) {
                     // first attempt to instantiate the type directly in case the method declares
                     // a non interface or abstract class
@@ -372,7 +386,7 @@ public class OwsUtils {
     /** Helper method for updating a collection based property. Only used if setter is null. */
     @SuppressWarnings("unchecked")
     static void updateCollectionProperty(Object object, Collection newValue, Method getter) throws Exception {
-        Collection<Object> oldValue = (Collection) getter.invoke(object, null);
+        Collection<Object> oldValue = (Collection) getter.invoke(object);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.addAll(newValue);
@@ -382,7 +396,7 @@ public class OwsUtils {
     /** Helper method for updating a map based property. Only used if setter is null. */
     @SuppressWarnings("unchecked")
     static void updateMapProperty(Object object, Map newValue, Method getter) throws Exception {
-        Map<Object, Object> oldValue = (Map) getter.invoke(object, null);
+        Map<Object, Object> oldValue = (Map) getter.invoke(object);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.putAll(newValue);

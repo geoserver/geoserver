@@ -9,13 +9,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 
 public class GeoJSONGetComplexFeaturesResponseAPITest extends TemplateComplexTestSupport {
 
@@ -35,6 +35,16 @@ public class GeoJSONGetComplexFeaturesResponseAPITest extends TemplateComplexTes
                 SupportedFormat.GEOJSON,
                 templateMappedFeature,
                 MF_TEMPLATE_GEO_JSON,
+                ".json",
+                "gsml",
+                mappedFeature);
+        // Set up schema override for queryables
+        setUpSchemaOverride(
+                null,
+                null,
+                SupportedFormat.GEOJSON,
+                "GeoJSONQueryablesSchema.json",
+                "MappedFeatureGeoJSON",
                 ".json",
                 "gsml",
                 mappedFeature);
@@ -87,5 +97,13 @@ public class GeoJSONGetComplexFeaturesResponseAPITest extends TemplateComplexTes
         assertTrue(result.has("gsml:GeologicUnit"));
         assertTrue(result.has("geometry"));
         assertTrue(result.has("links"));
+    }
+
+    @Test
+    public void testGeoJSONQueryablesOverride() throws Exception {
+        String docStr = getAsString(
+                "ogc/features/v1/collections/gsml:MappedFeature/queryables?f=application/json" + MF_TEMPLATE_PARAM,
+                "UTF-8");
+        assertTrue(docStr.contains("testPropertyForSchemaOverrideGeoJSON"));
     }
 }

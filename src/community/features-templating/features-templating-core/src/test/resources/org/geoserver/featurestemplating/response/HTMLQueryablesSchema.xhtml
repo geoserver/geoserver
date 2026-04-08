@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="http://localhost:8080/geoserver/apicss/bootstrap.min.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="http://localhost:8080/geoserver/apicss/geoserver.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="http://localhost:8080/geoserver/apicss/treeview.css" type="text/css" media="all" />
+    <script src="http://localhost:8080/geoserver/webresources/ogcapi/common.js"></script>
+</head>
+<body>
+<header id="header">
+    <a href="http://localhost:8080/geoserver/ogc/features/v1/"></a>
+    <div id="fetch"><span style="margin: 0.5em">Fetch this resource as:</span>
+        <select class="form-select form-select-sm form-select-open-basic">
+            <option value="none" selected>-- Please choose a format --</option>
+            <option value="http://localhost:8080/geoserver/ogc/features/v1/collections/gsml:MappedFeature/queryables?f=application/schema+json">application/schema json</option>
+            <option value="http://localhost:8080/geoserver/ogc/features/v1/collections/gsml:MappedFeature/queryables?f=application/yaml">application/yaml</option>
+        </select>
+    </div>
+</header>
+<div id="breadcrumb" class="py-2 mb-4">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class='breadcrumb-item'><a href='http://localhost:8080/geoserver/ogc/features/v1/'>Home</a></li>
+                <li class='breadcrumb-item'><a href='http://localhost:8080/geoserver/ogc/features/v1/collections'>Collections</a></li>
+                <li class='breadcrumb-item active'>gsml:MappedFeature</li>
+
+            </ol>
+        </nav>
+    </div>
+</div>
+<main>
+    <div id="content" class="container">
+
+        <div class="card my-4">
+            <div class="card-header">
+                <h2>Queryables for gsml:MappedFeature</h2>
+            </div>
+            <div class="card-body">
+                <ul id="queryables">
+                    <li><b>metaDataProperty</b>: string</li>
+                    <li><b>description</b>: string</li>
+                    <li><b>testPropertyForSchemaOverride</b>: string</li>
+                    <li><b>boundedBy</b>: string</li>
+                    <li><b>location</b>: string</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</main>
+</body>
+</html>

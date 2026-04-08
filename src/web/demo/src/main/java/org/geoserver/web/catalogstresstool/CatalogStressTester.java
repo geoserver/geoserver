@@ -9,6 +9,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import java.io.Serial;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -88,6 +89,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
     /** DropDown choice model object becuase dbconfig freaks out if using the CatalogInfo objects directly */
     private static final class Tuple implements Serializable, Comparable<Tuple> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         final String id, name;
@@ -104,6 +106,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
     }
 
     private static class TupleChoiceRenderer extends ChoiceRenderer<Tuple> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -131,6 +134,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         workspace.setRequired(true);
         form.add(workspace);
         workspace.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = -5613056077847641106L;
 
             @Override
@@ -147,6 +151,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
         store.setOutputMarkupId(true);
         store.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = -5333344688588590014L;
 
             @Override
@@ -182,6 +187,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         form.add(progress);
 
         form.add(new AjaxButton("cancel") {
+            @Serial
             private static final long serialVersionUID = 5767430648099432407L;
 
             @Override
@@ -191,6 +197,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         });
 
         startLink = new AjaxButton("submit", form) {
+            @Serial
             private static final long serialVersionUID = -4087484089208211355L;
 
             @Override
@@ -266,7 +273,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             copyOne(catalog, original, (Class<CatalogInfo>) clazz, layer, nameSuffix, globalTime, recursive, null);
             if ((curr + 1) % 100 == 0) {
                 sw.stop();
-                LOGGER.info(String.format("inserted %s so far in %s (last 100 in %s)\n", (curr + 1), globalTime, sw));
+                LOGGER.info("inserted %s so far in %s (last 100 in %s)\n".formatted((curr + 1), globalTime, sw));
                 sw.reset();
                 sw.start();
             }
@@ -321,10 +328,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             OwsUtils.copy(clazz.cast(original), clazz.cast(prototype), clazz);
             final String newName = OwsUtils.get(prototype, "name") + nameSuffix;
             OwsUtils.set(prototype, "name", newName);
-            if (prototype instanceof WorkspaceInfo) {
+            if (prototype instanceof WorkspaceInfo info) {
 
                 sw.start();
-                catalog.add((WorkspaceInfo) prototype);
+                catalog.add(info);
                 sw.stop();
 
                 String originalWsName = ((WorkspaceInfo) original).getName();
@@ -349,10 +356,9 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                 prototype);
                     }
                 }
-            } else if (prototype instanceof StoreInfo) {
+            } else if (prototype instanceof StoreInfo ps) {
 
                 sw.start();
-                final StoreInfo ps = (StoreInfo) prototype;
                 if (parent != null) {
                     ps.setWorkspace((WorkspaceInfo) parent);
                 }
@@ -378,18 +384,17 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     }
                 }
 
-            } else if (prototype instanceof ResourceInfo) {
-                ((ResourceInfo) prototype).setNativeName(((ResourceInfo) original).getNativeName());
-                ((ResourceInfo) prototype).setName(newName);
+            } else if (prototype instanceof ResourceInfo ri) {
+                ri.setNativeName(((ResourceInfo) original).getNativeName());
+                ri.setName(newName);
                 if (parent != null) {
-                    ResourceInfo ri = (ResourceInfo) prototype;
                     StoreInfo store = (StoreInfo) parent;
                     ri.setStore(store);
                     ri.setNamespace(
                             catalog.getNamespaceByPrefix(store.getWorkspace().getName()));
                 }
                 sw.start();
-                catalog.add((ResourceInfo) prototype);
+                catalog.add(ri);
                 sw.stop();
 
                 String id = prototype.getId();
@@ -402,7 +407,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 {
                     layerCopy = new LayerInfoImpl();
                     OwsUtils.copy(LayerInfo.class.cast(layer), layerCopy, LayerInfo.class);
-                    layerCopy.setResource((ResourceInfo) prototype);
+                    layerCopy.setResource(ri);
                     layerCopy.setId(null);
                 }
                 sw.start();
@@ -438,6 +443,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
     }
 
     private static class WorkspacesTestModel extends LoadableDetachableModel<List<Tuple>> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -455,6 +461,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
     }
 
     private class ResourcesTestModel extends LoadableDetachableModel<List<Tuple>> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -477,6 +484,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
     }
 
     private class StoresTestModel extends LoadableDetachableModel<List<Tuple>> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override

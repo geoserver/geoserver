@@ -252,7 +252,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         assertEquals(1, extensions.size());
         String overviewPolicy = (String) extensions.get(
                 WCS20Const.OVERVIEW_POLICY_EXTENSION_NAMESPACE + ":" + WCS20Const.OVERVIEW_POLICY_EXTENSION);
-        assertEquals(overviewPolicy, "QUALITY");
+        assertEquals("QUALITY", overviewPolicy);
     }
 
     @Test
@@ -294,7 +294,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testWorldOutsideDateline() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__world");
@@ -313,7 +312,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), EPSG_4326));
             assertEquals(720, reader.getOriginalGridRange().getSpan(0));
             assertEquals(360, reader.getOriginalGridRange().getSpan(1));
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertNotNull(coverage);
 
             GeneralBounds expected = new GeneralBounds(new double[] {-180.01, -90}, new double[] {180.01, 90});
@@ -328,7 +327,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testScalingWithRequestCrossingDateline() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__world"
@@ -354,7 +352,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         try {
             assertEquals(400, reader.getOriginalGridRange().getSpan(0));
             assertEquals(200, reader.getOriginalGridRange().getSpan(1));
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertNotNull(coverage);
 
             GeneralBounds expected = new GeneralBounds(new double[] {40, -50}, new double[] {240, 50});
@@ -376,7 +374,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         byte[] bytes = response.getContentAsByteArray();
 
         GeoTiffReader reader = new GeoTiffReader(new ByteArrayInputStream(bytes));
-        GridCoverage2D coverage = reader.read(null);
+        GridCoverage2D coverage = reader.read();
         Raster raster = coverage.getRenderedImage().getData();
         int[] pixel = new int[3];
         raster.getPixel(0, 0, pixel);
@@ -402,7 +400,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             CoordinateReferenceSystem crs = CRS.decode("EPSG:26711");
             assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
 
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertNotNull(coverage);
 
             // resolution is the native one
@@ -450,7 +448,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         try {
             CoordinateReferenceSystem crs = CRS.decode("EPSG:3003");
             assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertNotNull(coverage);
 
             GeneralBounds expected =
@@ -471,7 +469,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testDatelineCross() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
                 "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__dateline_cross");
@@ -490,7 +487,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
             assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
 
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertNotNull(coverage);
 
             // resolution is the native one
@@ -514,7 +511,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testReprojected() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=cdf__usa");
@@ -532,7 +528,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         try {
             CoordinateReferenceSystem crs = CRS.decode("EPSG:3857");
             assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertNotNull(coverage);
 
             GeneralBounds expected =
@@ -572,7 +568,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
             CoordinateReferenceSystem crs = CRS.decode("IAU:49900");
             assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
 
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertNotNull(coverage);
 
             // resolution is the native one
@@ -680,7 +676,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         final GeoTiffReader reader = new GeoTiffReader(file);
         GridCoverage2D coverage = null;
         try {
-            coverage = reader.read(null);
+            coverage = reader.read();
             checker.check(reader, coverage);
         } finally {
             clean(reader, coverage);

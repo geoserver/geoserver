@@ -5,10 +5,10 @@
 package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.ows.util.ResponseUtils;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
 /** Represents the conformance response, responses will encode in the desired formats */
 public class ConformanceDocument extends AbstractDocument {

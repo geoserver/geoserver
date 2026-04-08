@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
@@ -19,10 +20,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
@@ -54,6 +53,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         form.add(defaultCachingOptionsPanel);
 
         form.add(new Button("submit") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -63,6 +63,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         });
         form.add(applyLink(form));
         form.add(new GeoServerAjaxFormLink("cancel") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -85,12 +86,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
             form.error("Error saving GWC config: " + e.getMessage());
             return;
         }
-        // Update ConfigurableBlobStore
-        ConfigurableBlobStore blobstore = GeoServerExtensions.bean(ConfigurableBlobStore.class);
-        if (blobstore != null) {
-            blobstore.setChanged(gwcConfig, false);
-        }
-        // Do return
+
         if (doReturn) doReturn();
     }
 

@@ -9,9 +9,9 @@ import java.awt.Point;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
-import javax.media.jai.RasterFactory;
-import javax.media.jai.TileFactory;
-import javax.media.jai.TileRecycler;
+import org.eclipse.imagen.RasterFactory;
+import org.eclipse.imagen.TileFactory;
+import org.eclipse.imagen.TileRecycler;
 
 /**
  * A pass-through recycling tile factory that does not cache tiles but simply creates new ones as asked

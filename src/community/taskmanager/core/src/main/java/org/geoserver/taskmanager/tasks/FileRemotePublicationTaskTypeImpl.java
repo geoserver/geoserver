@@ -11,6 +11,7 @@ import it.geosolutions.geoserver.rest.decoder.RESTDataStore;
 import it.geosolutions.geoserver.rest.encoder.GSGenericStoreEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -20,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -135,6 +135,17 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
             }
         }
         if (upload && locationKey == null) { // simple upload
+            String format;
+            if (storeType == StoreType.COVERAGESTORES) {
+                format = store.getType().toLowerCase();
+            } else {
+                format = FilenameUtils.getExtension(
+                                processedResources.get(0).file().getName())
+                        .toLowerCase();
+                if ("xml".equals(format)) {
+                    format = "appschema";
+                }
+            }
             return restManager
                     .getPublisher()
                     .createStore(
@@ -142,7 +153,7 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                             storeType,
                             name,
                             UploadMethod.FILE,
-                            store.getType().toLowerCase(),
+                            format,
                             Files.probeContentType(
                                     processedResources.get(0).file().toPath()),
                             processedResources.get(0).file().toURI(),
@@ -174,8 +185,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
     }
 
     private String getLocation(StoreInfo storeInfo) {
-        if (storeInfo instanceof CoverageStoreInfo) {
-            return ((CoverageStoreInfo) storeInfo).getURL();
+        if (storeInfo instanceof CoverageStoreInfo info) {
+            return info.getURL();
         } else {
             // this will work for shapefiles and app-schemas
             // which I believe are the only file-based vector stores
@@ -212,8 +223,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
 
                 String nativeName = FilenameUtils.getBaseName(fileRef.getLatestVersion());
                 re.setNativeName(nativeName);
-                if (re instanceof GSCoverageEncoder) {
-                    ((GSCoverageEncoder) re).setNativeCoverageName(nativeName);
+                if (re instanceof GSCoverageEncoder encoder) {
+                    encoder.setNativeCoverageName(nativeName);
                 }
             }
         }

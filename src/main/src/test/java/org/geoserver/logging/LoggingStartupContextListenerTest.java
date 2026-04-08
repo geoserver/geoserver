@@ -14,18 +14,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -87,7 +87,7 @@ public class LoggingStartupContextListenerTest {
                 PrintWriter writer = new PrintWriter(buffered)) {
             writer.println("# Hello World");
         }
-        try (Stream<String> stream = Files.lines(Paths.get(DEFAULT_LOGGING_FILE.getPath()))) {
+        try (Stream<String> stream = Files.lines(Path.of(DEFAULT_LOGGING_FILE.getPath()))) {
             boolean found = stream.anyMatch(lines -> lines.contains("# Hello World"));
             assertTrue("default logging customized", found);
         }
@@ -102,7 +102,7 @@ public class LoggingStartupContextListenerTest {
             LoggingUtils.updateBuiltInLoggingProfiles = false;
         }
 
-        try (Stream<String> stream = Files.lines(Paths.get(DEFAULT_LOGGING_FILE.getPath()))) {
+        try (Stream<String> stream = Files.lines(Path.of(DEFAULT_LOGGING_FILE.getPath()))) {
             boolean found = stream.anyMatch(lines -> lines.contains("# Hello World"));
             assertFalse("default logging customized", found);
         }
@@ -166,7 +166,7 @@ public class LoggingStartupContextListenerTest {
 
         // Lookup Log4J Core configuration
         {
-            @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+            @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
             Configuration configuration = ctx.getConfiguration();
@@ -195,7 +195,7 @@ public class LoggingStartupContextListenerTest {
         {
             String expectedLogfile = new File(tmp, "foo.log").getCanonicalPath();
 
-            @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+            @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
             Configuration configuration = ctx.getConfiguration();
@@ -280,7 +280,7 @@ public class LoggingStartupContextListenerTest {
                 PrintWriter writer = new PrintWriter(buffered)) {
             writer.println("# Hello World");
         }
-        try (Stream<String> stream = Files.lines(Paths.get(DEFAULT_LOGGING_FILE.getPath()))) {
+        try (Stream<String> stream = Files.lines(Path.of(DEFAULT_LOGGING_FILE.getPath()))) {
             boolean found = stream.anyMatch(lines -> lines.contains("# Hello World"));
             assertTrue("default logging customized", found);
         }

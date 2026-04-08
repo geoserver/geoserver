@@ -32,6 +32,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.SortedProperties;
 
 /** A template info DAO that use a property file for persistence. */
 public class TemplateInfoDAOImpl implements TemplateInfoDAO {
@@ -194,7 +195,9 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         Properties p = toProperties();
         Resource propFile = dd.get(TEMPLATE_DIR, PROPERTY_FILE_NAME);
         try (OutputStream os = propFile.out()) {
-            p.store(os, null);
+            SortedProperties sortedProps = new SortedProperties();
+            sortedProps.putAll(p);
+            sortedProps.store(os, null);
         } catch (Exception e) {
             throw new RuntimeException("Could not write rules to " + PROPERTY_FILE_NAME);
         }
@@ -231,11 +234,11 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         @Override
         public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
             CatalogInfo source = event.getSource();
-            if (source instanceof FeatureTypeInfo) {
-                removeFtTemplates((FeatureTypeInfo) source);
+            if (source instanceof FeatureTypeInfo info1) {
+                removeFtTemplates(info1);
 
-            } else if (source instanceof WorkspaceInfo) {
-                removeWSTemplates((WorkspaceInfo) source);
+            } else if (source instanceof WorkspaceInfo info) {
+                removeWSTemplates(info);
             }
         }
 
@@ -258,11 +261,11 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         @Override
         public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
             final CatalogInfo source = event.getSource();
-            if (source instanceof FeatureTypeInfo) {
+            if (source instanceof FeatureTypeInfo info) {
                 int nameIdx = event.getPropertyNames().indexOf("name");
                 if (nameIdx != -1) {
                     String newName = (String) event.getNewValues().get(nameIdx);
-                    updateTemplateInfoLayerName((FeatureTypeInfo) source, newName);
+                    updateTemplateInfoLayerName(info, newName);
                 }
             } else if (source instanceof WorkspaceInfo) {
                 int nameIdx = event.getPropertyNames().indexOf("name");
@@ -304,8 +307,7 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         @Override
         public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
             CatalogInfo source = event.getSource();
-            if (source instanceof FeatureTypeInfo) {
-                FeatureTypeInfo info = (FeatureTypeInfo) source;
+            if (source instanceof FeatureTypeInfo info) {
                 int wsIdx = event.getPropertyNames().indexOf("workspace");
                 if (wsIdx != -1) {
                     WorkspaceInfo newWorkspace =

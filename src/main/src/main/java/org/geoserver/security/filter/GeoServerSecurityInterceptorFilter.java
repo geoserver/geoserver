@@ -8,20 +8,22 @@ package org.geoserver.security.filter;
 
 import static org.geoserver.platform.GeoServerExtensions.bean;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
@@ -32,6 +34,7 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
  * @author mcr
  * @author awaterme
  */
+@SuppressWarnings({"deprecation", "removal"})
 public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter {
 
     private static final AuthorizationDecision ACCESS_GRANTED = new AuthorizationDecision(true);
@@ -105,7 +108,8 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         @Override
-        public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest request) {
+        public @Nullable AuthorizationResult authorize(
+                Supplier<? extends @Nullable Authentication> authentication, HttpServletRequest request) {
             Collection<ConfigAttribute> attributes =
                     Optional.ofNullable(metadata.getAttributes(request)).orElse(Collections.emptySet());
             return vote(authentication.get(), request, attributes);
@@ -149,7 +153,8 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         @Override
-        public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest request) {
+        public @Nullable AuthorizationResult authorize(
+                Supplier<? extends @Nullable Authentication> authentication, HttpServletRequest request) {
             Collection<ConfigAttribute> attributes =
                     Optional.ofNullable(metadata.getAttributes(request)).orElse(Collections.emptySet());
             return vote(authentication.get(), request, attributes);
@@ -182,9 +187,10 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         @Override
-        public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest object) {
-            AuthorizationDecision d1 = delegate1.check(authentication, object);
-            AuthorizationDecision d2 = delegate2.check(authentication, object);
+        public @Nullable AuthorizationResult authorize(
+                Supplier<? extends @Nullable Authentication> authentication, HttpServletRequest object) {
+            AuthorizationResult d1 = delegate1.authorize(authentication, object);
+            AuthorizationResult d2 = delegate2.authorize(authentication, object);
             if (d1 == null && d2 == null) {
                 return allowIfAllAbstainDecisions ? ACCESS_GRANTED : ACCESS_DENIED;
             }

@@ -64,7 +64,7 @@ public class NewServiceAccessRulePageTest extends AbstractSecurityWicketTestSupp
         form = tester.newFormTester("form");
         form.submit("save");
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
         tester.assertRenderedPage(ServiceAccessRulePage.class);
 
         ServiceAccessRule foundRule = null;

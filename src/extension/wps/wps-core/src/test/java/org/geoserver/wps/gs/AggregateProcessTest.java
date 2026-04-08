@@ -11,13 +11,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import javax.xml.namespace.QName;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -122,12 +122,15 @@ public class AggregateProcessTest extends WPSTestSupport {
                 + "      </wps:Data>\n"
                 + "    </wps:Input>\n";
         if (groupBy) {
-            xml += "    <wps:Input>\n"
-                    + "      <ows:Identifier>groupByAttributes</ows:Identifier>\n"
-                    + "      <wps:Data>\n"
-                    + "        <wps:LiteralData>name</wps:LiteralData>\n"
-                    + "      </wps:Data>\n"
-                    + "    </wps:Input>\n";
+            xml +=
+                    """
+                        <wps:Input>
+                          <ows:Identifier>groupByAttributes</ows:Identifier>
+                          <wps:Data>
+                            <wps:LiteralData>name</wps:LiteralData>
+                          </wps:Data>
+                        </wps:Input>
+                    """;
         }
         xml += "  </wps:DataInputs>\n" + " <wps:ResponseForm>\n";
         if (rawOutput) {
@@ -264,7 +267,7 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertEquals(1, aggregationResults.size());
         JSONArray sumResult = (JSONArray) aggregationResults.get(0);
         assertEquals(1, sumResult.size());
-        assertEquals(sumResult.get(0), -111);
+        assertEquals(-111, sumResult.get(0));
     }
 
     @Test

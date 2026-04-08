@@ -125,7 +125,7 @@ public interface StoreInfo extends CatalogInfo {
      * An error associated with the store.
      *
      * <p>This value is used to store a problem that occured while attemping to connect to the underlying resource of
-     * the store. It returns <code>null</code> if no such error exists.
+     * the store. It returns {@code null} if no such error exists.
      *
      * <p>This is a transient property of the store.
      */
@@ -145,9 +145,9 @@ public interface StoreInfo extends CatalogInfo {
      *
      * @param adapterClass The class of the adapter.
      * @param hints Hints to use when creating the adapter.
-     * @return The adapter, an intsanceof adapterClass, or <code>null</code>.
+     * @return The adapter, an intsanceof adapterClass, or {@code null}.
      */
-    <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints);
+    <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints);
 
     /**
      * @return Returns a resource with the specified name that is provided by the store, or <code>

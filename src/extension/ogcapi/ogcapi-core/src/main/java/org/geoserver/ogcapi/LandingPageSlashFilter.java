@@ -7,16 +7,16 @@ package org.geoserver.ogcapi;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.filters.GeoServerFilter;
 import org.springframework.beans.BeansException;
@@ -47,8 +47,7 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-        if (servletRequest instanceof HttpServletRequest
-                && isLandingPageWithSlash((HttpServletRequest) servletRequest)) {
+        if (servletRequest instanceof HttpServletRequest request && isLandingPageWithSlash(request)) {
             filterChain.doFilter(new SlashWrapper(servletRequest), servletResponse);
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
@@ -114,7 +113,7 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
      * Removes the trailing slash on the path info, so that the landing page is properly served even when trailing
      * slashes are present by their match is disabled
      */
-    private class SlashWrapper extends HttpServletRequestWrapper {
+    private static class SlashWrapper extends HttpServletRequestWrapper {
 
         public SlashWrapper(ServletRequest request) {
             super((HttpServletRequest) request);

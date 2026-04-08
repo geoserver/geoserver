@@ -6,6 +6,7 @@
 package org.geoserver.cluster;
 
 import com.google.common.base.Objects;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class Event implements Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     Serializable source;

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.beanutils.BeanComparator;
@@ -30,7 +30,7 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
 
     static final Logger LOGGER = Logging.getLogger(MemoryProcessStatusStore.class);
 
-    Map<String, ExecutionStatus> statuses = new ConcurrentHashMap<>();
+    ConcurrentMap<String, ExecutionStatus> statuses = new ConcurrentHashMap<>();
 
     @Override
     public void save(ExecutionStatus status) {

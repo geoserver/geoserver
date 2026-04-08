@@ -1,14 +1,18 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-
-  <wicket:panel>
-    <ul>
-    	<li>
-			<label for="ecqlexp" class="text"><wicket:message key="ecqlexp">ECQL Expression</wicket:message></label>
-           	<textarea wicket:id="ecqlexp" rows="3"></textarea>
-        </li>
-    </ul>
-  </wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-RESTECQLSettingsPanel">
+        <div class="gs-unordered-list-class">
+          <div class="gs-list-item-class">
+            <label for="ecqlexp" class="text">
+              <wicket:message key="ecqlexp">ECQL Expression</wicket:message>
+            </label>
+            <textarea wicket:id="ecqlexp" rows="3"/>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

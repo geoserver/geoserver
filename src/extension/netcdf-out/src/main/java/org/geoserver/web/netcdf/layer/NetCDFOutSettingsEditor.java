@@ -4,6 +4,9 @@
  */
 package org.geoserver.web.netcdf.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -38,6 +41,19 @@ import tech.units.indriya.format.SimpleUnitFormat;
 /** Extension of the {@link NetCDFPanel} adding support for setting the Layer name and Unit of Measure */
 public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsContainer> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NetCDFOutSettingsEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     private static final NonSI NON_SI_INSTANCE = NonSI.getInstance();
 
     private static final SI SI_INSTANCE = SI.getInstance();
@@ -51,6 +67,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
     }
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final TextField<String> standardName;
@@ -145,8 +162,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
     @Override
     public void convertInput() {
         IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         };
@@ -173,8 +189,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         convertedInput.setLayerUOM(uom.getModelObject());
 
         extensionPanels.visitChildren((component, visit) -> {
-            if (component instanceof NetCDFExtensionPanel) {
-                NetCDFExtensionPanel extension = (NetCDFExtensionPanel) component;
+            if (component instanceof NetCDFExtensionPanel extension) {
                 extension.convertInput(convertedInput);
             }
         });

@@ -4,7 +4,7 @@
  */
 package org.geoserver.featurestemplating.expressions;
 
-import static net.sf.ezmorph.test.ArrayAssertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import org.geotools.api.feature.simple.SimpleFeature;

@@ -32,8 +32,7 @@ public class TypeNameExtractingVisitor extends DefaultFilterVisitor {
     @Override
     public Object visit(Id filter, Object data) {
         for (Identifier id : filter.getIdentifiers()) {
-            if (id instanceof FeatureId) {
-                FeatureId fid = (FeatureId) id;
+            if (id instanceof FeatureId fid) {
                 if (fid.getID() != null) {
                     String[] split = fid.getID().split("\\.");
                     if (split.length > 1) {

@@ -11,7 +11,9 @@ import static org.geoserver.inspire.InspireMetadata.OTHER_LANGUAGES;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
+import java.io.Serial;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,9 +44,22 @@ import org.geoserver.wfs.WFSInfo;
 /** Panel for the service admin page to set the service INSPIRE extension preferences. */
 public class InspireAdminPanel extends AdminPagePanel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(InspireAdminPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -7670555379263411393L;
 
-    @SuppressWarnings("unchecked")
     public InspireAdminPanel(final String id, final IModel<ServiceInfo> model) {
         super(id, model);
 
@@ -81,6 +96,7 @@ public class InspireAdminPanel extends AdminPagePanel {
         container.add(configs);
 
         createInspireExtendedCapabilities.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -112,6 +128,7 @@ public class InspireAdminPanel extends AdminPagePanel {
         IModel<String> urlTypeModel = new MapModel<>(metadata, SERVICE_METADATA_TYPE.key);
 
         IChoiceRenderer<String> urlTypeChoiceRenderer = new ChoiceRenderer<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

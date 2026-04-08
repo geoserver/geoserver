@@ -55,41 +55,38 @@ public class GPXHelper {
         }
 
         Object go = ((Property) defaultGeometry).getValue();
-        if (go instanceof MultiLineString) {
-            int nrls = ((MultiLineString) go).getNumGeometries();
+        if (go instanceof MultiLineString string1) {
+            int nrls = string1.getNumGeometries();
             for (int li = 0; li < nrls; li++) {
-                Geometry ls = ((MultiLineString) go).getGeometryN(li);
+                Geometry ls = string1.getGeometryN(li);
                 RteType rte = toRte((LineString) ls);
                 if (nameStr != null) rte.setName(nameStr);
                 if (commentStr != null) rte.setCmt(commentStr);
                 if (descriptionStr != null) rte.setDesc(descriptionStr);
                 gpxType.getRte().add(rte);
             }
-        } else if (go instanceof LineString) {
-            RteType rte = toRte((LineString) go);
+        } else if (go instanceof LineString string) {
+            RteType rte = toRte(string);
             if (nameStr != null) rte.setName(nameStr);
             if (commentStr != null) rte.setCmt(commentStr);
             if (descriptionStr != null) rte.setDesc(descriptionStr);
             gpxType.getRte().add(rte);
-        } else if (go instanceof MultiPoint) {
-            int nrpt = ((MultiPoint) go).getNumGeometries();
+        } else if (go instanceof MultiPoint point1) {
+            int nrpt = point1.getNumGeometries();
             for (int pi = 0; pi < nrpt; pi++) {
-                Geometry pt = ((MultiPoint) go).getGeometryN(pi);
+                Geometry pt = point1.getGeometryN(pi);
                 WptType wpt = toWpt((Point) pt);
                 if (nameStr != null) wpt.setName(nameStr);
                 if (commentStr != null) wpt.setCmt(commentStr);
                 if (descriptionStr != null) wpt.setDesc(descriptionStr);
                 gpxType.getWpt().add(wpt);
             }
-        } else if (go instanceof Point) {
-            WptType wpt = toWpt((Point) go);
+        } else if (go instanceof Point point) {
+            WptType wpt = toWpt(point);
             if (nameStr != null) wpt.setName(nameStr);
             if (commentStr != null) wpt.setCmt(commentStr);
             if (descriptionStr != null) wpt.setDesc(descriptionStr);
             gpxType.getWpt().add(wpt);
-        } else {
-            // no useful geometry, no feature!
-            return;
         }
     }
 
@@ -108,9 +105,9 @@ public class GPXHelper {
         RteType rte = new RteType();
         List<WptType> rtePts = rte.getRtept();
 
-        Coordinate[] coordinates = ((Geometry) ls).getCoordinates();
-        for (int pi = 0; pi < coordinates.length; pi++) {
-            rtePts.add(coordToWpt(coordinates[pi].x, coordinates[pi].y));
+        Coordinate[] coordinates = ls.getCoordinates();
+        for (Coordinate coordinate : coordinates) {
+            rtePts.add(coordToWpt(coordinate.x, coordinate.y));
         }
         return rte;
     }

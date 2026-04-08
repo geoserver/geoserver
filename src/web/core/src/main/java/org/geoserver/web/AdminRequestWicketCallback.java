@@ -44,8 +44,8 @@ public class AdminRequestWicketCallback implements WicketCallback {
 
     private boolean isAdmin() {
         Session session = Session.get();
-        if (session instanceof GeoServerSession) {
-            return ((GeoServerSession) session).isAdmin();
+        if (session instanceof GeoServerSession serverSession) {
+            return serverSession.isAdmin();
         }
         return false;
     }

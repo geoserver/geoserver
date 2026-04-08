@@ -10,18 +10,28 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class OseoSettingsControllerTest extends OSEORestTestSupport {
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     @Before
     public void revertChanges() {
@@ -83,6 +93,11 @@ public class OseoSettingsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 Arrays.asList("id", "geometry"),
                 oseoinfo.getJSONObject("globalQueryables").getJSONArray("string"));
+    }
+
+    @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
     }
 
     @Test

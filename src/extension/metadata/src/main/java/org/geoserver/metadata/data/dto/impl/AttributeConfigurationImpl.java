@@ -4,12 +4,13 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.metadata.data.dto.AttributeConfiguration;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.OccurrenceEnum;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Object that matches yaml structure.
@@ -20,6 +21,7 @@ import org.geoserver.metadata.data.dto.OccurrenceEnum;
  */
 public class AttributeConfigurationImpl implements AttributeConfiguration {
 
+    @Serial
     private static final long serialVersionUID = 3130368513874060531L;
 
     String key;

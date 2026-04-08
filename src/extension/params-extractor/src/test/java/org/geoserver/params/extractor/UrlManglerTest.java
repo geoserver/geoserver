@@ -6,10 +6,10 @@ package org.geoserver.params.extractor;
 
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequestWrapper;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;

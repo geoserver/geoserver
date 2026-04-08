@@ -6,6 +6,7 @@
 package org.geoserver.security.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.link.Link;
 import org.geoserver.security.GeoServerRoleService;
@@ -40,14 +41,15 @@ public abstract class AbstractSecurityPage extends GeoServerSecuredPage {
     }
 
     protected void setReturnPageDirtyAndReturn(boolean dirty) {
-        if (returnPage instanceof AbstractSecurityPage) {
-            ((AbstractSecurityPage) returnPage).setDirty(dirty);
+        if (returnPage instanceof AbstractSecurityPage page) {
+            page.setDirty(dirty);
         }
         doReturn();
     }
 
     public Link<Page> getCancelLink() {
         return new Link<>("cancel") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

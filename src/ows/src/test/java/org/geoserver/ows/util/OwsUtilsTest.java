@@ -69,7 +69,7 @@ public class OwsUtilsTest {
         Assert.assertEquals("v", baz.map.get("k"));
     }
 
-    class Foo {
+    static class Foo {
         String a;
         Integer b;
         float c;
@@ -99,7 +99,7 @@ public class OwsUtilsTest {
         }
     }
 
-    class Bar {
+    static class Bar {
         Foo foo;
         Double d;
 
@@ -120,7 +120,7 @@ public class OwsUtilsTest {
         }
     }
 
-    class Baz {
+    static class Baz {
         Map map;
 
         public Map getMap() {

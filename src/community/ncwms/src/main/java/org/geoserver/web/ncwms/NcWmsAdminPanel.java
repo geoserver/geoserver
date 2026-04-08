@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.ncwms;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -15,13 +17,26 @@ import org.geoserver.wms.ncwms.NcWmsService;
 
 public class NcWmsAdminPanel extends AdminPagePanel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NcWmsAdminPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     public NcWmsAdminPanel(String id, IModel<?> model) {
         super(id, model);
 
         IModel<NcWmsInfo> ncWmsModel = new MetadataMapModel<>(
                 new PropertyModel<>(model, "metadata"), NcWmsService.WMS_CONFIG_KEY, NcWmsInfo.class);
         if (ncWmsModel.getObject() == null) ncWmsModel.setObject(new NcWMSInfoImpl());
-        add(new TextField<Integer>("timeSeriesPoolSize", new PropertyModel<>(ncWmsModel, "timeSeriesPoolSize")));
-        add(new TextField<Integer>("maxTimeSeriesValues", new PropertyModel<>(ncWmsModel, "maxTimeSeriesValues")));
+        add(new TextField<>("timeSeriesPoolSize", new PropertyModel<>(ncWmsModel, "timeSeriesPoolSize")));
+        add(new TextField<>("maxTimeSeriesValues", new PropertyModel<>(ncWmsModel, "maxTimeSeriesValues")));
     }
 }

@@ -4,8 +4,6 @@
  */
 package org.geoserver.elasticsearch;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -39,6 +37,9 @@ import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /** ElasticSearch client implementation using the REST API */
 public class RestElasticClient implements ElasticClient {
@@ -69,8 +70,7 @@ public class RestElasticClient implements ElasticClient {
         this.client = client;
         this.proxyClient = proxyClient;
         this.responseBufferLimit = responseBufferLimit;
-        this.mapper = new ObjectMapper();
-        this.mapper.setDateFormat(DATE_FORMAT);
+        this.mapper = JsonMapper.builder().defaultDateFormat(DATE_FORMAT).build();
         this.enableRunAs = enableRunAs;
     }
 
@@ -273,12 +273,12 @@ public class RestElasticClient implements ElasticClient {
                 throw new IllegalStateException("Authentication could not be determined!");
             }
             if (!auth.isAuthenticated()) {
-                throw new IllegalStateException(String.format("User is not authenticated: %s", auth.getName()));
+                throw new IllegalStateException("User is not authenticated: %s".formatted(auth.getName()));
             }
             optionsBuilder.addHeader(RUN_AS, auth.getName());
-            LOGGER.fine(String.format("Performing request on behalf of user %s", auth.getName()));
+            LOGGER.fine("Performing request on behalf of user %s".formatted(auth.getName()));
         } else {
-            LOGGER.fine(String.format("Performing request with %s credentials", isAdmin ? "user" : "proxy"));
+            LOGGER.fine("Performing request with %s credentials".formatted(isAdmin ? "user" : "proxy"));
         }
         request.setOptions(optionsBuilder);
         final Response response = client.performRequest(request);

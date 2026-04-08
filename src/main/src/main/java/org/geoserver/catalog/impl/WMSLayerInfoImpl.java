@@ -9,7 +9,10 @@ import com.google.common.base.Objects;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -191,8 +194,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
             LOGGER.log(Level.SEVERE, "Unable to fetch available styles for cascaded layer " + getNativeName());
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
-        // on error default to super
-        return Collections.emptySet();
+        // on error default to mutable empty set (not Collections.emptySet() which is immutable)
+        return new HashSet<>();
     }
 
     @Override
@@ -289,6 +292,21 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         return allAvailableRemoteStyles;
     }
 
+    private Map<String, String> vendorParameters = new HashMap<>();
+
+    // This is only called by OWS with a null which should be fine
+    @Override
+    public Map<String, String> getVendorParameters() {
+        return vendorParameters;
+    }
+
+    @Override
+    public void setVendorParameters(Map<String, String> vendorParameters) {
+        if (vendorParameters != null) {
+            this.vendorParameters = vendorParameters;
+        } else this.vendorParameters = new HashMap<>();
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -301,6 +319,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         result = prime * result + ((minScale == null) ? 0 : minScale.hashCode());
         result = prime * result + ((maxScale == null) ? 0 : maxScale.hashCode());
         result = prime * result + Boolean.hashCode(metadataBBoxRespected);
+        result = prime * result + ((vendorParameters == null) ? 0 : vendorParameters.hashCode());
 
         return result;
     }
@@ -319,6 +338,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         if (!Objects.equal(minScale, other.getMinScale())) return false;
         if (!Objects.equal(maxScale, other.getMaxScale())) return false;
         if (!(other.isMetadataBBoxRespected() == this.metadataBBoxRespected)) return false;
+        if (!Objects.equal(vendorParameters, other.getVendorParameters())) return false;
 
         return true;
     }

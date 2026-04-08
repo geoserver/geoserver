@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.workspace;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
@@ -15,6 +16,7 @@ import org.geoserver.web.GeoServerApplication;
  * http://issues.apache.org/jira/browse/WICKET-27 and http://issues.apache.org/jira/browse/WICKET-2364
  */
 public class WorkspaceDetachableModel implements IModel<WorkspaceInfo> {
+    @Serial
     private static final long serialVersionUID = 7805768164289311051L;
 
     transient WorkspaceInfo workspace;

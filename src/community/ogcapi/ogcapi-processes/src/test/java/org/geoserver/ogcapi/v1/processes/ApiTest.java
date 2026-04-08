@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -26,13 +25,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.logging.Level;
 import org.geoserver.ogcapi.OGCApiTestSupport;
-import org.geoserver.ogcapi.OpenAPIMessageConverter;
+import org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter;
 import org.geoserver.test.GeoServerBaseTestSupport;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import tools.jackson.core.JacksonException;
 
 public class ApiTest extends OGCApiTestSupport {
 
@@ -43,14 +43,14 @@ public class ApiTest extends OGCApiTestSupport {
     }
 
     private void validateJSONAPI(MockHttpServletResponse response)
-            throws UnsupportedEncodingException, JsonProcessingException {
+            throws UnsupportedEncodingException, JacksonException, JsonProcessingException {
         assertThat(
-                response.getContentType(), CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
+                response.getContentType(),
+                CoreMatchers.startsWith(SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
-        ObjectMapper mapper = Json.mapper();
-        OpenAPI api = mapper.readValue(json, OpenAPI.class);
+        OpenAPI api = Json.mapper().readValue(json, OpenAPI.class);
         validateApi(api);
     }
 
@@ -101,11 +101,10 @@ public class ApiTest extends OGCApiTestSupport {
         validateYAMLApi(yaml);
     }
 
-    private void validateYAMLApi(String yaml) throws JsonProcessingException {
+    private void validateYAMLApi(String yaml) throws JacksonException, JsonProcessingException {
         GeoServerBaseTestSupport.LOGGER.log(Level.INFO, yaml);
 
-        ObjectMapper mapper = Yaml.mapper();
-        OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
+        OpenAPI api = Yaml.mapper().readValue(yaml, OpenAPI.class);
         validateApi(api);
     }
 
@@ -121,8 +120,7 @@ public class ApiTest extends OGCApiTestSupport {
         String yaml =
                 string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
-        ObjectMapper mapper = Yaml.mapper();
-        OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
+        OpenAPI api = Yaml.mapper().readValue(yaml, OpenAPI.class);
         validateApi(api);
     }
 

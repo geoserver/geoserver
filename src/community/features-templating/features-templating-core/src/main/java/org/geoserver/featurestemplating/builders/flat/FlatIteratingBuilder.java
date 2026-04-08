@@ -43,8 +43,8 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
             context = evaluateSource(context);
             Object o = context.getCurrentObj();
             if (o != null) {
-                if (o instanceof List) {
-                    evaluateCollection(writer, (List) o, context.getParent(), false);
+                if (o instanceof List list1) {
+                    evaluateCollection(writer, list1, context.getParent(), false);
                 } else if (o.getClass().isArray()) {
                     List list = Converters.convert(o, List.class);
                     evaluateCollection(writer, list, context.getParent(), false);

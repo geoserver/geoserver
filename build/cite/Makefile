@@ -51,8 +51,12 @@ ifndef suite
 	@echo "Error: suite is not specified. Please specify the suite to build the GeoServer Docker image for."
 	@exit 1
 endif
-	@echo Building the GeoServer Docker Image for the $(suite) test suite
-	@docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
+ifndef java-version
+	@echo "Error: java-version is not specified. Please specify the Java version to build the GeoServer Docker image for."
+	@exit 1
+endif
+	@echo Building the GeoServer Docker Image for the $(suite) test suite with Java $(java-version)
+	@JAVA_VERSION=$(java-version) docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
 	  build --no-cache --build-arg SOURCE_FILE=${war_url} geoserver
 
 # If there's a $suite/build-ets.sh file calls it, otherwise exists silently
@@ -81,7 +85,7 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
-ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wmts10 wfs10 wfs20 wcs11 wcs20 geotiff11 gpkg12))
+ifneq (,$(filter $(suite),ogcapi-features10 ogcapi-tiles10 wms11 wms13 wmts10 wfs10 wfs20 wcs11 wcs20 geotiff11 gpkg12))
 	@$(MAKE) test-rest suite=$(suite)
 else
 	@$(MAKE) test-cli suite=$(suite)
@@ -142,7 +146,7 @@ endif
 		echo "Error: Using 'host.docker.internal' as the iut value is not supported on Linux. Please use '172.17.0.1'."; \
 		exit 1; \
 	fi
-ifeq ($(suite), ogcapi-features10)
+ifeq ($(filter $(suite), ogcapi-features10 ogcapi-tiles10),$(suite))
 	@echo "Running REST-based tests for suite: $(suite) with iut: $(iut)"
 	@$(MAKE) test-rest suite=$(suite) iut=$(iut)
 else
@@ -267,9 +271,14 @@ pull: $(suite)
 
 .PHONY: build-war
 build-war:
-	@mvn -Pogcapi-features,geopkg-output \
-	clean package -f ../../src/pom.xml \
-	-DskipTests  -B -ntp -U -T1C -fae -pl :gs-web-app -am
+	# a single mvn package -pl :gs-web-app -am should work but it seems it doesn't take into account test dependencies
+	# so it fails when the version number changes (e.g. 2.28-SNAPSHOT -> 3.0-SNAPSHOT)
+	@mvn clean install -f ../../src/pom.xml \
+	-Pogcapi-features,ogcapi-tiles,geopkg-output,app-schema,wcs10,wcs11 \
+	-DskipTests  -B -ntp -U -T1C
+	@mvn package -f ../../src/pom.xml \
+	-Pogcapi-features,ogcapi-tiles,geopkg-output,wcs10,wcs11 \
+	-DskipTests -B -nsu -ntp -T1C -pl :gs-web-app -am
 
 .PHONY: copy-war
 copy-war:

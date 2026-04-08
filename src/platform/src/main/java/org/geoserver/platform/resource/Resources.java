@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource.Type;
@@ -82,8 +82,8 @@ public class Resources {
      * @return true If resource is hidden
      */
     public static boolean isHidden(Resource resource) {
-        if (resource instanceof SerializableResourceWrapper) {
-            resource = ((SerializableResourceWrapper) resource).delegate;
+        if (resource instanceof SerializableResourceWrapper wrapper) {
+            resource = wrapper.delegate;
         }
         if (resource instanceof FileSystemResourceStore.FileSystemResource
                 || resource instanceof Files.ResourceAdaptor) {
@@ -568,7 +568,7 @@ public class Resources {
      */
     public static Resource fromURL(Resource baseDirectory, String url) {
         String ss;
-        if (!Objects.equals(url, ss = StringUtils.removeStart(url, "resource:"))) {
+        if (!Objects.equals(url, ss = Strings.CS.removeStart(url, "resource:"))) {
             return baseDirectory.get(ss);
         }
 
@@ -704,8 +704,8 @@ public class Resources {
                 return res.file().toURI().toURL();
             }
 
-            if (res instanceof URIs.ResourceAdaptor) {
-                return ((URIs.ResourceAdaptor) res).getURL();
+            if (res instanceof URIs.ResourceAdaptor adaptor) {
+                return adaptor.getURL();
             }
 
             return new URL(

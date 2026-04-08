@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.logging.Level;
 import org.geotools.jdbc.RegexpValidator;
@@ -13,6 +14,7 @@ import org.geotools.jdbc.VirtualTableParameter.Validator;
 
 class Parameter implements Serializable {
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -5028680760307467030L;
 
     String name;
@@ -32,8 +34,8 @@ class Parameter implements Serializable {
         this.defaultValue = param.getDefaultValue();
         Validator validator = param.getValidator();
         if (validator != null) {
-            if (validator instanceof RegexpValidator) {
-                this.regexp = ((RegexpValidator) validator).getPattern().pattern();
+            if (validator instanceof RegexpValidator regexpValidator) {
+                this.regexp = regexpValidator.getPattern().pattern();
             } else {
                 SQLViewParamProvider.LOGGER.log(
                         Level.WARNING, "Skipping unknown validator type " + validator.getClass());

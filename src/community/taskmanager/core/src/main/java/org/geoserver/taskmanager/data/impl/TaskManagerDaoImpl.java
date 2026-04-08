@@ -4,16 +4,16 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.LockModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
@@ -30,6 +30,7 @@ import org.geoserver.taskmanager.util.InitConfigUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
+import org.hibernate.Locking.Scope;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,6 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         return session;
     }
 
-    @SuppressWarnings("unchecked")
     protected <T> T saveObject(T o) {
         o = (T) getSession().merge(o);
         getSession().flush();
@@ -79,7 +79,10 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     @Override
     public <T extends Identifiable> T lockReload(T object) {
         return (T) getSession()
-                .get(object.getClass(), object.getId(), new LockOptions(LockMode.PESSIMISTIC_READ).setScope(true));
+                .get(
+                        object.getClass(),
+                        object.getId(),
+                        new LockOptions(LockMode.PESSIMISTIC_READ).setScope(Scope.INCLUDE_COLLECTIONS));
     }
 
     @Override
@@ -127,13 +130,11 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         CriteriaQuery<Batch> query = cb.createQuery(Batch.class);
         Root<BatchImpl> root = query.from(BatchImpl.class);
         root.fetch("elements", JoinType.LEFT);
-        root.join("configuration", JoinType.LEFT);
+        Join<BatchImpl, Configuration> joinConfig = root.join("configuration", JoinType.LEFT);
         query.select(root);
         query.where(
                 cb.equal(root.get("removeStamp"), 0L),
-                cb.or(
-                        cb.isNull(root.get("configuration")),
-                        cb.equal(root.get("configuration").get("removeStamp"), 0L)));
+                cb.or(cb.isNull(joinConfig), cb.equal(joinConfig.get("removeStamp"), 0L)));
         query.distinct(true);
         return getSession().createQuery(query).getResultList();
     }
@@ -146,15 +147,15 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         root.fetch("latestBatchRun", JoinType.LEFT)
                 .fetch("batchRun", JoinType.LEFT)
                 .fetch("runs", JoinType.LEFT);
-        root.join("configuration", JoinType.LEFT);
+        Join<Object, Object> joinConfig = root.join("configuration", JoinType.LEFT);
         query.select(root);
         query.where(
                 cb.equal(root.get("removeStamp"), 0L),
                 cb.or(
-                        cb.isNull(root.get("configuration")),
+                        cb.isNull(joinConfig),
                         cb.and(
-                                cb.equal(root.get("configuration").get("removeStamp"), 0L),
-                                cb.equal(root.get("configuration").get("validated"), true),
+                                cb.equal(joinConfig.get("removeStamp"), 0L),
+                                cb.equal(joinConfig.get("validated"), true),
                                 cb.not(cb.like(root.get("name"), "@%")))));
         query.distinct(true);
         return getSession().createQuery(query).getResultList();
@@ -472,7 +473,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     @Transactional(transactionManager = "tmTransactionManager", propagation = Propagation.REQUIRES_NEW)
     public Configuration copyConfiguration(String configName) {
         ConfigurationImpl clone = (ConfigurationImpl) getConfiguration(configName);
-        initInternal(clone);
+        initInternal(clone, false);
         getSession().evict(clone);
         clone.setId(null);
         for (Attribute att : clone.getAttributes().values()) {
@@ -491,19 +492,22 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         for (Batch batch : clone.getBatches().values()) {
             batch.setConfiguration(clone);
             ((BatchImpl) batch).setId(null);
+            if (batch.getLatestBatchRun() != null) {
+                getSession().evict(batch.getLatestBatchRun().getBatchRun());
+            }
             ((BatchImpl) batch).setLatestBatchRun(null);
+            List<BatchElement> batchElements = new ArrayList<>();
             for (BatchElement be : batch.getElements()) {
-                be.setBatch(batch);
-                be.setTask(clone.getTasks().get(be.getTask().getName()));
-                ((BatchElementImpl) be).setId(null);
-                if (Hibernate.isInitialized(be.getRuns())) {
-                    be.getRuns().clear();
-                }
-                be.getTask().getBatchElements().add(be);
+                BatchElement beReal = Hibernate.unproxy(be, BatchElement.class);
+                // beReal.setBatch(batch);
+                beReal.setTask(clone.getTasks().get(be.getTask().getName()));
+                ((BatchElementImpl) beReal).setId(null);
+                beReal.setRuns(new ArrayList<Run>());
+                beReal.getTask().getBatchElements().add(be);
+                batchElements.add(beReal);
             }
-            if (Hibernate.isInitialized(batch.getBatchRuns())) {
-                batch.getBatchRuns().clear();
-            }
+            ((BatchImpl) batch).setElements(batchElements);
+            ((BatchImpl) batch).setBatchRuns(new ArrayList<BatchRun>());
             // disable cloned batches
             if (!clone.isTemplate()) {
                 batch.setEnabled(false);
@@ -520,30 +524,30 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
     @Override
     public void delete(Batch batch) {
-        batch = (Batch) getSessionNoFilters().get(BatchImpl.class, batch.getId());
+        batch = getSessionNoFilters().get(BatchImpl.class, batch.getId());
         if (batch.getConfiguration() != null) {
             batch.getConfiguration().getBatches().remove(batch.getName());
         }
-        getSessionNoFilters().delete(batch);
+        getSessionNoFilters().remove(batch);
     }
 
     @Override
     public void delete(Configuration config) {
-        getSessionNoFilters().delete(getSessionNoFilters().get(ConfigurationImpl.class, config.getId()));
+        getSessionNoFilters().remove(getSessionNoFilters().get(ConfigurationImpl.class, config.getId()));
     }
 
     @Override
     public void delete(BatchElement batchElement) {
-        batchElement = (BatchElement) getSession().get(BatchElementImpl.class, batchElement.getId());
+        batchElement = getSession().get(BatchElementImpl.class, batchElement.getId());
         batchElement.getBatch().getElements().remove(batchElement);
-        getSession().delete(batchElement);
+        getSession().remove(batchElement);
     }
 
     @Override
     public void delete(Task task) {
-        task = (Task) getSessionNoFilters().get(TaskImpl.class, task.getId());
+        task = getSessionNoFilters().get(TaskImpl.class, task.getId());
         task.getConfiguration().getTasks().remove(task.getName());
-        getSessionNoFilters().delete(task);
+        getSessionNoFilters().remove(task);
     }
 
     /**
@@ -593,6 +597,10 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     }
 
     protected Configuration initInternal(Configuration c) {
+        return initInternal(c, true);
+    }
+
+    protected Configuration initInternal(Configuration c, boolean taskBatchElements) {
         Hibernate.initialize(c.getTasks());
         Hibernate.initialize(c.getAttributes());
         Hibernate.initialize(c.getBatches());
@@ -600,9 +608,11 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
             Hibernate.initialize(b.getElements());
         }
         for (Task t : c.getTasks().values()) {
-            Hibernate.initialize(t.getBatchElements());
-            for (BatchElement be : t.getBatchElements()) {
-                Hibernate.initialize(be.getBatch().getElements());
+            if (taskBatchElements) {
+                Hibernate.initialize(t.getBatchElements());
+                for (BatchElement be : t.getBatchElements()) {
+                    Hibernate.initialize(be.getBatch().getElements());
+                }
             }
         }
         return c;

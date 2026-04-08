@@ -6,8 +6,10 @@
 package org.geoserver.web.data.layergroup;
 
 import static org.geoserver.catalog.Predicates.sortBy;
+import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 
 import com.google.common.collect.Streams;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -19,11 +21,13 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.SettingsInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.sort.SortBy;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@link GeoServerDataProvider} providing a table model for listing {@link LayerGroupInfo layer groups} available in
@@ -42,6 +46,7 @@ import org.springframework.lang.Nullable;
  */
 public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
+    @Serial
     private static final long serialVersionUID = 4806818198949114395L;
 
     public static Property<LayerGroupInfo> NAME = new BeanProperty<>("name", "name");
@@ -51,6 +56,8 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     static final Property<LayerGroupInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
     static final Property<LayerGroupInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
+
+    static final Property<LayerGroupInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
 
     public static Property<LayerGroupInfo> ENABLED = new BeanProperty<>("enabled", "enabled");
 
@@ -95,10 +102,19 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
         List<Property<LayerGroupInfo>> modifiedPropertiesList =
                 PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
-        if (GeoServerApplication.get().getGeoServer().getSettings().isShowCreatedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(CREATED_TIMESTAMP);
-        if (GeoServerApplication.get().getGeoServer().getSettings().isShowModifiedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        SettingsInfo settings = GeoServerApplication.get().getGeoServer().getSettings();
+        if (settings.isShowCreatedTimeColumnsInAdminList()) modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (settings.isShowModifiedTimeColumnsInAdminList()) modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+
+        String trackUser = GeoServerExtensions.getProperty(TRACK_USER);
+        if (trackUser == null
+                        && GeoServerApplication.get()
+                                .getGeoServer()
+                                .getSettings()
+                                .isShowModifiedUserInAdminList()
+                || Boolean.parseBoolean(trackUser)) {
+            modifiedPropertiesList.add(MODIFIED_BY);
+        }
         return modifiedPropertiesList;
     }
 
@@ -112,7 +128,6 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
      * {@link Stream}; note {@link Stream} is {@link AutoCloseable} and hence the returned stream shall be used in a
      * try-with-resources block.
      */
-    @SuppressWarnings("PMD.CloseResource")
     private Stream<LayerGroupInfo> query(
             Filter filter, @Nullable Integer first, @Nullable Integer count, @Nullable SortBy sortOrder) {
         Catalog catalog = getCatalog();

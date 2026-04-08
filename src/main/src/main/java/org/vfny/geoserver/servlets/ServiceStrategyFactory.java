@@ -5,10 +5,10 @@
  */
 package org.vfny.geoserver.servlets;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.OutputStrategyFactory;
 import org.geoserver.ows.ServiceStrategy;
@@ -87,7 +87,7 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
         }
 
         // TODO: this hack should be removed once modules have their own config
-        if (theStrategy instanceof PartialBufferStrategy2) {
+        if (theStrategy instanceof PartialBufferStrategy2 strategy2) {
             if (partialBufferSize == 0) {
                 String size = getServletContext().getInitParameter("PARTIAL_BUFFER_STRATEGY_SIZE");
 
@@ -114,7 +114,7 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
                 }
             }
 
-            ((PartialBufferStrategy2) theStrategy).setBufferSize(partialBufferSize);
+            strategy2.setBufferSize(partialBufferSize);
         }
 
         return theStrategy;

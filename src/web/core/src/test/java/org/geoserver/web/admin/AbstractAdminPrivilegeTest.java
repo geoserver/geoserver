@@ -149,7 +149,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     public void testWorkspaceEditPageUnauthorized() throws Exception {
         loginAsCite();
         tester.startPage(WorkspaceEditPage.class, new PageParameters().add("name", "cdf"));
-        tester.assertErrorMessages(new String[] {"Could not find workspace \"cdf\""});
+        tester.assertErrorMessages("Could not find workspace \"cdf\"");
     }
 
     @Test
@@ -203,7 +203,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
 
         tester.startPage(
                 DataAccessEditPage.class,
-                new PageParameters().add("wsName", "cite").add("storeName", "cite"));
+                new PageParameters().add("workspace", "cite").add("storeName", "cite"));
         tester.assertRenderedPage(DataAccessEditPage.class);
         tester.assertNoErrorMessage();
     }
@@ -214,9 +214,9 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
 
         tester.startPage(
                 DataAccessEditPage.class,
-                new PageParameters().add("wsName", "cdf").add("storeName", "cdf"));
+                new PageParameters().add("workspace", "cdf").add("storeName", "cdf"));
         tester.assertRenderedPage(StorePage.class);
-        tester.assertErrorMessages(new String[] {"Could not find data store \"cdf\" in workspace \"cdf\""});
+        tester.assertErrorMessages("Could not find data store \"cdf\" in workspace \"cdf\"");
     }
 
     @Test
@@ -246,7 +246,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         AdminRequest.start(new Object());
         assertEquals(cat.getLayerGroups().size(), view.getItemCount());
 
-        for (Iterator<Item<Object>> it = view.getItems(); it.hasNext(); ) { // NOPMD
+        for (Iterator<Item<Object>> it = view.getItems(); it.hasNext(); ) {
             String name = it.next().get("itemProperties:0:component:link:label").getDefaultModelObjectAsString();
             assertNotEquals("sf_local", name);
         }

@@ -19,6 +19,12 @@ function isCharacterKeyPress(evt) {
 function enableSelect2Keyboard(dropDownId) {
     var dropDown = $('#' + dropDownId);
     var s2Obj = dropDown.data('select2');
+    dropDown.off('select2:select.gsClose').on('select2:select.gsClose', function () {
+        var select2 = $(this).data('select2');
+        if (select2 && typeof select2.isOpen === 'function' && select2.isOpen()) {
+            $(this).select2('close');
+        }
+    });
     delete s2Obj.listeners.keypress;
     s2Obj.on('keypress', function (evt) {
       var key = evt.which;

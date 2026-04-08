@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.cas;
 
+import java.io.Serial;
 import org.geoserver.security.cas.CasAuthenticationFilterConfig;
 import org.geoserver.security.cas.GeoServerCasAuthenticationFilter;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
@@ -17,6 +18,7 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 public class CasAuthFilterPanelInfo
         extends AuthenticationFilterPanelInfo<CasAuthenticationFilterConfig, CasAuthFilterPanel> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public CasAuthFilterPanelInfo() {

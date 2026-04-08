@@ -5,12 +5,11 @@
  */
 package org.geoserver.wcs.responses;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import jakarta.activation.ActivationDataFlavor;
+import jakarta.activation.DataContentHandler;
+import jakarta.activation.DataSource;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.activation.DataContentHandler;
-import javax.activation.DataSource;
 
 /**
  * A data handler for the fake "geoserver/coverageDelegate" mime type. Uses a {@link CoverageResponseDelegate} to
@@ -26,12 +25,12 @@ public class CoverageDelegateHandler implements DataContentHandler {
     }
 
     @Override
-    public Object getTransferData(DataFlavor flavor, DataSource source) throws UnsupportedFlavorException, IOException {
+    public ActivationDataFlavor[] getTransferDataFlavors() {
         throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 
     @Override
-    public DataFlavor[] getTransferDataFlavors() {
+    public Object getTransferData(ActivationDataFlavor activationDataFlavor, DataSource dataSource) throws IOException {
         throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 

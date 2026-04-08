@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.util.SortedProperties;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
@@ -80,8 +81,8 @@ public class GeoServerPropertyConfigurer extends PropertySourcesPlaceholderConfi
     public void setLocation(Resource location) {
         try {
             location = SpringResourceAdaptor.relative(location, data.getResourceStore());
-            if (location instanceof SpringResourceAdaptor) {
-                configFile = ((SpringResourceAdaptor) location).getResource();
+            if (location instanceof SpringResourceAdaptor adaptor) {
+                configFile = adaptor.getResource();
             }
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error reading resource " + location, e);
@@ -103,7 +104,9 @@ public class GeoServerPropertyConfigurer extends PropertySourcesPlaceholderConfi
             // location was not found, create
             if (configFile != null && copyOutTemplate) {
                 try (OutputStream fout = configFile.out()) {
-                    props.store(fout, comments);
+                    SortedProperties sortedProps = new SortedProperties();
+                    sortedProps.putAll(props);
+                    sortedProps.store(fout, comments);
                     fout.flush();
                 }
             }

@@ -5,8 +5,7 @@
  */
 package org.geoserver.wms.worldwind;
 
-import com.sun.media.imageioimpl.plugins.raw.RawImageWriterSpi;
-import it.geosolutions.jaiext.range.RangeFactory;
+import it.geosolutions.imageio.plugins.raw.RawImageWriterSpi;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -24,9 +23,10 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.imageio.stream.ImageOutputStream;
-import javax.media.jai.Interpolation;
-import javax.media.jai.JAI;
-import javax.media.jai.TiledImage;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.TiledImage;
+import org.eclipse.imagen.media.range.RangeFactory;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.ServiceException;
@@ -120,11 +120,11 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 
         Double outNoData = null;
         Object noDataParam = metadata.get(BilConfig.NO_DATA_OUTPUT);
-        if (noDataParam instanceof Number) {
-            outNoData = ((Number) noDataParam).doubleValue();
-        } else if (noDataParam instanceof String) {
+        if (noDataParam instanceof Number number) {
+            outNoData = number.doubleValue();
+        } else if (noDataParam instanceof String string) {
             try {
-                outNoData = Double.parseDouble((String) noDataParam);
+                outNoData = Double.parseDouble(string);
             } catch (NumberFormatException e) {
                 LOGGER.warning("Can't parse output no data attribute: " + e.getMessage()); // TODO localize
             }
@@ -170,7 +170,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
                         ParameterBlock param = new ParameterBlock().addSource(image);
                         param = param.add(inNoData);
                         param = param.add(outNoData);
-                        transformedImage = JAI.create(RecodeRaster.OPERATION_NAME, param, null);
+                        transformedImage = ImageN.create(RecodeRaster.OPERATION_NAME, param, null);
                     }
                 }
 
@@ -312,6 +312,6 @@ public final class BilMapResponse extends RenderedImageMapResponse {
     }
 
     static {
-        RecodeRaster.register(JAI.getDefaultInstance());
+        RecodeRaster.register(ImageN.getDefaultInstance());
     }
 }

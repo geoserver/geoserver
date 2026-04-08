@@ -88,7 +88,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
      *
      * @param value an instance of {@link GetCapabilitiesType} (possibly a subclass) if a binding for a specific
      *     service's GetCapabilities request used {@link Binding#BEFORE} {@link #getExecutionMode() execution mode}, and
-     *     thus relies on this binding to fill the common properties. <code>null</code> otherwise.
+     *     thus relies on this binding to fill the common properties. {@code null} otherwise.
      *     <!-- end-user-doc -->
      * @generated modifiable
      */
@@ -96,8 +96,8 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetCapabilitiesType getCapabilities;
 
-        if ((value != null) && value instanceof GetCapabilitiesType) {
-            getCapabilities = (GetCapabilitiesType) value;
+        if ((value != null) && value instanceof GetCapabilitiesType type) {
+            getCapabilities = type;
         } else {
             getCapabilities = owsfactory.createGetCapabilitiesType();
         }

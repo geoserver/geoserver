@@ -91,10 +91,10 @@ public class GeoServerClient {
             if (byte[].class.equals(bodyType)) {
                 if (object != null) {
                     byte[] bytes;
-                    if (object instanceof String) {
-                        bytes = ((String) object).getBytes(UTF_8);
-                    } else if (object instanceof byte[]) {
-                        bytes = (byte[]) object;
+                    if (object instanceof String string) {
+                        bytes = string.getBytes(UTF_8);
+                    } else if (object instanceof byte[] bytes1) {
+                        bytes = bytes1;
                     } else {
                         throw new IllegalArgumentException(
                                 "Don't know how to convert " + object.getClass().getName() + " to byte[]");

@@ -77,8 +77,7 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
         ComplexFeatureBuilder featureBuilder = new ComplexFeatureBuilder(type);
         GeometryAttribute geometryAttribute = null;
         for (Property p : attributes) {
-            if (p instanceof GeometryAttribute) {
-                GeometryAttribute geom = (GeometryAttribute) p;
+            if (p instanceof GeometryAttribute geom) {
                 handleGeometryReprojection(geom);
                 if (p.getName().equals(type.getGeometryDescriptor().getName())) {
                     geometryAttribute = geom;
@@ -116,18 +115,16 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
             Object value = rootDBO.get(key);
             if (value == null) {
                 attributes.add(buildNullAttribute(namespaceURI, key, parentType));
-            } else if (value instanceof BasicDBList) {
-                BasicDBList list = (BasicDBList) value;
+            } else if (value instanceof BasicDBList list) {
                 attributes.addAll(buildComplexAttributesUnbounded(namespaceURI, key, list, parentType));
-            } else if (value instanceof DBObject) {
-                DBObject dbObj = (DBObject) value;
+            } else if (value instanceof DBObject dbObj) {
                 if (MongoSchemalessUtils.isGeometry(dbObj)) {
                     Geometry geom = geomBuilder.toGeometry(dbObj);
                     GeometryAttribute geometryAttribute = buildGeometryAttribute(geom, namespaceURI, key, parentType);
                     attributes.add(geometryAttribute);
                     continue;
                 }
-                attributes.add(buildComplexAttribute(namespaceURI, key, (DBObject) value, parentType, false));
+                attributes.add(buildComplexAttribute(namespaceURI, key, dbObj, parentType, false));
             } else {
                 attributes.add(buildSimpleAttribute(namespaceURI, key, value, parentType));
             }
@@ -168,8 +165,8 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
         List<Property> attributes = new ArrayList<>();
         for (int i = 0; i < value.size(); i++) {
             Object obj = value.get(i);
-            if (obj instanceof DBObject) {
-                Attribute attribute = buildComplexAttribute(namespaceURI, attrName, (DBObject) obj, parentType, true);
+            if (obj instanceof DBObject object) {
+                Attribute attribute = buildComplexAttribute(namespaceURI, attrName, object, parentType, true);
                 attributes.add(attribute);
             } else if (obj != null) {
                 Attribute attribute = buildSimpleAttribute(namespaceURI, attrName, obj, parentType, true);

@@ -11,14 +11,15 @@ import org.geotools.api.data.DataStore;
 import org.geotools.dggs.gstore.DGGSFeatureSource;
 import org.geotools.dggs.gstore.DGGSStore;
 
-class ReadOnlyDGGSStore extends ReadOnlyDataStore implements DGGSStore {
+class ReadOnlyDGGSStore<I> extends ReadOnlyDataStore implements DGGSStore<I> {
 
     protected ReadOnlyDGGSStore(DataStore delegate, WrapperPolicy policy) {
         super(delegate, policy);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public DGGSFeatureSource getDGGSFeatureSource(String typeName) throws IOException {
-        return ((DGGSStore) delegate).getDGGSFeatureSource(typeName);
+    public DGGSFeatureSource<I> getDGGSFeatureSource(String typeName) throws IOException {
+        return ((DGGSStore<I>) delegate).getDGGSFeatureSource(typeName);
     }
 }

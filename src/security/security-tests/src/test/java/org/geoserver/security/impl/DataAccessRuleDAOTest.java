@@ -67,7 +67,7 @@ public class DataAccessRuleDAOTest {
     @Test
     public void testParseGlobalLayerGroupRule() {
         DataAccessRule r = dao.parseDataAccessRule("group.r", "ROLE_GROUP_OWNER");
-        assertEquals(r.getRoot(), "group");
+        assertEquals("group", r.getRoot());
         assertNull(r.getLayer());
         assertTrue(r.isGlobalGroupRule());
         assertEquals(AccessMode.READ, r.getAccessMode());

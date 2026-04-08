@@ -23,7 +23,7 @@ public interface SettingsInfo extends Info {
      *
      * <p>Will be null for global settings: {@link GeoServerInfo#getSettings()}
      *
-     * @return A workspace, or <code>null</code>.
+     * @return A workspace, or {@code null}.
      */
     WorkspaceInfo getWorkspace();
 
@@ -137,6 +137,10 @@ public interface SettingsInfo extends Info {
     public boolean isShowModifiedTimeColumnsInAdminList();
 
     public void setShowModifiedTimeColumnsInAdminList(boolean showModifiedTimeColumnsInAdminList);
+
+    public boolean isShowModifiedUserInAdminList();
+
+    public void setShowModifiedUserInAdminList(boolean showModifiedUserInAdminList);
 
     /**
      * Get the default Locale

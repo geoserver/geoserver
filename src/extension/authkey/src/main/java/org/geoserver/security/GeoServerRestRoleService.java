@@ -92,7 +92,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
 
     GeoServerRestRoleServiceConfig restRoleServiceConfig;
 
-    private boolean convertToUpperCase = true;
+    private volatile boolean convertToUpperCase = true;
 
     private String adminGroup;
 
@@ -186,10 +186,10 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
                                 json, restRoleServiceConfig.getUsersJSONPath().replace("${username}", username));
 
                         for (Object roleObj : rolesString) {
-                            if (roleObj instanceof String) {
-                                populateRoles((String) roleObj, roles);
-                            } else if (roleObj instanceof JSONArray) {
-                                for (Object role : (JSONArray) roleObj) {
+                            if (roleObj instanceof String string) {
+                                populateRoles(string, roles);
+                            } else if (roleObj instanceof JSONArray array) {
+                                for (Object role : array) {
                                     populateRoles((String) role, roles);
                                 }
                             }
@@ -450,8 +450,12 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
 
     private ClientHttpRequestFactory clientHttpRequestFactory() {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        // Manual migration to `SocketConfig.Builder.setSoTimeout(Timeout)` necessary; see:
+        // https://docs.spring.io/spring-framework/docs/6.0.0/javadoc-api/org/springframework/http/client/HttpComponentsClientHttpRequestFactory.html#setReadTimeout(int)
+        // Manual migration to `SocketConfig.Builder.setSoTimeout(Timeout)` necessary; see:
+        // https://docs.spring.io/spring-framework/docs/6.0.0/javadoc-api/org/springframework/http/client/HttpComponentsClientHttpRequestFactory.html#setReadTimeout(int)
         factory.setReadTimeout(READ_TIMEOUT);
-        factory.setConnectTimeout(CONN_TIMEOUT);
+        factory.setConnectionRequestTimeout(CONN_TIMEOUT);
         return factory;
     }
 
@@ -488,7 +492,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
                             req.getHeaders().add("Authorization", "ApiKey " + authApiKey);
                         }
                         try (ClientHttpResponse res = req.execute()) {
-                            int status = res.getRawStatusCode();
+                            int status = res.getStatusCode().value();
 
                             switch (status) {
                                 case 200:

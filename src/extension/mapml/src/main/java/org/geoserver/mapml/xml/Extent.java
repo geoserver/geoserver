@@ -8,16 +8,16 @@
 
 package org.geoserver.mapml.xml;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * Java class for anonymous complex type.
@@ -71,7 +71,7 @@ public class Extent {
         @XmlElement(name = "map-select", type = Select.class, namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(name = "map-label", type = Label.class, namespace = "http://www.w3.org/1999/xhtml")
     })
-    protected List<Object> inputOrDatalistOrLink;
+    protected List<MapMLElement> inputOrDatalistOrLink;
 
     @XmlAttribute(name = "units")
     @XmlSchemaType(name = "anySimpleType")
@@ -105,7 +105,7 @@ public class Extent {
      * <p>Objects of the following type(s) are allowed in the list {@link Input } {@link Datalist } {@link Link }
      * {@link Select } {@link Label }
      */
-    public List<Object> getInputOrDatalistOrLink() {
+    public List<MapMLElement> getInputOrDatalistOrLink() {
         if (inputOrDatalistOrLink == null) {
             inputOrDatalistOrLink = new ArrayList<>();
         }

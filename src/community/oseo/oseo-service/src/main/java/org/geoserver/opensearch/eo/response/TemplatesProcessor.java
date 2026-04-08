@@ -6,7 +6,6 @@ package org.geoserver.opensearch.eo.response;
 
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_NAMESPACE;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.ext.beans.BeanModel;
 import freemarker.ext.beans.SimpleMapModel;
 import freemarker.template.Template;
@@ -67,6 +66,7 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Encoder;
 import org.locationtech.jts.geom.Geometry;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Loads, caches and processes Freemarker templates against a stream of features. It's meant to be used for a single
@@ -116,7 +116,7 @@ public class TemplatesProcessor {
         StringWriter sw = new StringWriter();
         Template header = getTemplate("", "generic" + "-header");
         header.process(model, sw);
-        FeatureCollection results = searchResults.getResults();
+        FeatureCollection<FeatureType, Feature> results = searchResults.getResults();
 
         try (FeatureIterator<Feature> featureIterator = results.features()) {
             while (featureIterator.hasNext()) {
@@ -236,7 +236,7 @@ public class TemplatesProcessor {
 
             // dc:date, can be a range
             String spec;
-            if (start != null && end != null && start.equals(end)) {
+            if (start != null && start.equals(end)) {
                 spec = DateTimeFormatter.ISO_INSTANT.format(start.toInstant());
             } else {
                 spec = start != null ? DateTimeFormatter.ISO_INSTANT.format(start.toInstant()) : "";
@@ -336,22 +336,22 @@ public class TemplatesProcessor {
     }
 
     private String toString(Object argument) throws TemplateModelException {
-        if (argument instanceof TemplateScalarModel) {
-            return ((TemplateScalarModel) argument).getAsString();
+        if (argument instanceof TemplateScalarModel model) {
+            return model.getAsString();
         }
         // in case it's an attribute, unwrap the raw value and convert
-        if (argument instanceof SimpleMapModel) {
-            argument = ((SimpleMapModel) argument).get("rawValue");
+        if (argument instanceof SimpleMapModel model) {
+            argument = model.get("rawValue");
         }
         return Converters.convert(argument, String.class);
     }
 
     private Geometry toGeometry(Object argument) throws TemplateModelException {
         // in case it's an attribute, unwrap the raw value and convert
-        if (argument instanceof SimpleMapModel) {
-            argument = ((SimpleMapModel) argument).get("rawValue");
-        } else if (argument instanceof BeanModel) {
-            argument = ((BeanModel) argument).getWrappedObject();
+        if (argument instanceof SimpleMapModel model1) {
+            argument = model1.get("rawValue");
+        } else if (argument instanceof BeanModel model) {
+            argument = model.getWrappedObject();
         }
         return Converters.convert(argument, Geometry.class);
     }
@@ -372,13 +372,12 @@ public class TemplatesProcessor {
             return null;
         } else {
             Object value = property.getValue();
-            if (value instanceof Geometry) {
+            if (value instanceof Geometry g) {
                 // cheap re-projection support since there is no re-projecting collection
                 // wrapper for complex features
                 CoordinateReferenceSystem nativeCRS =
                         ((GeometryDescriptor) property.getDescriptor()).getCoordinateReferenceSystem();
                 if (nativeCRS != null && !CRS.equalsIgnoreMetadata(nativeCRS, OpenSearchParameters.OUTPUT_CRS)) {
-                    Geometry g = (Geometry) value;
                     try {
                         return JTS.transform(g, CRS.findMathTransform(nativeCRS, OpenSearchParameters.OUTPUT_CRS));
                     } catch (MismatchedDimensionException | TransformException | FactoryException e) {

@@ -4,8 +4,11 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import com.google.common.collect.Lists;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +37,20 @@ import org.geotools.util.logging.Logging;
 
 public class GenerateDomainPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GenerateDomainPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -4252512711183089841L;
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTabPanel.class);
@@ -56,6 +73,7 @@ public class GenerateDomainPanel extends Panel {
                 new PropertyModel<>(getDefaultModel(), "method"),
                 Lists.newArrayList(false, true),
                 new IChoiceRenderer<>() {
+                    @Serial
                     private static final long serialVersionUID = 1966992066973104491L;
 
                     @Override
@@ -100,6 +118,7 @@ public class GenerateDomainPanel extends Panel {
         add(defAttributeNameChoice.setNullValid(false).setEnabled(false).setOutputMarkupId(true));
 
         methodChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 6321014584689914438L;
 
             @Override
@@ -117,6 +136,7 @@ public class GenerateDomainPanel extends Panel {
         });
 
         tableNameChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 6321014584689914438L;
 
             @Override

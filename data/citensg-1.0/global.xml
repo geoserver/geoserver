@@ -4,7 +4,7 @@
     <contact/>
     <charset>UTF-8</charset>
     <numDecimals>8</numDecimals>
-    <onlineResource>http://geoserver.org</onlineResource>
+    <onlineResource>https://geoserver.org</onlineResource>
     <verbose>true</verbose>
     <verboseExceptions>false</verboseExceptions>
     <metadata>
@@ -41,6 +41,5 @@
   <featureTypeCacheSize>0</featureTypeCacheSize>
   <globalServices>true</globalServices>
   <xmlPostRequestLogBufferSize>1024</xmlPostRequestLogBufferSize>
-  <xmlExternalEntitiesEnabled>true</xmlExternalEntitiesEnabled>
   <webUIMode>DEFAULT</webUIMode>
 </global>

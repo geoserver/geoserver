@@ -56,12 +56,12 @@ public class APIConfigurationSupport extends RestConfiguration {
                 return operation.getMethod().invoke(operation.getService().getService(), operation.getParameters());
             } catch (InvocationTargetException e) {
                 Throwable targetException = e.getTargetException();
-                if (targetException instanceof RuntimeException) {
-                    throw (RuntimeException) targetException;
-                } else if (targetException instanceof Error) {
-                    throw (Error) targetException;
-                } else if (targetException instanceof Exception) {
-                    throw (Exception) targetException;
+                if (targetException instanceof RuntimeException exception1) {
+                    throw exception1;
+                } else if (targetException instanceof Error error) {
+                    throw error;
+                } else if (targetException instanceof Exception exception) {
+                    throw exception;
                 } else {
                     throw new IllegalStateException(e);
                 }

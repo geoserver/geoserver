@@ -4,6 +4,9 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,21 @@ import org.geoserver.web.GeoServerApplication;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class MetadataPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MetadataPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private final Map<String, List<Integer>> derivedAtts;
@@ -80,6 +98,7 @@ public class MetadataPanel extends Panel {
 
             for (String tab : tabs) {
                 tabPanels.add(new AbstractTab(new Model<>(tab)) {
+                    @Serial
                     private static final long serialVersionUID = -6178140635455783732L;
 
                     @Override
@@ -91,11 +110,13 @@ public class MetadataPanel extends Panel {
 
             // we need to override with submit links so that each tab will validate & submit
             TabbedPanel<AbstractTab> panel = new TabbedPanel<>(id, tabPanels) {
+                @Serial
                 private static final long serialVersionUID = 2128818273175357135L;
 
                 @Override
                 protected WebMarkupContainer newLink(String linkId, final int index) {
                     return new SubmitLink(linkId) {
+                        @Serial
                         private static final long serialVersionUID = -9015199018095752516L;
 
                         @Override

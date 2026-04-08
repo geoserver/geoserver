@@ -11,11 +11,11 @@ package org.geoserver.gsr.controller.feature;
 
 import static org.junit.Assert.assertEquals;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.gsr.controller.ControllerTest;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 
 public class FeatureLayerListControllerTest extends ControllerTest {
     private String query(String service, String params) {

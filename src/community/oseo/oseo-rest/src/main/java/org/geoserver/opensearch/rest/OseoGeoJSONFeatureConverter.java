@@ -28,7 +28,7 @@ public class OseoGeoJSONFeatureConverter extends BaseMessageConverter<Object> {
     static final Logger LOGGER = Logging.getLogger(OseoGeoJSONFeatureConverter.class);
 
     public OseoGeoJSONFeatureConverter() {
-        super(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON_UTF8);
+        super(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
     }
 
     @Override

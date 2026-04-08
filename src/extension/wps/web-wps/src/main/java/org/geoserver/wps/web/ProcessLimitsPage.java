@@ -7,6 +7,7 @@ package org.geoserver.wps.web;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -239,6 +240,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
      * @author Andrea Aime - GeoSolutions
      */
     static final class InputLimit implements Serializable {
+        @Serial
         private static final long serialVersionUID = -4763254264009929615L;
 
         String name;

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
@@ -292,7 +293,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
     }
 
     private Set<GeoServerUserGroup> getChildrenGroups(GeoServerUserGroup parent) {
-        Assert.notNull(parent, "Geoserver group shouldn't be null.");
+        Assert.notNull(parent, "GeoServer group shouldn't be null.");
         final String groupName = parent.getGroupname();
         final Set<String> memberGroupDns = new HashSet<>();
         final Set<GeoServerUserGroup> childGroups = new HashSet<>();
@@ -315,7 +316,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
     }
 
     private boolean acceptChildGroup(String x) {
-        return !useNestedGroups || StringUtils.containsIgnoreCase(x, groupSearchBase);
+        return !useNestedGroups || Strings.CI.contains(x, groupSearchBase);
     }
 
     @Override
@@ -376,7 +377,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
                     .toString();
             groupDnReference.setValue(dn);
         });
-        return groupDnReference.getValue();
+        return groupDnReference.get();
     }
 
     @Override

@@ -4,11 +4,11 @@
  */
 package org.geoserver.wps.gs;
 
-import it.geosolutions.jaiext.range.Range;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
+import org.eclipse.imagen.media.range.Range;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;
@@ -158,7 +158,8 @@ public class GetCoveragesValue implements GeoServerProcess {
                         reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER),
                         reader.getCoordinateReferenceSystem()));
 
-        String useJaiImageRead = ImageMosaicFormat.USE_JAI_IMAGEREAD.getName().toString();
+        String useJaiImageRead =
+                ImageMosaicFormat.USE_IMAGEN_IMAGEREAD.getName().toString();
         if (parameters.keySet().contains(useJaiImageRead)) {
             parameters.put(useJaiImageRead, false);
         }
@@ -186,29 +187,25 @@ public class GetCoveragesValue implements GeoServerProcess {
     }
 
     private Number[] convertPrimitiveArrayToNumberArray(Object evaluate) {
-        if (evaluate instanceof double[]) {
-            double[] doubleArray = (double[]) evaluate;
+        if (evaluate instanceof double[] doubleArray) {
             Number[] numberArray = new Number[doubleArray.length];
             for (int i = 0; i < doubleArray.length; i++) {
                 numberArray[i] = doubleArray[i];
             }
             return numberArray;
-        } else if (evaluate instanceof int[]) {
-            int[] intArray = (int[]) evaluate;
+        } else if (evaluate instanceof int[] intArray) {
             Number[] numberArray = new Number[intArray.length];
             for (int i = 0; i < intArray.length; i++) {
                 numberArray[i] = intArray[i];
             }
             return numberArray;
-        } else if (evaluate instanceof float[]) {
-            float[] floatArray = (float[]) evaluate;
+        } else if (evaluate instanceof float[] floatArray) {
             Number[] numberArray = new Number[floatArray.length];
             for (int i = 0; i < floatArray.length; i++) {
                 numberArray[i] = floatArray[i];
             }
             return numberArray;
-        } else if (evaluate instanceof byte[]) {
-            byte[] byteArray = (byte[]) evaluate;
+        } else if (evaluate instanceof byte[] byteArray) {
             Number[] numberArray = new Number[byteArray.length];
             for (int i = 0; i < byteArray.length; i++) {
                 numberArray[i] = byteArray[i];

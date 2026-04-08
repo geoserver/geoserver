@@ -6,17 +6,17 @@
 
 package org.geoserver.security.cas;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
-import org.jasig.cas.client.util.CommonUtils;
+import org.apereo.cas.client.proxy.ProxyGrantingTicketStorage;
+import org.apereo.cas.client.util.WebUtils;
 import org.springframework.beans.factory.BeanNameAware;
 
 /**
@@ -49,7 +49,7 @@ public class ProxyGrantingTicketCallbackFilter implements Filter, BeanNameAware 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        CommonUtils.readAndRespondToProxyReceptorRequest(
+        WebUtils.readAndRespondToProxyReceptorRequest(
                 (HttpServletRequest) request, (HttpServletResponse) response, pgtStorageFilter);
     }
 

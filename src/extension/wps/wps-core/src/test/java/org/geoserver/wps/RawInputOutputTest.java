@@ -13,8 +13,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.process.Processors;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -37,9 +37,7 @@ public class RawInputOutputTest extends WPSTestSupport {
 
         // disable entity resolver as it won't let the tests run in IntelliJ if also GeoTools is
         // loaded...
-        GeoServerInfo global = getGeoServer().getGlobal();
-        global.setXmlExternalEntitiesEnabled(true);
-        getGeoServer().save(global);
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
     }
 
     @Test
@@ -134,28 +132,30 @@ public class RawInputOutputTest extends WPSTestSupport {
 
     @Test
     public void testExecuteEmbeddedXML() throws Exception {
-        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                + "<ows:Identifier>gs:Raw</ows:Identifier>"
-                + "<wps:DataInputs>"
-                + "<wps:Input>"
-                + "<ows:Identifier>data</ows:Identifier>"
-                + "<wps:Data>"
-                + "<wps:ComplexData mimeType=\"text/xml\" xmlns:ani=\"http://geoserver.org/wps/animation\">"
-                + "  <ani:Layer>\n"
-                + "    <ani:Name>test</ani:Name>\n"
-                + "    <ani:Parameter key=\"CQL_FILTER\">sun_elevation%3C51</ani:Parameter>\n"
-                + "  </ani:Layer>\n"
-                + "</wps:ComplexData>"
-                + "</wps:Data>"
-                + "</wps:Input>"
-                + "</wps:DataInputs>"
-                + "<wps:ResponseForm>"
-                + "<wps:RawDataOutput mimeType=\"text/xml\">"
-                + "<ows:Identifier>result</ows:Identifier>"
-                + "</wps:RawDataOutput>"
-                + "</wps:ResponseForm>"
-                + "</wps:Execute>";
+        String xml =
+                """
+                <wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' \
+                xmlns:ows='http://www.opengis.net/ows/1.1'>\
+                <ows:Identifier>gs:Raw</ows:Identifier>\
+                <wps:DataInputs>\
+                <wps:Input>\
+                <ows:Identifier>data</ows:Identifier>\
+                <wps:Data>\
+                <wps:ComplexData mimeType="text/xml" xmlns:ani="http://geoserver.org/wps/animation">\
+                  <ani:Layer>
+                    <ani:Name>test</ani:Name>
+                    <ani:Parameter key="CQL_FILTER">sun_elevation%3C51</ani:Parameter>
+                  </ani:Layer>
+                </wps:ComplexData>\
+                </wps:Data>\
+                </wps:Input>\
+                </wps:DataInputs>\
+                <wps:ResponseForm>\
+                <wps:RawDataOutput mimeType="text/xml">\
+                <ows:Identifier>result</ows:Identifier>\
+                </wps:RawDataOutput>\
+                </wps:ResponseForm>\
+                </wps:Execute>""";
         // System.out.println(xml);
 
         MockHttpServletResponse response = postAsServletResponse("wps", xml);

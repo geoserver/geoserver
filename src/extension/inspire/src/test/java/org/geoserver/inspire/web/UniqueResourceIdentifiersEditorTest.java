@@ -104,7 +104,7 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
 
         String error =
                 new ParamResourceModel("UniqueResourceIdentifiersEditor.noSpatialDatasetIdentifiers", null).getString();
-        tester.assertErrorMessages(new String[] {error});
+        tester.assertErrorMessages(error);
     }
 
     @Test

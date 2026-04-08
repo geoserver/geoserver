@@ -1,0 +1,21 @@
+<assembly>
+  <id>gwc-gcs-blobstore-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <!-- The destination directory for these JARs inside the final ZIP file -->
+      <outputDirectory>/</outputDirectory>
+      <!-- Include this project's own built JAR file in the set -->
+      <useProjectArtifact>true</useProjectArtifact>
+      <!-- Filter to include only dependencies needed at runtime (this also includes the 'compile' scope) -->
+      <scope>runtime</scope>
+      <!-- Include transitive dependencies (the entire dependency tree) -->
+      <useTransitiveDependencies>true</useTransitiveDependencies>
+      <!-- Ensure the full dependency tree is included without re-applying filters -->
+      <useTransitiveFiltering>false</useTransitiveFiltering>
+    </dependencySet>
+  </dependencySets>
+</assembly>

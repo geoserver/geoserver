@@ -5,6 +5,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.geotools.api.filter.Filter;
 import org.locationtech.jts.geom.MultiPolygon;
 
@@ -14,6 +15,7 @@ import org.locationtech.jts.geom.MultiPolygon;
  * @author Andrea Aime - GeoSolutions
  */
 public class WMSAccessLimits extends DataAccessLimits {
+    @Serial
     private static final long serialVersionUID = -6566842877723378894L;
 
     /** ROI on the returned images */

@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
@@ -104,7 +103,7 @@ public class CatalogImpl implements Catalog {
     protected GeoServerResourceLoader resourceLoader;
 
     /** extended validation switch */
-    protected boolean extendedValidation = true;
+    protected volatile boolean extendedValidation = true;
 
     protected CatalogImpl(CatalogImpl catalog) {
         this.dispatcher = catalog.dispatcher;
@@ -467,7 +466,7 @@ public class CatalogImpl implements Catalog {
         }
 
         if (isNull(resource.getNativeName())
-                && !(resource instanceof CoverageInfo && ((CoverageInfo) resource).getNativeCoverageName() != null)) {
+                && !(resource instanceof CoverageInfo info && info.getNativeCoverageName() != null)) {
             throw new NullPointerException("Resource native name must not be null");
         }
         if (resource.getStore() == null) {
@@ -500,8 +499,8 @@ public class CatalogImpl implements Catalog {
 
         // don't perform this validation on load, it would force connection to
         // all data stores. Just on save/add at runtime
-        if (resource instanceof FeatureTypeInfo && extendedValidation) {
-            new FeatureTypeValidator().validate((FeatureTypeInfo) resource);
+        if (resource instanceof FeatureTypeInfo info && extendedValidation) {
+            new FeatureTypeValidator().validate(info);
         }
 
         return postValidate(resource, isNew);
@@ -942,7 +941,6 @@ public class CatalogImpl implements Catalog {
 
     @Override
     @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew) {
         if (isNull(layerGroup.getName())) {
             throw new NullPointerException("Layer group name must not be null");
@@ -1053,10 +1051,10 @@ public class CatalogImpl implements Catalog {
         List<PublishedInfo> layers = layerGroup.getLayers();
         if (layers != null) {
             for (PublishedInfo p : layers) {
-                if (p instanceof LayerGroupInfo) {
-                    checkLayerGroupResourceIsInWorkspace((LayerGroupInfo) p, ws);
-                } else if (p instanceof LayerInfo) {
-                    checkLayerGroupResourceIsInWorkspace(layerGroup, (LayerInfo) p, ws);
+                if (p instanceof LayerGroupInfo info1) {
+                    checkLayerGroupResourceIsInWorkspace(info1, ws);
+                } else if (p instanceof LayerInfo info) {
+                    checkLayerGroupResourceIsInWorkspace(layerGroup, info, ws);
                 }
             }
         }
@@ -1281,9 +1279,9 @@ public class CatalogImpl implements Catalog {
 
         if (namespace.isIsolated() && !getCatalogCapabilities().supportsIsolatedWorkspaces()) {
             // isolated namespaces \ workspaces are not supported by this catalog
-            throw new IllegalArgumentException(String.format(
-                    "Namespace '%s:%s' is isolated but isolated workspaces are not supported by this catalog.",
-                    namespace.getPrefix(), namespace.getURI()));
+            throw new IllegalArgumentException(
+                    "Namespace '%s:%s' is isolated but isolated workspaces are not supported by this catalog."
+                            .formatted(namespace.getPrefix(), namespace.getURI()));
         }
 
         if (isNull(namespace.getPrefix())) {
@@ -1417,9 +1415,9 @@ public class CatalogImpl implements Catalog {
 
         if (workspace.isIsolated() && !getCatalogCapabilities().supportsIsolatedWorkspaces()) {
             // isolated namespaces \ workspaces are not supported by this catalog
-            throw new IllegalArgumentException(String.format(
-                    "Workspace '%s' is isolated but isolated workspaces are not supported by this catalog.",
-                    workspace.getName()));
+            throw new IllegalArgumentException(
+                    "Workspace '%s' is isolated but isolated workspaces are not supported by this catalog."
+                            .formatted(workspace.getName()));
         }
 
         if (isNull(workspace.getName())) {
@@ -1848,20 +1846,8 @@ public class CatalogImpl implements Catalog {
 
     public static void validateKeywords(List<KeywordInfo> keywords) {
         if (keywords != null) {
-            for (KeywordInfo kw : keywords) {
-                Matcher m = KeywordInfo.RE.matcher(kw.getValue());
-                if (!m.matches()) {
-                    throw new IllegalArgumentException("Illegal keyword '"
-                            + kw
-                            + "'. "
-                            + "Keywords must not be empty and must not contain the '\\' character");
-                }
-                if (kw.getVocabulary() != null) {
-                    m = KeywordInfo.RE.matcher(kw.getVocabulary());
-                    if (!m.matches()) {
-                        throw new IllegalArgumentException("Keyword vocbulary must not contain the '\\' character");
-                    }
-                }
+            for (KeywordInfo keyword : keywords) {
+                KeywordInfo.checkValid(keyword);
             }
         }
     }
@@ -1904,8 +1890,8 @@ public class CatalogImpl implements Catalog {
         ResourceInfoImpl r = (ResourceInfoImpl) resource;
         r.setCatalog(this);
 
-        if (resource instanceof FeatureTypeInfo) {
-            resolve((FeatureTypeInfo) resource);
+        if (resource instanceof FeatureTypeInfo info) {
+            resolve(info);
         }
         if (r instanceof CoverageInfo) {
             resolve((CoverageInfo) resource);
@@ -2103,22 +2089,22 @@ public class CatalogImpl implements Catalog {
     }
 
     public void resolve(CatalogInfo info) {
-        if (info instanceof LayerGroupInfo) {
-            resolve((LayerGroupInfo) info);
-        } else if (info instanceof LayerInfo) {
-            resolve((LayerInfo) info);
-        } else if (info instanceof MapInfo) {
-            resolve((MapInfo) info);
-        } else if (info instanceof NamespaceInfo) {
-            resolve((NamespaceInfo) info);
-        } else if (info instanceof ResourceInfo) {
-            resolve((ResourceInfo) info);
-        } else if (info instanceof StoreInfo) {
-            resolve((StoreInfo) info);
-        } else if (info instanceof StyleInfo) {
-            resolve((StyleInfo) info);
-        } else if (info instanceof WorkspaceInfo) {
-            resolve((WorkspaceInfo) info);
+        if (info instanceof LayerGroupInfo groupInfo) {
+            resolve(groupInfo);
+        } else if (info instanceof LayerInfo layerInfo) {
+            resolve(layerInfo);
+        } else if (info instanceof MapInfo mapInfo) {
+            resolve(mapInfo);
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
+            resolve(namespaceInfo);
+        } else if (info instanceof ResourceInfo resourceInfo) {
+            resolve(resourceInfo);
+        } else if (info instanceof StoreInfo storeInfo) {
+            resolve(storeInfo);
+        } else if (info instanceof StyleInfo styleInfo) {
+            resolve(styleInfo);
+        } else if (info instanceof WorkspaceInfo workspaceInfo) {
+            resolve(workspaceInfo);
         } else {
             throw new IllegalArgumentException("Unknown resource type: " + info);
         }

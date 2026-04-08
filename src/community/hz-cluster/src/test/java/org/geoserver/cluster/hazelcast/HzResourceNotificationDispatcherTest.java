@@ -18,7 +18,6 @@ import com.hazelcast.topic.MessageListener;
 import java.util.UUID;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.geoserver.platform.resource.AbstractResourceNotificationDispatcherTest;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
@@ -41,17 +40,14 @@ public class HzResourceNotificationDispatcherTest extends AbstractResourceNotifi
                 .andStubReturn(topic);
         expect(topic.addMessageListener(capture(captureTopicListener))).andReturn(UUID.randomUUID());
         topic.publish(EasyMock.capture(captureTopicPublish));
-        expectLastCall().andStubAnswer(new IAnswer<Object>() {
-            @Override
-            public Object answer() throws Throwable {
-                Message<ResourceNotification> message = createMock(Message.class);
-                expect(message.getMessageObject()).andStubReturn(captureTopicPublish.getValue());
-                EasyMock.replay(message);
-                for (MessageListener<ResourceNotification> listener : captureTopicListener.getValues()) {
-                    listener.onMessage(message);
-                }
-                return null;
+        expectLastCall().andStubAnswer(() -> {
+            Message<ResourceNotification> message = createMock(Message.class);
+            expect(message.getMessageObject()).andStubReturn(captureTopicPublish.getValue());
+            EasyMock.replay(message);
+            for (MessageListener<ResourceNotification> listener : captureTopicListener.getValues()) {
+                listener.onMessage(message);
             }
+            return null;
         });
 
         expect(hzCluster.isEnabled()).andStubReturn(true);

@@ -72,12 +72,12 @@ public class UserPasswordController extends RestBaseController {
 
             if (ugService == null) {
                 throw new RestException(
-                        "Cannot calculate if PUT is allowed (service not found)", HttpStatus.UNPROCESSABLE_ENTITY);
+                        "Cannot calculate if PUT is allowed (service not found)", HttpStatus.UNPROCESSABLE_CONTENT);
             }
 
         } catch (IOException e) {
             throw new RestException(
-                    "Cannot calculate if PUT is allowed (" + e.getMessage() + ")", HttpStatus.UNPROCESSABLE_ENTITY, e);
+                    "Cannot calculate if PUT is allowed (" + e.getMessage() + ")", HttpStatus.UNPROCESSABLE_CONTENT, e);
         }
         String newpass = putMap.get(UP_NEW_PW);
 
@@ -126,7 +126,7 @@ public class UserPasswordController extends RestBaseController {
         } catch (IOException e) {
             throw new RestException("Internal IO error", HttpStatus.INTERNAL_SERVER_ERROR, e);
         } catch (PasswordPolicyException e) {
-            throw new RestException("Bad password", HttpStatus.UNPROCESSABLE_ENTITY, e);
+            throw new RestException("Bad password", HttpStatus.UNPROCESSABLE_CONTENT, e);
         }
     }
 

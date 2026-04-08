@@ -14,11 +14,9 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.easymock.IArgumentMatcher;
 import org.easymock.IExpectationSetters;
 import org.geoserver.catalog.CatalogInfo;
@@ -172,7 +170,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
 
     @Override
     public List<Object> myMocks() {
-        List<Object> mocks = new ArrayList<Object>();
+        List<Object> mocks = new ArrayList<>();
         mocks.addAll(super.myMocks());
         mocks.add(configListener);
         mocks.add(catListener);
@@ -256,23 +254,11 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     protected void expectConfigGetListeners() {
-        expect(getGeoServer().getListeners()).andStubAnswer(new IAnswer<Collection<ConfigurationListener>>() {
-
-            @Override
-            public Collection<ConfigurationListener> answer() throws Throwable {
-                return Arrays.asList(sync, configListener);
-            }
-        });
+        expect(getGeoServer().getListeners()).andStubAnswer(() -> Arrays.asList(sync, configListener));
     }
 
     protected void expectCatalogGetListeners() {
-        expect(getCatalog().getListeners()).andStubAnswer(new IAnswer<Collection<CatalogListener>>() {
-
-            @Override
-            public Collection<CatalogListener> answer() throws Throwable {
-                return Arrays.asList(sync, catListener);
-            }
-        });
+        expect(getCatalog().getListeners()).andStubAnswer(() -> Arrays.asList(sync, catListener));
     }
 
     CatalogEvent catEvent(final CatalogInfo info) {

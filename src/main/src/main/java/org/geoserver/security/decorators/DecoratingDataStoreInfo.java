@@ -158,4 +158,14 @@ public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo> im
     public void setDisableOnConnFailure(boolean disableOnConnFailure) {
         delegate.setDisableOnConnFailure(disableOnConnFailure);
     }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        delegate.setModifiedBy(userName);
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return delegate.getModifiedBy();
+    }
 }

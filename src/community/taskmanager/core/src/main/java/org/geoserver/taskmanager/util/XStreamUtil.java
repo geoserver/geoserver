@@ -13,6 +13,7 @@ import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedSet
 import com.thoughtworks.xstream.hibernate.converter.HibernateProxyConverter;
 import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
+import java.util.LinkedHashMap;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.taskmanager.data.impl.AttributeImpl;
 import org.geoserver.taskmanager.data.impl.BatchElementImpl;
@@ -20,10 +21,11 @@ import org.geoserver.taskmanager.data.impl.BatchImpl;
 import org.geoserver.taskmanager.data.impl.ConfigurationImpl;
 import org.geoserver.taskmanager.data.impl.ParameterImpl;
 import org.geoserver.taskmanager.data.impl.TaskImpl;
-import org.hibernate.collection.internal.PersistentMap;
-import org.hibernate.collection.internal.PersistentSortedMap;
-import org.hibernate.collection.internal.PersistentSortedSet;
+import org.hibernate.collection.spi.PersistentBag;
 import org.hibernate.collection.spi.PersistentCollection;
+import org.hibernate.collection.spi.PersistentMap;
+import org.hibernate.collection.spi.PersistentSortedMap;
+import org.hibernate.collection.spi.PersistentSortedSet;
 
 public class XStreamUtil {
 
@@ -45,8 +47,10 @@ public class XStreamUtil {
             ParameterImpl.class,
             PersistentCollection.class,
             PersistentMap.class,
+            PersistentBag.class,
             PersistentSortedMap.class,
-            PersistentSortedSet.class
+            PersistentSortedSet.class,
+            LinkedHashMap.class
         });
 
         xs.autodetectAnnotations(true);

@@ -1,5 +1,5 @@
 {
-   "$schema":"http://json-schema.org/draft-03/schema#",
+   "$schema":"https://json-schema.org/draft/2020-12/schema",
    "title":"Map Service Root resource",
    "type":"object",
    "properties":{
@@ -11,8 +11,7 @@
       "mapName":{
          "title":"map name",
          "description":"name of the map provided by the service author",
-         "type":"string",
-         "required":true
+         "type":"string"
       },
       "description":{
          "title":"description",
@@ -35,8 +34,7 @@
                "id":{
                   "title":"layer id",
                   "description":"unique layer/table id within the map service",
-                  "type":"integer",
-                  "required":true
+                  "type":"integer"
                },
                "name":{
                   "title":"layer name",
@@ -58,7 +56,8 @@
                      "type":"integer"
                   }
                }
-            }
+            },
+            "required":["id"]
          }
       },
       "tables":{
@@ -71,14 +70,14 @@
                "id":{
                   "title":"table id",
                   "description":"unique layer/table id within the map service",
-                  "type":"integer",
-                  "required":true
+                  "type":"integer"
                },
                "name":{
                   "title":"table name",
                   "type":"string"
                }
-            }
+            },
+            "required":["id"]
          }
       },
       "spatialReference":{
@@ -96,23 +95,19 @@
          "properties":{
             "rows":{
                "title":"rows",
-               "type":"integer",
-               "required":true
+               "type":"integer"
             },
             "cols":{
                "title":"cols",
-               "type":"integer",
-               "required":true
+               "type":"integer"
             },
             "dpi":{
                "title":"dpi",
-               "type":"integer",
-               "required":true
+               "type":"integer"
             },
             "format":{
                "title":"format",
-               "type":"string",
-               "required":true
+               "type":"string"
             },
             "compressionQuality":{
                "title":"compression quality",
@@ -133,25 +128,24 @@
                      "level":{
                         "title":"level",
                         "description":"The top most level is 0, this level represents the finest level of detail",
-                        "type":"integer",
-                        "required":true
+                        "type":"integer"
                      },
                      "resolution":{
                         "title":"resolution",
                         "description":"Resolution, in map units, of each pixel in a tile for the scale level",
-                        "type":"number",
-                        "required":true
+                        "type":"number"
                      },
                      "scale":{
                         "title":"scale",
                         "description":"Scale denominator for the level",
-                        "type":"number",
-                        "required":true
+                        "type":"number"
                      }
-                  }
+                  },
+                  "required":["level","resolution","scale"]
                }
             }
-         }
+         },
+         "required":["rows","cols","dpi","format"]
       },
       "initialExtent":{
          "$ref":"../../envelope.json"
@@ -210,5 +204,6 @@
          "description":"provides hints about the capabilities of the service; pre-defined values are Map, Query, and Data",
          "type":"string"
       }
-   }
+   },
+   "required":["mapName"]
 }

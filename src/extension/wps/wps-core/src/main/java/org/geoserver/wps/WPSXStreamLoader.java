@@ -123,6 +123,9 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         if (service.getVersions() == null) {
             ((WPSInfoImpl) service).setVersions(new ArrayList<>());
         }
+        if (service.getDisabledVersions() == null) {
+            ((WPSInfoImpl) service).setDisabledVersions(new ArrayList<>());
+        }
         if (service.getVersions().isEmpty()) {
             service.getVersions().add(new Version("1.0.0"));
         }
@@ -215,8 +218,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                 if (converted.getFilteredProcesses() != null) {
                     List<ProcessInfo> newFilteredProcesses = new ArrayList<>();
                     for (Object fp : converted.getFilteredProcesses()) {
-                        if (fp instanceof NameImpl) {
-                            NameImpl ni = (NameImpl) fp;
+                        if (fp instanceof NameImpl ni) {
                             ProcessInfo pi = new ProcessInfoImpl();
                             pi.setName(ni);
                             pi.setEnabled(false);

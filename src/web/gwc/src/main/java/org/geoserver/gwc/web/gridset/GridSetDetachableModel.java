@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.gridset;
 
+import java.io.Serial;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.gwc.GWC;
 import org.geowebcache.grid.GridSet;
@@ -12,6 +13,7 @@ import org.geowebcache.grid.GridSetBroker;
 
 /** @see GWC#getGridSetBroker() */
 class GridSetDetachableModel extends LoadableDetachableModel<GridSet> {
+    @Serial
     private static final long serialVersionUID = 7948457592325861589L;
 
     private final String name;

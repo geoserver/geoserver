@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.xml;
 
+import java.io.Serial;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
 
 /**
@@ -14,7 +15,9 @@ import org.geoserver.security.config.FileBasedSecurityServiceConfig;
  */
 public class XMLSecurityServiceConfig extends FileBasedSecurityServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private boolean validating;
 
     public XMLSecurityServiceConfig() {}

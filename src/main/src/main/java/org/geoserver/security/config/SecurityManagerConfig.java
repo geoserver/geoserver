@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.SerializationUtils;
@@ -24,6 +25,7 @@ import org.geoserver.security.rememberme.RememberMeServicesConfig;
  */
 public class SecurityManagerConfig implements SecurityConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String roleServiceName;

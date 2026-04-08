@@ -4,9 +4,9 @@
     <id>WorkspaceInfoImpl-1c443fee:182c0f3f209:-7ffe</id>
   </workspace>
   <enabled>true</enabled>
-  <name>WMTS</name>
+  <name>Tiles</name>
   <title>GeoServer Natural Earth Tiles</title>
-  <maintainer>http://geoserver.org/com</maintainer>
+  <maintainer>https://geoserver.org/com</maintainer>
   <abstrct>Map tiles generated from Natural Earth vector data, raster data and imagery.</abstrct>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
@@ -19,7 +19,7 @@
     <string>WMTS</string>
   </keywords>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.org</onlineResource>
+  <onlineResource>https://geoserver.org</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
 </wmts>

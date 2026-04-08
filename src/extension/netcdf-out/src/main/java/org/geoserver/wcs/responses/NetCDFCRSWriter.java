@@ -270,8 +270,10 @@ class NetCDFCRSWriter {
             NetCDFProjection projection) {
         if (!(crs instanceof GeneralDerivedCRS)) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("The provided CRS is not a projected or derived CRS\n"
-                        + "No projection information needs to be added");
+                LOGGER.fine(
+                        """
+                        The provided CRS is not a projected or derived CRS
+                        No projection information needs to be added""");
             }
             return;
         }

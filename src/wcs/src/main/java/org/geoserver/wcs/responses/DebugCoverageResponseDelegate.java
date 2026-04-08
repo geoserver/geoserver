@@ -27,7 +27,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
  */
 public class DebugCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
-    @SuppressWarnings("serial")
     public DebugCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,

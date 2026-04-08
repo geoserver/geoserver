@@ -12,7 +12,7 @@ public class NcWmsXStreamInitializer implements XStreamPersisterInitializer {
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("ncwms", NcWmsInfo.class);
+        persister.registerBriefMapComplexType("ncwms", NcWmsInfo.class);
         XStream xs = persister.getXStream();
         xs.allowTypes(new Class[] {NcWmsInfo.class, NcWMSInfoImpl.class});
         xs.addDefaultImplementation(NcWMSInfoImpl.class, NcWmsInfo.class);

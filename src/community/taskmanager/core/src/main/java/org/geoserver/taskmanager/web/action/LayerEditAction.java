@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.action;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LayerEditAction implements Action {
 
+    @Serial
     private static final long serialVersionUID = 6978608806982184868L;
 
     private static final String NAME = "LayerEdit";

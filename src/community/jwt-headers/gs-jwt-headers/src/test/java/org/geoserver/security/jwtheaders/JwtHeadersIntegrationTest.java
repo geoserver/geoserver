@@ -8,28 +8,33 @@ package org.geoserver.security.jwtheaders;
 import static org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JSON;
 import static org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JWT;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
-import javax.servlet.Filter;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpSession;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.*;
+import org.geoserver.security.auth.AbstractAuthenticationProviderTest;
 import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.security.filter.GeoServerWebAuthenticationDetails;
 import org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilter;
 import org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig;
 import org.geoserver.security.jwtheaders.filter.details.JwtHeadersWebAuthenticationDetails;
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.security.validation.SecurityConfigException;
+import org.geotools.util.Base64;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -39,7 +44,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
+public class JwtHeadersIntegrationTest extends AbstractAuthenticationProviderTest {
+
+    private static final List<String> TEST_FILTER_CONFIGS = Arrays.asList("JwtHeaders1", "JwtHeaders2", "JwtHeaders3");
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -48,16 +55,7 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
     protected GeoServerJwtHeadersFilterConfig injectConfig1() throws Exception {
         GeoServerSecurityManager manager = getSecurityManager();
-
-        SortedSet<String> filters = manager.listFilters();
-        if (filters.contains("JwtHeaders1")) {
-            SecurityFilterConfig config = manager.loadFilterConfig("JwtHeaders1", false);
-            manager.removeFilter(config);
-        }
-        if (filters.contains("JwtHeaders2")) {
-            SecurityFilterConfig config = manager.loadFilterConfig("JwtHeaders2", false);
-            manager.removeFilter(config);
-        }
+        removeTestFilters(manager);
 
         GeoServerJwtHeadersFilterConfig filterConfig = new GeoServerJwtHeadersFilterConfig();
         filterConfig.setName("JwtHeaders1");
@@ -90,16 +88,7 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
     protected GeoServerJwtHeadersFilterConfig injectConfig2() throws Exception {
         GeoServerSecurityManager manager = getSecurityManager();
-
-        SortedSet<String> filters = manager.listFilters();
-        if (filters.contains("JwtHeaders1")) {
-            SecurityFilterConfig config = manager.loadFilterConfig("JwtHeaders1", false);
-            manager.removeFilter(config);
-        }
-        if (filters.contains("JwtHeaders2")) {
-            SecurityFilterConfig config = manager.loadFilterConfig("JwtHeaders2", false);
-            manager.removeFilter(config);
-        }
+        removeTestFilters(manager);
 
         GeoServerJwtHeadersFilterConfig filterConfig = new GeoServerJwtHeadersFilterConfig();
         filterConfig.setName("JwtHeaders2");
@@ -128,6 +117,49 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
         manager.saveSecurityConfig(config);
         return filterConfig;
+    }
+
+    protected GeoServerJwtHeadersFilterConfig injectConfig3() throws Exception {
+        GeoServerSecurityManager manager = getSecurityManager();
+        removeTestFilters(manager);
+
+        GeoServerJwtHeadersFilterConfig filterConfig = new GeoServerJwtHeadersFilterConfig();
+        filterConfig.setName("JwtHeaders3");
+
+        filterConfig.setClassName(GeoServerJwtHeadersFilter.class.getName());
+
+        // username
+        filterConfig.getJwtConfiguration().setUserNameJsonPath("preferred_username");
+        filterConfig.getJwtConfiguration().setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat.JWT);
+        filterConfig.getJwtConfiguration().setUserNameHeaderAttributeName("Authorization");
+
+        // roles
+        filterConfig.setRoleSource(JWT);
+        filterConfig.getJwtConfiguration().setRoleConverterString("GeoserverAdministrator=ROLE_ADMINISTRATOR");
+        filterConfig.getJwtConfiguration().setRolesJsonPath("resource_access.live-key2.roles");
+        filterConfig.getJwtConfiguration().setRolesHeaderName("Authorization");
+        filterConfig.getJwtConfiguration().setOnlyExternalListedRoles(true);
+
+        manager.saveFilter(filterConfig);
+
+        SecurityManagerConfig config = manager.getSecurityConfig();
+        GeoServerSecurityFilterChain chain = config.getFilterChain();
+        RequestFilterChain www = chain.getRequestChainByName("web");
+
+        www.setFilterNames("basic", "JwtHeaders3");
+
+        manager.saveSecurityConfig(config);
+        return filterConfig;
+    }
+
+    private void removeTestFilters(GeoServerSecurityManager manager) throws IOException, SecurityConfigException {
+        SortedSet<String> filters = manager.listFilters();
+        for (String name : TEST_FILTER_CONFIGS) {
+            if (filters.contains(name)) {
+                SecurityFilterConfig config = manager.loadFilterConfig(name, false);
+                manager.removeFilter(config);
+            }
+        }
     }
 
     /** Enable the Spring Security authentication filters, we want the test to be complete and realistic */
@@ -301,6 +333,68 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
         Assert.assertEquals("david.blasby22@geocat.net", auth.getPrincipal());
     }
 
+    // admin:geoserver
+    String basicAuthAuthorizationHeader = "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes());
+
+    String jwtAuthorizationHeader = "Bearer " + accessToken;
+
+    @Test
+    public void testWithAuthorizationHeader() throws Exception {
+        // note: super class AbstractAuthenticationProviderTest sets up the test user for basic auth
+        GeoServerJwtHeadersFilterConfig filterConfig = injectConfig3();
+        // mimick user pressing on login button
+        MockHttpServletRequest webRequest = createRequest("web/");
+        MockHttpServletResponse webResponse = executeOnSecurityFilters(webRequest);
+
+        int responseStatus = webResponse.getStatus();
+
+        Assert.assertTrue(responseStatus > 400); // access denied
+
+        // basic auth filter should process "Authorization: Basic ..." header
+        webRequest = createRequest("web/");
+        webRequest.addHeader("Authorization", basicAuthAuthorizationHeader);
+
+        webResponse = executeOnSecurityFilters(webRequest);
+
+        responseStatus = webResponse.getStatus();
+
+        Assert.assertEquals(200, responseStatus); // good request
+
+        Authentication auth = getAuthentication(webRequest, webResponse);
+
+        Assert.assertNotNull(auth);
+        Assert.assertEquals(UsernamePasswordAuthenticationToken.class, auth.getClass());
+        Assert.assertEquals(
+                GeoServerWebAuthenticationDetails.class, auth.getDetails().getClass());
+
+        // JWT header filter should process "Authorization: Bearer ..." header
+        webRequest = createRequest("web/");
+        webRequest.addHeader("Authorization", jwtAuthorizationHeader);
+
+        webResponse = executeOnSecurityFilters(webRequest);
+
+        responseStatus = webResponse.getStatus();
+
+        Assert.assertEquals(200, responseStatus); // good request
+
+        auth = getAuthentication(webRequest, webResponse);
+
+        Assert.assertNotNull(auth);
+        Assert.assertEquals(PreAuthenticatedAuthenticationToken.class, auth.getClass());
+        Assert.assertEquals(
+                JwtHeadersWebAuthenticationDetails.class, auth.getDetails().getClass());
+
+        String authFilterId = ((JwtHeadersWebAuthenticationDetails) auth.getDetails()).getJwtHeadersConfigId();
+        Assert.assertEquals(filterConfig.getId(), authFilterId);
+
+        List<String> roles =
+                auth.getAuthorities().stream().map(x -> x.getAuthority()).collect(Collectors.toList());
+        Assert.assertEquals(2, roles.size());
+        Assert.assertTrue(roles.contains("ROLE_ADMINISTRATOR"));
+        Assert.assertTrue(roles.contains("ROLE_AUTHENTICATED"));
+        int tt = 0;
+    }
+
     public Authentication getAuthentication(MockHttpServletRequest request, MockHttpServletResponse response) {
         SecurityContext context = new HttpSessionSecurityContextRepository()
                 .loadContext(new HttpRequestResponseHolder(request, response));
@@ -315,7 +409,7 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
-            throws IOException, javax.servlet.ServletException {
+            throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
         new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 

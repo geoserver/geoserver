@@ -4,6 +4,8 @@
  */
 package org.geoserver.proxybase.ext.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -40,25 +42,24 @@ public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
     public ProxyBaseExtensionConfigPage() {
         setHeaderPanel(headerPanel());
         add(
-                rulesPanel =
-                        new GeoServerTablePanel<ProxyBaseExtensionRule>("rulesPanel", new RulesDataProvider(), true) {
+                rulesPanel = new GeoServerTablePanel<>("rulesPanel", new RulesDataProvider(), true) {
 
-                            @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<ProxyBaseExtensionRule> itemModel,
-                                    GeoServerDataProvider.Property<ProxyBaseExtensionRule> property) {
-                                if (property == RulesDataProvider.EDIT_BUTTON) {
-                                    return createEditLink(id, itemModel.getObject());
-                                }
-                                if (property == RulesDataProvider.ACTIVATE_BUTTON) {
-                                    // wrapped in panel because checkbox is not working with the
-                                    // GeoServerTablePanel component markup
-                                    return new ActivateButtonPanel(id, itemModel.getObject());
-                                }
-                                return null;
-                            }
-                        });
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id,
+                            IModel<ProxyBaseExtensionRule> itemModel,
+                            GeoServerDataProvider.Property<ProxyBaseExtensionRule> property) {
+                        if (property == RulesDataProvider.EDIT_BUTTON) {
+                            return createEditLink(id, itemModel.getObject());
+                        }
+                        if (property == RulesDataProvider.ACTIVATE_BUTTON) {
+                            // wrapped in panel because checkbox is not working with the
+                            // GeoServerTablePanel component markup
+                            return new ActivateButtonPanel(id, itemModel.getObject());
+                        }
+                        return null;
+                    }
+                });
         rulesPanel.setOutputMarkupId(true);
         rulesPanel.setSortable(false);
         rulesPanel.setPageable(false);
@@ -100,13 +101,13 @@ public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
 
     private Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
-        header.add(new AjaxLink<Object>("addNew") {
+        header.add(new AjaxLink<>("addNew") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 setResponsePage(new ProxyBaseExtensionRulePage(Optional.empty()));
             }
         });
-        header.add(new AjaxLink<Object>("removeSelected") {
+        header.add(new AjaxLink<>("removeSelected") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 RulesDataProvider.delete(rulesPanel.getSelection().stream()
@@ -120,7 +121,7 @@ public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
 
     Component createEditLink(String id, final ProxyBaseExtensionRule ruleModel) {
         ImageAjaxLink<Object> editLink =
-                new ImageAjaxLink<Object>(id, new PackageResourceReference(getClass(), "img/edit.png")) {
+                new ImageAjaxLink<>(id, new PackageResourceReference(getClass(), "img/edit.png")) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         setResponsePage(new ProxyBaseExtensionRulePage(Optional.of(ruleModel)));
@@ -133,7 +134,21 @@ public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
         return editLink;
     }
 
-    private class ActivateButtonPanel extends Panel {
+    private static class ActivateButtonPanel extends Panel {
+
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(ProxyBaseExtensionConfigPage.ActivateButtonPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public ActivateButtonPanel(String id, final ProxyBaseExtensionRule ruleModel) {
             super(id);

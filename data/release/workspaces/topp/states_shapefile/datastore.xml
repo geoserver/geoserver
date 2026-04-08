@@ -1,6 +1,7 @@
 <dataStore>
   <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fd9</id>
   <name>states_shapefile</name>
+  <type>Shapefile</type>
   <enabled>true</enabled>
   <workspace>
     <id>WorkspaceInfoImpl--570ae188:124761b8d78:-7ffd</id>

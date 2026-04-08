@@ -357,8 +357,8 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat
     private boolean isShapefileCompatible(SimpleFeatureType schema) {
         GeometryType gt = null;
         for (AttributeDescriptor at : schema.getAttributeDescriptors()) {
-            if (at instanceof GeometryDescriptor) {
-                if (gt == null) gt = ((GeometryDescriptor) at).getType();
+            if (at instanceof GeometryDescriptor descriptor) {
+                if (gt == null) gt = descriptor.getType();
                 else
                     // more than one geometry
                     return false;

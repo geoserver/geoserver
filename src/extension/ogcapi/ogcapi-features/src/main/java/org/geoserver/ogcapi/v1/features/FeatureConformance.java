@@ -31,8 +31,8 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
             CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30");
 
     // optional output format from WFS
-    public static final APIConformance GML321 =
-            new APIConformance("http://schemas.opengis.net/gml/3.2.1/gml.xsd", STANDARD);
+    public static final APIConformance GML321 = // this is not a recognized conformance class though??
+            new APIConformance("http://schemas.opengis.net/gml/3.2.1/gml.xsd", STANDARD, "gml321");
 
     // not-implemented resource formats
     public static final APIConformance GMLSF0 =
@@ -41,16 +41,23 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
             CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2");
 
     // optional
-    public static final APIConformance CRS_BY_REFERENCE =
-            CORE.extend("http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs");
-    public static final APIConformance FEATURES_FILTER = CORE.extend(ConformanceClass.FEATURES_FILTER);
+    public static final APIConformance CRS_BY_REFERENCE = new APIConformance(
+            "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs",
+            STANDARD,
+            APIConformance.Type.EXTENSION,
+            CORE,
+            "crsByReference");
+    public static final APIConformance FEATURES_FILTER = new APIConformance(
+            ConformanceClass.FEATURES_FILTER, STANDARD, APIConformance.Type.EXTENSION, CORE, "featuresFilter");
     public static final APIConformance FILTER = CORE.extend(ConformanceClass.FILTER);
     public static final APIConformance QUERYABLES = CORE.extend(ConformanceClass.QUERYABLES);
 
     // draft
     public static final APIConformance IDS = new APIConformance(ConformanceClass.IDS, DRAFT_STANDARD);
     public static final APIConformance SEARCH = new APIConformance(ConformanceClass.SEARCH, DRAFT_STANDARD);
-    public static final APIConformance SORTBY = new APIConformance(ConformanceClass.SORTBY, DRAFT_STANDARD);
+    public static final APIConformance SORTBY = new APIConformance(ConformanceClass.SORTBY, DRAFT_STANDARD, "sortBy");
+    public static final APIConformance PROPERTY_SELECTION =
+            new APIConformance(ConformanceClass.PROPERTY_SELECTION, DRAFT_STANDARD, "propertySelection");
 
     private Boolean core = null;
     private Boolean gml321 = null;
@@ -63,9 +70,15 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     private Boolean queryables = null;
     private Boolean ids = null;
     private Boolean sortBy = null;
+    private Boolean propertySelection = null;
 
     /** Configuration for OGCAPI Features. */
     public FeatureConformance() {}
+
+    @Override
+    public String getId() {
+        return "feature";
+    }
 
     /**
      * Requires CORE to be enabled.
@@ -96,6 +109,22 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
         }
     }
 
+    @Override
+    public List<APIConformance> configurableConformances() {
+        List<APIConformance> conformance = new ArrayList<>();
+        conformance.add(CRS_BY_REFERENCE);
+        conformance.add(GML321);
+        conformance.add(FEATURES_FILTER);
+        conformance.add(FILTER);
+        conformance.add(QUERYABLES);
+        conformance.add(IDS);
+        conformance.add(SEARCH);
+        conformance.add(SORTBY);
+        conformance.add(PROPERTY_SELECTION);
+
+        return conformance;
+    }
+
     /**
      * Configuration for FeatureService CORE functionality and extensions.
      *
@@ -106,7 +135,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     public List<APIConformance> conformances(WFSInfo serviceInfo) {
         List<APIConformance> conformance = new ArrayList<>();
         if (isEnabled(serviceInfo)) {
-            // built-in rquired conformance classes
+            // built-in required conformance classes
             conformance.add(FeatureConformance.CORE);
             conformance.add(FeatureConformance.OAS30);
             conformance.add(FeatureConformance.HTML);
@@ -148,6 +177,9 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
             }
             if (sortBy(serviceInfo)) {
                 conformance.add(FeatureConformance.SORTBY);
+            }
+            if (propertySelection(serviceInfo)) {
+                conformance.add(FeatureConformance.PROPERTY_SELECTION);
             }
         }
         return conformance;
@@ -468,6 +500,34 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
         sortBy = enabled;
     }
 
+    /**
+     * PROPERTY_SELECTION conformance enabled by configuration.
+     *
+     * @return PROPERTY_SELECTION conformance enabled, or {@code null} for default.
+     */
+    public Boolean isPropertySelection() {
+        return propertySelection;
+    }
+
+    /**
+     * PROPERTY_SELECTION conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return <code>true</code> if PROPERTY_SELECTION conformance enabled
+     */
+    public boolean propertySelection(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo, propertySelection, PROPERTY_SELECTION);
+    }
+
+    /**
+     * PROPERTY_SELECTION conformance enablement.
+     *
+     * @param enabled PROPERTY_SELECTION conformance enabled, or {@code null} for default.
+     */
+    public void setPropertySelection(Boolean enabled) {
+        propertySelection = enabled;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("FeatureConformance");
@@ -482,6 +542,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
         sb.append(", queryables=").append(queryables);
         sb.append(", search=").append(search);
         sb.append(", sortBy=").append(sortBy);
+        sb.append(", propertySelection=").append(propertySelection);
         sb.append('}');
         return sb.toString();
     }

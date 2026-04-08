@@ -23,9 +23,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.util.List;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.WMTSLayerInfo;
@@ -38,6 +35,9 @@ import org.geoserver.test.http.MockHttpResponse;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -62,6 +62,8 @@ public class WMTSStoreTest extends CatalogRESTTestSupport {
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setWorkspace(catalog.getWorkspaceByName("sf"));
         WMTSStoreInfo wmts = cb.buildWMTSStore("demo");
+        wmts.setUsername("username");
+        wmts.setPassword("password");
         wmts.setCapabilitiesURL(capabilities);
         catalog.add(wmts);
         cb.setStore(wmts);
@@ -103,8 +105,8 @@ public class WMTSStoreTest extends CatalogRESTTestSupport {
         Object stores = ((JSONObject) json).getJSONObject("wmtsStores").get("wmtsStore");
         assertNotNull(stores);
 
-        if (stores instanceof JSONArray) {
-            assertEquals(catalog.getStoresByWorkspace("sf", WMTSStoreInfo.class).size(), ((JSONArray) stores).size());
+        if (stores instanceof JSONArray array) {
+            assertEquals(catalog.getStoresByWorkspace("sf", WMTSStoreInfo.class).size(), array.size());
         } else {
             assertEquals(
                     1, catalog.getStoresByWorkspace("sf", WMTSStoreInfo.class).size());
@@ -321,6 +323,27 @@ public class WMTSStoreTest extends CatalogRESTTestSupport {
         assertEquals(readTimeout, wsi.getReadTimeout());
         assertEquals(connectTimeout, wsi.getConnectTimeout());
         assertEquals(useConnectionPooling, wsi.isUseConnectionPooling());
+    }
+
+    @Test
+    public void testPutUnsetUserPasswordXML() throws Exception {
+        String xml =
+                """
+            <wmtsStore>
+              <name>demo</name>
+              <user xsi:nil="true"/>
+              <password xsi:nil="true"/>
+            </wmtsStore>\
+            """;
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        WMTSStoreInfo wsi = catalog.getStoreByName("sf", "demo", WMTSStoreInfo.class);
+
+        assertNull(wsi.getUsername());
+        assertNull(wsi.getPassword());
     }
 
     @Test

@@ -45,15 +45,15 @@ class PropertyComparator<T> implements Comparator<T> {
     private int compareAscending(T f1, T f2) {
         Object a1 = propertyName.evaluate(f1);
         Comparable o1, o2;
-        if (a1 instanceof Attribute) {
-            o1 = (Comparable) ((Attribute) a1).getValue();
+        if (a1 instanceof Attribute attribute) {
+            o1 = (Comparable) attribute.getValue();
         } else {
             o1 = a1 != null ? (Comparable) a1 : null;
         }
 
         Object a2 = propertyName.evaluate(f2);
-        if (a2 instanceof Attribute) {
-            o2 = (Comparable) ((Attribute) a2).getValue();
+        if (a2 instanceof Attribute attribute) {
+            o2 = (Comparable) attribute.getValue();
         } else {
             o2 = a2 != null ? (Comparable) a2 : null;
         }

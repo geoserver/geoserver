@@ -5,7 +5,10 @@
  */
 package org.geoserver.web.data.workspace;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -45,6 +48,7 @@ import org.geoserver.web.wicket.XMLNameValidator;
 /** Allows creation of a new workspace */
 public class WorkspaceNewPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -4355978268880701910L;
 
     TextField<String> nsUriTextField;
@@ -62,6 +66,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
         tabs.add(new AbstractTab(new Model<>("Basic Info")) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -77,6 +82,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         if (AccessDataRuleInfoManager.canAccess()) {
             tabs.add(new AbstractTab(new Model<>("Security")) {
 
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -96,12 +102,14 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
         tabbedPanel = new TabbedPanel<>("tabs", tabs) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
             protected WebMarkupContainer newLink(String linkId, final int index) {
                 return new SubmitLink(linkId) {
 
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -122,6 +130,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     private AjaxLink<Void> cancelLink() {
         return new AjaxLink<>("cancel") {
+            @Serial
             private static final long serialVersionUID = -1731475076965108576L;
 
             @Override
@@ -134,6 +143,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     private SubmitLink submitLink() {
         return new SubmitLink("submit") {
 
+            @Serial
             private static final long serialVersionUID = -3462848930497720229L;
 
             @Override
@@ -235,7 +245,22 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     class WsNewInfoPanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WorkspaceNewPage.WsNewInfoPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = 4286364808180616865L;
+
         boolean defaultWs;
 
         public WsNewInfoPanel(String id, IModel<WorkspaceInfo> model) {
@@ -245,6 +270,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
             nameTextField.add(new XMLNameValidator());
             nameTextField.add(new StringValidator() {
 
+                @Serial
                 private static final long serialVersionUID = -5475431734680134780L;
 
                 @Override

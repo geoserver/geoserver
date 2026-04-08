@@ -120,7 +120,7 @@ public interface LayerGroupInfo extends PublishedInfo {
     /** Set the layer group to be not queryable and hence can not be subject of a GetFeatureInfo request. */
     void setQueryDisabled(boolean queryDisabled);
 
-    /** Returns a workspace or <code>null</code> if global. */
+    /** Returns a workspace or {@code null} if global. */
     WorkspaceInfo getWorkspace();
 
     /** Get root layer. */

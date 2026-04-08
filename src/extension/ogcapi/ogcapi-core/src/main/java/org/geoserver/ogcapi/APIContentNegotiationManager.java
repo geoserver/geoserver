@@ -5,8 +5,8 @@
 
 package org.geoserver.ogcapi;
 
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML;
-import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE;
+import static org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_YAML;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.http.MediaType.TEXT_XML;
 
@@ -58,11 +58,10 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
         }
     }
 
-    private class OpenAPIContentNegotiationStrategy implements ContentNegotiationStrategy {
+    private static class OpenAPIContentNegotiationStrategy implements ContentNegotiationStrategy {
         @Override
         public List<MediaType> resolveMediaTypes(NativeWebRequest nativeWebRequest) {
-            if (nativeWebRequest instanceof ServletWebRequest) {
-                ServletWebRequest servletWebRequest = (ServletWebRequest) nativeWebRequest;
+            if (nativeWebRequest instanceof ServletWebRequest servletWebRequest) {
                 if (servletWebRequest.getRequest().getRequestURI().endsWith("/openapi.json")) {
                     return Arrays.asList(OPEN_API_MEDIA_TYPE);
                 } else if (servletWebRequest.getRequest().getRequestURI().endsWith("/openapi.yaml")) {

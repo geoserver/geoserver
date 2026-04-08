@@ -42,7 +42,7 @@ public interface FileService extends Serializable, Secured {
      *
      * @param filePath the path of the file, relative to this service
      * @param content the content of the file
-     * @return a location string that can be used to configure a Geoserver store
+     * @return a location string that can be used to configure a GeoServer store
      */
     void create(String filePath, InputStream content, boolean doPrepare) throws IOException;
 
@@ -51,7 +51,7 @@ public interface FileService extends Serializable, Secured {
      *
      * @param filePath the path of the file, relative to this service
      * @param content the content of the file
-     * @return a location string that can be used to configure a Geoserver store
+     * @return a location string that can be used to configure a GeoServer store
      */
     default void create(String filePath, InputStream content) throws IOException {
         create(filePath, content, false);

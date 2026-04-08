@@ -19,8 +19,6 @@ import org.geotools.api.util.ProgressListener;
  * Given a {@link DataStoreInfo} makes sure no write operations can be performed through it
  *
  * @author Andrea Aime - TOPP
- * @param <T>
- * @param <F>
  */
 @SuppressWarnings("serial")
 public class SecuredDataStoreInfo extends DecoratingDataStoreInfo {

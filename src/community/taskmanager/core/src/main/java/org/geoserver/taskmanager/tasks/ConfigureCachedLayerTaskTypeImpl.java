@@ -6,11 +6,11 @@ package org.geoserver.taskmanager.tasks;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.encoder.GSCachedLayerEncoder;
+import jakarta.annotation.PostConstruct;
 import java.beans.Introspector;
 import java.net.MalformedURLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -85,12 +85,11 @@ public class ConfigureCachedLayerTaskTypeImpl implements TaskType {
             tileLayer = null;
         }
 
-        if (tileLayer instanceof GeoServerTileLayer) {
-            final GeoServerTileLayerInfo info = ((GeoServerTileLayer) tileLayer).getInfo();
+        if (tileLayer instanceof GeoServerTileLayer serverTileLayer) {
+            final GeoServerTileLayerInfo info = serverTileLayer.getInfo();
             final GSCachedLayerEncoder cachedLayerEncoder = new GSCachedLayerEncoder();
             cachedLayerEncoder.setName(layerName);
             cachedLayerEncoder.setEnabled(info.isEnabled());
-            cachedLayerEncoder.setInMemoryCached(info.isInMemoryCached());
             cachedLayerEncoder.setMetaWidthHeight(info.getMetaTilingX(), info.getMetaTilingY());
             cachedLayerEncoder.setExpireCache(info.getExpireCache());
             cachedLayerEncoder.setExpireClients(info.getExpireClients());

@@ -7,6 +7,7 @@ package org.geoserver.web.wicket.browser;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,6 +20,7 @@ import org.apache.wicket.model.Model;
 
 public class FileProvider extends SortableDataProvider<File, String> {
 
+    @Serial
     private static final long serialVersionUID = 2387540012977156321L;
 
     public static final String NAME = "name";

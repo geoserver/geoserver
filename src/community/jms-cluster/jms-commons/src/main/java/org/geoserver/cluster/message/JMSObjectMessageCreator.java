@@ -5,15 +5,15 @@
  */
 package org.geoserver.cluster.message;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.springframework.jms.core.MessageCreator;
 

@@ -53,8 +53,8 @@ public class CoverageViewPamResourceInfo extends DefaultResourceInfo implements 
                 GridCoverage2DReader bandReader = readers.get(inputCoverageBand.getCoverageName());
                 ResourceInfo resourceInfoBand = bandReader.getInfo(inputCoverageBand.getCoverageName());
                 // reader is associated with a PAM
-                if (resourceInfoBand instanceof PAMResourceInfo) {
-                    PAMDataset bandPam = ((PAMResourceInfo) resourceInfoBand).getPAMDataset();
+                if (resourceInfoBand instanceof PAMResourceInfo resourceInfo) {
+                    PAMDataset bandPam = resourceInfo.getPAMDataset();
                     if (bandPam != null) {
                         List<PAMDataset.PAMRasterBand> pamRasterBands = bandPam.getPAMRasterBand();
                         // find the PAMRasterBand for the given band index and put in the output

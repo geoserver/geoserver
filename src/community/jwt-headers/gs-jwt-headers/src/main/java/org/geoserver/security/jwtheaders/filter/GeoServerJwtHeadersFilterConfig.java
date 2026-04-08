@@ -5,6 +5,7 @@
 
 package org.geoserver.security.jwtheaders.filter;
 
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
@@ -18,6 +19,7 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
 
     private static final Logger LOG = Logging.getLogger(GeoServerJwtHeadersFilterConfig.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     // generic required for saving config

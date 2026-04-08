@@ -34,6 +34,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.opensearch.eo.ListComplexFeatureCollection;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.DataSourceException;
 import org.geotools.api.data.DataStore;
@@ -99,6 +101,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     static final Set<String> SERVICE_NAMES = Set.of("wms", "maps", "wcs", "coverages", "wmts", "tiles");
 
     static final Logger LOGGER = Logging.getLogger(AbstractMappingStore.class);
+    private static final int MAX_MEMORY_FEATURES =
+            Integer.parseInt(Optional.ofNullable(GeoServerExtensions.getProperty("OSEO_MAX_MEMORY_FEATURES"))
+                    .orElse("1000"));
     private final FeatureType servicesType;
 
     /**
@@ -304,8 +309,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
     protected SimpleFeatureStore getDelegateCollectionStore() throws IOException {
         SimpleFeatureSource simpleFeatureSource = getDelegateSource();
-        if (simpleFeatureSource instanceof WorkspaceFeatureSource) {
-            simpleFeatureSource = ((WorkspaceFeatureSource) simpleFeatureSource).getDelegate();
+        if (simpleFeatureSource instanceof WorkspaceFeatureSource source) {
+            simpleFeatureSource = source.getDelegate();
         }
         SimpleFeatureStore fs = (SimpleFeatureStore) simpleFeatureSource;
         if (transaction != null) {
@@ -518,6 +523,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public FeatureCollection<FeatureType, Feature> getFeatures(Query query) throws IOException {
         // fast path for query with no paging or with no joins
         if (!needsJoins(query) || (query.getStartIndex() == null && query.getMaxFeatures() == Integer.MAX_VALUE)) {
@@ -554,7 +560,15 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         // the mapper state allows the simple to complex map funcion to retain state across
         // feature mappings (e.g. for caching)
         HashMap<String, Object> mapperState = new HashMap<>();
-        return new MappingFeatureCollection(schema, fc, it -> mapToComplexFeature(it, mapperState));
+        MappingFeatureCollection mc =
+                new MappingFeatureCollection(schema, fc, it -> mapToComplexFeature(it, mapperState));
+
+        // the collection is counted on, and potentially iterated multiple times, so cache it in memory if not too big
+        if (query.getMaxFeatures() < MAX_MEMORY_FEATURES) {
+            return new ListComplexFeatureCollection(mc.getSchema(), DataUtilities.list(mc));
+        } else {
+            return mc;
+        }
     }
 
     /** Maps the underlying features (eventually joined) to the output complex feature */
@@ -574,12 +588,12 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             Object layer = fi.getAttribute("layer");
 
             // handle joined layer if any
-            if (layer instanceof SimpleFeature) {
-                layers.add((SimpleFeature) layer);
+            if (layer instanceof SimpleFeature feature) {
+                layers.add(feature);
             }
 
-            if (link instanceof SimpleFeature) {
-                links.add((SimpleFeature) link);
+            if (link instanceof SimpleFeature feature) {
+                links.add(feature);
             }
 
             if (it.hasNext()) {
@@ -603,7 +617,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         }
 
         for (SimpleFeature link : links) {
-            SimpleFeature linkFeature = SimpleFeatureBuilder.retype((SimpleFeature) link, linkFeatureType);
+            SimpleFeature linkFeature = SimpleFeatureBuilder.retype(link, linkFeatureType);
             builder.append(OGC_LINKS_PROPERTY_NAME, linkFeature);
         }
 
@@ -917,8 +931,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             String attributeName = at.getLocalName();
             Object attributeValue = f.getAttribute(attributeName);
             if (("bands".equals(attributeName) || "browseBands".equals(attributeName))
-                    && attributeValue instanceof String[]) {
-                final String[] array = (String[]) attributeValue;
+                    && attributeValue instanceof String[] array) {
                 attributeValue = Arrays.stream(array).collect(Collectors.joining(","));
             }
             if (!isSynthentic(at)) {
@@ -985,10 +998,11 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
     public List<String> getMainTypeDatabaseIdentifiers(Filter filter) throws IOException {
         SimpleFeatureSource fs = getDelegateSource();
+        @SuppressWarnings("PMD.CloseResource")
         Transaction t = getTransaction();
         if (t != Transaction.AUTO_COMMIT && t != null) {
-            if (fs instanceof WorkspaceFeatureSource) {
-                fs = ((WorkspaceFeatureSource) fs).getDelegate();
+            if (fs instanceof WorkspaceFeatureSource source) {
+                fs = source.getDelegate();
             }
             ((SimpleFeatureStore) fs).setTransaction(transaction);
         }

@@ -25,7 +25,7 @@ import org.geotools.util.logging.Logging;
  */
 public class ProcessStartupFilter implements ProcessFilter, ExtensionPriority {
 
-    public class ProcessStartupWrapper implements Process {
+    public static class ProcessStartupWrapper implements Process {
 
         Process delegate;
 
@@ -57,7 +57,7 @@ public class ProcessStartupFilter implements ProcessFilter, ExtensionPriority {
         return new ProcessStartupFactory(pf);
     }
 
-    class ProcessStartupFactory extends DelegatingProcessFactory {
+    static class ProcessStartupFactory extends DelegatingProcessFactory {
 
         public ProcessStartupFactory(ProcessFactory delegate) {
             super(delegate);

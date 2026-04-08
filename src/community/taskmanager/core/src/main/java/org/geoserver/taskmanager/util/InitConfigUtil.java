@@ -58,8 +58,8 @@ public class InitConfigUtil {
     }
 
     public static Configuration unwrap(Configuration config) {
-        if (config instanceof ConfigurationWrapper) {
-            return ((ConfigurationWrapper) config).getDelegate();
+        if (config instanceof ConfigurationWrapper wrapper) {
+            return wrapper.getDelegate();
         } else {
             return config;
         }

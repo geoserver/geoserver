@@ -93,7 +93,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("rasterStoreForm:save");
 
         tester.assertRenderedPage(CoverageStoreEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Data Source Name' is required."});
+        tester.assertErrorMessages("Field 'Data Source Name' is required.");
     }
 
     /**

@@ -12,6 +12,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeMessage;
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,9 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.metadata.IIOMetadataNode;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeMessage;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -80,7 +80,6 @@ import org.xml.sax.SAXParseException;
  *
  * @author Andrea Aime, GeoSolutions
  */
-@SuppressWarnings("serial")
 public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static XpathEngine xpath;
 
@@ -448,7 +447,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 (GeneralBounds) expected.getEnvelope(), scaleA, (GeneralBounds) actual.getEnvelope(), scaleB);
     }
 
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // equality with tolerance
     protected static void assertEnvelopeEquals(
             GeneralBounds expected, double scaleExpected, GeneralBounds actual, double scaleActual) {
         final double tolerance;
@@ -473,8 +471,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
      *     not affine.
      */
     protected static AffineTransform getAffineTransform(final Coverage coverage) {
-        if (coverage instanceof GridCoverage) {
-            final GridGeometry geometry = ((GridCoverage) coverage).getGridGeometry();
+        if (coverage instanceof GridCoverage gridCoverage) {
+            final GridGeometry geometry = gridCoverage.getGridGeometry();
             if (geometry != null) {
                 final MathTransform gridToCRS;
                 if (geometry instanceof GridGeometry2D) {
@@ -482,8 +480,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 } else {
                     gridToCRS = geometry.getGridToCRS();
                 }
-                if (gridToCRS instanceof AffineTransform) {
-                    return (AffineTransform) gridToCRS;
+                if (gridToCRS instanceof AffineTransform transform) {
+                    return transform;
                 }
             }
         }

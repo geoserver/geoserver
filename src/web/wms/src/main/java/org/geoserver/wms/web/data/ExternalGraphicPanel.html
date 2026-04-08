@@ -1,30 +1,57 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-  <div wicket:id="externalGraphicContainer">
-    <ul wicket:id="list">
-      <li>
-        <label for="onlineResource"><wicket:message key="onlineResource">URL:</wicket:message></label>
-      </li>
-      <li>
-        <input wicket:id="onlineResource" type="text" class="text"></input>
-        <a href="#" wicket:id="chooseImage"><wicket:message key="chooseImage">Choose ...</wicket:message></a>
-        <br>
-        <a href="#" wicket:id="autoFill"><wicket:message key="autoFill">Auto-detect image size and type</wicket:message></a>
-      </li>
-      <li><label for="width"><wicket:message key="width">Width</wicket:message></label></li>
-      <li><input wicket:id="width" type="text" class="text"></input></li>
-      <li><label for="height"><wicket:message key="height">Height</wicket:message></label></li>
-      <li><input wicket:id="height" type="text" class="text"></input></li>
-      <li><label for="format"><wicket:message key="format">format</wicket:message></label></li>
-      <li><input wicket:id="format" type="text" class="text"></input></li>      
-    </ul>
-    <form wicket:id="showhide" id="showhideForm">
-        <button wicket:id="show"><wicket:message key="show">Show</wicket:message></button>
-        <button wicket:id="hide"><wicket:message key="hide">Hide</wicket:message></button>
-    </form>
-  </div>  
-</wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ExternalGraphicPanel">
+        <div wicket:id="externalGraphicContainer">
+          <div wicket:id="list">
+            <div class="gs-form">
+              <div class="gs-form-group">
+                <label for="onlineResource">
+                  <wicket:message key="onlineResource">URL:</wicket:message>
+                </label>
+                <div class="gs-input-group">
+                  <input wicket:id="onlineResource" type="text"/>
+                  <a class="button" href="#" wicket:id="chooseImage">
+                    <wicket:message key="chooseImage">Choose ...</wicket:message>
+                  </a>
+                  <br/>
+                  <a class="button" href="#" wicket:id="autoFill">
+                    <wicket:message key="autoFill">Auto-detect image size and type</wicket:message>
+                  </a>
+                </div>
+              </div>
+              <div class="gs-form-group">
+                <label for="width">
+                  <wicket:message key="width">Width</wicket:message>
+                </label>
+                <input wicket:id="width" type="text"/>
+              </div>
+              <div class="gs-form-group">
+                <label for="height">
+                  <wicket:message key="height">Height</wicket:message>
+                </label>
+                <input wicket:id="height" type="text"/>
+              </div>
+              <div class="gs-form-group">
+                <label for="format">
+                  <wicket:message key="format">format</wicket:message>
+                </label>
+                <input wicket:id="format" type="text"/>
+              </div>
+            </div>
+          </div>
+          <form wicket:id="showhide" id="showhideForm">
+            <button wicket:id="show">
+              <wicket:message key="show">Show</wicket:message>
+            </button>
+            <button wicket:id="hide">
+              <wicket:message key="hide">Hide</wicket:message>
+            </button>
+          </form>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -34,7 +34,7 @@ public abstract class XMLXpath {
      * @author christian
      */
     @SuppressWarnings("unchecked") // Java 8 and Java 11 interfaces differ
-    public class NamespaceContextImpl implements NamespaceContext {
+    public static class NamespaceContextImpl implements NamespaceContext {
         private Map<String, String> prefix_ns_Map = new HashMap<>();
         private Map<String, String> ns_prefix_Map = new HashMap<>();
 

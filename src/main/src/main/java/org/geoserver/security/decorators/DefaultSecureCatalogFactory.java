@@ -83,7 +83,7 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     private void logDoubleWrap(Object unwrapped, Object orig) {
-        String msg = String.format("Tried to double secure: %s already securing %s", orig, unwrapped);
+        String msg = "Tried to double secure: %s already securing %s".formatted(orig, unwrapped);
         LOGGER.warning(msg);
     }
 

@@ -4,8 +4,8 @@
  */
 package org.geoserver.featurestemplating.builders.visitors;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Strategy used by {@link PropertySelectionVisitor} and by a

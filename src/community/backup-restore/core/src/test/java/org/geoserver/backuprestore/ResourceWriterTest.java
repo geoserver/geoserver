@@ -30,7 +30,6 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.junit.Before;
 import org.junit.Test;
 
 /** @author Alessio Fabiani, GeoSolutions */
@@ -39,7 +38,6 @@ public class ResourceWriterTest extends BackupRestoreTestSupport {
     protected static Backup backupFacade;
 
     @Override
-    @Before
     public void beforeTest() throws InterruptedException {
         backupFacade = (Backup) applicationContext.getBean("backupFacade");
         ensureCleanedQueues();

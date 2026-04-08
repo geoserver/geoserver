@@ -94,8 +94,7 @@ public class QueryablesTest extends FeaturesTestSupport {
         MockHttpServletResponse response =
                 getAsMockHttpServletResponse(roadSegmentQueryables() + "?f=application/schema%2Bjson", 200);
 
-        // check the response can be read as a valid JSON schema (will fail with an exception if
-        // not)
+        // check the response can be read as a valid JSON schema (will fail with an exception if not)
         JsonValue schemaJSON = new JsonParser(response.getContentAsString()).parse();
         new SchemaLoader(schemaJSON).load();
     }

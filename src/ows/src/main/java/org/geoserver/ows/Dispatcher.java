@@ -8,11 +8,12 @@ package org.geoserver.ows;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,8 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,9 +46,10 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpMap;
@@ -88,14 +88,14 @@ import org.xml.sax.SAXException;
  *   <li>The version of the service ( optional )
  * </ol>
  *
- * <p>Additional, an OWS request can contain an arbitray number of additional parameters.
+ * <p>Additionally, an OWS request can contain an arbitrary number of additional parameters.
  *
  * <p>An OWS request can be specified in two forms. The first form is known as "KVP" in which all the parameters come in
  * the form of a set of key-value pairs. Commonly this type of request is made in an http "GET" request, the parameters
  * being specified in the query string:
  *
  * <pre>
- * <code>http://www.xyz.com/geoserver?service=someService&amp;request=someRequest&amp;version=X.Y.Z&amp;param1=...&amp;param2=...</code>
+ * {@code http://www.xyz.com/geoserver?service=someService&request=someRequest&version=X.Y.Z&param1=...&param2=...}
  * </pre>
  *
  * <p>This type of request can also be made in a "POST" request in with a mime-type of
@@ -104,17 +104,17 @@ import org.xml.sax.SAXException;
  * <p>The second form is known as "XML" in which all the parameters come in the form of an xml document. This type of
  * request is made in an http "POST" request.
  *
- * <pre><code>
- *  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
- *  &lt;SomeRequest service="someService" version="X.Y.Z"&gt;
- *    &lt;Param1&gt;...&lt;/Param1&gt;
- *    &lt;Param2&gt;...&lt;/Param2&gt;
- *    ...
- *  &lt;/SomeRequest&gt;
- * </code></pre>
+ * <pre>{@code
+ * <?xml version="1.0" encoding="UTF-8"?>
+ * <SomeRequest service="someService" version="X.Y.Z">
+ *   <Param1>...</Param1>
+ *   <Param2>...</Param2>
+ *   ...
+ * </SomeRequest>
+ * }</pre>
  *
  * <p>When a request is received, the <b>service</b> the <b>version</b> parameters are used to locate a service
- * desciptor, an instance of {@link Service} . With the service descriptor, the <b>request</b> parameter is used to
+ * descriptor, an instance of {@link Service} . With the service descriptor, the <b>request</b> parameter is used to
  * locate the operation of the service to call.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
@@ -130,7 +130,7 @@ public class Dispatcher extends AbstractController {
     /** Logging instance */
     static Logger logger = Logging.getLogger("org.geoserver.ows");
 
-    /** flag to control wether the dispatcher is cite compliant */
+    /** flag to control whether the dispatcher is cite compliant */
     boolean citeCompliant = false;
 
     /** thread local variable for the request */
@@ -171,13 +171,13 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
-     * Sets the flag to control wether the dispatcher is cite compliante.
+     * Sets the flag to control whether the dispatcher is cite compliant.
      *
-     * <p>If set to <code>true</code>, the dispatcher with throw exceptions when it encounters something that is not
-     * 100% compliant with CITE standards. An example would be a request which specifies the servce in the context path:
+     * <p>If set to {@code true}, the dispatcher with throw exceptions when it encounters something that is not 100%
+     * compliant with CITE standards. An example would be a request which specifies the service in the context path:
      * '.../geoserver/wfs?request=...' and not with the kvp '&amp;service=wfs'.
      *
-     * @param citeCompliant <code>true</code> to set compliance, <code>false</code> to unset it.
+     * @param citeCompliant {@code true} to set compliance, {@code false} to unset it.
      */
     public void setCiteCompliant(boolean citeCompliant) {
         this.citeCompliant = citeCompliant;
@@ -196,7 +196,7 @@ public class Dispatcher extends AbstractController {
         String lookahead = GeoServerExtensions.getProperty("XML_LOOKAHEAD", context);
         if (lookahead != null) {
             try {
-                int lookaheadValue = Integer.valueOf(lookahead);
+                int lookaheadValue = Integer.parseInt(lookahead);
                 if (lookaheadValue <= 0)
                     logger.log(
                             Level.SEVERE, "Invalid XML_LOOKAHEAD value, " + "will use " + XML_LOOKAHEAD + " instead");
@@ -318,8 +318,17 @@ public class Dispatcher extends AbstractController {
         // figure out method
         request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()) || isForm(reqContentType));
 
-        // create the kvp map
-        parseKVP(request);
+        // parse workspace context first so version negotiation can use it
+        initRequestContext(request);
+
+        // so DisabledServiceCheck can read workspace context for version filtering
+        REQUEST.set(request);
+        try {
+            // create the kvp map
+            parseKVP(request);
+        } finally {
+            REQUEST.remove();
+        }
 
         if (!request.isGet()) { // && httpRequest.getInputStream().available() > 0) {
             // check for a SOAP request, if so we need to unwrap the SOAP stuff
@@ -327,14 +336,17 @@ public class Dispatcher extends AbstractController {
                     && httpRequest.getContentType().startsWith(SOAP_MIME)) {
                 request.setSOAP(true);
                 request.setInput(soapReader(httpRequest, request));
-            } else if (reqContentType != null && ServletFileUpload.isMultipartContent(httpRequest)) {
+            } else if (reqContentType != null && JakartaServletFileUpload.isMultipartContent(httpRequest)) {
                 // multipart form upload
-                ServletFileUpload up = new ServletFileUpload(new DiskFileItemFactory());
+                final DiskFileItemFactory factory =
+                        DiskFileItemFactory.builder().get();
+                final JakartaServletFileUpload<DiskFileItem, DiskFileItemFactory> up =
+                        new JakartaServletFileUpload<>(factory);
 
                 // treat regular form fields as additional kvp parameters
                 Map<String, FileItem> kvpFileItems = new CaseInsensitiveMap<>(new LinkedHashMap<>());
                 try {
-                    List<FileItem> items = up.parseRequest(httpRequest);
+                    final List<DiskFileItem> items = up.parseRequest(httpRequest);
                     FileItemCleanupCallback.setFileItems(items);
                     FileItem body = null;
                     for (FileItem item : items) {
@@ -365,10 +377,12 @@ public class Dispatcher extends AbstractController {
                 }
 
                 Map<String, Object> kvpItems = new LinkedHashMap<>();
-                kvpFileItems.forEach((key, value) -> {
+                for (Map.Entry<String, FileItem> entry : kvpFileItems.entrySet()) {
+                    String key = entry.getKey();
+                    FileItem value = entry.getValue();
                     kvpItems.put(key, value.getString());
                     value.delete(); // the temp file can be deleted at this point
-                });
+                }
 
                 request.setOrAppendKvp(parseKVP(request, kvpItems));
             } else {
@@ -383,7 +397,6 @@ public class Dispatcher extends AbstractController {
                 request.getInput().reset();
             }
         }
-        initRequestContext(request);
 
         return fireInitCallback(request);
     }
@@ -421,15 +434,18 @@ public class Dispatcher extends AbstractController {
         String version = KvpUtils.getSingleValue(kvp, "version");
         String wmtver = KvpUtils.getSingleValue(kvp, "wmtver");
         if (service != null && "GetCapabilities".equalsIgnoreCase(request)) {
-            List<String> supportedVersions = RequestUtils.getSupportedVersions(service);
-
             if (version != null) {
-                // pre-OWS negotiation if version if available
-                version = RequestUtils.getVersionPreOws(supportedVersions, List.of(version));
+                // pre-OWS negotiation if version is available - use ALL versions, not filtered
+                List<String> allVersions = RequestUtils.getSupportedVersions(service);
+                version = RequestUtils.getVersionPreOws(allVersions, List.of(version));
             } else if (wmtver != null && "WMS".equalsIgnoreCase(service)) {
-                // this case is specific to WMS for backwards compatibility
-                version = RequestUtils.getVersionPreOws(supportedVersions, List.of(wmtver));
+                // this case is specific to WMS for backwards compatibility - use ALL versions
+                List<String> allVersions = RequestUtils.getSupportedVersions(service);
+                version = RequestUtils.getVersionPreOws(allVersions, List.of(wmtver));
             } else {
+                // filter to enabled versions only
+                List<String> supportedVersions = getEnabledVersions(service);
+
                 // OWS negotiation, using acceptVersions
                 String acceptVersionsList = Optional.ofNullable(kvp)
                         .map(map -> map.get(ACCEPT_VERSIONS))
@@ -441,6 +457,18 @@ public class Dispatcher extends AbstractController {
                     req.setAcceptVersions(acceptVersions);
                     version = RequestUtils.getVersionOWS(supportedVersions, acceptVersions, citeCompliant);
                     if (version == null) versionNegotiationFailed();
+                } else if (supportedVersions != null && !supportedVersions.isEmpty()) {
+                    // No version or acceptVersions specified, default to highest enabled version
+                    version = supportedVersions.get(0);
+                } else {
+                    // if no enabled versions found (shouldn't normally happen),
+                    // use highest supported version to prevent returning null
+                    logger.warning("No enabled versions found for service " + service
+                            + ", falling back to highest supported version");
+                    List<String> allVersions = RequestUtils.getSupportedVersions(service);
+                    if (allVersions != null && !allVersions.isEmpty()) {
+                        version = allVersions.get(allVersions.size() - 1);
+                    }
                 }
             }
 
@@ -563,8 +591,8 @@ public class Dispatcher extends AbstractController {
         Element payload = null;
         for (int i = 0; payload == null && i < body.getChildNodes().getLength(); i++) {
             Node n = body.getChildNodes().item(i);
-            if (n instanceof Element) {
-                payload = (Element) n;
+            if (n instanceof Element element) {
+                payload = element;
             }
         }
 
@@ -656,6 +684,9 @@ public class Dispatcher extends AbstractController {
 
             if (service == null) {
                 service = normalize((String) map.get("service"));
+                if (service != null) {
+                    service = service.toUpperCase();
+                }
 
                 if ((service != null) && !citeCompliant) {
                     req.setService(service);
@@ -715,11 +746,11 @@ public class Dispatcher extends AbstractController {
         }
 
         if (v.getMinor() == null) {
-            return String.format("%d.0.0", ((Number) v.getMajor()).intValue());
+            return "%d.0.0".formatted(((Number) v.getMajor()).intValue());
         }
 
         if (v.getRevision() == null) {
-            return String.format("%d.%d.0", ((Number) v.getMajor()).intValue(), ((Number) v.getMinor()).intValue());
+            return "%d.%d.0".formatted(((Number) v.getMajor()).intValue(), ((Number) v.getMinor()).intValue());
         }
 
         // version ok
@@ -749,7 +780,7 @@ public class Dispatcher extends AbstractController {
             throw new ServiceException(msg, "OperationNotSupported", req.getRequest());
         }
 
-        // step 4: setup the paramters
+        // step 4: setup the parameters
         Object[] parameters = new Object[operation.getParameterTypes().length];
 
         for (int i = 0; i < parameters.length; i++) {
@@ -819,7 +850,7 @@ public class Dispatcher extends AbstractController {
                 // GEOS-934  and GEOS-1288
                 Method setBaseUrl = OwsUtils.setter(requestBean.getClass(), "baseUrl", String.class);
                 if (setBaseUrl != null) {
-                    setBaseUrl.invoke(requestBean, new String[] {ResponseUtils.baseURL(req.getHttpRequest())});
+                    setBaseUrl.invoke(requestBean, ResponseUtils.baseURL(req.getHttpRequest()));
                 }
 
                 // another couple of thos of those lovley cite things, version+service has to
@@ -828,7 +859,7 @@ public class Dispatcher extends AbstractController {
                 // objects to try and find one
                 // TODO: should make this configurable
                 if (requestBean != null) {
-                    // if we dont have a version thus far, check the request object
+                    // if we don't have a version thus far, check the request object
                     if (req.getService() == null) {
                         req.setService(lookupRequestBeanProperty(requestBean, "service", false));
                     }
@@ -848,7 +879,7 @@ public class Dispatcher extends AbstractController {
 
         // if we are in cite compliant mode, do some additional checks to make
         // sure the "mandatory" parameters are specified, even though we
-        // succesfully dispatched the request.
+        // successfully dispatched the request.
         if (citeCompliant) {
             // the version is mandatory for all requests but GetCapabilities
             if (!"GetCapabilities".equalsIgnoreCase(req.getRequest())) {
@@ -912,11 +943,9 @@ public class Dispatcher extends AbstractController {
     }
 
     String lookupRequestBeanProperty(Object requestBean, String property, boolean allowDefaultValues) {
-        if (requestBean instanceof EObject && EMFUtils.has((EObject) requestBean, property)) {
+        if (requestBean instanceof EObject eObject && EMFUtils.has(eObject, property)) {
             // special case hack for eObject, we should move
-            // this out into an extension ppint
-            EObject eObject = (EObject) requestBean;
-
+            // this out into an extension point
             if (allowDefaultValues || EMFUtils.isSet(eObject, property)) {
                 return normalize((String) EMFUtils.get(eObject, property));
             }
@@ -941,12 +970,12 @@ public class Dispatcher extends AbstractController {
         Object result = null;
 
         try {
-            if (serviceBean instanceof DirectInvocationService) {
+            if (serviceBean instanceof DirectInvocationService service) {
                 // invokeDirect expects the operation to be called as declared in the operation
                 // descriptor, although it used to match a method name, lets use the declared
                 // operation name for contract compliance.
                 String operationName = opDescriptor.getId();
-                result = ((DirectInvocationService) serviceBean).invokeDirect(operationName, parameters);
+                result = service.invokeDirect(operationName, parameters);
             } else {
                 Method operation = opDescriptor.getMethod();
                 result = operation.invoke(serviceBean, parameters);
@@ -995,7 +1024,7 @@ public class Dispatcher extends AbstractController {
                         && (!outputFormats.isEmpty())
                         && !outputFormats.contains(req.getOutputFormat())) {
 
-                    // must do a case insensitive check
+                    // must do a case-insensitive check
                     for (Object format : outputFormats) {
                         String outputFormat = (String) format;
                         if (req.getOutputFormat().equalsIgnoreCase(outputFormat)) {
@@ -1091,8 +1120,8 @@ public class Dispatcher extends AbstractController {
                 }
 
                 // special check for transformer
-                if (req.isSOAP() && result instanceof TransformerBase) {
-                    ((TransformerBase) result).setOmitXMLDeclaration(true);
+                if (req.isSOAP() && result instanceof TransformerBase base) {
+                    base.setOmitXMLDeclaration(true);
                 }
 
                 // actually write out the response
@@ -1178,8 +1207,8 @@ public class Dispatcher extends AbstractController {
     void startSOAPEnvelope(OutputStream output, Request request, Response response) throws IOException {
         output.write(("<soap:Envelope xmlns:soap='" + request.getSOAPNamespace() + "'><soap:Header/>").getBytes());
         output.write("<soap:Body".getBytes());
-        if (response != null && response instanceof SOAPAwareResponse) {
-            String type = ((SOAPAwareResponse) response).getBodyType();
+        if (response != null && response instanceof SOAPAwareResponse awareResponse) {
+            String type = awareResponse.getBodyType();
             if (type != null) {
                 output.write((" type='" + type + "'").getBytes());
             }
@@ -1268,7 +1297,7 @@ public class Dispatcher extends AbstractController {
 
             // multiple services found, sort by version
             if (vmatches.size() > 1) {
-                // use highest version
+                // use the highest version
                 Comparator<Service> comparator = (s1, s2) -> s1.getVersion().compareTo(s2.getVersion());
 
                 Collections.sort(vmatches, comparator);
@@ -1376,7 +1405,7 @@ public class Dispatcher extends AbstractController {
         if (matches.isEmpty()) {
             // do a more lax serach, search only on the element name if the
             // namespace was unspecified
-            if (namespace == null || namespace.equals("")) {
+            if (namespace == null || namespace.isEmpty()) {
                 String msg = "No namespace specified in request, searching for " + " xml reader by element name only";
                 logger.info(msg);
 
@@ -1457,7 +1486,7 @@ public class Dispatcher extends AbstractController {
 
             // multiple readers found, sort by version and by service match
             if (vmatches.size() > 1) {
-                // use highest version
+                // use the highest version
                 Comparator<XmlRequestReader> comparator = (r1, r2) -> {
                     Version v1 = r1.getVersion();
                     Version v2 = r2.getVersion();
@@ -1647,30 +1676,28 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
-     * To be called once determined the incoming request is an HTTP POST request
-     * with a request body, and the request's {@link Request#getInput() input
-     * reader} has been set; in order to pre-parse the XML request body root element
-     * and establish the following request properties:
+     * To be called once determined the incoming request is an HTTP POST request with a request body, and the request's
+     * {@link Request#getInput() input reader} has been set; in order to pre-parse the XML request body root element and
+     * establish the following request properties:
+     *
      * <p>
+     *
      * <ul>
-     * <li>{@link Request#setNamespace namespace}: The xml root element's namespace,
-     * or {@code ""} (empty string) if {@code null}
-     * <li>{@link Request#setPostRequestElementName PostRequestElementName}: The xml
-     * root element name (e.g. {@code GetMap}, {@code GetFeature},
-     * {@code StyledLayerDescriptor}, etc.)
-     * <li>{@link Request#setRequest: The xml root element name, assuming it matches
-     * the request name, might be overriten later while parting the request's query
-     * string key-value pairs
-     * <li>{@link Request#setService service}: matching the xml root element's
-     * {@code service} attribute, or {@code null}
-     * <li>{@link Request#setVersion version}: matching the xml root element's
-     * {@code version} attribute, or {@code null}
-     * <li>{@link Request#setOutputFormat outputFormat}: matching the xml root
-     * element's {@code outputFormat} attribute, or {@code null}
+     *   <li>{@link Request#setNamespace namespace}: The xml root element's namespace, or {@code ""} (empty string) if
+     *       {@code null}
+     *   <li>{@link Request#setPostRequestElementName PostRequestElementName}: The xml root element name (e.g.
+     *       {@code GetMap}, {@code GetFeature}, {@code StyledLayerDescriptor}, etc.)
+     *   <li>{@link Request#setRequest}: The xml root element name, assuming it matches the request name, might be
+     *       overridden later while parting the request's query string key-value pairs
+     *   <li>{@link Request#setService service}: matching the xml root element's {@code service} attribute, or
+     *       {@code null}
+     *   <li>{@link Request#setVersion version}: matching the xml root element's {@code version} attribute, or
+     *       {@code null}
+     *   <li>{@link Request#setOutputFormat outputFormat}: matching the xml root element's {@code outputFormat}
+     *       attribute, or {@code null}
      * </ul>
      *
-     * @param req The request to set properties to based on the xml request body's
-     *            root element
+     * @param req The request to set properties to based on the xml request body's root element
      * @param citeCompliant Whether to perform version negotiation for OWS requests
      * @return a {@link Map} containing the parsed parameters.
      * @throws Exception if there was an error reading the input.
@@ -1683,7 +1710,11 @@ public class Dispatcher extends AbstractController {
         String version;
         String outputFormat;
         List<String> acceptVersions = new ArrayList<>();
-
+        // We parse the root element to determine the metadata, then rewind the input stream and start parsing again.
+        // See GEOS-10509 .  req.getInput must be a BufferedReader, so we wrap it.
+        @SuppressWarnings("PMD.CloseResource")
+        RewindableReader rewindableReader = new RewindableReader(req.getInput());
+        req.setInput(new BufferedReader(rewindableReader));
         XMLStreamReader parser = createParserForRootElement(req);
         try {
             // position at root element
@@ -1730,6 +1761,11 @@ public class Dispatcher extends AbstractController {
             parser.close();
         }
 
+        // Done getting metadata from the root element.  Rewind and do a real parse.  We need a fresh
+        // BufferedReader as we can't fully reset it.
+        rewindableReader.rewind();
+        req.setInput(new BufferedReader(rewindableReader));
+
         req.setNamespace(normalize(namespace));
         req.setPostRequestElementName(normalize(elementName));
         // These may already be given by the request query string KVP's, override only if non-null
@@ -1752,7 +1788,7 @@ public class Dispatcher extends AbstractController {
             List<String> supportedVersions = null;
             if (service != null) {
                 req.setService(normalize(service));
-                supportedVersions = RequestUtils.getSupportedVersions(service);
+                supportedVersions = getEnabledVersions(service);
             }
             version = RequestUtils.getVersionOWS(supportedVersions, acceptVersions, citeCompliant);
             if (version == null) versionNegotiationFailed();
@@ -1771,24 +1807,13 @@ public class Dispatcher extends AbstractController {
 
     private static XMLStreamReader createParserForRootElement(Request req)
             throws IOException, FactoryConfigurationError, XMLStreamException {
-        char[] buff = new char[XML_LOOKAHEAD];
-        {
-            // Read into buff and use that for the XML stream reader, using req.getInput() directly
-            // can mess up the BufferedReader's state depending on the implementation
-            @SuppressWarnings("PMD.CloseResource")
-            BufferedReader input = req.getInput();
-            input.mark(XML_LOOKAHEAD);
-            input.read(buff);
-            input.reset();
-        }
         // create stream parser
         XMLInputFactory factory = XMLInputFactory.newFactory();
         // disable DTDs
         factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         // disable external entities
         factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-        XMLStreamReader parser = factory.createXMLStreamReader(new CharArrayReader(buff));
-        return parser;
+        return factory.createXMLStreamReader(req.getInput());
     }
 
     void exception(Throwable t, Service service, Request request) {
@@ -1797,8 +1822,8 @@ public class Dispatcher extends AbstractController {
                 && !(current instanceof ClientStreamAbortedException)
                 && !isSecurityException(current)
                 && !(current instanceof HttpErrorCodeException)) {
-            if (current instanceof SAXException) {
-                current = ((SAXException) current).getException();
+            if (current instanceof SAXException exception) {
+                current = exception.getException();
             } else {
                 current = current.getCause();
             }
@@ -1811,8 +1836,7 @@ public class Dispatcher extends AbstractController {
             throw (RuntimeException) current;
         }
 
-        if (current instanceof HttpErrorCodeException) {
-            HttpErrorCodeException ece = (HttpErrorCodeException) current;
+        if (current instanceof HttpErrorCodeException ece) {
             int errorCode = ece.getErrorCode();
             if (errorCode < 199 || errorCode > 299) {
                 logger.log(Level.FINE, "", t);
@@ -1857,8 +1881,8 @@ public class Dispatcher extends AbstractController {
             // unwind the exception stack until we find one we know about
             Throwable cause = t;
             while (cause != null) {
-                if (cause instanceof ServiceException) {
-                    errorCode = ((ServiceException) cause).getCode();
+                if (cause instanceof ServiceException exception) {
+                    errorCode = exception.getCode();
                     break;
                 }
                 cause = cause.getCause();
@@ -1953,5 +1977,39 @@ public class Dispatcher extends AbstractController {
      */
     public static boolean isSecurityException(Throwable t) {
         return t != null && t.getClass().getPackage().getName().startsWith("org.springframework.security");
+    }
+
+    /**
+     * Gets supported versions for a service, filtering out any disabled versions using registered ServiceVersionFilter
+     * extensions.
+     *
+     * @param serviceId The service identifier (e.g., "WMS", "WFS")
+     * @return List of enabled versions for the service
+     */
+    private static List<String> getEnabledVersions(String serviceId) {
+        List<String> versions = RequestUtils.getSupportedVersions(serviceId);
+        logger.info("Dispatcher.getEnabledVersions for " + serviceId + ", all versions: " + versions);
+
+        Collection<ServiceVersionFilter> filters = GeoServerExtensions.extensions(ServiceVersionFilter.class);
+        logger.info("Found " + filters.size() + " ServiceVersionFilter(s)");
+        if (!filters.isEmpty()) {
+            Collection<Service> services = GeoServerExtensions.extensions(Service.class);
+            Service service = services.stream()
+                    .filter(s -> s.getId().equalsIgnoreCase(serviceId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (service != null) {
+                for (ServiceVersionFilter filter : filters) {
+                    versions = filter.filterVersions(service, versions);
+                }
+            }
+        }
+
+        if (versions != null) {
+            versions.sort(Comparator.comparing(Version::new, Comparator.reverseOrder()));
+        }
+
+        return versions;
     }
 }

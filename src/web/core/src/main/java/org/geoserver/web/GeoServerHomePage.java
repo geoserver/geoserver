@@ -8,6 +8,7 @@ package org.geoserver.web;
 import static org.geoserver.catalog.Predicates.acceptAll;
 
 import com.google.common.base.Stopwatch;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -53,6 +55,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.InternationalStringUtils;
 import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.data.layer.NewLayerPage;
@@ -85,6 +88,22 @@ import org.geotools.feature.NameImpl;
  * @author Andrea Aime - TOPP
  */
 public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnlockablePage {
+
+    /**
+     * When {@code true}, show the legacy workspace/layer chooser on the home page and hide the navigation panels.
+     *
+     * <p>Defaults to {@code false} (navigation tree + breadcrumb UI).
+     */
+    public static final String LEGACY_HOMEPAGE_SELECTOR = "GeoServerHomePage.legacyHomepageSelector";
+
+    static boolean isLegacyHomepageSelectorEnabled() {
+        String systemProp = System.getProperty(LEGACY_HOMEPAGE_SELECTOR);
+        if (systemProp != null) {
+            return Boolean.parseBoolean(systemProp);
+        }
+        String raw = GeoServerExtensions.getProperty(LEGACY_HOMEPAGE_SELECTOR);
+        return !Strings.isEmpty(raw) && Boolean.parseBoolean(raw);
+    }
 
     // used only during page initialization, not persisted (needed temporarily as a field in order
     // to work across the GeoServerBasePage framework of description calculation and component
@@ -148,8 +167,12 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             }
         }
 
+        WebMarkupContainer chooser = new WebMarkupContainer("chooser");
+        chooser.setVisible(isLegacyHomepageSelectorEnabled());
+        add(chooser);
+
         Form<GeoServerHomePage> form = selectionForm(true);
-        add(form);
+        chooser.add(form);
 
         Locale locale = getLocale();
 
@@ -206,6 +229,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             capsProviders = Model.ofList(new ArrayList<>());
         }
         ListView<CapabilitiesHomePageLinkProvider> capsView = new ListView<>("providedCaps", capsProviders) {
+            @Serial
             private static final long serialVersionUID = -4859682164111586340L;
 
             @Override
@@ -332,6 +356,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
         if (ajax) {
             workspaceField.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Serial
                 private static final long serialVersionUID = 5871428962450362668L;
 
                 @Override
@@ -347,6 +372,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         layerField.setRequired(false);
         if (ajax) {
             layerField.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Serial
                 private static final long serialVersionUID = 5871428962450362669L;
 
                 @Override
@@ -470,6 +496,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 getContentProviders(GeoServerHomePageContentProvider.class);
 
         return new ListView<>("contributedContent", contentProviders) {
+            @Serial
             private static final long serialVersionUID = 3756653714268296207L;
 
             @Override
@@ -637,6 +664,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
     private <T> IModel<List<T>> getContentProviders(final Class<T> providerClass) {
         IModel<List<T>> providersModel = new LoadableDetachableModel<>() {
+            @Serial
             private static final long serialVersionUID = 3042209889224234562L;
 
             @Override
@@ -663,6 +691,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         Catalog catalog = getGeoServer().getCatalog();
         if (workspaceInfo != null) {
             NamespaceInfo namespaceInfo = catalog.getNamespaceByPrefix(workspaceInfo.getName());
+            if (namespaceInfo == null) {
+                return null;
+            }
             LayerInfo layerInfo = catalog.getLayerByName(new NameImpl(namespaceInfo.getURI(), layerName));
             if (layerInfo != null) {
                 return layerInfo;

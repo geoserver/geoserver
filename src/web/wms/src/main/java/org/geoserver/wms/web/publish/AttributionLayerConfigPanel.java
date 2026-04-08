@@ -5,7 +5,10 @@
  */
 package org.geoserver.wms.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.awt.image.BufferedImage;
+import java.io.Serial;
 import java.net.URL;
 import java.net.URLConnection;
 import javax.imageio.ImageIO;
@@ -25,6 +28,20 @@ import org.geoserver.web.publish.PublishedConfigurationPanel;
 // TODO WICKET8 - Verify this page works OK
 public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<PublishedInfo> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AttributionLayerConfigPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -5229831547353122190L;
 
     public AttributionLayerConfigPanel(String id, IModel<? extends PublishedInfo> model) {
@@ -69,6 +86,7 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
         add(width);
 
         add(new AjaxSubmitLink("verifyImage") {
+            @Serial
             private static final long serialVersionUID = 6814575194862084111L;
 
             @Override

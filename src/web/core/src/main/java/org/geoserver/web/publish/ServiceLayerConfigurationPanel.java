@@ -4,6 +4,9 @@
  */
 package org.geoserver.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
@@ -37,6 +40,21 @@ import org.geoserver.web.wicket.GeoServerDialog;
  * @author Fernando Miño - Geosolutions
  */
 public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ServiceLayerConfigurationPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected GeoServerDialog dialog;
@@ -53,6 +71,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
                 GeoServerExtensions.getProperty(DisabledServiceResourceFilter.PROPERTY);
         IModel<Boolean> serviceConfigurationModel = new PropertyModel<>(layerModel, "resource.serviceConfiguration");
         final AjaxCheckBox configEnabledCheck = new AjaxCheckBox("configEnabled", serviceConfigurationModel) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -94,6 +113,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
                         renderer,
                         10,
                         false) {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -134,6 +154,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
         add(dialog);
 
         add(new AjaxLink<String>("layerSettingsHelp") {
+            @Serial
             private static final long serialVersionUID = 9222171216768726058L;
 
             @Override
@@ -153,6 +174,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
 
     private LoadableDetachableModel<List<String>> servicesVotedModel(ResourceInfo resource) {
         return new LoadableDetachableModel<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

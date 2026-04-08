@@ -48,7 +48,7 @@ public class GeoServerConfigurationLock {
         WRITE
     }
 
-    private boolean enabled;
+    private volatile boolean enabled;
 
     public GeoServerConfigurationLock() {
         String pvalue = System.getProperty("GeoServerConfigurationLock.enabled");

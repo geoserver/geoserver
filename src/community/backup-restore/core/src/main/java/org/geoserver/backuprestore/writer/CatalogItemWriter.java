@@ -5,7 +5,6 @@
 package org.geoserver.backuprestore.writer;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
@@ -23,9 +22,11 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.logging.Logging;
+import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.WritableResource;
 
 /**
  * Concrete Spring Batch {@link ItemWriter}.
@@ -51,29 +52,29 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void write(List<? extends T> items) {
-        for (T item : items) {
+    public void write(@NonNull Chunk<? extends T> chunk) {
+        for (T item : chunk) {
             try {
-                if (item instanceof WorkspaceInfo) {
-                    write((WorkspaceInfo) item);
-                } else if (item instanceof NamespaceInfo) {
-                    write((NamespaceInfo) item);
-                } else if (item instanceof DataStoreInfo) {
-                    write((DataStoreInfo) item);
-                } else if (item instanceof WMSStoreInfo) {
-                    write((WMSStoreInfo) item);
-                } else if (item instanceof WMTSStoreInfo) {
-                    write((WMTSStoreInfo) item);
-                } else if (item instanceof CoverageStoreInfo) {
-                    write((CoverageStoreInfo) item);
-                } else if (item instanceof ResourceInfo) {
-                    write((ResourceInfo) item);
-                } else if (item instanceof LayerInfo) {
-                    write((LayerInfo) item);
-                } else if (item instanceof StyleInfo) {
-                    write((StyleInfo) item);
-                } else if (item instanceof LayerGroupInfo) {
-                    write((LayerGroupInfo) item);
+                if (item instanceof WorkspaceInfo info9) {
+                    write(info9);
+                } else if (item instanceof NamespaceInfo info8) {
+                    write(info8);
+                } else if (item instanceof DataStoreInfo info7) {
+                    write(info7);
+                } else if (item instanceof WMSStoreInfo info6) {
+                    write(info6);
+                } else if (item instanceof WMTSStoreInfo info5) {
+                    write(info5);
+                } else if (item instanceof CoverageStoreInfo info4) {
+                    write(info4);
+                } else if (item instanceof ResourceInfo info3) {
+                    write(info3);
+                } else if (item instanceof LayerInfo info2) {
+                    write(info2);
+                } else if (item instanceof StyleInfo info1) {
+                    write(info1);
+                } else if (item instanceof LayerGroupInfo info) {
+                    write(info);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Exception writting catalog item : " + item, e);
@@ -181,7 +182,7 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
     /** Setter for resource. Represents a file that can be written. */
     @Override
-    public void setResource(Resource resource) {
+    public void setResource(WritableResource resource) {
         // Nothing to do
     }
 }

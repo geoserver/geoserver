@@ -21,9 +21,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
-import net.sf.json.test.JSONAssert;
 import org.apache.commons.lang3.SystemUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -39,6 +36,9 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.test.JSONAssert;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -527,7 +527,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
         Resource newDir = getDataDirectory().get("mynewdir");
         assertTrue(Resources.exists(newDir));
-        assertSame(newDir.getType(), Type.DIRECTORY);
+        assertSame(Type.DIRECTORY, newDir.getType());
         Assert.assertFalse(Resources.exists(myRes));
         assertTrue(Resources.exists(getDataDirectory().get("mynewdir/myres")));
 

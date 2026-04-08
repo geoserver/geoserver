@@ -4,10 +4,10 @@
     <id>WorkspaceInfoImpl-1c443fee:182c0f3f209:-7ffe</id>
   </workspace>
   <enabled>true</enabled>
-  <name>WCS</name>
+  <name>Raster</name>
   <title>GeoServer Natural Earth Raster data and imagery</title>
   <internationalTitle/>
-  <maintainer>http://geoserver.org/comm</maintainer>
+  <maintainer>https://geoserver.org/comm</maintainer>
   <abstrct>Direct access to Natural Earth raster data and imagery.</abstrct>
   <internationalAbstract/>
   <accessConstraints>NONE</accessConstraints>
@@ -33,7 +33,7 @@
     <metadataType>other</metadataType>
   </metadataLink>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.org</onlineResource>
+  <onlineResource>https://geoserver.org</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gmlPrefixing>false</gmlPrefixing>

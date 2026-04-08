@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import org.geoserver.security.VariableFilterChain;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.security.VariableFilterChain;
  */
 public class VariableFilterChainWrapper extends RequestFilterChainWrapper {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public VariableFilterChainWrapper(VariableFilterChain chain) {

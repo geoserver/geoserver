@@ -33,7 +33,7 @@ abstract class AggregationOp {
     static List<Object> toListObj(Object object) {
         List<Object> objectList;
         if (object instanceof Collection) objectList = new ArrayList<>((Collection<Object>) object);
-        else if (object instanceof Object[]) objectList = Arrays.asList((Object[]) object);
+        else if (object instanceof Object[] object1s) objectList = Arrays.asList(object1s);
         else objectList = Arrays.asList(object);
         return objectList;
     }
@@ -41,9 +41,8 @@ abstract class AggregationOp {
     /** Unpacks value from attribute container */
     static Object unpack(Object value) {
 
-        if (value instanceof org.geotools.api.feature.ComplexAttribute) {
-            Property simpleContent =
-                    ((org.geotools.api.feature.ComplexAttribute) value).getProperty(new NameImpl("simpleContent"));
+        if (value instanceof org.geotools.api.feature.ComplexAttribute attribute) {
+            Property simpleContent = attribute.getProperty(new NameImpl("simpleContent"));
             if (simpleContent == null) {
                 return null;
             } else {
@@ -51,8 +50,8 @@ abstract class AggregationOp {
             }
         }
 
-        if (value instanceof org.geotools.api.feature.Attribute) {
-            return ((org.geotools.api.feature.Attribute) value).getValue();
+        if (value instanceof org.geotools.api.feature.Attribute attribute) {
+            return attribute.getValue();
         }
 
         return value;

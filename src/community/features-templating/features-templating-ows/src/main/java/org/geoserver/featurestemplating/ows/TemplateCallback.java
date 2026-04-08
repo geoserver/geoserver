@@ -168,14 +168,17 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     private boolean operationSupported(Operation operation) {
         String id = operation.getId();
         String serviceId = operation.getService().getId();
+        GetFeatureRequest getFeature = operation.getParameters().length > 0
+                ? GetFeatureRequest.adapt(operation.getParameters()[0])
+                : null;
+        boolean isHits = getFeature != null && getFeature.isResultTypeHits();
         return "GetFeatureInfo".equalsIgnoreCase(id) && "wms".equalsIgnoreCase(serviceId)
-                || "GetFeature".equalsIgnoreCase(id) && "wfs".equalsIgnoreCase(serviceId);
+                || "GetFeature".equalsIgnoreCase(id) && "wfs".equalsIgnoreCase(serviceId) && !isHits;
     }
 
     private Response findResponse(Object param1) {
         Response response = null;
-        if (param1 instanceof GetFeatureInfoRequest) {
-            GetFeatureInfoRequest request = (GetFeatureInfoRequest) param1;
+        if (param1 instanceof GetFeatureInfoRequest request) {
             if (request.getInfoFormat() != null) {
                 response = getTemplateFeatureInfoResponse(request);
             }

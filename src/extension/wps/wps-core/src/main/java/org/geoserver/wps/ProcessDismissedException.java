@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps;
 
+import java.io.Serial;
 import org.geoserver.wps.executor.MaxExecutionTimeListener;
 import org.geotools.api.util.ProgressListener;
 import org.geotools.data.util.DelegateProgressListener;
@@ -16,6 +17,7 @@ import org.geotools.data.util.DelegateProgressListener;
  */
 public class ProcessDismissedException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = -4266240008696107774L;
 
     public ProcessDismissedException() {
@@ -33,8 +35,7 @@ public class ProcessDismissedException extends RuntimeException {
             listener = d.getDelegate();
         }
 
-        if (listener instanceof MaxExecutionTimeListener) {
-            MaxExecutionTimeListener max = (MaxExecutionTimeListener) listener;
+        if (listener instanceof MaxExecutionTimeListener max) {
             if (max.isExpired()) {
                 return "The process executed got interrupted because it went "
                         + "beyond the configured limits of "

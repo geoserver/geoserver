@@ -22,9 +22,9 @@ under the License.
 GeoTools Junit ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_rulesets.html
 </description>
   <rule ref="category/java/bestpractices.xml/SimplifiableTestAssertion" />
-  <rule ref="category/java/bestpractices.xml/JUnit4TestShouldUseBeforeAnnotation" />
-  <rule ref="category/java/bestpractices.xml/JUnit4TestShouldUseAfterAnnotation" />
-  <rule ref="category/java/bestpractices.xml/JUnit4TestShouldUseTestAnnotation" />
+  <rule ref="category/java/bestpractices.xml/UnitTestShouldUseBeforeAnnotation" />
+  <rule ref="category/java/bestpractices.xml/UnitTestShouldUseAfterAnnotation" />
+  <rule ref="category/java/bestpractices.xml/UnitTestShouldUseTestAnnotation" />
   <!-- Excluded due to https://github.com/pmd/pmd/issues/2147 /-->
   <!-- rule ref="category/java/bestpractices.xml/JUnitTestsShouldIncludeAssert" /-->
   <rule name="DisallowJunit3"

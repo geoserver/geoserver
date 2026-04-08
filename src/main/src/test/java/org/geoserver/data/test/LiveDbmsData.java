@@ -40,7 +40,6 @@ import org.geotools.util.logging.Logging;
  *
  * @author Andrea Aime - TOPP
  */
-@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public class LiveDbmsData extends LiveSystemTestData {
     private static final Logger LOGGER = Logging.getLogger(LiveDbmsData.class);
 
@@ -120,7 +119,7 @@ public class LiveDbmsData extends LiveSystemTestData {
     }
 
     @Override
-    @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
+    @SuppressWarnings("PMD.UseTryWithResources")
     public void setUp() throws Exception {
         // if the test was disabled we don't need to run the setup
         if (fixture == null) return;
@@ -209,8 +208,8 @@ public class LiveDbmsData extends LiveSystemTestData {
      * methods
      */
     protected Connection getDatabaseConnection(DataStore ds) throws IOException {
-        if (ds instanceof JDBCDataStore) {
-            return ((JDBCDataStore) ds).getConnection(Transaction.AUTO_COMMIT);
+        if (ds instanceof JDBCDataStore store) {
+            return store.getConnection(Transaction.AUTO_COMMIT);
         } else {
             return null;
         }

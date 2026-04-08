@@ -6,8 +6,8 @@
 
 package org.geoserver.gwc.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geowebcache.controller.GeoWebCacheDispatcherController;
 

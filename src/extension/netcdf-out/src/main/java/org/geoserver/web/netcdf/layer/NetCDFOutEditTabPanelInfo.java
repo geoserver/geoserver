@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.netcdf.layer;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.CoverageInfo;
@@ -19,6 +20,7 @@ import org.geoserver.web.publish.LayerEditTabPanelInfo;
 public class NetCDFOutEditTabPanelInfo extends LayerEditTabPanelInfo {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override

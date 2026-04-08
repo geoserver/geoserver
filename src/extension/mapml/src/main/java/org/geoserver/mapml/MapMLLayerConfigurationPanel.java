@@ -5,7 +5,9 @@
 package org.geoserver.mapml;
 
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +37,6 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.gwc.GWC;
@@ -56,9 +57,25 @@ import org.geowebcache.layer.TileLayer;
  * @author prushforth
  */
 public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MapMLLayerConfigurationPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     static final Logger LOGGER = Logging.getLogger(MapMLLayerConfigurationPanel.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     public static final String PNG_MIME_TYPE = "image/png";
     ListMultipleChoice<String> featureCaptionAttributes;
 
@@ -109,11 +126,6 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         MapModel<Boolean> useFeaturesModel = new MapModel<>(
                 new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_USE_FEATURES);
         CheckBox useFeatures = new CheckBox(MapMLConstants.USE_FEATURES, useFeaturesModel);
-        if (model.getObject() != null && model.getObject() instanceof PublishedInfo) {
-            if (model.getObject().getType() == PublishedType.RASTER) {
-                useFeatures.setEnabled(false);
-            }
-        }
         useFeatures.add(new OnChangeAjaxBehavior() {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -123,6 +135,12 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
             }
         });
         add(useFeatures);
+
+        // add the checkbox to expose sub-layers / set usemultiextents:true or :false
+        MapModel<Boolean> useMultiExtentsModel = new MapModel<>(
+                new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_USE_MULTIEXTENTS);
+        CheckBox useMultiExtents = new CheckBox(MapMLConstants.USE_MULTIEXTENTS, useMultiExtentsModel);
+        add(useMultiExtents);
 
         MapModel<String> dimensionModel = new MapModel<>(
                 new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_DIMENSION);
@@ -185,8 +203,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                 try {
                     TileLayer tileLayer = gwc.getTileLayerByName(layer.prefixedName());
                     // if the useTiles flag is set and the cache is enabled we get cache mime types
-                    if (tileLayer instanceof GeoServerTileLayer && tileLayer.isEnabled()) {
-                        GeoServerTileLayer geoServerTileLayer = (GeoServerTileLayer) tileLayer;
+                    if (tileLayer instanceof GeoServerTileLayer geoServerTileLayer && tileLayer.isEnabled()) {
                         GeoServerTileLayerInfo info = geoServerTileLayer.getInfo();
                         mimeTypes.addAll(info.getMimeFormats().stream()
                                 .filter(mimeType ->
@@ -220,9 +237,8 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                 layer.getResource().getMetadata().entrySet()) {
             String key = entry.getKey();
             Serializable md = entry.getValue();
-            if (md instanceof DimensionInfo) {
+            if (md instanceof DimensionInfo di) {
                 // skip disabled dimensions
-                DimensionInfo di = (DimensionInfo) md;
                 if (!di.isEnabled()) {
                     continue;
                 }
@@ -253,8 +269,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
             return Collections.emptyList();
         }
         try {
-            if (res instanceof FeatureTypeInfo) {
-                FeatureTypeInfo typeInfo = (FeatureTypeInfo) res;
+            if (res instanceof FeatureTypeInfo typeInfo) {
                 Catalog catalog = GeoServerApplication.get().getCatalog();
                 final ResourcePool resourcePool = catalog.getResourcePool();
                 // using loadAttributes to dodge the ResourcePool caches, the

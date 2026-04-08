@@ -7,9 +7,9 @@ package org.geoserver.rest.catalog;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
+import jakarta.servlet.Filter;
+import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.Filter;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -23,8 +23,10 @@ public class SecuredControllerAccessTest extends GeoServerSystemTestSupport {
 
     @Override
     protected List<Filter> getFilters() {
+        List<Filter> filters = new ArrayList<>(super.getFilters());
         // enable spring security
-        return Collections.singletonList((Filter) GeoServerExtensions.bean("filterChainProxy"));
+        filters.add((Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return filters;
     }
 
     @Before

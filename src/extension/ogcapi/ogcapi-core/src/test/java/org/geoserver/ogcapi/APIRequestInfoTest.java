@@ -4,20 +4,19 @@
  */
 package org.geoserver.ogcapi;
 
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML;
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_YAML;
+import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import net.sf.json.JSONObject;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.TestDispatcherCallback;
 import org.geoserver.platform.Operation;
@@ -26,6 +25,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.MediaType;
 
 /**

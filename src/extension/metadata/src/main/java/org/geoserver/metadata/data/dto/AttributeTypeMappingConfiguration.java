@@ -4,10 +4,10 @@
  */
 package org.geoserver.metadata.data.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.io.Serializable;
 import java.util.List;
 import org.geoserver.metadata.data.dto.impl.AttributeTypeMappingConfigurationImpl;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Object that matches yaml structure.

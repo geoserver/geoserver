@@ -1,0 +1,102 @@
+.simulator{
+  width: 99%;
+  padding-left: 10px;
+  border-width: 1px;
+  border-color: #ccc;
+  border-style: solid;
+  margin-bottom: 10px;
+  padding-top: 10px;
+}
+
+.simulator div{
+  width: 100%;
+  margin-top: 4px;
+  white-space:nowrap;
+  display:flex;
+  flex-direction: row;
+  justify-content: left; 
+  align-items: start;
+}
+.simulator div legend{
+  font-size: 1em;
+}
+.simulator div span.item{
+  width: 33%;
+}
+.simulator div input, .simulator div select, .multichoice{
+  width: 90%;
+}
+.multichoice{
+  display: inline-block;
+}
+.no-matching-rules{
+  width: 75%;
+  border-style: solid;
+  margin: auto;
+  border: 2px solid green;
+  padding: 30px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.access-info{
+  width: 99%;
+  padding-left: 10px;
+  border-width: 1px;
+  border-color: #ccc;
+  border-style: solid;
+  margin-bottom: 10px;
+  padding-top: 10px;
+}
+
+.access-info .row{
+  display: flex;
+  white-space: nowrap;
+  padding-bottom: 10px;
+}
+
+.access-info .column{
+  display: flex;
+  white-space: nowrap;
+  padding-right: 10px;
+  min-width: 100px;
+}
+
+.access-info .column label{
+  font-weight: bolder;
+  margin-left: 10px;
+}
+
+.access-info .tab-panel .row {
+  flex-direction: column;
+}
+
+.access-info .tab-panel .column {
+  min-width: 100px;
+  white-space: normal;
+}
+
+.access-info textarea{
+  width: 100%;
+  height: 2em;
+  min-height:1em;
+  background-color:beige;
+  border-style:none;
+}
+
+#filterTabs{
+ max-width: 100%;
+ display: block;
+ padding-top: 10px;
+}
+
+/* Hide disabled tabs */
+.tabset > input:first-child:disabled ~ .tab-panels > .tab-panel:first-child,
+.tabset > input:nth-child(3):disabled ~ .tab-panels > .tab-panel:nth-child(2),
+.tabset > input:nth-child(5):disabled ~ .tab-panels > .tab-panel:nth-child(3),
+.tabset > input:nth-child(7):disabled ~ .tab-panels > .tab-panel:nth-child(4),
+.tabset > input:nth-child(9):disabled ~ .tab-panels > .tab-panel:nth-child(5),
+.tabset > input:nth-child(11):disabled ~ .tab-panels > .tab-panel:nth-child(6) {
+  display: none;
+}
+

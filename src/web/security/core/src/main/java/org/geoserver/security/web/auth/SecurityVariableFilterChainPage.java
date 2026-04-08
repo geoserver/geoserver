@@ -6,6 +6,7 @@
 package org.geoserver.security.web.auth;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -28,6 +29,7 @@ import org.geoserver.web.wicket.HelpLink;
  */
 public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** logger */
@@ -85,7 +87,9 @@ public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
 
     class AuthFilterNamesModel implements IModel<List<String>> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
+
         VariableFilterChainWrapper chainModel;
 
         AuthFilterNamesModel(VariableFilterChainWrapper chainModel) {

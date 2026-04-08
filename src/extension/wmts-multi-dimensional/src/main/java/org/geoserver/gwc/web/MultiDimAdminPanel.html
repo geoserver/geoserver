@@ -1,32 +1,37 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<form name="theForm">
-    <wicket:panel>
-        <ul>
-            <li>
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="MultiDimAdminPanel.title">multidim</wicket:message></span>
-                    </legend>
-                    <ul>
-                        <li>
-                            <label for="defaultExpandLimit">
-                                <wicket:message key="defaultExpandLimit">defaultExpandLimit</wicket:message>
-                            </label>
-                            <input id="defaultExpandLimit" class="text" type="text" wicket:id="defaultExpandLimit"/>
-                        </li>
-                        <li>
-                            <label for="maxExpandLimit">
-                                <wicket:message key="maxExpandLimit">maxExpandLimit</wicket:message>
-                            </label>
-                            <input id="maxExpandLimit" class="text" type="text" wicket:id="maxExpandLimit"/>
-                        </li>
-                    </ul>
-                </fieldset>
-            </li>
-        </ul>
-    </wicket:panel>
-</form>
-</body>
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-MultiDimAdminPanel">
+          <div class="gs-unordered-list-class">
+            <div class="gs-list-item-class">
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="MultiDimAdminPanel.title">multidim</wicket:message>
+                  </span>
+                </legend>
+                <div class="gs-unordered-list-class">
+                  <div class="gs-list-item-class">
+                    <label for="defaultExpandLimit">
+                      <wicket:message key="defaultExpandLimit">defaultExpandLimit</wicket:message>
+                    </label>
+                    <input id="defaultExpandLimit" type="text" wicket:id="defaultExpandLimit"/>
+                  </div>
+                  <div class="gs-list-item-class">
+                    <label for="maxExpandLimit">
+                      <wicket:message key="maxExpandLimit">maxExpandLimit</wicket:message>
+                    </label>
+                    <input id="maxExpandLimit" type="text" wicket:id="maxExpandLimit"/>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

@@ -5,6 +5,9 @@
  */
 package org.geoserver.monitor.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -23,6 +26,20 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 
 public class LiveActivityPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LiveActivityPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -2807950039989311964L;
 
     public LiveActivityPanel(String id) {
@@ -30,6 +47,7 @@ public class LiveActivityPanel extends Panel {
 
         GeoServerTablePanel<RequestData> requests =
                 new GeoServerTablePanel<>("requests", new LiveRequestDataProvider()) {
+                    @Serial
                     private static final long serialVersionUID = -431473636413825153L;
 
                     @Override
@@ -46,6 +64,7 @@ public class LiveActivityPanel extends Panel {
 
     static class LiveRequestDataProvider extends GeoServerDataProvider<RequestData> {
 
+        @Serial
         private static final long serialVersionUID = -5576324995486786071L;
 
         static final Property<RequestData> ID = new BeanProperty<>("id", "id");

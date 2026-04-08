@@ -14,4 +14,10 @@
   <!-- <mvc:annotation-driven/> -->
   <context:component-scan base-package="org.geoserver.opensearch.rest"/>
 
+    <bean id="oseoRestExtension" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-oseo-rest"/>
+        <constructor-arg index="1" value="GeoServer OpenSearch for EO REST admin API"/>
+        <property name="category" value="PENDING"/>
+        <property name="contact" value="andrea.aime@geosolutionsgroup.com"/>
+    </bean>
 </beans>

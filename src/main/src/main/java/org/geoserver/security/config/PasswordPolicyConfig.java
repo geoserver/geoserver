@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
+
 /**
  * Password Policy configuration object.
  *
@@ -12,7 +14,9 @@ package org.geoserver.security.config;
  */
 public class PasswordPolicyConfig extends BaseSecurityNamedServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private boolean uppercaseRequired, lowercaseRequired, digitRequired;
     private int minLength, maxLength;
 

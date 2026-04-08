@@ -4,6 +4,7 @@
  */
 package org.geoserver.rest.catalog;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.awt.RenderingHints;
 import java.io.IOException;
 import java.io.Serializable;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogRepository;
@@ -94,9 +94,8 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         }
 
         GridCoverageReader reader = info.getGridCoverageReader(null, null);
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
-            if (sr.isReadOnly()) {
+        if (reader instanceof StructuredGridCoverage2DReader sgcr) {
+            if (sgcr.isReadOnly()) {
                 throw new RestException(
                         "Coverage store found, but it cannot harvest extra resources", HttpStatus.METHOD_NOT_ALLOWED);
             }
@@ -129,7 +128,8 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             @PathVariable UploadMethod method,
             @PathVariable String format,
             @RequestParam(name = "configure", required = false) String configure,
-            @RequestParam(name = "USE_JAI_IMAGEREAD", required = false) Boolean useJaiImageRead,
+            @RequestParam(name = "USE_IMAGEN_IMAGEREAD", required = false) Boolean useJaiImageRead,
+            @RequestParam(name = "USE_IMAGEN_IMAGEREAD", required = false) Boolean useImageNImageRead,
             @RequestParam(name = "coverageName", required = false) String coverageName,
             @RequestParam(required = false) String filename,
             HttpServletRequest request)
@@ -243,7 +243,11 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             final Map<String, Serializable> customParameters = new HashMap<>();
             if (useJaiImageRead != null) {
                 customParameters.put(
-                        AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), useJaiImageRead);
+                        AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().toString(), useJaiImageRead);
+            }
+            if (useImageNImageRead != null) {
+                customParameters.put(
+                        AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().toString(), useImageNImageRead);
             }
 
             // check if the name of the coverage was specified

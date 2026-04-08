@@ -4,6 +4,9 @@
  */
 package org.geoserver.taskmanager.web.panel.bulk;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -13,6 +16,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -32,6 +36,20 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 public class BulkInitPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(BulkInitPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -7787191736336649903L;
 
     private static final Logger LOGGER = Logging.getLogger(BulkInitPanel.class);
@@ -54,23 +72,27 @@ public class BulkInitPanel extends Panel {
         add(dialog);
         dialog.setInitialHeight(100);
 
+        Form<?> form = new Form<Object>("form");
+        add(form);
+
         TextField<String> workspace = new TextField<>("workspace", workspaceModel);
-        add(workspace);
+        form.add(workspace);
 
         TextField<String> configuration = new TextField<>("configuration", configurationModel);
-        add(configuration.setRequired(true));
+        form.add(configuration.setRequired(true));
 
         NumberTextField<Integer> startDelay = new NumberTextField<>("startDelay", new Model<Integer>(0), Integer.class);
         startDelay.setMinimum(0);
-        add(startDelay);
+        form.add(startDelay);
 
         NumberTextField<Integer> betweenDelay =
                 new NumberTextField<>("betweenDelay", new Model<Integer>(0), Integer.class);
         betweenDelay.setMinimum(0);
-        add(betweenDelay);
+        form.add(betweenDelay);
 
         Label configsFound =
                 new Label("configsFound", new ParamResourceModel("configsFound", this, new IModel<String>() {
+                    @Serial
                     private static final long serialVersionUID = -6328441242635771092L;
 
                     @Override
@@ -84,9 +106,10 @@ public class BulkInitPanel extends Panel {
                     @Override
                     public void detach() {}
                 }));
-        add(configsFound.setOutputMarkupId(true));
+        form.add(configsFound.setOutputMarkupId(true));
 
         AjaxSubmitLink run = new AjaxSubmitLink("run") {
+            @Serial
             private static final long serialVersionUID = -3288982013478650146L;
 
             @Override
@@ -96,6 +119,7 @@ public class BulkInitPanel extends Panel {
                     ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                 } else {
                     dialog.showOkCancel(target, new DialogDelegate() {
+                        @Serial
                         private static final long serialVersionUID = -8203963847815744909L;
 
                         @Override
@@ -142,9 +166,10 @@ public class BulkInitPanel extends Panel {
                 ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
             }
         };
-        add(run);
+        form.add(run);
 
         workspace.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 3397757222203749030L;
 
             @Override
@@ -155,6 +180,7 @@ public class BulkInitPanel extends Panel {
             }
         });
         configuration.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 3397757222203749030L;
 
             @Override

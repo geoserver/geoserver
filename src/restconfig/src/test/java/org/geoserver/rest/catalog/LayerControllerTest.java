@@ -25,16 +25,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.config.CatalogModificationUserUpdater;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.rest.RestBaseController;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -435,5 +438,67 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
                     fileContents.toString().replace("<name>RoadSegments</name>", "<name>demo:RoadSegmentsDup</name>"));
             writer.write(fileContents.toString());
         }
+    }
+
+    @Test
+    public void testPutWithUserModifiedWithTrackUserTrue() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(false);
+        getGeoServer().save(info);
+        LayerInfo l = catalog.getLayerByName("cite:Buildings");
+        assertEquals("Buildings", l.getDefaultStyle().getName());
+        String xml = "<layer>"
+                + "<defaultStyle>Forests</defaultStyle>"
+                + "<styles>"
+                + "<style>Ponds</style>"
+                + "</styles>"
+                + "</layer>";
+        putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "text/xml");
+
+        l = catalog.getLayerByName("cite:Buildings");
+        assertNotNull(l.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPutWithUserModifiedWithTrackUserFalse() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "false");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        LayerInfo l = catalog.getLayerByName("cite:Buildings");
+        assertEquals("Buildings", l.getDefaultStyle().getName());
+        String xml = "<layer>"
+                + "<defaultStyle>Forests</defaultStyle>"
+                + "<styles>"
+                + "<style>Ponds</style>"
+                + "</styles>"
+                + "</layer>";
+        putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "text/xml");
+
+        l = catalog.getLayerByName("cite:Buildings");
+        assertNull(l.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPutWithUserModifiedWithoutTrackUser() throws Exception {
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        LayerInfo l = catalog.getLayerByName("cite:Buildings");
+        assertEquals("Buildings", l.getDefaultStyle().getName());
+        String xml = "<layer>"
+                + "<defaultStyle>Forests</defaultStyle>"
+                + "<styles>"
+                + "<style>Ponds</style>"
+                + "</styles>"
+                + "</layer>";
+        putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "text/xml");
+
+        l = catalog.getLayerByName("cite:Buildings");
+        assertNotNull(l.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
     }
 }

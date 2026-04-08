@@ -346,11 +346,10 @@ public class GMLFileFormat extends VectorFormat {
             return;
         }
 
-        if (value instanceof Geometry) {
+        if (value instanceof Geometry g) {
             // for geometries, special case as we need to handle the CRS and we basically
             // have no promotions, either all equal, or all Geometry.class
             if (target == null) {
-                Geometry g = (Geometry) value;
                 AttributeTypeBuilder typeBuilder = new AttributeTypeBuilder();
                 typeBuilder.setName(name);
                 typeBuilder.setBinding(value.getClass());

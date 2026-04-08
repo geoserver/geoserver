@@ -5,6 +5,12 @@
  */
 package org.geoserver.filters;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,12 +18,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.util.Enumeration;
 import java.util.logging.Logger;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.RequestUtils;
@@ -25,7 +25,7 @@ import org.geoserver.ows.util.RequestUtils;
 /**
  * Filter to log requests for debugging or statistics-gathering purposes.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  */
 public class LoggingFilter implements GeoServerFilter {
     protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
@@ -105,8 +105,7 @@ public class LoggingFilter implements GeoServerFilter {
         String path = "";
 
         if (enabled) {
-            if (req instanceof HttpServletRequest) {
-                HttpServletRequest hreq = (HttpServletRequest) req;
+            if (req instanceof HttpServletRequest hreq) {
 
                 path = RequestUtils.getRemoteAddr(hreq) + " \"" + hreq.getMethod() + " " + hreq.getRequestURI();
                 if (hreq.getQueryString() != null) {

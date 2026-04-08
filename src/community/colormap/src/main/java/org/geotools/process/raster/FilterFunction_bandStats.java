@@ -38,8 +38,7 @@ public class FilterFunction_bandStats extends FunctionExpressionImpl {
             Integer bandIndex = (getExpression(0).evaluate(feature, Integer.class));
             String propertyName = (getExpression(1).evaluate(feature, String.class));
             Object val = null;
-            if (feature instanceof GridCoverage2D) {
-                GridCoverage2D coverage = (GridCoverage2D) feature;
+            if (feature instanceof GridCoverage2D coverage) {
                 val = evaluate(coverage, bandIndex, propertyName);
             }
             if (val != null) {

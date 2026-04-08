@@ -8,20 +8,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonContext;
 import com.jayway.jsonpath.internal.JsonFormatter;
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.Filter;
-import javax.servlet.ServletException;
 import net.minidev.json.JSONAware;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -31,6 +29,9 @@ import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matchers;
 import org.springframework.mock.web.MockHttpServletResponse;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 public class OGCApiTestSupport extends GeoServerSystemTestSupport {
 
@@ -98,12 +99,12 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     }
 
     protected JsonContext convertYamlToJsonPath(String yaml) throws Exception {
-        ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
+        ObjectMapper yamlReader = new YAMLMapper();
         Object obj = yamlReader.readValue(yaml, Object.class);
 
-        ObjectMapper jsonWriter = new ObjectMapper();
-        JsonContext json = (JsonContext) JsonPath.parse(jsonWriter.writeValueAsString(obj));
-        return json;
+        ObjectMapper jsonWriter = new JsonMapper();
+        String json = jsonWriter.writeValueAsString(obj);
+        return (JsonContext) JsonPath.parse(json);
     }
 
     /**
@@ -203,5 +204,17 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     protected boolean headerHasValue(MockHttpServletResponse response, String headerName, String expectedValue) {
         String headerValue = response.getHeader(headerName);
         return headerValue != null && headerValue.contains(expectedValue);
+    }
+
+    /**
+     * Checks an OGC API exception structure
+     *
+     * @param json The JSON document
+     * @param expectedCode The expected code
+     * @param expectedDescription The expected description
+     */
+    protected void checkOGCAPIException(DocumentContext json, String expectedCode, String expectedDescription) {
+        assertEquals(expectedCode, json.read("code"));
+        assertEquals(expectedDescription, json.read("description"));
     }
 }

@@ -118,9 +118,10 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
 
         tester.clickLink("addNew");
 
-        tester.assertComponent("dialog:dialog:content:form:userPanel", DropDownPanel.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel", DropDownPanel.class);
 
-        tester.executeAjaxEvent("dialog:dialog:content:form:submit", "click");
+        tester.executeAjaxEvent("dialog:dialog:modal:overlay:dialog:content:content:form:submit", "click");
 
         tester.assertRenderedPage(ConfigurationPage.class);
 
@@ -160,13 +161,14 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
 
         tester.clickLink("addNew");
 
-        tester.assertComponent("dialog:dialog:content:form:userPanel", DropDownPanel.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel", DropDownPanel.class);
 
-        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
 
         formTester.select("userPanel:dropdown", 0);
 
-        tester.executeAjaxEvent("dialog:dialog:content:form:submit", "click");
+        tester.executeAjaxEvent("dialog:dialog:modal:overlay:dialog:content:content:form:submit", "click");
 
         tester.assertRenderedPage(ConfigurationPage.class);
 
@@ -213,7 +215,7 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         assertTrue(w.isShown());
 
         // confirm
-        tester.executeAjaxEvent("dialog:dialog:content:form:submit", "click");
+        tester.executeAjaxEvent("dialog:dialog:modal:overlay:dialog:content:content:form:submit", "click");
 
         assertFalse(containsConfig(dao.getConfigurations(false), dummy1));
         assertTrue(containsConfig(dao.getConfigurations(false), dummy2));

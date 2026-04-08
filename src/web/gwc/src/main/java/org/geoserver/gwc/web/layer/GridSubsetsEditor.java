@@ -5,6 +5,9 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +19,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -45,6 +49,9 @@ import org.geowebcache.grid.GridSetBroker;
 
 class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GridSubsetsEditor.class);
+
+    @Serial
     private static final long serialVersionUID = 5098470663723800345L;
 
     private final WebMarkupContainer table;
@@ -57,6 +64,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
     private class GridSubsetListValidator implements IValidator<Set<XMLGridSubset>> {
 
+        @Serial
         private static final long serialVersionUID = -2646310164736911748L;
 
         private boolean validate;
@@ -134,6 +142,17 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
         }
     }
 
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     public GridSubsetsEditor(final String id, final IModel<Set<XMLGridSubset>> model) {
         super(id, model);
         add(validator = new GridSubsetListValidator());
@@ -151,6 +170,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
         grids = new ListView<>("gridSubsets", new ArrayList<>(model.getObject())) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -237,6 +257,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                 for (ZoomLevelDropDownChoice dropDown :
                         Arrays.asList(zoomStart, zoomStop, minCachedLevel, maxCachedLevel)) {
                     dropDown.add(new OnChangeAjaxBehavior() {
+                        @Serial
                         private static final long serialVersionUID = 1L;
 
                         // cascades to zoomStop, min and max cached levels
@@ -260,6 +281,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
                 final Component removeLink = new ImageAjaxLink<>("removeLink", GWCIconFactory.DELETE_ICON) {
 
+                    @Serial
                     private static final long serialVersionUID = -5072597940769821889L;
 
                     @Override
@@ -298,6 +320,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
         Collections.sort(gridSetNames);
 
         GeoServerAjaxFormLink addGridsubsetLink = new GeoServerAjaxFormLink("addGridSubset") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -333,8 +356,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
     @Override
     public void convertInput() {
         grids.visitChildren((component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         });
@@ -354,6 +376,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
     }
 
     private static class ZoomLevelDropDownChoice extends DropDownChoice<Integer> {
+        @Serial
         private static final long serialVersionUID = -1312406093015271637L;
 
         public ZoomLevelDropDownChoice(final String id, IModel<Integer> model, IModel<List<Integer>> allChoices) {

@@ -283,7 +283,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         int fileCount = 256;
         final Set<String> files = IntStream.range(0, fileCount)
-                .mapToObj(i -> String.format("File%d", i))
+                .mapToObj(i -> "File%d".formatted(i))
                 .collect(Collectors.toSet());
         // async create files with delay
         final BlockingQueue<String> names = new ArrayBlockingQueue<>(files.size(), true, files);

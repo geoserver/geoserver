@@ -5,7 +5,7 @@
  */
 package org.geoserver.ogcapi;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.ows.HttpErrorCodeException;

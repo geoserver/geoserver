@@ -6,8 +6,24 @@ package org.geoserver.security.web.csp;
 
 import com.google.common.base.Preconditions;
 import com.google.common.net.HttpHeaders;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Serial;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -20,22 +36,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.hc.core5.net.URLEncodedUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Button;
@@ -55,6 +57,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 /** Page for configuring the Content-Security-Policy HTTP response header. */
 public class CSPConfigurationPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -5935887226717780789L;
 
     private TextArea<String> testResultField;
@@ -77,6 +80,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         form.add(new CSPPolicyPanel("policies", this.config));
         form.add(new TextArea<>("testUrl", new PropertyModel<>(this, "testUrl")));
         form.add(new AjaxSubmitLink("testLink") {
+            @Serial
             private static final long serialVersionUID = 1700932575669734348L;
 
             @Override
@@ -87,6 +91,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         this.testResultField = new TextArea<>("testResult", new Model<>(""));
         form.add(this.testResultField.setOutputMarkupId(true).setEnabled(false));
         form.add(new SubmitLink("save", form) {
+            @Serial
             private static final long serialVersionUID = -8900006356449150190L;
 
             @Override
@@ -95,6 +100,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
         });
         form.add(new Button("apply") {
+            @Serial
             private static final long serialVersionUID = -3327108081898697618L;
 
             @Override
@@ -103,6 +109,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
         });
         form.add(new Button("cancel") {
+            @Serial
             private static final long serialVersionUID = 7567566240358171893L;
 
             @Override
@@ -172,7 +179,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         String context = GeoServerApplication.get().servletRequest().getContextPath();
         String pathInfo = path.startsWith(context) ? path.substring(context.length()) : path;
         Map<String, List<String>> listMap = new LinkedHashMap<>();
-        URLEncodedUtils.parse(url.getQuery(), StandardCharsets.UTF_8, '&')
+        URLEncodedUtils.parse(url.getQuery(), StandardCharsets.UTF_8)
                 .forEach(p -> listMap.computeIfAbsent(p.getName(), x -> new ArrayList<>())
                         .add(p.getValue()));
         Map<String, String[]> parameterMap = new LinkedHashMap<>();
@@ -290,11 +297,6 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
 
             @Override
-            public String getRealPath(String path) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
             public BufferedReader getReader() {
                 throw new UnsupportedOperationException();
             }
@@ -355,6 +357,21 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
 
             @Override
+            public String getRequestId() {
+                return "";
+            }
+
+            @Override
+            public String getProtocolRequestId() {
+                return "";
+            }
+
+            @Override
+            public ServletConnection getServletConnection() {
+                return null;
+            }
+
+            @Override
             public String getContentType() {
                 throw new UnsupportedOperationException();
             }
@@ -406,11 +423,6 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
 
             @Override
             public boolean isRequestedSessionIdValid() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean isRequestedSessionIdFromUrl() {
                 throw new UnsupportedOperationException();
             }
 

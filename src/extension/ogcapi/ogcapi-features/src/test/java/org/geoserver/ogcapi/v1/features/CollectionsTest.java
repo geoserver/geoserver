@@ -96,7 +96,6 @@ public class CollectionsTest extends FeaturesTestSupport {
         assertEquals(expected - 1, (int) json2.read("collections.length()", Integer.class));
     }
 
-    @SuppressWarnings("unchecked") // generic varargs in matcher
     private void testCollectionsJson(DocumentContext json) throws Exception {
         int expected = getCatalog().getFeatureTypes().size();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
@@ -163,7 +162,7 @@ public class CollectionsTest extends FeaturesTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/features/v1/collections/?f=application/yaml");
+        String yaml = getAsString("ogc/features/v1/collections?f=application/yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testCollectionsJson(json);
     }
@@ -306,7 +305,7 @@ public class CollectionsTest extends FeaturesTestSupport {
         gsi.getSettings().getMetadata().put(LinkInfo.LINKS_METADATA_KEY, links);
         getGeoServer().save(gsi);
 
-        DocumentContext json = getAsJSONPath("cite/ogc/features/v1/collections/", 200);
+        DocumentContext json = getAsJSONPath("cite/ogc/features/v1/collections", 200);
 
         // check first link
         DocumentContext l1c = readSingleContext(json, "$.links[?(@.rel=='enclosure')]");

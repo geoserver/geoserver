@@ -10,11 +10,11 @@
 
 package org.geoserver.gsr.api.map;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;

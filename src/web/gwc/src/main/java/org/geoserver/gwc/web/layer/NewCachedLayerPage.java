@@ -9,24 +9,25 @@ import static org.geoserver.gwc.web.layer.UnconfiguredCachedLayersProvider.ENABL
 import static org.geoserver.gwc.web.layer.UnconfiguredCachedLayersProvider.NAME;
 import static org.geoserver.gwc.web.layer.UnconfiguredCachedLayersProvider.TYPE;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.web.GWCIconFactory;
+import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -42,6 +43,7 @@ import org.geowebcache.layer.TileLayer;
  */
 public class NewCachedLayerPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 6458510742445385219L;
 
     private UnconfiguredCachedLayersProvider provider = new UnconfiguredCachedLayersProvider();
@@ -58,6 +60,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
 
         table = new GeoServerTablePanel<>("table", provider, true) {
 
+            @Serial
             private static final long serialVersionUID = -5260899839139961722L;
 
             @Override
@@ -67,22 +70,22 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
                     TileLayer layer = itemModel.getObject();
-                    PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
-                    f.add(new Image("layerIcon", layerIcon));
+                    ResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
+                    f.add(CatalogIconFactory.get().getIcon("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
                     return nameLink(id, itemModel);
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = itemModel.getObject();
                     boolean enabled = layerInfo.isEnabled();
-                    PackageResourceReference icon;
+                    ResourceReference icon;
                     if (enabled) {
                         icon = GWCIconFactory.getEnabledIcon();
                     } else {
                         icon = GWCIconFactory.getDisabledIcon();
                     }
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
-                    f.add(new Image("layerIcon", icon));
+                    f.add(CatalogIconFactory.get().getIcon("layerIcon", icon));
                     return f;
                 }
                 throw new IllegalArgumentException("Don't know a property named " + property.getName());
@@ -143,6 +146,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
      */
     private class BulkCachedLayerConfigurationLink extends AjaxLink<String> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         public BulkCachedLayerConfigurationLink(String string) {
@@ -168,6 +172,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
             // if there is something to cancel, let's warn the user about what
             // could go wrong, and if the user accepts, let's delete what's needed
             dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override

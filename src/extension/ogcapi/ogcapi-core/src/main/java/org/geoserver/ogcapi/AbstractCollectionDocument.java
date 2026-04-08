@@ -7,10 +7,10 @@ package org.geoserver.ogcapi;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.ArrayList;
 import java.util.List;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links"})
@@ -22,11 +22,28 @@ public class AbstractCollectionDocument<T> extends AbstractDocument {
     protected T subject;
     protected List<StyleDocument> styles = new ArrayList<>();
 
+    /** Builds an abstract collection without a subject */
+    public AbstractCollectionDocument() {}
+
     /**
      * Builds an abstract collection around the provided subject. Call with null if the collection happens to have none.
      */
     public AbstractCollectionDocument(T subject) {
         this.subject = subject;
+    }
+
+    /**
+     * Copy constructor
+     *
+     * @param other
+     */
+    protected AbstractCollectionDocument(AbstractCollectionDocument<T> other) {
+        super(other);
+        this.title = other.title;
+        this.description = other.description;
+        this.extent = other.extent;
+        this.subject = other.subject;
+        this.styles.addAll(other.styles);
     }
 
     /**

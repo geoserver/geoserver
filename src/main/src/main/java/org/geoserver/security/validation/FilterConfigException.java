@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.validation;
 
+import java.io.Serial;
+
 /**
  * Exception for filter configurations
  *
@@ -12,6 +14,7 @@ package org.geoserver.security.validation;
  */
 public class FilterConfigException extends SecurityConfigException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public FilterConfigException(String errorId, Object... args) {

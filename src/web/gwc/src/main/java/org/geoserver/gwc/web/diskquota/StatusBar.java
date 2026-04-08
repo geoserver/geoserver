@@ -5,6 +5,9 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
@@ -16,6 +19,9 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 
 public class StatusBar extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(StatusBar.class);
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final String script;
@@ -72,5 +78,11 @@ public class StatusBar extends Panel {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(new PackageResourceReference(StatusBar.class, "statusbar.css")));
         response.render(OnLoadHeaderItem.forScript(this.script));
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
     }
 }

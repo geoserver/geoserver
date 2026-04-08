@@ -22,7 +22,7 @@ import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
 /**
  * A Filter visitor that transforms a filter on a CSW Record of the Internal Catalog Store with a particular mapping to
- * a filter that can be applied directly onto Geoserver catalog objects.
+ * a filter that can be applied directly onto GeoServer catalog objects.
  *
  * @author Niels Charlier
  */

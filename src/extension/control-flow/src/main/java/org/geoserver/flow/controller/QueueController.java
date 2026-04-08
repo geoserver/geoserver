@@ -6,9 +6,9 @@
 
 package org.geoserver.flow.controller;
 
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.flow.FlowController;
@@ -27,7 +27,7 @@ public abstract class QueueController implements FlowController {
     int queueMaxSize;
 
     /** The per request queue collection */
-    Map<String, TimedBlockingQueue> queues = new ConcurrentHashMap<>();
+    ConcurrentMap<String, TimedBlockingQueue> queues = new ConcurrentHashMap<>();
 
     /** Last time we've performed a queue cleanup */
     long lastCleanup = System.currentTimeMillis();

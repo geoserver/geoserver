@@ -6,6 +6,7 @@
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -145,6 +146,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         paramsForm.add(new BookmarkablePageLink<>("cancel", StorePage.class));
 
         paramsForm.add(new AjaxSubmitLink("save", paramsForm) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -220,7 +222,9 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         final DropDownChoice wsDropDown = (DropDownChoice) workspacePanel.getFormComponent();
         // add an ajax onchange behaviour that keeps ws and ns in synch
         wsDropDown.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
+
             private NamespaceParamModel namespaceModel;
             private NamespacePanel namespacePanel;
             private boolean namespaceLookupOccurred;
@@ -281,10 +285,10 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         Component child;
         for (Component component : c) {
             child = component;
-            if (child instanceof NamespacePanel) {
-                return (NamespacePanel) child;
-            } else if (child instanceof MarkupContainer) {
-                NamespacePanel panel = findNamespacePanel((MarkupContainer) child);
+            if (child instanceof NamespacePanel panel1) {
+                return panel1;
+            } else if (child instanceof MarkupContainer container) {
+                NamespacePanel panel = findNamespacePanel(container);
                 if (panel != null) {
                     return panel;
                 }

@@ -52,10 +52,8 @@ public class DuplicatingTemplateVisitor implements TemplateVisitor {
     @Override
     public Object visit(DynamicValueBuilder dynamicBuilder, Object extradata) {
         Object result;
-        if (dynamicBuilder instanceof DynamicIncludeFlatBuilder)
-            result = visit((DynamicIncludeFlatBuilder) dynamicBuilder, extradata);
-        else if (dynamicBuilder instanceof DynamicMergeBuilder)
-            result = visit((DynamicMergeBuilder) dynamicBuilder, extradata);
+        if (dynamicBuilder instanceof DynamicIncludeFlatBuilder builder1) result = visit(builder1, extradata);
+        else if (dynamicBuilder instanceof DynamicMergeBuilder builder) result = visit(builder, extradata);
         else {
             DynamicValueBuilder copy = dynamicBuilder.copy(false);
             addChildren(copy, extradata, dynamicBuilder.getChildren());

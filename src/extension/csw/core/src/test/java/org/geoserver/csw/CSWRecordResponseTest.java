@@ -50,7 +50,7 @@ import org.xml.sax.SAXException;
 
 public class CSWRecordResponseTest extends CSWSimpleTestSupport {
 
-    class CustomRecordResponse extends AbstractRecordsResponse {
+    static class CustomRecordResponse extends AbstractRecordsResponse {
 
         public CustomRecordResponse(GeoServer gs) {
             super(

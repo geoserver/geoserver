@@ -5,10 +5,10 @@
  */
 package org.geoserver.security.filter;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.config.SecurityManagerConfig;
@@ -34,7 +34,7 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
         implements Filter, BeanNameAware {
 
     /**
-     * Geoserver authentication filter should set an {@link AuthenticationEntryPoint} using this servlet attribute name.
+     * GeoServer authentication filter should set an {@link AuthenticationEntryPoint} using this servlet attribute name.
      *
      * <p>The {@link GeoServerExceptionTranslationFilter} may use the entry point in case of an
      * {@link AuthenticationException}
@@ -64,7 +64,7 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
      * Tries to authenticate from cache if a key can be derived and the {@link Authentication} object is not in the
      * cache, the key will be returned.
      *
-     * <p>A not <code>null</code> return value indicates a missing cache entry
+     * <p>A not {@code null} return value indicates a missing cache entry
      */
     protected String authenticateFromCache(AuthenticationCachingFilter filter, HttpServletRequest request) {
         return authenticateFromCache(filter, request, false);
@@ -74,7 +74,7 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
      * Tries to authenticate from cache if a key can be derived and the {@link Authentication} object is not in the
      * cache, the key will be returned.
      *
-     * <p>A not <code>null</code> return value indicates a missing cache entry
+     * <p>A not {@code null} return value indicates a missing cache entry
      */
     protected String authenticateFromCache(
             AuthenticationCachingFilter filter, HttpServletRequest request, boolean force) {
@@ -103,5 +103,10 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
         url = url.toLowerCase();
 
         return url;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + " [beanName=" + beanName + "]";
     }
 }

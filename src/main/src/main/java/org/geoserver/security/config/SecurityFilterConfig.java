@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -16,6 +17,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  */
 public abstract class SecurityFilterConfig extends BaseSecurityNamedServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

@@ -50,7 +50,7 @@ import org.locationtech.jts.geom.Envelope;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-@SuppressWarnings({"unchecked", "PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
+@SuppressWarnings("unchecked")
 public class MockData implements TestData {
     // Extra configuration keys for vector data
     /** Use FeatureTypeInfo constants for srs handling as values or use {@link ProjectionPolicy} values straight */
@@ -484,8 +484,8 @@ public class MockData implements TestData {
         // wcs 1.1
         addCoverage(TASMANIA_DEM, TestData.class.getResource("tazdem.tiff"), TIFF, styleName);
         addCoverage(TASMANIA_DEM_NODATA, TestData.class.getResource("tazdemNoData2.tiff"), TIFF, styleName);
-        addCoverage(HOLE, TestData.class.getResource("hole.zip"), null, styleName);
-        addCoverage(ELSHAPED, TestData.class.getResource("elshaped.zip"), null, styleName);
+        addCoverageFromZip(HOLE, TestData.class.getResource("hole.zip"), null, styleName);
+        addCoverageFromZip(ELSHAPED, TestData.class.getResource("elshaped.zip"), null, styleName);
         addCoverage(TASMANIA_BM, TestData.class.getResource("tazbm.tiff"), TIFF, styleName);
         addCoverage(ROTATED_CAD, TestData.class.getResource("rotated.tiff"), TIFF, styleName);
         addCoverage(WORLD, TestData.class.getResource("world.tiff"), TIFF, styleName);

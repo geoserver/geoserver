@@ -40,11 +40,11 @@ public class GdalWrapper extends AbstractToolWrapper {
         try {
             // this works with gdal_translate v. 1.11.2
             // TODO: test with other GDAL versions
-            List<String> commands = new ArrayList<String>();
+            List<String> commands = new ArrayList<>();
             commands.add(getExecutable());
             commands.add("--long-usage");
 
-            Set<String> formats = new HashSet<String>();
+            Set<String> formats = new HashSet<>();
             addFormats(commands, formats);
 
             return formats;
@@ -81,7 +81,7 @@ public class GdalWrapper extends AbstractToolWrapper {
      */
     @Override
     public boolean isAvailable() {
-        List<String> commands = new ArrayList<String>();
+        List<String> commands = new ArrayList<>();
         commands.add(getExecutable());
         commands.add("--version");
 

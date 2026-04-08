@@ -19,10 +19,10 @@ import org.springframework.util.StringUtils;
 /**
  * Multiplexing password encoder.
  *
- * <p>The purpose of this class is to decode a previously encoded password without knowing before hand which password
+ * <p>The purpose of this class is to decode a previously encoded password without knowing beforehand which password
  * encoder was used. The prefix contained in the encoded password is used to route to the appropriate delegate encoder.
- * Therefore only {@link GeoserverPasswordEncoder} implementations that use a prefix in the encoded password are valid
- * for this encoder.
+ * Therefore, only {@link PasswordEncoder} implementations that use a prefix in the encoded password are valid for this
+ * encoder.
  *
  * <p>This class can also encode (although not typically used to do so). Encoding simply returns the first avaialble and
  * successful encoder.

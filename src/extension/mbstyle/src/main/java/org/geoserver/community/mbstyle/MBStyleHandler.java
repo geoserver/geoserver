@@ -71,14 +71,12 @@ public class MBStyleHandler extends StyleHandler {
             Object input, Version version, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
         // see if we can use the style cache, some conversions are expensive.
-        if (input instanceof File) {
+        if (input instanceof File jsonFile) {
             // convert to resource, to avoid code duplication
-            File jsonFile = (File) input;
             input = new FileSystemResourceStore(jsonFile.getParentFile()).get(jsonFile.getName());
         }
 
-        if (input instanceof Resource) {
-            Resource jsonResource = (Resource) input;
+        if (input instanceof Resource jsonResource) {
             Resource sldResource = jsonResource.parent().get(FilenameUtils.getBaseName(jsonResource.name()) + ".sld");
             if (sldResource.getType() != Resource.Type.UNDEFINED
                     && sldResource.lastmodified() > jsonResource.lastmodified()) {
@@ -99,7 +97,7 @@ public class MBStyleHandler extends StyleHandler {
         }
 
         // in this case, just do a plain on the fly conversion
-        try (Reader unusedReader = toReader(input)) { // NOPMD
+        try (Reader unusedReader = toReader(input)) {
             return convertToSLD(toReader(input));
         } catch (ParseException e) {
             throw new IOException(e);

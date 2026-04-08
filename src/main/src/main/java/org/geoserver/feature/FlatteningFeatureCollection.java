@@ -98,7 +98,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
     }
 
     /** Flattens the features in a streaming fashion */
-    class FlatteningFeatureIterator implements SimpleFeatureIterator {
+    static class FlatteningFeatureIterator implements SimpleFeatureIterator {
 
         private SimpleFeatureIterator delegate;
 
@@ -136,9 +136,9 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
         private void accumulateAttributes(SimpleFeature feature) {
             for (int i = 0; i < feature.getAttributes().size(); i++) {
                 Object attr = feature.getAttribute(i);
-                if (attr instanceof SimpleFeature) {
+                if (attr instanceof SimpleFeature simpleFeature) {
                     // go forth and harvest attrubutes
-                    accumulateAttributes((SimpleFeature) attr);
+                    accumulateAttributes(simpleFeature);
                 } else {
                     builder.add(attr);
                 }

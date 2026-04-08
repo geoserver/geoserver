@@ -5,15 +5,15 @@
  */
 package org.geoserver.platform;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.io.IOException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
  * A servlet filter that allows for advanced dispatching.
@@ -33,8 +33,8 @@ public class AdvancedDispatchFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        if (request instanceof HttpServletRequest) {
-            request = new AdvancedDispatchHttpRequest((HttpServletRequest) request);
+        if (request instanceof HttpServletRequest servletRequest) {
+            request = new AdvancedDispatchHttpRequest(servletRequest);
         }
         chain.doFilter(request, response);
     }

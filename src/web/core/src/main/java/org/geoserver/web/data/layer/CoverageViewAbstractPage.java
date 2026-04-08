@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.media.jai.ImageLayout;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
@@ -26,6 +25,7 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
+import org.eclipse.imagen.ImageLayout;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -47,7 +47,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
 
     public static final String COVERAGESTORE = "storeName";
 
-    public static final String WORKSPACE = "wsName";
+    public static final String WORKSPACE = "workspace";
 
     static final String COVERAGE_VIEW_NAME = "COVERAGEVIEW_NAME";
 
@@ -72,6 +72,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     List<String> selectedCoverages;
 
     List<CoverageBand> outputBands;
+
+    boolean fillMissingBands;
 
     EnvelopeCompositionType envelopeCompositionType;
 
@@ -141,6 +143,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                     .orElse(EnvelopeCompositionType.INTERSECTION);
             selectedResolution =
                     Optional.ofNullable(coverageView.getSelectedResolution()).orElse(SelectedResolution.BEST);
+            // Default to false if null on legacy coverageViews
+            fillMissingBands = Boolean.TRUE.equals(coverageView.getFillMissingBands());
         } else {
             outputBands = new ArrayList<>();
             newCoverage = true;
@@ -148,6 +152,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             envelopeCompositionType = EnvelopeCompositionType.INTERSECTION;
             selectedResolution = SelectedResolution.BEST;
             compositionType = CoverageView.CompositionType.BAND_SELECT;
+            fillMissingBands = false;
         }
         selectedCoverages = new ArrayList<>(availableCoverages);
         // build the form and the text area
@@ -170,7 +175,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                 availableCoverages,
                 definition,
                 outputName,
-                storeId);
+                storeId,
+                new PropertyModel<>(this, "fillMissingBands"));
         form.add(coverageEditor);
 
         // save and cancel at the bottom of the page
@@ -201,6 +207,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         view.setCompositionType(compositionType);
         view.setDefinition(coverageEditor.jiffleFormulaModel.getObject());
         view.setOutputName(coverageEditor.jiffleOutputNameModel.getObject());
+        view.setFillMissingBands(coverageEditor.fillMissingBands.getObject());
         if (resolutionReferenceCoverage != null) {
             final int referenceCoverageIndex = getReferenceCoverageIndex();
             view.setSelectedResolutionIndex(referenceCoverageIndex);

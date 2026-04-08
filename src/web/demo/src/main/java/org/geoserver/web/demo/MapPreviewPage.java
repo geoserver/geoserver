@@ -11,6 +11,7 @@ import static org.geoserver.web.demo.PreviewLayerProvider.NAME;
 import static org.geoserver.web.demo.PreviewLayerProvider.TITLE;
 import static org.geoserver.web.demo.PreviewLayerProvider.TYPE;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,10 +26,10 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -37,23 +38,49 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.DynamicImageResource;
+import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.caching.IStaticCacheableResource;
+import org.apache.wicket.util.string.StringValue;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedType;
-import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geotools.api.filter.Filter;
 
 /** Shows a paged list of the available layers and points to previews in various formats */
 public class MapPreviewPage extends GeoServerBasePage {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    PreviewLayerProvider provider = new PreviewLayerProvider();
+    private static final PackageResourceReference JS_FILE =
+            new PackageResourceReference(MapPreviewPage.class, "MapPreviewPage.js");
+
+    PreviewLayerProvider provider = new PreviewLayerProvider() {
+        @Override
+        protected Filter getFilter() {
+
+            Filter baseFilter = super.getFilter();
+            StringValue wsParam = getPageParameters().get("workspace");
+            if (wsParam.isNull() || wsParam.isEmpty()) {
+                return baseFilter;
+            }
+            String targetWs = wsParam.toString();
+            Filter layerWsFilter = Predicates.equal("resource.store.workspace.name", targetWs);
+            Filter groupWsFilter = Predicates.equal("workspace.name", targetWs);
+            Filter workspaceFilter = Predicates.or(layerWsFilter, groupWsFilter);
+            return Predicates.and(baseFilter, workspaceFilter);
+        }
+    };
 
     GeoServerTablePanel<PreviewLayer> table;
 
@@ -68,6 +95,7 @@ public class MapPreviewPage extends GeoServerBasePage {
         // build the table
         table = new GeoServerTablePanel<>("table", provider) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -78,7 +106,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                 boolean wfsVisible = layer.hasServiceSupport("WFS");
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);
-                    f.add(new Image("layerIcon", layer.getIcon()));
+                    f.add(new CachingImage("layerIcon", layer.getIcon()));
                     return f;
                 } else if (property == NAME) {
                     return new Label(id, property.getModel(itemModel));
@@ -105,51 +133,16 @@ public class MapPreviewPage extends GeoServerBasePage {
                 throw new IllegalArgumentException("Don't know a property named " + property.getName());
             }
         };
-        table.setOutputMarkupId(true);
-        add(table);
+        table.setTableChangeJS("MapPreviewPage_SetOnChange();");
+        add(table.setOutputMarkupId(true));
+        int maxFeatures = getGeoServer().getService(WFSInfo.class).getMaxNumberOfFeaturesForPreview();
+        add(new HiddenField<>("maxFeatures", Model.of(maxFeatures)).setOutputMarkupId(true));
     }
 
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-
-        // setup onChange events (Content-security-policy doesn't allow onClick events in the HTML)
-        String script = "\n";
-
-        script +=
-                "\n         //1. attach to the appropriate <select> elements (marked with class map-preview-page-menu-select)\n"
-                        + "        //2. when onChange called:\n"
-                        + "        //    a. is this WMS (otherwise its WFS)\n"
-                        + "        //    b. determine the format attribute selector (its different for WMS and WFS). This is from the optionGroup\n"
-                        + "        //       the selected option is from (WMS or WFS).\n"
-                        + "        //    c. determine actual format (i.e. image/png) - this is the option's `value`\n"
-                        + "        //    d. the \"&maxFeature=50\" is a constant (based on the configuration).  Used by WFS.\n"
-                        + "        //    e. use either the attribute wmsLink of wfsLink as the base url and add\n"
-                        + "        //         i. format specifier\n"
-                        + "        //        ii. \"&maxFeature=50\" (see above) if its WFS\n"
-                        + "        //    f. open a new window to computed url (NOTE: this is a popup and might be blocked by browser)\n"
-                        + "        //    g. reset the selected item to \"Select one\" so user can choose a different one (or different layer)"
-                        + "\n\n$('.map-preview-page-menu-select').on('change',function(event) {\n"
-                        + "    //debugger;\n\n"
-                        + "    var isWMS = this.options[this.selectedIndex].parentNode.label == 'WMS';\n"
-                        + "    var formatAtt= isWMS ? 'format' : 'outputFormat';\n"
-                        + "    var actualFormat = this.options[this.selectedIndex].value;\n"
-                        + "    var maxFeature = '"
-                        + getMaxFeatures()
-                        + "';\n"
-                        + "     var url='';\n"
-                        + "     if (isWMS) {\n"
-                        + "       url=this.getAttribute('wmsLink') + '&' + formatAtt + '=' + actualFormat;\n"
-                        + "    }\n"
-                        + "    else {\n"
-                        + "       url=this.getAttribute('wfsLink') + '&' + formatAtt + '=' + actualFormat + maxFeature;\n"
-                        + "    }\n"
-                        + "    window.open(url);\n"
-                        + "    this.selectedIndex=0;\n"
-                        + "}\n"
-                        + ");\n\n";
-        script += "\n";
-        response.render(OnDomReadyHeaderItem.forScript(script));
+        response.render(JavaScriptReferenceHeaderItem.forReference(JS_FILE));
     }
 
     private List<ExternalLink> commonFormatLinks(PreviewLayer layer) {
@@ -160,20 +153,6 @@ public class MapPreviewPage extends GeoServerBasePage {
             links.add(link.getFormatLink(layer));
         }
         return links;
-    }
-    /**
-     * Generates the maxFeatures element of the WFS request using the value of maxNumberOfFeaturesForPreview. Values <=
-     * 0 give no limit.
-     *
-     * @return "&maxFeatures=${maxNumberOfFeaturesForPreview}" or "" if maxNumberOfFeaturesForPreview <= 0"
-     */
-    private String getMaxFeatures() {
-        GeoServer geoserver = getGeoServer();
-        WFSInfo service = geoserver.getService(WFSInfo.class);
-        if (service.getMaxNumberOfFeaturesForPreview() > 0) {
-            return "&maxFeatures=" + service.getMaxNumberOfFeaturesForPreview();
-        }
-        return "";
     }
 
     /**
@@ -340,8 +319,17 @@ public class MapPreviewPage extends GeoServerBasePage {
         protected byte[] getImageData(Attributes attributes) {
             PreviewLayer layer = itemModel.getObject();
             try {
-                return IOUtils.toByteArray(
-                        layer.getIcon().getResource().getResourceStream().getInputStream());
+                ResourceReference imageReference = layer.getIcon();
+                IResource image = imageReference.getResource();
+
+                if (image instanceof IStaticCacheableResource) {
+                    IStaticCacheableResource staticImage = (IStaticCacheableResource) image;
+
+                    return IOUtils.toByteArray(staticImage.getResourceStream().getInputStream());
+                } else {
+                    throw new RuntimeException("Image "
+                            + imageReference.getClass().getSimpleName() + " is not a static cacheable resource");
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

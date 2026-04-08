@@ -94,7 +94,7 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
             }
             AbstractGridCoverage2DReader reader = format.getReader(f);
             resource = new GridCoverageReaderResource(reader, f);
-            return reader.read(null);
+            return reader.read();
         } finally {
             if (resource != null) {
                 resources.addResource(resource);

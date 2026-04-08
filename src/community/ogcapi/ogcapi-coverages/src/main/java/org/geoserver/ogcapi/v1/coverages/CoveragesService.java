@@ -6,8 +6,8 @@ package org.geoserver.ogcapi.v1.coverages;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import static org.geoserver.ogcapi.APIException.INVALID_PARAMETER_VALUE;
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
-import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
+import static org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
@@ -222,14 +222,13 @@ public class CoveragesService {
                     HttpStatus.BAD_REQUEST);
         }
         Object timeSpec = times.iterator().next();
-        if (timeSpec instanceof Date) {
+        if (timeSpec instanceof Date date) {
             DimensionSliceType slice = wf.createDimensionSliceType();
             slice.setDimension("time");
-            slice.setSlicePoint(ISO_INSTANT.format(((Date) timeSpec).toInstant()));
+            slice.setSlicePoint(ISO_INSTANT.format(date.toInstant()));
             request.getDimensionSubset().add(slice);
-        } else if (timeSpec instanceof DateRange) {
+        } else if (timeSpec instanceof DateRange range) {
             DimensionTrimType timeTrim = wf.createDimensionTrimType();
-            DateRange range = (DateRange) timeSpec;
             timeTrim.setDimension("time");
             timeTrim.setTrimLow(ISO_INSTANT.format(range.getMinValue().toInstant()));
             timeTrim.setTrimHigh(ISO_INSTANT.format(range.getMaxValue().toInstant()));

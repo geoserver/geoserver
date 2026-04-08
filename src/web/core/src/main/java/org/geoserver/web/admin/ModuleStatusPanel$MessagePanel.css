@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class ModuleStatusPanel$MessagePanel
+
+The panel's html will be contained in a <div class='gs-panel-ModuleStatusPanel_MessagePanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-ModuleStatusPanel_MessagePanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

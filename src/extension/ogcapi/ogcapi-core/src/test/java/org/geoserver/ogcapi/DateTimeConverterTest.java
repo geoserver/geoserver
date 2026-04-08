@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 import java.util.TimeZone;
 import org.geotools.util.DateRange;
@@ -76,7 +77,8 @@ public class DateTimeConverterTest {
         assertEquals(1, result.size());
         assertTrue(result.get(0) instanceof DateRange);
         DateRange range = (DateRange) result.get(0);
-        assertEquals(start, range.getMinValue().toInstant());
+        Instant instant = range.getMinValue().toInstant();
+        assertEquals(Instant.ofEpochMilli(start.getTime()), instant);
         assertNull(range.getMaxValue());
     }
 

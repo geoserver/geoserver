@@ -15,7 +15,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.cs.DefaultCoordinateSystemAxis;
 
 /**
- * A custom {@link Envelope} that allows to set a min value of longitude higher than the max one in selected methods to
+ * A custom {@link Bounds} that allows to set a min value of longitude higher than the max one in selected methods to
  * deal with the dateline crossing case
  *
  * @author Andrea Aime - GeoSolutions

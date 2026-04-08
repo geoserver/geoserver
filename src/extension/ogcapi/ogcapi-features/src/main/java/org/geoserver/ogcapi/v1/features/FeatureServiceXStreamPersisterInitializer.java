@@ -12,9 +12,9 @@ import org.geoserver.config.util.XStreamPersisterInitializer;
 public class FeatureServiceXStreamPersisterInitializer implements XStreamPersisterInitializer {
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("ogcapiFeatures", FeatureConformance.class);
-        persister.registerBreifMapComplexType("cql2", CQL2Conformance.class);
-        persister.registerBreifMapComplexType("ecql", ECQLConformance.class);
+        persister.registerBriefMapComplexType("ogcapiFeatures", FeatureConformance.class);
+        persister.registerBriefMapComplexType("cql2", CQL2Conformance.class);
+        persister.registerBriefMapComplexType("ecql", ECQLConformance.class);
 
         XStream xs = persister.getXStream();
         xs.allowTypes(new Class[] {FeatureConformance.class});

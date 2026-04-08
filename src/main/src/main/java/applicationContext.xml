@@ -21,6 +21,7 @@
     <bean id="gsMainModule" class="org.geoserver.platform.ModuleStatusImpl">
         <constructor-arg index="0" value="gs-main"/>
         <constructor-arg index="1" value="GeoServer Main"/>
+        <property name="category" value="CORE"/>
     </bean>
     <bean class="org.geoserver.platform.RenderingEngineStatus"/>
     <bean class="org.geoserver.platform.SystemPropertyStatus"/>
@@ -56,6 +57,10 @@
     <bean id="manifestLoader" class="org.geoserver.ManifestLoader" lazy-init="false">
        <constructor-arg ref="resourceLoader"/>
     </bean>
+
+    <bean id="customCRSAuthorityLoader" class="org.vfny.geoserver.crs.CustomCRSAuthorityLoader">
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
     
     <!-- extensions -->
     <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
@@ -76,7 +81,7 @@
      -->
      
     <!-- configuration module -->
-        <!-- note: we use depends to ensure that all datastore plugins are 
+        <!-- note: we use depends on ensure that all datastore plugins are
              loaded from the spring container before processing hte catalog -->
      
     <bean id="rawCatalog" class="org.geoserver.catalog.impl.CatalogImpl" depends-on="configurationLock">
@@ -105,7 +110,8 @@
     <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl">
       <property name="catalog" ref="catalog"/>
     </bean>
-    <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy" depends-on="extensions,dataDirectory,geoServerSecurityManager,configurationLock">
+    <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy"
+          depends-on="extensions,dataDirectory,geoServerSecurityManager,configurationLock,customCRSAuthorityLoader">
       <constructor-arg ref="resourceLoader"/>
     </bean>
     
@@ -159,8 +165,8 @@
     <!-- classpath publisher, allows resources in the classpath to be published as static files -->
     <bean id="classpathPublisher" class="org.geoserver.ows.ClasspathPublisher"/>
     
-  <!-- jai initializer -->
-  <bean id="jaiInitializer" class="org.geoserver.jai.JAIInitializer"/>
+  <!-- ImageN initializer -->
+  <bean id="imageNInitializer" class="org.geoserver.jai.ImageNInitializer"/>
   
   <!-- coverage access initializer -->
   <bean id="coverageAccessInitializer" class="org.geoserver.coverage.CoverageAccessInitializer">
@@ -170,6 +176,10 @@
   <bean id="loggingInitializer" class="org.geoserver.logging.LoggingInitializer">
     <property name="resourceLoader" ref="resourceLoader"/>
     <property name="geoServer" ref="geoServer"/>
+  </bean>
+
+  <!-- cors initializer -->
+  <bean id="corsInitializer" class="org.geoserver.security.cors.CORSInitializer">
   </bean>
   
   <!-- resource pool initializer -->
@@ -182,7 +192,7 @@
   <bean id="defaultCatalogSecurityFactory" class="org.geoserver.security.decorators.DefaultSecureCatalogFactory"/>
   
   <bean id="disabledServiceChecker" class="org.geoserver.ows.DisabledServiceCheck"/>
-  
+
   <bean id="dispatcherMapping" 
     class="org.geoserver.ows.OWSHandlerMapping">
     <constructor-arg ref="catalog"/>
@@ -197,6 +207,7 @@
   
   <bean id="filePublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>
@@ -208,6 +219,7 @@
   
   <bean id="stylePublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>
@@ -218,6 +230,7 @@
   
   <bean id="classpathPublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>
@@ -285,7 +298,7 @@
     <constructor-arg ref="rawCatalog"/> 
   </bean>
    
-  <!-- Alllows to lock the config subsyste to that we serialize accesses to it -->
+  <!-- Allows to lock the config subsystem to that we serialize accesses to it -->
   <bean id="configurationLock" class="org.geoserver.GeoServerConfigurationLock"/>
   
   <!-- Automatically injects a env map into the env function -->
@@ -315,8 +328,8 @@
   <bean id="cascadedStoredQueryCallback" class="org.geoserver.catalog.CascadedStoredQueryCallback"/>
   
   <!-- Entity resolver provider, to stop xml attacks via system entity resolution -->
-  <!-- The depends-on is important to avoid circularities, when a depends-on is setup a bean does not
-       start creation until the bean it depends onto is created. This ensures GeoServer post-processing
+  <!-- The depends-on is important to avoid circularises, when a depends-on is set up a bean does not
+       start creation until the bean it depends on onto is created. This ensures GeoServer post-processing
        inside GeoServerLoader ends up causing the initialization of entityResolverProvider instead of the 
        opposite, via the ResourcePoolInitializer, and breaks the circularity that would otherwise happen -->
   <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider" depends-on="geoServer">
@@ -336,6 +349,11 @@
   <!-- handle time stamping of layer/style creation/modification -->
   <bean id="catalogTimeStampUpdater" class="org.geoserver.config.CatalogTimeStampUpdater">
   	<constructor-arg ref="catalog"/>
+  </bean>
+
+  <bean id="catalogModificationUserUpdater" class="org.geoserver.config.CatalogModificationUserUpdater">
+    <constructor-arg ref="catalog"/>
+    <constructor-arg ref="geoServer"/>
   </bean>
 
   <bean id="httpWarningAppender" class="org.geoserver.util.HTTPWarningAppender"/>
@@ -358,9 +376,28 @@
   </bean>
   <bean id="xmlViewParamsFormatParser" class="org.geoserver.ows.kvp.XMLViewParamsFormatParser">
   </bean>
+  <!--
+    Common KVP parsers, services with different syntax can use their own
+    by declaring the service/version parameters to have their own parser prioritized
+  -->
+  <bean id="bboxKvpParser" class="org.geoserver.ows.kvp.BBoxKvpParser"/>
+  <bean id="cqlKvpParser" class="org.geoserver.ows.kvp.CQLFilterKvpParser"/>
+  <bean id="sortByKvpParser" class="org.geoserver.ows.kvp.SortByKvpParser">
+      <constructor-arg ref="filterFactory"/>
+  </bean>
+  <bean id="formatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
+    <bean id="featureIdKvpParser" class="org.geoserver.ows.FlatKvpParser">
+        <constructor-arg index="0" value="featureId"/>
+        <constructor-arg index="1" value="java.lang.String"/>
+    </bean>
 
-  <bean id="authCacheLifecycleHandler" class="org.geoserver.security.auth.GuavaAuthenticationCacheImpl">
+
+    <bean id="authCacheLifecycleHandler" class="org.geoserver.security.auth.GuavaAuthenticationCacheImpl">
     <constructor-arg value="1000"/>
   </bean>
+
+  <bean id="geoserverTileCache" class="org.geoserver.jai.GeoServerTileCache"/>
+
+
 
 </beans>

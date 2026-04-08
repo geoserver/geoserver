@@ -5,6 +5,7 @@
  */
 package org.geoserver.opensearch.eo.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,6 +21,7 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - GeoSolutions
  */
 public class OpenSearchAccessListModel extends LoadableDetachableModel<List<DataStoreInfo>> {
+    @Serial
     private static final long serialVersionUID = -7742496075623731474L;
 
     static final Logger LOGGER = Logging.getLogger(OpenSearchAccessListModel.class);

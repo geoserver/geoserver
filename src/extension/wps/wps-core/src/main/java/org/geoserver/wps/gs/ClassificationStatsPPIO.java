@@ -7,10 +7,10 @@ package org.geoserver.wps.gs;
 
 import java.io.InputStream;
 import javax.xml.namespace.QName;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.media.stats.Statistics;
 import org.geoserver.wps.ppio.XMLPPIO;
 import org.geotools.process.classify.ClassificationStats;
-import org.jaitools.numeric.Range;
-import org.jaitools.numeric.Statistic;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -40,7 +40,7 @@ public class ClassificationStatsPPIO extends XMLPPIO {
             atts.addAttribute("", "", "count", null, results.count(i).toString());
 
             h.startElement("", "", "Class", atts);
-            for (Statistic stat : results.getStats()) {
+            for (Statistics.StatsType stat : results.getStats()) {
                 h.startElement("", "", stat.name(), null);
 
                 String value = String.valueOf(results.value(i, stat));

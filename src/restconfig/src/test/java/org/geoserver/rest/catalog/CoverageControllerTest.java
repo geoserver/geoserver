@@ -22,9 +22,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
 import javax.xml.namespace.QName;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CoverageDimensionInfo;
@@ -41,6 +38,9 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -447,7 +447,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         GridCoverage2D coverage = null;
         try {
             reader = catalog.getResourcePool().getGridCoverageReader(coverageStore, "tazdem", null);
-            coverage = (GridCoverage2D) reader.read("tazdem", null);
+            coverage = (GridCoverage2D) reader.read("tazdem");
             GridSampleDimension sampleDim = coverage.getSampleDimension(0);
             double[] noDataValues = sampleDim.getNoDataValues();
             assertEquals(-999.0, noDataValues[0], DELTA);

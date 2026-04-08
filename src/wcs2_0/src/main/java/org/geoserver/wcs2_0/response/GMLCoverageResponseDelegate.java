@@ -36,7 +36,6 @@ public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate im
     /** Can be used to map dimensions name to indexes */
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
-    @SuppressWarnings("serial")
     public GMLCoverageResponseDelegate(EnvelopeAxesLabelsMapper envelopeDimensionsMapper, GeoServer geoserver) {
         super(
                 geoserver,

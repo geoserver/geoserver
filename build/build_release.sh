@@ -284,10 +284,9 @@ if [ -z $SKIP_BUILD ]; then
   ##################
 
   pushd ../doc/en > /dev/null
-
-  # ant clean user -Dproject.version=$tag
-  # ant user-pdf -Dproject.version=$tag
-  # ant developer -Dproject.version=$tag
+  
+  # obtains release from pom.xml
+  ant build
 
   mvn clean compile $MAVEN_FLAGS
   mvn package $MAVEN_FLAGS
@@ -360,10 +359,8 @@ for a in `ls $artifacts/*.zip | grep -v plugin`; do
   cp $a $dist
 done
 
-cp $artifacts/../../../doc/en/target/user/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf || true
-
 echo "generated artifacts:"
-ls -la $dist
+ls -lha $dist
 
 # git commit changes on the release branch
 pushd .. > /dev/null

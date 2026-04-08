@@ -7,6 +7,7 @@ package org.geoserver.importer;
 
 import static org.geoserver.importer.ImporterUtils.resolve;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import org.geotools.feature.SchemaException;
 public class ImportTask implements Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String TYPE_NAME = "typeName";
@@ -180,12 +182,12 @@ public class ImportTask implements Serializable {
         return transform;
     }
 
-    @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
+    @SuppressWarnings("unchecked")
     public void addTransform(ImportTransform tx) {
         ((TransformChain) this.transform).add(tx);
     }
 
-    @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
+    @SuppressWarnings("unchecked")
     public void removeTransform(ImportTransform tx) {
         ((TransformChain) this.transform).remove(tx);
     }

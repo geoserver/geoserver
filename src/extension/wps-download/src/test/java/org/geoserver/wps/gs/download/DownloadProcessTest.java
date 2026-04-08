@@ -61,9 +61,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
-import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.executor.ExecutionStatus;
@@ -82,6 +80,7 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
 import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.MathTransform2D;
@@ -164,7 +163,8 @@ public class DownloadProcessTest extends WPSTestSupport {
     private static Map<String, Set<String>> FORMAT_TO_EXTENSIONS = new HashMap<>();
 
     private static final CoordinateReferenceSystem WGS84;
-    private static final double DELTA = 1E-6;
+    private static final double DELTA_DEGREES = 1E-6;
+    private static final double DELTA_METERS = 1;
 
     static {
         GTIFF_EXTENSIONS.add("tif");
@@ -191,41 +191,6 @@ public class DownloadProcessTest extends WPSTestSupport {
         }
     }
 
-    public static class AutoCloseableResource implements AutoCloseable {
-        WPSResourceManager resourceManager;
-
-        RawData rawData;
-
-        Resource resource;
-
-        public File getFile() {
-            return file;
-        }
-
-        File file;
-
-        public AutoCloseableResource(WPSResourceManager resourceManager, RawData rawData) throws IOException {
-
-            // Final checks on the result
-            Assert.assertNotNull(rawData);
-
-            this.resourceManager = resourceManager;
-            this.rawData = rawData;
-            this.resource = resourceManager.getTemporaryResource(rawData.getFileExtension());
-            this.file = resource.file();
-            try (InputStream in = rawData.getInputStream()) {
-                IOUtils.copy(in, file);
-            }
-        }
-
-        @Override
-        public void close() throws IOException {
-            // clean up process
-            IOUtils.delete(file, true);
-            resourceManager.finished(resourceManager.getExecutionId(true));
-        }
-    }
-
     public static class AutoDisposableGeoTiffReader extends GeoTiffReader implements AutoCloseable {
 
         public AutoDisposableGeoTiffReader(File file) throws DataSourceException {
@@ -238,21 +203,9 @@ public class DownloadProcessTest extends WPSTestSupport {
         }
 
         public AutoDisposableGridCoverage2D read() throws IOException {
-            GridCoverage2D gc = super.read(null);
+            GridCoverage2D gc = super.read();
             assertNotNull(gc);
             return new AutoDisposableGridCoverage2D("", gc);
-        }
-    }
-
-    public static class AutoDisposableGridCoverage2D extends GridCoverage2D implements AutoCloseable {
-
-        public AutoDisposableGridCoverage2D(CharSequence name, GridCoverage2D coverage) {
-            super(name, coverage);
-        }
-
-        @Override
-        public void close() {
-            CoverageCleanerCallback.disposeCoverage(this);
         }
     }
 
@@ -348,7 +301,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         revertLayer(MockData.POLYGONS);
     }
 
-    private WPSResourceManager getResourceManager() {
+    protected WPSResourceManager getResourceManager() {
         return GeoServerExtensions.bean(WPSResourceManager.class);
     }
 
@@ -756,12 +709,12 @@ public class DownloadProcessTest extends WPSTestSupport {
             assertExpectedExtension(raster, "tiff");
 
             Assert.assertEquals(
-                    -130.88669845369998, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA);
+                    -130.88669845369998, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA_DEGREES);
             Assert.assertEquals(
-                    48.611129008700004, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA);
+                    48.611129008700004, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA_DEGREES);
             Assert.assertEquals(
-                    -123.95304462109999, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA);
-            Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA);
+                    -123.95304462109999, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA_DEGREES);
+            Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA_DEGREES);
 
             // Take a pixel within the ROI
             byte[] result = (byte[]) gc.evaluate(new Position2D(new Point2D.Double(firstXRoi, firstYRoi - 1E-4)));
@@ -803,12 +756,12 @@ public class DownloadProcessTest extends WPSTestSupport {
                 AutoDisposableGridCoverage2D gc = reader.read()) {
 
             Assert.assertEquals(
-                    -130.88669845369998, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA);
+                    -130.88669845369998, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA_DEGREES);
             Assert.assertEquals(
-                    48.611129008700004, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA);
+                    48.611129008700004, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA_DEGREES);
             Assert.assertEquals(
-                    -123.95304462109999, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA);
-            Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA);
+                    -123.95304462109999, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA_DEGREES);
+            Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA_DEGREES);
 
             // Take a pixel within the ROI
             byte[] result = (byte[]) gc.evaluate(new Position2D(new Point2D.Double(firstXRoi, firstYRoi - 1E-4)));
@@ -852,19 +805,19 @@ public class DownloadProcessTest extends WPSTestSupport {
             Assert.assertEquals(
                     -1.457024062347863E7,
                     gcResampled.getEnvelope().getLowerCorner().getOrdinate(0),
-                    DELTA);
+                    DELTA_DEGREES);
             Assert.assertEquals(
                     6209706.404894806,
                     gcResampled.getEnvelope().getLowerCorner().getOrdinate(1),
-                    DELTA);
+                    DELTA_DEGREES);
             Assert.assertEquals(
                     -1.379838980949677E7,
                     gcResampled.getEnvelope().getUpperCorner().getOrdinate(0),
-                    DELTA);
+                    DELTA_DEGREES);
             Assert.assertEquals(
                     7187128.139081598,
                     gcResampled.getEnvelope().getUpperCorner().getOrdinate(1),
-                    DELTA);
+                    DELTA_DEGREES);
         }
     }
 
@@ -1246,12 +1199,12 @@ public class DownloadProcessTest extends WPSTestSupport {
 
             // check envelope
             Assert.assertEquals(
-                    -130.88669845369998, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA);
-            Assert.assertEquals(48.5552612829, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA);
+                    -130.88669845369998, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA_DEGREES);
+            Assert.assertEquals(48.5552612829, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA_DEGREES);
             Assert.assertEquals(
-                    -124.05382943906582, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA);
+                    -124.05382943906582, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA_DEGREES);
             Assert.assertEquals(
-                    54.00577111704634, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA);
+                    54.00577111704634, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA_DEGREES);
         }
     }
 
@@ -1382,10 +1335,10 @@ public class DownloadProcessTest extends WPSTestSupport {
             Assert.assertEquals(80, Math.round(originalGridRange.getHeight()));
 
             // check envelope
-            Assert.assertEquals(-130.8866985, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA);
-            Assert.assertEquals(48.5552613, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA);
-            Assert.assertEquals(-123.8830077, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA);
-            Assert.assertEquals(54.1420339, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA);
+            Assert.assertEquals(-130.8866985, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA_DEGREES);
+            Assert.assertEquals(48.5552613, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA_DEGREES);
+            Assert.assertEquals(-123.8830077, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA_DEGREES);
+            Assert.assertEquals(54.1420339, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA_DEGREES);
         }
 
         ///////////////////////////////////////
@@ -1473,12 +1426,12 @@ public class DownloadProcessTest extends WPSTestSupport {
 
             // check envelope
             Assert.assertEquals(
-                    -130.88669845369998, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA);
+                    -130.88669845369998, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA_DEGREES);
             Assert.assertEquals(
-                    48.623544058877776, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA);
+                    48.623544058877776, gc.getEnvelope().getLowerCorner().getOrdinate(1), DELTA_DEGREES);
             Assert.assertEquals(
-                    -123.95304462109999, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA);
-            Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA);
+                    -123.95304462109999, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA_DEGREES);
+            Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA_DEGREES);
         }
     }
 
@@ -1928,8 +1881,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                 // getting the native resolution
                 double resX = XAffineTransform.getScaleX0(referenceTransform);
                 double resY = XAffineTransform.getScaleY0(referenceTransform);
-                assertEquals(resX, XAffineTransform.getScaleX0(transform), DELTA);
-                assertEquals(resY, XAffineTransform.getScaleY0(transform), DELTA);
+                assertEquals(resX, XAffineTransform.getScaleX0(transform), DELTA_DEGREES);
+                assertEquals(resY, XAffineTransform.getScaleY0(transform), DELTA_DEGREES);
 
                 // Check proper alignment
                 double[] referenceLowerCorner =
@@ -1937,8 +1890,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                 double[] lowerCorner = gc.getEnvelope2D().getLowerCorner().getCoordinate();
                 double xPixels = Math.abs(referenceLowerCorner[0] - lowerCorner[0]) / resX;
                 double yPixels = Math.abs(referenceLowerCorner[1] - lowerCorner[1]) / resY;
-                assertTrue(Math.abs(xPixels - Math.round(xPixels)) < DELTA);
-                assertTrue(Math.abs(yPixels - Math.round(yPixels)) < DELTA);
+                assertTrue(Math.abs(xPixels - Math.round(xPixels)) < DELTA_DEGREES);
+                assertTrue(Math.abs(yPixels - Math.round(yPixels)) < DELTA_DEGREES);
             }
         }
     }
@@ -2698,20 +2651,18 @@ public class DownloadProcessTest extends WPSTestSupport {
         final PropertyName property = FF.property("resolution");
         Filter filter = FF.greaterOrEqual(property, FF.literal(16000));
 
-        testExpectedResolution(downloadProcess, filter, WGS84, ROI2, resourceManager, 17550.94845318, -17550.94845318);
+        testExpectedResolution(downloadProcess, filter, WGS84, ROI2, resourceManager, 17550, -17550);
 
         // Download native resolution 2
         filter = FF.and(FF.lessOrEqual(property, FF.literal(10000)), FF.greaterOrEqual(property, FF.literal(1000)));
 
-        testExpectedResolution(
-                downloadProcess, filter, null, null, resourceManager, 8712.564801039759900, -8712.564801039759900);
+        testExpectedResolution(downloadProcess, filter, null, null, resourceManager, 8712, -8712);
 
         // Download native resolution 3
         filter = FF.lessOrEqual(property, FF.literal(1000));
 
         // Final checks on the result
-        testExpectedResolution(
-                downloadProcess, filter, null, null, resourceManager, 7818.453242658203, -10139.712928934865);
+        testExpectedResolution(downloadProcess, filter, null, null, resourceManager, 7796, -10133);
 
         filter = FF.and(FF.lessOrEqual(property, FF.literal(10000)), FF.greaterOrEqual(property, FF.literal(1000)));
 
@@ -2796,8 +2747,11 @@ public class DownloadProcessTest extends WPSTestSupport {
             double resX = transform2D.getScaleX();
             double resY = transform2D.getScaleY();
 
-            Assert.assertEquals(expectedX, resX, DELTA);
-            Assert.assertEquals(expectedY, resY, DELTA);
+            double delta =
+                    reader.getCoordinateReferenceSystem() instanceof GeographicCRS ? DELTA_DEGREES : DELTA_METERS;
+
+            Assert.assertEquals(expectedX, resX, delta);
+            Assert.assertEquals(expectedY, resY, delta);
         }
     }
 

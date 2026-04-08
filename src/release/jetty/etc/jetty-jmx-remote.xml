@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_10_0.dtd">
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+  <Call name="addBean">
+    <Arg>
+      <New id="JMXConnectorServer" class="org.eclipse.jetty.jmx.ConnectorServer">
+        <Arg>
+          <New class="javax.management.remote.JMXServiceURL">
+            <Arg type="java.lang.String">rmi</Arg>
+            <Arg type="java.lang.String"><Property name="jetty.jmxremote.rmiserverhost" default="localhost"/></Arg>
+            <Arg type="java.lang.Integer"><Property name="jetty.jmxremote.rmiserverport" default="1099"/></Arg>
+            <Arg type="java.lang.String">/jndi/rmi://<Property name="jetty.jmxremote.rmiregistryhost" default="localhost"/>:<Property name="jetty.jmxremote.rmiregistryport" default="1099"/>/jmxrmi</Arg>
+          </New>
+        </Arg>
+        <Arg>org.eclipse.jetty.jmx:name=jmxconnectorserver</Arg>
+      </New>
+    </Arg>
+  </Call>
+</Configure>

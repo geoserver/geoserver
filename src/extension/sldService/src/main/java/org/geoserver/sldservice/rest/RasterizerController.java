@@ -5,6 +5,7 @@
  */
 package org.geoserver.sldservice.rest;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -190,7 +190,7 @@ public class RasterizerController extends BaseSLDServiceController {
     }
 
     @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED, reason = "RasterSymbolizer SLD expected!")
-    private class InvalidSymbolizer extends RuntimeException {
+    private static class InvalidSymbolizer extends RuntimeException {
         private static final long serialVersionUID = 5453377766415209696L;
     }
 
@@ -290,8 +290,8 @@ public class RasterizerController extends BaseSLDServiceController {
             for (FeatureTypeStyle ftStyle : sInfo.getStyle().featureTypeStyles().toArray(new FeatureTypeStyle[0])) {
                 for (Rule rule : ftStyle.rules().toArray(new Rule[0])) {
                     for (Symbolizer sym : rule.symbolizers()) {
-                        if (sym instanceof RasterSymbolizer) {
-                            rasterSymbolizer = (RasterSymbolizer) sym;
+                        if (sym instanceof RasterSymbolizer symbolizer) {
+                            rasterSymbolizer = symbolizer;
                             break;
                         }
                     }

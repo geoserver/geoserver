@@ -96,7 +96,6 @@ public class WfsOnlineTestOracleSetup extends AbstractReferenceDataSetup {
     }
 
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         runSqlInsertScript();
     }

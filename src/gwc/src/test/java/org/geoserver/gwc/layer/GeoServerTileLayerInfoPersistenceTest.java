@@ -57,7 +57,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
         return sameProperty(expected, property, Matchers::is);
     }
 
-    @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
+    @SuppressWarnings("unchecked")
     <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher) throws Exception {
         Object value = Arrays.stream(
                         Introspector.getBeanInfo(expected.getClass()).getPropertyDescriptors())

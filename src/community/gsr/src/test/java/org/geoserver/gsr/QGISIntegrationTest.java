@@ -14,9 +14,9 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.sf.json.JSONObject;
 import org.geoserver.gsr.controller.ControllerTest;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 
 public class QGISIntegrationTest extends ControllerTest {
 

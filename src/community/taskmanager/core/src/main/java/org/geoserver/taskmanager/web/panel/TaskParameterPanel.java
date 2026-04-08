@@ -4,6 +4,9 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -17,9 +20,23 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 
 public class TaskParameterPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TaskParameterPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     public static final String CONFIGURATION_NAME = "configurationName";
     public static final String TASK_NAME = "taskName";
 
+    @Serial
     private static final long serialVersionUID = 3902645494421966388L;
 
     private IModel<Task> taskModel;
@@ -40,6 +57,7 @@ public class TaskParameterPanel extends Panel {
         GeoServerTablePanel<Parameter> parametersPanel =
                 new GeoServerTablePanel<Parameter>("parametersPanel", new ParametersModel(taskModel), true) {
 
+                    @Serial
                     private static final long serialVersionUID = -8943273843044917552L;
 
                     @SuppressWarnings("unchecked")

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.rememberme;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
  */
 public class RememberMeServicesConfig extends BaseSecurityNamedServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String DEFAULT_KEY = "geoserver";

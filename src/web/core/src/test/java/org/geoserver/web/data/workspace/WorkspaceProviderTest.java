@@ -18,11 +18,12 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.junit.Before;
 import org.junit.Test;
 
-public class WorkspaceProviderTest {
+public class WorkspaceProviderTest extends GeoServerWicketTestSupport {
 
     private WorkspaceProvider provider;
 

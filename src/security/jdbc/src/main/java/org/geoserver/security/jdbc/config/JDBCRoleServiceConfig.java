@@ -5,10 +5,12 @@
  */
 package org.geoserver.security.jdbc.config;
 
+import java.io.Serial;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 
 public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig implements SecurityRoleServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected String adminRoleName;

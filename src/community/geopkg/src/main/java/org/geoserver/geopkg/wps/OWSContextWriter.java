@@ -7,8 +7,6 @@ package org.geoserver.geopkg.wps;
 import static org.geoserver.ows.URLMangler.URLType.SERVICE;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
@@ -55,6 +53,8 @@ import org.geotools.geopkg.wps.GeoPackageProcessRequest;
 import org.geotools.util.logging.Logging;
 import org.geotools.wps.WPS;
 import org.geotools.xsd.Encoder;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 /** Adds the OWS Context elements into the GeoPackage using freemarker templates */
 public class OWSContextWriter {
@@ -231,7 +231,7 @@ public class OWSContextWriter {
         try {
             Object parsedJson = MAPPER.readValue(json, Object.class);
             return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(json);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.log(Level.WARNING, "Could not pretty print JSON, returning as is", e);
             return json;
         }

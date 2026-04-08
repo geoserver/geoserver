@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -25,6 +28,20 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /** Allows to edit the root layer of a layer group */
 public class RootLayerEntryPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RootLayerEntryPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 3471204885852128002L;
 
     public RootLayerEntryPanel(String id, WorkspaceInfo workspace, final IModel<LayerGroupInfo> model) {
@@ -33,6 +50,7 @@ public class RootLayerEntryPanel extends Panel {
         setOutputMarkupId(true);
 
         final TextField<LayerInfo> rootLayerField = new TextField<>("rootLayer") {
+            @Serial
             private static final long serialVersionUID = -8033503312874828019L;
 
             @SuppressWarnings("unchecked")
@@ -66,6 +84,7 @@ public class RootLayerEntryPanel extends Panel {
         }
 
         DropDownChoice<StyleInfo> styleField = new DropDownChoice<>("rootLayerStyle", styles) {
+            @Serial
             private static final long serialVersionUID = 1190134258726393181L;
 
             @SuppressWarnings("unchecked")
@@ -84,6 +103,7 @@ public class RootLayerEntryPanel extends Panel {
         final GSModalWindow popupWindow = new GSModalWindow("popup");
         add(popupWindow);
         add(new AjaxLink<>("add") {
+            @Serial
             private static final long serialVersionUID = 723787950130153037L;
 
             @Override
@@ -92,6 +112,7 @@ public class RootLayerEntryPanel extends Panel {
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
                 popupWindow.setContent(new LayerListPanel(popupWindow.getContentId(), workspace) {
+                    @Serial
                     private static final long serialVersionUID = -650599334132713975L;
 
                     @Override

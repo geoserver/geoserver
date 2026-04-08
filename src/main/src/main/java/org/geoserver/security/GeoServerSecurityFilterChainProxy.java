@@ -5,19 +5,19 @@
  */
 package org.geoserver.security;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
@@ -40,7 +40,7 @@ public class GeoServerSecurityFilterChainProxy
     static ThreadLocal<HttpServletRequest> REQUEST = new ThreadLocal<>();
 
     /**
-     * Request header attribute indicating if the request was running through a Geoserver security filter chain. The
+     * Request header attribute indicating if the request was running through a GeoServer security filter chain. The
      * default is <code>false</code>.
      *
      * <p>The mandatory {@link GeoServerSecurityContextPersistenceFilter} object sets this attribute to <code>true
@@ -236,8 +236,8 @@ public class GeoServerSecurityFilterChainProxy
         if (filter == null) {
             try {
                 Object obj = GeoServerExtensions.bean(filterName, appContext);
-                if (obj != null && obj instanceof Filter) {
-                    filter = (Filter) obj;
+                if (obj != null && obj instanceof Filter filter1) {
+                    filter = filter1;
                 }
             } catch (NoSuchBeanDefinitionException ex) {
                 // do nothing
@@ -248,10 +248,13 @@ public class GeoServerSecurityFilterChainProxy
 
     @Override
     public void destroy() {
-        proxy.destroy();
-
+        if (proxy != null) {
+            proxy.destroy();
+        }
         // do some cleanup
-        securityManager.removeListener(this);
+        if (securityManager != null) {
+            securityManager.removeListener(this);
+        }
     }
 
     public List<SecurityFilterChain> getFilterChains() {

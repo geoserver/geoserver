@@ -102,8 +102,7 @@ public class CoverageController extends AbstractCatalogController {
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
             // could not find the namespace associated with the desired workspace
-            throw new ResourceNotFoundException(
-                    String.format("Name space not found for workspace '%s'.", workspaceName));
+            throw new ResourceNotFoundException("Name space not found for workspace '%s'.".formatted(workspaceName));
         }
         if (list != null && list.equalsIgnoreCase("all")) {
             // we need to ask the coverage reader of each available coverage store which coverages
@@ -135,9 +134,9 @@ public class CoverageController extends AbstractCatalogController {
         Optional<CoverageInfo> optCoverage = coverages.stream()
                 .filter(ci -> coverageName.equals(ci.getName()))
                 .findFirst();
-        if (!optCoverage.isPresent()) {
+        if (optCoverage.isEmpty()) {
             throw new ResourceNotFoundException(
-                    String.format("No such coverage: %s,%s,%s", workspaceName, storeName, coverageName));
+                    "No such coverage: %s,%s,%s".formatted(workspaceName, storeName, coverageName));
         }
         CoverageInfo coverage = optCoverage.get();
         checkCoverageExists(coverage, workspaceName, coverageName);
@@ -159,8 +158,7 @@ public class CoverageController extends AbstractCatalogController {
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
             // could not find the namespace associated with the desired workspace
-            throw new ResourceNotFoundException(
-                    String.format("Name space not found for workspace '%s'.", workspaceName));
+            throw new ResourceNotFoundException("Name space not found for workspace '%s'.".formatted(workspaceName));
         }
         CoverageInfo coverage = catalog.getCoverageByName(nameSpace, coverageName);
         checkCoverageExists(coverage, workspaceName, coverageName);
@@ -225,7 +223,7 @@ public class CoverageController extends AbstractCatalogController {
         CoverageStoreInfo ds = catalog.getCoverageStoreByName(workspaceName, storeName);
         CoverageInfo c = catalog.getCoverageByCoverageStore(ds, coverageName);
         if (c == null) {
-            throw new RestException(String.format("Coverage '%s' not found.", coverageName), HttpStatus.NOT_FOUND);
+            throw new RestException("Coverage '%s' not found.".formatted(coverageName), HttpStatus.NOT_FOUND);
         }
         List<LayerInfo> layers = catalog.getLayers(c);
         if (recurse) {
@@ -268,7 +266,7 @@ public class CoverageController extends AbstractCatalogController {
     /** If the coverage doesn't exists throws a REST exception with HTTP 404 code. */
     private void checkCoverageExists(CoverageInfo coverage, String workspaceName, String coverageName) {
         if (coverage == null) {
-            throw new ResourceNotFoundException(String.format("No such coverage: %s,%s", workspaceName, coverageName));
+            throw new ResourceNotFoundException("No such coverage: %s,%s".formatted(workspaceName, coverageName));
         }
     }
 
@@ -401,12 +399,10 @@ public class CoverageController extends AbstractCatalogController {
                     String prefix,
                     HierarchicalStreamWriter writer,
                     MarshallingContext context) {
-                if (obj instanceof NamespaceInfo) {
-                    NamespaceInfo ns = (NamespaceInfo) obj;
+                if (obj instanceof NamespaceInfo ns) {
                     converter.encodeLink("/namespaces/" + converter.encode(ns.getPrefix()), writer);
                 }
-                if (obj instanceof CoverageStoreInfo) {
-                    CoverageStoreInfo cs = (CoverageStoreInfo) obj;
+                if (obj instanceof CoverageStoreInfo cs) {
                     converter.encodeLink(
                             "/workspaces/"
                                     + converter.encode(cs.getWorkspace().getName())

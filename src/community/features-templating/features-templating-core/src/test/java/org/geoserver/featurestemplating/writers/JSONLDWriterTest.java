@@ -6,15 +6,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactory;
 
 public class JSONLDWriterTest {
 
@@ -58,7 +59,8 @@ public class JSONLDWriterTest {
 
     private JSONObject writeJSONLD(EncodingHints hints) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JSONLDWriter writer = new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        JSONLDWriter writer = new JSONLDWriter(
+                JsonFactory.builder().build().createGenerator(ObjectWriteContext.empty(), baos, JsonEncoding.UTF8));
         writer.startTemplateOutput(hints);
         writer.endTemplateOutput(hints);
         writer.close();

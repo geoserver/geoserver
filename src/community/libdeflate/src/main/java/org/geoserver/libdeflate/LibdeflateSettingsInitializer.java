@@ -38,8 +38,7 @@ public class LibdeflateSettingsInitializer implements GeoServerInitializer {
         Iterator<CompressorSpi> cSpis = registryInstance.getSPIs(CompressorSpi.class, true);
         while (cSpis.hasNext()) {
             CompressorSpi spi = cSpis.next();
-            if (spi instanceof LibDeflateCompressorSpi) {
-                LibDeflateCompressorSpi compSpi = ((LibDeflateCompressorSpi) spi);
+            if (spi instanceof LibDeflateCompressorSpi compSpi) {
                 compSpi.setPriority(libdeflateSettings.compressionPriority);
                 compSpi.setMaxLevel(libdeflateSettings.maxLevel);
                 compSpi.setMinLevel(libdeflateSettings.minLevel);
@@ -52,8 +51,7 @@ public class LibdeflateSettingsInitializer implements GeoServerInitializer {
                 CompressionRegistry.getDefaultInstance().getSPIs(DecompressorSpi.class, true);
         while (dSpis.hasNext()) {
             DecompressorSpi spi = dSpis.next();
-            if (spi instanceof LibDeflateDecompressorSpi) {
-                LibDeflateDecompressorSpi decompSpi = (LibDeflateDecompressorSpi) spi;
+            if (spi instanceof LibDeflateDecompressorSpi decompSpi) {
                 decompSpi.setPriority(libdeflateSettings.decompressionPriority);
                 decompSpi.onRegistration(registryInstance, DecompressorSpi.class);
                 break;

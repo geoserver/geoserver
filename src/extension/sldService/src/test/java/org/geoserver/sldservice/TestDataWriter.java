@@ -24,6 +24,6 @@ public class TestDataWriter {
         GeoTiffWriter writer = new GeoTiffWriter(
                 new File(
                         "/home/aaime/devel/git-gs/src/extension/sldService/src/test/resources/org/geoserver/sldservice/singleValueNoData.tif"));
-        writer.write(g2d, null);
+        writer.write(g2d);
     }
 }

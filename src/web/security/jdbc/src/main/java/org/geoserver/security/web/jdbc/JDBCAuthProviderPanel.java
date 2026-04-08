@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.jdbc;
 
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.logging.Level;
@@ -30,7 +31,9 @@ import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
 // TODO WICKET8 - Verify this page works OK
 public class JDBCAuthProviderPanel extends AuthenticationProviderPanel<JDBCConnectAuthProviderConfig> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     FeedbackPanel feedbackPanel;
     String username, password;
 

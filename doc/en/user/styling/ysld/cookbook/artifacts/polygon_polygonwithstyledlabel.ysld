@@ -1,0 +1,20 @@
+title: 'YSLD Cook Book: Polygon with styled label'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - polygon:
+        stroke-color: '#FFFFFF'
+        stroke-width: 2
+        fill-color: '#40FF40'
+    - text:
+        label: ${name}
+        fill-color: '#000000'
+        font-family: Arial
+        font-size: 11
+        font-style: normal
+        font-weight: bold
+        placement: point
+        anchor: [0.5,0.5]
+        x-autoWrap: 60
+        x-maxDisplacement: 150

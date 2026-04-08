@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.MetadataMap;
@@ -15,17 +17,30 @@ import org.geoserver.web.util.MetadataMapModel;
 /** Pluggable panel containing {@link CogSettings}} configuration, to show up on the Global Settings page */
 public class CogSettingsPluginPanel extends SettingsPluginPanel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CogSettingsPluginPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     public CogSettingsPluginPanel(String id, IModel<SettingsInfo> model) {
         super(id, model);
         // Model associated to the metadata map
-        final PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
 
         IModel<CogSettings> cogSettingsModel =
-                new MetadataMapModel(metadata, CogSettings.COG_SETTINGS_KEY, CogSettings.class);
+                new MetadataMapModel<>(metadata, CogSettings.COG_SETTINGS_KEY, CogSettings.class);
 
         // New Container
         // container for ajax updates
-        CogSettingsPanel panel = new CogSettingsPanel("panel", cogSettingsModel);
+        CogSettingsPanel panel = new CogSettingsPanel<>("panel", cogSettingsModel);
         add(panel);
     }
 }

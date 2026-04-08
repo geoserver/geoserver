@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -57,6 +59,19 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
 
     class ServicesPanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(UserGroupRoleServicesPage.ServicesPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public ServicesPanel(String id) {
             super(id);
 
@@ -68,7 +83,21 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
         }
     }
 
-    class UsersGroupsPanel extends Panel {
+    static class UsersGroupsPanel extends Panel {
+
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(UserGroupRoleServicesPage.UsersGroupsPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public UsersGroupsPanel(String id) {
             super(id);
@@ -77,7 +106,20 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
         }
     }
 
-    class RolesPanel extends Panel {
+    static class RolesPanel extends Panel {
+
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(UserGroupRoleServicesPage.RolesPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public RolesPanel(String id) {
             super(id);

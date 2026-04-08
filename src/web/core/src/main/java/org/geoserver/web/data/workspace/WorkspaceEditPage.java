@@ -6,7 +6,9 @@
 package org.geoserver.web.data.workspace;
 
 import static org.geoserver.web.services.BaseServiceAdminPage.WORKSPACE_ADMIN_SERVICE_ACCESS;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -70,6 +71,7 @@ import org.geoserver.web.security.AccessDataRulePanel;
 import org.geoserver.web.security.DataAccessRuleInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.services.ServiceMenuPageInfo;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -81,6 +83,7 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 public class WorkspaceEditPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 4341324830412716976L;
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.data.workspace");
@@ -122,8 +125,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         if (ns == null) {
             // unfortunately this may happen if the namespace associated to the workspace was
             // deleted or never created
-            throw new RuntimeException(
-                    String.format("Workspace '%s' associated namespace doesn't exists.", ws.getName()));
+            throw new RuntimeException("Workspace '%s' associated namespace doesn't exists.".formatted(ws.getName()));
         }
 
         nsModel = new NamespaceDetachableModel(ns);
@@ -132,6 +134,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         List<ITab> tabs = new ArrayList<>();
         tabs.add(new AbstractTab(new Model<>("Basic Info")) {
 
+            @Serial
             private static final long serialVersionUID = 5216769765556937554L;
 
             @Override
@@ -147,6 +150,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         if (AccessDataRuleInfoManager.canAccess()) {
             tabs.add(new AbstractTab(new Model<>("Security")) {
 
+                @Serial
                 private static final long serialVersionUID = 5216769765556937554L;
 
                 @Override
@@ -166,11 +170,13 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
         tabbedPanel = new TabbedPanel<>("tabs", tabs) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
             protected WebMarkupContainer newLink(String linkId, final int index) {
                 return new SubmitLink(linkId) {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -191,6 +197,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     private SubmitLink submitLink() {
         return new SubmitLink("save") {
 
+            @Serial
             private static final long serialVersionUID = -3462848930497720229L;
 
             @Override
@@ -295,6 +302,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * Data object to hold onto transient settings, and maintain state of enabled for the workspace.
      */
     static class Settings implements Serializable {
+        @Serial
         private static final long serialVersionUID = -5855608735160516252L;
 
         /** track selection */
@@ -306,7 +314,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class ExistingSettingsModel extends LoadableDetachableModel<SettingsInfo> {
 
+        @Serial
         private static final long serialVersionUID = -8203239697623788188L;
+
         IModel<WorkspaceInfo> wsModel;
 
         ExistingSettingsModel(IModel<WorkspaceInfo> wsModel) {
@@ -322,7 +332,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class NewSettingsModel extends Model<SettingsInfo> {
 
+        @Serial
         private static final long serialVersionUID = -4365626821652771933L;
+
         IModel<WorkspaceInfo> wsModel;
         SettingsInfo info;
 
@@ -355,6 +367,20 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     class WsEditInfoPanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WorkspaceEditPage.WsEditInfoPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = -8487041433764733692L;
 
         boolean defaultWs;
@@ -397,6 +423,20 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     class SettingsPanel extends FormComponentPanel<Serializable> {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WorkspaceEditPage.SettingsPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = -1580928887379954134L;
 
         WebMarkupContainer settingsContainer;
@@ -421,6 +461,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
             add(new CheckBox("enabled", new PropertyModel<>(set, "enabled"))
                     .add(new AjaxFormComponentUpdatingBehavior("click") {
+                        @Serial
                         private static final long serialVersionUID = -7851699665702753119L;
 
                         @Override
@@ -478,6 +519,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * the workspace.
      */
     static class Service implements Serializable {
+        @Serial
         private static final long serialVersionUID = 3283857206025172687L;
 
         /** track selection */
@@ -492,7 +534,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class NewServiceModel extends Model<ServiceInfo> {
 
+        @Serial
         private static final long serialVersionUID = -3467556623909292282L;
+
         IModel<WorkspaceInfo> wsModel;
         Class<ServiceInfo> serviceClass;
         ServiceInfo service;
@@ -519,6 +563,11 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             // initialize from global service
             ServiceInfo global = gs.getService(serviceClass);
             OwsUtils.copy(global, newService, serviceClass);
+            // deep-copy disabledVersions so workspace service has its own independent list
+            ServiceInfoImpl newServiceImpl = (ServiceInfoImpl) newService;
+            if (newServiceImpl.getDisabledVersions() != null) {
+                newServiceImpl.setDisabledVersions(new ArrayList<>(newServiceImpl.getDisabledVersions()));
+            }
             newService.setWorkspace(wsModel.getObject());
 
             // hack, but need id to be null so its considered unattached
@@ -530,7 +579,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class ExistingServiceModel extends LoadableDetachableModel<ServiceInfo> {
 
+        @Serial
         private static final long serialVersionUID = -2170117760214309321L;
+
         IModel<WorkspaceInfo> wsModel;
         Class<ServiceInfo> serviceClass;
 
@@ -547,7 +598,22 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     class ServicesPanel extends FormComponentPanel<Serializable> {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(WorkspaceEditPage.ServicesPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = 7375904545106343626L;
+
         List<Service> services;
 
         public ServicesPanel(String id, final IModel<WorkspaceInfo> wsModel) {
@@ -558,6 +624,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             services = services(wsModel);
             ListView<Service> serviceList = new ListView<>("services", services) {
 
+                @Serial
                 private static final long serialVersionUID = -4142739871430618450L;
 
                 @Override
@@ -576,6 +643,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     link.setEnabled(isEnabled);
 
                     AjaxCheckBox enabled = new AjaxCheckBox("enabled", new PropertyModel<>(service, "enabled")) {
+                        @Serial
                         private static final long serialVersionUID = 6369730006169869310L;
 
                         @Override
@@ -592,12 +660,12 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                             "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
                     link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
 
-                    Image image;
+                    CachingImage image;
                     if (info.getIcon() != null) {
-                        image = new Image(
+                        image = new CachingImage(
                                 "link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
                     } else {
-                        image = new Image(
+                        image = new CachingImage(
                                 "link.icon",
                                 new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
                     }
@@ -637,7 +705,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
 
         private class ServiceLink extends Link<Service> {
+            @Serial
             private static final long serialVersionUID = 1111536301891090436L;
+
             private final IModel<WorkspaceInfo> wsModel;
 
             public ServiceLink(Service service, IModel<WorkspaceInfo> wsModel) {

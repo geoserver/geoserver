@@ -31,6 +31,8 @@ import org.springframework.validation.Validator;
  */
 public abstract class AbstractInputProvider implements InputProvider {
 
+    static boolean disableHostnameVerification = Boolean.getBoolean("geoserver.wps.remoteInput.insecureHostname");
+
     /** Creates an input provider */
     public static InputProvider getInputProvider(
             InputType input,
@@ -59,7 +61,11 @@ public abstract class AbstractInputProvider implements InputProvider {
                 int maxSizeMB = Validators.getMaxSizeMB(validators);
                 validators = Validators.filterOutClasses(validators, MaxSizeValidator.class);
                 provider = new RemoteRequestInputProvider(
-                        input, (ComplexPPIO) ppio, executor.getConnectionTimeout(), maxSizeMB * 1024 * 1024);
+                        input,
+                        (ComplexPPIO) ppio,
+                        executor.getConnectionTimeout(),
+                        (long) maxSizeMB * 1024 * 1024,
+                        disableHostnameVerification);
             }
         } else {
             provider = new SimpleInputProvider(input, ppio);

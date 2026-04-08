@@ -4,10 +4,5 @@
  */
 package org.geoserver.openapi.mapper.catalog;
 
-/**
- * 
- * @since 1.0
- */
-public interface CatalogInfoMapper {
-
-}
+/** @since 1.0 */
+public interface CatalogInfoMapper {}

@@ -5,15 +5,15 @@
  */
 package org.geoserver.logging;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -70,7 +70,9 @@ public class LoggingStartupContextListener implements ServletContextListener {
             LoggingInfo loginfo = getLogging(loader);
 
             if (loginfo != null) {
-                final String location = LoggingUtils.getLogFileLocation(loginfo.getLocation(), context);
+                // Log location is only sourced from GEOSERVER_LOG_LOCATION property (GeoServer 3.0+).
+                // The <location> element in logging.xml is ignored.
+                final String location = LoggingUtils.getLogFileLocation(null, context);
 
                 LoggingUtils.initLogging(loader, loginfo.getLevel(), !loginfo.isStdOutLogging(), false, location);
             } else {

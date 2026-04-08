@@ -4,12 +4,12 @@
  */
 package org.geoserver.wps.gs.download;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXSource;
@@ -35,8 +35,8 @@ public class JaxbPPIO extends ComplexPPIO {
 
     @Override
     public Object decode(Object input) throws Exception {
-        if (input instanceof String) {
-            return decode(new ByteArrayInputStream(((String) input).getBytes()));
+        if (input instanceof String string) {
+            return decode(new ByteArrayInputStream(string.getBytes()));
         }
         return super.decode(input);
     }

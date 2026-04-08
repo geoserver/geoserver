@@ -20,16 +20,19 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,11 +48,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
-import org.apache.http.client.utils.DateUtils;
+import org.apache.hc.client5.http.utils.DateUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -74,6 +74,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
+import org.geoserver.ows.kvp.BBoxKvpParser;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
@@ -85,9 +86,10 @@ import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geoserver.util.HTTPWarningAppender;
-import org.geoserver.wfs.kvp.BBoxKvpParser;
+import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.map.MetaTilingOutputFormat;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.api.filter.Filter;
@@ -169,7 +171,6 @@ import org.springframework.context.ApplicationContextAware;
  * worry about complexities nor API changes in either.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GWC implements DisposableBean, InitializingBean, ApplicationContextAware {
 
@@ -222,6 +223,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     // list of GeoServer contributed grid sets that should not be editable by the user
     private final Set<String> geoserverEmbeddedGridSets = new HashSet<>();
+
+    // list of mime types that support meta-tiling in GeoServer
+    private static Set<String> METATILING_MIME_TYPES = Collections.emptySet();
 
     private BlobStoreAggregator blobStoreAggregator;
 
@@ -469,12 +473,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 new TruncateBboxRequest(layerName, intersectingBounds, gridSetId)
                         .doTruncate(storageBroker, tileBreeder);
             } catch (StorageException | GeoWebCacheException e) {
-                log.log(
-                        Level.WARNING,
-                        e,
-                        () -> String.format(
-                                "Error while truncating modified bounds for layer %s gridset %s",
-                                layerName, gridSetId));
+                log.log(Level.WARNING, e, () -> "Error while truncating modified bounds for layer %s gridset %s"
+                        .formatted(layerName, gridSetId));
             }
         }
     }
@@ -1327,8 +1327,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         // request
         String workspace = params.remove(WORKSPACE_PARAM);
 
-        FakeHttpServletRequest req = new FakeHttpServletRequest(params, cookies, workspace);
-        FakeHttpServletResponse resp = new FakeHttpServletResponse();
+        InternalDispatchServletRequest req = new InternalDispatchServletRequest(params, cookies, workspace);
+        InternalDispatchServletResponse resp = new InternalDispatchServletResponse();
 
         Request request = Dispatcher.REQUEST.get();
         Dispatcher.REQUEST.remove();
@@ -1373,7 +1373,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         // cascade
         Cookie[] cookies = actualRequest.getCookies();
-        FakeHttpServletRequest request = new FakeHttpServletRequest(parameterMap, cookies);
+        InternalDispatchServletRequest request = new InternalDispatchServletRequest(parameterMap, cookies);
         owsDispatcher.handleRequest(request, tile.servletResp);
     }
 
@@ -1648,8 +1648,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public boolean isQueryable(final GeoServerTileLayer geoServerTileLayer) {
         WMS wmsMediator = WMS.get();
         PublishedInfo published = geoServerTileLayer.getPublishedInfo();
-        if (published instanceof LayerInfo) {
-            return wmsMediator.isQueryable((LayerInfo) published);
+        if (published instanceof LayerInfo info) {
+            return wmsMediator.isQueryable(info);
         }
         return wmsMediator.isQueryable((LayerGroupInfo) published);
     }
@@ -1826,11 +1826,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             // paranoid check in case the two lists are not in sync
             StyleInfo si = i < styleCount ? lg.getStyles().get(i) : null;
             PublishedInfo pi = i < layerCount ? lg.getLayers().get(i) : null;
-            if (pi instanceof LayerInfo) {
+            if (pi instanceof LayerInfo li) {
                 if (style.equals(si)) {
                     return true;
                 } else {
-                    LayerInfo li = (LayerInfo) pi;
                     if (style.equals(li.getDefaultStyle())) {
                         return true;
                     }
@@ -2063,16 +2062,16 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public boolean hasTileLayer(CatalogInfo source) {
         final String tileLayerName;
-        if (source instanceof ResourceInfo) {
-            LayerInfo layerInfo = getCatalog().getLayerByName(((ResourceInfo) source).prefixedName());
+        if (source instanceof ResourceInfo info2) {
+            LayerInfo layerInfo = getCatalog().getLayerByName(info2.prefixedName());
             if (layerInfo == null) {
                 return false;
             }
             tileLayerName = tileLayerName(layerInfo);
-        } else if (source instanceof LayerInfo) {
-            tileLayerName = tileLayerName((LayerInfo) source);
-        } else if (source instanceof LayerGroupInfo) {
-            tileLayerName = tileLayerName((LayerGroupInfo) source);
+        } else if (source instanceof LayerInfo info1) {
+            tileLayerName = tileLayerName(info1);
+        } else if (source instanceof LayerGroupInfo info) {
+            tileLayerName = tileLayerName(info);
         } else {
             return false;
         }
@@ -2086,12 +2085,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public GeoServerTileLayer getTileLayer(CatalogInfo source) {
         final String name;
-        if (source instanceof ResourceInfo) {
-            name = ((ResourceInfo) source).prefixedName();
-        } else if (source instanceof LayerInfo) {
-            name = tileLayerName((LayerInfo) source);
-        } else if (source instanceof LayerGroupInfo) {
-            name = tileLayerName((LayerGroupInfo) source);
+        if (source instanceof ResourceInfo info2) {
+            name = info2.prefixedName();
+        } else if (source instanceof LayerInfo info1) {
+            name = tileLayerName(info1);
+        } else if (source instanceof LayerGroupInfo info) {
+            name = tileLayerName(info);
         } else {
             return null;
         }
@@ -2101,8 +2100,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         } catch (GeoWebCacheException notFound) {
             return null;
         }
-        if (tileLayer instanceof GeoServerTileLayer) {
-            return (GeoServerTileLayer) tileLayer;
+        if (tileLayer instanceof GeoServerTileLayer layer) {
+            return layer;
         }
         return null;
     }
@@ -2153,13 +2152,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                             layerInfo, Proxy.getInvocationHandler(layerInfo).getClass());
                 }
 
-                if (layerInfo instanceof SecuredLayerInfo) {
+                if (layerInfo instanceof SecuredLayerInfo securedLayerInfo) {
                     // test layer bbox limits
-                    SecuredLayerInfo securedLayerInfo = (SecuredLayerInfo) layerInfo;
                     WrapperPolicy policy = securedLayerInfo.getWrapperPolicy();
                     AccessLimits limits = policy.getLimits();
 
-                    if (limits instanceof DataAccessLimits) {
+                    if (limits instanceof DataAccessLimits accessLimits1) {
                         // ensure we are all using the same CRS
                         CoordinateReferenceSystem dataCrs =
                                 layerInfo.getResource().getCRS();
@@ -2174,7 +2172,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                         }
                         Envelope limitBox = new ReferencedEnvelope(ReferencedEnvelope.EVERYTHING, dataCrs);
 
-                        Filter filter = ((DataAccessLimits) limits).getReadFilter();
+                        Filter filter = accessLimits1.getReadFilter();
                         if (filter != null) {
                             // extract filter envelope from filter
                             Envelope box = (Envelope) filter.accept(ExtractBoundsFilterVisitor.BOUNDS_VISITOR, null);
@@ -2182,21 +2180,17 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                                 limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
                             }
                         }
-                        if (limits instanceof CoverageAccessLimits) {
-                            if (((CoverageAccessLimits) limits).getRasterFilter() != null) {
-                                Envelope box = ((CoverageAccessLimits) limits)
-                                        .getRasterFilter()
-                                        .getEnvelopeInternal();
+                        if (limits instanceof CoverageAccessLimits accessLimits) {
+                            if (accessLimits.getRasterFilter() != null) {
+                                Envelope box = accessLimits.getRasterFilter().getEnvelopeInternal();
                                 if (box != null) {
                                     limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
                                 }
                             }
                         }
-                        if (limits instanceof WMSAccessLimits) {
-                            if (((WMSAccessLimits) limits).getRasterFilter() != null) {
-                                Envelope box = ((WMSAccessLimits) limits)
-                                        .getRasterFilter()
-                                        .getEnvelopeInternal();
+                        if (limits instanceof WMSAccessLimits accessLimits) {
+                            if (accessLimits.getRasterFilter() != null) {
+                                Envelope box = accessLimits.getRasterFilter().getEnvelopeInternal();
                                 if (box != null) {
                                     limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
                                 }
@@ -2221,8 +2215,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public CoordinateReferenceSystem getDeclaredCrs(final String geoServerTileLayerName) {
         GeoServerTileLayer layer = (GeoServerTileLayer) getTileLayerByName(geoServerTileLayerName);
         PublishedInfo published = layer.getPublishedInfo();
-        if (published instanceof LayerInfo) {
-            return ((LayerInfo) published).getResource().getCRS();
+        if (published instanceof LayerInfo info) {
+            return info.getResource().getCRS();
         }
         LayerGroupInfo layerGroupInfo = (LayerGroupInfo) published;
         ReferencedEnvelope bounds = layerGroupInfo.getBounds();
@@ -2281,7 +2275,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.gwcEnvironment = GeoServerExtensions.bean(GeoWebCacheEnvironment.class);
         GWC.INSTANCE = GeoServerExtensions.bean(GWC.class);
 
+        // Build once: all GetMapOutputFormats that explicitly support meta-tiling
+        METATILING_MIME_TYPES =
+                GeoServerExtensions.extensions(MetaTilingOutputFormat.class, applicationContext).stream()
+                        .map(GetMapOutputFormat::getMimeType)
+                        .filter(java.util.Objects::nonNull)
+                        .peek(mime -> log.log(Level.INFO, "Registered meta-tiling MIME type: " + mime))
+                        .collect(java.util.stream.Collectors.toUnmodifiableSet());
+
         GWC.INSTANCE.gwcSynchEnv.syncEnv();
+    }
+
+    public static boolean supportsMetaTiling(MimeType mime) {
+        if (mime.supportsTiling()) return true;
+        return METATILING_MIME_TYPES.contains(mime.getFormat());
     }
 
     /**
@@ -2536,15 +2543,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         // (e.g. 'Sun, 06 Nov 1994 08:49:37 GMT'). See
         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
 
-        final String lastModified = DateUtils.formatDate(new Date(tileTimeStamp));
+        final String lastModified = DateUtils.formatStandardDate(Instant.ofEpochMilli(tileTimeStamp));
         map.put("Last-Modified", lastModified);
 
-        final Date ifModifiedSince;
+        final Instant ifModifiedSince;
         if (ifModSinceHeader != null && !ifModSinceHeader.isEmpty()) {
-            ifModifiedSince = DateUtils.parseDate(ifModSinceHeader);
+            ifModifiedSince = DateUtils.parseStandardDate(ifModSinceHeader);
             if (ifModifiedSince != null) {
                 // the HTTP header has second precision
-                long ifModSinceSeconds = 1000 * (ifModifiedSince.getTime() / 1000);
+                long ifModSinceSeconds = 1000 * (ifModifiedSince.toEpochMilli() / 1000);
                 long tileTimeStampSeconds = 1000 * (tileTimeStamp / 1000);
                 if (ifModSinceSeconds >= tileTimeStampSeconds) {
                     throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_MODIFIED);

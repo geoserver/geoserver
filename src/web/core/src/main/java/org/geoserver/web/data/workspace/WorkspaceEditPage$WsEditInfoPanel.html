@@ -1,44 +1,60 @@
-<html  xmlns:wicket="http://wicket.apache.org/">
-<head>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
 
 </head>
-<body>
-<wicket:panel >
-        <ul>
-            <li>
-                <label for="name"><wicket:message key="name">Name</wicket:message></label>
-                <input wicket:id="name" id="name" type="text" class="text"/>
-            </li>
-            <li>
-                <label for="uri"><wicket:message key="namespaceURI">Namespace URI</wicket:message></label>
-                <input wicket:id="uri" id="uri" type="text" class="text"/>
-                <div class="instruct"><wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message></div>
-            </li>
-            <li class="choiceItem">
-                <input wicket:id="default" id="default" type="checkbox"/> <label for="default"><wicket:message key="defaultWorkspace">Default workspace</wicket:message></label>
-            </li>
-            <li class="choiceItem">
-                <input wicket:id="isolated" id="isolated" type="checkbox"/>
-                <label for="isolated">
-                    <wicket:message key="isolatedWorkspace">Isolated workspace</wicket:message>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-WorkspaceEditPage_WsEditInfoPanel">
+        <fieldset>
+          <div class="gs-form">
+            <div class="gs-form-group">
+              <label for="name">
+                <wicket:message key="name">Name</wicket:message>
+              </label>
+              <input wicket:id="name" id="name" type="text"/>
+            </div>
+            <div class="gs-form-group">
+              <div class="gs-form-group-label">
+                <label for="uri">
+                  <wicket:message key="namespaceURI">Namespace URI</wicket:message>
                 </label>
-            </li>
-            <!-- Commented out waiting for a consistent work to be done on the other edit pages
-            <li>
-              <h3><wicket:message key="stores">Stores</wicket:message></h3>
-              <div wicket:id="storeTable"></div>
-            </li>
-            -->
-            <li>
-                <div id="tableBody" class="clearfix pt-4">
-                    <div wicket:id="services" class="pt-3">
-                    </div>
-                    <div wicket:id="settings" class="pt-3">
-                    </div>
+                <div class="instruct">
+                  <wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message>
                 </div>
-            </li>
-        </ul>
-    <div wicket:id="dialog"></div>
-</wicket:panel>
-</body>
+              </div>
+              <input wicket:id="uri" id="uri" type="text"/>
+            </div>
+            <div class="choiceItem">
+              <input wicket:id="default" id="default" type="checkbox"/>
+              <label for="default">
+                <wicket:message key="defaultWorkspace">Default workspace</wicket:message>
+              </label>
+            </div>
+            <div class="choiceItem">
+              <input wicket:id="isolated" id="isolated" type="checkbox"/>
+              <label for="isolated">
+                <wicket:message key="isolatedWorkspace">Isolated workspace</wicket:message>
+              </label>
+            </div>
+            <!-- Commented out waiting for a consistent work to be done on the other edit pages
+              <div class="gs-list-item-class">
+                <h3><wicket:message key="stores">Stores</wicket:message></h3>
+                <div wicket:id="storeTable"></div>
+              </div>
+              -->
+            </div>
+          </fieldset>
+          <div class="gs-list-item-class">
+            <div id="tableBody" class="clearfix pt-4">
+              <div wicket:id="services" class="pt-3">
+                    </div>
+              <div wicket:id="settings" class="pt-3">
+                    </div>
+            </div>
+          </div>
+        <div wicket:id="dialog"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -4,7 +4,6 @@
  */
 package org.geoserver.ogcapi.v1.stac;
 
-import static org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport.setupBasicOpenSearch;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -25,24 +24,33 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
-import org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.impl.GeoServerRole;
 import org.hamcrest.Matchers;
 import org.jsoup.select.Elements;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 public class STACTestSupport extends OGCApiTestSupport {
     protected static final String STAC_TITLE = "STAC server title";
+    protected static final String ROLE_PROPRIETARY = "ROLE_PROPRIETARY";
+    protected static final String ROLE_ATM = "ROLE_ATMOSPHERIC";
+    protected static final String ROLE_NOCLOUD = "ROLE_LOWCLOUD";
 
     /** The EPS value to use for floating point comparisons. Matches precision of the expected values */
     protected static final double EPS = 1e-4;
 
     static TimeZone currentTimeZone;
     static Locale currentLocale;
+    protected static OSEOPostGISResource postgis;
 
     @BeforeClass
     public static void setupGMT() {
@@ -73,7 +81,7 @@ public class STACTestSupport extends OGCApiTestSupport {
         service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection", "eo:cloud_cover"));
         gs.save(service);
 
-        setupBasicOpenSearch(testData, getCatalog(), gs, false);
+        postgis.setupBasicOpenSearch(getCatalog(), gs);
 
         // add the custom product class
         service.getProductClasses().add(JDBCOpenSearchAccessTest.GS_PRODUCT);
@@ -81,8 +89,31 @@ public class STACTestSupport extends OGCApiTestSupport {
     }
 
     @BeforeClass
-    public static void checkOnLine() {
-        GeoServerOpenSearchTestSupport.checkOnLine();
+    public static void checkOnLine() throws Throwable {
+        postgis = new OSEOPostGISResource(false);
+        postgis.before();
+    }
+
+    @AfterClass
+    public static void cleanDB() throws IOException {
+        postgis.after();
+    }
+
+    @Before
+    public void clearConfiguration() throws Exception {
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.getGlobalQueryables().clear();
+        service.setSkipNumberMatched(false);
+        gs.save(service);
+    }
+
+    /** Sets up the service to skip number matched */
+    protected void enableSkipNumberMatched() {
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.setSkipNumberMatched(true);
+        gs.save(service);
     }
 
     /**
@@ -150,8 +181,8 @@ public class STACTestSupport extends OGCApiTestSupport {
         assertThat(instruments, Matchers.containsInAnyOrder("OLI", "TIRS"));
         assertEquals("landsat8", l8_02.read("properties.constellation"));
         // creation and modification
-        assertEquals("2017-02-26T10:24:58.000+00:00", l8_02.read("properties.created"));
-        assertEquals("2017-02-28T10:24:58.000+00:00", l8_02.read("properties.updated"));
+        assertEquals("2017-02-26T10:24:58.000Z", l8_02.read("properties.created"));
+        assertEquals("2017-02-28T10:24:58.000Z", l8_02.read("properties.updated"));
 
         // check bits unique to the LS8 template
         assertEquals(Integer.valueOf(30), l8_02.read("properties.gsd"));
@@ -197,7 +228,7 @@ public class STACTestSupport extends OGCApiTestSupport {
         assertEquals(-117.969376, s2Sample.read("bbox[2]", Double.class), EPS);
         assertEquals(34.337738, s2Sample.read("bbox[3]", Double.class), EPS);
         // ... time range (single value)
-        assertEquals("2017-03-08T18:54:21.026+00:00", s2Sample.read("properties.datetime"));
+        assertEquals("2017-03-08T18:54:21.026Z", s2Sample.read("properties.datetime"));
         // ... instrument related
         assertEquals("sentinel-2a", s2Sample.read("properties.platform"));
         assertEquals("sentinel2", s2Sample.read("properties.constellation"));
@@ -223,5 +254,40 @@ public class STACTestSupport extends OGCApiTestSupport {
     protected void assertPoint(double x, double y, JSONArray coordinate) {
         assertEquals(x, (Double) coordinate.get(0), EPS);
         assertEquals(y, (Double) coordinate.get(1), EPS);
+    }
+
+    protected void ensureRolesAvailable(List<String> roleNames) throws IOException {
+        GeoServerSecurityManager securityManager = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+        GeoServerRoleService roleService = securityManager.getActiveRoleService();
+        GeoServerRoleStore roleStore = roleService.createStore();
+        for (String roleName : roleNames) {
+            if (roleService.getRoleByName(roleName) == null) roleStore.addRole(new GeoServerRole(roleName));
+        }
+        roleStore.store();
+    }
+
+    protected int getJsonListSize(DocumentContext json, String jsonPath) {
+        List<?> list = json.read(jsonPath, List.class);
+        return list.size();
+    }
+
+    protected void assertJsonListSize(DocumentContext json, String jsonPath, int expectedSize) {
+        assertEquals(expectedSize, getJsonListSize(json, jsonPath));
+    }
+
+    @Before
+    public void resetSecurity() throws Exception {
+        // clear security rules
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.getCollectionLimits().clear();
+        service.getProductLimits().clear();
+        gs.save(service);
+
+        // clear eventual login
+        logout();
+
+        // ensure the test roles are there
+        ensureRolesAvailable(List.of(ROLE_PROPRIETARY, ROLE_ATM, ROLE_NOCLOUD));
     }
 }

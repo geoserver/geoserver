@@ -6,7 +6,6 @@ package org.geoserver.featurestemplating.builders.selectionwrappers;
 
 import static org.geoserver.featurestemplating.builders.TemplateBuilderUtils.hasSelectableKey;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
@@ -14,6 +13,7 @@ import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderWrapper;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionHandler;
+import tools.jackson.databind.JsonNode;
 
 /**
  * A generic PropertySelectionWrapper suitable for usage when a selectable TemplateBuilder has a dynamic key. It uses a
@@ -60,8 +60,7 @@ public class PropertySelectionWrapper extends TemplateBuilderWrapper {
         TemplateBuilder builder = this;
         TemplateBuilder currParent = builder.getParent();
         while (currParent != null) {
-            if (currParent instanceof AbstractTemplateBuilder && hasSelectableKey(currParent)) {
-                AbstractTemplateBuilder parent = (AbstractTemplateBuilder) currParent;
+            if (currParent instanceof AbstractTemplateBuilder parent && hasSelectableKey(currParent)) {
                 String pKey = parent.getKey(context);
                 if (pKey != null) linkedList.addFirst(pKey);
             }
@@ -80,8 +79,8 @@ public class PropertySelectionWrapper extends TemplateBuilderWrapper {
      *     chosen handler.
      */
     protected Object pruneJsonNodeIfNeeded(TemplateBuilderContext context, Object value) {
-        if (value instanceof JsonNode) {
-            value = strategy.pruneJsonAttributes((JsonNode) value, getFullKey(context));
+        if (value instanceof JsonNode node) {
+            value = strategy.pruneJsonAttributes(node, getFullKey(context));
         }
         return value;
     }

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.password;
 
+import java.io.Serial;
 import org.apache.commons.lang3.SerializationUtils;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
@@ -18,6 +19,7 @@ import org.geoserver.security.config.SecurityConfig;
 public class MasterPasswordConfig implements SecurityConfig {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     String providerName;

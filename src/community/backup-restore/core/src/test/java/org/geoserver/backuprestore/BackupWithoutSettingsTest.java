@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.geoserver.platform.resource.Files;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
@@ -20,7 +19,6 @@ public class BackupWithoutSettingsTest extends BackupRestoreTestSupport {
     protected static Backup backupFacade;
 
     @Override
-    @Before
     public void beforeTest() throws InterruptedException {
         backupFacade = (Backup) applicationContext.getBean("backupFacade");
         ensureCleanedQueues();

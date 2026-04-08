@@ -5,9 +5,9 @@
  */
 package org.geoserver.csw.response;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.StringReader;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerFactory;

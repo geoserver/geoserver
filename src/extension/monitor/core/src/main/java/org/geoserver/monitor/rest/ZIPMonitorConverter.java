@@ -46,8 +46,8 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
         String[] csvFields = fields.toArray(new String[fields.size()]);
         csv.writeCSVfile(object, csvFields, monitor, zout);
 
-        if (object instanceof Query) {
-            monitor.query((Query) object, (data, aggregates) -> {
+        if (object instanceof Query query) {
+            monitor.query(query, (data, aggregates) -> {
                 try {
                     writeBodyAndError(data, zout, body, error, true);
                 } catch (IOException e) {

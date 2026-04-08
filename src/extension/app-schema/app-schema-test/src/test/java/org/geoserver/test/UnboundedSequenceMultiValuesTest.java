@@ -133,20 +133,22 @@ public class UnboundedSequenceMultiValuesTest extends AbstractAppSchemaTestSuppo
             return;
         }
 
-        String filter = "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\"\n"
-                + "    xmlns:fes=\"http://www.opengis.net/fes/2.0\"\n"
-                + "    xmlns:st_gml32=\"http://www.stations_gml32.org/1.0\"\n"
-                + "    xmlns:wfs=\"http://www.opengis.net/wfs/2.0\">\n"
-                + "    <wfs:Query typeNames=\"st_gml32:Station_gml32\">\n"
-                + "        <fes:Filter>\n"
-                + "            <fes:PropertyIsEqualTo>\n"
-                + "                <fes:ValueReference>st_gml32:Station_gml32/st_gml32:maintainer/st_gml32:name\n"
-                + "                </fes:ValueReference>\n"
-                + "                <fes:Literal>mnt_c</fes:Literal>\n"
-                + "            </fes:PropertyIsEqualTo>\n"
-                + "        </fes:Filter>\n"
-                + "    </wfs:Query>\n"
-                + "</wfs:GetFeature>";
+        String filter =
+                """
+                <wfs:GetFeature service="WFS" version="2.0.0"
+                    xmlns:fes="http://www.opengis.net/fes/2.0"
+                    xmlns:st_gml32="http://www.stations_gml32.org/1.0"
+                    xmlns:wfs="http://www.opengis.net/wfs/2.0">
+                    <wfs:Query typeNames="st_gml32:Station_gml32">
+                        <fes:Filter>
+                            <fes:PropertyIsEqualTo>
+                                <fes:ValueReference>st_gml32:Station_gml32/st_gml32:maintainer/st_gml32:name
+                                </fes:ValueReference>
+                                <fes:Literal>mnt_c</fes:Literal>
+                            </fes:PropertyIsEqualTo>
+                        </fes:Filter>
+                    </wfs:Query>
+                </wfs:GetFeature>""";
         Document document = postAsDOM("wfs", filter);
 
         checkCount(

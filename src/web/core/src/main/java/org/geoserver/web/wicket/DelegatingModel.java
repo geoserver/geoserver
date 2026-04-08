@@ -5,10 +5,12 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 
 public class DelegatingModel<T> implements IModel<T> {
+    @Serial
     private static final long serialVersionUID = -5182376836143803511L;
 
     Component myComponent;

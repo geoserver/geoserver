@@ -26,13 +26,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
+import java.util.Objects;
 import org.apache.commons.io.FileUtils;
+import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.core5.http.HttpEntity;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.importer.DataFormat;
@@ -55,6 +53,8 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
@@ -245,21 +245,24 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         unpack("shape/bugsites_esri_prj.tar.gz", dir);
 
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create().setMode(HttpMultipartMode.STRICT);
+
         new File(dir, "extra.file").createNewFile();
         File[] files = dir.listFiles();
-        Part[] parts = new Part[files.length];
-        for (int i = 0; i < files.length; i++) {
-            parts[i] = new FilePart(files[i].getName(), files[i]);
+        for (File file : files) {
+            builder.addBinaryBody(file.getName(), file);
         }
 
-        MultipartRequestEntity multipart = new MultipartRequestEntity(parts, new PostMethod().getParams());
+        ByteArrayOutputStream bout;
+        MockHttpServletRequest req;
+        try (HttpEntity multipart = builder.build()) {
+            bout = new ByteArrayOutputStream();
+            multipart.writeTo(bout);
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        multipart.writeRequest(bout);
-
-        MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
-        req.setContentType(multipart.getContentType());
-        req.addHeader("Content-Type", multipart.getContentType());
+            req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
+            req.setContentType(multipart.getContentType());
+            req.addHeader("Content-Type", multipart.getContentType());
+        }
         req.setMethod("POST");
         req.setContent(bout.toByteArray());
         resp = dispatch(req);
@@ -290,24 +293,25 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
-        Part[] parts = {
-            new FilePart("archsites.shp", new File(dir, "archsites.shp")),
-            new FilePart("archsites.dbf", new File(dir, "archsites.dbf")),
-            new FilePart("archsites.shx", new File(dir, "archsites.shx")),
-            new FilePart("archsites.prj", new File(dir, "archsites.prj"))
-        };
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create().setMode(HttpMultipartMode.STRICT);
+        builder.addBinaryBody("archsites.shp", new File(dir, "archsites.shp"));
+        builder.addBinaryBody("archsites.dbf", new File(dir, "archsites.dbf"));
+        builder.addBinaryBody("archsites.shx", new File(dir, "archsites.shx"));
+        builder.addBinaryBody("archsites.prj", new File(dir, "archsites.prj"));
 
-        MultipartRequestEntity multipart = new MultipartRequestEntity(parts, new PostMethod().getParams());
+        ByteArrayOutputStream bout;
+        MockHttpServletRequest req;
+        try (HttpEntity multipart = builder.build()) {
+            bout = new ByteArrayOutputStream();
+            multipart.writeTo(bout);
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        multipart.writeRequest(bout);
-
-        MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
-        req.setContentType(multipart.getContentType());
-        req.addHeader("Content-Type", multipart.getContentType());
+            req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
+            req.setContentType(multipart.getContentType());
+            req.addHeader("Content-Type", multipart.getContentType());
+        }
         req.setMethod("POST");
         req.setContent(bout.toByteArray());
-        resp = dispatch(req);
+        dispatch(req);
 
         context = importer.getContext(context.getId());
         assertNull(context.getData());
@@ -338,8 +342,8 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
-        String[] split = resp.getHeader("Location").split("/");
-        Integer id = Integer.parseInt(split[split.length - 1]);
+        String[] split = Objects.requireNonNull(resp.getHeader("Location")).split("/");
+        int id = Integer.parseInt(split[split.length - 1]);
         ImportContext context = importer.getContext(id);
 
         MockHttpServletRequest req =
@@ -382,15 +386,18 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         String path = "geotiff/EmissiveCampania.tif.bz2";
         try (InputStream stream = ImporterTestSupport.class.getResourceAsStream("test-data/" + path)) {
 
-            String creationRequest = "{\n"
-                    + "   \"import\": {\n"
-                    + "      \"targetWorkspace\": {\n"
-                    + "         \"workspace\": {\n"
-                    + "            \"name\": \"sf\"\n"
-                    + "         }\n"
-                    + "      }\n"
-                    + "   }\n"
-                    + "}";
+            String creationRequest =
+                    """
+                {
+                   "import": {
+                      "targetWorkspace": {
+                         "workspace": {
+                            "name": "sf"
+                         }
+                      }
+                   }
+                }\
+                """;
             ImportContext context = uploadGeotiffAndVerify(
                     new File(path).getName(),
                     stream,
@@ -468,7 +475,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
     @Test
     public void testPutTargetExisting() throws Exception {
-        createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
+        creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
 
         int id = lastId();
         String update = "{\"dataStore\": { \"name\": \"foo\" }}";
@@ -479,12 +486,12 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
         JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/target");
         assertEquals("foo", json.getJSONObject("dataStore").getString("name"));
-        assertEquals("H2", json.getJSONObject("dataStore").getString("type"));
+        assertEquals("GeoPackage", json.getJSONObject("dataStore").getString("type"));
     }
 
     @Test
     public void testUpdateMode() throws Exception {
-        createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
+        creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
 
         int id = lastId();
         ImportContext session = importer.getContext(id);
@@ -570,7 +577,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     public void testRenameLayerAndImportIntoH2() throws Exception {
         // create H2 store to act as a target
         DataStoreInfo h2Store =
-                createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "testTarget");
+                creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "testTarget");
 
         // create context with default name
         File dir = unpack("shape/archsites_epsg_prj.zip");
@@ -585,12 +592,15 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertEquals("READY", task.get("state"));
 
         // now rename the layer
-        String renamer = "{\n"
-                + "  \"layer\": {\n"
-                + "\t\t\t\"name\": \"test123\",\n"
-                + "\t\t  \"nativeName\": \"test123\",\n"
-                + "\t\t}\n"
-                + "}";
+        String renamer =
+                """
+            {
+              "layer": {
+            			"name": "test123",
+            		  "nativeName": "test123",
+            		}
+            }\
+            """;
         JSONObject response = (JSONObject) putAsJSON(
                 RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/layer",
                 renamer,

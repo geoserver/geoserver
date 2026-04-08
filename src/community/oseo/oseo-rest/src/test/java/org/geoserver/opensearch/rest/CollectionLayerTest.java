@@ -5,8 +5,8 @@
 package org.geoserver.opensearch.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.geoserver.opensearch.eo.store.OpenSearchAccess.*;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYER_DESCRIPTION;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYER_TITLE;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,9 +42,10 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo.PngEncoderType;
+import org.geoserver.config.ImageProcessingInfo.PngEncoderType;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.Property;
@@ -60,12 +61,14 @@ import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.image.test.ImageAssert;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.MapProjection;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -73,13 +76,20 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class CollectionLayerTest extends OSEORestTestSupport {
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     private String resourceBase;
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wfs", "http://www.opengis.net/wfs");
@@ -99,7 +109,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
         GeoServer gs = getGeoServer();
         GeoServerInfo gsInfo = gs.getGlobal();
-        gsInfo.getJAI().setPngEncoderType(PngEncoderType.JDK);
+        gsInfo.getImageProcessing().setPngEncoderType(PngEncoderType.JDK);
         gs.save(gsInfo);
     }
 
@@ -407,6 +417,16 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     private void setupDefaultLayer(
             String granuleLocations, String layerDefinition, String workspace, Boolean expectSeparateBands)
             throws Exception {
+        setupDefaultLayer(granuleLocations, layerDefinition, workspace, expectSeparateBands, true);
+    }
+
+    private void setupDefaultLayer(
+            String granuleLocations,
+            String layerDefinition,
+            String workspace,
+            Boolean expectSeparateBands,
+            Boolean expectHeterogeneousCRS)
+            throws Exception {
         // setup the granules
         String granulesTemplate = getTestStringData(granuleLocations);
         String granules = granulesTemplate.replace("$resources", resourceBase);
@@ -428,7 +448,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         assertEquals(workspace, json.read("$.workspace"));
         assertEquals("test123", json.read("$.layer"));
         assertEquals(expectSeparateBands, json.read("$.separateBands"));
-        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
+        assertEquals(expectHeterogeneousCRS, json.read("$.heterogeneousCRS"));
     }
 
     @Test
@@ -510,7 +530,6 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         json = getAsJSONPath("/rest/oseo/collections/TEST123/layers", 200);
         assertEquals(Integer.valueOf(2), json.read("$.layers.length()"));
         checkTest123SecondaryLayer();
-        return;
     }
 
     private void checkTest123SecondaryLayer() throws Exception {
@@ -640,7 +659,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
                 Boolean.TRUE);
 
         // check the configuration elements are there too
-        LayerInfo layer = validateBasicLayerStructure("gs", "test123", new String[] {"B02", "B03", "B04", "B08"});
+        validateBasicLayerStructure("gs", "test123", new String[] {"B02", "B03", "B04", "B08"});
 
         // get the capabilites and check the times are indeed ranges
         Document dom = getAsDOM("wms?service=WMS&version=1.3.0&request=GetCapabilities");
@@ -687,5 +706,56 @@ public class CollectionLayerTest extends OSEORestTestSupport {
                 accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
         Feature collection = DataUtilities.first(collections);
         return collection;
+    }
+
+    @Test
+    public void testCreateCollectionUTMLayer() throws Exception {
+        // setup the granules and the layer in UTM 01
+        setupDefaultLayer(
+                "/test123-product-granules-multiband.json",
+                "/test123-layer-multiband-utm.json",
+                "gs",
+                Boolean.TRUE,
+                false);
+
+        // check the configuration elements are there too
+        LayerInfo layer = validateBasicLayerStructure("gs", "test123", new String[] {"B02", "B03", "B04", "B08"});
+        assertThat(layer.getDefaultStyle().prefixedName(), equalTo("gs:test123"));
+        ChannelSelection cs = getChannelSelection(layer);
+        assertEquals("4", cs.getRGBChannels()[0].getChannelName().evaluate(null, String.class));
+        assertEquals("2", cs.getRGBChannels()[1].getChannelName().evaluate(null, String.class));
+        assertEquals("1", cs.getRGBChannels()[2].getChannelName().evaluate(null, String.class));
+        assertNull(cs.getGrayChannel());
+        // declared SRS is 32601 but native is 4326
+        assertEquals("EPSG:32601", layer.getResource().getSRS());
+        assertEquals("EPSG:4326", CRS.lookupIdentifier(layer.getResource().getNativeCRS(), false));
+
+        // request in native CRS
+        BufferedImage image = getAsImage(
+                "wms/reflect?layers=gs:test123&format=image/png&width=200&bbox=510000,7091000,606000,7199000",
+                "image/png");
+        File expected = new File("src/test/resources/test123-multiband-utm.png");
+        ImageAssert.assertEquals(expected, image, 1000);
+    }
+
+    @Test
+    public void testCreateCollectionSimpleLayerUTM() throws Exception {
+        // setup the granules
+        setupDefaultLayer("/test123-product-granules-rgb.json", "/test123-layer-simple-utm.json", "gs", false, false);
+
+        // check the configuration elements are there too
+        LayerInfo layer =
+                validateBasicLayerStructure("gs", "test123", new String[] {"RED_BAND", "GREEN_BAND", "BLUE_BAND"});
+        // ... its style is the default one
+        assertThat(layer.getDefaultStyle().getName(), equalTo("raster"));
+        // declared SRS is 32660 but native is 4326
+        assertEquals("EPSG:32660", layer.getResource().getSRS());
+        assertEquals("EPSG:4326", CRS.lookupIdentifier(layer.getResource().getNativeCRS(), false));
+
+        BufferedImage image = getAsImage(
+                "wms/reflect?layers=gs:test123&format=image/png&width=200&bbox=504980,6295220,604780,6395020",
+                "image/png");
+        File expected = new File("src/test/resources/test123-simple-rgb-utm.png");
+        ImageAssert.assertEquals(expected, image, 1000);
     }
 }

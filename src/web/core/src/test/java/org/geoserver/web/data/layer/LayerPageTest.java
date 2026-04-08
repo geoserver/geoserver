@@ -216,4 +216,23 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         assertTrue(layerProvider.getProperties().contains(LayerProvider.CREATED_TIMESTAMP));
         assertTrue(layerProvider.getProperties().contains(LayerProvider.MODIFIED_TIMESTAMP));
     }
+
+    @Test
+    public void testModificationUserColumnToggle() {
+        GeoServerInfo info = getGeoServerApplication().getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServerApplication().getGeoServer().save(info);
+
+        login();
+
+        // test that we can load the page
+        tester.startPage(new LayerPage());
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        // check it has two columns
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        LayerProvider layerProvider = (LayerProvider) table.getDataProvider();
+        assertTrue(layerProvider.getProperties().contains(LayerProvider.MODIFIED_BY));
+    }
 }

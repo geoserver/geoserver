@@ -4,6 +4,9 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -24,6 +27,9 @@ import org.apache.wicket.util.io.IClusterable;
  */
 public class GSModalWindow extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GSModalWindow.class);
+
+    @Serial
     private static final long serialVersionUID = 4093464097152933949L;
 
     private static final String TITLE_ID = "title";
@@ -50,6 +56,7 @@ public class GSModalWindow extends Panel {
         this.panel.add(new WebMarkupContainer(ModalDialog.CONTENT_ID));
         this.panel.add(new AjaxLink<>("close") {
 
+            @Serial
             private static final long serialVersionUID = 8414211581955106952L;
 
             @Override
@@ -67,9 +74,13 @@ public class GSModalWindow extends Panel {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(new PackageResourceReference(getClass(), "modal/modal.css")));
         response.render(
-                CssHeaderItem.forReference(new PackageResourceReference(getClass(), "modal/GSModalWindow.css")));
-        response.render(
                 JavaScriptHeaderItem.forReference(new PackageResourceReference(getClass(), "modal/GSModalWindow.js")));
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
     }
 
     public void close(AjaxRequestTarget target) {
@@ -158,6 +169,20 @@ public class GSModalWindow extends Panel {
 
     private static final class ContentsPanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(GSModalWindow.ContentsPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = -8770328867678258989L;
 
         public ContentsPanel(String id) {

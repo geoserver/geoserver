@@ -1,0 +1,7 @@
+{
+  "inputs": {
+    "id": "text",
+    "binaryMimeType" : "application/zip"
+  },
+  "response": "raw"
+}

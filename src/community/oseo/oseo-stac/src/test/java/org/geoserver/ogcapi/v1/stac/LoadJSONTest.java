@@ -7,7 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.util.IOUtils;
@@ -47,7 +47,7 @@ public class LoadJSONTest extends STACTestSupport {
         assertTrue(new File(nestedJsonPath).exists());
         String oldContent = IOUtils.toString(getClass().getResourceAsStream(template));
         String newContent = oldContent.replace("willBeReplaced", nestedJsonPath).trim();
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(newContent.getBytes(Charset.forName("UTF-8")))) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(newContent.getBytes(StandardCharsets.UTF_8))) {
             copyTemplate(template, bais);
         }
     }

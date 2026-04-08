@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,7 +27,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Provides efficient traversal of the GeoServer data directory structure.
@@ -129,10 +128,7 @@ class DataDirectoryWalker {
     }
 
     private Stream<LayerDirectory> layers(Path storeDirectory) {
-        return subdirectories(storeDirectory).stream()
-                .map(this::newLayer)
-                .filter(Optional::isPresent)
-                .map(Optional::get);
+        return subdirectories(storeDirectory).stream().map(this::newLayer).flatMap(Optional::stream);
     }
 
     private Optional<LayerDirectory> newLayer(Path layerDirectory) {
@@ -147,17 +143,16 @@ class DataDirectoryWalker {
         return Optional.empty();
     }
 
-    private static final Predicate<Path> STORE_DIRNAME_FILTER = dir -> {
+    private static boolean storeDirnameFilter(Path dir) {
         String name = dir.getFileName().toString();
         return !"styles".equals(name) && !"layergroups".equals(name);
-    };
+    }
 
     private Stream<StoreDirectory> stores(Path workspaceDir) {
         return subdirectories(workspaceDir).stream()
-                .filter(STORE_DIRNAME_FILTER)
+                .filter(DataDirectoryWalker::storeDirnameFilter)
                 .map(this::newStore)
-                .filter(Optional::isPresent)
-                .map(Optional::get);
+                .flatMap(Optional::stream);
     }
 
     private Optional<StoreDirectory> newStore(Path directory) {

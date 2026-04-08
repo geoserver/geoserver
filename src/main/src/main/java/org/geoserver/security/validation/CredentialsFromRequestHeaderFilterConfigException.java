@@ -4,11 +4,14 @@
  */
 package org.geoserver.security.validation;
 
+import java.io.Serial;
+
 /**
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
  */
 public class CredentialsFromRequestHeaderFilterConfigException extends FilterConfigException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public CredentialsFromRequestHeaderFilterConfigException(String errorId, Object... args) {

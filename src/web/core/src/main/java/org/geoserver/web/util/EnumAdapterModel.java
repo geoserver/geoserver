@@ -27,8 +27,7 @@ public class EnumAdapterModel<T extends Enum> implements IModel<T> {
     @SuppressWarnings("unchecked") // casts to T
     public T getObject() {
         Object object = delegate.getObject();
-        if (object instanceof String) {
-            String text = (String) object;
+        if (object instanceof String text) {
             if (text.isEmpty()) {
                 return null;
             }

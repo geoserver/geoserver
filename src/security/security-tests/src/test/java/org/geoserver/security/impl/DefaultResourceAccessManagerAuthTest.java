@@ -323,8 +323,8 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
         } else if (mode == AccessMode.READ) {
             return limits.getReadFilter() != Filter.EXCLUDE;
         } else if (mode == AccessMode.WRITE) {
-            if (limits instanceof VectorAccessLimits) {
-                return ((VectorAccessLimits) limits).getWriteFilter() != Filter.EXCLUDE;
+            if (limits instanceof VectorAccessLimits accessLimits) {
+                return accessLimits.getWriteFilter() != Filter.EXCLUDE;
             } else {
                 return false;
             }

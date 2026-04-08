@@ -9,6 +9,7 @@
     <bean id="wpsCoreExtension" class="org.geoserver.platform.ModuleStatusImpl">
       <constructor-arg index="0" value="gs-wps-core"/>
       <constructor-arg index="1" value="GeoServer Web Processing Service Core"/>
+      <property name="category" value="EXTENSION"/>
     </bean>
 	<bean id="wpsFactoryExtension" class="org.geoserver.wps.WPSFactoryExtension"/>
 	
@@ -187,7 +188,7 @@
     <bean id="geoTiffPPIO" class="org.geoserver.wps.ppio.GeoTiffPPIO">
       <constructor-arg ref="wpsResourceManager"/>
     </bean>
-    <bean id="arcGridPPIO" class="org.geoserver.wps.ppio.ArcGridPPIO">
+    <bean id="arcGridPPIO" class="org.geoserver.wps.ppio.ArcGridPPIOFactory" factory-method="create">
       <constructor-arg ref="wpsResourceManager"/>
     </bean>
     <bean id="coveragePngPPIO" class="org.geoserver.wps.ppio.CoveragePPIO.PNGPPIO"/>
@@ -201,7 +202,7 @@
     <bean id="interpolationPPIO" class="org.geoserver.wps.ppio.InterpolationPPIO" />
     <bean id="sldStylePPIO" class="org.geoserver.wps.ppio.SLDStylePPIO" />
     <bean id="urlPPIO" class="org.geoserver.wps.ppio.URLPPIO" />
-    <bean id="jaitoolsRangePPIO" class="org.geoserver.wps.ppio.JAIToolsRangePPIO"/>
+    <bean id="jaiextRangePPIO" class="org.geoserver.wps.ppio.JAIExtRangePPIO"/>
     <bean id="rawDataPPIO" class="org.geoserver.wps.ppio.RawDataPPIO">
       <constructor-arg ref="wpsResourceManager" />
     </bean>

@@ -13,7 +13,7 @@ public class LibdeflateSettingsXStreamInitializer implements XStreamPersisterIni
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("libdeflateSettings", LibdeflateSettings.class);
+        persister.registerBriefMapComplexType("libdeflateSettings", LibdeflateSettings.class);
         XStream xs = persister.getXStream();
         xs.alias("libdeflateSettings", LibdeflateSettings.class);
     }

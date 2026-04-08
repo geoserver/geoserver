@@ -5,18 +5,23 @@
  */
 package org.geoserver.web.admin;
 
+import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 import static org.geoserver.filters.LoggingFilter.LOG_BODIES_ENABLED;
 import static org.geoserver.filters.LoggingFilter.LOG_HEADERS_ENABLED;
 import static org.geoserver.filters.LoggingFilter.LOG_REQUESTS_ENABLED;
 
+import java.io.Serial;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -36,7 +41,9 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
 import org.geoserver.logging.LoggingUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.Paths;
@@ -56,6 +63,7 @@ import org.springframework.context.ApplicationContext;
 // TODO WICKET8 - Verify this page works OK
 public class GlobalSettingsPage extends ServerAdminPage {
 
+    @Serial
     private static final long serialVersionUID = 4716657682337915996L;
 
     public static final ArrayList<String> AVAILABLE_CHARSETS =
@@ -69,6 +77,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         CompoundPropertyModel<GeoServerInfo> globalModel = new CompoundPropertyModel<>(globalInfoModel);
         PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(globalModel, "settings");
+        PropertyModel<UserDetailsDisplaySettingsInfo> userDetailsDisplaySettingsModel =
+                new PropertyModel<>(globalModel, "userDetailsDisplaySettings");
         PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(globalInfoModel, "metadata");
         Form<GeoServerInfo> form = new Form<>("form", globalModel);
 
@@ -90,7 +100,6 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         logLevelsAppend(form, loggingInfoModel);
         form.add(new CheckBox("stdOutLogging", new PropertyModel<>(loggingInfoModel, "stdOutLogging")));
-        form.add(new TextField<>("loggingLocation", new PropertyModel<>(loggingInfoModel, "location")));
 
         TextField<String> xmlPostRequestLogBufferSize = new TextField<>(
                 "xmlPostRequestLogBufferSize", new PropertyModel<>(globalInfoModel, "xmlPostRequestLogBufferSize"));
@@ -129,8 +138,6 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(requestCheckBox);
 
-        form.add(new CheckBox("xmlExternalEntitiesEnabled"));
-
         form.add(new CheckBox("trailingSlashMatch"));
 
         form.add(new TextField<>("featureTypeCacheSize").add(RangeValidator.minimum(0)));
@@ -156,6 +163,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(webUIModeChoice);
 
+        form.add(webAdminInterfaceSettings(settingsModel, userDetailsDisplaySettingsModel));
+
         form.add(new CheckBox(
                 "allowStoredQueriesPerWorkspace",
                 new PropertyModel<>(globalInfoModel, "allowStoredQueriesPerWorkspace")));
@@ -165,12 +174,6 @@ public class GlobalSettingsPage extends ServerAdminPage {
         ListView extensions =
                 SettingsPluginPanelInfo.createExtensions("extensions", settingsModel, getGeoServerApplication());
         form.add(extensions);
-
-        form.add(new CheckBox(
-                "showCreatedTimeCols", new PropertyModel<>(settingsModel, "showCreatedTimeColumnsInAdminList")));
-
-        form.add(new CheckBox(
-                "showModifiedTimeCols", new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
 
         form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(settingsModel, "defaultLocale")));
         Button submit = new Button("submit") {
@@ -190,6 +193,92 @@ public class GlobalSettingsPage extends ServerAdminPage {
             }
         };
         form.add(cancel);
+    }
+
+    private WebMarkupContainer webAdminInterfaceSettings(
+            PropertyModel<SettingsInfo> settingsModel,
+            PropertyModel<UserDetailsDisplaySettingsInfo> userDetailsDisplaySettingsModel) {
+
+        WebMarkupContainer fieldset = new WebMarkupContainer("webAdminInterfaceSettingsFragment");
+
+        IModel<UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode> loggedInUserDisplayModeModel =
+                new PropertyModel<>(userDetailsDisplaySettingsModel, "loggedInUserDisplayMode");
+        if (loggedInUserDisplayModeModel.getObject() == null) {
+            loggedInUserDisplayModeModel.setObject(UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode.USERNAME);
+        }
+        DropDownChoice<UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode> loggedInUserDisplayModeChoice =
+                new Select2DropDownChoice<>(
+                        "loggedInUserDisplayMode",
+                        loggedInUserDisplayModeModel,
+                        Arrays.asList(UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode.values()));
+
+        CheckBox showProfileColumnsInUserList = new CheckBox(
+                "showProfileColumnsInUserList",
+                new PropertyModel<>(userDetailsDisplaySettingsModel, "showProfileColumnsInUserList"));
+
+        IModel<UserDetailsDisplaySettingsInfo.EmailDisplayMode> emailDisplayModeModel =
+                new PropertyModel<>(userDetailsDisplaySettingsModel, "emailDisplayMode");
+        if (emailDisplayModeModel.getObject() == null) {
+            emailDisplayModeModel.setObject(UserDetailsDisplaySettingsInfo.EmailDisplayMode.DOMAIN_ONLY);
+        }
+        DropDownChoice<UserDetailsDisplaySettingsInfo.EmailDisplayMode> emailDisplayModeChoice =
+                new Select2DropDownChoice<>(
+                        "emailDisplayMode",
+                        emailDisplayModeModel,
+                        Arrays.asList(UserDetailsDisplaySettingsInfo.EmailDisplayMode.values()));
+
+        CheckBox revealEmailAtClickCheckbox = new CheckBox(
+                "revealEmailAtClick", new PropertyModel<>(userDetailsDisplaySettingsModel, "revealEmailAtClick"));
+        revealEmailAtClickCheckbox.setOutputMarkupPlaceholderTag(true);
+        revealEmailAtClickCheckbox.setOutputMarkupId(true);
+
+        emailDisplayModeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                if (!emailDisplayModeChoice.getModelObject().allowsReveal()) {
+                    revealEmailAtClickCheckbox.setModelObject(false);
+                }
+                target.add(revealEmailAtClickCheckbox);
+            }
+        });
+        revealEmailAtClickCheckbox
+                .add(new AjaxFormComponentUpdatingBehavior("change") {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        target.add(revealEmailAtClickCheckbox);
+                    }
+                })
+                .add(new Behavior() {
+                    @Override
+                    public void onConfigure(Component component) {
+                        super.onConfigure(component);
+                        component.setEnabled(
+                                emailDisplayModeChoice.getModelObject().allowsReveal());
+                    }
+                });
+
+        CheckBox showCreatedTimeColumnsInAdminListCheckbox = new CheckBox(
+                "showCreatedTimeCols", new PropertyModel<>(settingsModel, "showCreatedTimeColumnsInAdminList"));
+
+        CheckBox showModifiedTimeColumnsInAdminListCheckbox = new CheckBox(
+                "showModifiedTimeCols", new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList"));
+
+        CheckBox showModifiedUserInAdminListCheckbox =
+                new CheckBox("showModifiedByCols", new PropertyModel<>(settingsModel, "showModifiedUserInAdminList"));
+        String property = GeoServerExtensions.getProperty(TRACK_USER);
+        if (property != null) {
+            showModifiedUserInAdminListCheckbox.setEnabled(false);
+        }
+
+        fieldset.add(loggedInUserDisplayModeChoice);
+        fieldset.add(showProfileColumnsInUserList);
+        fieldset.add(emailDisplayModeChoice);
+        fieldset.add(revealEmailAtClickCheckbox);
+        fieldset.add(showCreatedTimeColumnsInAdminListCheckbox);
+        fieldset.add(showModifiedTimeColumnsInAdminListCheckbox);
+        fieldset.add(showModifiedUserInAdminListCheckbox);
+
+        return fieldset;
     }
 
     private GeoserverAjaxSubmitLink applyLink(Form form) {
@@ -269,6 +358,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
     }
 
     class ResourceErrorHandlingRenderer extends ChoiceRenderer<ResourceErrorHandling> {
+        @Serial
         private static final long serialVersionUID = 4183327535180465575L;
 
         @Override

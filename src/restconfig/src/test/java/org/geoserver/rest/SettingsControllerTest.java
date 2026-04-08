@@ -12,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
@@ -25,6 +23,8 @@ import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -38,9 +38,9 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
 
         // revert global settings
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.getJAI().setAllowInterpolation(false);
-        global.getJAI().setMemoryThreshold(0.75d);
-        global.getJAI().setTilePriority(5);
+        global.getImageProcessing().setAllowInterpolation(false);
+        global.getImageProcessing().setMemoryThreshold(0.75d);
+        global.getImageProcessing().setTilePriority(5);
         global.getCoverageAccess().setQueueType(CoverageAccessInfo.QueueType.UNBOUNDED);
         getGeoServer().save(global);
 
@@ -199,11 +199,14 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         assertEquals("8", settings.get("numDecimals").toString().trim());
         assertEquals("https://geoserver.org", settings.get("onlineResource"));
 
-        JSONObject jaiInfo = global.getJSONObject("jai");
-        assertNotNull(jaiInfo);
-        assertEquals("false", jaiInfo.get("allowInterpolation").toString().trim());
-        assertEquals("0.75", jaiInfo.get("memoryThreshold").toString().trim());
-        assertEquals("5", jaiInfo.get("tilePriority").toString().trim());
+        JSONObject ImageProcessingInfo = global.getJSONObject("jai");
+        assertNotNull(ImageProcessingInfo);
+        assertEquals(
+                "false",
+                ImageProcessingInfo.get("allowInterpolation").toString().trim());
+        assertEquals(
+                "0.75", ImageProcessingInfo.get("memoryThreshold").toString().trim());
+        assertEquals("5", ImageProcessingInfo.get("tilePriority").toString().trim());
 
         JSONObject covInfo = global.getJSONObject("coverageAccess");
         assertEquals("UNBOUNDED", covInfo.get("queueType"));
@@ -282,10 +285,13 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         assertNotNull(contact);
         assertEquals("Claudius Ptolomaeus", contact.get("contactPerson"));
 
-        JSONObject jaiInfo = global.getJSONObject("jai");
-        assertNotNull(jaiInfo);
-        assertEquals("false", jaiInfo.get("allowInterpolation").toString().trim());
-        assertEquals("0.75", jaiInfo.get("memoryThreshold").toString().trim());
+        JSONObject ImageProcessingInfo = global.getJSONObject("jai");
+        assertNotNull(ImageProcessingInfo);
+        assertEquals(
+                "false",
+                ImageProcessingInfo.get("allowInterpolation").toString().trim());
+        assertEquals(
+                "0.75", ImageProcessingInfo.get("memoryThreshold").toString().trim());
 
         JSONObject covInfo = global.getJSONObject("coverageAccess");
         assertEquals("UNBOUNDED", covInfo.get("queueType"));
@@ -567,38 +573,41 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPutContactAsJSONInternationalValues() throws Exception {
         initContact();
-        String inputJson = "{\n"
-                + "    \"contact\": {\n"
-                + "        \"internationalAddress\": {\n"
-                + "            \"ar-EG\": \"Avenida Atlantica 15\",\n"
-                + "            \"de\": \"via di Sotterra 13\"\n"
-                + "        },\n"
-                + "        \"internationalAddressCity\": {\n"
-                + "            \"ar-EG\": \"Alexandria\",\n"
-                + "            \"de\": \"Berlin\"\n"
-                + "        },\n"
-                + "        \"internationalAddressCountry\": {\n"
-                + "            \"ar-EG\": \"Egypt\",\n"
-                + "            \"de\": \"Germany\"\n"
-                + "        },\n"
-                + "        \"internationalAddressDeliveryPoint\": {\n"
-                + "            \"ar-EG\": \"EG delivery point\",\n"
-                + "            \"de\": \"DE delivery point\"\n"
-                + "        },\n"
-                + "        \"internationalAddressPostalCode\": {\n"
-                + "            \"ar-EG\": 111110000011111,\n"
-                + "            \"de\": \"000001111110000\"\n"
-                + "        },\n"
-                + "        \"internationalContactEmail\": {\n"
-                + "            \"ar-EG\": \"claudius.ptolomaeus@gmail.com\",\n"
-                + "            \"de\": \"alexander.von.humboldt@erdkunde.com\"\n"
-                + "        },\n"
-                + "        \"internationalContactPerson\": {\n"
-                + "            \"ar-EG\": \"Claudius Ptolomaeus\",\n"
-                + "            \"de\": \"Alexander von Humboldt\"\n"
-                + "        },\n"
-                + "    }\n"
-                + "}";
+        String inputJson =
+                """
+                {
+                    "contact": {
+                        "internationalAddress": {
+                            "ar-EG": "Avenida Atlantica 15",
+                            "de": "via di Sotterra 13"
+                        },
+                        "internationalAddressCity": {
+                            "ar-EG": "Alexandria",
+                            "de": "Berlin"
+                        },
+                        "internationalAddressCountry": {
+                            "ar-EG": "Egypt",
+                            "de": "Germany"
+                        },
+                        "internationalAddressDeliveryPoint": {
+                            "ar-EG": "EG delivery point",
+                            "de": "DE delivery point"
+                        },
+                        "internationalAddressPostalCode": {
+                            "ar-EG": 111110000011111,
+                            "de": "000001111110000"
+                        },
+                        "internationalContactEmail": {
+                            "ar-EG": "claudius.ptolomaeus@gmail.com",
+                            "de": "alexander.von.humboldt@erdkunde.com"
+                        },
+                        "internationalContactPerson": {
+                            "ar-EG": "Claudius Ptolomaeus",
+                            "de": "Alexander von Humboldt"
+                        },
+                    }
+                }\
+                """;
         MockHttpServletResponse response =
                 putAsServletResponse(RestBaseController.ROOT_PATH + "/settings/contact", inputJson, "text/json");
         assertEquals(200, response.getStatus());

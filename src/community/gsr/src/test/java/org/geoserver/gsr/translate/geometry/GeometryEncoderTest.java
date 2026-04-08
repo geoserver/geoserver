@@ -13,14 +13,14 @@ package org.geoserver.gsr.translate.geometry;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import net.sf.json.JSON;
-import net.sf.json.JSONSerializer;
-import net.sf.json.test.JSONAssert;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.gsr.api.GeoServicesJacksonJsonConverter;
 import org.geoserver.gsr.model.geometry.Geometry;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKID;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONSerializer;
+import org.kordamp.json.test.JSONAssert;
 
 public class GeometryEncoderTest {
 

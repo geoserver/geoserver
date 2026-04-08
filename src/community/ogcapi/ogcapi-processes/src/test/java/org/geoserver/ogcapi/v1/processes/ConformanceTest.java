@@ -8,6 +8,7 @@ import static org.geoserver.ogcapi.v1.processes.ProcessesService.CONF_CLASS_HTML
 import static org.geoserver.ogcapi.v1.processes.ProcessesService.CONF_CLASS_JSON;
 import static org.geoserver.ogcapi.v1.processes.ProcessesService.CONF_CLASS_PROCESSES_CORE;
 import static org.geoserver.ogcapi.v1.processes.ProcessesService.CONF_CLASS_PROCESS_DESCRIPTION;
+import static org.geoserver.ogcapi.v1.processes.ProcessesService.CONF_DISMISS;
 import static org.geoserver.ogcapi.v1.processes.ProcessesService.CONF_KVP_EXECUTE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -42,7 +43,8 @@ public class ConformanceTest extends OGCApiTestSupport {
             CONF_CLASS_PROCESS_DESCRIPTION,
             CONF_CLASS_HTML,
             CONF_CLASS_JSON,
-            CONF_KVP_EXECUTE
+            CONF_KVP_EXECUTE,
+            CONF_DISMISS
         };
     }
 

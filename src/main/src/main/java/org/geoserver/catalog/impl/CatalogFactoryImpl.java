@@ -137,7 +137,7 @@ public class CatalogFactoryImpl implements CatalogFactory {
     }
 
     @Override
-    public <T extends Object> T create(Class<T> clazz) {
+    public <T> T create(Class<T> clazz) {
         return null;
     }
 }

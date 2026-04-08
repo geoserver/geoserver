@@ -23,7 +23,6 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.DimensionWarning;
 import org.geotools.util.logging.Logging;
-import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 
 /**
  * Loads and saves the integrated GWC configuration at {@code <data dir>/gwc-gs.xml}
@@ -111,10 +110,10 @@ public class GWCConfigPersister {
         xs.alias("defaultCoverageCacheFormats", HashSet.class);
         xs.alias("defaultVectorCacheFormats", HashSet.class);
         xs.alias("defaultOtherCacheFormats", HashSet.class);
-        xs.alias("InnerCacheConfiguration", CacheConfiguration.class);
         xs.alias("warning", DimensionWarning.WarningType.class);
-        xs.allowTypes(new Class[] {GWCConfig.class, CacheConfiguration.class, DimensionWarning.WarningType.class});
+        xs.allowTypes(new Class[] {GWCConfig.class, DimensionWarning.WarningType.class});
         xs.addDefaultImplementation(LinkedHashSet.class, Set.class);
+        xs.ignoreUnknownElements();
     }
 
     private Resource getConfigRoot() {

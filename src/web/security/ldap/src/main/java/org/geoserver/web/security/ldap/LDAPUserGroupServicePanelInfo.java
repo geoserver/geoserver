@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security.ldap;
 
+import java.io.Serial;
 import org.geoserver.security.ldap.LDAPUserGroupService;
 import org.geoserver.security.ldap.LDAPUserGroupServiceConfig;
 import org.geoserver.security.web.usergroup.UserGroupServicePanelInfo;
@@ -12,6 +13,7 @@ import org.geoserver.security.web.usergroup.UserGroupServicePanelInfo;
 public class LDAPUserGroupServicePanelInfo
         extends UserGroupServicePanelInfo<LDAPUserGroupServiceConfig, LDAPUserGroupServicePanel> {
 
+    @Serial
     private static final long serialVersionUID = 3768741389681107925L;
 
     public LDAPUserGroupServicePanelInfo() {

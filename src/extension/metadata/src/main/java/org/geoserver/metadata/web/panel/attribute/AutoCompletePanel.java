@@ -4,6 +4,9 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +25,20 @@ import org.geoserver.metadata.data.dto.AttributeConfiguration;
 
 public class AutoCompletePanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(AutoCompletePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -1829729746678003578L;
 
     public AutoCompletePanel(
@@ -35,6 +52,7 @@ public class AutoCompletePanel extends Panel {
         super(id, model);
 
         AutoCompleteTextField<String> field = new AutoCompleteTextField<>("autoComplete", model) {
+            @Serial
             private static final long serialVersionUID = 7742400754591550452L;
 
             @Override
@@ -59,6 +77,7 @@ public class AutoCompletePanel extends Panel {
         };
         if (selectedValues != null) {
             field.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Serial
                 private static final long serialVersionUID = 1989673955080590525L;
 
                 @Override
@@ -71,6 +90,7 @@ public class AutoCompletePanel extends Panel {
         if (forceValues) {
             field.add(new IValidator<>() {
 
+                @Serial
                 private static final long serialVersionUID = -7843517457763685578L;
 
                 @Override

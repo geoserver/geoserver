@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.catalog.Catalog;
@@ -70,6 +69,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.springframework.http.HttpStatus;
@@ -88,10 +88,10 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     }
 
     @Before
-    public void createH2Store() throws Exception {
+    public void createGeopkgStore() throws Exception {
         // create the store for the indirect imports
         String wsName = getCatalog().getDefaultWorkspace().getName();
-        createH2DataStore(wsName, "h2");
+        creatGeopkgDataStore(wsName, "gpkg");
         // remove any callback set to check the request spring context
         RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
         listener.setCallBack(null);
@@ -135,7 +135,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"
@@ -192,7 +192,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"
@@ -231,7 +231,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },\n"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      },\n"
                 + "      \"transforms\": [\n"
@@ -272,7 +272,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },\n"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      },\n"
                 + "      \"transforms\": [\n"
@@ -322,7 +322,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },\n"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      },\n"
                 + "      \"transforms\": [\n"
@@ -450,7 +450,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"
@@ -527,7 +527,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"
@@ -620,7 +620,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         File granulesRoot = new File(root, mosaicName + "_granules");
         ensureClean(granulesRoot);
         Properties props = new Properties();
-        props.put("SPI", "org.geotools.data.h2.H2DataStoreFactory");
+        props.put("SPI", "org.geotools.geopkg.GeoPkgDataStoreFactory");
         props.put("database", "empty");
         try (FileOutputStream fos = new FileOutputStream(new File(mosaicRoot, "datastore.properties"))) {
             props.store(fos, null);
@@ -686,24 +686,27 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     /** Attribute computation integration test */
     @Test
     public void testAttributeCompute() throws Exception {
-        // create H2 store to act as a target
-        DataStoreInfo h2Store =
-                createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "computeDB");
+        // create geopkg store to act as a target
+        DataStoreInfo geopkg =
+                creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "computeDB");
 
         // create context with default name
         File dir = unpack("shape/archsites_epsg_prj.zip");
         ImportContext context = importer.createContext(0l);
-        context.setTargetStore(h2Store);
+        context.setTargetStore(geopkg);
         importer.changed(context);
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
         // add a transformation to compute a new attribute
-        String json = "{\n"
-                + "  \"type\": \"AttributeComputeTransform\",\n"
-                + "  \"field\": \"label\",\n"
-                + "  \"fieldType\": \"java.lang.String\",\n"
-                + "  \"cql\": \"'Test string'\"\n"
-                + "}";
+        String json =
+                """
+                {
+                  "type": "AttributeComputeTransform",
+                  "field": "label",
+                  "fieldType": "java.lang.String",
+                  "cql": "'Test string'"
+                }\
+                """;
 
         MockHttpServletResponse resp = postAsServletResponse(
                 RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/transforms",
@@ -716,7 +719,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.run(context);
 
         // check created type, layer and database table
-        DataStore store = (DataStore) h2Store.getDataStore(null);
+        DataStore store = (DataStore) geopkg.getDataStore(null);
         SimpleFeatureSource fs = store.getFeatureSource("archsites");
         assertNotNull(fs.getSchema().getType("label"));
         SimpleFeature first = DataUtilities.first(fs.getFeatures());
@@ -845,11 +848,14 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
         // add a transformation to run post script
-        String json = "{\n"
-                + "  \"type\": \"PostScriptTransform\",\n"
-                + "  \"name\": \"test.sh\",\n"
-                + "  \"options\": [\"test.abc\"]"
-                + "}";
+        String json =
+                """
+                {
+                  "type": "PostScriptTransform",
+                  "name": "test.sh",
+                  "options": ["test.abc"]\
+                }\
+                """;
 
         MockHttpServletResponse resp = postAsServletResponse(
                 RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/transforms",
@@ -873,7 +879,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     public void testRunWithTimeDimension() throws Exception {
         Catalog cat = getCatalog();
 
-        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "ming");
+        DataStoreInfo ds = creatGeopkgDataStore(cat.getDefaultWorkspace().getName(), "ming");
 
         // the target layer is not there
         assertNull(getCatalog().getLayerByName("ming_time"));
@@ -890,11 +896,14 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         context.getTasks().get(0).getData().setCharsetEncoding("UTF-8");
 
         // add a transformation to run post script
-        String json = "{\n"
-                + "  \"type\": \"DateFormatTransform\",\n"
-                + "  \"field\": \"Year_Date\",\n"
-                + "  \"presentation\": \"DISCRETE_INTERVAL\""
-                + "}";
+        String json =
+                """
+                {
+                  "type": "DateFormatTransform",
+                  "field": "Year_Date",
+                  "presentation": "DISCRETE_INTERVAL"\
+                }\
+                """;
 
         MockHttpServletResponse resp = postAsServletResponse(
                 RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/transforms",
@@ -930,8 +939,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         DimensionInfo timeDimension = (DimensionInfo) md.get("time");
         assertNotNull(timeDimension);
 
-        assertEquals(timeDimension.getAttribute(), "Year_Date");
-        assertEquals(timeDimension.getPresentation(), DimensionPresentation.DISCRETE_INTERVAL);
+        assertEquals("Year_Date", timeDimension.getAttribute());
+        assertEquals(DimensionPresentation.DISCRETE_INTERVAL, timeDimension.getPresentation());
     }
 
     @Test
@@ -959,7 +968,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },\n"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"
@@ -987,7 +996,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.PENDING, context.getState());
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
-        assertSame(context.getState(), ImportContext.State.COMPLETE);
+        assertSame(ImportContext.State.COMPLETE, context.getState());
 
         assertFalse(new File(context.getUploadDirectory().getFile(), ".locking").exists());
         assertTrue(new File(context.getUploadDirectory().getFile(), ".clean-me").exists());
@@ -1041,7 +1050,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.PENDING, context.getState());
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
-        assertSame(context.getState(), ImportContext.State.COMPLETE);
+        assertSame(ImportContext.State.COMPLETE, context.getState());
 
         assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
     }
@@ -1070,12 +1079,15 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 catalog.getLayerByName(basicPolygonsName).getDefaultStyle().getId());
 
         // Do a JSON PUT to change the default style
-        String contextDefinition = "{\"layer\": {\n"
-                + "  \"name\": \"BasicPolygons\",\n"
-                + "  \"defaultStyle\":   {\n"
-                + "    \"name\": \"polygon\"\n"
-                + "  },\n"
-                + "}}";
+        String contextDefinition =
+                """
+                {"layer": {
+                  "name": "BasicPolygons",
+                  "defaultStyle":   {
+                    "name": "polygon"
+                  },
+                }}\
+                """;
 
         MockHttpServletResponse response = putAsServletResponse(
                 "/rest/layers/" + basicPolygonsName.toString(), contextDefinition, "application/json");
@@ -1136,7 +1148,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.PENDING, context.getState());
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
-        assertSame(context.getState(), ImportContext.State.COMPLETE);
+        assertSame(ImportContext.State.COMPLETE, context.getState());
 
         assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.shp").exists());
         assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.dbf").exists());

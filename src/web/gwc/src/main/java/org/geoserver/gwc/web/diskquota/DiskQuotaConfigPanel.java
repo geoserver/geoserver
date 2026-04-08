@@ -5,6 +5,9 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -52,6 +55,21 @@ import org.springframework.context.ApplicationContext;
  * @author groldan
  */
 public class DiskQuotaConfigPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DiskQuotaConfigPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOGGER = Logging.getLogger(DiskQuotaConfigPanel.class);
@@ -168,6 +186,7 @@ public class DiskQuotaConfigPanel extends Panel {
         // make the JDBC configuration visible only when the user chose a JDBC store
         quotaStoreChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
 
+            @Serial
             private static final long serialVersionUID = -6806581935751265393L;
 
             @Override
@@ -202,6 +221,7 @@ public class DiskQuotaConfigPanel extends Panel {
         // make the two ways to configure the JDBC store show up as alternatives
         connectionTypeChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
 
+            @Serial
             private static final long serialVersionUID = -8286073946292214144L;
 
             @Override
@@ -222,6 +242,7 @@ public class DiskQuotaConfigPanel extends Panel {
         final IModel<Quota> globalQuotaModel = new PropertyModel<>(diskQuotaModel, "globalQuota");
 
         final IModel<Quota> globalUsedQuotaModel = new LoadableDetachableModel<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -269,7 +290,6 @@ public class DiskQuotaConfigPanel extends Panel {
         globalQuotaPolicy.add(globalQuotaPolicyLRU);
     }
 
-    @SuppressWarnings("unchecked")
     private void addCleanUpFrequencyConfig(final IModel<DiskQuotaConfig> diskQuotaModel) {
 
         final DiskQuotaConfig diskQuotaConfig = diskQuotaModel.getObject();

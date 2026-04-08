@@ -6,7 +6,9 @@
 package org.geoserver.security.web.auth;
 
 import static org.geoserver.security.web.auth.SecurityFilterChainProvider.NAME;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
@@ -20,6 +22,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.HtmlLoginFilterChain;
@@ -44,6 +47,19 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
  * @author christian
  */
 public class SecurityFilterChainsPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityFilterChainsPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     SecurityFilterChainTablePanel tablePanel;
     FeedbackPanel feedbackPanel;
@@ -83,6 +99,7 @@ public class SecurityFilterChainsPanel extends Panel {
         SecurityFilterChainProvider dataProvider = new SecurityFilterChainProvider(secMgrConfig);
         add(
                 tablePanel = new SecurityFilterChainTablePanel("table", dataProvider) {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     //            @Override
@@ -117,8 +134,7 @@ public class SecurityFilterChainsPanel extends Panel {
      */
     void handleException(Exception e, Component target) {
         Serializable msg = null;
-        if (e instanceof SecurityConfigException) {
-            SecurityConfigException sce = (SecurityConfigException) e;
+        if (e instanceof SecurityConfigException sce) {
             msg = new StringResourceModel("security." + sce.getId())
                     .setParameters(sce.getArgs())
                     .getObject();
@@ -152,9 +168,9 @@ public class SecurityFilterChainsPanel extends Panel {
                             .getRequestChainByName(chainName);
 
                     SecurityFilterChainPage editPage = null;
-                    if (chain instanceof VariableFilterChain)
+                    if (chain instanceof VariableFilterChain filterChain)
                         editPage = new SecurityVariableFilterChainPage(
-                                ((VariableFilterChain) chain), SecurityFilterChainsPanel.this.secMgrConfig, false);
+                                filterChain, SecurityFilterChainsPanel.this.secMgrConfig, false);
                     else
                         editPage =
                                 new SecurityFilterChainPage(chain, SecurityFilterChainsPanel.this.secMgrConfig, false);
@@ -222,6 +238,19 @@ public class SecurityFilterChainsPanel extends Panel {
 
     class PositionPanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(SecurityFilterChainsPanel.PositionPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         List<RequestFilterChain> getChains() {
             return secMgrConfig.getFilterChain().getRequestChains();
         }
@@ -235,29 +264,27 @@ public class SecurityFilterChainsPanel extends Panel {
             this.theChain = chain;
             this.setOutputMarkupId(true);
 
-            upLink =
-                    new ImageAjaxLink(
-                            "up", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_up.png")) {
-                        @Override
-                        protected void onClick(AjaxRequestTarget target) {
-                            int index = getChains().indexOf(PositionPanel.this.theChain);
-                            getChains().remove(index);
-                            getChains().add(Math.max(0, index - 1), PositionPanel.this.theChain);
-                            target.add(tablePanel);
-                            target.add(this);
-                            target.add(downLink);
-                            target.add(upLink);
-                        }
+            upLink = new ImageAjaxLink("up", new ContextRelativeResourceReference("img/icons/silk/arrow_up.png")) {
+                @Override
+                protected void onClick(AjaxRequestTarget target) {
+                    int index = getChains().indexOf(PositionPanel.this.theChain);
+                    getChains().remove(index);
+                    getChains().add(Math.max(0, index - 1), PositionPanel.this.theChain);
+                    target.add(tablePanel);
+                    target.add(this);
+                    target.add(downLink);
+                    target.add(upLink);
+                }
 
-                        @Override
-                        protected void onComponentTag(ComponentTag tag) {
-                            if (getChains().indexOf(theChain) == 0) {
-                                tag.put("class", "visibility-hidden");
-                            } else {
-                                tag.put("class", "visibility-visible");
-                            }
-                        }
-                    };
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    if (getChains().indexOf(theChain) == 0) {
+                        tag.put("class", "visibility-hidden");
+                    } else {
+                        tag.put("class", "visibility-visible");
+                    }
+                }
+            };
             upLink.getImage()
                     .add(new AttributeModifier(
                             "alt", new ParamResourceModel("SecurityFilterChainsPanel.th.up", upLink)));
@@ -265,8 +292,7 @@ public class SecurityFilterChainsPanel extends Panel {
             add(upLink);
 
             downLink =
-                    new ImageAjaxLink(
-                            "down", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_down.png")) {
+                    new ImageAjaxLink("down", new ContextRelativeResourceReference("img/icons/silk/arrow_down.png")) {
                         @Override
                         protected void onClick(AjaxRequestTarget target) {
                             int index = getChains().indexOf(PositionPanel.this.theChain);

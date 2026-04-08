@@ -5,6 +5,9 @@
  */
 package org.geoserver.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +26,20 @@ import org.geotools.util.Version;
  */
 public class CapabilitiesHomePagePanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CapabilitiesHomePagePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -102,11 +119,11 @@ public class CapabilitiesHomePagePanel extends Panel {
         });
 
         ListView<CapsInfo> view = new ListView<>("services", capsLinks) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void populateItem(ListItem<CapsInfo> captItem) {
-                @SuppressWarnings("deprecation")
                 CapsInfo capsInfo = captItem.getModelObject();
 
                 Version version = capsInfo.getVersion();

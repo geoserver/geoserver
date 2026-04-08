@@ -21,7 +21,7 @@
   </coverageAccess>
   <charset>UTF-8</charset>
   <numDecimals>8</numDecimals>
-  <onlineResource>http://geoserver.org</onlineResource>
+  <onlineResource>https://geoserver.org</onlineResource>
   <verbose>false</verbose>
   <verboseExceptions>true</verboseExceptions>
   <updateSequence>2</updateSequence>

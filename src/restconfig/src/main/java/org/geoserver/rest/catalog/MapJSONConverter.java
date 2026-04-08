@@ -13,12 +13,12 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONNull;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -80,8 +80,7 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
      * @return json representation
      */
     public Object toJSONObject(Object obj) {
-        if (obj instanceof Map) {
-            Map<?, ?> m = (Map<?, ?>) obj;
+        if (obj instanceof Map<?, ?> m) {
             JSONObject json = new JSONObject();
 
             for (Entry<?, ?> entry : m.entrySet()) {
@@ -90,8 +89,7 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
                 json.put(key, value);
             }
             return json;
-        } else if (obj instanceof Collection) {
-            Collection<?> collection = (Collection<?>) obj;
+        } else if (obj instanceof Collection<?> collection) {
             JSONArray json = new JSONArray();
             for (Object object : collection) {
                 Object value = toJSONObject(object);

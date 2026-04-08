@@ -4,6 +4,7 @@
  */
 package org.geoserver.jdbcstore.internal;
 
+import java.io.Serial;
 import org.geoserver.jdbcloader.JDBCLoaderProperties;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.jdbcloader.JDBCLoaderProperties;
  */
 public class JDBCResourceStoreProperties extends JDBCLoaderProperties {
 
+    @Serial
     private static final long serialVersionUID = -3335880912330668027L;
 
     public JDBCResourceStoreProperties(JDBCResourceStorePropertiesFactoryBean factory) {

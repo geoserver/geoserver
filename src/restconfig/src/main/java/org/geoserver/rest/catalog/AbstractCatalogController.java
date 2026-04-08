@@ -85,18 +85,16 @@ public abstract class AbstractCatalogController extends RestBaseController {
                 throw new RestException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
         }
-        if (fieldsToCalculate.contains("dimensions") && message instanceof CoverageInfo) {
+        if (fieldsToCalculate.contains("dimensions") && message instanceof CoverageInfo ci) {
             CatalogBuilder cb = new CatalogBuilder(catalog);
             try {
-                CoverageInfo ci = (CoverageInfo) message;
                 cb.reloadDimensions(ci);
             } catch (Exception e) {
                 String errorMessage = "Error while calculating bands for coverage: " + message;
                 throw new RestException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
         }
-        if (fieldsToCalculate.contains("attributes") && message instanceof FeatureTypeInfoImpl) {
-            FeatureTypeInfoImpl ft = (FeatureTypeInfoImpl) message;
+        if (fieldsToCalculate.contains("attributes") && message instanceof FeatureTypeInfoImpl ft) {
             catalog.getResourcePool().clear(ft);
             ft.setAttributes(new ArrayList<>());
         }

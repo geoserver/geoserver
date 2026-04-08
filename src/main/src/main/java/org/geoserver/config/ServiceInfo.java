@@ -60,7 +60,7 @@ public interface ServiceInfo extends Info {
      */
     void setName(String name);
 
-    /** The workspace the service is specific or local to, or <code>null</code> if the service is global. */
+    /** The workspace the service is specific or local to, or {@code null} if the service is global. */
     WorkspaceInfo getWorkspace();
 
     /** Sets the workspace the service is specific or local to. */
@@ -149,6 +149,20 @@ public interface ServiceInfo extends Info {
      * @uml.property name="versions"
      */
     List<Version> getVersions();
+
+    /**
+     * The versions of the service that are disabled.
+     *
+     * @return List of disabled versions, empty list means all versions are enabled
+     */
+    List<Version> getDisabledVersions();
+
+    /**
+     * Sets the list of disabled versions for this service.
+     *
+     * @param disabledVersions List of versions to disable
+     */
+    void setDisabledVersions(List<Version> disabledVersions);
 
     /**
      * Keywords associated with the service.

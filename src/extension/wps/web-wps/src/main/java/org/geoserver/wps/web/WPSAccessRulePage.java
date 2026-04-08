@@ -116,7 +116,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                             TextArea<String> roles = new TextArea<>("roles", pm) {
                                 @Override
                                 @SuppressWarnings("unchecked")
-                                public <C extends Object> IConverter<C> getConverter(java.lang.Class<C> type) {
+                                public <C> IConverter<C> getConverter(java.lang.Class<C> type) {
                                     return new RolesConverter(availableRoles);
                                 }
                             };
@@ -165,7 +165,9 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                 new PropertyModel<>(wpsInfo, "catalogMode"),
                 CATALOG_MODES,
                 new CatalogModeRenderer());
-        catalogModeChoice.setSuffix(" ");
+        // Wrap each radio input + label pair in a <div>...</div>
+        catalogModeChoice.setPrefix("<div>");
+        catalogModeChoice.setSuffix("</div>");
         form.add(catalogModeChoice);
 
         SubmitLink submit = new SubmitLink("submit", new StringResourceModel("save", null, null)) {

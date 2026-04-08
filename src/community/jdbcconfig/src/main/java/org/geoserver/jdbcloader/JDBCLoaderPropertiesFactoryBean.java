@@ -4,6 +4,7 @@
  */
 package org.geoserver.jdbcloader;
 
+import jakarta.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +14,6 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import org.geoserver.config.GeoServerPluginConfigurator;
 import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -22,6 +22,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.SortedProperties;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -211,7 +212,9 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
         try {
             OutputStream out = propFile.out();
             try {
-                config.store(out, comment);
+                SortedProperties sortedConfig = new SortedProperties();
+                sortedConfig.putAll(config);
+                sortedConfig.store(out, comment);
             } finally {
                 out.close();
             }
@@ -246,10 +249,8 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
 
     protected String getDataDirStr() {
         if (dataDirectory == null) {
-            if (resourceStore instanceof GeoServerResourceLoader) {
-                dataDirectory = ((GeoServerResourceLoader) resourceStore)
-                        .getBaseDirectory()
-                        .getAbsolutePath();
+            if (resourceStore instanceof GeoServerResourceLoader loader) {
+                dataDirectory = loader.getBaseDirectory().getAbsolutePath();
             } else {
                 throw new IllegalStateException("Data directory could not be determined.");
             }

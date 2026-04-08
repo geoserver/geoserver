@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.config.GeoServer;
@@ -33,6 +34,7 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
@@ -218,21 +220,44 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         }
 
         // count
-        Query countQuery = new Query(resultsQuery);
-        countQuery.setMaxFeatures(Query.DEFAULT_MAX);
-        countQuery.setStartIndex(null);
-        int totalResults = featureSource.getCount(countQuery);
-
-        // get actual features
+        Integer totalResults = null;
+        boolean nextPage;
         FeatureCollection<FeatureType, Feature> features;
-        if (resultsQuery.getMaxFeatures() == 0) {
-            // pure count query
-            features = new ListComplexFeatureCollection(featureSource.getSchema(), Collections.emptyList());
+        if (getService().isSkipNumberMatched()) {
+            if (resultsQuery.getMaxFeatures() == Query.DEFAULT_MAX) {
+                features = featureSource.getFeatures(resultsQuery);
+                nextPage = false;
+            } else {
+                // get the items, plus one to check for next page
+                Query nextQuery = new Query(resultsQuery);
+                nextQuery.setMaxFeatures(resultsQuery.getMaxFeatures() + 1);
+                features = featureSource.getFeatures(nextQuery);
+                int returned = features.size();
+                if (returned > resultsQuery.getMaxFeatures()) {
+                    nextPage = true;
+                    features = new MaxFeaturesFeatureCollection<>(features, resultsQuery.getMaxFeatures());
+                } else {
+                    nextPage = false;
+                }
+            }
         } else {
-            features = featureSource.getFeatures(resultsQuery);
+            Query countQuery = new Query(resultsQuery);
+            countQuery.setMaxFeatures(Query.DEFAULT_MAX);
+            countQuery.setStartIndex(null);
+            totalResults = featureSource.getCount(countQuery);
+            nextPage = totalResults
+                    > (Optional.ofNullable(resultsQuery.getStartIndex()).orElse(0) + resultsQuery.getMaxFeatures());
+
+            // get actual features
+            if (resultsQuery.getMaxFeatures() == 0) {
+                // pure count query
+                features = new ListComplexFeatureCollection(featureSource.getSchema(), Collections.emptyList());
+            } else {
+                features = featureSource.getFeatures(resultsQuery);
+            }
         }
 
-        SearchResults results = new SearchResults(request, features, totalResults);
+        SearchResults results = new SearchResults(request, features, totalResults, nextPage);
 
         return results;
     }

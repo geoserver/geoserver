@@ -10,8 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
 import java.util.Objects;
 import org.geoserver.ogcapi.AbstractDocument;
-import org.geotools.api.feature.type.Name;
-import org.geotools.process.ProcessFactory;
 
 @JsonInclude(Include.NON_NULL)
 public class ProcessSummaryDocument extends AbstractDocument {
@@ -22,11 +20,11 @@ public class ProcessSummaryDocument extends AbstractDocument {
     List<JobControl> jobControlOptions = List.of(JobControl.SYNC, JobControl.ASYNC);
     List<String> keywords;
 
-    public ProcessSummaryDocument(ProcessFactory factory, Name processName) {
-        this.id = processName.getURI();
-        this.version = factory.getVersion(processName);
-        this.title = factory.getTitle(processName).toString();
-        this.description = factory.getDescription(processName).toString();
+    public ProcessSummaryDocument(Process process) {
+        this.id = process.getName().getURI();
+        this.version = process.getVersion();
+        this.title = process.getTitle();
+        this.description = process.getDescription();
     }
 
     public String getVersion() {

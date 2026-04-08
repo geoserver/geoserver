@@ -1,6 +1,7 @@
 <dataStore>
   <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fdc</id>
   <name>taz_shapes</name>
+  <type>Shapefile</type>
   <description>Tasmania vector data derived from Digital Chart of the World.</description>
   <enabled>true</enabled>
   <workspace>

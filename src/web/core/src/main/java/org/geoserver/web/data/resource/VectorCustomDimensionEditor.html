@@ -1,81 +1,123 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
+
+<head />
+
 <body>
   <wicket:panel>
-
-    <ul>
-      <li><input type="checkbox" wicket:id="enabled"/>
-      <wicket:message key="enabled">enabled</wicket:message>
-        &nbsp;&nbsp;<em><span wicket:id="noAttributeMsg"></span></em>
-        <label for="customDimName"><wicket:message key="customDimName" /></label>
-        <input wicket:id="customDimName" id="customDimName" type="text" size="40"/>
-        <button type="button" wicket:id="removeButton">
-        	<wicket:message key="removeButton">Remove</wicket:message>
-        </button>
-      </li>
-      <li wicket:id="configContainer">
-        <ul wicket:id="configs">
-          <li wicket:id="attributeContainer">
-            <label for="attribute">
-              <wicket:message key="attribute">attribute</wicket:message>
-            </label>
-            <select id="attribute" wicket:id="attribute"></select>
-            <label for="endAttribute">
-              <wicket:message key="endAttribute">endAttribute</wicket:message>
-            </label>
-            <select id="endAttribute" wicket:id="endAttribute"></select>
-          </li>
-          <li wicket:id="unitsContainer">
-            <label for="units"><wicket:message key="units">units</wicket:message></label>
-            <input type="text" wicket:id="units" class="field text" />
-            <label for="unitSymbol">
-              <wicket:message key="unitSymbol">unitSymbol</wicket:message>
-            </label>
-            <input type="text" wicket:id="unitSymbol" class="field text" />
-          </li>
-          <li><label><wicket:message key="presentation">presentation</wicket:message></label>
-            <select wicket:id="presentation"></select>
-          </li>
-          <li wicket:id="resolutionContainer">
-            <div wicket:id="resolutions">
-              <label><wicket:message key="resolution">resolution</wicket:message></label>
-              <input type="text" wicket:id="resElevation"
-                class="field text" />
-              <div wicket:id="resTime" />
+    <div class="gs-panel-VectorCustomDimensionEditor">
+      <div class="gs-form">
+        <div class="choiceItem">
+          <input type="checkbox" wicket:id="enabled" />
+          <wicket:message key="enabled">enabled</wicket:message>
+          &#xA0;&#xA0;<em><span wicket:id="noAttributeMsg" /></em>
+        </div>
+        <div class="gs-form-group">
+          <label for="customDimName">
+            <wicket:message key="customDimName" />
+          </label>
+          <div class="gs-input-group">
+            <input wicket:id="customDimName" id="customDimName" type="text" size="40" />
+            <button type="button" wicket:id="removeButton">
+              <wicket:message key="removeButton">Remove</wicket:message>
+            </button>
+          </div>
+        </div>
+        <div class="gs-list-item-class" wicket:id="configContainer">
+          <div class="gs-form" wicket:id="configs">
+            <div class="gs-form" wicket:id="attributeContainer">
+              <div class="gs-form-group">
+                <label for="attribute">
+                  <wicket:message key="attribute">attribute</wicket:message>
+                </label>
+                <select id="attribute" wicket:id="attribute" />
+              </div>
+              <div class="gs-form-group">
+                <label for="endAttribute">
+                  <wicket:message key="endAttribute">endAttribute</wicket:message>
+                </label>
+                <select id="endAttribute" wicket:id="endAttribute" />
+              </div>
             </div>
-          </li>
-          <li wicket:id="defaultValueContainer">
-            <label for="strategy">
-              <wicket:message key="defaultValueStrategy">defaultValue</wicket:message>
-            </label>
-            <select wicket:id="strategy"></select>
-			<div wicket:id="referenceValueContainer">
-              <label for="referenceValue">
-                <wicket:message key="referenceValue">referenceValue</wicket:message>
-              </label>
-              <input type="text" wicket:id="referenceValue" class="field text" />
-              &nbsp;&nbsp;<em><span class="error" wicket:id="refValueValidationMsg"></span></em>
-			</div>
-          </li>
-          <li wicket:id="nearestMatchContainer">
-            <input type="checkbox" id="nearestMatchEnabled" wicket:id="nearestMatchEnabled"/><wicket:message key="nearestMatch">nearestMatch</wicket:message>
-            <div wicket:id="acceptableIntervalEditor">
-              <label><wicket:message key="acceptableInterval">acceptableInterval</wicket:message></label>
-              <input type="text" wicket:id="acceptableInterval" class="field text" />
+            <div class="gs-form" wicket:id="unitsContainer">
+              <div class="gs-form-group">
+                <label for="units">
+                  <wicket:message key="units">units</wicket:message>
+                </label>
+                <input type="text" wicket:id="units" class="field" />
+              </div>
+              <div class="gs-form-group">
+                <label for="unitSymbol">
+                  <wicket:message key="unitSymbol">unitSymbol</wicket:message>
+                </label>
+                <input type="text" wicket:id="unitSymbol" class="field" />
+              </div>
             </div>
-          </li>
-          <li wicket:id="startEndContainer">
-            <label><wicket:message key="startValue">startValue</wicket:message></label>
-            <input type="text" wicket:id="startValue" class="field text" />
-            &nbsp;<em><span class="error" wicket:id="startValueValidationMsg"></span></em>
-            <label><wicket:message key="endValue">endValue</wicket:message></label>
-            <input type="text" wicket:id="endValue" class="field text" />
-            &nbsp;<em><span class="error" wicket:id="endValueValidationMsg"></span></em>
-          </li>
-        </ul>
-      </li>
-    </ul>
-
+            <div class="gs-form">
+              <div class="gs-form-group">
+                <label>
+                  <wicket:message key="presentation">presentation</wicket:message>
+                </label>
+                <select wicket:id="presentation" />
+              </div>
+            </div>
+            <div class="gs-form" wicket:id="resolutionContainer">
+              <div wicket:id="resolutions" class="gs-form-group">
+                <label>
+                  <wicket:message key="resolution">resolution</wicket:message>
+                </label>
+                <input type="text" wicket:id="resElevation" class="field" />
+                <div wicket:id="resTime" />
+              </div>
+            </div>
+            <div class="gs-form" wicket:id="defaultValueContainer">
+              <div class="gs-form-group">
+                <label for="strategy">
+                  <wicket:message key="defaultValueStrategy">defaultValue</wicket:message>
+                </label>
+                <select wicket:id="strategy" />
+              </div>
+              <div wicket:id="referenceValueContainer" class="gs-form-group">
+                <label for="referenceValue">
+                  <wicket:message key="referenceValue">referenceValue</wicket:message>
+                </label><input type="text" wicket:id="referenceValue" class="field" />
+                &#xA0;&#xA0;<em><span class="error" wicket:id="refValueValidationMsg" /></em>
+              </div>
+            </div>
+            <div class="gs-form" wicket:id="nearestMatchContainer">
+              <div>
+                <input type="checkbox" id="nearestMatchEnabled" wicket:id="nearestMatchEnabled" />
+                <wicket:message key="nearestMatch">nearestMatch</wicket:message>
+              </div>
+              <div wicket:id="acceptableIntervalEditor" class="gs-form-group">
+                <label>
+                  <wicket:message key="acceptableInterval">acceptableInterval</wicket:message>
+                </label>
+                <input type="text" wicket:id="acceptableInterval" class="field" />
+              </div>
+            </div>
+            <div wicket:id="startEndContainer">
+              <div class="gs-form">
+                <div class="gs-form-group">
+                  <label>
+                    <wicket:message key="startValue">startValue</wicket:message>
+                  </label><input type="text" wicket:id="startValue" class="field" />
+                  &#xA0;<em><span class="error" wicket:id="startValueValidationMsg" /></em>
+                </div>
+                <div class="gs-form-group">
+                  <label>
+                    <wicket:message key="endValue">endValue</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="endValue" class="field" />
+                  &#xA0;<em><span class="error" wicket:id="endValueValidationMsg" /></em>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </wicket:panel>
 </body>
+
 </html>

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -15,13 +16,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.geoserver.platform.resource.Files;
 import org.geotools.util.factory.Hints;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
 public class WmsWmtsBackupTest extends BackupRestoreTestSupport {
 
-    @Before
+    @Override
     public void beforeTest() throws InterruptedException {
         ensureCleanedQueues();
 
@@ -32,7 +32,7 @@ public class WmsWmtsBackupTest extends BackupRestoreTestSupport {
     @Test
     public void testWmsWmtsBackup() throws IOException, InterruptedException {
         // Given
-        Hints hints = new Hints(new HashMap(2));
+        Hints hints = new Hints(new HashMap<>(2));
         hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
 
         File backupFile = File.createTempFile("testRunSpringBatchBackupWms", ".zip");
@@ -45,17 +45,20 @@ public class WmsWmtsBackupTest extends BackupRestoreTestSupport {
         // Then
         if (backupExecution.getStatus() == BatchStatus.COMPLETED) {
             // unzip the completed backup
-            ZipFile backup = new ZipFile(backupFile);
-            ZipEntry entry = backup.getEntry("store.dat.1");
+            Scanner scanner;
+            boolean hasWmsStore;
+            try (ZipFile backup = new ZipFile(backupFile)) {
+                ZipEntry entry = backup.getEntry("store.dat.1");
 
-            Scanner scanner = new Scanner(backup.getInputStream(entry), "UTF-8");
-            boolean hasWmsStore = false;
-            while (scanner.hasNextLine() && !hasWmsStore) {
-                String line = scanner.nextLine();
-                hasWmsStore = line.contains("some-wms-store");
+                scanner = new Scanner(backup.getInputStream(entry), StandardCharsets.UTF_8);
+                hasWmsStore = false;
+                while (scanner.hasNextLine() && !hasWmsStore) {
+                    String line = scanner.nextLine();
+                    hasWmsStore = line.contains("some-wms-store");
+                }
+
+                scanner = new Scanner(backup.getInputStream(entry), StandardCharsets.UTF_8);
             }
-
-            scanner = new Scanner(backup.getInputStream(entry), "UTF-8");
             boolean hasWmtsStore = false;
             while (scanner.hasNextLine() && !hasWmtsStore) {
                 String line = scanner.nextLine();

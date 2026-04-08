@@ -6,7 +6,7 @@
   <enabled>true</enabled>
   <name>WMTS</name>
   <title>GeoServer Web Map Tile Service</title>
-  <maintainer>http://geoserver.org/com</maintainer>
+  <maintainer>https://geoserver.org/com</maintainer>
   <abstrct>The statement (A compliant implementation of WMTS service.) should be: This service implements the NSG WMTS 1.0.0 profile version 1.0.</abstrct>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
@@ -19,7 +19,7 @@
     <string>Information\@language=en\;</string>
   </keywords>
   <citeCompliant>true</citeCompliant>
-  <onlineResource>http://geoserver.org</onlineResource>
+  <onlineResource>https://geoserver.org</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
 </wmts>

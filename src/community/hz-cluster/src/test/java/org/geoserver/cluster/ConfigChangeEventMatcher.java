@@ -47,8 +47,7 @@ public class ConfigChangeEventMatcher extends EventMatcher {
 
     @Override
     public boolean matches(Object argument) {
-        if (argument instanceof ConfigChangeEvent) {
-            ConfigChangeEvent evt = (ConfigChangeEvent) argument;
+        if (argument instanceof ConfigChangeEvent evt) {
             return super.matches(argument)
                     && nullsafeEquals(this.id, evt.getObjectId())
                     && nullsafeEquals(this.name, evt.getObjectName())

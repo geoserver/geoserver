@@ -49,10 +49,10 @@ public final class SpatialReferences {
     }
 
     public static CoordinateReferenceSystem fromSpatialReference(SpatialReference sr) throws FactoryException {
-        if (sr instanceof SpatialReferenceWKID) {
-            return Utils.parseSpatialReference(String.valueOf(((SpatialReferenceWKID) sr).getWkid()));
-        } else if (sr instanceof SpatialReferenceWKT) {
-            return CRS.parseWKT(((SpatialReferenceWKT) sr).getWkt());
+        if (sr instanceof SpatialReferenceWKID iD) {
+            return Utils.parseSpatialReference(String.valueOf(iD.getWkid()));
+        } else if (sr instanceof SpatialReferenceWKT kT) {
+            return CRS.parseWKT(kT.getWkt());
         } else {
             throw new IllegalArgumentException("Unknown SpatialReference class: " + sr.getClass());
         }

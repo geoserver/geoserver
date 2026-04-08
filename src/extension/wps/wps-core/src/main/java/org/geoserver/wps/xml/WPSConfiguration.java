@@ -41,10 +41,23 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
     @Override
     protected void configureContext(MutablePicoContainer container) {
         super.configureContext(container);
+        String[] wcsParserDelegates = {
+            "org.geoserver.wcs.xml.v1_1_1.WCSParserDelegate",
+            "org.geoserver.wcs.xml.v1_0_0.WCSParserDelegate",
+            "org.geoserver.wcs2_0.xml.WCSParserDelegate"
+        };
 
-        container.registerComponentInstance(new org.geoserver.wcs.xml.v1_1_1.WCSParserDelegate());
-        container.registerComponentInstance(new org.geoserver.wcs.xml.v1_0_0.WCSParserDelegate());
-        container.registerComponentInstance(new org.geoserver.wcs2_0.xml.WCSParserDelegate());
+        for (String className : wcsParserDelegates) {
+            try {
+                Class<?> delegateClass = Class.forName(className);
+                Object delegate = delegateClass.getDeclaredConstructor().newInstance();
+                container.registerComponentInstance(delegate);
+            } catch (ClassNotFoundException e) {
+                // WCS extension not available, skip
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to instantiate " + className, e);
+            }
+        }
         container.registerComponentInstance(container);
         // replace WFSParserDelegate from GeoTools with a new one using GeoServer
         // GetFeatureTypeBinding,

@@ -6,6 +6,7 @@
 package org.geoserver.web.publish;
 
 import java.io.IOException;
+import java.io.Serial;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerInfo;
@@ -15,8 +16,8 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
 /**
  * Extension point for panels which appear in separate tabs on the layer edit page.
  *
- * <p>Subclasses <b>must</b> override the {@link #LayerEditTabPanel(String, IModel)} constructor and <b>not</b> change
- * its signature.
+ * <p>Subclasses <b>must</b> override the {@link #PublishedEditTabPanel(String, IModel)} constructor and <b>not</b>
+ * change its signature.
  *
  * <p>Instances of this class are described in a spring context with a {@link PublishedEditTabPanelInfo} bean.
  *
@@ -25,6 +26,7 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
  */
 public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 8044055895040826418L;
 
     /**

@@ -4,14 +4,14 @@
  */
 package org.geoserver.cluster;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
 import org.geoserver.cluster.events.ToggleType;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 
@@ -116,9 +116,9 @@ public final class JmsEventsListener extends JMSApplicationListener implements S
         for (Message message : messages) {
             try {
                 String handlerKey = message.getStringProperty(JMSEventHandlerSPI.getKeyName());
-                if (handlerKey.equals(handlerName) && message instanceof ObjectMessage) {
+                if (handlerKey.equals(handlerName) && message instanceof ObjectMessage objectMessage) {
                     // we found a message that match's the desired handler
-                    String object = ((ObjectMessage) message).getObject().toString();
+                    String object = objectMessage.getObject().toString();
                     found.add(handler.deserialize(object));
                 }
             } catch (Exception exception) {

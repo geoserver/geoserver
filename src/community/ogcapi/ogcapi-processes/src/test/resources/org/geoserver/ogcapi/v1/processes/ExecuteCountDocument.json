@@ -1,0 +1,10 @@
+{
+  "inputs": {
+    "features": {
+      "href": "$LINK",
+      "type": "text/xml; subtype=wfs-collection/1.1"
+    },
+    "distance": 1000
+  },
+  "response": "document"
+}

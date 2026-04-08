@@ -5,11 +5,11 @@
  */
 package org.geoserver.wps.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -106,7 +106,6 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
         form.add(new AjaxSubmitLink("execute") {
 
-            @SuppressWarnings("unchecked")
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 HttpServletRequest http = GeoServerApplication.get().servletRequest();
@@ -175,7 +174,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         response.render(CssHeaderItem.forCSS("#xml {display: none;}", "wpsRequestBuilderCSS"));
     }
 
-    public class WPSRequestModel implements Serializable {
+    public static class WPSRequestModel implements Serializable {
         public String xml;
 
         public String getXml() {

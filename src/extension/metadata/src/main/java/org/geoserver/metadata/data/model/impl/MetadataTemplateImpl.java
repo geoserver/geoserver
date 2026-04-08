@@ -5,6 +5,7 @@
 package org.geoserver.metadata.data.model.impl;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import org.geoserver.metadata.data.model.MetadataTemplate;
 @XStreamAlias("MetadataTemplate")
 public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
 
+    @Serial
     private static final long serialVersionUID = -1907518678061997394L;
 
     private String id;
@@ -79,14 +81,13 @@ public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
         if (getId() == null) {
             return this == other;
         } else {
-            return other instanceof MetadataTemplate
-                    && ((MetadataTemplate) other).getId().equals(getId());
+            return other instanceof MetadataTemplate mt && mt.getId().equals(getId());
         }
     }
 
     @Override
     public int hashCode() {
-        return id == null ? super.hashCode() : id.hashCode();
+        return id == null ? System.identityHashCode(this) : id.hashCode();
     }
 
     @Override

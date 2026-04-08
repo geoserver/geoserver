@@ -1,0 +1,735 @@
+openapi: 3.0.1
+info:
+  title: A sample API definition based on the draft OGC API - 3D GeoVolumes candidate standard
+  version: "0.0.2"
+  description: >-
+    This is a sample OpenAPI definition produced by the OGC 3D Container API Pilot
+    and adapted for the July 2022 OGC API Code Sprint - The Vector Data Code Sprint.
+  contact:
+    name: "Open Geospatial Consortium (OGC)"
+    email: standards-team@ogc.org
+    url: 'https://www.ogc.org/contacts'
+  license:
+    name: OGC License
+    url: http://www.opengeospatial.org/legal/
+paths:
+  '/':
+    get:
+      summary: Landing page of this API
+      description: >-
+        The landing page provides links to the API definition, the Conformance
+        statements and the metadata about the 3d Container in this dataset.
+      operationId: getLandingPage
+      tags:
+        - OGC3DContainerAPI
+      responses:
+        '200':
+          description: 'links to the API capabilities'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/landingPage'
+            text/html:
+              schema:
+                type: string
+        '500':
+          description: 'error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+            text/html:
+              schema:
+                type: string
+  '/openapi':
+    get:
+      summary: API Definition
+      description: >-
+        Provides the API definition
+      operationId: getAPIDefinition
+      tags:
+        - OGC3DContainerAPI
+      responses:
+        '200':
+          description: 'Links to the API capabilities'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/root'
+            text/html:
+              schema:
+                type: string
+        '500':
+          description: 'error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+            text/html:
+              schema:
+                type: string
+  '/conformance':
+    get:
+      summary: API Conformance
+      description: >-
+        The landing page provides links to the API definition, the Conformance
+        statements and the metadata about the 3d-container data in this dataset.
+      operationId: getConformanceDeclaration
+      tags:
+        - OGC3DContainerAPI
+      responses:
+        '200':
+          description: 'links to the API capabilities'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conformance'
+            text/html:
+              schema:
+                type: string
+        '500':
+          description: 'error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+            text/html:
+              schema:
+                type: string
+  '/collections':
+    get:
+      summary: Describes the collection of 3D Containers.
+      operationId: describe3DContainers
+      tags:
+        - OGC3DContainerAPI
+      parameters:
+        - $ref: '#/components/parameters/formatQS'
+      responses:
+        '200':
+          description: Metadata about the 3D Containers shared by this API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collections'
+            text/html:
+              schema:
+                type: string
+        '500':
+          description: 'error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+            text/html:
+              schema:
+                type: string
+        default:
+          description: An error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+            text/html:
+              schema:
+                type: string
+  '/collections/{3d-containerID}':
+    get:
+      summary: >-
+        Retrieve the 3d-container for the specified id.  Optional query items: 
+        bounding box and return format type.
+      operationId: describe3DContainer
+      tags:
+        - OGC3DContainerAPI
+      parameters:
+        - $ref: '#/components/parameters/3d-containerID'
+        - $ref: '#/components/parameters/formatQS'
+      responses:
+        '200':
+          description: 'Metadata about the {3d-containerID} 3D Container shared by this API.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/3dcontainer'
+            text/html:
+              schema:
+                type: string
+        '500':
+          description: 'error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+            text/html:
+              schema:
+                type: string
+        default:
+          description: An error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+            text/html:
+              schema:
+                type: string
+components:
+  parameters:
+    boundingbox:
+      name: boundingbox
+      in: query
+      description: >-
+        An array of 12 numbers that define an oriented bounding box. The 
+        first three elements define the x, y, and z values for the center 
+        of the box. The next three elements (with indices 3, 4, and 5) 
+        define the x axis direction and half-length. The next three elements 
+        (indices 6, 7, and 8) define the y axis direction and half-length. 
+        The last three elements (indices 9, 10, and 11) define the z axis 
+        direction and half-length.
+      required: false
+      schema:
+        type: array
+        minItems: 12
+        maxItems: 12
+        items:
+          type: number
+          format: double
+      style: form
+      explode: false
+    region:
+      name: region
+      in: query
+      description: >-
+        An array of six numbers that define a bounding geographic region in 
+        EPSG:4979 coordinates with the order [west, south, east, north, minimum
+        height, maximum height]. Longitudes and latitudes are in radians, and 
+        heights are in meters above (or below) the WGS84 ellipsoid.
+      required: false
+      schema:
+        type: array
+        minItems: 6
+        maxItems: 6
+        items:
+          type: number
+          format: double
+      style: form
+      explode: false
+    sphere:
+      name: sphere
+      in: query
+      description: >-
+        An array of four numbers that define a bounding sphere. The first three
+        elements define the x, y, and z values for the center of the sphere. 
+        The last element (with index 3) defines the radius in meters.
+      required: false
+      schema:
+        type: array
+        minItems: 4
+        maxItems: 4
+        items:
+          type: number
+          format: double
+      style: form
+      explode: false
+    bbox:
+      name: bbox
+      in: query
+      description: |-
+        Only features that have a geometry that intersects the bounding box are selected.
+        The bounding box is provided as four or six numbers, depending on whether the
+        coordinate reference system includes a vertical axis (elevation or depth):
+
+        * Lower left corner, coordinate axis 1
+        * Lower left corner, coordinate axis 2
+        * Lower left corner, coordinate axis 3 (optional)
+        * Upper right corner, coordinate axis 1
+        * Upper right corner, coordinate axis 2
+        * Upper right corner, coordinate axis 3 (optional)
+
+        The coordinate reference system of the values is WGS84 longitude/latitude
+        (http://www.opengis.net/def/crs/OGC/1.3/CRS84) unless a different coordinate
+        reference system is specified in the parameter `bbox-crs`.
+
+        For WGS84 longitude/latitude the values are in most cases the sequence of
+        minimum longitude, minimum latitude, maximum longitude and maximum latitude.
+        However, in cases where the box spans the antimeridian the first value
+        (west-most box edge) is larger than the third value (east-most box edge).
+
+        If a feature has multiple spatial geometry properties, it is the decision of the
+        server whether only a single spatial geometry property is used to determine
+        the extent or all relevant geometries.
+      required: false
+      schema:
+        type: array
+        minItems: 4
+        maxItems: 6
+        items:
+          type: number
+          format: double
+      style: form
+      explode: false
+    time:
+      name: time
+      in: query
+      description: |-
+        Either a date-time or a period string that adheres to RFC 3339. Examples:
+
+        * A date-time: "2018-02-12T23:20:50Z"
+        * A period: "2018-02-12T00:00:00Z/2018-03-18T12:31:12Z" or "2018-02-12T00:00:00Z/P1M6DT12H31M12S"
+
+        Only features that have a temporal property that intersects the value of
+        `time` are selected.
+
+        If a feature has multiple temporal properties, it is the decision of the
+        server whether only a single temporal property is used to determine
+        the extent or all relevant temporal properties.
+      required: false
+      schema:
+        type: string
+      style: form
+      explode: false
+    formatQS:
+      name: f
+      in: query
+      description: >-
+        The format of the response. If no value is provided, the standard http
+        rules apply, i.e., the accept header is used to determine the format.
+        Pre-defined values are "json" and "html". The response to other
+        values is determined by the server.
+      required: false
+      schema:
+        type: string
+        enum:
+          - json
+          - html
+    3d-containerID:
+      name: 3d-containerID
+      in: path
+      required: true
+      description: 'Identifier (name) of a specific 3D Container'
+      schema:
+        type: string
+  schemas:
+    exception:
+      title: 'Exception'
+      description: >-
+        An exception describes an event, which occurs during execution 
+        that disrupts the normal flow of the program's instructions.
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+      example:
+        code: '500'
+        description: 'An internal server error occurred. Incident ID: 1234567. Please contact admin@example.org.'
+    conformance:
+      title: 'Conformance'
+      description: >-
+        This schema defines the resource returned from the /Conformance path
+      type: object
+      properties:
+        conformsTo:
+          type: array
+          description: >-
+            ConformsTo is an array of URLs. Each URL should correspond to
+            a defined OGC Conformance class. Unrecognized URLs should be ignored
+          items:
+            type: string
+            example: 'http://www.opengis.net/spec/OAPI_Common/1.0/req/core'
+      example:
+        conformsTo:
+          - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/core'
+          - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/oas30'
+          - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/html'
+          - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/geojson'
+    landingPage:
+      title: 'Landing Page'
+      description: 'JSON schema for the OGC API-Common landing page'
+      type: object
+      required:
+        - links
+      properties:
+        title:
+          description: 'The title of the API'
+          type: string
+          example: 'OGC3DContainerAPI-Pilot'
+        description:
+          description: 'A textual description of the API'
+          type: 'string'
+          example: >
+            The 3D Data Container and Tiles Pilot and associated component implementations to design, implement, and test a 2D/3D environment that allows smooth integration of both 2D tiled and 3D tiled geospatial data.
+        links:
+          description: 'Links to the resources exposed through this API.'
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+      example:
+        tile: 'OGC 3D Container/API Pilot'
+        description: 'A Pilot of anAPI for 3D Containers'
+        links:
+          - href: 'http://data.example.org/'
+            rel: 'service-desc'
+            type: application/json
+            title: "Service Description"
+          - href: 'https://app.swaggerhub.com/apis/timothy-miller/OGC_3DContainer_Tile_API_Pilot/0.0.1'
+            rel: service
+            type: application/openapi+json;version=3.0
+            title: 'Conformance'
+          - href: 'http://data.example.org/conformance'
+            rel: conformance
+            type: application/json
+            title: Conformance
+          - href: 'http://data.example.org/collections'
+            rel: data
+            type: application/json
+            title: Collections
+    root:
+      title: 'Root Object'
+      type: object
+      description: >-
+        Collection of links that describe the overall capabilities of the API.
+      required:
+        - links
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+          example:
+            - href: 'http://data.example.org/'
+              rel: self
+              type: application/json
+              title: this document
+            - href: 'http://data.example.org/api'
+              rel: service
+              type: application/openapi+json;version=3.0
+              title: the API definition
+            - href: 'http://data.example.org/conformance'
+              rel: conformance
+              type: application/json
+              title: WFS 3.0 conformance classes implemented by this server
+            - href: 'http://data.example.org/collections'
+              rel: data
+              type: application/json
+              title: Metadata about the feature collections
+    link:
+      title: 'Link'
+      type: object
+      description: 'Link to content'
+      required:
+        - href
+        - rel
+      properties:
+        href:
+          type: string
+        title:
+          type: string
+        rel:
+          $ref: '#/components/schemas/rel'
+        type:
+          $ref: '#/components/schemas/type'
+        hreflang:
+          type: string
+          example: en
+      example:
+        title: '3dtiles'
+        href: 'URL'
+        rel:  'original'
+        type: 'application/json+3dtiles'
+        hreflang: 'en'
+    extent:
+      description: >-
+        The extent of the collection. In the Core only spatial and temporal extents are specified. Extensions may add additional members to represent other  extents, for example, thermal or pressure ranges.
+        It is recommended that the spatial extent is expected in CRS84 except if this is not possible.
+      type: object
+      properties:
+        spatial:
+          $ref: '#/components/schemas/spatialExtent'
+        temporal:
+          $ref: '#/components/schemas/temporalExtent'
+    spatialExtent:
+      description: |-
+        The spatial extent of the element in the collection.
+      type: object
+      required:
+        - bbox
+      properties:
+        bbox:
+          $ref: '#/components/schemas/bbox'
+        crs:
+          $ref: '#/components/schemas/crs'
+    bbox:
+      description: >-
+        One or more bounding boxes that describe the spatial extent of the dataset.
+        In the Core only a single bounding box is supported. Extensions may support
+        additional areas. If multiple areas are provided, the union of the bounding
+        boxes describes the spatial extent.
+      type: array
+      minItems: 1
+      items:
+        description: |-
+          West, south, [optional elevation], east, north, [optional elevation] edges of the bounding box. 
+          The coordinates are in the coordinate reference system specified in 'crs'. By default
+          this is WGS84 longitude/latitude.
+          4 coordinates: longitude, latitude, longitude, latitude,
+          6 coordinates: longitude, latitude, elevation, longitude, latitude, elevation
+        type: array
+        minItems: 4
+        maxItems: 6
+        items:
+          type: number
+        example:
+          - 7.01
+          - 50.63
+          - -1.6
+          - 7.22
+          - 50.78
+          - 10.2
+    crs:
+      description: |-
+        Coordinate reference system of the coordinates in the spatial extent
+        (property `bbox`). The default reference system is WGS 84 longitude/latitude.
+        In the Core this is the only supported coordinate reference system.
+        Extensions may support additional coordinate reference systems and add
+        additional enum values.
+      type: string
+      enum:
+        - 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'
+      default: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'
+    temporalExtent:
+      description: |-
+        The temporal extent of the element in the collection.
+      type: object
+      nullable: true
+      properties:
+        interval:
+          $ref: '#/components/schemas/temporalInterval'
+        trs:
+          $ref: '#/components/schemas/trs'
+    temporalInterval:
+      description: |-
+        One or more time intervals that describe the temporal extent of the dataset.
+        The value `null` is supported and indicates an open time interval.
+        In the Core only a single time interval is supported. Extensions may support
+        multiple intervals. If multiple intervals are provided, the union of the
+        intervals describes the temporal extent.
+      type: array
+      nullable: true
+      minItems: 1
+      items:
+        description: |-
+          Begin and end times of the time interval. The timestamps
+          are in the coordinate reference system specified in `trs`. By default
+          this is the Gregorian calendar.
+        type: array
+        minItems: 2
+        maxItems: 2
+        items:
+          type: string
+          format: date-time
+          nullable: true
+        example:
+          - '2010-02-15T12:34:56Z'
+          - null
+    trs:
+      description: |-
+        Coordinate reference system of the coordinates in the temporal extent
+        (property `interval`). The default reference system is the Gregorian calendar.
+        In the Core this is the only supported temporal reference system.
+        Extensions may support additional temporal reference systems and add
+        additional enum values.
+      type: string
+      enum:
+        - 'http://www.opengis.net/def/uom/ISO-8601/0/Gregorian'
+      default: 'http://www.opengis.net/def/uom/ISO-8601/0/Gregorian'
+    3dcontainer:
+      title: '3D-Container'
+      description: >-
+        The 3D Data Container and Tiles API is an OGC API whose characteristic resource is a 3DContainer.
+        The most general definition of a 3D-Container (3DC) is that it is a spatial information resource that has a distinct bounding volume, a (required) enclosing bounding box (2D / 3D), contains at most one 3D model dataset which is relevant to that volume (items, content) and represented by references to one or more distributions, and includes or references other 3D-Containers (children) whose bounding volumes are fully contained by the parent container's bounding volume. The default representations of a 3D-Container are json / html information documents which define the bounding box, link to an implicit tileset scheme if applicable and provide the described links.
+      type: object
+      required:
+        - id
+        - extent
+        - links
+      properties:
+        id:
+          type: string
+          description: 'Identifier (name) of a specific 3D Container'
+        title:
+          type: string
+          description: 'Title of a specific 3D Container'
+          example: '3D-Container Collection Information Schema'
+        description:
+          type: string
+          description:  'Detailed description of a specific 3D Container'
+          example: >-
+            This schema defines metadata resource returned from 
+            /collections/{collectionId} for a collection type of 3d-container
+        collectionType:
+          type: string
+          description: >-
+            Property with value "3d-container" is required.
+          default: '3d-container'
+        itemType:
+          type: string
+          description: >-
+            Indicator about the type of the items in the collection (the default value is 'unknown').
+          default: 'unknown'
+        extent:
+          $ref: '#/components/schemas/extent'
+        contentExtent:
+          $ref: '#/components/schemas/boundingVolume'
+        crs:
+          $ref: '#/components/schemas/crs'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+          example:
+            - href: 'http://data.example.org/collections.json'
+              rel: self
+              type: application/json
+              title: this document
+            - href: 'http://data.example.org/collections.html'
+              rel: alternate
+              type: text/html
+              title: this document as HTML
+            - href: 'http://schemas.example.org/1.0/foobar.xsd'
+              rel: describedBy
+              type: application/xml
+              title: XML schema for Acme Corporation data
+          description: |-
+            Array members in the "links" property must include "self", and may include
+            "items" (for compatibility with a common collection type),
+            "parent" (link to enclosing 3D-Container),
+            "root" (link to top-level 3D-Container),
+            "scheme" link to the definition of any implicit tile scheme which sets the 
+            3Container organization, extent and/or addressing,
+            "affinemap" (link from a 3D-Container with 2D content to a 3D-Container 
+            with 2.5D content (surface, point cloud) to which the 2D content should 
+            be texture-mapped)
+        children:
+          type: array
+          description: >-
+            A "children" property with an array of zero or more "child" 
+            3D-Containers is require(could be just the required properties: 
+            id, self-link, extent).
+          items:
+            $ref: '#/components/schemas/3dcontainer'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+    collections:
+      type: object
+      title: 'Collections'
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+        collections:
+          type: array
+          items:
+            $ref: '#/components/schemas/3dcontainer'
+    box:
+      title: 'Bounding Box'
+      description: >-
+        An array of 12 numbers that define an oriented bounding box.  The first
+        three elements define the x, y, and z values for the center of the box.
+        The next three elements (with indices 3, 4, and 5) define the x axis 
+        direction and half-length.  The next three elements (indices 6, 7, and
+        8) define the y axis direction and half-length.  The last three elements
+        (indices 9, 10, and 11) define the z axis direction and half-length.
+      example: [0, 0, 10, 100, 0, 0, 0, 100, 0, 0, 0, 10]
+      type: array
+      items:
+        type: number
+        format: double
+      minItems: 12
+      maxItems: 12
+    region:
+      title: 'Bounding Region'
+      description: >-
+        An array of six numbers that define a bounding geographic region in 
+        EPSG:4979 coordinates with the order [west, south, east, north, 
+        minimum height, maximum height]. Longitudes and latitudes are in 
+        radians, and heights are in meters above (or below) the WGS84 ellipsoid.
+      example: [ -1.3197004795898053, 0.6988582109, -1.3196595204101946, 0.6988897891, 0, 20 ]
+      type: array
+      items:
+        type: number
+        format: double
+      minItems: 6
+      maxItems: 6
+    sphere:
+      title: 'Bounding Sphere'
+      description: >-
+        An array of four numbers that define a bounding sphere.  The first 
+        three elements define the x, y, and z values for the center of the 
+        sphere.  The last element (with index 3) defines the radius in meters. 
+      example: [ 0, 0, 10, 141.4214 ]
+      type: array
+      items:
+        type: number
+        format: double
+      minItems: 4
+      maxItems: 4
+    boundingVolume:
+      title: 'Bounding Volume'
+      description: >-
+        A closed volume completely containing the union of a set of geometric objects. 
+        Exactly one box, region, or sphere property is required.
+      properties:
+        box:
+          $ref: '#/components/schemas/box'
+        region:
+          $ref: '#/components/schemas/region'
+        sphere:
+          $ref: '#/components/schemas/sphere'
+      oneOf:
+        - $ref: '#/components/schemas/box'
+        - $ref: '#/components/schemas/region'
+        - $ref: '#/components/schemas/sphere'
+    rel:
+      title: 'Link Relation Type'
+      description: >-
+        The relationship between the current JSON resource representation and a 
+        related JSON resource.  The provided enumeration is provided as an 
+        example.  Other relationship types are possible.
+      type: string
+      enum:
+        - affinemap
+        - alternate
+        - collections
+        - conformance
+        - data
+        - dataset
+        - describedBy
+        - distribution
+        - item
+        - items
+        - original
+        - parent
+        - root
+        - scheme
+        - self
+        - service
+        - service-desc
+    type:
+      title: "Content Type"
+      description: 'Content type enumeration'
+      type: string
+      pattern: '^(?=[-a-z]{1,127}/[-\.a-z0-9]{1,127}$)[a-z]+(-[a-z]+)*/[a-z0-9]+([-\.][a-z0-9]+)*$'
+      enum:
+        - 'application/json'
+        - 'application/json-3dtiles'
+        - 'application/json-i3s'
+        - 'text/html'
+tags:
+  - name: OGC3DContainerAPI
+    description: >-
+      Essential characteristics of this API including information about the data.

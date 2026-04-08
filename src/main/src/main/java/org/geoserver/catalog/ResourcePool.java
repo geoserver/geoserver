@@ -4,6 +4,8 @@
  */
 package org.geoserver.catalog;
 
+import static java.util.Collections.emptyList;
+
 import java.awt.RenderingHints;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -651,8 +653,8 @@ public class ResourcePool {
             }
             disableStoreInfoIfNeeded(info, DataStoreInfo.class, e);
 
-            if (e instanceof IOException) {
-                throw (IOException) e;
+            if (e instanceof IOException exception) {
+                throw exception;
             } else {
                 throw (IOException) new IOException().initCause(e);
             }
@@ -747,9 +749,8 @@ public class ResourcePool {
         } catch (IOException e) {
             LOGGER.log(
                     Level.INFO,
-                    String.format(
-                            "Failed to create the store using the configured factory (%s), will try a generic lookup now.",
-                            factory.getClass()),
+                    "Failed to create the store using the configured factory (%s), will try a generic lookup now."
+                            .formatted(factory.getClass()),
                     e);
             dataStore = DataStoreUtils.getDataAccess(connectionParameters);
         }
@@ -791,7 +792,7 @@ public class ResourcePool {
      * @return Processed parameters with relative file URLs resolved
      * @param m a map of data store connection parameters
      * @parm loader
-     * @task REVISIT: cache these?
+     * @revist cache these?
      */
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> getParams(Map<K, V> m, GeoServerResourceLoader loader) {
@@ -810,8 +811,7 @@ public class ResourcePool {
             // TODO: this code is a pretty big hack, using the name to
             // determine if the key is a url, could be named something else
             // and still be a url
-            if ((key != null) && key.matches(".* *url") && value instanceof String) {
-                String path = (String) value;
+            if ((key != null) && key.matches(".* *url") && value instanceof String path) {
 
                 if (path.startsWith("file:")) {
                     File fixedPath =
@@ -819,15 +819,13 @@ public class ResourcePool {
                     URL url = URLs.fileToUrl(fixedPath);
                     entry.setValue((V) url.toExternalForm());
                 }
-            } else if (value instanceof URL && ((URL) value).getProtocol().equals("file")) {
-                URL url = (URL) value;
+            } else if (value instanceof URL url && url.getProtocol().equals("file")) {
                 File fixedPath = Resources.find(
                         Resources.fromURL(Files.asResource(loader.getBaseDirectory()), url.toString()), true);
                 entry.setValue((V) URLs.fileToUrl(fixedPath));
             } else if ((key != null)
                     && (key.equals("directory") || key.equals("database") || key.equals("file"))
-                    && value instanceof String) {
-                String path = (String) value;
+                    && value instanceof String path) {
                 // if a url is used for a directory (for example property store), convert it to path
 
                 if (path.startsWith("file:")) {
@@ -947,7 +945,8 @@ public class ResourcePool {
             List<XSDSchemaLocator> locators = Arrays.asList(GML.getInstance().createSchemaLocator());
             XSDSchema schema = null;
             try {
-                schema = Schemas.parse(schemaFile.getAbsolutePath(), locators, null);
+                schema = Schemas.parse(
+                        schemaFile.getAbsolutePath(), locators, emptyList(), emptyList(), getEntityResolver());
             } catch (Exception e) {
                 LOGGER.warning("Unable to parse "
                         + schemaFile.getAbsolutePath()
@@ -1141,15 +1140,13 @@ public class ResourcePool {
     private FeatureType buildFeatureType(FeatureTypeInfo info, boolean handleProjectionPolicy, FeatureType ft)
             throws IOException {
         // TODO: support reprojection for non-simple FeatureType
-        if (ft instanceof SimpleFeatureType) {
+        if (ft instanceof SimpleFeatureType type) {
             // configured attribute customization, execute before projection handling and callbacks
             if (info.getAttributes() != null && !info.getAttributes().isEmpty())
-                ft = transformer.retypeFeatureType(info, ft);
-
-            SimpleFeatureType sft = (SimpleFeatureType) ft;
+                type = (SimpleFeatureType) transformer.retypeFeatureType(info, ft);
             // create the feature type so it lines up with the "declared" schema
             SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-            tb.init(sft);
+            tb.init(type);
             // Handle any aliases defined in info
             tb.setName(info.getName());
             tb.setNamespaceURI(info.getNamespace().getURI());
@@ -1158,7 +1155,7 @@ public class ResourcePool {
             tb.setAttributes((AttributeDescriptor[]) null);
             // take this to mean just load all native with projection handling,
             // feature type customization happens later
-            for (PropertyDescriptor pd : ft.getDescriptors()) {
+            for (PropertyDescriptor pd : type.getDescriptors()) {
                 if (!(pd instanceof AttributeDescriptor)) {
                     continue;
                 }
@@ -1169,12 +1166,14 @@ public class ResourcePool {
                 }
                 tb.add(ad);
             }
-            ft = tb.buildFeatureType();
+            type = tb.buildFeatureType();
 
             // extension point for retyping the feature type
             for (RetypeFeatureTypeCallback callback : GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
-                ft = callback.retypeFeatureType(info, ft);
+                type = (SimpleFeatureType) callback.retypeFeatureType(info, type);
             }
+
+            return type;
         } // end special case for SimpleFeatureType
 
         return ft;
@@ -1197,7 +1196,7 @@ public class ResourcePool {
         // dirty?
         if (Proxy.isProxyClass(info.getClass())) {
             Object invocationHandler = Proxy.getInvocationHandler(info);
-            if (invocationHandler instanceof ModificationProxy && ((ModificationProxy) invocationHandler).isDirty()) {
+            if (invocationHandler instanceof ModificationProxy proxy && proxy.isDirty()) {
                 return false;
             }
         }
@@ -1212,8 +1211,7 @@ public class ResourcePool {
 
         // force the user specified CRS if the data has no CRS, or reproject it
         // if necessary
-        if (ad instanceof GeometryDescriptor) {
-            GeometryDescriptor old = (GeometryDescriptor) ad;
+        if (ad instanceof GeometryDescriptor old) {
             try {
                 // if old has no crs, change the projection handlign policy
                 // to be the declared
@@ -1267,8 +1265,7 @@ public class ResourcePool {
         FeatureType featureType = getFeatureType(ftInfo);
         if (featureType != null) {
             for (PropertyDescriptor pd : featureType.getDescriptors()) {
-                if (pd instanceof AttributeDescriptor) {
-                    AttributeDescriptor ad = (AttributeDescriptor) pd;
+                if (pd instanceof AttributeDescriptor ad) {
                     if (atInfo.getName().equals(ad.getLocalName())) {
                         return ad;
                     }
@@ -1461,7 +1458,7 @@ public class ResourcePool {
         } catch (Exception exception) {
             LOGGER.log(
                     Level.FINE,
-                    String.format("Error retrieving feature type using published name '%s'.", info.getQualifiedName()));
+                    "Error retrieving feature type using published name '%s'.".formatted(info.getQualifiedName()));
             // let's try now to search based on the native name
             featureSource = dataAccess.getFeatureSource(info.getQualifiedNativeName());
         }
@@ -1546,7 +1543,7 @@ public class ResourcePool {
      * Returns a coverage reader, caching the result.
      *
      * @param info The coverage metadata.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @throws IOException Any errors that occur loading the reader.
      */
     public GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, Hints hints) throws IOException {
@@ -1557,7 +1554,7 @@ public class ResourcePool {
      * Returns a coverage reader, caching the result.
      *
      * @param storeInfo The coverage metadata.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @throws IOException Any errors that occur loading the reader.
      */
     public GridCoverageReader getGridCoverageReader(CoverageStoreInfo storeInfo, String coverageName, Hints hints)
@@ -1569,7 +1566,7 @@ public class ResourcePool {
      * Returns a coverage reader, caching the result.
      *
      * @param info The coverage metadata.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @throws IOException Any errors that occur loading the reader.
      */
     private GridCoverageReader getGridCoverageReader(
@@ -1970,6 +1967,7 @@ public class ResourcePool {
         return entityResolver;
     }
 
+    @SuppressWarnings("PMD.CloseResource") // mtClient
     private HTTPClient getHTTPClient(HTTPStoreInfo info) {
         String capabilitiesURL = info.getCapabilitiesURL();
 
@@ -1984,10 +1982,8 @@ public class ResourcePool {
         HTTPClient client;
         if (info.isUseConnectionPooling()) {
             client = HTTPClientFinder.createClient(HTTPConnectionPooling.class);
-            if (info.getMaxConnections() > 0 && client instanceof HTTPConnectionPooling) {
+            if (info.getMaxConnections() > 0 && client instanceof HTTPConnectionPooling mtClient) {
                 int maxConnections = info.getMaxConnections();
-                @SuppressWarnings("PMD.CloseResource") // wrapped and returned
-                HTTPConnectionPooling mtClient = (HTTPConnectionPooling) client;
                 mtClient.setMaxConnections(maxConnections);
             }
         } else {
@@ -2312,7 +2308,7 @@ public class ResourcePool {
      * @param <K>
      * @param <V>
      */
-    abstract class CatalogResourceCache<K, V> extends SoftValueHashMap<K, V> {
+    abstract static class CatalogResourceCache<K, V> extends SoftValueHashMap<K, V> {
 
         public CatalogResourceCache() {
             this(100);
@@ -2491,7 +2487,7 @@ public class ResourcePool {
         }
     }
 
-    class FeatureTypeAttributeCache extends CatalogResourceCache<String, List<AttributeTypeInfo>> {
+    static class FeatureTypeAttributeCache extends CatalogResourceCache<String, List<AttributeTypeInfo>> {
 
         FeatureTypeAttributeCache(int size) {
             super(size);
@@ -2503,17 +2499,16 @@ public class ResourcePool {
         }
     }
 
-    class WMSCache extends CatalogResourceCache<String, WebMapServer> {
+    static class WMSCache extends CatalogResourceCache<String, WebMapServer> {
 
         @Override
+        @SuppressWarnings("PMD.CloseResource") // closeable
         protected void dispose(String key, WebMapServer server) {
             HTTPClient client = server.getHTTPClient();
-            if (client instanceof Closeable) {
+            if (client instanceof Closeable closeable) {
                 // dispose the client, and the connection pool hosted into it as a consequence
                 // the connection pool additionally holds a few threads that are also getting
                 // disposed with this call
-                @SuppressWarnings("PMD.CloseResource") // actually closing here
-                Closeable closeable = (Closeable) client;
                 try {
                     closeable.close();
                 } catch (IOException e) {
@@ -2523,17 +2518,16 @@ public class ResourcePool {
         }
     }
 
-    class WMTSCache extends CatalogResourceCache<String, WebMapTileServer> {
+    static class WMTSCache extends CatalogResourceCache<String, WebMapTileServer> {
 
         @Override
+        @SuppressWarnings("PMD.CloseResource") // closeable
         protected void dispose(String key, WebMapTileServer server) {
             HTTPClient client = server.getHTTPClient();
-            if (client instanceof Closeable) {
+            if (client instanceof Closeable closeable) {
                 // dispose the client, and the connection pool hosted into it as a consequence
                 // the connection pool additionally holds a few threads that are also getting
                 // disposed with this call
-                @SuppressWarnings("PMD.CloseResource") // actually closing here
-                Closeable closeable = (Closeable) client;
                 try {
                     closeable.close();
                 } catch (IOException e) {
@@ -2689,8 +2683,7 @@ public class ResourcePool {
             });
             clear(ds);
         } else {
-            if (dataStore instanceof ContentDataStore) {
-                ContentDataStore contentDataStore = (ContentDataStore) dataStore;
+            if (dataStore instanceof ContentDataStore contentDataStore) {
                 try {
                     // ask ContentDataStore to forget cached column information
                     String nativeName = ft.getNativeName();
@@ -2727,8 +2720,8 @@ public class ResourcePool {
         DataStoreInfo target;
         try {
             target = SerializationUtils.clone(source);
-            if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
-                ((StoreInfoImpl) target).setCatalog(catalog);
+            if (target instanceof StoreInfoImpl impl && target.getCatalog() == null) {
+                impl.setCatalog(catalog);
             }
         } catch (Exception e) {
             target = catalog.getFactory().createDataStore();
@@ -2772,8 +2765,8 @@ public class ResourcePool {
         CoverageStoreInfo target;
         try {
             target = SerializationUtils.clone(source);
-            if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
-                ((StoreInfoImpl) target).setCatalog(catalog);
+            if (target instanceof StoreInfoImpl impl && target.getCatalog() == null) {
+                impl.setCatalog(catalog);
             }
         } catch (Exception e) {
             target = catalog.getFactory().createCoverageStore();
@@ -2821,8 +2814,8 @@ public class ResourcePool {
         WMSStoreInfo target;
         try {
             target = SerializationUtils.clone(source);
-            if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
-                ((StoreInfoImpl) target).setCatalog(catalog);
+            if (target instanceof StoreInfoImpl impl && target.getCatalog() == null) {
+                impl.setCatalog(catalog);
             }
         } catch (Exception e) {
             target = catalog.getFactory().createWebMapServer();
@@ -2853,8 +2846,8 @@ public class ResourcePool {
         WMTSStoreInfo target;
         try {
             target = SerializationUtils.clone(source);
-            if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
-                ((StoreInfoImpl) target).setCatalog(catalog);
+            if (target instanceof StoreInfoImpl impl && target.getCatalog() == null) {
+                impl.setCatalog(catalog);
             }
         } catch (Exception e) {
             target = catalog.getFactory().createWebMapTileServer();

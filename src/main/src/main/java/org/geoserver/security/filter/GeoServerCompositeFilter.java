@@ -6,15 +6,15 @@
 
 package org.geoserver.security.filter;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -42,9 +42,8 @@ public class GeoServerCompositeFilter extends GeoServerSecurityFilter {
                 throws IOException, ServletException {
 
             // try cache
-            if (GeoServerCompositeFilter.this instanceof AuthenticationCachingFilter && currentPosition == 0) {
-                String cacheKey = authenticateFromCache(
-                        (AuthenticationCachingFilter) GeoServerCompositeFilter.this, (HttpServletRequest) request);
+            if (GeoServerCompositeFilter.this instanceof AuthenticationCachingFilter filter && currentPosition == 0) {
+                String cacheKey = authenticateFromCache(filter, (HttpServletRequest) request);
                 if (cacheKey != null) request.setAttribute(CACHE_KEY_ATTRIBUTE, cacheKey);
             }
 

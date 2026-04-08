@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.28-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -12,6 +12,10 @@
   <packaging>pom</packaging>
 
   <name>GeoServer JMS based clustering modules</name>
+
+  <properties>
+    <amq.version>6.1.7</amq.version>
+  </properties>
 
   <repositories>
     <repository>
@@ -23,15 +27,6 @@
 
   </repositories>
   <profiles>
-    <profile>
-      <id>activemq</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>activemqBroker</module>
-      </modules>
-    </profile>
     <profile>
       <id>cluster</id>
 

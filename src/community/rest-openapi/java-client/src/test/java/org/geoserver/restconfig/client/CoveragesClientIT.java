@@ -65,8 +65,8 @@ public class CoveragesClientIT {
         this.coverageStores = support.client().coverageStores();
         this.coverages = support.client().coverages();
 
-        String wsname1 = String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
-        String wsname2 = String.format("%s-ws2-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname1 = "%s-ws1-%d".formatted(testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname2 = "%s-ws2-%d".formatted(testName.getMethodName(), rnd.nextInt((int) 1e6));
 
         this.workspaces.create(wsname1);
         this.workspaces.create(wsname2);
@@ -97,7 +97,7 @@ public class CoveragesClientIT {
     private void expect(Runnable cmd, Class<? extends Exception> expectedException, String expectedMessage) {
         try {
             cmd.run();
-            fail(String.format("Expected %s", expectedException.getName()));
+            fail("Expected %s".formatted(expectedException.getName()));
         } catch (Throwable t) {
             assertThat(t, IsInstanceOf.instanceOf(expectedException));
             assertThat(t.getMessage(), StringContains.containsString(expectedMessage));

@@ -7,7 +7,6 @@ package org.geoserver.mapml;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,25 +15,24 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.data.TypeInfoCollectionWrapper;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.HeadContent;
+import org.geoserver.mapml.xml.MapMLElement;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -47,7 +45,6 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 /**
  * @author Chris Hodgson
@@ -57,7 +54,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.mapml");
 
     @Autowired
-    private Jaxb2Marshaller mapmlMarshaller;
+    private MapMLEncoder mapMLEncoder;
 
     private WMS wms;
 
@@ -130,7 +127,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             Iterator<FeatureCollection> fci = featureCollections.iterator();
             while (fci.hasNext()) {
                 fc = (SimpleFeatureCollection) fci.next();
-                List<Feature> features = body.getFeatures();
+                List<MapMLElement> features = body.getTilesOrFeatures();
                 try (SimpleFeatureIterator iterator = fc.features()) {
                     while (iterator.hasNext()) {
                         SimpleFeature feature;
@@ -157,10 +154,9 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             }
         }
 
-        OutputStreamWriter osw = new OutputStreamWriter(out, wms.getCharSet());
-        Result result = new StreamResult(osw);
-        mapmlMarshaller.marshal(mapml, result);
-        osw.flush();
+        // write to output based on global verbose setting
+        boolean verbose = wms.getGeoServer().getGlobal().getSettings().isVerbose();
+        mapMLEncoder.encode(mapml, out, verbose);
     }
 
     @Override
@@ -270,8 +266,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         FeatureTypeInfo fti;
         ResourceInfo meta = null;
         // if it's a complex feature collection get the proper ResourceInfo
-        if (features instanceof TypeInfoCollectionWrapper.Complex) {
-            TypeInfoCollectionWrapper.Complex fcollection = (TypeInfoCollectionWrapper.Complex) features;
+        if (features instanceof TypeInfoCollectionWrapper.Complex fcollection) {
             fti = fcollection.getFeatureTypeInfo();
             meta = catalog.getResourceByName(fti.getName(), ResourceInfo.class);
         } else {
@@ -279,8 +274,8 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             FeatureType featureType = features.getSchema();
             meta = catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
         }
-        if (meta instanceof FeatureTypeInfo) {
-            fti = (FeatureTypeInfo) meta;
+        if (meta instanceof FeatureTypeInfo info) {
+            fti = info;
             return callback.apply(fti);
         }
         return null;

@@ -299,15 +299,13 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
 
             // Confirm geoserverlogfile configured to use loggingLocation
             Appender appender = getAppenders().get("geoserverlogfile");
-            if (appender instanceof RollingFileAppender) {
-                RollingFileAppender fileAppender = (RollingFileAppender) appender;
+            if (appender instanceof RollingFileAppender fileAppender) {
                 String fileName = fileAppender.getFileName();
                 String filePattern = fileAppender.getFilePattern();
 
                 LOGGER.debug("Postconfigure geoserverlogfile.filename=" + fileName);
                 LOGGER.debug("Postconfigure geoserverlogfile.filePattern=" + filePattern);
-            } else if (appender instanceof FileAppender) {
-                FileAppender fileAppender = (FileAppender) appender;
+            } else if (appender instanceof FileAppender fileAppender) {
                 String fileName = fileAppender.getFileName();
                 LOGGER.debug("Postconfigure geoserverlogfile.filename=" + fileName);
             }

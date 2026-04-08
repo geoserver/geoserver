@@ -32,7 +32,6 @@ public class LiveDbmsDataSecurity extends LiveDbmsData {
     }
 
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         data = IOUtils.createRandomDirectory("./target", "live", "data");
         IOUtils.deepCopy(source, data);

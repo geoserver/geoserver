@@ -8,14 +8,8 @@
     margin-bottom:7px;
 }
 
-#trNewWindow {
-    display:none;
-}
 
-#divNewWindow {
-    display:flex;
-    flex-direction: row;
-}
+
 
 .tdNoWidth {
     width: 1%;
@@ -23,4 +17,33 @@
 
 #inputUsername {
     width: 120px;
+}
+
+.newWindowCheckbox {
+    display:none;
+}
+
+
+.gn-panel-DemoRequestsPage .gs-grid-table-cell {
+    border: none;
+    margin-bottom: auto;
+    margin-top: auto;
+}
+
+/* label - start (leftmost) of row */
+.gn-panel-DemoRequestsPage .gs-grid-table div:nth-child(odd of .gs-grid-table-cell) {
+    text-align: center;
+}
+
+/* control - end (rightmost) of row */
+.gn-panel-DemoRequestsPage .gs-grid-table div:nth-child(even of .gs-grid-table-cell) {
+    margin-right: auto;
+    width: 100%;
+}
+
+
+
+.gn-panel-DemoRequestsPage .gs-grid-table {
+    grid-template-columns: 1fr 100fr;
+    grid-auto-rows: auto;
 }

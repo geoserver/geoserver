@@ -17,17 +17,21 @@ import org.geoserver.wfs.WFSInfo;
 public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     public static final String METADATA_KEY = "ecql";
 
-    public static final APIConformance ECQL = new APIConformance(ConformanceClass.ECQL, COMMUNITY_STANDARD);
-    public static final APIConformance ECQL_TEXT = new APIConformance(ConformanceClass.ECQL_TEXT, COMMUNITY_STANDARD);
+    public static final APIConformance ECQL_TEXT =
+            new APIConformance(ConformanceClass.ECQL_TEXT, COMMUNITY_STANDARD, "text");
 
-    private Boolean ecql = null;
     private Boolean text = null;
 
     public ECQLConformance() {}
 
     @Override
+    public String getId() {
+        return "ecql";
+    }
+
+    @Override
     public boolean isEnabled(WFSInfo serviceInfo) {
-        return ecql(serviceInfo);
+        return text(serviceInfo);
     }
 
     /**
@@ -49,10 +53,14 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     }
 
     @Override
+    public List<APIConformance> configurableConformances() {
+        return List.of(ECQLConformance.ECQL_TEXT);
+    }
+
+    @Override
     public List<APIConformance> conformances(WFSInfo wfsInfo) {
         List<APIConformance> conformanceList = new ArrayList<>();
         if (isEnabled(wfsInfo)) {
-            conformanceList.add(ECQLConformance.ECQL);
             if (text(wfsInfo)) {
                 conformanceList.add(ECQLConformance.ECQL_TEXT);
             }
@@ -60,30 +68,6 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
         return conformanceList;
     }
 
-    /**
-     * ECQL conformance enabled by configuration.
-     *
-     * @return Enable ECQL conformance, or @{code null} for default.
-     */
-    public Boolean isECQL() {
-        return ecql;
-    }
-    /**
-     * ECQL conformance enabled by configuration.
-     *
-     * @return Enable ECQL conformance, or @{code null} for default.
-     */
-    public boolean ecql(WFSInfo info) {
-        return isEnabled(info, ecql, ECQL);
-    }
-    /**
-     * ECQL conformance enablement.
-     *
-     * @param enabled ECQL conformance enabled, or @{code null} for default.
-     */
-    public void setECQL(Boolean enabled) {
-        ecql = enabled;
-    }
     /**
      * ECQL_TEXT conformance enabled by configuration.
      *
@@ -113,7 +97,6 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     public String toString() {
         final StringBuilder sb = new StringBuilder("ECQLConformance");
         sb.append(" ").append(METADATA_KEY);
-        sb.append("{ ecql=").append(ecql);
         sb.append("{ text=").append(text);
         sb.append('}');
         return sb.toString();

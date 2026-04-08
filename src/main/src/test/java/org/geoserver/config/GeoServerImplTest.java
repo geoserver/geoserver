@@ -69,12 +69,10 @@ public class GeoServerImplTest {
         GeoServerInfo global1 = geoServer.getFactory().createGlobal();
         GeoServerInfo global2 = geoServer.getFactory().createGlobal();
         global1.setGlobalServices(true);
-        global1.setXmlExternalEntitiesEnabled(false);
         global1.getSettings().setVerbose(false);
         global1.getSettings().setVerboseExceptions(false);
 
         global2.setGlobalServices(true);
-        global2.setXmlExternalEntitiesEnabled(false);
         global2.getSettings().setVerbose(false);
         global2.getSettings().setVerboseExceptions(false);
         assertEquals(global1, global2);

@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor.web;
 
+import java.io.Serial;
 import java.util.Calendar;
 import java.util.Date;
 import org.geoserver.monitor.Monitor;
@@ -13,6 +14,7 @@ import org.jfree.data.time.RegularTimePeriod;
 
 public class MonthlyActivityPanel extends ActivityChartBasePanel {
 
+    @Serial
     private static final long serialVersionUID = 4759510768065522723L;
 
     public MonthlyActivityPanel(String id, Monitor monitor) {

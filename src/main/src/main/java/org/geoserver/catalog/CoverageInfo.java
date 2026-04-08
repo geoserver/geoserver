@@ -116,7 +116,7 @@ public interface CoverageInfo extends ResourceInfo {
      * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to report the progress of
      * loading the coverage and also to report any errors or warnings that occur.
      *
-     * @param listener A progress listener, may be <code>null</code>.
+     * @param listener A progress listener, may be {@code null}.
      * @param hints Hints to be used when loading the coverage.
      * @return The grid coverage.
      * @throws IOException Any I/O problems.

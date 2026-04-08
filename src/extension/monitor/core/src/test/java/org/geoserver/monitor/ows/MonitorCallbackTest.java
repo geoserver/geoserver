@@ -210,7 +210,6 @@ public class MonitorCallbackTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWFSGetFeature20() throws Exception {
         net.opengis.wfs20.GetFeatureType gf = Wfs20Factory.eINSTANCE.createGetFeatureType();
         org.geotools.api.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
@@ -623,7 +622,8 @@ public class MonitorCallbackTest {
         glg.setLayer(null);
         callback.operationDispatched(new Request(), op("GetLegendGraphic", "WMS", "1.1.1", glg));
         List<String> resources = data.getResources();
-        assertEquals(data.getOperation(), "GetLegendGraphic");
+        assertEquals("GetLegendGraphic", data.getOperation());
+
         assertNull(resources);
     }
 

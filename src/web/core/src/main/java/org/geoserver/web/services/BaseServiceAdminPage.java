@@ -5,22 +5,28 @@
  */
 package org.geoserver.web.services;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -52,33 +58,44 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 /**
  * Base page for service administration pages.
  *
- * <p>Subclasses of this page should contribute form components in the {@link #build(ServiceInfo, Form)} method. Each
- * component that is added to the form should have a corresponding markup entry of the following form:
+ * <ul>
+ *   <li>{@link #getServiceName()}}: The service being configured by {@code build} single page, or {@code buildPanel}
+ *       for tabbed presentation.
+ *   <li>{@link #getServiceClass()}: The {@link ServiceInfo} used to store configuration.
+ * </ul>
  *
- * <pre>
+ * There are two presentation options:
+ *
+ * <p>Recommended: Subclasses of this page can use {@link #buildPanel(String, IModel, Form)} contribute an
+ * {@link AdminPagePanel}. This panel is used as a starting point for a tabbed display of services associated with the
+ * {@link #getServiceClass()} configuration. If {@code buildPanel} return {@code null} the subclass is assumed to
+ * {@code wicket:extend} BaseServiceAdmin page by contribute form components using {@link #build(IModel, Form)} method.
+ * Each component that is added to the form should have a corresponding markup entry of the following form:
+ *
+ * <pre>{@code
  * <wicket:extend>
- *   &lt;li>
- *       &lt;span>
- *         &lt;label><wicket:message key="maxFeatures.title">Maximum Features</wicket:message></label>
- *         &lt;input wicket:id="maxFeatures" class="field text" type="text">
- *       &lt;/span>
- *       &lt;p class="instruct">
- *       &lt;/p>
- *     &lt;/li>
- *
+ *   <div class="gs-form-group">
+ *     <label for="maxFeatures">
+ *       <wicket:message key="maxFeatures.title">Maximum Features</wicket:message>
+ *     </label>
+ *     <input class="field"  id="maxFeatures" wicket:id="maxFeatures" type="text">
+ *   </div>
  * </wicket:extend>
- *   </pre>
+ * }</pre>
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-// TODO WICKET8 - Verify this page (and derived pages?) work OK
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
-    /** Allows workspace admins access to the workspace service configuration too * */
+    /** Application property allowing workspace admins access to the workspace service configuration too. */
     public static final String WORKSPACE_ADMIN_SERVICE_ACCESS = "WORKSPACE_ADMIN_SERVICE_ACCESS";
 
+    /** Shared dialog used for feedback and confirmation. */
     protected GeoServerDialog dialog;
+
+    /** Form on submit callbacks.. */
     protected List<SerializableConsumer<Void>> onSubmitHooks = new ArrayList<>();
 
+    /** create a page */
     public BaseServiceAdminPage() {
         this(new PageParameters());
     }
@@ -115,42 +132,78 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             // create just a panel with a label that signifies the workspace
             form.add(new LocalWorkspacePanel("workspace", service));
         }
-
         form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
-        form.add(new Label(
-                "service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
-        form.add(new TextField<>("maintainer"));
-        TextField<String> onlineResource = new TextField<>("onlineResource");
+        Map<String, List<AdminPagePanelInfo>> panels = extensionPanels();
+        List<ITab> tabs = new ArrayList<>();
 
-        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        // initial panel used for tabbed presentation
+        final AdminPagePanel initialAdminPanel = buildPanel("initial", infoModel, form);
 
-        // AF: Disable Binding if GeoServer Env Parametrization is enabled!
-        if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
-            onlineResource.add(new UrlValidator());
+        if (initialAdminPanel != null) {
+            // TABBED PRESENTATION
+            // general tab for common service configuration options
+            tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("BaseServiceAdminPage.service")) {
+                @Override
+                public Panel getPanel(String panelId) {
+                    return new GeneralTabAdminPagePanel(panelId, infoModel, null);
+                }
+            });
+            // service tab
+            final List<AdminPagePanelInfo> servicePanels = panels.remove(getServiceType());
+            tabs.add(new AbstractTab(this::getServiceType) {
+                @Override
+                public Panel getPanel(String panelId) {
+                    return new ServiceAdminTabPanel(
+                            panelId, infoModel, initialAdminPanel, servicePanels, onSubmitHooks);
+                }
+            });
+
+            // remaining content on their own tabs
+            if (!panels.isEmpty()) {
+                for (String specificServiceType : panels.keySet()) {
+                    List<AdminPagePanelInfo> tabPanels = panels.get(specificServiceType);
+                    if (tabPanels != null && !tabPanels.isEmpty()) {
+                        tabs.add(new AbstractTab(() -> specificServiceType) {
+                            @Override
+                            public Panel getPanel(String panelId) {
+                                return new ServiceAdminTabPanel(panelId, infoModel, null, tabPanels, onSubmitHooks);
+                            }
+                        });
+                    }
+                }
+            }
+            TabbedPanel<ITab> tabbedPanel = new TabbedPanel<>("tabs", tabs) {
+                @Override
+                protected WebMarkupContainer newLink(String linkId, int index) {
+                    return new SubmitLink(linkId) {
+                        @Serial
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        public void onSubmit() {
+                            setSelectedTab(index);
+                        }
+                    };
+                }
+            };
+            form.add(tabbedPanel);
+            form.add(createPlaceholder("general"));
+            form.add(createPlaceholder("extensions"));
+        } else {
+            // SINGLE PAGE PRESENTATION: for specific service type
+            form.add(createPlaceholder("tabs"));
+            form.add(new GeneralTabAdminPagePanel("general", infoModel, getServiceType()));
+
+            // Subclass build adds content to bottom of page, rather than individual tabs
+            build(infoModel, form);
+
+            List<AdminPagePanelInfo> extensionPanels = panels.get(getServiceType());
+            ListView extensionPanelView =
+                    new AdminPagePanelInfoListView("extensions", extensionPanels, infoModel, onSubmitHooks);
+            extensionPanelView.setReuseItems(true);
+            form.add(extensionPanelView);
         }
-
-        form.add(onlineResource);
-        CheckBox enabled = new CheckBox("enabled");
-        enabled.setOutputMarkupId(true);
-        enabled.setMarkupId("enabled");
-        form.add(enabled);
-        CheckBox citeCompliant = new CheckBox("citeCompliant");
-        citeCompliant.setOutputMarkupId(true);
-        citeCompliant.setMarkupId("citeCompliant");
-        form.add(citeCompliant);
-        form.add(getInternationalContentFragment(infoModel, "serviceTitleAndAbstract"));
-        form.add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
-        form.add(new TextField<>("fees"));
-        form.add(new TextField<>("accessConstraints"));
-
-        build(infoModel, form);
-
-        // add the extension panels
-        ListView extensionPanels = createExtensionPanelList("extensions", infoModel);
-        extensionPanels.setReuseItems(true);
-        form.add(extensionPanels);
-
         SubmitLink submit = new SubmitLink("submit", new StringResourceModel("save", null, null)) {
             @Override
             public void onSubmit() {
@@ -209,7 +262,20 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         };
     }
 
-    protected ListView createExtensionPanelList(String id, final IModel infoModel) {
+    /** Create an invisible placeholder */
+    Label createPlaceholder(String id) {
+        Label placeholder = new Label(id);
+        placeholder.setVisible(false);
+
+        return placeholder;
+    }
+
+    /**
+     * Look up AdminPagePanels for {@link #getServiceClass()}.
+     *
+     * @return AdminPagePanelInfo, listed by specific service type.
+     */
+    protected Map<String, List<AdminPagePanelInfo>> extensionPanels() {
         List<AdminPagePanelInfo> panels = getGeoServerApplication().getBeansOfType(AdminPagePanelInfo.class);
         for (Iterator<AdminPagePanelInfo> it = panels.iterator(); it.hasNext(); ) {
             AdminPagePanelInfo panel = it.next();
@@ -217,66 +283,85 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 it.remove();
             }
         }
-
-        return new ListView<>(id, panels) {
-
-            @Override
-            protected void populateItem(ListItem<AdminPagePanelInfo> item) {
-                AdminPagePanelInfo info = item.getModelObject();
-                try {
-                    AdminPagePanel panel = info.getComponentClass()
-                            .getConstructor(String.class, IModel.class)
-                            .newInstance("content", infoModel);
-                    item.add(panel);
-                    // add onMainFormSubmit to hooks
-                    onSubmitHooks.add(x -> panel.onMainFormSubmit());
-                } catch (Exception e) {
-                    throw new WicketRuntimeException(
-                            "Failed to create admin extension panel of "
-                                    + "type "
-                                    + info.getComponentClass().getSimpleName(),
-                            e);
-                }
+        Map<String, List<AdminPagePanelInfo>> panelsByTab = new HashMap<>();
+        for (AdminPagePanelInfo panel : panels) {
+            String type = panel.getSpecificServiceType();
+            if (type == null) {
+                type = getServiceType();
             }
-        };
+            panelsByTab.computeIfAbsent(type, k -> new ArrayList<>()).add(panel);
+        }
+        return panelsByTab;
     }
 
     /**
-     * The class of the service.
+     * The {@link ServiceInfo} storing configuration for this admin page.
      *
      * <p>This value is used to obtain a reference to the service info object via {@link GeoServer#getService(Class)}.
      */
     protected abstract Class<T> getServiceClass();
 
     /**
-     * Builds the form for the page.
+     * Callback for building an initial AdminPanel for tabbed ServiceAdminPage presentation.
      *
-     * <p>The form uses a {@link CompoundPropertyModel} so in the normal case components do not need a model as its
+     * @param id Wicket id for created panel
+     * @return Initial AdminPagePanel, or {@code null} for single page presentation.
+     */
+    protected AdminPagePanel buildPanel(String id, IModel<T> info, Form form) {
+        return null;
+    }
+
+    /**
+     * Extend the BaseServiceAdminPage by building adding additional components to the form for the page. This method is
+     * only called if {@link #buildPanel(String, IModel, Form)} returns {@code null}.
+     *
+     * <p>The form uses a {@link CompoundPropertyModel} so in the normal case components do not need a model as it's
      * inherited from the parent. This means that component id's should match the info bean property they correspond to.
      *
      * @param info The service info object.
      * @param form The page form.
+     * @deprecated use {@link #buildPanel(String, IModel, Form)} instead to build the main tab panel for the page.
      */
-    protected abstract void build(IModel info, Form form); // {
-
-    // }
+    @Deprecated(since = "3.0.0", forRemoval = true)
+    protected void build(IModel<T> info, Form form) {}
 
     /**
      * Callback for submit.
      *
-     * <p>This implementation simply saves the service. Subclasses may extend / override if need be.
+     * <p>This implementation persists the service configuration. If the service has already been persisted (i.e.
+     * {@code info.getId() != null}), it is saved (updated). Otherwise, it is added as a new service configuration —
+     * this happens when a workspace-specific service is configured for the first time. Subclasses may extend / override
+     * if need be.
      */
     protected void handleSubmit(T info) {
         if (info.getId() != null) {
             getGeoServer().save(info);
+        } else {
+            // ServiceInfo override being created for the first time
+            getGeoServer().add(info);
         }
-        // else means a non attached instance was passed to us, do nothing, up to caller to add it
-        // to configuration
     }
 
-    /** The string to use when representing this service to users. Subclasses must override. */
+    /** The string to use when representing this service to users, subclasses must override. */
     protected abstract String getServiceName();
 
+    /**
+     * The specific service type identifier (e.g., "WMS", "WFS", "WCS", "Features") Used to retrieve available versions
+     * from the dispatcher service registry.
+     *
+     * <p>Services can share a common {@link #getServiceClass()} for configuration.
+     *
+     * <p>Subclasses must override.
+     */
+    protected abstract String getServiceType();
+
+    /**
+     * Model used to establish the context (global or workspace) for this service admin page.
+     *
+     * <p>Detached model that looks up ServiceInfo from GeoServer catalogue using optional workspaceName.
+     *
+     * @param <T>
+     */
     class ServiceModel<T extends ServiceInfo> extends LoadableDetachableModel<T> {
 
         /* id reference */
@@ -289,6 +374,11 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         /* direct reference */
         T service;
 
+        /**
+         * Create a ServiceModel using the provided ServiceInfo.
+         *
+         * @param service serivce info
+         */
         ServiceModel(T service) {
             this.id = service.getId();
             if (this.id == null) {
@@ -296,6 +386,12 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         }
 
+        /**
+         * Detached model looking up
+         *
+         * @param serviceClass ServiceInfo class
+         * @param workspaceName Wworkspace name
+         */
         ServiceModel(Class<T> serviceClass, String workspaceName) {
             this.serviceClass = serviceClass;
             this.workspaceName = workspaceName;
@@ -309,10 +405,11 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
             if (serviceClass != null) {
                 if (workspaceName != null) {
+                    // workspace service configuration override
                     WorkspaceInfo ws = getCatalog().getWorkspaceByName(workspaceName);
                     return (T) getGeoServer().getService(ws, getServiceClass());
                 }
-
+                // global service
                 return (T) getGeoServer().getService(getServiceClass());
             }
             return service;
@@ -353,6 +450,19 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
     class GlobalWorkspacePanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.GlobalWorkspacePanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public GlobalWorkspacePanel(String id) {
             super(id);
 
@@ -380,6 +490,19 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
     class LocalWorkspacePanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(BaseServiceAdminPage.LocalWorkspacePanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public LocalWorkspacePanel(String id, T service) {
             super(id);
 
@@ -396,6 +519,59 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         return false;
     }
 
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        // This page is used in two context, for global services and workspace services
+        // the authorizer is set to workspace admin to allow access to workspace services
+        // but a check for full admin is performed in the constructor to verify access to global services
+        // Rationale: this method is called when the page is constructed, and the workspace is not yet known
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
+
+    /** AdminPagePanel for general configuration options. */
+    public class GeneralTabAdminPagePanel extends AdminPagePanel {
+        @Serial
+        private static final long serialVersionUID = -1;
+
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(BaseServiceAdminPage.GeneralTabAdminPagePanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        public GeneralTabAdminPagePanel(String panelId, IModel<T> infoModel, String specificServiceType) {
+            super(panelId, infoModel);
+
+            // metadata
+            add(getInternationalContentFragment(infoModel, "serviceTitleAndAbstract"));
+
+            add(new TextField<>("maintainer"));
+            TextField<String> onlineResource = new TextField<>("onlineResource");
+
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+
+            // AF: Disable Binding if GeoServer Env Parametrization is enabled!
+            if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
+                onlineResource.add(new UrlValidator());
+            }
+            add(onlineResource);
+            add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
+            add(new TextField<>("fees"));
+            add(new TextField<>("accessConstraints"));
+
+            // service control
+            add(new ServiceControlAdminPanel<>("serviceControl", infoModel, specificServiceType));
+        }
+    }
+
     private Fragment getInternationalContentFragment(IModel<T> infoModel, String id) {
         Fragment fragment;
         if (supportInternationalContent()) {
@@ -407,14 +583,5 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             fragment.add(new TextArea<>("abstract"));
         }
         return fragment;
-    }
-
-    @Override
-    protected ComponentAuthorizer getPageAuthorizer() {
-        // This page is used in two context, for global services and workspace services
-        // the authorizer is set to workspace admin to allow access to workspace services
-        // but a check for full admin is performed in the constructor to verify access to global services
-        // Rationale: this method is called when the page is constructed, and the workspace is not yet known
-        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 }

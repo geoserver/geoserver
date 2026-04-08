@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.v1.styles;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -63,6 +64,7 @@ public class StyleMetadataDocument extends AbstractDocument {
 
     SampleDataSupport sampleDataSupport;
 
+    @JsonCreator
     public StyleMetadataDocument() {
         // empty constructor for Jackson usage
     }
@@ -152,10 +154,10 @@ public class StyleMetadataDocument extends AbstractDocument {
     private Stream<Description> getDescriptions(StyledLayerDescriptor sld) {
         return Arrays.stream(sld.getStyledLayers())
                 .flatMap(sl -> {
-                    if (sl instanceof NamedLayer) {
-                        return Arrays.stream(((NamedLayer) sl).getStyles());
-                    } else if (sl instanceof UserLayer) {
-                        return Arrays.stream(((UserLayer) sl).getUserStyles());
+                    if (sl instanceof NamedLayer layer1) {
+                        return Arrays.stream(layer1.getStyles());
+                    } else if (sl instanceof UserLayer layer) {
+                        return Arrays.stream(layer.getUserStyles());
                     }
                     return Stream.empty();
                 })

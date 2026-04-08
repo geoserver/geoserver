@@ -7,7 +7,7 @@ package org.geoserver.wcs.responses;
 
 import static java.util.Map.entry;
 
-import com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet;
+import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFLZWCompressor;
 import java.awt.Dimension;
 import java.awt.image.RenderedImage;

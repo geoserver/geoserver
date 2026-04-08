@@ -12,13 +12,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletContextEvent;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageReaderWriterSpi;
 import javax.imageio.spi.ImageWriterSpi;
-import javax.servlet.ServletContextEvent;
 import org.geotools.api.feature.FeatureFactory;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.style.StyleFactory;

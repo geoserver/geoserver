@@ -4,8 +4,6 @@
  */
 package org.geoserver.ogcapi.v1.stac;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
@@ -19,6 +17,9 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactoryBuilder;
 
 /** Converter for the {@link CollectionResponse} that will encode STAC collections using a feature template */
 @Component
@@ -47,8 +48,9 @@ public class TemplatedCollectionsConverter extends AbstractHttpMessageConverter<
     protected void writeInternal(CollectionsResponse collectionsResponse, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
 
-        try (STACCollectionWriter writer = new STACCollectionWriter(
-                new JsonFactory().createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
+        try (STACCollectionWriter writer = new STACCollectionWriter(new JsonFactoryBuilder()
+                .build()
+                .createGenerator(ObjectWriteContext.empty(), httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
             writer.startTemplateOutput(null);
             try (FeatureIterator features = collectionsResponse.getCollections().features()) {
                 while (features.hasNext()) {

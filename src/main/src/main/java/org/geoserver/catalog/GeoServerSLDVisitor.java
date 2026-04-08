@@ -221,8 +221,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
 
     protected boolean handleLayerGroup() {
         // NamedLayer - LayerGroup: ignore any defined styles and use the layer group instead
-        if (info != null && info instanceof LayerGroupInfo) {
-            LayerGroupInfo lg = (LayerGroupInfo) info;
+        if (info != null && info instanceof LayerGroupInfo lg) {
 
             List<LayerInfo> layers = lg.layers();
             List<StyleInfo> styles = lg.styles();
@@ -248,8 +247,8 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     protected void handleNoStyles() {
         // handle no styles -- use default
         try {
-            if (styleCount == 0 && info != null && info instanceof LayerInfo) {
-                StyleInfo styleInfo = ((LayerInfo) info).getDefaultStyle();
+            if (styleCount == 0 && info != null && info instanceof LayerInfo layerInfo) {
+                StyleInfo styleInfo = layerInfo.getDefaultStyle();
 
                 if (styleInfo != null) {
                     visit(styleInfo.getStyle());
@@ -266,8 +265,8 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     @Override
     public void visit(Style style) {
         styleCount++;
-        if (style instanceof NamedStyle) {
-            visitNamedStyleInternal((NamedStyle) style);
+        if (style instanceof NamedStyle namedStyle) {
+            visitNamedStyleInternal(namedStyle);
         } else {
             visitUserStyleInternal(style);
         }

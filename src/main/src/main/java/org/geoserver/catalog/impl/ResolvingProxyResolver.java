@@ -80,22 +80,22 @@ public class ResolvingProxyResolver {
      * @param catalog the catalog to use for resolution
      */
     public static void resolve(CatalogInfo info, Catalog catalog) {
-        if (info instanceof WorkspaceInfo) {
-            resolve((WorkspaceInfo) info, catalog);
-        } else if (info instanceof NamespaceInfo) {
-            resolve((NamespaceInfo) info, catalog);
-        } else if (info instanceof StoreInfo) {
-            resolve((StoreInfo) info, catalog);
-        } else if (info instanceof ResourceInfo) {
-            resolve((ResourceInfo) info, catalog);
-        } else if (info instanceof LayerInfo) {
-            resolve((LayerInfo) info, catalog);
-        } else if (info instanceof LayerGroupInfo) {
-            resolve((LayerGroupInfo) info, catalog);
-        } else if (info instanceof StyleInfo) {
-            resolve((StyleInfo) info, catalog);
-        } else if (info instanceof MapInfo) {
-            resolve((MapInfo) info, catalog);
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            resolve(workspaceInfo, catalog);
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
+            resolve(namespaceInfo, catalog);
+        } else if (info instanceof StoreInfo storeInfo) {
+            resolve(storeInfo, catalog);
+        } else if (info instanceof ResourceInfo resourceInfo) {
+            resolve(resourceInfo, catalog);
+        } else if (info instanceof LayerInfo layerInfo) {
+            resolve(layerInfo, catalog);
+        } else if (info instanceof LayerGroupInfo groupInfo) {
+            resolve(groupInfo, catalog);
+        } else if (info instanceof StyleInfo styleInfo) {
+            resolve(styleInfo, catalog);
+        } else if (info instanceof MapInfo mapInfo) {
+            resolve(mapInfo, catalog);
         } else {
             LOGGER.warning("Unknown CatalogInfo: " + info);
         }
@@ -187,15 +187,15 @@ public class ResolvingProxyResolver {
 
             if (l != null) {
                 PublishedInfo resolved;
-                if (l instanceof LayerGroupInfo) {
-                    resolved = unwrap(ResolvingProxy.resolve(catalog, (LayerGroupInfo) l));
+                if (l instanceof LayerGroupInfo info1) {
+                    resolved = unwrap(ResolvingProxy.resolve(catalog, info1));
                     // special case to handle catalog loading, when nested publishibles might not be
                     // loaded.
                     if (resolved == null) {
                         resolved = l;
                     }
-                } else if (l instanceof LayerInfo) {
-                    resolved = unwrap(ResolvingProxy.resolve(catalog, (LayerInfo) l));
+                } else if (l instanceof LayerInfo info) {
+                    resolved = unwrap(ResolvingProxy.resolve(catalog, info));
                     // special case to handle catalog loading, when nested publishibles might not be
                     // loaded.
                     if (resolved == null) {

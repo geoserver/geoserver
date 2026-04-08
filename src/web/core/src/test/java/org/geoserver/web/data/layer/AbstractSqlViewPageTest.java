@@ -11,6 +11,7 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.PostGISTestResource;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.SimpleFeatureSource;
@@ -18,17 +19,19 @@ import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.junit.ClassRule;
 import org.locationtech.jts.io.WKTReader;
 
 public class AbstractSqlViewPageTest extends GeoServerWicketTestSupport {
+
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
 
     public static final String STORE_NAME = "foo";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-
-        // setup an H2 datastore for the purpose of doing joins
         Catalog cat = getCatalog();
         DataStoreInfo ds = cat.getFactory().createDataStore();
         ds.setName(STORE_NAME);
@@ -36,8 +39,7 @@ public class AbstractSqlViewPageTest extends GeoServerWicketTestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo");
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
 
         SimpleFeatureSource fs1 = getFeatureSource(SystemTestData.FORESTS);

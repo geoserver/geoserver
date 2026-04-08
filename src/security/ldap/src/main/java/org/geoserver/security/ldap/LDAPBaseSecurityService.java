@@ -75,13 +75,13 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
     protected String userNameAttribute = "uid";
 
     /** lookup user for dn */
-    protected boolean lookupUserForDn = false;
+    protected volatile boolean lookupUserForDn = false;
 
     /** Activates nested groups searching */
-    protected boolean useNestedGroups = true;
+    protected volatile boolean useNestedGroups = true;
 
     /** The max recursion level for search Hierarchical groups */
-    protected int maxGroupSearchLevel = 10;
+    protected volatile int maxGroupSearchLevel = 10;
 
     /** Pattern used for nested group filtering */
     protected String nestedGroupSearchFilter = "member={0}";

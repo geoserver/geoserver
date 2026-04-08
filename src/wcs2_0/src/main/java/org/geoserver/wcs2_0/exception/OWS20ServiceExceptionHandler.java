@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs2_0.exception;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -12,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletResponse;
 import net.opengis.ows20.ExceptionReportType;
 import net.opengis.ows20.ExceptionType;
 import net.opengis.ows20.Ows20Factory;
@@ -29,11 +29,11 @@ import org.geotools.ows.v2_0.OWSConfiguration;
 import org.geotools.xsd.Encoder;
 
 /**
- * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in a <code>
- * ows:ExceptionReport</code> document.
+ * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in a
+ * {@code ows:ExceptionReport} document.
  *
- * <p>This service exception handler will generate an OWS exception report, see
- * {@linkplain "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd"}.
+ * <p>This service exception handler will generate an OWS exception report, see <a
+ * href="http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd">owsExceptionReport.xsd </a>.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -95,8 +95,8 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
         }
 
         OWS20Exception ows2ex;
-        if (exception instanceof OWS20Exception) {
-            ows2ex = (OWS20Exception) exception;
+        if (exception instanceof OWS20Exception s20Exception) {
+            ows2ex = s20Exception;
         } else if (exception.getCause() != null && exception.getCause() instanceof OWS20Exception) {
             ows2ex = (OWS20Exception) exception.getCause();
         } else {
@@ -197,7 +197,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
             // exception.
             sb.append("\nDetails:\n");
             ByteArrayOutputStream trace = new ByteArrayOutputStream();
-            exception.printStackTrace(new PrintStream(trace)); // NOPMD
+            exception.printStackTrace(new PrintStream(trace));
             sb.append(new String(trace.toByteArray()));
         }
 

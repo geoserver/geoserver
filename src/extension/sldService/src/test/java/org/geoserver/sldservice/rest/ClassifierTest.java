@@ -36,8 +36,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
+import org.eclipse.imagen.PlanarImage;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -211,7 +211,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         // Reordered bands coverage
         CoverageInfo coverageInfo = multiBandCoverageView.createCoverageInfo(MULTIBAND_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         catalog.add(coverageInfo);
         final LayerInfo layerInfoView = builder.buildLayer(coverageInfo);
         catalog.add(layerInfoView);
@@ -247,7 +247,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRule(rules[0], "#8E0000", org.geotools.api.filter.And.class);
         checkRule(rules[1], "#FF0000", org.geotools.api.filter.And.class);
 
-        assertEquals(resultXml.indexOf("StyledLayerDescriptor"), -1);
+        assertEquals(-1, resultXml.indexOf("StyledLayerDescriptor"));
     }
 
     @Test
@@ -1383,8 +1383,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1397,14 +1397,14 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Map<GeneralParameterDescriptor, Object> parameters = getParametersMap(reader.getReadParameters());
 
         // expect the bands selection
-        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.USE_JAI_IMAGEREAD));
-        Boolean imageRead = (Boolean) parameters.get(AbstractGridFormat.USE_JAI_IMAGEREAD);
+        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.USE_IMAGEN_IMAGEREAD));
+        Boolean imageRead = (Boolean) parameters.get(AbstractGridFormat.USE_IMAGEN_IMAGEREAD);
         assertTrue(imageRead);
 
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1422,8 +1422,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // yet the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1447,8 +1447,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1480,8 +1480,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1511,8 +1511,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1540,8 +1540,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -2139,7 +2139,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsQuantile = getRasterSymbolizer(domQuantile);
         ColorMap cmQuantile = rsQuantile.getColorMap();
         ColorMapEntry[] entriesQuantile = cmQuantile.getColorMapEntries();
-        assertEquals(entriesQuantile.length, 6);
+        assertEquals(6, entriesQuantile.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesQuantile) {
             if (e.getLabel() != null) {
@@ -2169,7 +2169,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsEqual = getRasterSymbolizer(domEqual);
         ColorMap cmEqual = rsEqual.getColorMap();
         ColorMapEntry[] entriesEqual = cmEqual.getColorMapEntries();
-        assertEquals(entriesEqual.length, 6);
+        assertEquals(6, entriesEqual.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesEqual) {
             if (e.getLabel() != null) {
@@ -2198,7 +2198,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsJenks = getRasterSymbolizer(domjenks);
         ColorMap cmJenks = rsJenks.getColorMap();
         ColorMapEntry[] entriesJenks = cmJenks.getColorMapEntries();
-        assertEquals(entriesJenks.length, 6);
+        assertEquals(6, entriesJenks.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesJenks) {
             if (e.getLabel() != null) {
@@ -2227,7 +2227,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsUnique = getRasterSymbolizer(domUnique);
         ColorMap cmUnique = rsUnique.getColorMap();
         ColorMapEntry[] entriesUnique = cmUnique.getColorMapEntries();
-        assertEquals(entriesUnique.length, 167);
+        assertEquals(167, entriesUnique.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesUnique) {
             if (e.getLabel() != null) {
@@ -2286,7 +2286,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsQuantile = getRasterSymbolizer(domQuantile);
         ColorMap cmQuantile = rsQuantile.getColorMap();
         ColorMapEntry[] entriesQuantile = cmQuantile.getColorMapEntries();
-        assertEquals(entriesQuantile.length, 6);
+        assertEquals(6, entriesQuantile.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesQuantile) {
             if (e.getLabel() != null) {
@@ -2475,7 +2475,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsJenks = getRasterSymbolizer(domjenks);
         ColorMap cmJenks = rsJenks.getColorMap();
         ColorMapEntry[] entriesJenks = cmJenks.getColorMapEntries();
-        assertEquals(entriesJenks.length, 6);
+        assertEquals(6, entriesJenks.length);
         double percentagesSum = 0.0;
         for (int i = 0; i < entriesJenks.length; i++) {
             ColorMapEntry e = entriesJenks[i];
@@ -2550,7 +2550,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rs = getRasterSymbolizer(dom);
         ColorMap cm = rs.getColorMap();
         // for unique interval we get a Type values ColorMap
-        assertEquals(cm.getType(), ColorMap.TYPE_VALUES);
+        assertEquals(ColorMap.TYPE_VALUES, cm.getType());
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(2, entries.length);
         // the first entry will match the actual raster's value

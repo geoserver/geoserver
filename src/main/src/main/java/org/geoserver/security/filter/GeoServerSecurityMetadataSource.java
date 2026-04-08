@@ -6,6 +6,7 @@
 
 package org.geoserver.security.filter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geotools.util.logging.Logging;
@@ -24,7 +24,7 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.SecurityMetadataSource;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
@@ -33,6 +33,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @author mcr
  */
+@SuppressWarnings({"deprecation", "removal"})
 public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
 
     /**
@@ -44,17 +45,18 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
      */
     static class LoginPageRequestMatcher implements RequestMatcher {
 
-        RequestMatcher webChainMatcher1 = new AntPathRequestMatcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
+        RequestMatcher webChainMatcher1 =
+                PathPatternRequestMatcher.withDefaults().matcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
 
-        RequestMatcher webChainMatcher2 =
-                new AntPathRequestMatcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME + "/");
+        RequestMatcher webChainMatcher2 = PathPatternRequestMatcher.withDefaults()
+                .matcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME + "/");
 
         @Override
         public boolean matches(HttpServletRequest request) {
 
             // check if we are on the "web" chain
             boolean isOnWebChain = webChainMatcher1.matches(request) || webChainMatcher2.matches(request);
-            if (isOnWebChain == false) return false;
+            if (!isOnWebChain) return false;
 
             Map<String, String[]> params = request.getParameterMap();
             if (params.size() != 2) return false;
@@ -62,7 +64,7 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
             String[] pageClass = params.get("wicket:bookmarkablePage");
             if (pageClass == null || pageClass.length != 1) return false;
 
-            if (":org.geoserver.web.GeoServerLoginPage".equals(pageClass[0]) == false) return false;
+            if (!":org.geoserver.web.GeoServerLoginPage".equals(pageClass[0])) return false;
 
             String[] error = params.get("error");
             if (error == null || error.length != 1) return false;
@@ -79,14 +81,14 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
         // the login page is a public resource
         map.put(new LoginPageRequestMatcher(), new ArrayList<>());
         // images,java script,... are public resources
-        map.put(new AntPathRequestMatcher("/web/resources/**"), new ArrayList<>());
+        map.put(PathPatternRequestMatcher.withDefaults().matcher("/web/resources/**"), new ArrayList<>());
 
-        RequestMatcher matcher = new AntPathRequestMatcher("/config/**");
+        RequestMatcher matcher = PathPatternRequestMatcher.withDefaults().matcher("/config/**");
         List<ConfigAttribute> list = new ArrayList<>();
         list.add(new SecurityConfig(GeoServerRole.ADMIN_ROLE.getAuthority()));
         map.put(matcher, list);
 
-        matcher = new AntPathRequestMatcher("/**");
+        matcher = PathPatternRequestMatcher.withDefaults().matcher("/**");
         list = new ArrayList<>();
         list.add(new SecurityConfig("IS_AUTHENTICATED_ANONYMOUSLY"));
         map.put(matcher, list);
@@ -94,7 +96,7 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
         requestMap = Collections.unmodifiableMap(map);
     }
 
-    private Logger logger = Logging.getLogger(GeoServerSecurityMetadataSource.class);
+    private final Logger logger = Logging.getLogger(GeoServerSecurityMetadataSource.class);
 
     public GeoServerSecurityMetadataSource() {
         super();

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import org.apache.wicket.model.IModel;
  * to be modified directly, as opposed thru setting it again with a property setter
  */
 public abstract class LiveCollectionModel<S, T extends Collection<S>> implements IModel<T> {
+    @Serial
     private static final long serialVersionUID = 3505518156788420409L;
 
     IModel<? extends Collection<S>> wrapped;
@@ -44,6 +46,7 @@ public abstract class LiveCollectionModel<S, T extends Collection<S>> implements
     public static <S> LiveCollectionModel<S, List<S>> list(IModel<? extends Collection<S>> wrapped) {
         return new LiveCollectionModel<>(wrapped) {
 
+            @Serial
             private static final long serialVersionUID = 3182237972594668864L;
 
             @Override
@@ -57,6 +60,7 @@ public abstract class LiveCollectionModel<S, T extends Collection<S>> implements
     public static <S> LiveCollectionModel<S, Set<S>> set(IModel<? extends Collection<S>> wrapped) {
         return new LiveCollectionModel<>(wrapped) {
 
+            @Serial
             private static final long serialVersionUID = 7638792616781214296L;
 
             @Override

@@ -10,6 +10,7 @@
   <bean id="webCoreExtension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-web-core"/>
     <constructor-arg index="1" value="GeoServer Web UI Core"/>
+    <property name="category" value="CORE"/>
   </bean>
   <!-- Core web app setup -->
   <bean id="webApplication" class="org.geoserver.web.GeoServerApplication">
@@ -48,6 +49,7 @@
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"
     lazy-init="true">
     <property name="alwaysUseFullPath" value="true" />
+    <property name="patternParser"><null/></property> <!-- Spring 5.x backwards compatibility -->
     <property name="mappings">
       <props>
         <prop key="/web">#{webDispatcherMappingSystem}</prop>
@@ -70,12 +72,10 @@
   </bean>
   
   <!-- Menu categories -->
-  <bean id="aboutStatusCategory" class="org.geoserver.web.Category">
-    <property name="nameKey" value="category.about" />
+  <bean id="geoserverCategory" class="org.geoserver.web.Category">
+    <property name="nameKey" value="category.geoserver" />
     <property name="order" value="100" />
   </bean>
-  <!-- alias for backward compatability -->
-  <alias name="aboutStatusCategory" alias="serverCategory" />
 
   <bean id="dataCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.data" />
@@ -87,18 +87,35 @@
     <property name="order" value="150" />
   </bean>
 
-  <bean id="settingsCategory" class="org.geoserver.web.Category">
+  <bean id="serverCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.settings" />
     <property name="order" value="175" />
   </bean>
+  <!-- alias for backward compatability -->
+  <alias name="serverCategory" alias="settingsCategory" />
+  <alias name="serverCategory" alias="aboutStatusCategory" />
+
+  <bean id="utilitiesCategory" class="org.geoserver.web.Category">
+    <property name="nameKey" value="category.utilities" />
+    <property name="order" value="310" />
+  </bean>
 
   <!-- Server menu items -->
+  <bean id="welcomeMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="welcome" />
+    <property name="titleKey" value="GeoServerHomePage.title" />
+    <property name="descriptionKey" value="GeoServerHomePage.description" />
+    <property name="componentClass" value="org.geoserver.web.GeoServerHomePage" />
+    <property name="category" ref="geoserverCategory" />
+    <property name="icon" value="/img/logo-icon.svg" />
+    <property name="order" value="5" />
+  </bean>
   <bean id="statusMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="server.admin.status" />
     <property name="titleKey" value="StatusPage.title" />
     <property name="descriptionKey" value="StatusPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.StatusPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/server_error.png" />
     <property name="order" value="10" />
   </bean>
@@ -107,7 +124,7 @@
     <property name="titleKey" value="LogPage.title" />
     <property name="descriptionKey" value="LogPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.LogPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/page_white_text.png" />
     <property name="order" value="15" />
   </bean>
@@ -116,17 +133,17 @@
     <property name="titleKey" value="ContactPage.title" />
     <property name="descriptionKey" value="ContactPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.ContactPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/vcard.png" />
-    <property name="order" value="20" />
+    <property name="order" value="5" />
   </bean>
   <bean id="aboutMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="server.about" />
     <property name="titleKey" value="AboutGeoServerPage.title" />
     <property name="descriptionKey" value="AboutGeoServerPage.description" />
     <property name="componentClass" value="org.geoserver.web.AboutGeoServerPage" />
-    <property name="category" ref="aboutStatusCategory" />
-    <property name="icon" value="img/icons/silk/help.png" />
+    <property name="category" ref="geoserverCategory" />
+    <property name="icon" value="/img/icons/silk/help.png" />
     <property name="order" value="25" />
   </bean>
   <bean id="globalSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -134,7 +151,7 @@
     <property name="titleKey" value="global.title" />
     <property name="descriptionKey" value="GlobalSettingsPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.GlobalSettingsPage" />
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/server.png" />
     <property name="order" value="30" />
   </bean>
@@ -143,7 +160,7 @@
     <property name="titleKey" value="jai.title" />
     <property name="descriptionKey" value="JAIPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.JAIPage" />
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/cog_photo.png" />
     <property name="order" value="40" />
   </bean>
@@ -152,7 +169,7 @@
     <property name="titleKey" value="coverageAccess.title" />
     <property name="descriptionKey" value="CoverageAccessPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.CoverageAccessPage" />
-    <property name="category" ref="settingsCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../img/icons/silk/cog_photo.png" />
     <property name="order" value="45" />
   </bean>
@@ -209,12 +226,14 @@
     <property name="titleKey" value="demo.title" />
     <property name="descriptionKey" value="demo.description" />
     <property name="componentClass" value="org.geoserver.web.DemoPage" />
+    <property name="category" ref="geoserverCategory" />
+    <property name="icon" value="img/icons/silk/picture_empty.png" />
+    <property name="order" value="10" />
     <property name="authorizer">
       <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
         <property name="linkClasses" value="org.geoserver.web.DemoLinkInfo" />
       </bean>
     </property>
-
   </bean>
 
   <!-- Tool menu item -->
@@ -223,6 +242,9 @@
     <property name="titleKey" value="tools.title" />
     <property name="descriptionKey" value="tools.description" />
     <property name="componentClass" value="org.geoserver.web.ToolPage" />
+    <property name="category" ref="utilitiesCategory" />
+    <property name="icon" value="img/icons/silk/wrench.png" />
+    <property name="order" value="15" />
     <property name="authorizer">
       <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
         <property name="linkClasses">
@@ -280,15 +302,86 @@
     </property>
   </bean>
 
-  <!-- Layer configuration panels -->
+  <!-- heading configuration panels -->
+
+  <!-- record heading is order: 1100 -->
+  <!-- web-csw heading is order: 1050 -->
+
+  <bean id="mapHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="mapHeading" />
+    <property name="order" value="1000" />
+    <property name="titleKey" value="HeadingConfigurationPanel.map.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.map.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
+  <!-- web-wms sub-heading is order: 950 -->
+
+  <!-- tiling sub-heading is order: 800 -->
+  <!-- web-wmts sub-heading is order: 750 -->
+
+  <bean id="vectorHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="vectorHeading" />
+    <property name="order" value="700" />
+    <property name="titleKey" value="HeadingConfigurationPanel.vector.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.vector.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.FeatureTypeInfo</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- web-wfs sub-heading is order: 650 -->
+
+  <bean id="rasterHeadingConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="rasterHeading" />
+    <property name="order" value="600" />
+    <property name="titleKey" value="HeadingConfigurationPanel.raster.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.raster.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.CoverageInfo</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- web-wcs sub-heading is order: 550 -->
+
+  <!-- process heading is order: 400 -->
+  <!-- process heading is order: 350 -->
+
+  <bean id="formatHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="formatHeading" />
+    <property name="order" value="300" />
+    <property name="titleKey" value="HeadingConfigurationPanel.format.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.format.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
+  <!-- ogcapi heading is order: 200 -->
+
+  <bean id="settingsHeadingConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="settingsHeading" />
+    <property name="order" value="100" />
+    <property name="titleKey" value="HeadingConfigurationPanel.settings.title" />
+    <property name="descriptionKey" value="HeadingConfigurationPanel.settings.description" />
+    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+  </bean>
+
   <bean id="httpLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="http" />
+    <property name="order" value="90" />
     <property name="titleKey" value="publish.layer.config.http" />
     <property name="componentClass" value="org.geoserver.web.publish.LayerHTTPLayerConfig" />
   </bean>
-  
+
+  <!-- wms configuration panel -->
   <bean id="rootLayerConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
-    <property name="id" value="http" />
+    <property name="id" value="rootLayer" />
+    <property name="order" value="940"/>
     <property name="titleKey" value="publish.layer.config.rootLayer" />
     <property name="componentClass" value="org.geoserver.web.publish.RootLayerConfig" />
   </bean>
@@ -296,6 +389,7 @@
   <!-- LayerGroup configuration panels -->
   <bean id="httpLayerGroupConfigPanel" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
     <property name="id" value="http" />
+    <property name="order" value="90"/>
     <property name="titleKey" value="publish.layer.config.http" />
     <property name="componentClass" value="org.geoserver.web.publish.LayerGroupHTTPLayerConfig" />
   </bean>
@@ -340,24 +434,6 @@
     <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
     <property name="componentClass"
       value="org.geoserver.web.data.store.raster.DirectoryRasterEditPanel" />
-  </bean>
-
-  <bean id="arcGridStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
-    <property name="id" value="arcgridRaster" />
-    <property name="factoryClass" value="org.geotools.gce.arcgrid.ArcGridFormat" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
-    <property name="componentClass"
-      value="org.geoserver.web.data.store.raster.FileRasterEditPanel" />
-  </bean>
-
-  <bean id="worldImageStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
-    <property name="id" value="worldImageRaster" />
-    <property name="factoryClass" value="org.geotools.gce.image.WorldImageFormat" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
-    <property name="componentClass"
-      value="org.geoserver.web.data.store.raster.WorldImageEditPanel" />
   </bean>
   
   <bean id="geopkgStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
@@ -463,11 +539,158 @@
 		<property name="include" value="include_login_form.html" />
 		<property name="loginPath" value="j_spring_security_check" />
 	</bean>
-	
- 	<bean id="serviceLayerConfigurationPanelInfo" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+
+    <bean id="serviceLayerConfigurationPanelInfo" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
 		<property name="id" value="serviceLayerConfigurationPanel"/>
+        <property name="order" value="95"/>
 		<property name="titleKey" value="publish.layer.config"/>
 		<property name="componentClass" value="org.geoserver.web.publish.ServiceLayerConfigurationPanel"/>
 	</bean>
+
  
+  <bean id="breadcrumbCatWorkspace" class="org.geoserver.web.Category">
+    <property name="nameKey" value="BreadcrumbNavigationPanel.workspace" />
+    <property name="order" value="10" />
+  </bean>
+
+  <bean id="breadcrumbCatData" class="org.geoserver.web.Category">
+    <property name="nameKey" value="BreadcrumbNavigationPanel.data" />
+    <property name="order" value="20" />
+  </bean>
+
+  <bean id="breadcrumbCatTileCaching" class="org.geoserver.web.Category">
+    <property name="nameKey" value="BreadcrumbNavigationPanel.tilecaching" />
+    <property name="order" value="30" />
+  </bean>
+
+  <bean id="breadcrumbCatServiceOverrides" class="org.geoserver.web.Category">
+    <property name="nameKey" value="BreadcrumbNavigationPanel.serviceoverrides" />
+    <property name="order" value="40" />
+  </bean>
+
+  <bean id="breadcrumbItemWsEditSettings" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemWsEditSettings" />
+    <property name="titleKey" value="WorkspaceEditPage.title" /> 
+    <property name="componentClass" value="org.geoserver.web.data.workspace.WorkspaceEditPage" />
+    <property name="targetLevel" value="WORKSPACE" />
+    <property name="category" ref="breadcrumbCatWorkspace" />
+    <property name="order" value="10" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    <property name="icon" value="../../img/icons/silk/wrench.png"/>
+  </bean>
+
+  <bean id="breadcrumbItemWsStores" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemWsStores" />
+    <property name="titleKey" value="StorePage.title" /> 
+    <property name="componentClass" value="org.geoserver.web.data.store.StorePage" />
+    <property name="targetLevel" value="WORKSPACE" />
+    <property name="category" ref="breadcrumbCatData" />
+    <property name="order" value="10" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    <property name="icon" value="../../img/icons/silk/database.png"/>
+  </bean>
+
+  <bean id="breadcrumbItemWsLayers" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemWsLayers" />
+    <property name="titleKey" value="LayerPage.title" /> 
+    <property name="componentClass" value="org.geoserver.web.data.layer.LayerPage" />
+    <property name="targetLevel" value="WORKSPACE" />
+    <property name="category" ref="breadcrumbCatData" />
+    <property name="order" value="20" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    <property name="icon" value="../../img/icons/silk/picture_empty.png"/>
+  </bean>
+
+  <bean id="breadcrumbItemWsLayerGroups" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemWsLayerGroups" />
+    <property name="titleKey" value="LayerGroupPage.title" /> 
+    <property name="componentClass" value="org.geoserver.web.data.layergroup.LayerGroupPage" />
+    <property name="targetLevel" value="WORKSPACE" />
+    <property name="category" ref="breadcrumbCatData" />
+    <property name="order" value="30" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    <property name="icon" value="../../img/icons/silk/layers.png"/>
+  </bean>
+
+  <bean id="breadcrumbCatLayerMenu" class="org.geoserver.web.Category">
+    <property name="nameKey" value="BreadcrumbNavigationPanel.layer" />
+    <property name="order" value="10" />
+  </bean>
+
+  <bean id="breadcrumbCatLayerData" class="org.geoserver.web.Category">
+    <property name="nameKey" value="BreadcrumbNavigationPanel.data" />
+    <property name="order" value="20" />
+  </bean>
+
+  <bean id="breadcrumbItemLayerEdit" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemLayerEdit" />
+    <property name="titleKey" value="BreadcrumbNavigationPanel.editsettings" /> 
+    <property name="componentClass" value="org.geoserver.web.data.resource.ResourceConfigurationPage" />
+    <property name="targetLevel" value="LAYER" />
+    <property name="category" ref="breadcrumbCatLayerMenu" />
+    <property name="order" value="10" />
+    <property name="icon" value="../../img/icons/silk/wrench.png"/>
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+  </bean>
+
+  <bean id="breadcrumbItemLayerStores" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemLayerStores" />
+    <property name="titleKey" value="StorePage.title" /> 
+    <property name="componentClass" value="org.geoserver.web.data.store.StorePage" />
+    <property name="targetLevel" value="LAYER" />
+    <property name="category" ref="breadcrumbCatLayerData" />
+    <property name="order" value="10" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+    <property name="icon" value="../../img/icons/silk/database.png"/>
+  </bean>
+
+  <bean id="breadcrumbCatLayerGroupMenu" class="org.geoserver.web.Category">
+    <property name="nameKey" value="BreadcrumbNavigationPanel.group" />
+    <property name="order" value="10" />
+  </bean>
+
+  <bean id="breadcrumbItemLayerGroupEdit" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
+    <property name="id" value="breadcrumbItemLayerEdit" />
+    <property name="titleKey" value="BreadcrumbNavigationPanel.editsettings" /> 
+    <property name="componentClass" value="org.geoserver.web.data.layergroup.LayerGroupEditPage" />
+    <property name="targetLevel" value="LAYER_GROUP" />
+    <property name="category" ref="breadcrumbCatLayerGroupMenu" />
+    <property name="order" value="10" />
+    <property name="icon" value="../../img/icons/silk/wrench.png"/>
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+  </bean>
+
+  <!-- Sidebar "New" menu items (used by NavigationTreePanel) -->
+  <bean id="sidebarNewLayer" class="org.geoserver.web.SidebarNewMenuItemInfo">
+    <property name="id" value="sidebarNewLayer" />
+    <property name="titleKey" value="addLayers" />
+    <property name="componentClass" value="org.geoserver.web.data.layer.NewLayerPage" />
+    <property name="order" value="10" />
+    <property name="icon" value="../../img/icons/silk/add_layer.png" />
+  </bean>
+
+  <bean id="sidebarNewLayerGroup" class="org.geoserver.web.SidebarNewMenuItemInfo">
+    <property name="id" value="sidebarNewLayerGroup" />
+    <property name="titleKey" value="addGroups" />
+    <property name="componentClass" value="org.geoserver.web.data.layergroup.LayerGroupEditPage" />
+    <property name="order" value="20" />
+    <property name="icon" value="../../img/icons/silk/add_layergroup.png" />
+  </bean>
+
+  <bean id="sidebarNewStore" class="org.geoserver.web.SidebarNewMenuItemInfo">
+    <property name="id" value="sidebarNewStore" />
+    <property name="titleKey" value="addStores" />
+    <property name="componentClass" value="org.geoserver.web.data.store.NewDataPage" />
+    <property name="order" value="30" />
+    <property name="icon" value="../../img/icons/silk/add_store.png" />
+  </bean>
+
+  <bean id="sidebarNewWorkspace" class="org.geoserver.web.SidebarNewMenuItemInfo">
+    <property name="id" value="sidebarNewWorkspace" />
+    <property name="titleKey" value="addWorkspaces" />
+    <property name="componentClass" value="org.geoserver.web.data.workspace.WorkspaceNewPage" />
+    <property name="order" value="40" />
+    <property name="icon" value="../../img/icons/silk/add_workspace.png" />
+  </bean>
+
 </beans>

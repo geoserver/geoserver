@@ -15,7 +15,6 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.rest.RestBaseController;
@@ -23,6 +22,7 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -153,7 +153,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
     }
 
     String[][] getDefaultRestRulesForDelete() {
-        return new String[][] {{"%2F**:GET,HEAD,OPTIONS", "ADMIN"}, {"%2F**:POST,DELETE,PUT", "ADMIN"}};
+        return new String[][] {{"/**:GET,HEAD,OPTIONS", "ADMIN"}, {"/**:POST,DELETE,PUT", "ADMIN"}};
     }
 
     @Test

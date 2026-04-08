@@ -116,7 +116,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // should not work, no name provided, so we remain
         // in the same page
         tester.assertRenderedPage(LayerGroupEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Name' is required.", "Field 'Bounds' is required."});
+        tester.assertErrorMessages("Field 'Name' is required.", "Field 'Bounds' is required.");
     }
 
     @Test
@@ -186,7 +186,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         // should work, we switch to the edit page
         tester.assertRenderedPage(LayerGroupEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Bounds' is required."});
+        tester.assertErrorMessages("Field 'Bounds' is required.");
     }
 
     @Test
@@ -350,23 +350,49 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:bounds:maxX", "180");
         form.setValue("tabs:panel:bounds:maxY", "90");
         form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
+
         // add a keyword
-        form.setValue("tabs:panel:keywords:newKeyword", "keyword1");
-        form.setValue("tabs:panel:keywords:lang", "en");
-        form.setValue("tabs:panel:keywords:vocab", "vocab1");
-        tester.executeAjaxEvent("publishedinfo:tabs:panel:keywords:addKeyword", "click");
+        // publishedinfo:tabs:panel:keywords:container:addKeyword
+        tester.executeAjaxEvent("publishedinfo:tabs:panel:keywords:container:addKeyword", "click");
+        tester.assertNoErrorMessage();
+
+        form = tester.newFormTester("publishedinfo");
+        form.setValue(
+                "tabs:panel:keywords:container:table:keywords:0:keywordBorder:keywordBorder_body:keyword", "keyword1");
+        form.setValue("tabs:panel:keywords:container:table:keywords:0:keywordBorder:keywordBorder_body:language", "en");
+        form.setValue(
+                "tabs:panel:keywords:container:table:keywords:0:vocabularyBorder:vocabularyBorder_body:vocabulary",
+                "vocab1");
+
         // add another keyword
-        form.setValue("tabs:panel:keywords:newKeyword", "keyword2");
-        form.setValue("tabs:panel:keywords:lang", "pt");
-        form.setValue("tabs:panel:keywords:vocab", "vocab2");
-        tester.executeAjaxEvent("publishedinfo:tabs:panel:keywords:addKeyword", "click");
+        tester.executeAjaxEvent("publishedinfo:tabs:panel:keywords:container:addKeyword", "click");
+        form.setValue(
+                "tabs:panel:keywords:container:table:keywords:1:keywordBorder:keywordBorder_body:keyword", "keyword2");
+        form.setValue("tabs:panel:keywords:container:table:keywords:1:keywordBorder:keywordBorder_body:language", "pt");
+        form.setValue(
+                "tabs:panel:keywords:container:table:keywords:1:vocabularyBorder:vocabularyBorder_body:vocabulary",
+                "vocab2");
+
+        form = tester.newFormTester("publishedinfo");
+        form.getForm()
+                .get("tabs:panel:keywords:container:table:keywords:1:keywordBorder:keywordBorder_body:keyword")
+                .setDefaultModelObject("keyword2");
+        form.getForm()
+                .get("tabs:panel:keywords:container:table:keywords:1:keywordBorder:keywordBorder_body:language")
+                .setDefaultModelObject("pt");
+        form.getForm()
+                .get("tabs:panel:keywords:container:table:keywords:1:vocabularyBorder:vocabularyBorder_body:vocabulary")
+                .setDefaultModelObject("vocab2");
+
         // save the layer group
         form = tester.newFormTester("publishedinfo");
         form.submit("save");
+        tester.assertNoErrorMessage();
+
         // get the create layer group from the catalog
         LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName("keywords-layer-group");
         assertThat(layerGroup, notNullValue());
-        // check the keywords
+        // check the added keywords
         List<KeywordInfo> keywords = layerGroup.getKeywords();
         assertThat(keywords, notNullValue());
         assertThat(keywords.size(), is(2));
@@ -411,11 +437,11 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         form = tester.newFormTester("publishedinfo");
 
-        tester.assertComponent("publishedinfo:tabs:panel:theList:1:content:cacheAgeMax", TextField.class);
-        tester.assertComponent("publishedinfo:tabs:panel:theList:1:content:cachingEnabled", CheckBox.class);
+        tester.assertComponent("publishedinfo:tabs:panel:theList:4:content:cacheAgeMax", TextField.class);
+        tester.assertComponent("publishedinfo:tabs:panel:theList:4:content:cachingEnabled", CheckBox.class);
 
-        form.setValue("tabs:panel:theList:1:content:cachingEnabled", "on");
-        form.setValue("tabs:panel:theList:1:content:cacheAgeMax", "1234");
+        form.setValue("tabs:panel:theList:4:content:cachingEnabled", "on");
+        form.setValue("tabs:panel:theList:4:content:cacheAgeMax", "1234");
 
         // save the layer group
         form.submit("save");

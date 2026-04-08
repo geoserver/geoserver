@@ -9,12 +9,12 @@
  */
 package org.geoserver.gsr.api;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.gsr.model.exception.ServiceError;
 import org.geoserver.gsr.model.exception.ServiceErrorWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +56,8 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
     protected ModelAndView doResolveException(
             HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         ServiceErrorWrapper exception;
-        if (ex instanceof ServiceException) {
-            exception = new ServiceErrorWrapper(((ServiceException) ex).error);
+        if (ex instanceof ServiceException serviceException) {
+            exception = new ServiceErrorWrapper(serviceException.error);
         } else {
             exception = new ServiceErrorWrapper(
                     new ServiceError(500, "Internal Server Error", Collections.singletonList(ex.getMessage())));

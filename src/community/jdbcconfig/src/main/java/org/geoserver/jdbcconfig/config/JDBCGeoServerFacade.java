@@ -11,6 +11,7 @@ import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.isNull;
 
 import com.google.common.base.Preconditions;
+import jakarta.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.rmi.server.UID;
@@ -19,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.geoserver.catalog.Info;
@@ -124,12 +124,9 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
                         Level.WARNING,
                         "Start up logging config does not match that in JDBCConfig.  Reconfiguring now.  Logs preceding this message may reflect a different configuration.");
 
+                // Log location only from GEOSERVER_LOG_LOCATION property (GeoServer 3.0+)
                 LoggingUtils.initLogging(
-                        resourceLoader,
-                        realLogInfo.getLevel(),
-                        !realLogInfo.isStdOutLogging(),
-                        false,
-                        realLogInfo.getLocation());
+                        resourceLoader, realLogInfo.getLevel(), !realLogInfo.isStdOutLogging(), false, null);
             }
         } catch (Exception ex) {
             // If something bad happens, log it and keep going with the wrong logging config

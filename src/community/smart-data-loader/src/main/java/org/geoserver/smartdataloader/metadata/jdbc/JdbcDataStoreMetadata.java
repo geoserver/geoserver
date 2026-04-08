@@ -7,6 +7,7 @@ package org.geoserver.smartdataloader.metadata.jdbc;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import org.geoserver.smartdataloader.metadata.AttributeMetadata;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadataConfig;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadataImpl;
@@ -16,8 +17,11 @@ import org.geoserver.smartdataloader.metadata.RelationMetadata;
 /** Concrete class that implements access to JDBC dataStore metadata model, extending DataStoreMetadataImpl. */
 public class JdbcDataStoreMetadata extends DataStoreMetadataImpl {
 
-    public JdbcDataStoreMetadata(DataStoreMetadataConfig config) {
+    private final JdbcHelper jdbcHelper;
+
+    public JdbcDataStoreMetadata(DataStoreMetadataConfig config, JdbcHelper jdbcHelper) {
         super(config);
+        this.jdbcHelper = Objects.requireNonNull(jdbcHelper, "jdbcHelper must not be null");
     }
 
     @Override
@@ -25,8 +29,8 @@ public class JdbcDataStoreMetadata extends DataStoreMetadataImpl {
         JdbcDataStoreMetadataConfig jdbcConfig = (JdbcDataStoreMetadataConfig) this.config;
         // load entities
         entities = new ArrayList<>();
-        List<JdbcTableMetadata> tableList = JdbcHelper.getInstance()
-                .getSchemaTables(jdbcConfig.getConnection().getMetaData(), jdbcConfig.getSchema());
+        List<JdbcTableMetadata> tableList =
+                jdbcHelper.getSchemaTables(jdbcConfig.getConnection().getMetaData(), jdbcConfig.getSchema());
         entities.addAll(tableList);
         // load attributes and relations for each entity
         relations = new ArrayList<>();
@@ -34,14 +38,14 @@ public class JdbcDataStoreMetadata extends DataStoreMetadataImpl {
         while (iTables.hasNext()) {
             JdbcTableMetadata jTable = iTables.next();
             // load attributes
-            List<AttributeMetadata> attributes = JdbcHelper.getInstance()
-                    .getColumnsByTable(jdbcConfig.getConnection().getMetaData(), jTable);
+            List<AttributeMetadata> attributes =
+                    jdbcHelper.getColumnsByTable(jdbcConfig.getConnection().getMetaData(), jTable);
             attributes.forEach(attributeMetadata -> {
                 jTable.addAttribute(attributeMetadata);
             });
             // load relations
-            List<RelationMetadata> tableRelations = JdbcHelper.getInstance()
-                    .getRelationsByTable(jdbcConfig.getConnection().getMetaData(), jTable);
+            List<RelationMetadata> tableRelations =
+                    jdbcHelper.getRelationsByTable(jdbcConfig.getConnection().getMetaData(), jTable);
             tableRelations.forEach(relationMetadata -> {
                 jTable.addRelation(relationMetadata);
                 relations.add(relationMetadata);

@@ -168,7 +168,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         return results.get(n);
     }
 
-    class ComponentContentFinder implements IVisitor<Component, Void> {
+    static class ComponentContentFinder implements IVisitor<Component, Void> {
         Component candidate;
         Object content;
 
@@ -202,9 +202,8 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
      */
     protected AjaxEventBehavior getAjaxBehavior(String path, String event) {
         for (Behavior b : tester.getComponentFromLastRenderedPage(path).getBehaviors()) {
-            if (b instanceof AjaxEventBehavior
-                    && ((AjaxEventBehavior) b).getEvent().equals(event)) {
-                return (AjaxEventBehavior) b;
+            if (b instanceof AjaxEventBehavior behavior && behavior.getEvent().equals(event)) {
+                return behavior;
             }
         }
         return null;

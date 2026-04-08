@@ -13,6 +13,11 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 
+/**
+ * Drop down choice for choosing Locale.
+ *
+ * <p>The display value is the language tag and the display name of the locale, for example {@code en - English}.
+ */
 public class LocalesDropdown extends Select2DropDownChoice<Locale> {
 
     public LocalesDropdown(String id, IModel<Locale> model) {

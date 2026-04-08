@@ -171,10 +171,8 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         assertFalse(attrs.isEmpty());
 
         for (AttributeMapping attr : attrs) {
-            if (attr instanceof JoiningNestedAttributeMapping) {
+            if (attr instanceof JoiningNestedAttributeMapping joiningNestedAttr) {
                 nestedFeaturesCount++;
-
-                JoiningNestedAttributeMapping joiningNestedAttr = (JoiningNestedAttributeMapping) attr;
                 Map<Name, DataAccessMappingFeatureIterator> nestedFeatureIterators =
                         joiningNestedAttr.getNestedFeatureIterators(mappingIt);
                 assertNotNull(nestedFeatureIterators);

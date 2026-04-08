@@ -9,6 +9,11 @@
         <constructor-arg ref="templateConfiguration"/>
     </bean>
 
+    <bean id="schemaCallback" class="org.geoserver.featurestemplating.ows.SchemaCallback">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="schemaConfiguration"/>
+    </bean>
+
     <bean id="JSONLDGetFeatureResponse" class="org.geoserver.featurestemplating.ows.wfs.JSONLDGetFeatureResponse">
         <constructor-arg ref="geoServer"/>
         <constructor-arg ref="templateConfiguration"/>

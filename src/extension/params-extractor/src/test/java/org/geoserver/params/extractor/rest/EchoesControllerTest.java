@@ -15,13 +15,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.params.extractor.EchoParametersDao;
 import org.geoserver.util.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -98,7 +98,7 @@ public class EchoesControllerTest extends ParamsExtractorRestTestSupport {
         JSONObject param = json.getJSONObject("EchoParameter");
         assertEquals(0, param.get("id"));
         assertEquals("CQL_FILTER", param.get("parameter"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
     }
 
     @Test
@@ -133,11 +133,14 @@ public class EchoesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPutEchoJSON() throws Exception {
-        String jsonBody = "{\"EchoParameter\": {\n"
-                + "  \"id\": 1,\n"
-                + "  \"parameter\": \"test123\",\n"
-                + "  \"activated\": true\n"
-                + "}}";
+        String jsonBody =
+                """
+                {"EchoParameter": {
+                  "id": 1,
+                  "parameter": "test123",
+                  "activated": true
+                }}\
+                """;
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/params-extractor/echoes/1", jsonBody, "application/json");
         assertEquals(200, response.getStatus());

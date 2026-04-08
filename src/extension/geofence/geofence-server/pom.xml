@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-geofence-root</artifactId>
-    <version>2.28-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
@@ -18,10 +18,6 @@
   <dependencies>
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
     </dependency>
 
@@ -32,19 +28,19 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Older versions of h2 fails in drop/create tables   -->
-    <!-- This version may break netcdf/grib modules         -->
-    <!-- Please do consider using a postgis backend instead -->
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>2.3.232</version>
-      <scope>test</scope>
-    </dependency>
-
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -131,11 +127,9 @@
       <groupId>com.github.svenmeier.wicket-dnd</groupId>
       <artifactId>wicket-dnd</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
 
     <!-- test dependencies -->
@@ -171,7 +165,7 @@
 
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs1_x</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -182,7 +176,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
+      <artifactId>gs-wms-core</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -202,12 +196,13 @@
       <version>1.14.15</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>10.7.0</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
   <build>
@@ -231,7 +226,6 @@
     <profile>
       <id>release</id>
       <build>
-        <!-- needed to pack h2 in geofence needed version -->
         <plugins>
           <plugin>
             <artifactId>maven-dependency-plugin</artifactId>
@@ -243,8 +237,8 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <includeGroupIds>com.h2database,org.postgresql,org.postgis,org.opengeo</includeGroupIds>
-                  <includeArtifactIds>h2,postgresql,postgis-jdbc,geodb</includeArtifactIds>
+                  <includeGroupIds>org.postgresql,org.postgis,org.opengeo</includeGroupIds>
+                  <includeArtifactIds>postgresql,postgis-jdbc,geodb</includeArtifactIds>
                 </configuration>
               </execution>
             </executions>

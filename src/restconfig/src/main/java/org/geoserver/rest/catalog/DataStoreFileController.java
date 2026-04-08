@@ -4,10 +4,9 @@
  */
 package org.geoserver.rest.catalog;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -19,10 +18,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -30,15 +25,12 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourcePool;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUploadPathMapper;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.api.data.DataAccess;
@@ -59,12 +51,9 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.util.URLs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -94,16 +83,17 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         formatToDataStoreFactory.put("appschema", "org.geotools.data.complex.AppSchemaDataAccessFactory");
         formatToDataStoreFactory.put("gpkg", "org.geotools.geopkg.GeoPkgDataStoreFactory");
         formatToDataStoreFactory.put("mbtiles", "org.geotools.mbtiles.MBTilesDataStoreFactory");
+        formatToDataStoreFactory.put("geoparquet", "org.geotools.data.geoparquet.GeoParquetDataStoreFactory");
     }
 
     protected static final Map<String, Map<String, Serializable>> dataStoreFactoryToDefaultParams = new HashMap<>();
 
     static {
         Map<String, Serializable> map = new HashMap<>();
-        map.put("database", "@DATA_DIR@/@NAME@");
-        map.put("dbtype", "h2");
+        map.put("database", "@DATA_DIR@/@NAME@.gpkg");
+        map.put("dbtype", "geopkg");
 
-        dataStoreFactoryToDefaultParams.put("org.geotools.data.h2.H2DataStoreFactory", map);
+        dataStoreFactoryToDefaultParams.put("org.geotools.geopkg.GeoPkgDataStoreFactory", map);
     }
 
     public static DataAccessFactory lookupDataStoreFactory(String format) {
@@ -122,8 +112,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         // if not, let's see if we have a file data store factory that knows about the extension
         String extension = "." + format;
         for (DataAccessFactory dataAccessFactory : DataStoreUtils.getAvailableDataStoreFactories()) {
-            if (dataAccessFactory instanceof FileDataStoreFactorySpi) {
-                FileDataStoreFactorySpi factory = (FileDataStoreFactorySpi) dataAccessFactory;
+            if (dataAccessFactory instanceof FileDataStoreFactorySpi factory) {
                 for (String handledExtension : factory.getFileExtensions()) {
                     if (extension.equalsIgnoreCase(handledExtension)) {
                         return factory;
@@ -153,81 +142,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         }
 
         return null;
-    }
-
-    @GetMapping
-    public ResponseEntity dataStoresGet(@PathVariable String workspaceName, @PathVariable String storeName)
-            throws IOException {
-
-        // find the directory from teh datastore connection parameters
-        DataStoreInfo info = catalog.getDataStoreByName(workspaceName, storeName);
-        if (info == null) {
-            throw new RestException("No such datastore " + storeName, HttpStatus.NOT_FOUND);
-        }
-        ResourcePool rp = info.getCatalog().getResourcePool();
-        GeoServerResourceLoader resourceLoader = info.getCatalog().getResourceLoader();
-        Map<String, Serializable> rawParamValues = info.getConnectionParameters();
-        Map<String, Serializable> paramValues = rp.getParams(rawParamValues, resourceLoader);
-        File directory = null;
-        try {
-            DataAccessFactory factory = rp.getDataStoreFactory(info);
-            for (DataAccessFactory.Param param : factory.getParametersInfo()) {
-                if (File.class.isAssignableFrom(param.getType())) {
-                    Object result = param.lookUp(paramValues);
-                    if (result instanceof File) {
-                        directory = (File) result;
-                    }
-                } else if (URL.class.isAssignableFrom(param.getType())) {
-                    Object result = param.lookUp(paramValues);
-                    if (result instanceof URL) {
-                        directory = URLs.urlToFile((URL) result);
-                    }
-                }
-
-                if (directory != null && !"directory".equals(param.key)) {
-                    directory = directory.getParentFile();
-                }
-
-                if (directory != null) {
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            throw new RestException(
-                    "Failed to lookup source directory for store " + storeName, HttpStatus.NOT_FOUND, e);
-        }
-
-        if (directory == null || !directory.exists() || !directory.isDirectory()) {
-            throw new RestException("No files for datastore " + storeName, HttpStatus.NOT_FOUND);
-        }
-
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(byteArrayOutputStream);
-                ZipOutputStream zipOutputStream = new ZipOutputStream(bufferedOutputStream)) {
-            // packing files
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    // new zip entry and copying inputstream with file to zipOutputStream, after all
-                    // closing streams
-                    zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-                    try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                        IOUtils.copy(fileInputStream, zipOutputStream);
-                    }
-                    zipOutputStream.closeEntry();
-                }
-            }
-
-            zipOutputStream.finish();
-            zipOutputStream.flush();
-
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.add("content-disposition", "attachment; filename=" + info.getName() + ".zip");
-            responseHeaders.add("Content-Type", "application/zip");
-            return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), responseHeaders, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PutMapping
@@ -358,10 +272,8 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             // if it is the case that the source does not match the target we need to
             // copy the data into the target
             if (!targetDataStoreFormat.equals(sourceDataStoreFormat)
-                    && (source instanceof DataStore && ds instanceof DataStore)) {
+                    && (source instanceof DataStore sourceDataStore && ds instanceof DataStore targetDataStore)) {
                 // copy over the feature types
-                DataStore sourceDataStore = (DataStore) source;
-                DataStore targetDataStore = (DataStore) ds;
                 for (String featureTypeName : sourceDataStore.getTypeNames()) {
 
                     // does the feature type already exist in the target?
@@ -385,7 +297,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                         continue;
                     }
 
-                    @SuppressWarnings("PMD.CloseResource") // no try-with-resource to rollback
                     Transaction tx = new DefaultTransaction();
                     try { // NOPMD - tx used in catch too, cannot use try-with-resources
                         SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
@@ -592,10 +503,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
     @Override
     protected Resource findPrimaryFile(Resource directory, String format) {
-        if ("shp".equalsIgnoreCase(format) || "h2".equalsIgnoreCase(format)) {
+        if ("shp".equalsIgnoreCase(format)) {
             // special case for shapefiles, since shapefile datastore can handle directories just
             // return the directory, this handles the case of a user uploading a zip with multiple
-            // shapefiles in it and the same happens for H2
+            // shapefiles in it
             return directory;
         } else {
             return super.findPrimaryFile(directory, format);
@@ -645,6 +556,11 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 continue;
             }
 
+            // it occurs usually with parquet
+            if (String.class == p.type && "uri".equals(p.key)) {
+                connectionParameters.put(p.key, f.getAbsolutePath());
+            }
+
             if (p.required) {
                 try {
                     p.lookUp(connectionParameters);
@@ -666,11 +582,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 Optional<Resource> found =
                         Resources.list(uploadedFile, resource -> resource.name().endsWith("data.db")).stream()
                                 .findFirst();
-                if (!found.isPresent()) {
+                if (found.isEmpty()) {
                     // ouch no database file found just throw an exception
                     throw new RestException(
-                            String.format(
-                                    "H2 database file could not be found in directory '%s'.", f.getAbsolutePath()),
+                            "H2 database file could not be found in directory '%s'.".formatted(f.getAbsolutePath()),
                             HttpStatus.INTERNAL_SERVER_ERROR);
                 }
                 // we found the database file get the absolute path
@@ -681,8 +596,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             if (!matcher.matches()) {
                 // strange the database file is not ending in data.db
                 throw new RestException(
-                        String.format("Invalid H2 database file '%s'.", databaseFile),
-                        HttpStatus.INTERNAL_SERVER_ERROR);
+                        "Invalid H2 database file '%s'.".formatted(databaseFile), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             connectionParameters.put(JDBCDataStoreFactory.DATABASE.getName(), matcher.group(1));
         }

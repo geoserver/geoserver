@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.IConverter;
@@ -17,6 +18,7 @@ import org.apache.wicket.util.convert.IConverter;
  */
 public class DecimalTextField extends TextField<Double> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private DecimalConverter decimalConverter;

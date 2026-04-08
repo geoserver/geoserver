@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -19,7 +20,9 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  */
 public class ColorPickerField extends TextField<String> {
 
+    @Serial
     private static final long serialVersionUID = -5126346882014020980L;
+
     private static final PackageResourceReference JSCOLOR_JS =
             new PackageResourceReference(ColorPickerField.class, "js/jscolor/jscolor.js");
 

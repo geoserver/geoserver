@@ -5,12 +5,12 @@
  */
 package org.geoserver.security.ldap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.SortedSet;
@@ -19,12 +19,12 @@ import org.apache.directory.server.annotations.CreateTransport;
 import org.apache.directory.server.core.annotations.ApplyLdifFiles;
 import org.apache.directory.server.core.annotations.CreateDS;
 import org.apache.directory.server.core.annotations.CreatePartition;
-import org.apache.directory.server.core.integ.FrameworkRunner;
+import org.apache.directory.server.core.integ.ApacheDSTestExtension;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.impl.GeoServerRole;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 public class LDAPRoleServiceTest extends LDAPBaseTest {
 
@@ -49,7 +49,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -164,7 +164,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
         config = new LDAPRoleServiceConfig();
     }
 
-    @RunWith(FrameworkRunner.class)
+    @ExtendWith(ApacheDSTestExtension.class)
     @CreateLdapServer(
             transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
             allowAnonymousAccess = true)
@@ -270,7 +270,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
         }
     }
 
-    @RunWith(FrameworkRunner.class)
+    @ExtendWith(ApacheDSTestExtension.class)
     @CreateLdapServer(
             transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
             allowAnonymousAccess = true)
@@ -302,7 +302,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
         }
     }
 
-    @RunWith(FrameworkRunner.class)
+    @ExtendWith(ApacheDSTestExtension.class)
     @CreateLdapServer(
             transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
             allowAnonymousAccess = true)

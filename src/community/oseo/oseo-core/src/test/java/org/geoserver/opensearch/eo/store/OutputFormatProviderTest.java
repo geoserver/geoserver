@@ -10,7 +10,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
@@ -35,7 +34,6 @@ public class OutputFormatProviderTest extends GeoServerSystemTestSupport {
         super.onSetUp(testData);
 
         // remove caching from one raster layer
-        Catalog catalog = getCatalog();
         GWC gwc = GWC.get();
         gwc.removeTileLayers(Arrays.asList(getLayerId(SystemTestData.TASMANIA_DEM)));
     }

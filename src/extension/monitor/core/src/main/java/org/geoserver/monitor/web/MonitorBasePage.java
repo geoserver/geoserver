@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor.web;
 
+import java.io.Serial;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.MonitorDAO;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -16,6 +17,7 @@ import org.geoserver.web.GeoServerSecuredPage;
  */
 public class MonitorBasePage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 5400909938411833603L;
 
     protected Monitor getMonitor() {

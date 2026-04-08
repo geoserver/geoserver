@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class OSEORestTestSupport extends OSEOTestSupport {
+public abstract class OSEORestTestSupport extends OSEOTestSupport {
 
     protected static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
@@ -76,13 +76,14 @@ public class OSEORestTestSupport extends OSEOTestSupport {
 
     protected DocumentContext getAsJSONPath(String path, int expectedHttpCode) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        if (!isQuietTests()) {
-            System.out.println(response.getContentAsString());
-        }
 
         assertEquals(expectedHttpCode, response.getStatus());
         // allow application/json, application/geo+json, application/schema+json, ...
         assertThat(response.getContentType(), allOf(startsWith("application/"), endsWith("json")));
+        if (!isQuietTests()) {
+            print(json(response));
+        }
+
         return JsonPath.parse(response.getContentAsString());
     }
 

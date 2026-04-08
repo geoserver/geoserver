@@ -7,7 +7,9 @@ package org.geoserver.gwc.web;
 
 import java.io.Serializable;
 import java.util.List;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
@@ -22,25 +24,23 @@ import org.geowebcache.layer.wms.WMSLayer;
 @SuppressWarnings("serial")
 public class GWCIconFactory implements Serializable {
 
-    public static final PackageResourceReference UNKNOWN_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/error.png");
+    public static final ResourceReference UNKNOWN_ICON =
+            new ContextRelativeResourceReference("img/icons/silk/error.png");
 
-    public static final PackageResourceReference DISABLED_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/error.png");
+    public static final ResourceReference DISABLED_ICON =
+            new ContextRelativeResourceReference("img/icons/silk/error.png");
 
-    public static final PackageResourceReference ENABLED_ICON =
+    public static final ResourceReference ENABLED_ICON =
             new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/tick.png");
 
-    public static final PackageResourceReference ADD_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/add.png");
+    public static final ResourceReference ADD_ICON = new ContextRelativeResourceReference("img/icons/silk/add.png");
 
-    public static final PackageResourceReference DELETE_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/delete.png");
+    public static final ResourceReference DELETE_ICON =
+            new ContextRelativeResourceReference("img/icons/silk/delete.png");
 
-    public static final PackageResourceReference GRIDSET =
-            new PackageResourceReference(GWCSettingsPage.class, "gridset.png");
+    public static final ResourceReference GRIDSET = new PackageResourceReference(GWCSettingsPage.class, "gridset.png");
 
-    public static final PackageResourceReference GWC =
+    public static final ResourceReference GWC =
             new PackageResourceReference(GWCSettingsPage.class, "geowebcache-16.png");
 
     /**
@@ -77,8 +77,7 @@ public class GWCIconFactory implements Serializable {
     }
 
     public static CachedLayerType getCachedLayerType(final TileLayer layer) {
-        if (layer instanceof GeoServerTileLayer) {
-            GeoServerTileLayer gsTileLayer = (GeoServerTileLayer) layer;
+        if (layer instanceof GeoServerTileLayer gsTileLayer) {
             PublishedInfo published = gsTileLayer.getPublishedInfo();
             PublishedType publishedType = published.getType();
             return CachedLayerType.valueOf(publishedType.getCode());
@@ -102,12 +101,11 @@ public class GWCIconFactory implements Serializable {
     }
 
     /** Returns the appropriate icon for the specified layer type. */
-    public static PackageResourceReference getSpecificLayerIcon(final TileLayer layer) {
-        if (layer instanceof GeoServerTileLayer) {
-            GeoServerTileLayer gsTileLayer = (GeoServerTileLayer) layer;
+    public static ResourceReference getSpecificLayerIcon(final TileLayer layer) {
+        if (layer instanceof GeoServerTileLayer gsTileLayer) {
             PublishedInfo published = gsTileLayer.getPublishedInfo();
-            if (published instanceof LayerInfo) {
-                return CatalogIconFactory.get().getSpecificLayerIcon((LayerInfo) published);
+            if (published instanceof LayerInfo info) {
+                return CatalogIconFactory.get().getSpecificLayerIcon(info);
             }
             return CatalogIconFactory.GROUP_ICON;
         }
@@ -120,7 +118,7 @@ public class GWCIconFactory implements Serializable {
         for (GWCTileLayerIconCustomizer iconCustomizer : iconCustomizers) {
             // Stop scanning through the registered customizers as soon as the
             // suggested icon is not the UNKNOWN_ICON
-            PackageResourceReference ref = iconCustomizer.getLayerIcon(layer);
+            ResourceReference ref = iconCustomizer.getLayerIcon(layer);
             if (ref != null && ref != UNKNOWN_ICON) {
                 return ref;
             }
@@ -130,16 +128,16 @@ public class GWCIconFactory implements Serializable {
     }
 
     /** Returns a reference to a general purpose icon to indicate an enabled/properly configured resource */
-    public static PackageResourceReference getEnabledIcon() {
+    public static ResourceReference getEnabledIcon() {
         return ENABLED_ICON;
     }
 
     /** Returns a reference to a general purpose icon to indicate a disabled/misconfigured/unreachable resource */
-    public static PackageResourceReference getDisabledIcon() {
+    public static ResourceReference getDisabledIcon() {
         return DISABLED_ICON;
     }
 
-    public static PackageResourceReference getErrorIcon() {
+    public static ResourceReference getErrorIcon() {
         return UNKNOWN_ICON;
     }
 }

@@ -81,7 +81,7 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
      *
      * @author aaime
      */
-    private class RevalidateTagResponse extends Response {
+    private static class RevalidateTagResponse extends Response {
 
         Response delegate;
 

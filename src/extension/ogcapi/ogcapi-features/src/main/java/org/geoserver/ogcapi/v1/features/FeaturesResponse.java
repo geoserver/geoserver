@@ -6,7 +6,7 @@
 package org.geoserver.ogcapi.v1.features;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.wfs.request.FeatureCollectionResponse;

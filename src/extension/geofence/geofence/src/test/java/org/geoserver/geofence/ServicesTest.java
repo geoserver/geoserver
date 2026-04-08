@@ -29,8 +29,8 @@ public class ServicesTest extends GeofenceBaseTest {
 
     /** Enable the Spring Security auth filters, otherwise there will be no auth */
     @Override
-    protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+    protected List<jakarta.servlet.Filter> getFilters() {
+        return Collections.singletonList((jakarta.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Test

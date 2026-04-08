@@ -4,6 +4,9 @@
  */
 package org.geoserver.web.treeview;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +39,20 @@ import org.apache.wicket.request.cycle.RequestCycle;
  */
 public class TreeView<T> extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TreeView.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 2683470514874500599L;
 
     /** Behaviour for selected node */
@@ -299,6 +316,7 @@ public class TreeView<T> extends Panel {
      */
     protected abstract class TreeNodeView extends Panel {
 
+        @Serial
         private static final long serialVersionUID = 2940674057639126436L;
 
         protected Component selectableLabel;
@@ -349,6 +367,7 @@ public class TreeView<T> extends Panel {
         }
 
         private class SelectableLabelClickBehavior extends AjaxEventBehavior {
+            @Serial
             private static final long serialVersionUID = -3705747320247194977L;
 
             public SelectableLabelClickBehavior() {
@@ -428,12 +447,27 @@ public class TreeView<T> extends Panel {
     /** View for an expandable tree node (directory node) */
     protected class TreeExpandableNodeView extends TreeNodeView {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(TreeView.TreeExpandableNodeView.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = 2940674057639126436L;
 
         public TreeExpandableNodeView(String id, IModel<TreeNode<T>> nodeModel) {
             super(id, nodeModel);
             final AjaxCheckBox cbExpand = new AjaxCheckBox(
                     "cbExpand", nodeModel.getObject().getExpanded()) {
+                @Serial
                 private static final long serialVersionUID = 7602857423814264211L;
 
                 @Override
@@ -490,6 +524,20 @@ public class TreeView<T> extends Panel {
     /** View for an tree node leaf */
     protected class TreeLeafView extends TreeNodeView {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(TreeView.TreeLeafView.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = 2940674057639126436L;
 
         public TreeLeafView(String id, IModel<TreeNode<T>> nodeModel) {
@@ -500,6 +548,7 @@ public class TreeView<T> extends Panel {
 
     /** Custom mark data */
     protected static class Mark implements Serializable {
+        @Serial
         private static final long serialVersionUID = -827616908801489309L;
 
         private AttributeAppender behaviour;

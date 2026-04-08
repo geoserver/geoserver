@@ -38,7 +38,7 @@ import org.junit.Test;
 import org.postgresql.jdbc.SslMode;
 
 /**
- * Implementation of GeoServerWicketTestSupport for SmartAppSchema Postgis tests, including Geoserver and Wicket
+ * Implementation of GeoServerWicketTestSupport for SmartAppSchema Postgis tests, including GeoServer and Wicket
  * support.
  */
 public abstract class AbstractSmartDataLoaderPageTest extends GeoServerWicketTestSupport {

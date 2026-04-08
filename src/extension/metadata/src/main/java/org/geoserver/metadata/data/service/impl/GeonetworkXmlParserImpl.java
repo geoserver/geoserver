@@ -4,14 +4,15 @@
  */
 package org.geoserver.metadata.data.service.impl;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.Serial;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -47,6 +48,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
 
     private static final Logger LOGGER = Logging.getLogger(GeonetworkXmlParserImpl.class);
 
+    @Serial
     private static final long serialVersionUID = -4931070325217885824L;
 
     @Autowired

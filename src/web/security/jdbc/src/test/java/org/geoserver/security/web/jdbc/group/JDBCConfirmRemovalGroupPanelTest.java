@@ -5,13 +5,15 @@
  */
 package org.geoserver.security.web.jdbc.group;
 
-import org.geoserver.security.jdbc.H2RoleServiceTest;
-import org.geoserver.security.jdbc.H2UserGroupServiceTest;
+import java.io.Serial;
+import org.geoserver.security.jdbc.HSQLRoleServiceTest;
+import org.geoserver.security.jdbc.HSQLUserGroupServiceTest;
 import org.geoserver.security.web.group.ConfirmRemovalGroupPanelTest;
 import org.junit.Test;
 
 public class JDBCConfirmRemovalGroupPanelTest extends ConfirmRemovalGroupPanelTest {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -31,6 +33,6 @@ public class JDBCConfirmRemovalGroupPanelTest extends ConfirmRemovalGroupPanelTe
     }
 
     void initializeForJDBC() throws Exception {
-        initialize(new H2UserGroupServiceTest(), new H2RoleServiceTest());
+        initialize(new HSQLUserGroupServiceTest(), new HSQLRoleServiceTest());
     }
 }

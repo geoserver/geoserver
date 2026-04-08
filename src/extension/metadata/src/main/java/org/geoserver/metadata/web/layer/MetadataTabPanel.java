@@ -4,7 +4,10 @@
  */
 package org.geoserver.metadata.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +44,20 @@ import org.geotools.util.logging.Logging;
  */
 public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(MetadataTabPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -552158739086379566L;
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTabPanel.class);
@@ -88,6 +105,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
         // Link with templates panel
         this.add(new ImportTemplatePanel("importTemplatePanel", selectedTemplatesModel) {
+            @Serial
             private static final long serialVersionUID = -8056914656580115202L;
 
             @Override
@@ -100,6 +118,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
         // Geonetwork import panel
         ImportGeonetworkPanel geonetworkPanel = new ImportGeonetworkPanel("geonetworkPanel") {
+            @Serial
             private static final long serialVersionUID = -4620394948554985874L;
 
             @Override
@@ -128,6 +147,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
         add(geonetworkPanel);
 
         add(new CopyFromLayerPanel("copyFromLayerPanel", resource.getId()) {
+            @Serial
             private static final long serialVersionUID = -4105294542603002567L;
 
             @Override

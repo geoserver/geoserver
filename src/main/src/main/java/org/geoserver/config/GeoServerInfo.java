@@ -44,11 +44,11 @@ public interface GeoServerInfo extends Info {
     @Deprecated
     void setUseHeadersProxyURL(Boolean useHeadersProxyURL);
 
-    /** The Java Advanced Imaging configuration. */
-    JAIInfo getJAI();
+    /** The Image Processing configuration. */
+    ImageProcessingInfo getImageProcessing();
 
-    /** Sets the Java Advanced Imaging configuration. */
-    void setJAI(JAIInfo jai);
+    /** Sets the Image Processing configuration. */
+    void setImageProcessing(ImageProcessingInfo imagen);
 
     /** The Coverage Access configuration. */
     CoverageAccessInfo getCoverageAccess();
@@ -109,13 +109,19 @@ public interface GeoServerInfo extends Info {
     /**
      * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
      * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated(since = "2.26.4, 2.27.2, 2.28.0")
     void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled);
 
     /**
      * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
      * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated(since = "2.26.4, 2.27.2, 2.28.0")
     Boolean isXmlExternalEntitiesEnabled();
 
     /**
@@ -190,6 +196,10 @@ public interface GeoServerInfo extends Info {
 
     /** Set the WebUIMode */
     public void setWebUIMode(WebUIMode mode);
+
+    UserDetailsDisplaySettingsInfo getUserDetailsDisplaySettings();
+
+    void setUserDetailsDisplaySettings(UserDetailsDisplaySettingsInfo userDetailsDisplaySettings);
 
     /** Determines if Per-workspace Stores Queries are activated. */
     Boolean isAllowStoredQueriesPerWorkspace();

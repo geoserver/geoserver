@@ -1,11 +1,11 @@
 <wms>
   <id>wms</id>
   <enabled>true</enabled>
-  <name>WMS</name>
-  <title>GeoServer Web Map Service</title>
+  <name>Maps</name>
+  <title>Maps</title>
   <internationalTitle/>
-  <maintainer>http://geoserver.org/comm</maintainer>
-  <abstrct>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</abstrct>
+  <maintainer>https://geoserver.org/comm</maintainer>
+  <abstrct>Georeferenced map images generated from vector data, raster data, and imagery.</abstrct>
   <internationalAbstract/>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
@@ -18,13 +18,14 @@
     </org.geotools.util.Version>
   </versions>
   <keywords>
+    <string>MAP</string>
     <string>WMS</string>
     <string>GEOSERVER</string>
   </keywords>
   <metadataLink/>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.org</onlineResource>
-  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <onlineResource>https://geoserver.org</onlineResource>
+  <schemaBaseURL>https://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <metadata>
     <entry key="disableDatelineWrappingHeuristic">false</entry>

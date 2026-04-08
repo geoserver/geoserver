@@ -40,13 +40,13 @@ This will run the container, with the data directory included with the container
    
       .. parsed-literal::
 
-         docker run -it -p8080:8080 docker.osgeo.org/geoserver:|release|
+         docker run -it -p 8080:8080 docker.osgeo.org/geoserver:|release|
 
    .. only:: snapshot
    
       .. parsed-literal::
 
-         docker run -it -p8080:8080 docker.osgeo.org/geoserver:|version|.x
+         docker run -it -p 8080:8080 docker.osgeo.org/geoserver:|version|.x
 
  
 #. In a web browser, navigate to ``http://localhost:8080/geoserver``.
@@ -92,7 +92,7 @@ This will run the container with a local data directory.  The data directory wil
 
       .. parsed-literal::
          
-         docker run  -it -p8080:8080 \\
+         docker run  -it -p 8080:8080 \\
            --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data \\
            docker.osgeo.org/geoserver:|release|
       
@@ -100,7 +100,7 @@ This will run the container with a local data directory.  The data directory wil
    
       .. parsed-literal::
          
-         docker run -it -p8080:8080 \\
+         docker run -it -p 8080:8080 \\
            --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data \\
            docker.osgeo.org/geoserver:|version|.x
 
@@ -123,7 +123,7 @@ You can add GeoServer Extensions - the container will download them during start
 
    .. parsed-literal::
    
-      docker run -it -p8080:8080 \\
+      docker run -it -p 8080:8080 \\
         --env INSTALL_EXTENSIONS=true \\
         --env STABLE_EXTENSIONS="ysld,ogcapi-features" \\
         docker.osgeo.org/geoserver:|release|
@@ -132,7 +132,7 @@ You can add GeoServer Extensions - the container will download them during start
 
    .. parsed-literal::
 
-      docker run -it -p8080:8080 \\
+      docker run -it -p 8080:8080 \\
         --env INSTALL_EXTENSIONS=true \\
         --env STABLE_EXTENSIONS="ysld,ogcapi-features" \\
         docker.osgeo.org/geoserver:|version|.x
@@ -144,25 +144,25 @@ Here is a list of available extensions (taken from the `build server <https://bu
 
 ::
 
-    app-schema               grib                     ogr-wps                  
-    authkey                  gwc-s3                   oracle                   
-    cas                      h2                       params-extractor         
+    app-schema               geopkg-output            ogr-wps
+    authkey                  grib                     oracle
+    cas                      gwc-s3                   params-extractor
     charts                   iau                      printing                 
     control-flow             importer                 pyramid                  
     css                      inspire                  querylayer               
     csw-iso                  jp2k                     rat                      
-    csw                      libjpeg-turbo            sldservice               
-    db2                      mapml                    sqlserver                
-    dxf                      mbstyle                  vectortiles              
-    excel                    metadata                 wcs2_0-eo                
-    feature-pregeneralized   mongodb                  web-resource             
-    gdal                     monitor                  wmts-multi-dimensional   
-    geofence                 mysql                    wps-cluster-hazelcas     
-    geofence-server-h2       netcdf-out               wps-download             
-    geofence-server-postgres netcdf                   wps-jdbc                 
-    geofence-wps             ogcapi-features          wps                      
-    geopkg-output            ogr-wfs                  ysld                     
-    datadir-catalog-loader
+    csw                      libjpeg-turbo            sldservice
+    datadir-catalog-loader   mapml                    sqlserver
+    db2                      mbstyle                  vectortiles
+    dxf                      metadata                 wcs2_0-eo
+    excel                    mongodb                  web-resource
+    feature-pregeneralized   monitor                  wmts-multi-dimensional
+    gdal                     mysql                    wps-cluster-hazelcas
+    geofence                 netcdf-out               wps-download
+    geofence-server-h2       netcdf                   wps-jdbc
+    geofence-server-postgres ogcapi-features          wps
+    geofence-wps             ogr-wfs                  ysld
+    kml
 
 
 Testing Geoserver Community modules
@@ -191,7 +191,7 @@ Working with a Nightly build is a good way to test community modules and provide
    
    .. parsed-literal::
    
-      docker run -it -p8080:8080 \\
+      docker run -it -p 8080:8080 \\
         --env INSTALL_EXTENSIONS=true \\
         --env STABLE_EXTENSIONS="ysld,h2" \\
         --env COMMUNITY_EXTENSIONS="ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
@@ -202,8 +202,8 @@ Working with a Nightly build is a good way to test community modules and provide
    ::
    
        acl                           gwc-mbtiles                     ogcapi-tiles
-       activeMQ-broker               gwc-sqlite                      ogr-datastore
-       backup-restore                hz-cluster                      opensearch-eo
+       backup-restore                gwc-sqlite                      ogr-datastore
+                                     hz-cluster                      opensearch-eo
        cog-azure                                                     proxy-base-ext
        cog-google                    importer-jdbc                   s3-geotiff
        cog-http                                                      sec-keycloak
@@ -222,5 +222,5 @@ Working with a Nightly build is a good way to test community modules and provide
        gpx                           ogcapi-dggs                     webp
        graticule                     ogcapi-images                   wfs-freemarker
        gsr                           ogcapi-maps                     wps-longitudinal-profile
-       gwc-azure-blobstore           ogcapi-styles                   wps-remote
+       gwc-azure-blobstore           ogcapi-styles
                                      ogcapi-tiled-features               

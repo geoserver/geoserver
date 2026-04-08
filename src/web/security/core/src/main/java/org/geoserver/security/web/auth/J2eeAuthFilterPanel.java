@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
@@ -17,6 +18,7 @@ import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
 public class J2eeAuthFilterPanel extends J2eeBaseAuthFilterPanel<J2eeAuthenticationFilterConfig> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public J2eeAuthFilterPanel(String id, IModel<J2eeAuthenticationFilterConfig> model) {

@@ -22,9 +22,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
@@ -78,11 +83,11 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         super.onSetUp(testData);
 
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
-        DataStoreInfo store = cb.buildDataStore("h2test");
-        store.getConnectionParameters().put("dbtype", "h2");
+        DataStoreInfo store = cb.buildDataStore("gpkg_test");
+        store.getConnectionParameters().put("dbtype", "geopkg");
         store.getConnectionParameters()
                 .put("database", new File(getDataDirectory().findOrCreateDir("data"), "h2_test").getAbsolutePath());
-        store.getConnectionParameters().put("MVCC", true);
+        store.getConnectionParameters().put("read_only", false);
         catalog.save(store);
     }
 
@@ -178,7 +183,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         assertEquals(storeInfo, ci.getStore());
 
         // check harvesting happened as expected
-        DataStore ds = (DataStore) getCatalog().getDataStoreByName("h2test").getDataStore(null);
+        DataStore ds = (DataStore) getCatalog().getDataStoreByName("gpkg_test").getDataStore(null);
         assertNotNull(ds);
         SimpleFeatureSource fs = ds.getFeatureSource("watertemp-repo");
         assertNotNull(fs);
@@ -387,7 +392,8 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             assertNotNull(metadataNames);
             assertEquals("true", reader2.getMetadataValue("HAS_TIME_DOMAIN"));
             assertEquals(
-                    "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z",
+                    adjustExpectedForCurrentTimezone(
+                            "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z"),
                     reader2.getMetadataValue(metadataNames[0]));
             // Removal of all the data associated to the mosaic
             reader2.delete(true);
@@ -512,10 +518,34 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         String[] metadataNames = reader2.getMetadataNames();
         assertNotNull(metadataNames);
         assertEquals("true", reader2.getMetadataValue("HAS_TIME_DOMAIN"));
-        assertEquals(
-                "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z",
-                reader2.getMetadataValue(metadataNames[0]));
+        String expectedNormalized = adjustExpectedForCurrentTimezone(
+                "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z");
+        assertEquals(expectedNormalized, reader2.getMetadataValue(metadataNames[0]));
+
         return reader2;
+    }
+
+    /**
+     * Once sqlite is initialized (geopackage) changing the jvm timezone does nothing, this adapts the expected value to
+     * the current timezone instead of GMT. GeoPackage converts to GMT using GeoTools DateTimeParser based on
+     * java.util.Date, resulting in different offsets then using Instand and ZonedDateTime. See GEOT-7870.
+     */
+    private String adjustExpectedForCurrentTimezone(String expectedGMT) {
+        return Arrays.stream(expectedGMT.split(","))
+                .map(String::trim)
+                .map(ts -> {
+                    Instant instant = Instant.parse(ts);
+                    String dateText = ts.substring(0, ts.indexOf("T")) + "T00:00:00";
+                    ZonedDateTime dateTime = LocalDateTime.parse(dateText)
+                            .atZone(Clock.systemDefaultZone().getZone());
+                    int offset = dateTime.getOffset().getTotalSeconds();
+
+                    // Adjust by the offset
+                    Instant adjusted = instant.minusSeconds(offset);
+
+                    return adjusted.toString().replace("Z", ".000Z");
+                })
+                .collect(Collectors.joining(","));
     }
 
     private Resource readMosaic() throws FactoryException, IOException {
@@ -630,7 +660,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo("coverageView", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         coverageInfo.getDimensions().get(0).setName("rasterA");
         coverageInfo.getDimensions().get(1).setName("rasterB");
         cat.add(coverageInfo);

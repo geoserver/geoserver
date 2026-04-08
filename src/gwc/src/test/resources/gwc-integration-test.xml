@@ -9,5 +9,10 @@
 
   <bean id="balancedRequestTester" class="org.geoserver.gwc.BalancedRequestTester"/>
   <bean id="requestRecorder" class="org.geoserver.gwc.HttpRequestRecorderCallback"/>
-
+    <bean id="gwcDemoUrlHandlerMapping" class="org.geoserver.gwc.controller.GwcUrlHandlerMapping">
+        <constructor-arg ref="catalog" />
+        <constructor-arg value="/gwc/demo"/>
+        <property name="alwaysUseFullPath" value="true" />
+        <property name="order" value="10" />
+    </bean>
 </beans>

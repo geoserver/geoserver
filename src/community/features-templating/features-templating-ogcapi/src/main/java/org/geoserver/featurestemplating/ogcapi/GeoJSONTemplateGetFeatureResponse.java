@@ -8,8 +8,6 @@ import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFe
 import static org.geoserver.ogcapi.v1.features.FeatureService.ITEM_ID;
 import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -23,6 +21,9 @@ import org.geoserver.platform.Operation;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.springframework.web.context.request.RequestContextHolder;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactoryBuilder;
 
 /**
  * OGC API - Features specific version of GeoJsonTemplateGetFeatureResponse, handles additional fields in a different
@@ -38,7 +39,9 @@ class GeoJSONTemplateGetFeatureResponse
 
     @Override
     protected GeoJSONWriter getOutputWriter(OutputStream output) throws IOException {
-        return new GeoJSONAPIWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8), identifier);
+        return new GeoJSONAPIWriter(
+                new JsonFactoryBuilder().build().createGenerator(ObjectWriteContext.empty(), output, JsonEncoding.UTF8),
+                identifier);
     }
 
     @Override

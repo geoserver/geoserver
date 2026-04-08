@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.impl.GeoServerJ2eeRoleService;
 
 /**
@@ -14,7 +15,9 @@ import org.geoserver.security.impl.GeoServerJ2eeRoleService;
  * @author christian
  */
 public class J2eeRoleServiceConfig extends BaseSecurityNamedServiceConfig implements SecurityRoleServiceConfig {
+    @Serial
     private static final long serialVersionUID = 1L;
+
     protected String adminRoleName;
     protected String groupAdminRoleName;
 

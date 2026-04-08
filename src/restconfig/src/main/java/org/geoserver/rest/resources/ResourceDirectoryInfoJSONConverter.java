@@ -57,8 +57,7 @@ public class ResourceDirectoryInfoJSONConverter extends XStreamJSONMessageConver
 
         RestWrapper<?> restWrapper = (RestWrapper<?>) o;
         Object object = restWrapper.getObject();
-        if (object instanceof ResourceDirectoryInfo) {
-            ResourceDirectoryInfo dirInfo = (ResourceDirectoryInfo) object;
+        if (object instanceof ResourceDirectoryInfo dirInfo) {
             if (1 == dirInfo.getChildren().size()) {
                 boolean alwaysSerializeCollectionsAsArrays = true;
                 XStreamPersister xmlPersister = xpf.createJSONPersister(alwaysSerializeCollectionsAsArrays);
@@ -79,7 +78,7 @@ public class ResourceDirectoryInfoJSONConverter extends XStreamJSONMessageConver
 
         Converter conv = new CollectionConverter(xstream.getMapper()) {
             @Override
-            public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+            public boolean canConvert(Class type) {
                 return Collection.class.isAssignableFrom(type);
             }
 

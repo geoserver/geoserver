@@ -9,6 +9,7 @@
   <bean id="wpsWebExtension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-web-wps"/>
     <constructor-arg index="1" value="GeoServer Web UI Web Processing Service"/>
+    <property name="category" value="EXTENSION"/>
   </bean>
   <bean id="wpsServiceDescriptor" class="org.geoserver.wps.web.WPSServiceDescriptionProvider">
   </bean>
@@ -35,7 +36,7 @@
     <property name="titleKey" value="ProcessStatusPage.title" />
     <property name="descriptionKey" value="ProcessStatusPage.description" />
     <property name="componentClass" value="org.geoserver.wps.web.ProcessStatusPage" />
-    <property name="category" ref="aboutStatusCategory" />
+    <property name="category" ref="serverCategory" />
     <property name="icon" value="../../web/img/icons/silk/cog.png" />
     <property name="order" value="30" />
   </bean>

@@ -192,7 +192,7 @@ public class STACQueryablesBuilder {
     }
 
     private Schema<?> getSchema(String title, String ref) {
-        Schema schema = new Schema();
+        Schema<?> schema = new Schema<>();
         schema.set$ref(ref);
         schema.setTitle(title);
         schema.setDescription(title);
@@ -201,8 +201,7 @@ public class STACQueryablesBuilder {
 
     private AbstractTemplateBuilder lookupBuilder(TemplateBuilder parent, String key) {
         for (TemplateBuilder child : parent.getChildren()) {
-            if (child instanceof AbstractTemplateBuilder) {
-                AbstractTemplateBuilder atb = (AbstractTemplateBuilder) child;
+            if (child instanceof AbstractTemplateBuilder atb) {
                 if (key.equals(atb.getKey(null))) {
                     return atb;
                 } else if (atb instanceof CompositeBuilder && atb.getKey(null) == null) {
@@ -219,8 +218,7 @@ public class STACQueryablesBuilder {
             binding = (Class<?>) db.getEncodingHints().get(JSON_PROPERTY_TYPE);
         } else if (db.getXpath() != null) {
             Object result = db.getXpath().evaluate(itemsSchema);
-            if (result instanceof PropertyDescriptor) {
-                PropertyDescriptor pd = (PropertyDescriptor) result;
+            if (result instanceof PropertyDescriptor pd) {
                 binding = pd.getType().getBinding();
             }
         } else if (db.getCql() != null) {
@@ -236,7 +234,7 @@ public class STACQueryablesBuilder {
     }
 
     private Schema getGenericSchema() {
-        Schema schema = new Schema();
+        Schema<?> schema = new Schema<>();
         schema.setType(AttributeType.STRING.getType());
         schema.setDescription(AttributeType.STRING.getType());
         return schema;

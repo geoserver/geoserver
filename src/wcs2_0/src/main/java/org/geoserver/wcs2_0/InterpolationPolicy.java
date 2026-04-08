@@ -5,8 +5,8 @@
  */
 package org.geoserver.wcs2_0;
 
-import javax.media.jai.Interpolation;
 import net.opengis.wcs20.InterpolationMethodType;
+import org.eclipse.imagen.Interpolation;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geotools.util.Utilities;

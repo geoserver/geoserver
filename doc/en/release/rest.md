@@ -18,6 +18,7 @@ Core API:
 
 *   [coverages](coverages/index.html)
 *   [coveragestores](coveragestores/index.html)
+*   [crs](crs/index.html)
 *   [datastores](datastores/index.html)
 *   [featuretypes](featuretypes/index.html)
 *   [fonts](fonts/index.html)
@@ -54,7 +55,6 @@ GeoWebCache API:
 *   [gwcindex](gwcindex/index.html)
 *   [gwclayers](gwclayers/index.html)
 *   [gwcmasstruncate](gwcmasstruncate/index.html)
-*   [gwcmemorycachestatistics](gwcmemorycachestatistics/index.html)
 *   [gwcreload](gwcreload/index.html)
 *   [gwcseed](gwcseed/index.html)
 Importer Extension:

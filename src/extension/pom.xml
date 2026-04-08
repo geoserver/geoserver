@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.28-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -24,8 +24,8 @@
       <artifactId>gs-platform</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -70,13 +70,7 @@
       <id>app-schema</id>
       <modules>
         <module>app-schema</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>h2</id>
-      <modules>
-        <module>h2</module>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -139,7 +133,7 @@
     <profile>
       <id>excel</id>
       <modules>
-        <module>excel</module>
+        <module>excel-core</module>
       </modules>
     </profile>
 
@@ -161,6 +155,7 @@
       <id>wps</id>
       <modules>
         <module>wps</module>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -240,9 +235,30 @@
     </profile>
 
     <profile>
+      <id>wcs</id>
+      <modules>
+        <module>wcs</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>wcs10</id>
+      <modules>
+        <module>wcs/wcs1_0</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>libjpeg-turbo</id>
       <modules>
         <module>libjpeg-turbo</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>kml</id>
+      <modules>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -312,7 +328,7 @@
         <module>sldService</module>
       </modules>
     </profile>
-    <profile>
+    <!-- profile>
       <id>geofence</id>
       <activation>
         <property>
@@ -333,7 +349,7 @@
       <modules>
         <module>geofence</module>
       </modules>
-    </profile>
+    </profile -->
     <profile>
       <id>authkey</id>
       <modules>
@@ -368,6 +384,7 @@
       <id>wps-download</id>
       <modules>
         <module>wps-download</module>
+        <module>kml</module>
       </modules>
     </profile>
     <profile>
@@ -407,6 +424,19 @@
       </modules>
     </profile>
     <profile>
+      <id>arcgrid</id>
+      <modules>
+        <module>arcgrid</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>image</id>
+      <modules>
+        <module>image</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>ogcapi-features</id>
       <modules>
         <module>ogcapi/ogcapi-core</module>
@@ -415,13 +445,18 @@
         <module>ogcapi/web-features</module>
       </modules>
     </profile>
+    <profile>
+      <id>wcs11</id>
+      <modules>
+        <module>wcs/wcs1_1</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
       <modules>
         <module>app-schema</module>
-        <module>h2</module>
         <module>sqlserver</module>
         <module>oracle</module>
         <module>mysql</module>
@@ -429,7 +464,9 @@
         <module>gdal</module>
         <module>jp2k</module>
         <module>ogr</module>
-        <module>excel</module>
+        <module>excel-core</module>
+        <module>excel-wfs</module>
+        <module>excel-wps</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
         <module>control-flow</module>
@@ -443,6 +480,7 @@
         <module>dxf</module>
         <module>printing</module>
         <module>wcs2_0-eo</module>
+        <module>wcs</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
         <module>grib</module>
@@ -453,7 +491,7 @@
         <module>mbstyle</module>
         <module>mongodb</module>
         <module>sldService</module>
-        <module>geofence</module>
+        <!-- module>geofence</module -->
         <module>authkey</module>
         <module>web-resource</module>
         <module>params-extractor</module>
@@ -466,6 +504,9 @@
         <module>metadata</module>
         <module>rat</module>
         <module>ogcapi</module>
+        <module>kml</module>
+        <module>arcgrid</module>
+        <module>image</module>
       </modules>
     </profile>
 
@@ -474,7 +515,6 @@
       <id>release</id>
       <modules>
         <module>app-schema</module>
-        <module>h2</module>
         <module>sqlserver</module>
         <module>oracle</module>
         <module>mysql</module>
@@ -482,7 +522,9 @@
         <module>gdal</module>
         <module>jp2k</module>
         <module>ogr</module>
-        <module>excel</module>
+        <module>excel-core</module>
+        <module>excel-wfs</module>
+        <module>excel-wps</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
         <module>control-flow</module>
@@ -496,6 +538,7 @@
         <module>dxf</module>
         <module>printing</module>
         <module>wcs2_0-eo</module>
+        <module>wcs</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
         <module>grib</module>
@@ -506,7 +549,7 @@
         <module>mbstyle</module>
         <module>mongodb</module>
         <module>sldService</module>
-        <module>geofence</module>
+        <!-- module>geofence</module -->
         <module>authkey</module>
         <module>web-resource</module>
         <module>params-extractor</module>
@@ -519,6 +562,9 @@
         <module>metadata</module>
         <module>rat</module>
         <module>ogcapi</module>
+        <module>kml</module>
+        <module>arcgrid</module>
+        <module>image</module>
       </modules>
     </profile>
   </profiles>

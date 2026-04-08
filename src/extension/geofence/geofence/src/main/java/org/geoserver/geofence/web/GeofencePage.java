@@ -5,6 +5,8 @@
 package org.geoserver.geofence.web;
 
 import com.google.common.cache.LoadingCache;
+import java.io.IOException;
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,6 +46,7 @@ import org.geoserver.web.wicket.model.ExtPropertyModel;
 // TODO WICKET8 - Verify this page works OK
 public class GeofencePage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 5845823599005718408L;
 
     /** Configuration object. */
@@ -74,14 +77,16 @@ public class GeofencePage extends GeoServerSecuredPage {
 
         form.add(
                 new AjaxSubmitLink("test") {
+                    @Serial
                     private static final long serialVersionUID = -91239899377941223L;
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
                         ((FormComponent<?>) form.get("servicesUrl")).processInput();
                         String servicesUrl = (String) ((FormComponent<?>) form.get("servicesUrl")).getConvertedInput();
-                        RuleReaderService ruleReader = getRuleReaderService(servicesUrl);
+
                         try {
+                            RuleReaderService ruleReader = getRuleReaderService(servicesUrl);
                             ruleReader.getMatchingRules(new RuleFilter());
 
                             info(new StringResourceModel(GeofencePage.class.getSimpleName() + ".connectionSuccessful")
@@ -98,16 +103,18 @@ public class GeofencePage extends GeoServerSecuredPage {
                     // HttpInvokerProxyFactoryBean is deprecated because
                     // Spring no longer supports serialized RMI invocations
                     @SuppressWarnings("deprecation")
-                    private RuleReaderService getRuleReaderService(String servicesUrl) {
+                    private RuleReaderService getRuleReaderService(String servicesUrl) throws IOException {
                         if (config.isInternal()) {
                             return (RuleReaderService) GeoServerExtensions.bean("ruleReaderService");
                         } else {
-                            org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean invoker =
+                            /*org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean invoker =
                                     new org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean();
                             invoker.setServiceUrl(servicesUrl);
                             invoker.setServiceInterface(RuleReaderService.class);
                             invoker.afterPropertiesSet();
-                            return (RuleReaderService) invoker.getObject();
+                            return (RuleReaderService) invoker.getObject();*/
+
+                            return (RuleReaderService) null;
                         }
                     }
                 }.setDefaultFormProcessing(false));
@@ -122,6 +129,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(new TextField<>("acceptedRoles", new PropertyModel<>(configModel, "acceptedRoles")));
 
         Button submit = new Button("submit") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -140,6 +148,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(submit);
 
         Button cancel = new Button("cancel") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -168,6 +177,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(
                 new AjaxSubmitLink("invalidate") {
 
+                    @Serial
                     private static final long serialVersionUID = 3847903240475052867L;
 
                     @Override

@@ -5,7 +5,7 @@
 package org.geoserver.ogcapi;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.lang.reflect.Field;
 import java.util.List;
 import org.geoserver.config.ServiceInfo;
 
@@ -28,7 +28,7 @@ import org.geoserver.config.ServiceInfo;
  *
  * <p>Generic / abstract conformance configuration, stored in ServiceInfo.
  */
-public class ConformanceInfo<S extends ServiceInfo> implements Serializable {
+public abstract class ConformanceInfo<S extends ServiceInfo> implements Serializable {
 
     /**
      * Checks conformance configuration, to see if enabled.
@@ -83,19 +83,41 @@ public class ConformanceInfo<S extends ServiceInfo> implements Serializable {
         return serviceInfo.isEnabled();
     }
 
+    /** Returns the list of conformance classes that are configurable for this service. */
+    public abstract List<APIConformance> configurableConformances();
+
     /**
      * Configuration for ServiceInfo.
      *
      * @param serviceInfo ServiceInfo configuration
      * @return List of enabled conformance
      */
-    public List<APIConformance> conformances(S serviceInfo) {
-        return Collections.emptyList();
-    }
+    public abstract List<APIConformance> conformances(S serviceInfo);
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(getClass().getSimpleName());
-        return sb.toString();
+        return getClass().getSimpleName();
+    }
+
+    public abstract String getId();
+
+    public Boolean isEnabled(APIConformance item) {
+        try {
+            Field field = this.getClass().getDeclaredField(item.getProperty());
+            field.setAccessible(true);
+            return (Boolean) field.get(this);
+        } catch (NoSuchFieldException | ClassCastException | IllegalAccessException e) {
+            throw new RuntimeException("Could not find field for conformance: " + item.getProperty(), e);
+        }
+    }
+
+    public void setEnabled(APIConformance item, Boolean enabled) {
+        try {
+            Field field = this.getClass().getDeclaredField(item.getProperty());
+            field.setAccessible(true);
+            field.set(this, enabled);
+        } catch (NoSuchFieldException | ClassCastException | IllegalAccessException e) {
+            throw new RuntimeException("Could not find field for conformance: " + item.getProperty(), e);
+        }
     }
 }

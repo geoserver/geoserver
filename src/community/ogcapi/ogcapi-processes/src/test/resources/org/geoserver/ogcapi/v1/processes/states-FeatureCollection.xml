@@ -1,0 +1,48 @@
+<wfs:FeatureCollection numberOfFeatures="2" timeStamp="2008-11-15T01:01:13.675-05:00" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:topp="http://www.openplans.org/topp"   xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <gml:featureMembers>
+  <topp:states gml:id="states.1">
+   <gml:boundedBy>
+    <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+     <gml:lowerCorner>0 0</gml:lowerCorner>
+     <gml:upperCorner>2 2</gml:upperCorner>
+    </gml:Envelope>
+   </gml:boundedBy>
+   <topp:the_geom>
+    <gml:MultiSurface srsName="urn:x-ogc:def:crs:EPSG:4326">
+     <gml:surfaceMember>
+      <gml:Polygon>
+       <gml:exterior>
+        <gml:LinearRing>
+         <gml:posList>0 0 1 1 2 2 0 0</gml:posList>
+        </gml:LinearRing>
+       </gml:exterior>
+      </gml:Polygon>
+     </gml:surfaceMember>
+    </gml:MultiSurface>
+   </topp:the_geom>
+   <topp:STATE_NAME>Illinois</topp:STATE_NAME>
+  </topp:states>
+  <topp:states gml:id="states.2">
+   <gml:boundedBy>
+    <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+     <gml:lowerCorner>3 3</gml:lowerCorner>
+     <gml:upperCorner>5 5</gml:upperCorner>
+    </gml:Envelope>
+   </gml:boundedBy>
+   <topp:the_geom>
+    <gml:MultiSurface srsName="urn:x-ogc:def:crs:EPSG:4326">
+     <gml:surfaceMember>
+      <gml:Polygon>
+       <gml:exterior>
+        <gml:LinearRing>
+         <gml:posList>3 3 4 4 5 5 3 3</gml:posList>
+        </gml:LinearRing>
+       </gml:exterior>
+      </gml:Polygon>
+     </gml:surfaceMember>
+    </gml:MultiSurface>
+   </topp:the_geom>
+   <topp:STATE_NAME>District of Columbia</topp:STATE_NAME>
+  </topp:states>
+ </gml:featureMembers>
+</wfs:FeatureCollection>

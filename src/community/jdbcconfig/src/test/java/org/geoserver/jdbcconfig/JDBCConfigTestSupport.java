@@ -7,6 +7,7 @@ package org.geoserver.jdbcconfig;
 
 import static org.easymock.EasyMock.*;
 
+import jakarta.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.geoserver.GeoServerConfigurationLock;
@@ -148,7 +148,7 @@ public class JDBCConfigTestSupport {
     static List<DBConfig> getDBConfigurations() {
         ArrayList<DBConfig> configs = new ArrayList<DBConfig>();
 
-        dbConfig(configs, "h2", "org.h2.Driver", "jdbc:h2:file:${DATA_DIR}/geoserver");
+        dbConfig(configs, "hsqldb", "org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:file:${DATA_DIR}/geoserver");
         dbConfig(configs, "postgres", "org.postgresql.Driver", "jdbc:postgresql://localhost:5432/geoserver");
         dbConfig(configs, "oracle", "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@//localhost:49161/xe");
 
@@ -166,7 +166,8 @@ public class JDBCConfigTestSupport {
             System.err.println("skipping " + name + " tests, enable via maven profile");
             return;
         }
-        if ("true".equals(System.getProperty("jdbcconfig." + name + ".skip", "h2".equals(name) ? "false" : "true"))) {
+        if ("true"
+                .equals(System.getProperty("jdbcconfig." + name + ".skip", "hsqldb".equals(name) ? "false" : "true"))) {
             System.err.println("skipping " + name + " tests, enable via maven profile");
             return;
         }

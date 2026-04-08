@@ -39,7 +39,6 @@ import org.apache.commons.io.FileUtils;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.cluster.ClusterConfig;
@@ -104,7 +103,6 @@ public abstract class HzSynchronizerTest {
         expect(this.cluster.getHz()).andStubReturn(hz);
         expect(this.cluster.isEnabled()).andStubReturn(true);
         expect(this.cluster.getRawCatalog()).andStubReturn(catalog);
-        ;
         expect(this.cluster.getAckTimeoutMillis()).andStubReturn(100);
 
         expect(hz.<Event>getTopic(TOPIC_NAME)).andStubReturn(topic);
@@ -116,18 +114,14 @@ public abstract class HzSynchronizerTest {
         expectLastCall().anyTimes();
 
         ackTopic.publish(EasyMock.capture(captureAckTopicPublish));
-        EasyMock.expectLastCall().andStubAnswer(new IAnswer<Object>() {
-
-            @Override
-            public Object answer() throws Throwable {
-                Message<UUID> message = createMock(Message.class);
-                expect(message.getMessageObject()).andStubReturn(captureAckTopicPublish.getValue());
-                EasyMock.replay(message);
-                for (MessageListener<UUID> listener : captureAckTopicListener.getValues()) {
-                    listener.onMessage(message);
-                }
-                return null;
+        EasyMock.expectLastCall().andStubAnswer(() -> {
+            Message<UUID> message = createMock(Message.class);
+            expect(message.getMessageObject()).andStubReturn(captureAckTopicPublish.getValue());
+            EasyMock.replay(message);
+            for (MessageListener<UUID> listener : captureAckTopicListener.getValues()) {
+                listener.onMessage(message);
             }
+            return null;
         });
 
         expect(cluster.getLocalMember()).andStubReturn(localMember);

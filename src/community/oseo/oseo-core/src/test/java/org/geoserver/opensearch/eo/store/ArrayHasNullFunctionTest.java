@@ -31,9 +31,8 @@ public class ArrayHasNullFunctionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullArgument() throws Exception {
-        ArrayHasNullFunction arrayHasNullFunction = new ArrayHasNullFunction();
         Expression workspaces = null;
         Function function = FF.function("arrayhasnull", workspaces);
-        arrayHasNullFunction.evaluate(null);
+        function.evaluate(null);
     }
 }

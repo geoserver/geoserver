@@ -5,18 +5,18 @@
  */
 package org.geoserver.filters;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
 import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.geotools.util.logging.Logging;
 
@@ -43,8 +43,7 @@ public class SessionDebugFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-        if (req instanceof HttpServletRequest) {
-            HttpServletRequest request = (HttpServletRequest) req;
+        if (req instanceof HttpServletRequest request) {
             chain.doFilter(new SessionDebugWrapper(request), res);
         } else {
             chain.doFilter(req, res);
@@ -56,7 +55,7 @@ public class SessionDebugFilter implements Filter {
      *
      * @author Andrea Aime - GeoSolutions
      */
-    class SessionDebugWrapper extends HttpServletRequestWrapper {
+    static class SessionDebugWrapper extends HttpServletRequestWrapper {
 
         public SessionDebugWrapper(HttpServletRequest request) {
             super(request);

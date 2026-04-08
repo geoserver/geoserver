@@ -33,8 +33,7 @@ public class ToolPage extends GeoServerSecuredPage {
                 final ComponentInfo info = item.getModelObject();
 
                 AbstractLink link = null;
-                if (info instanceof ToolLinkInfo) {
-                    final ToolLinkInfo tool = (ToolLinkInfo) info;
+                if (info instanceof ToolLinkInfo tool) {
                     link = new BookmarkablePageLink<>("theLink", tool.getComponentClass());
                 } else {
                     final ToolLinkExternalInfo tool = (ToolLinkExternalInfo) info;

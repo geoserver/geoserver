@@ -4,6 +4,10 @@
  */
 package org.geoserver.logging;
 
+import static org.geoserver.logging.LoggingUtils.GEOSERVER_LOG_LOCATION;
+import static org.geoserver.logging.LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS;
+import static org.geoserver.logging.LoggingUtils.updateBuiltInLoggingProfiles;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -143,7 +147,7 @@ class LoggingUtilsDelegate {
 
         // add the appenders we saved above (for example a test appender)
         {
-            @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+            @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
             LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
             Configuration configuration = loggerContext.getConfiguration();
 
@@ -158,8 +162,24 @@ class LoggingUtilsDelegate {
             }
         }
 
+        suppressSpringPostProcessingWarnings();
+
         LoggingStartupContextListener.getLogger()
                 .fine("FINISHED CONFIGURING GEOSERVER LOGGING -------------------------");
+    }
+
+    /** Suppress the Spring BeanPostProcessorChecker warnings about infrastructure beans. */
+    private static void suppressSpringPostProcessingWarnings() {
+        @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+        Configuration configuration = loggerContext.getConfiguration();
+
+        // Suppress the BeanPostProcessorChecker warnings about infrastructure beans
+        org.apache.logging.log4j.core.config.LoggerConfig loggerConfig = configuration.getLoggerConfig(
+                "org.springframework.beans.factory.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker");
+        loggerConfig.setLevel(org.apache.logging.log4j.Level.ERROR);
+
+        loggerContext.updateLoggers();
     }
 
     /**
@@ -173,7 +193,7 @@ class LoggingUtilsDelegate {
     private static boolean checkConfiguration(
             boolean suppressStdOutLogging, boolean suppressFileLogging, String logFileName) {
 
-        @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+        @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
         LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 
         Configuration configuration = loggerContext.getConfiguration();
@@ -181,7 +201,9 @@ class LoggingUtilsDelegate {
         boolean reloadRequired = false;
 
         if (!suppressFileLogging) {
-            if (configuration.getProperties().containsKey("GEOSERVER_LOG_LOCATION")) {
+            LoggingStartupContextListener.getLogger()
+                    .warning(() -> "The logging location can be set using " + GEOSERVER_LOG_LOCATION + " property");
+            if (configuration.getProperties().containsKey(GEOSERVER_LOG_LOCATION)) {
                 // this is a log4j 2 configuration using default properties
                 LoggingStartupContextListener.getLogger()
                         .fine("Logging property GEOSERVER_LOG_LOCATION set to file '"
@@ -191,8 +213,7 @@ class LoggingUtilsDelegate {
 
             // check resulting configuring of log4j file logger
             Appender gslf = configuration.getAppender("geoserverlogfile");
-            if (gslf instanceof RollingFileAppender) {
-                RollingFileAppender fileAppender = (RollingFileAppender) gslf;
+            if (gslf instanceof RollingFileAppender fileAppender) {
                 if (logFileName.equals(fileAppender.getFileName())) {
                     LoggingStartupContextListener.getLogger().fine("Logging output set to file '" + logFileName + "'");
                 } else {
@@ -203,8 +224,7 @@ class LoggingUtilsDelegate {
                                     + logFileName
                                     + "'");
                 }
-            } else if (gslf instanceof FileAppender) {
-                FileAppender fileAppender = (FileAppender) gslf;
+            } else if (gslf instanceof FileAppender fileAppender) {
                 if (logFileName.equals(fileAppender.getFileName())) {
                     LoggingStartupContextListener.getLogger().fine("Logging output set to file '" + logFileName + "'");
                 } else {
@@ -276,7 +296,7 @@ class LoggingUtilsDelegate {
 
         String extension = Paths.extension(configResource.path());
 
-        @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+        @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
         LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 
         try {
@@ -440,7 +460,7 @@ class LoggingUtilsDelegate {
         }
         System.setProperty(DefaultConfiguration.DEFAULT_LEVEL, defaultLevel);
 
-        @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+        @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
         LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure(new DefaultConfiguration());
 
@@ -553,7 +573,7 @@ class LoggingUtilsDelegate {
 
         File target = new File(logsDirectory.getAbsolutePath(), logConfigXml);
         if (target.exists()) {
-            if (LoggingUtils.updateBuiltInLoggingProfiles) {
+            if (updateBuiltInLoggingProfiles) {
                 try (FileInputStream targetContents = new FileInputStream(target);
                         InputStream template = getStreamFromResource(logConfigXml)) {
                     if (!IOUtils.contentEquals(targetContents, template)) {
@@ -605,7 +625,7 @@ class LoggingUtilsDelegate {
         Resource logs = resourceLoader.get("logs");
         File logsDirectory = logs.dir();
 
-        for (String logConfigFile : LoggingUtils.STANDARD_LOGGING_CONFIGURATIONS) {
+        for (String logConfigFile : STANDARD_LOGGING_CONFIGURATIONS) {
             String logConfigProperties = logConfigFile + ".properties";
 
             File properties = new File(logsDirectory.getAbsolutePath(), logConfigProperties);

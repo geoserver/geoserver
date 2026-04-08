@@ -45,7 +45,7 @@ public class DirectDownload {
      * Files collector class which populates a {@link File}s {@link List} by accessing a {@link FileGroupProvider}
      * instance.
      */
-    class FilesCollector {
+    static class FilesCollector {
 
         public FilesCollector(FileGroupProvider fileGroupProvider) {
             this.fileGroupProvider = fileGroupProvider;
@@ -180,8 +180,7 @@ public class DirectDownload {
      */
     private void getExtraFiles(GridCoverage2DReader reader, List<File> result) {
         ServiceInfo info = reader.getInfo();
-        if (info instanceof FileServiceInfo) {
-            FileServiceInfo fileInfo = (FileServiceInfo) info;
+        if (info instanceof FileServiceInfo fileInfo) {
             FileGroupProvider provider = fileInfo;
             FilesCollector collector = new FilesCollector(provider);
             collector.collectFull(result);
@@ -197,8 +196,7 @@ public class DirectDownload {
      */
     private void getFileResources(GridCoverage2DReader reader, String coverageName, String fileId, List<File> result) {
         ResourceInfo resourceInfo = reader.getInfo(coverageName);
-        if (resourceInfo instanceof FileResourceInfo) {
-            FileResourceInfo fileResourceInfo = (FileResourceInfo) resourceInfo;
+        if (resourceInfo instanceof FileResourceInfo fileResourceInfo) {
 
             // Get the resource files
             FileGroupProvider fileGroupProvider = fileResourceInfo;

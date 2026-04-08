@@ -189,8 +189,8 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
 
     @Override
     public void destroy() throws Exception {
-        if (dataSource != null && dataSource instanceof BasicDataSource) {
-            ((BasicDataSource) dataSource).close();
+        if (dataSource != null && dataSource instanceof BasicDataSource source) {
+            source.close();
         }
         dataSource = null;
     }

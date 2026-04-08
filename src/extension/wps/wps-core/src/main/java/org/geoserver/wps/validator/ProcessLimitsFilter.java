@@ -99,7 +99,7 @@ public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAwa
                         processInfo != null ? processInfo.getValidators() : EMPTY_MULTIMAP;
                 // clone just to be on the safe side
                 HashMap<String, Parameter<?>> params = new LinkedHashMap<>(result);
-                for (String paramName : params.keySet()) {
+                for (String paramName : List.copyOf(params.keySet())) {
                     Parameter<?> param = params.get(paramName);
                     Collection<WPSInputValidator> validators = validatorsMap.get(paramName);
                     // can we skip to build a clone?
@@ -119,15 +119,12 @@ public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAwa
                     if (validators != null) {
                         metadataClone.put(VALIDATORS_KEY, validators);
                         for (Validator validator : validators) {
-                            if (validator instanceof MaxSizeValidator) {
-                                MaxSizeValidator msv = (MaxSizeValidator) validator;
+                            if (validator instanceof MaxSizeValidator msv) {
                                 int maxSizeMB = msv.getMaxSizeMB();
                                 metadataClone.put(MaxSizeValidator.PARAMETER_KEY, maxSizeMB);
-                            } else if (validator instanceof NumberRangeValidator) {
-                                NumberRangeValidator rv = (NumberRangeValidator) validator;
+                            } else if (validator instanceof NumberRangeValidator rv) {
                                 validate(param, metadataClone, rv);
-                            } else if (validator instanceof MultiplicityValidator) {
-                                MultiplicityValidator mv = (MultiplicityValidator) validator;
+                            } else if (validator instanceof MultiplicityValidator mv) {
                                 int max = mv.getMaxInstances();
                                 if (max < maxOccurs) {
                                     maxOccurs = max;

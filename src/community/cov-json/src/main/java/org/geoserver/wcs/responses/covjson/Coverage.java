@@ -37,8 +37,7 @@ public class Coverage extends CoverageJson {
         super(TYPE);
         this.coverage = coverage;
         List<GridCoverage2D> coverages;
-        if (coverage instanceof GranuleStack) {
-            GranuleStack granuleStack = (GranuleStack) coverage;
+        if (coverage instanceof GranuleStack granuleStack) {
             coverages = granuleStack.getGranules();
             referenceCoverage = coverages.get(0);
         } else {
@@ -83,8 +82,8 @@ public class Coverage extends CoverageJson {
         List<DimensionBean> dimensions = null;
         GranuleStack granuleStack = null;
 
-        if (coverage instanceof GranuleStack) {
-            granuleStack = (GranuleStack) coverage;
+        if (coverage instanceof GranuleStack stack) {
+            granuleStack = stack;
             dimensions = granuleStack.getDimensions();
         } else {
             dimensions = Collections.emptyList();

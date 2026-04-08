@@ -39,7 +39,7 @@ public abstract class AbstractUserGroupStore implements GeoServerUserGroupStore 
     /** logger */
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
 
-    private boolean modified = false;
+    private volatile boolean modified = false;
     protected AbstractUserGroupService service;
 
     protected UserGroupStoreHelper helper;

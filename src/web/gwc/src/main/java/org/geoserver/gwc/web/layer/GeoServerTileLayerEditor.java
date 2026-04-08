@@ -7,9 +7,11 @@ package org.geoserver.gwc.web.layer;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,12 +46,10 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.CatalogLayerEventListener;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.DimensionWarning.WarningType;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -59,7 +59,6 @@ import org.geowebcache.diskquota.storage.Quota;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
-import org.geowebcache.storage.blobstore.memory.CacheProvider;
 
 /**
  * Edit panel for a {@link GeoServerTileLayerInfo} (used to edit caching options for both {@link LayerInfo} and
@@ -77,6 +76,20 @@ import org.geowebcache.storage.blobstore.memory.CacheProvider;
  */
 class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerTileLayerEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 7870938096047218989L;
 
     /**
@@ -122,8 +135,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
     private IModel<? extends CatalogInfo> layerModel;
 
-    private CheckBox enableInMemoryCaching;
-
     /** @param tileLayerModel must be a {@link GeoServerTileLayerInfoModel} */
     public GeoServerTileLayerEditor(
             final String id,
@@ -140,16 +151,16 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final PublishedInfo info = layerModel.getObject();
         final GeoServerTileLayerInfo tileLayerInfo = tileLayerModel.getObject();
 
-        if (info instanceof LayerInfo) {
+        if (info instanceof LayerInfo layerInfo) {
             createTileLayerLabelModel = new ResourceModel("createTileLayerForLayer");
-            ResourceInfo resource = ((LayerInfo) info).getResource();
+            ResourceInfo resource = layerInfo.getResource();
             // we need the _current_ name, regardless of it's name is being changed
             resource = ModificationProxy.unwrap(resource);
             originalLayerName = resource.prefixedName();
-        } else if (info instanceof LayerGroupInfo) {
+        } else if (info instanceof LayerGroupInfo groupInfo) {
             createTileLayerLabelModel = new ResourceModel("createTileLayerForLayerGroup");
             // we need the _current_ name, regardless of if it's name is being changed
-            LayerGroupInfo lgi = ModificationProxy.unwrap((LayerGroupInfo) info);
+            LayerGroupInfo lgi = ModificationProxy.unwrap(groupInfo);
             originalLayerName = tileLayerName(lgi);
         } else {
             throw new IllegalArgumentException(
@@ -207,6 +218,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(enabled);
 
         ChoiceRenderer<String> blobStoreRenderer = new ChoiceRenderer<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             final String defaultStore = getDefaultBlobStoreId();
@@ -233,6 +245,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         blobStoreId.add(new AttributeModifier("title", new ResourceModel("blobStoreId.title")));
 
         add(new IValidator<>() {
+            @Serial
             private static final long serialVersionUID = 5240602030478856537L;
 
             @Override
@@ -246,16 +259,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
                 }
             }
         });
-
-        // CheckBox for enabling/disabling inner caching for the layer
-        enableInMemoryCaching = new CheckBox("inMemoryCached", new PropertyModel<>(getModel(), "inMemoryCached"));
-        ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
-        if (store != null && store.getCache() != null) {
-            enableInMemoryCaching.setEnabled(mediator.getConfig().isInnerCachingEnabled()
-                    && !store.getCache().isImmutable());
-        }
-
-        configs.add(enableInMemoryCaching);
 
         List<Integer> metaTilingChoices =
                 Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
@@ -282,6 +285,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         mergeExisting(formats, mimeFormatsModel.getObject());
 
         ListView<String> cacheFormatsList = new ListView<>("cacheFormats", formats) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -319,6 +323,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         setValidating(createLayer.getModelObject());
 
         createLayer.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -390,8 +395,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final String name;
         final GridSetBroker gridsets = gwc.getGridSetBroker();
         GeoServerTileLayer tileLayer;
-        if (layer instanceof LayerGroupInfo) {
-            LayerGroupInfo groupInfo = (LayerGroupInfo) layer;
+        if (layer instanceof LayerGroupInfo groupInfo) {
             name = tileLayerName(groupInfo);
             tileLayer = new GeoServerTileLayer(groupInfo, gridsets, tileLayerInfo);
         } else {
@@ -401,19 +405,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         }
 
         tileLayerInfo.setName(name);
-
-        // Remove the Layer from the cache if it is present
-        ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
-        if (store != null) {
-            CacheProvider cache = store.getCache();
-            if (cache != null) {
-                if (enableInMemoryCaching.getModelObject()) {
-                    cache.removeUncachedLayer(name);
-                } else {
-                    cache.addUncachedLayer(name);
-                }
-            }
-        }
 
         if (tileLayerExists) {
             gwc.save(tileLayer);
@@ -436,6 +427,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         // if there is something to cancel, let's warn the user about what
         // could go wrong, and if the user accepts, let's delete what's needed
         confirmRemovalDialog.showOkCancel(origTarget, new GeoServerDialog.DialogDelegate() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -496,20 +488,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
             cacheFormats.processInput();
             parameterFilters.processInput();
             gridSubsets.processInput();
-
-            //            // Remove add the Layer to the cache if it is present
-            //            ConfigurableBlobStore store =
-            // GeoServerExtensions.bean(ConfigurableBlobStore.class);
-            //            if(store != null){
-            //                CacheProvider cache = store.getCache();
-            //                if (cache != null) {
-            //                    if (enableInMemoryCaching.getModelObject()) {
-            //                        cache.removeUncachedLayer(getModel().getObject().getName());
-            //                    } else {
-            //                        cache.addUncachedLayer(getModel().getObject().getName());
-            //                    }
-            //                }
-            //            }
 
             tileLayerInfo.setId(layerModel.getObject().getId());
             setConvertedInput(tileLayerInfo);

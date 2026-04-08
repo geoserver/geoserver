@@ -70,8 +70,7 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
                 return ft;
             }
 
-            if (ft instanceof SimpleFeatureType) {
-                SimpleFeatureType sft = (SimpleFeatureType) ft;
+            if (ft instanceof SimpleFeatureType sft) {
                 Set<String> properties = new HashSet<>(Arrays.asList(query.getPropertyNames()));
                 SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
                 tb.init(sft);

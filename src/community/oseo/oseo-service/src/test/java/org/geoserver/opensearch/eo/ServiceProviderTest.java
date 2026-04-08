@@ -34,7 +34,7 @@ public class ServiceProviderTest extends GeoServerSystemTestSupport {
         final ServiceResourceProvider provider = GeoServerExtensions.bean(ServiceResourceProvider.class);
         final List<String> services = provider.getServicesForLayerName(getLayerId(SystemTestData.POLYGONS));
         assertThat(services, not(contains("OSEO")));
-        assertThat(services, containsInAnyOrder("WMS", "WFS"));
+        assertThat(services, containsInAnyOrder("WMS", "WFS", "WMTS"));
     }
 
     @Test
@@ -42,6 +42,6 @@ public class ServiceProviderTest extends GeoServerSystemTestSupport {
         final ServiceResourceProvider provider = GeoServerExtensions.bean(ServiceResourceProvider.class);
         final List<String> services = provider.getServicesForLayerName(getLayerId(SystemTestData.TASMANIA_DEM));
         assertThat(services, not(contains("OSEO")));
-        assertThat(services, containsInAnyOrder("WCS", "WMS"));
+        assertThat(services, containsInAnyOrder("WCS", "WMS", "WMTS"));
     }
 }

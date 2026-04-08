@@ -24,7 +24,12 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
   <rule ref="category/java/bestpractices.xml/CheckResultSet"/>
   <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
-  <rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
+  <rule ref="category/java/bestpractices.xml/UnusedPrivateField">
+    <properties>
+      <!-- The rule ignores fields that are annotated, but we want to check those annotated only with @SuppressWarnings -->
+      <property name="reportForAnnotations" value="java.lang.SuppressWarnings" />
+    </properties>
+  </rule>
   <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
   <rule ref="category/java/bestpractices.xml/SystemPrintln"/>
   <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach" />
@@ -57,6 +62,7 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace" />
   <rule ref="category/java/bestpractices.xml/MissingOverride" />
   <rule ref="category/java/bestpractices.xml/UseStandardCharsets" />
+  <rule ref="category/java/bestpractices.xml/UnnecessaryWarningSuppression" />
 
   <rule ref="category/java/performance.xml/UseArrayListInsteadOfVector" />
 
@@ -121,5 +127,7 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
     <properties>
       <property name="reportLevel" value="130"/>
     </properties>
-  </rule>  	  
+  </rule>
+  
+
 </ruleset>

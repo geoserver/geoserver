@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_10_0.dtd">
+
+<Configure id="scheduler" class="org.eclipse.jetty.util.thread.ScheduledExecutorScheduler">
+  <Arg name="name"><Property name="jetty.scheduler.name"/></Arg>
+  <Arg name="daemon" type="boolean"><Property name="jetty.scheduler.daemon" default="false" /></Arg>
+  <Arg name="threads" type="int"><Property name="jetty.scheduler.threads" default="-1" /></Arg>
+</Configure>

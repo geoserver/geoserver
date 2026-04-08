@@ -4,8 +4,11 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
@@ -27,6 +30,20 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 // TODO WICKET8 - Verify this page works OK
 /** Basic panel to set the Cog input URL. */
 public class CogInput extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CogInput.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     TextField<String> textField;
     GSModalWindow dialog;
     IModel<? extends FileFilter> fileFilter;
@@ -51,7 +68,7 @@ public class CogInput extends Panel {
 
         // the text field, with a decorator for validations
         FileRootsFinder rootsFinder = new FileRootsFinder(false);
-        textField = new AutoCompleteTextField<String>("paramValue", getCogFileModel(paramValue, controlFlagModel)) {
+        textField = new AutoCompleteTextField<>("paramValue", getCogFileModel(paramValue, controlFlagModel)) {
             @Override
             protected Iterator<String> getChoices(String input) {
                 try {
@@ -88,7 +105,7 @@ public class CogInput extends Panel {
     }
 
     protected Component chooserButton(final String windowTitle) {
-        AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
+        return new AjaxSubmitLink("chooser") {
 
             @Override
             public boolean getDefaultFormProcessing() {
@@ -100,11 +117,12 @@ public class CogInput extends Panel {
                 File file = null;
                 textField.processInput();
                 String input = textField.getConvertedInput();
-                if (input != null && !input.equals("")) {
+                if (input != null && !input.isEmpty()) {
                     file = new File(input);
                 }
 
-                GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<File>(file)) {
+                GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<>(file)) {
+                    @Serial
                     private static final long serialVersionUID = -7096642192491726498L;
 
                     @Override
@@ -118,7 +136,6 @@ public class CogInput extends Panel {
                             dialog.close(target.get());
                         }
                     }
-                    ;
                 };
                 chooser.setFileTableHeight(null);
                 chooser.setFilter(fileFilter);
@@ -127,7 +144,6 @@ public class CogInput extends Panel {
                 dialog.show(target);
             }
         };
-        return link;
     }
 
     /** The text field stored inside the panel. */

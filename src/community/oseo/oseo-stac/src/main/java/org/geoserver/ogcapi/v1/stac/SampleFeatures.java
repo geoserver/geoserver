@@ -123,14 +123,14 @@ public class SampleFeatures implements GeoServerLifecycleHandler {
 
     private final OpenSearchAccessProvider accessProvider;
     private final LoadingCache<Object, Feature> sampleFeatures = CacheBuilder.newBuilder()
-            .build(new CacheLoader<Object, Feature>() {
+            .build(new CacheLoader<>() {
                 @Override
                 public Feature load(Object o) throws Exception {
                     FeatureSource<FeatureType, Feature> ps =
                             accessProvider.getOpenSearchAccess().getProductSource();
                     Filter filter = Filter.INCLUDE;
-                    if (o instanceof String) {
-                        filter = STACService.getProductInCollectionFilter(Arrays.asList((String) o));
+                    if (o instanceof String string) {
+                        filter = STACService.getProductInCollectionFilter(Arrays.asList(string));
                     }
                     Query q = new Query();
                     q.setMaxFeatures(1);
@@ -159,7 +159,7 @@ public class SampleFeatures implements GeoServerLifecycleHandler {
             return feature;
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof IOException) throw (IOException) cause;
+            if (cause instanceof IOException exception) throw exception;
             throw new IOException(e);
         }
     }

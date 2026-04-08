@@ -10,6 +10,7 @@
   <bean id="coreSecurityWebExtension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-web-sec-core"/>
     <constructor-arg index="1" value="GeoServer Web UI Security Core"/>
+    <property name="category" value="CORE"/>
   </bean>
   <bean id="securityHomePageContentProvider"
     class="org.geoserver.security.web.SecurityHomePageContentProvider"/>
@@ -114,6 +115,17 @@
         <property name="icon" value="../img/icons/silk/shield.png" />
         <property name="category" ref="securityCategory" />
         <property name="order" value="220" />
+    </bean>
+
+    <!-- Control CORS page -->
+    <bean id="corsConfigurationPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="security.cors"/>
+        <property name="titleKey" value="security.cors.title"/>
+        <property name="descriptionKey" value="security.cors.description"/>
+        <property name="componentClass" value="org.geoserver.security.web.cors.CORSConfigurationPage"/>
+        <property name="icon" value="../img/icons/silk/shield.png"/>
+        <property name="category" ref="securityCategory"/>
+        <property name="order" value="221"/>
     </bean>
 
     <!-- password policy panel infos -->

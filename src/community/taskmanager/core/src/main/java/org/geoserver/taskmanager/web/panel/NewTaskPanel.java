@@ -4,6 +4,9 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -18,6 +21,20 @@ import org.geoserver.taskmanager.util.TaskManagerBeans;
 
 public class NewTaskPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NewTaskPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -1678565286034119572L;
 
     public NewTaskPanel(String id, Configuration config) {
@@ -36,6 +53,7 @@ public class NewTaskPanel extends Panel {
                 .setOutputMarkupId(true));
 
         getCopyField().add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = -5575115165929413404L;
 
             @Override
@@ -52,6 +70,7 @@ public class NewTaskPanel extends Panel {
         });
 
         getTypeField().add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = -1427899086435643578L;
 
             @Override

@@ -30,13 +30,16 @@ public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testParseThroughStyles() throws IOException {
-        String mbstyle = "{\"layers\": [{\n"
-                + "    \"type\": \"line\",\n"
-                + "    \"paint\": {\n"
-                + "        \"line-color\": \"#0099ff\",\n"
-                + "        \"line-width\": 10,\n"
-                + "    }\n"
-                + "}]}";
+        String mbstyle =
+                """
+                {"layers": [{
+                    "type": "line",
+                    "paint": {
+                        "line-color": "#0099ff",
+                        "line-width": 10,
+                    }
+                }]}\
+                """;
         StyledLayerDescriptor sld = Styles.handler(MBStyleHandler.FORMAT).parse(mbstyle, null, null, null);
         assertNotNull(sld);
 

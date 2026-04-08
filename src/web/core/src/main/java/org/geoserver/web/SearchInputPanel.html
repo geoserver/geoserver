@@ -1,0 +1,22 @@
+<wicket:panel>
+    <div class="custom-search-wrapper">
+        
+        <input type="text" wicket:id="searchInput" class="custom-search-input" 
+               placeholder="Search..." autocomplete="off" 
+               role="combobox" aria-autocomplete="list" aria-expanded="false" 
+               aria-controls="resultsContainer" aria-haspopup="listbox" />
+        
+        <ul wicket:id="resultsContainer" class="search-results-container" 
+            role="listbox" tabindex="-1">
+            
+            <li wicket:id="initialResults" class="search-result-item" role="option" tabindex="-1">
+                <img wicket:id="itemIcon" class="item-icon" alt="" />
+                <span wicket:id="itemLabel" class="item-label"></span>
+            </li>
+            
+        </ul>
+        
+        <div id="search-announcer" class="sr-only" aria-live="polite"></div>
+
+    </div>
+</wicket:panel>

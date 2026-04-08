@@ -4,10 +4,10 @@
  */
 package org.geoserver.taskmanager.tasks;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
@@ -227,8 +227,8 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
     }
 
     private static <T> T unwrap(T o, Class<T> clazz) {
-        if (o instanceof Wrapper) {
-            return ((Wrapper) o).unwrap(clazz);
+        if (o instanceof Wrapper wrapper) {
+            return wrapper.unwrap(clazz);
         } else {
             return o;
         }

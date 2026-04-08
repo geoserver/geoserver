@@ -18,12 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.util.JSONBuilder;
-import net.sf.json.util.JSONStringer;
 import org.geoserver.gsr.model.geometry.GeometryArray;
 import org.geoserver.gsr.model.geometry.GeometryTypeEnum;
 import org.geoserver.gsr.model.geometry.Multipoint;
@@ -31,6 +25,12 @@ import org.geoserver.gsr.model.geometry.Point;
 import org.geoserver.gsr.model.geometry.Polygon;
 import org.geoserver.gsr.model.geometry.Polyline;
 import org.geoserver.gsr.model.geometry.SpatialReference;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.util.JSONBuilder;
+import org.kordamp.json.util.JSONStringer;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -137,23 +137,19 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         // doesn't distinguish between a linestring and a multilinestring) and
         // generality.
 
-        if (geom instanceof org.locationtech.jts.geom.Point) {
-            org.locationtech.jts.geom.Point p = (org.locationtech.jts.geom.Point) geom;
+        if (geom instanceof org.locationtech.jts.geom.Point p) {
             T[] coords = embeddedPoint(p);
 
             return new Point(coords[0], coords[1], spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.MultiPoint) {
-            org.locationtech.jts.geom.MultiPoint mpoint = (org.locationtech.jts.geom.MultiPoint) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.MultiPoint mpoint) {
             List<T[]> points = new ArrayList<>();
             for (int i = 0; i < mpoint.getNumPoints(); i++) {
                 points.add(embeddedPoint((org.locationtech.jts.geom.Point) mpoint.getGeometryN(i)));
             }
             return new Multipoint(points.toArray(new Number[points.size()][]), spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.LineString) {
-            org.locationtech.jts.geom.LineString line = (org.locationtech.jts.geom.LineString) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.LineString line) {
             return new Polyline(new Number[][][] {embeddedLineString(line)}, spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.MultiLineString) {
-            org.locationtech.jts.geom.MultiLineString mline = (org.locationtech.jts.geom.MultiLineString) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.MultiLineString mline) {
             List<T[][]> paths = new ArrayList<>();
 
             for (int i = 0; i < mline.getNumGeometries(); i++) {
@@ -163,8 +159,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             }
             return new Polyline(paths.toArray(new Number[paths.size()][][]), spatialReference);
 
-        } else if (geom instanceof org.locationtech.jts.geom.Polygon) {
-            org.locationtech.jts.geom.Polygon polygon = (org.locationtech.jts.geom.Polygon) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.Polygon polygon) {
             List<T[][]> rings = new ArrayList<>();
             LineString shell = polygon.getExteriorRing();
             if (Orientation.isCCW(shell.getCoordinateSequence())) {
@@ -180,8 +175,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 rings.add(embeddedLineString(hole));
             }
             return new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.MultiPolygon) {
-            org.locationtech.jts.geom.MultiPolygon mpoly = (org.locationtech.jts.geom.MultiPolygon) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.MultiPolygon mpoly) {
 
             // ESRI API has no concept of multi-polygon, there is only polygon, which can have
             // multiple outer rings, depending on their orientation. The old implementation using
@@ -210,9 +204,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             }
 
             return new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.GeometryCollection) {
-            org.locationtech.jts.geom.GeometryCollection collection =
-                    (org.locationtech.jts.geom.GeometryCollection) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.GeometryCollection collection) {
             GeometryTypeEnum geometryType = determineGeometryType(collection);
             List<org.geoserver.gsr.model.geometry.Geometry> geometries = new ArrayList<>();
             for (int i = 0; i < collection.getNumGeometries(); i++) {
@@ -380,7 +372,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @param json the json object representing an envelope
      * @return the envelope
      */
-    public static Envelope jsonToEnvelope(net.sf.json.JSON json) {
+    public static Envelope jsonToEnvelope(org.kordamp.json.JSON json) {
         if (!(json instanceof JSONObject)) {
             throw new JSONException("An envelope must be encoded as a JSON Object");
         }
@@ -400,7 +392,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @see #jsonToJtsGeometry(JSON)
      * @see #toJts(org.geoserver.gsr.model.geometry.Geometry)
      */
-    public static Geometry jsonToJtsGeometry(net.sf.json.JSON json) {
+    public static Geometry jsonToJtsGeometry(org.kordamp.json.JSON json) {
         return toJts(jsonToGeometry(json));
     }
 
@@ -410,7 +402,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @param json the json object representing a geometry
      * @return the geometry
      */
-    public static org.geoserver.gsr.model.geometry.Geometry jsonToGeometry(net.sf.json.JSON json) {
+    public static org.geoserver.gsr.model.geometry.Geometry jsonToGeometry(org.kordamp.json.JSON json) {
         JSONObject obj = (JSONObject) json;
 
         SpatialReference spatialReference = null;
@@ -457,20 +449,16 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
     public static Geometry toJts(org.geoserver.gsr.model.geometry.Geometry geometry) {
         GeometryFactory geometries = new GeometryFactory();
 
-        if (geometry instanceof Point) {
-            Point p = (Point) geometry;
+        if (geometry instanceof Point p) {
 
             double x = p.getX().doubleValue();
             double y = p.getY().doubleValue();
             return geometries.createPoint(new org.locationtech.jts.geom.Coordinate(x, y));
-        } else if (geometry instanceof Multipoint) {
-            Multipoint mp = (Multipoint) geometry;
+        } else if (geometry instanceof Multipoint mp) {
 
             Number[][] points = mp.getPoints();
             return geometries.createMultiPointFromCoords(arrayToCoordinates(points));
-        } else if (geometry instanceof Polyline) {
-
-            Polyline pl = (Polyline) geometry;
+        } else if (geometry instanceof Polyline pl) {
 
             Number[][][] paths = pl.getPaths();
 
@@ -480,12 +468,10 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 lines[i] = geometries.createLineString(coords);
             }
             return geometries.createMultiLineString(lines);
-        } else if (geometry instanceof Polygon) {
+        } else if (geometry instanceof Polygon pg) {
             // A Polygon can have multiple outer rings, there is no notion of multipolygon
             // See https://developers.arcgis.com/documentation/common-data-types/geometry-objects
             // .htm#POLYGON
-            Polygon pg = (Polygon) geometry;
-
             Number[][][] rings = pg.getRings();
             if (rings.length < 1) {
                 throw new JSONException("Polygon must have at least one ring");
@@ -562,9 +548,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 return geometries.createMultiPolygon(
                         polygons.toArray(new org.locationtech.jts.geom.Polygon[polygons.size()]));
             }
-        } else if (geometry instanceof GeometryArray) {
-
-            GeometryArray ga = (GeometryArray) geometry;
+        } else if (geometry instanceof GeometryArray ga) {
             org.geoserver.gsr.model.geometry.Geometry[] nestedGeometries = ga.getGeometries();
             Geometry[] parsedGeometries = new Geometry[nestedGeometries.length];
             for (int i = 0; i < nestedGeometries.length; i++) {

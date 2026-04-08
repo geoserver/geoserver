@@ -42,7 +42,7 @@ public final class EchoParametersDao {
     }
 
     public static String getTmpEchoParametersPath() {
-        return String.format("params-extractor/%s-echo-parameters.xml", UUID.randomUUID());
+        return "params-extractor/%s-echo-parameters.xml".formatted(UUID.randomUUID());
     }
 
     public static List<EchoParameter> getEchoParameters() {

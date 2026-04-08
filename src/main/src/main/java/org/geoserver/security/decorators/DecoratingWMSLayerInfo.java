@@ -405,6 +405,16 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo> impl
     }
 
     @Override
+    public Map<String, String> getVendorParameters() {
+        return delegate.getVendorParameters();
+    }
+
+    @Override
+    public void setVendorParameters(Map<String, String> vendorParameters) {
+        delegate.setVendorParameters(vendorParameters);
+    }
+
+    @Override
     public boolean isMetadataBBoxRespected() {
         return delegate.isMetadataBBoxRespected();
     }

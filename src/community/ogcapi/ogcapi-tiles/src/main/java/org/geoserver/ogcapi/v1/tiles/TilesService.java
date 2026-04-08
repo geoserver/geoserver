@@ -4,11 +4,12 @@
  */
 package org.geoserver.ogcapi.v1.tiles;
 
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
-import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
+import static org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 import static org.geowebcache.conveyor.Conveyor.CacheResult.MISS;
+import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
@@ -21,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -81,8 +81,12 @@ public class TilesService {
     public static final String CC_TILE_CORE = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core";
 
     public static final String CC_TILESET = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset";
-    public static final String CC_MULTITILES = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/multitiles";
     public static final String CC_INFO = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/info";
+    public static final String CC_TILESETS = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tilesets";
+    public static final String CC_GEODATA_TILESET_LIST =
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tilesets-list";
+    public static final String CC_GEODATA_TILESETS =
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-tilesets";
 
     public static final String CC_TILES_TILE_MATRIX_SET = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tmxs";
     public static final String CC_TILE_MATRIX_SET = "http://www.opengis.net/spec/tilematrixset/1.0/conf/tilematrixset";
@@ -145,7 +149,9 @@ public class TilesService {
                 ConformanceClass.COLLECTIONS,
                 CC_TILE_CORE,
                 CC_TILESET,
-                CC_MULTITILES,
+                CC_TILESETS,
+                CC_GEODATA_TILESET_LIST,
+                CC_GEODATA_TILESETS,
                 CC_INFO,
                 CC_TILES_TILE_MATRIX_SET,
                 CC_TILE_MATRIX_SET,
@@ -396,8 +402,8 @@ public class TilesService {
         final byte[] tileBytes;
         {
             final Resource mapContents = tile.getBlob();
-            if (mapContents instanceof ByteArrayResource) {
-                tileBytes = ((ByteArrayResource) mapContents).getContents();
+            if (mapContents instanceof ByteArrayResource resource) {
+                tileBytes = resource.getContents();
             } else {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 mapContents.transferTo(Channels.newChannel(out));
@@ -425,9 +431,7 @@ public class TilesService {
         // override for workspace specific services
         tmpHeaders.put(
                 "geowebcache-layer",
-                tileLayer instanceof GeoServerTileLayer
-                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                        : tileLayer.getName());
+                tileLayer instanceof GeoServerTileLayer gstl ? gstl.getContextualName() : tileLayer.getName());
         if (filterSpec != null && !tileIsCacheable) {
             tmpHeaders.put("geowebcache-cache-result", MISS.toString());
             tmpHeaders.put(
@@ -437,17 +441,17 @@ public class TilesService {
         tmpHeaders.forEach((k, v) -> headers.add(k, v));
         // content type and disposition
         headers.add(HttpHeaders.CONTENT_TYPE, tile.getMimeType().getMimeType());
+        String disposition = requestedFormat.isInlinePreferred() ? "inline" : "attachment";
         headers.add(
                 HttpHeaders.CONTENT_DISPOSITION,
-                getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile));
+                disposition + "; filename=\""
+                        + getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile) + "\"");
 
         return new ResponseEntity<>(tileBytes, headers, HttpStatus.OK);
     }
 
     static String getTileLayerId(TileLayer tileLayer) {
-        return tileLayer instanceof GeoServerTileLayer
-                ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                : tileLayer.getName();
+        return tileLayer instanceof GeoServerTileLayer gstl ? gstl.getContextualName() : tileLayer.getName();
     }
 
     private String getETag(byte[] tileBytes) throws NoSuchAlgorithmException {
@@ -499,7 +503,7 @@ public class TilesService {
             Optional<ParameterFilter> styles = tileLayer.getParameterFilters().stream()
                     .filter(pf -> "styles".equalsIgnoreCase(pf.getKey()))
                     .findFirst();
-            if (!styles.isPresent() || !styles.get().applies(styleId)) {
+            if (styles.isEmpty() || !styles.get().applies(styleId)) {
                 throw new InvalidParameterValueException(
                         "Invalid style name, please check the collection description for valid style names: "
                                 + tileLayer.getStyles());
@@ -508,8 +512,8 @@ public class TilesService {
     }
 
     static boolean isLayerGroup(TileLayer tileLayer) {
-        if (tileLayer instanceof GeoServerTileLayer) {
-            return ((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerGroupInfo;
+        if (tileLayer instanceof GeoServerTileLayer layer) {
+            return layer.getPublishedInfo() instanceof LayerGroupInfo;
         }
 
         return false;
@@ -555,13 +559,13 @@ public class TilesService {
     }
 
     public String getTileFileName(
-            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId,
-            @PathVariable(name = "tileMatrix") String tileMatrix,
-            @PathVariable(name = "tileRow") long tileRow,
-            @PathVariable(name = "tileCol") long tileCol,
+            String tileMatrixSetId,
+            String tileMatrix,
+            long tileRow,
+            long tileCol,
             TileLayer tileLayer,
             ConveyorTile tile) {
-        String layerName = getTileLayerId(tileLayer);
+        String layerName = tileLayer instanceof GeoServerTileLayer gstl ? gstl.getSimpleName() : tileLayer.getName();
         return layerName
                 + "_"
                 + getExternalZIndex(tileMatrixSetId, tileMatrix, tileLayer)
@@ -569,6 +573,7 @@ public class TilesService {
                 + tileRow
                 + "_"
                 + tileCol
+                + "."
                 + tile.getMimeType().getFileExtension();
     }
 
@@ -667,7 +672,7 @@ public class TilesService {
 
     /** Utility method to check if a given tile layer supports filtering */
     public static boolean supportsFiltering(TileLayer tileLayer) {
-        return (tileLayer instanceof GeoServerTileLayer)
+        return (tileLayer instanceof GeoServerTileLayer gstl)
                 && (((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerInfo)
                 && (((LayerInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo()).getResource()
                         instanceof FeatureTypeInfo);

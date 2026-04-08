@@ -36,11 +36,11 @@ public class TileLayerInfoUtil {
      * @param defaults default configuration
      */
     public static GeoServerTileLayerInfo loadOrCreate(final CatalogInfo info, final GWCConfig defaults) {
-        if (info instanceof LayerInfo) {
-            return loadOrCreate((LayerInfo) info, defaults);
+        if (info instanceof LayerInfo layerInfo) {
+            return loadOrCreate(layerInfo, defaults);
         }
-        if (info instanceof LayerGroupInfo) {
-            return loadOrCreate((LayerGroupInfo) info, defaults);
+        if (info instanceof LayerGroupInfo groupInfo) {
+            return loadOrCreate(groupInfo, defaults);
         }
         throw new IllegalArgumentException();
     }
@@ -109,8 +109,6 @@ public class TileLayerInfoUtil {
         info.setGutter(defaults.getGutter());
         info.setMetaTilingX(defaults.getMetaTilingX());
         info.setMetaTilingY(defaults.getMetaTilingY());
-        info.setInMemoryCached(true);
-
         info.setCacheWarningSkips(defaults.getCacheWarningSkips());
 
         return info;
@@ -130,10 +128,10 @@ public class TileLayerInfoUtil {
      * @param layerInfo The GeoWebCache layer
      */
     public static void checkAutomaticStyles(final PublishedInfo published, GeoServerTileLayerInfo layerInfo) {
-        if (published instanceof LayerInfo) {
-            checkAutomaticStyles((LayerInfo) published, layerInfo);
-        } else if (published instanceof LayerGroupInfo) {
-            checkAutomaticStyles((LayerGroupInfo) published, layerInfo);
+        if (published instanceof LayerInfo info1) {
+            checkAutomaticStyles(info1, layerInfo);
+        } else if (published instanceof LayerGroupInfo info) {
+            checkAutomaticStyles(info, layerInfo);
         } else {
             throw new IllegalArgumentException("Do not know how to handle this kind of PublishedInfo: " + published);
         }
@@ -150,8 +148,8 @@ public class TileLayerInfoUtil {
         ParameterFilter filter = layerInfo.getParameterFilter("STYLES");
 
         // Update the filter with the latest available styles if it's a style filter
-        if (filter != null && filter instanceof StyleParameterFilter) {
-            ((StyleParameterFilter) filter).setLayer(layer);
+        if (filter != null && filter instanceof StyleParameterFilter parameterFilter) {
+            parameterFilter.setLayer(layer);
         }
     }
 

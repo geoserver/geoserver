@@ -15,9 +15,6 @@ import it.geosolutions.imageio.stream.input.FileImageInputStreamExtImpl;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageMetadata;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
-import it.geosolutions.jaiext.range.NoDataContainer;
-import it.geosolutions.jaiext.vectorbin.ROIGeometry;
-import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.renderable.ParameterBlock;
@@ -36,11 +33,14 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.ROI;
-import javax.media.jai.RenderedOp;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.ROI;
+import org.eclipse.imagen.RenderedOp;
+import org.eclipse.imagen.media.range.NoDataContainer;
+import org.eclipse.imagen.media.vectorbin.ROIGeometry;
+import org.eclipse.imagen.media.viewer.RenderedImageBrowser;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
@@ -253,6 +253,7 @@ class RasterDirectDownloader {
         return null;
     }
 
+    @SuppressWarnings("PMD.CloseResource") // FileImageInputStreamExtImpl impl
     private File getSourceFile(RenderedImage image) {
         RenderedOp read = getImageRead(image);
         if (read == null) {
@@ -263,12 +264,12 @@ class RasterDirectDownloader {
         ParameterBlock params = read.getParameterBlock();
         Object source = params.getObjectParameter(0);
 
-        if (source instanceof FileImageInputStreamExtImpl) {
-            return ((FileImageInputStreamExtImpl) source).getFile();
-        } else if (source instanceof File) {
-            return (File) source;
-        } else if (source instanceof String) {
-            File file = new File((String) source);
+        if (source instanceof FileImageInputStreamExtImpl impl) {
+            return impl.getFile();
+        } else if (source instanceof File file1) {
+            return file1;
+        } else if (source instanceof String string) {
+            File file = new File(string);
             if (file.exists()) return file;
         }
 
@@ -415,8 +416,8 @@ class RasterDirectDownloader {
         if (!roi.getBounds().contains(source.getBounds())) return false;
 
         // quick check for ROIGeometry, rectangular geometry covering the whole source iamge
-        if (roi instanceof ROIGeometry) {
-            Geometry g = ((ROIGeometry) roi).getAsGeometry();
+        if (roi instanceof ROIGeometry geometry) {
+            Geometry g = geometry.getAsGeometry();
             if (g.isRectangle() && JTS.toRectangle2D(g.getEnvelopeInternal()).equals(source.getBounds())) return true;
         }
 

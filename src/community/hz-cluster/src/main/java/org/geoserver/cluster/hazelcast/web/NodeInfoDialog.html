@@ -1,33 +1,38 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-  <wicket:panel>
-   <div class="padding-1em">
-   <h3><span wicket:id="ip"></span></h3>
-   <form>
-     <ul>
-        <li>
-          <label>Hazelcast Group</label>
-          <span wicket:id="groupName"></span>
-        </li>
-        <li>
-          <label>Hostname</label>
-          <span wicket:id="host"></span>
-        </li>
-        <li>
-          <label>Port</label>
-          <span wicket:id="port"></span>
-        </li>
-        <li>
-          <label>Members</label>
-            <ul wicket:id="cluster">
-              <li wicket:id="members">
-                 <span wicket:id="label"></span>
-              </li>
-            </ul>
-        </li>
-     </ul>
-   </form>
-   </div>
-   </wicket:panel>
- </body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-NodeInfoDialog">
+        <div class="padding-1em">
+          <h3>
+            <span wicket:id="ip"/>
+          </h3>
+          <form>
+            <div class="gs-unordered-list-class">
+              <div class="gs-list-item-class">
+                <label>Hazelcast Group</label>
+                <span wicket:id="groupName"/>
+              </div>
+              <div class="gs-list-item-class">
+                <label>Hostname</label>
+                <span wicket:id="host"/>
+              </div>
+              <div class="gs-list-item-class">
+                <label>Port</label>
+                <span wicket:id="port"/>
+              </div>
+              <div class="gs-list-item-class">
+                <label>Members</label>
+                <div class="gs-unordered-list-class" wicket:id="cluster">
+                  <div class="gs-list-item-class" wicket:id="members">
+                    <span wicket:id="label"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

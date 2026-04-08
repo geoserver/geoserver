@@ -34,7 +34,9 @@ import org.geoserver.wcs2_0.kvp.WCSKVPTestSupport;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
+import org.junit.AfterClass;
 import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -52,6 +54,22 @@ import ucar.nc2.dataset.NetcdfDatasets;
 public class GHRSSTWCSTest extends WCSKVPTestSupport {
 
     public static QName SST = new QName(CiteTestData.WCS_URI, "sst", CiteTestData.WCS_PREFIX);
+    private static String PREVIOUS_TIME_ZONE;
+
+    @BeforeClass
+    public static void oneTimeSetUp() throws Exception {
+        PREVIOUS_TIME_ZONE = System.getProperty("user.timezone");
+        if (PREVIOUS_TIME_ZONE == null || !PREVIOUS_TIME_ZONE.equals("UTC")) {
+            System.setProperty("user.timezone", "UTC");
+        }
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() throws Exception {
+        if (PREVIOUS_TIME_ZONE != null) {
+            System.setProperty("user.timezone", PREVIOUS_TIME_ZONE);
+        }
+    }
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -90,7 +108,7 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
     }
 
     private CoverageView buildSstView() {
-        String[] bandNames = new String[] {
+        String[] bandNames = {
             "pixels_per_bin",
             "sea_surface_temperature",
             "sst_dtime",
@@ -131,7 +149,7 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
         // hope the file name structure is correct, not 100% sure
         String contentDispostion = response.getHeader("Content-disposition");
         assertEquals(
-                "inline; filename=19121213214553-EUR-L3U_GHRSST-SSTint-AVHRR_METOP_A-v02.0-fv01.0.nc",
+                "inline; filename=19121213224553-EUR-L3U_GHRSST-SSTint-AVHRR_METOP_A-v02.0-fv01.0.nc",
                 contentDispostion);
         byte[] responseBytes = getBinary(response);
         File file = File.createTempFile("ghrsst", ".nc", new File("./target"));
@@ -235,8 +253,6 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
                     new double[] {301, 302, 303, 304, 305, 306, 307, 308, 309},
                     2e-3);
             assertValues(dataset, "wind_speed", new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9}, 0.2);
-        } finally {
-            // FileUtils.deleteQuietly(file);
         }
     }
 

@@ -31,7 +31,7 @@ import org.geotools.util.factory.GeoTools;
 public class CoverageStoreEditPage extends AbstractCoverageStorePage {
 
     public static final String STORE_NAME = "storeName";
-    public static final String WS_NAME = "wsName";
+    public static final String WS_NAME = "workspace";
 
     /** Dialog to ask for save confirmation in case the store can't be reached */
     private GeoServerDialog dialog;

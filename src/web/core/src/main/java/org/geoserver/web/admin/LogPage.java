@@ -8,6 +8,7 @@ package org.geoserver.web.admin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.Serial;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +45,7 @@ public class LogPage extends GeoServerSecuredPage {
 
     static final Logger LOGGER = Logging.getLogger(LogPage.class);
 
+    @Serial
     private static final long serialVersionUID = 4742103132576413211L;
 
     static final String LINES = "lines";
@@ -68,10 +70,8 @@ public class LogPage extends GeoServerSecuredPage {
          * take geoserver log file location from Config as absolute path and only use if valid, otherwise fallback to
          * (geoserver-root)/logs/geoserver.log as default.
          */
+        // Log location only from GEOSERVER_LOG_LOCATION property (GeoServer 3.0+)
         String location = GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION);
-        if (location == null) {
-            location = getGeoServerApplication().getGeoServer().getLogging().getLocation();
-        }
         if (location == null) {
             GeoServerResourceLoader loader = getGeoServerApplication().getResourceLoader();
             logFile = loader.get("logs").get("geoserver.log").file();
@@ -109,7 +109,6 @@ public class LogPage extends GeoServerSecuredPage {
             }
         });
 
-        @SuppressWarnings("PMD.UseDiamondOperator") // java 8 compiler cannot infer type
         NumberTextField<Integer> lines = new NumberTextField<Integer>("lines", new PropertyModel<>(this, "lines"));
         lines.add(RangeValidator.minimum(1));
         form.add(lines);
@@ -139,6 +138,7 @@ public class LogPage extends GeoServerSecuredPage {
     }
 
     public class GSLogsModel extends LoadableDetachableModel<String> {
+        @Serial
         private static final long serialVersionUID = 3364442904754424569L;
 
         @Override

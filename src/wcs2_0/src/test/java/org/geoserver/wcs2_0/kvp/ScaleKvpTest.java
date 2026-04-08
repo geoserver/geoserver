@@ -95,11 +95,11 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -126,11 +126,11 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         // check we can read it as a TIFF and it is similare to the origina one
         readerTarget = new GeoTiffReader(file);
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -180,11 +180,11 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -215,11 +215,11 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         // check we can read it as a TIFF and it is similare to the origina one
         readerTarget = new GeoTiffReader(file);
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -268,7 +268,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample
@@ -300,7 +300,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             FileUtils.writeByteArrayToFile(file, tiffContents);
 
             readerTarget = new GeoTiffReader(file);
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -326,7 +326,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // upsample
@@ -359,11 +359,11 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             // check we can read it as a TIFF and it is similare to the origina one
             readerTarget = new GeoTiffReader(file);
 
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -426,11 +426,11 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -457,11 +457,11 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         // check we can read it as a TIFF and it is similare to the origina one
         readerTarget = new GeoTiffReader(file);
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -490,7 +490,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             //            assertEquals(sourceCoverage.getCoordinateReferenceSystem(),
@@ -562,7 +562,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample
@@ -593,11 +593,11 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             FileUtils.writeByteArrayToFile(file, tiffContents);
 
             readerTarget = new GeoTiffReader(file);
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -622,7 +622,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // upsample
@@ -655,11 +655,11 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             // check we can read it as a TIFF and it is similare to the origina one
             readerTarget = new GeoTiffReader(file);
 
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -696,7 +696,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             //            assertEquals(sourceCoverage.getCoordinateReferenceSystem(),

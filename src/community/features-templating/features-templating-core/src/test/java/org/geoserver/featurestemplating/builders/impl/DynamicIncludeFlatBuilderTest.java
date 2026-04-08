@@ -2,15 +2,8 @@ package org.geoserver.featurestemplating.builders.impl;
 
 import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geotools.api.feature.Feature;
@@ -22,7 +15,15 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
 import org.xml.sax.helpers.NamespaceSupport;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class DynamicIncludeFlatBuilderTest extends DataTestCase {
 
@@ -105,8 +106,9 @@ public class DynamicIncludeFlatBuilderTest extends DataTestCase {
     private JSONObject encodeDynamicIncludeFlat(String expression, Feature feature, String baseNode)
             throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GeoJSONWriter writer =
-                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8), TemplateIdentifier.JSON);
+        GeoJSONWriter writer = new GeoJSONWriter(
+                JsonFactory.builder().build().createGenerator(ObjectWriteContext.empty(), baos, JsonEncoding.UTF8),
+                TemplateIdentifier.JSON);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode base = objectMapper.readTree(baseNode);
         DynamicIncludeFlatBuilder builder = new DynamicIncludeFlatBuilder(expression, new NamespaceSupport(), base);

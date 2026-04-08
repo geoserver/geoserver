@@ -6,9 +6,9 @@
 package org.geoserver.ogr;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.apache.wicket.Component;
@@ -34,6 +34,7 @@ import org.geotools.data.ogr.jni.JniOGRDataStoreFactory;
 
 /** Custom data store panel for OGR data stores */
 // TODO WICKET8 - Verify this page works OK
+@SuppressWarnings("unchecked")
 public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
 
     /**
@@ -56,7 +57,7 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
         // show a dropdown using the available driver names
         if (OGRDataStoreFactory.OGR_DRIVER_NAME.key.equals(paramName)) {
             List<String> drivers = new ArrayList<>(new JniOGRDataStoreFactory().getAvailableDrivers());
-            Collections.sort(drivers, String.CASE_INSENSITIVE_ORDER);
+            drivers.sort(String.CASE_INSENSITIVE_ORDER);
 
             IModel<Serializable> valueModel = new MapModel(paramsModel, paramName);
             return new DropDownChoiceParamPanel(componentId, valueModel, labelModel, drivers, false);
@@ -72,7 +73,7 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
     }
 
     /** Delegate that allows both files and directories to be chosen */
-    class FileOrDirectoryParamPanel extends DirectoryParamPanel {
+    static class FileOrDirectoryParamPanel extends DirectoryParamPanel {
 
         public FileOrDirectoryParamPanel(
                 String id,
@@ -93,8 +94,9 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
             return new DirectoryInput("fileInput", paramValue, paramLabelModel, required, validators) {
                 @Override
                 protected Component chooserButton(final String windowTitle) {
-                    AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
+                    return new AjaxSubmitLink("chooser") {
 
+                        @Serial
                         private static final long serialVersionUID = -2860146532287292092L;
 
                         @Override
@@ -104,11 +106,10 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
 
                         @Override
                         public void onSubmit(AjaxRequestTarget target) {
-                            gsDialog.setTitle(new Model<String>(windowTitle));
+                            gsDialog.setTitle(new Model<>(windowTitle));
                             gsDialog.showOkCancel(target, new OGRDialogDelegate());
                         }
                     };
-                    return link;
                 }
 
                 @Override
@@ -121,6 +122,7 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
                 class OGRDialogDelegate extends GeoServerDialog.DialogDelegate {
 
                     /** */
+                    @Serial
                     private static final long serialVersionUID = 1576266249751904398L;
 
                     @Override
@@ -148,11 +150,11 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
                         File file = null;
                         textField.processInput();
                         String input = textField.getConvertedInput();
-                        if (input != null && !input.equals("")) {
+                        if (input != null && !input.isEmpty()) {
                             file = new File(input);
                         }
 
-                        GeoServerFileChooser chooser = new GeoServerFileChooser(id, new Model<File>(file)) {
+                        GeoServerFileChooser chooser = new GeoServerFileChooser(id, new Model<>(file)) {
                             @Override
                             protected void fileClicked(File file, Optional<AjaxRequestTarget> target) {
                                 // clear the raw input of the field
@@ -166,7 +168,6 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
                                     dialog.close(target.get());
                                 }
                             }
-                            ;
                         };
                         chooser.setFilter(fileFilter);
 

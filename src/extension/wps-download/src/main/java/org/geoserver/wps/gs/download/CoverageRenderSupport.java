@@ -4,9 +4,6 @@
  */
 package org.geoserver.wps.gs.download;
 
-import it.geosolutions.jaiext.range.Range;
-import it.geosolutions.jaiext.vectorbin.ROIGeometry;
-import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -18,13 +15,16 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.ROI;
-import javax.media.jai.ROIShape;
-import javax.media.jai.operator.ConstantDescriptor;
-import javax.media.jai.operator.MosaicDescriptor;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.ROI;
+import org.eclipse.imagen.ROIShape;
+import org.eclipse.imagen.media.mosaic.MosaicDescriptor;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.media.vectorbin.ROIGeometry;
+import org.eclipse.imagen.media.viewer.RenderedImageBrowser;
+import org.eclipse.imagen.operator.ConstantDescriptor;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ColorUtilities;
@@ -67,8 +67,7 @@ class CoverageRenderSupport {
         // in case of index color model we try to preserve it, so that output
         // formats that can work with it can enjoy its extra compactness
         double[] bgValues = null;
-        if (cm instanceof IndexColorModel) {
-            IndexColorModel icm = (IndexColorModel) cm;
+        if (cm instanceof IndexColorModel icm) {
             // try to find the index that matches the requested background color
             final int bgColorIndex = icm.getTransparentPixel();
 
@@ -109,10 +108,8 @@ class CoverageRenderSupport {
 
         // in case of component color model
         boolean noDataTransparencyApplied = false;
-        if (cm instanceof ComponentColorModel) {
-
+        if (cm instanceof ComponentColorModel ccm) {
             // convert to RGB if necessary
-            ComponentColorModel ccm = (ComponentColorModel) cm;
             boolean hasAlpha = cm.hasAlpha();
 
             // if we have a grayscale image see if we have to expand to RGB
@@ -216,7 +213,7 @@ class CoverageRenderSupport {
                 Float.valueOf(image.getWidth()),
                 Float.valueOf(image.getHeight()),
                 new Byte[] {Byte.valueOf((byte) 255)},
-                new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+                new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, tempLayout));
 
         // Using an ImageWorker
         ImageWorker iw = new ImageWorker(image);
@@ -287,8 +284,7 @@ class CoverageRenderSupport {
             Object roiCandidate,
             boolean preProcessedWithTransparency) {
         ROI roi;
-        if (roiCandidate instanceof ROI) {
-            ROI imageROI = (ROI) roiCandidate;
+        if (roiCandidate instanceof ROI imageROI) {
             try {
                 roi = new ROIGeometry(mapRasterArea).intersect(imageROI);
             } catch (IllegalArgumentException e) {
@@ -315,7 +311,7 @@ class CoverageRenderSupport {
                 }
                 : null;
         // apply the mosaic
-        iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+        iw.setRenderingHint(ImageN.KEY_IMAGE_LAYOUT, layout);
         iw.setBackground(bgValues);
         iw.mosaic(
                 new RenderedImage[] {image},

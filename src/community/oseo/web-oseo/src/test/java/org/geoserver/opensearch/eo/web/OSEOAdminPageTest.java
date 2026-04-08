@@ -5,15 +5,27 @@
 package org.geoserver.opensearch.eo.web;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 public class OSEOAdminPageTest extends OSEOWebTestSupport {
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     @Before
     public void startPage() {
@@ -106,5 +118,22 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         formTester.setValue(componentName, null);
         formTester.submit();
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+    }
+
+    @Test
+    public void testSkipNumberMatched() throws Exception {
+        GeoServer gs = getGeoServer();
+        OSEOInfo oseo = gs.getService(OSEOInfo.class);
+        oseo.setSkipNumberMatched(false);
+        gs.save(oseo);
+
+        tester.startPage(OSEOAdminPage.class);
+        FormTester formTester = tester.newFormTester("form");
+        formTester.setValue("skipNumberMatched", "true");
+        formTester.submit("submit");
+        tester.assertNoErrorMessage();
+
+        oseo = gs.getService(OSEOInfo.class);
+        assertTrue(oseo.isSkipNumberMatched());
     }
 }

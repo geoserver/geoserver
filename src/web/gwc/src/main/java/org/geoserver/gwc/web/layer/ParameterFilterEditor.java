@@ -6,6 +6,9 @@
 
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,8 +61,22 @@ import org.geowebcache.filter.parameters.StringParameterFilter;
 // TODO WICKET8 - Verify this page works OK
 class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ParameterFilterEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     private static final Logger LOGGER = Logging.getLogger(ParameterFilterEditor.class);
 
+    @Serial
     private static final long serialVersionUID = 5098470663723800345L;
 
     private static final List<String> COMMON_KEYS = Arrays.asList(
@@ -90,6 +107,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
     private class ParameterListValidator implements IValidator<Set<ParameterFilter>> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private boolean validate;
@@ -164,6 +182,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
         filters = new ListView<>("parameterFilters", new ArrayList<>(model.getObject())) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -196,6 +215,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 item.add(subForm);
 
                 final AjaxSubmitLink removeLink = new AjaxSubmitLink("removeLink") {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -228,6 +248,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         Collections.sort(parameterKeys);
 
         GeoServerAjaxFormLink addStyleFilterLink = new GeoServerAjaxFormLink("addStyleFilter") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -254,6 +275,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 "availableFilterTypes", new Model<>(), new Model<>(filterTypes), new ChoiceRenderer<>() {
 
                     /** serialVersionUID */
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -294,6 +316,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         add(commonKeys);
 
         GeoServerAjaxFormLink addFilterLink = new GeoServerAjaxFormLink("addFilter") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -353,8 +376,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
     @Override
     public void convertInput() {
         filters.visitChildren((component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         });

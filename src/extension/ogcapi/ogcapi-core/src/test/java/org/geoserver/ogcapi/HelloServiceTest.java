@@ -6,11 +6,12 @@
 
 package org.geoserver.ogcapi;
 
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -18,9 +19,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.TestDispatcherCallback;
@@ -30,6 +29,8 @@ import org.geoserver.test.CodeExpectingHttpServletResponse;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -421,23 +422,55 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
     @Test
     public void testDocumentHTML() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1/document?f=html");
-        assertEquals(MediaType.TEXT_HTML_VALUE, response.getContentType());
+        String contentAsString = response.getContentAsString();
+        assertEquals(contentAsString, MediaType.TEXT_HTML_VALUE, response.getContentType());
         // Testing:
         // - the message is in the body
         // - service link generation
         // - resource link generation
-        String expected = "<html>\n"
-                + "<head>\n"
-                + "    <script src=\"http://localhost:8080/geoserver/webresources/ogcapi/hello.js\"></script>\n"
-                + "</head>\n"
-                + "<body>\n"
-                + "  <p>The message: hello</p>\n"
-                + "  <p><a class=\"wmsCapabilities\" href=\"http://localhost:8080/geoserver/wms?request=GetCapabilities&amp;service=WMS\">Capabilities URL</a></p>\n"
-                + "</body>\n"
-                + "</html>";
+        String expected =
+                """
+                <html xmlns:wicket="http://wicket.apache.org/">
+                <head>
+                    <script src="http://localhost:8080/geoserver/webresources/ogcapi/hello.js"></script>
+                </head>
+                <body>
+                  <p>The message: hello</p>
+                  <p><a class="wmsCapabilities" href="http://localhost:8080/geoserver/wms?request=GetCapabilities&amp;service=WMS">Capabilities URL</a></p>
+                  <div>
+                      <h2>value1</h2>
+                      <h2>value2</h2>
+                      <h2>value3</h2>
+                  </div>
+                </body>
+                </html>""";
         // windows line endings are normalized to unix
         String normalizedResponse = response.getContentAsString().replaceAll("\r\n", "\n");
         assertEquals(expected, normalizedResponse);
+    }
+
+    /**
+     * Verify {@link CloseableIterator} properties are properly closed by {@link AutoCloseableTracker} after encoding to
+     * HTML
+     */
+    @Test
+    public void testAutoCloseableTracker() throws Exception {
+        AutoCloseableTracker.closed.set(0);
+        MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1/document?f=html");
+        assertEquals(MediaType.TEXT_HTML_VALUE, response.getContentType());
+        assertEquals(1, AutoCloseableTracker.closed.get());
+    }
+
+    /**
+     * Verify {@link CloseableIterator} properties are properly closed by {@link CloseableIteratorSerializer} after
+     * encoding to JSON
+     */
+    @Test
+    public void testCloseableIteratorJsonSerializer() throws Exception {
+        CloseableIteratorSerializer.closed.set(0);
+        MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1/document");
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+        assertEquals(1, CloseableIteratorSerializer.closed.get());
     }
 
     @Test

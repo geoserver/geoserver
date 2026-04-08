@@ -9,23 +9,25 @@
       <span><wicket:message key="passwords"></wicket:message></span>
     </legend>
 
-    <div class="py-1">
-      <label for="passwordEncoderName">
-        <wicket:message key="passwordEncryption"></wicket:message>
-      </label>
-      <select wicket:id="passwordEncoderName"/>
-    </div>
-    <div class="choiceItem py-1">
-      <input wicket:id="recodeExistingPasswords" type="checkbox"/>
-      <label for="recodeExistingPasswords">
-        <wicket:message key="recodeExistingPasswords"></wicket:message>
-      </label>
-    </div>
-    <div class="py-1">
-      <label for="passwordPolicyName">
-        <wicket:message key="passwordPolicy"></wicket:message>
-      </label>
-      <select wicket:id="passwordPolicyName"/>
+    <div class="gs-form">
+      <div class="gs-form-group">
+        <label for="passwordEncoderName">
+          <wicket:message key="passwordEncryption"></wicket:message>
+        </label>
+        <select wicket:id="passwordEncoderName"/>
+      </div>
+      <div class="choiceItem">
+        <input wicket:id="recodeExistingPasswords" type="checkbox"/>
+        <label for="recodeExistingPasswords">
+          <wicket:message key="recodeExistingPasswords"></wicket:message>
+        </label>
+      </div>
+      <div class="gs-form-group">
+        <label for="passwordPolicyName">
+          <wicket:message key="passwordPolicy"></wicket:message>
+        </label>
+        <select wicket:id="passwordPolicyName"/>
+      </div>
     </div>
 
   </fieldset>

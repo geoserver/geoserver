@@ -6,6 +6,7 @@ package org.geoserver.importer.transform;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +22,7 @@ import org.geoserver.importer.ValidationException;
  * @author Andrea Aime - GeoSolutions
  */
 public class GdalAddoTransform extends AbstractCommandLinePreTransform implements RasterTransform {
+    @Serial
     private static final long serialVersionUID = -6241844409161277128L;
 
     /** Checks if gdaladdo is available */
@@ -79,8 +81,7 @@ public class GdalAddoTransform extends AbstractCommandLinePreTransform implement
 
     @Override
     protected File getInputFile(ImportData data) throws IOException {
-        if (data instanceof FileData) {
-            FileData fd = (FileData) data;
+        if (data instanceof FileData fd) {
             return fd.getFile();
         } else {
             throw new IOException("Can run gdaladdo only against file data");

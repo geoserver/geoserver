@@ -6,21 +6,22 @@ package org.geoserver.ows;
 
 import com.google.common.base.Throwables;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.UncheckedIOException;
 
 /**
- * An IOException that means a {@link ServiceStrategy#getDestination(javax.servlet.http.HttpServletResponse)
+ * An IOException that means a {@link ServiceStrategy#getDestination(jakarta.servlet.http.HttpServletResponse)
  * ServiceStrategy's destination} IO operation has been abruptly interrupted while writing a response.
  *
  * <p>This exception serves as an indicator to the dispatching system that there's no need to report the exception back
  * to the client.
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  * @since 1.6.x
  */
 public final class ClientStreamAbortedException extends IOException {
 
+    @Serial
     private static final long serialVersionUID = -812677957232110980L;
 
     public ClientStreamAbortedException() {

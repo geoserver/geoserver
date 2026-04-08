@@ -26,16 +26,26 @@
           <table class="function-table">
           <tr>
             <th>Identifier</th>
-            <th>Title</th>
             <th>Type</th>
+            <th>Min/Max</th>
             <th>Description</th>
+            <th>Encodings</th>
           </tr>
           <#list model.inputs as id, parameter>
             <tr id="input_${id}">
                 <td>${id}</td>
-                <td>${parameter.title!""}</td>
                 <td>${parameter.schema.getTitle()!""}</td>
+                <td>${parameter.minOccurs}/${parameter.maxOccurs}</td>
                 <td>${parameter.description!""}</td>
+                <td>
+                  <#if parameter.encodings?has_content>
+                    <div class="d-flex flex-wrap gap-1">
+                    <#list parameter.encodings as encoding>
+                      <span class="badge bg-process-inputs text-dark">${encoding}</span>
+                    </#list>
+                    </div>
+                  </#if>
+                </td>
             </tr>
           </#list>
           </table>
@@ -54,16 +64,24 @@
           <table class="function-table">
           <tr>
             <th>Identifier</th>
-            <th>Title</th>
             <th>Type</th>
             <th>Description</th>
+            <th>Encodings</th>
           </tr>
           <#list model.outputs as id, parameter>
             <tr id="output_${id}">
                 <td>${id}</td>
-                <td>${parameter.title!""}</td>
                 <td>${parameter.schema.getTitle()!""}</td>
                 <td>${parameter.description!""}</td>
+                <td>
+                  <#if parameter.encodings?has_content>
+                    <div class="d-flex flex-wrap gap-1">
+                    <#list parameter.encodings as encoding>
+                      <span class="badge bg-process-inputs text-dark">${encoding}</span>
+                    </#list>
+                    </div>
+                  </#if>
+                </td>
             </tr>
           </#list>
           </table>

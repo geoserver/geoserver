@@ -39,7 +39,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
 
     public LocalWorkspaceCatalogFilter(Catalog catalog) {
         // unwrap it just to be sure
-        while (catalog instanceof Wrapper && ((Wrapper) catalog).isWrapperFor(Catalog.class)) {
+        while (catalog instanceof Wrapper w && w.isWrapperFor(Catalog.class)) {
             Catalog unwrapped = ((Wrapper) catalog).unwrap(Catalog.class);
             if (unwrapped == catalog || unwrapped == null) {
                 break;
@@ -57,8 +57,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
             return false;
         } else if (local instanceof LayerInfo) {
             return !local.equals(layer);
-        } else if (local instanceof LayerGroupInfo) {
-            LayerGroupInfo lg = (LayerGroupInfo) local;
+        } else if (local instanceof LayerGroupInfo lg) {
             Request request = Dispatcher.REQUEST.get();
             if (request != null
                     && "WMS".equalsIgnoreCase(request.getService())
@@ -124,8 +123,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
     public boolean hideLayerGroup(LayerGroupInfo layerGroup) {
         PublishedInfo local = LocalPublished.get();
         if (local != null) {
-            if (local instanceof LayerGroupInfo) {
-                LayerGroupInfo lg = (LayerGroupInfo) local;
+            if (local instanceof LayerGroupInfo lg) {
                 Request request = Dispatcher.REQUEST.get();
                 if (request != null
                         && "WMS".equalsIgnoreCase(request.getService())
@@ -165,13 +163,13 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
     protected boolean subLayersHidden(LayerGroupInfo layerGroup) {
         boolean anySublayersVisible = false;
         for (PublishedInfo subLayer : layerGroup.getLayers()) {
-            if (subLayer instanceof LayerInfo) {
-                if (!hideLayer((LayerInfo) subLayer)) {
+            if (subLayer instanceof LayerInfo info1) {
+                if (!hideLayer(info1)) {
                     anySublayersVisible = true;
                     break;
                 }
-            } else if (subLayer instanceof LayerGroupInfo) {
-                if (!hideLayerGroup((LayerGroupInfo) subLayer)) {
+            } else if (subLayer instanceof LayerGroupInfo info) {
+                if (!hideLayerGroup(info)) {
                     anySublayersVisible = true;
                     break;
                 }
@@ -244,8 +242,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
                     filter = Predicates.and(filter, factory.equals(factory.literal(Boolean.TRUE), subLayersHidden));
 
                     Predicates.and(filter, Predicates.equal("id", localPublished.getId()));
-                } else if (localPublished instanceof LayerGroupInfo) {
-                    LayerGroupInfo lg = (LayerGroupInfo) localPublished;
+                } else if (localPublished instanceof LayerGroupInfo lg) {
                     List<LayerGroupInfo> groups = new LayerGroupHelper(lg).allGroups();
                     List<Filter> groupIdFilters = new ArrayList<>();
                     for (LayerGroupInfo group : groups) {
@@ -263,8 +260,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
                 return Predicates.acceptAll();
             } else if (localPublished instanceof LayerInfo) {
                 return Predicates.equal("id", localPublished.getId());
-            } else if (localPublished instanceof LayerGroupInfo) {
-                LayerGroupInfo lg = (LayerGroupInfo) localPublished;
+            } else if (localPublished instanceof LayerGroupInfo lg) {
                 Request request = Dispatcher.REQUEST.get();
                 if (request != null
                         && "WMS".equalsIgnoreCase(request.getService())

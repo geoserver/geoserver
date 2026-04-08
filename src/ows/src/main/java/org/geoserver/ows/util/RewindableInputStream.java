@@ -22,7 +22,7 @@
 // underlying InputStream's read(char[], offset length) method--it
 // won't buffer data read this way!</strong>
 //
-// @task TODO: How about implementing an ability to completely
+// @todo How about implementing an ability to completely
 //             disable buffering performed by this stream?
 //             It is very unlikely that someone will read data from
 //             the stream byte by byte with <code>read()</code>
@@ -356,7 +356,7 @@ public class RewindableInputStream extends InputStream {
 
         // Quickly "skipping" bytes in the buffer by modifying its pointer.
         if (n <= bytesLeft) {
-            fOffset += n;
+            fOffset = (int) (fOffset + n);
 
             return n;
         }

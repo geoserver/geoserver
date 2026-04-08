@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence.server.web;
 
+import java.io.Serial;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -33,6 +34,7 @@ import wicketdnd.theme.WebTheme;
  */
 public class GeofenceServerPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -8258166751239553791L;
 
     private GeofenceRulesModel rulesModel;
@@ -45,6 +47,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
 
         // the add button
         add(new AjaxLink<>("addNew") {
+            @Serial
             private static final long serialVersionUID = 8443763075141885559L;
 
             @Override
@@ -56,6 +59,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
         // the removal button
         add(
                 remove = new AjaxLink<>("removeSelected") {
+                    @Serial
                     private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override
@@ -71,6 +75,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
         add(
                 rulesPanel = new GeoServerTablePanel<>("rulesPanel", rulesModel = new GeofenceRulesModel(), true) {
 
+                    @Serial
                     private static final long serialVersionUID = -8943273843044917552L;
 
                     @Override
@@ -94,6 +99,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
         rulesPanel.add(new DragSource(Operation.MOVE).drag("tr"));
         rulesPanel.add(
                 new DropTarget(Operation.MOVE) {
+                    @Serial
                     private static final long serialVersionUID = 543875667418965337L;
 
                     @Override
@@ -124,6 +130,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
     /** Panel with buttons up, down and edit */
     private class ButtonPanel extends Panel {
 
+        @Serial
         private static final long serialVersionUID = 833648465957566970L;
 
         private ImageAjaxLink<?> upLink;
@@ -135,6 +142,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
             this.setOutputMarkupId(true);
 
             upLink = new ImageAjaxLink<>("up", new PackageResourceReference(getClass(), "img/arrow_up.png")) {
+                @Serial
                 private static final long serialVersionUID = -8179503447106596760L;
 
                 @Override
@@ -158,6 +166,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
             add(upLink);
 
             downLink = new ImageAjaxLink<>("down", new PackageResourceReference(getClass(), "img/arrow_down.png")) {
+                @Serial
                 private static final long serialVersionUID = 4640187752303674221L;
 
                 @Override
@@ -182,6 +191,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
 
             ImageAjaxLink<?> editLink =
                     new ImageAjaxLink<>("edit", new PackageResourceReference(getClass(), "img/edit.png")) {
+                        @Serial
                         private static final long serialVersionUID = 4640187752303674221L;
 
                         @Override

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wps;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.geotools.process.ProcessFactory;
 
 public class ProcessGroupInfoImpl implements ProcessGroupInfo {
 
+    @Serial
     private static final long serialVersionUID = 4850653421657310854L;
 
     Class<? extends ProcessFactory> factoryClass;

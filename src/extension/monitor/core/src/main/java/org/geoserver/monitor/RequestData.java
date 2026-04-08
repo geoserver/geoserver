@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.geometry.BoundingBox;
+import org.geotools.util.SuppressFBWarnings;
 
 /**
  * The request object, a simple java bean that gathers all the information and data that is monitored per request.
@@ -19,8 +21,10 @@ import org.geotools.api.geometry.BoundingBox;
  * @author Andrea Aime, OpenGeo
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressFBWarnings("AT_NONATOMIC_64BIT_PRIMITIVE") // used by one thread at a time
 public class RequestData implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 4115701065212157258L;
 
     private static AtomicLong COUNTER = new AtomicLong();

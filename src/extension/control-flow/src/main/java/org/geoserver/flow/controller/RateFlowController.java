@@ -5,12 +5,13 @@
 package org.geoserver.flow.controller;
 
 import com.google.common.base.Predicate;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.flow.ControlFlowCallback;
 import org.geoserver.flow.FlowController;
 import org.geoserver.ows.HttpErrorCodeException;
@@ -48,7 +49,7 @@ public class RateFlowController implements FlowController {
     static int COUNTERS_CLEANUP_INTERVAL =
             Integer.parseInt(System.getProperty("org.geoserver.flow.countersCleanupInterval", "10000"));
 
-    final class Counter {
+    static final class Counter {
         volatile long timePeriodId;
 
         AtomicInteger requests = new AtomicInteger(0);
@@ -79,7 +80,7 @@ public class RateFlowController implements FlowController {
     KeyGenerator keyGenerator;
 
     /** Contains all active counters */
-    Map<String, Counter> counters = new ConcurrentHashMap<>();
+    ConcurrentMap<String, Counter> counters = new ConcurrentHashMap<>();
 
     /** Used to make user keys unique before using them as synchronization locks */
     CanonicalSet<String> canonicalizer = CanonicalSet.newInstance(String.class);

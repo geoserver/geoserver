@@ -11,6 +11,7 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -116,12 +116,12 @@ public class ListAttributesController extends AbstractCatalogController {
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Error generating Attributes List!")
-    private class InvalidAttributes extends RuntimeException {
+    private static class InvalidAttributes extends RuntimeException {
         private static final long serialVersionUID = 7641473348901661113L;
     }
 
     /** @author Fabiani */
-    public class LayerAttributesList {
+    public static class LayerAttributesList {
         private String layerName;
 
         private Map<String, String> attributes = new HashMap<>();
@@ -171,7 +171,7 @@ public class ListAttributesController extends AbstractCatalogController {
     }
 
     /** @author Fabiani */
-    public class LayerAttributesListConverter implements Converter {
+    public static class LayerAttributesListConverter implements Converter {
 
         /** @see com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java .lang.Class) */
         @Override

@@ -6,6 +6,7 @@
 package org.geoserver.cluster.impl.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Properties;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -82,6 +83,7 @@ public class ClusterPage extends GeoServerSecuredPage {
 
         final AjaxButton connection = new AjaxButton("connectionB") {
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -149,6 +151,7 @@ public class ClusterPage extends GeoServerSecuredPage {
 
         final AjaxButton readOnly = new AjaxButton("readOnlyB") {
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -169,6 +172,7 @@ public class ClusterPage extends GeoServerSecuredPage {
         final Button save = new Button("saveB") {
 
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -198,6 +202,7 @@ public class ClusterPage extends GeoServerSecuredPage {
 
         final AjaxButton embeddedBroker = new AjaxButton("embeddedBrokerB") {
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -261,6 +266,7 @@ public class ClusterPage extends GeoServerSecuredPage {
         form.add(toggleInfo);
 
         final AjaxButton toggle = new AjaxButton(buttonId) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

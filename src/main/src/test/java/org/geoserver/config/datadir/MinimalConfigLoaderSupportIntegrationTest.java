@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,7 +25,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.servlet.ServletContext;
 import org.awaitility.Awaitility;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
@@ -116,7 +116,6 @@ public class MinimalConfigLoaderSupportIntegrationTest {
         global.getSettings().setTitle("pre-existing");
 
         LoggingInfo logging = support.getGeoServer().getFactory().createLogging();
-        logging.setLocation("logs/gs2.log");
 
         TestService1Impl service1 = new TestService1Impl();
         service1.setTitle("pre-existing service 1");
@@ -185,7 +184,6 @@ public class MinimalConfigLoaderSupportIntegrationTest {
         LoggingInfo logging = context.getBean(GeoServer.class).getLogging();
         assertNotNull(logging);
         assertEquals("DEFAULT_LOGGING", logging.getLevel());
-        assertEquals("logs/geoserver.log", logging.getLocation());
         assertTrue(logging.isStdOutLogging());
     }
 
@@ -262,7 +260,6 @@ public class MinimalConfigLoaderSupportIntegrationTest {
             // Verify our externally created logging config was loaded
             LoggingInfo logging = gs.getLogging();
             assertEquals("DEFAULT_LOGGING", logging.getLevel());
-            assertEquals("logs/geoserver.log", logging.getLocation());
             assertTrue(logging.isStdOutLogging());
         }
 

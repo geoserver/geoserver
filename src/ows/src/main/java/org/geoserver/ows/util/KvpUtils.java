@@ -34,7 +34,6 @@ import org.geoserver.platform.ServiceException;
  * @author Gabriel Rold?n, Axios
  * @author Justin Deoliveira, TOPP
  * @author Carlo Cancellieri Geo-Solutions SAS
- * @version $Id$
  */
 public class KvpUtils {
     /** Class logger */
@@ -53,8 +52,7 @@ public class KvpUtils {
      * Defines how to tokenize a string by using some sort of delimiter.
      *
      * <p>Default implementation uses {@link String#split(String)} with the regular expression provided at the
-     * constructor. More specialized subclasses may just override <code>
-     * readFlat(String)</code>.
+     * constructor. More specialized subclasses may just override {@code readFlat(String)}.
      *
      * @author Gabriel Roldan
      * @since 1.6.0
@@ -116,7 +114,7 @@ public class KvpUtils {
     /** Delimeter for inner value lists in the KVPs */
     public static final Tokenizer INNER_DELIMETER = new Tokenizer(",");
 
-    /** Delimeter for multiple filters in a CQL filter list (<code>";"</code>) */
+    /** Delimeter for multiple filters in a CQL filter list ({@code ";"}) */
     public static final Tokenizer CQL_DELIMITER = new Tokenizer(";");
 
     /** Delimeter for inner value lists in the KVPs */
@@ -152,7 +150,7 @@ public class KvpUtils {
         return typeList;
     }
 
-    /** Calls {@link #readFlat(String)} with the {@link #INNER_DELIMETER}. */
+    /** Calls {@link #readFlat(String, Tokenizer)} with the {@link #INNER_DELIMETER}. */
     public static List<String> readFlat(String rawList) {
         return readFlat(rawList, INNER_DELIMETER);
     }
@@ -371,8 +369,7 @@ public class KvpUtils {
 
     /**
      * Converts a raw KVP based on String values to one with object values. Here to help trade with parts of the code
-     * assuming <code>KvpMap<String, String></code> and <code>
-     * KvpMap<String, Object></code>
+     * assuming {@code KvpMap<String, String>} and {@code KvpMap<String, Object>}
      *
      * @param kvp
      * @return
@@ -563,8 +560,8 @@ public class KvpUtils {
         Object value = kvp.get(key);
         if (value == null) {
             return null;
-        } else if (value instanceof String) {
-            return (String) value;
+        } else if (value instanceof String string) {
+            return string;
         } else {
             String[] strings = (String[]) value;
             if (strings.length == 0) {
@@ -636,9 +633,9 @@ public class KvpUtils {
             } else {
                 String[] array;
                 Object oldValue = result.get(key);
-                if (oldValue instanceof String) {
+                if (oldValue instanceof String string) {
                     array = new String[2];
-                    array[0] = (String) oldValue;
+                    array[0] = string;
                     array[1] = value;
                 } else {
                     String[] oldArray = (String[]) oldValue;
@@ -753,9 +750,7 @@ public class KvpUtils {
             if (entry.getKey() instanceof String) {
                 if (paramname.equalsIgnoreCase((String) entry.getKey())) {
                     Object obj = entry.getValue();
-                    value = obj instanceof String
-                            ? (String) obj
-                            : (obj instanceof String[]) ? ((String[]) obj)[0].toLowerCase() : value;
+                    value = obj instanceof String s ? s : (obj instanceof String[] ss) ? ss[0].toLowerCase() : value;
                 }
             }
         }
@@ -781,8 +776,8 @@ public class KvpUtils {
         Object o = kvp.get(param);
         if (o == null) {
             return null;
-        } else if (o instanceof String) {
-            return (String) o;
+        } else if (o instanceof String string) {
+            return string;
         } else {
             String[] values = (String[]) o;
             if (values.length > 0) {

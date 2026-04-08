@@ -6,6 +6,7 @@ package org.geoserver.importer.transform;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.geoserver.importer.ImportData;
  * @author Andrea Aime - GeoSolutions
  */
 public class GdalTranslateTransform extends AbstractCommandLinePreTransform implements RasterTransform {
+    @Serial
     private static final long serialVersionUID = -6241844409161277128L;
 
     /** Checks if gdal_translate is available */
@@ -37,8 +39,7 @@ public class GdalTranslateTransform extends AbstractCommandLinePreTransform impl
 
     @Override
     protected File getInputFile(ImportData data) throws IOException {
-        if (data instanceof FileData) {
-            FileData fd = (FileData) data;
+        if (data instanceof FileData fd) {
             return fd.getFile();
         } else {
             throw new IOException("Can run gdal_translate only against file data");

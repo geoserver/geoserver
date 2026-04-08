@@ -1,0 +1,44 @@
+table{
+  table-layout: auto;
+  width: 100%;
+}
+th{
+  min-width: 0.1%;
+  word-break: break-all;
+}
+td{
+  min-width: 0.1%;
+  word-break: break-all;
+}
+td span{
+  min-width: 0.1%;
+  word-break: break-all;
+}
+td span div{
+  min-width: 0.1%;
+  max-width:140px;
+  width: auto;
+  white-space:nowrap;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 1; position:relative;
+}
+td span div:hover {
+  overflow: visible;
+  display: inline-block;
+  z-index: 2; position:relative;
+}
+td span div:hover span{
+  background-color: white;
+  display: inline-block;
+}
+
+.cog-link{
+  background-color: transparent;
+  background-attachment: scroll;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding: 2px 0 2px 20px;
+  background-image: url(../org.geoserver.web.GeoServerBasePage/img/icons/silk/cog.png);
+}

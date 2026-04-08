@@ -8,6 +8,7 @@
   <bean id="ldapSecurityWebExtension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-web-sec-ldap"/>
     <constructor-arg index="1" value="GeoServer Web UI Security LDAP"/>
+    <property name="category" value="CORE"/>
   </bean>
   <!-- ui auth provider panel info-->
   <bean id="ldapAuthPanelInfo" class="org.geoserver.web.security.ldap.LDAPAuthProviderPanelInfo">

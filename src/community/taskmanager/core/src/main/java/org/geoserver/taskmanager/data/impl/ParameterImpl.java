@@ -4,22 +4,27 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.io.Serial;
 import org.geoserver.taskmanager.data.Parameter;
 import org.geoserver.taskmanager.data.Task;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "task"})})
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "task"})},
+        indexes = {@Index(name = "idx_parameterimpl_task", columnList = "task", unique = false)})
 public class ParameterImpl extends BaseImpl implements Parameter {
 
+    @Serial
     private static final long serialVersionUID = 2728548577251702332L;
 
     @Id

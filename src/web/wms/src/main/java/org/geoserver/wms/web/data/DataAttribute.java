@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.web.data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -14,6 +15,7 @@ import java.io.Serializable;
  */
 class DataAttribute implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -6470442390382618241L;
 
     String name;

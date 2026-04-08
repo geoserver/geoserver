@@ -1,15 +1,22 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-  <div>
-    <label wicket:for="case"><wicket:message key="case">Case</wicket:message></label>
-    <select wicket:id="case" class="d-block" />
-  </div>
-  <div>
-    <label wicket:for="locale"><wicket:message key="locale">locale</wicket:message></label>
-    <select wicket:id="locale" class="d-block" />
-  </div>
-</wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-CaseNormalizerSubform">
+        <div>
+          <label wicket:for="case">
+            <wicket:message key="case">Case</wicket:message>
+          </label>
+          <select wicket:id="case" class="d-block"/>
+        </div>
+        <div>
+          <label wicket:for="locale">
+            <wicket:message key="locale">locale</wicket:message>
+          </label>
+          <select wicket:id="locale" class="d-block"/>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

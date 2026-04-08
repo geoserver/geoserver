@@ -17,11 +17,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
@@ -32,7 +32,6 @@ import org.springframework.context.ApplicationContext;
  * Unit test suite for {@link GeoServerExtensions}
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  */
 public class GeoServerExtensionsTest {
 
@@ -84,9 +83,9 @@ public class GeoServerExtensionsTest {
 
         List<GeoServerExtensionsTest> extensions = GeoServerExtensions.extensions(GeoServerExtensionsTest.class);
         assertNotNull(extensions);
-        assertEquals(2, extensions.size());
+        // null is filtered out
+        assertEquals(1, extensions.size());
         assertTrue(extensions.contains(this));
-        assertTrue(extensions.contains(null));
 
         assertEquals(3, GeoServerExtensions.extensionsCache.size());
         assertTrue(GeoServerExtensions.extensionsCache.containsKey(GeoServerExtensionsTest.class));

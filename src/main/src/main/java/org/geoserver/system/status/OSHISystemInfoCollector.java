@@ -45,7 +45,7 @@ public class OSHISystemInfoCollector extends Thread {
 
     private final FileSystem fs;
 
-    private double cpuUsage = 0;
+    private volatile double cpuUsage = 0;
 
     private long[][] oldTicks;
     private long[] oldLoadTicks;
@@ -87,7 +87,7 @@ public class OSHISystemInfoCollector extends Thread {
         List<MetricValue> si = Collections.emptyList();
         try {
             switch (info) {
-                    // system metrics
+                // system metrics
                 case OPERATING_SYSTEM: {
                     MetricValue mv = new MetricValue(info);
                     mv.setAvailable(true);
@@ -132,7 +132,7 @@ public class OSHISystemInfoCollector extends Thread {
                     }
                     break;
                 }
-                    // cpu metrics
+                // cpu metrics
                 case PHYSICAL_CPUS: {
                     MetricValue mv = new MetricValue(info);
                     mv.setAvailable(true);
@@ -192,7 +192,7 @@ public class OSHISystemInfoCollector extends Thread {
                     }
                     break;
                 }
-                    // memory metrics
+                // memory metrics
                 case MEMORY_USED: {
                     MetricValue mv = new MetricValue(info);
                     mv.setAvailable(true);
@@ -220,7 +220,7 @@ public class OSHISystemInfoCollector extends Thread {
                     si = Collections.singletonList(mv);
                     break;
                 }
-                    // swap metrics
+                // swap metrics
                 case SWAP_USED: {
                     MetricValue mv = new MetricValue(info);
                     mv.setAvailable(true);
@@ -250,7 +250,7 @@ public class OSHISystemInfoCollector extends Thread {
                     si = Collections.singletonList(mv);
                     break;
                 }
-                    // file system metrics
+                // file system metrics
                 case FILE_SYSTEM_TOTAL_USAGE: {
                     List<OSFileStore> fss = fs.getFileStores();
                     if (!fss.isEmpty()) {
@@ -329,7 +329,7 @@ public class OSHISystemInfoCollector extends Thread {
                     }
                     break;
                 }
-                    // network metrics
+                // network metrics
                 case NETWORK_INTERFACES_SEND: {
                     List<NetworkIF> nis = hal.getNetworkIFs();
                     if (!nis.isEmpty()) {
@@ -396,7 +396,7 @@ public class OSHISystemInfoCollector extends Thread {
                     }
                     break;
                 }
-                    // sensors metrics
+                // sensors metrics
                 case TEMPERATURE: {
                     double value = ss.getCpuTemperature();
                     if (value > 0) {
@@ -440,7 +440,7 @@ public class OSHISystemInfoCollector extends Thread {
                     }
                     break;
                 }
-                    // geoserver metrics
+                // geoserver metrics
                 case GEOSERVER_CPU_USAGE: {
                     if (cpuUsage >= 0.0) {
                         MetricValue mv = new MetricValue(info);

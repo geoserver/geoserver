@@ -13,8 +13,8 @@ public class CogSettingsXStreamInitializer implements XStreamPersisterInitialize
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("cogSettings", CogSettings.class);
-        persister.registerBreifMapComplexType("cogSettingsStore", CogSettingsStore.class);
+        persister.registerBriefMapComplexType("cogSettings", CogSettings.class);
+        persister.registerBriefMapComplexType("cogSettingsStore", CogSettingsStore.class);
         XStream xs = persister.getXStream();
         xs.alias("cogSettings", CogSettings.class);
         xs.alias("cogSettingsStore", CogSettingsStore.class);

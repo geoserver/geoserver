@@ -43,7 +43,7 @@ public class ReaderDimensionAccessorTest {
         }
 
         @Override
-        public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+        public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
             return null;
         }
 

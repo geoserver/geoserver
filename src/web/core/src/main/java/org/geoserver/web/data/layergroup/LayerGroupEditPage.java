@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.WicketRuntimeException;
@@ -45,6 +48,7 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 /** Handles layer group */
 public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInfo> {
 
+    @Serial
     private static final long serialVersionUID = 5659874305843575438L;
 
     public static final String GROUP = "group";
@@ -98,6 +102,20 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
     public class LayerGroupTab extends PublishedEditTabPanel<LayerGroupInfo> {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerGroupEditPage.LayerGroupTab.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = 2192005814142588155L;
 
         public LayerGroupTab(String id) {
@@ -134,6 +152,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             modeChoice.setNullValid(false);
             modeChoice.setRequired(true);
             modeChoice.add(new OnChangeAjaxBehavior() {
+                @Serial
                 private static final long serialVersionUID = 8819356789334465887L;
 
                 @Override
@@ -182,6 +201,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             envelopePanel.setOutputMarkupId(true);
 
             add(new GeoServerAjaxFormLink("generateBounds") {
+                @Serial
                 private static final long serialVersionUID = -5290731459036222837L;
 
                 @Override
@@ -217,6 +237,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
             add(new GeoServerAjaxFormLink("generateBoundsFromCRS") {
 
+                @Serial
                 private static final long serialVersionUID = -7907583302556368270L;
 
                 @Override
@@ -275,6 +296,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
         class GroupNameValidator implements IValidator<String> {
 
+            @Serial
             private static final long serialVersionUID = -6621372846640620132L;
 
             @Override

@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.security.ldap;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -20,6 +23,7 @@ import org.geoserver.security.web.role.RoleServicePanel;
 
 public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig> {
 
+    @Serial
     private static final long serialVersionUID = -67788557484913489L;
 
     private static final String USE_NESTED_PARENT_GROUPS = "useNestedParentGroups";
@@ -27,9 +31,24 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
     private static final String NESTED_GROUP_SEARCH_FILTER = "nestedGroupSearchFilter";
     private static final String NESTED_SEARCH_FIELDS_CONTAINER = "nestedSearchFieldsContainer";
 
-    class LDAPAuthenticationPanel extends FormComponentPanel<String> {
+    static class LDAPAuthenticationPanel extends FormComponentPanel<String> {
+
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(LDAPRoleServicePanel.LDAPAuthenticationPanel.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 8919421089437979222L;
 
         public LDAPAuthenticationPanel(String id) {
@@ -62,6 +81,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
         add(rolePrefixField);
         add(new CheckBox("convertToUpperCase"));
         add(new AjaxCheckBox("bindBeforeGroupSearch") {
+            @Serial
             private static final long serialVersionUID = -1675695153498067857L;
 
             @Override
@@ -99,6 +119,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
                 useNestedOpt.map(LDAPRoleServiceConfig::isUseNestedParentGroups).orElse(false);
         nestedSearchFieldsContainer.setVisible(useNestedActivated);
         final AjaxCheckBox useNestedCheckbox = new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

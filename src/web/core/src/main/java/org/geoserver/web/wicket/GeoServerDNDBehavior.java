@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -17,6 +18,7 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
  */
 public class GeoServerDNDBehavior extends Behavior {
 
+    @Serial
     private static final long serialVersionUID = -68544546136230017L;
 
     public static final JavaScriptResourceReference DND_JS =

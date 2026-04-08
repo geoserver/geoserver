@@ -1,6 +1,7 @@
 package org.geoserver.smartdataloader.domain;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.DatabaseMetaData;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.smartdataloader.AbstractJDBCSmartDataLoaderTestSupport;
 import org.geoserver.smartdataloader.JDBCFixtureHelper;
+import org.geoserver.smartdataloader.domain.entities.DomainEntitySimpleAttribute;
 import org.geoserver.smartdataloader.domain.entities.DomainModel;
 import org.geoserver.smartdataloader.domain.entities.DomainRelation;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
@@ -164,6 +166,8 @@ public abstract class DomainModelBuilderTest extends AbstractJDBCSmartDataLoader
         String paramContainingEntity = relationParam.getContainingEntity().getName();
         assertEquals(stContainingEntity, paramContainingEntity);
         assertEquals("meteo_observations", stContainingEntity);
-        assertEquals(4, dm.getRootEntity().getAttributes().size());
+        assertEquals(5, dm.getRootEntity().getAttributes().size());
+        List<DomainEntitySimpleAttribute> attributes = dm.getRootEntity().getAttributes();
+        assertTrue(attributes.stream().anyMatch(dsa -> dsa.getName().equals("universal_id")));
     }
 }

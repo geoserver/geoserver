@@ -75,9 +75,9 @@ public class WicketResourceResourceLoader implements IStringResourceLoader {
                 }
             } catch (IOException | IllegalStateException e) {
                 if (shouldThrowExceptionForMissingResource()) {
-                    throw new WicketRuntimeException(String.format(
-                            "Unable able to locate resource bundle for the specifed base name: %s",
-                            resourceBundleName));
+                    throw new WicketRuntimeException(
+                            "Unable able to locate resource bundle for the specifed base name: %s"
+                                    .formatted(resourceBundleName));
                 }
                 LOGGER.fine("Unable able to locate resource bundle for the specifed base name:" + resourceBundleName);
             }
@@ -116,8 +116,8 @@ public class WicketResourceResourceLoader implements IStringResourceLoader {
 
         if (caught || string == null) {
             if (shouldThrowExceptionForMissingResource()) {
-                throw new WicketRuntimeException(String.format(
-                        "Unable able to locate resource bundle for the specifed base name: %s", resourceBundleName));
+                throw new WicketRuntimeException("Unable able to locate resource bundle for the specifed base name: %s"
+                        .formatted(resourceBundleName));
             }
 
             LOGGER.fine("No value found key " + key + " in resource bundle " + resourceBundleName);

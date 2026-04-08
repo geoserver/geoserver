@@ -63,30 +63,21 @@ public class FilterConfigValidator extends SecurityConfigValidator {
 
     public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
-        if (config instanceof BasicAuthenticationFilterConfig)
-            validateFilterConfig((BasicAuthenticationFilterConfig) config);
-        if (config instanceof DigestAuthenticationFilterConfig)
-            validateFilterConfig((DigestAuthenticationFilterConfig) config);
-        if (config instanceof RoleFilterConfig) validateFilterConfig((RoleFilterConfig) config);
-        if (config instanceof X509CertificateAuthenticationFilterConfig)
-            validateFilterConfig((X509CertificateAuthenticationFilterConfig) config);
-        if (config instanceof UsernamePasswordAuthenticationFilterConfig)
-            validateFilterConfig((UsernamePasswordAuthenticationFilterConfig) config);
-        if (config instanceof RequestHeaderAuthenticationFilterConfig)
-            validateFilterConfig((RequestHeaderAuthenticationFilterConfig) config);
-        if (config instanceof J2eeAuthenticationFilterConfig)
-            validateFilterConfig((J2eeAuthenticationFilterConfig) config);
-        if (config instanceof ExceptionTranslationFilterConfig)
-            validateFilterConfig((ExceptionTranslationFilterConfig) config);
-        if (config instanceof SecurityContextPersistenceFilterConfig)
-            validateFilterConfig((SecurityContextPersistenceFilterConfig) config);
-        if (config instanceof RememberMeAuthenticationFilterConfig)
-            validateFilterConfig((RememberMeAuthenticationFilterConfig) config);
-        if (config instanceof AnonymousAuthenticationFilterConfig)
-            validateFilterConfig((AnonymousAuthenticationFilterConfig) config);
-        if (config instanceof SecurityInterceptorFilterConfig)
-            validateFilterConfig((SecurityInterceptorFilterConfig) config);
-        if (config instanceof LogoutFilterConfig) validateFilterConfig((LogoutFilterConfig) config);
+        if (config instanceof BasicAuthenticationFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof DigestAuthenticationFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof RoleFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof X509CertificateAuthenticationFilterConfig filterConfig)
+            validateFilterConfig(filterConfig);
+        if (config instanceof UsernamePasswordAuthenticationFilterConfig filterConfig)
+            validateFilterConfig(filterConfig);
+        if (config instanceof RequestHeaderAuthenticationFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof J2eeAuthenticationFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof ExceptionTranslationFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof SecurityContextPersistenceFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof RememberMeAuthenticationFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof AnonymousAuthenticationFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof SecurityInterceptorFilterConfig filterConfig) validateFilterConfig(filterConfig);
+        if (config instanceof LogoutFilterConfig filterConfig) validateFilterConfig(filterConfig);
 
         // TODO, check rememberme
 
@@ -234,8 +225,8 @@ public class FilterConfigValidator extends SecurityConfigValidator {
                             FilterConfigException.INVALID_ENTRY_POINT, config.getAuthenticationFilterName());
 
                 boolean valid = false;
-                if (filterConfig instanceof SecurityFilterConfig) {
-                    if (((SecurityFilterConfig) filterConfig).providesAuthenticationEntryPoint()) valid = true;
+                if (filterConfig instanceof SecurityFilterConfig securityFilterConfig) {
+                    if (securityFilterConfig.providesAuthenticationEntryPoint()) valid = true;
                 }
                 if (!valid) {
                     throw createFilterException(

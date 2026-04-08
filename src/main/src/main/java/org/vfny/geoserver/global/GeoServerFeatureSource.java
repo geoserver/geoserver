@@ -68,7 +68,6 @@ import org.geotools.util.factory.Hints.ConfigurationMetadataKey;
  * this. Could we use this class to do so?
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSource> implements SimpleFeatureSource {
     /** Shared package logger */
@@ -347,7 +346,7 @@ public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSourc
         Integer offset = null, maxFeatures = null;
         if (sortBy != null && sortBy != SortBy.UNSORTED) {
             if (!source.getQueryCapabilities().supportsSorting(sortBy)) {
-                query.setSortBy(null);
+                query.setSortBy((SortBy[]) null);
 
                 // if paging is in and we cannot do sorting natively
                 // we should not let the datastore handle it: we need to sort first, then
@@ -584,7 +583,7 @@ public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSourc
      *
      * <p>Please note this extent will reflect the provided definitionQuery.
      *
-     * @return Extent of this FeatureSource, or <code>null</code> if no optimizations exist.
+     * @return Extent of this FeatureSource, or {@code null} if no optimizations exist.
      * @throws IOException If bounds of definitionQuery
      */
     @Override
@@ -603,13 +602,13 @@ public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSourc
      * Retrive the extent of the Query.
      *
      * <p>This method provides access to an optimized getBounds opperation. If no optimized opperation is available
-     * <code>null</code> will be returned.
+     * {@code null} will be returned.
      *
      * <p>You may still make use of getFeatures( Query ).getCount() which will return the correct answer (even if it has
      * to itterate through all the results to do so.
      *
      * @param query User's query
-     * @return Extend of Query or <code>null</code> if no optimization is available
+     * @return Extend of Query or {@code null} if no optimization is available
      * @throws IOException If a problem is encountered with source
      */
     @Override
@@ -671,7 +670,7 @@ public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSourc
             }
 
             @Override
-            public boolean supportsSorting(SortBy[] sortAttributes) {
+            public boolean supportsSorting(SortBy... sortAttributes) {
                 return true;
             }
         };

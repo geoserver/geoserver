@@ -20,7 +20,7 @@
        <p>The following processes are supported on ${model.id}.</p>
        <#list model.endpoints as ep>
           <h3>${ep.id}</h3>
-          <p>${ep.title?html}.<br/>${ep.description?html?replace("\n", "<br>")}<br>
+          <p>${ep.title}.<br/>${ep.description?replace("\n", "<br>")}<br>
           <a id="html_${ep.id}_link" href="${ep.getLinkUrl('ogc-dapa-endpoint', 'application/geo+json')!}">Run "${ep.id}" with default parameters</a>
           </p>
        </#list>

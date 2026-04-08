@@ -5,9 +5,9 @@
  */
 package org.geoserver.logging;
 
+import jakarta.servlet.ServletContext;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import javax.servlet.ServletContext;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -68,7 +68,7 @@ public class LoggingUtils {
      */
     public static final String GT2_LOGGING_REDIRECTION = "GT2_LOGGING_REDIRECTION";
 
-    /** Flag used to override {@link LoggingInfo#getLocation()} */
+    /** Application property used to configure the log file location. */
     public static final String GEOSERVER_LOG_LOCATION = "GEOSERVER_LOG_LOCATION";
 
     /** Policy settings for {@link LoggingUtils#GEOSERVER_LOG_LOCATION} configuration. */
@@ -92,6 +92,7 @@ public class LoggingUtils {
     }
 
     /** Built-in logging configurations. */
+    @SuppressWarnings("MutablePublicArray") // TODO convert to immutable list
     public static final String[] STANDARD_LOGGING_CONFIGURATIONS = {
         "DEFAULT_LOGGING",
         "GEOSERVER_DEVELOPER_LOGGING",

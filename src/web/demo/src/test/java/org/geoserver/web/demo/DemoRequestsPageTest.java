@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -25,7 +26,6 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.test.TestData;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.util.SerializationUtils;
 
 /**
  * @author Gabriel Roldan

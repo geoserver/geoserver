@@ -1,0 +1,268 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.wms.web.publish;
+
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.IOException;
+import java.io.Serial;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import org.apache.wicket.extensions.markup.html.form.palette.Palette;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.util.CollectionModel;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.string.Strings;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.web.publish.PublishedConfigurationPanel;
+import org.geoserver.web.wicket.LiveCollectionModel;
+import org.geoserver.web.wicket.SimpleChoiceRenderer;
+import org.geotools.util.logging.Logging;
+
+/**
+ * Configures {@link LayerInfo} WMS specific attributes for handling remote WMS Layers.
+ *
+ * <ul>
+ *   <li>remoteStyles
+ *   <li>extraRemoteStyles
+ *   <li>remoteFormats
+ *   <li>min and max scale denominator
+ *   <li>respectMetadataBBox
+ *   <li>queryableEnabled
+ *   <li>vendorParameters
+ * </ul>
+ */
+public class WMSRemoteLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(WMSRemoteLayerConfig.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    static final Logger LOGGER = Logging.getLogger(WMSRemoteLayerConfig.class);
+
+    @Serial
+    private static final long serialVersionUID = -2895136226805357537L;
+
+    public WMSRemoteLayerConfig(String id, IModel<LayerInfo> layerModel) {
+        super(id, layerModel);
+
+        // styles block container
+        WebMarkupContainer styleContainer = new WebMarkupContainer("remotestyles");
+
+        // remote formats
+        WebMarkupContainer remoteForamtsContainer = new WebMarkupContainer("remoteformats");
+        WebMarkupContainer metaDataCheckBoxContainer = new WebMarkupContainer("metaDataCheckBoxContainer");
+        WebMarkupContainer scaleDenominatorContainer = new WebMarkupContainer("scaleDenominatorContainer");
+        WebMarkupContainer vendorParametersContainer = new WebMarkupContainer("vendorParametersContainer");
+
+        add(styleContainer);
+        add(remoteForamtsContainer);
+        add(metaDataCheckBoxContainer);
+        add(scaleDenominatorContainer);
+        add(vendorParametersContainer);
+
+        if (!(layerModel.getObject().getResource() instanceof WMSLayerInfo)) {
+            styleContainer.setVisible(false);
+            remoteForamtsContainer.setVisible(false);
+            metaDataCheckBoxContainer.setVisible(false);
+            scaleDenominatorContainer.setVisible(false);
+            vendorParametersContainer.setVisible(false);
+            return;
+        }
+
+        WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerModel.getObject().getResource();
+        // for new only
+        try {
+            if (layerModel.getObject().getId() == null) wmsLayerInfo.reset();
+            else {
+                // pull latest styles from remote WMS
+                wmsLayerInfo.getAllAvailableRemoteStyles().clear();
+                wmsLayerInfo.getAllAvailableRemoteStyles().addAll(wmsLayerInfo.getRemoteStyleInfos());
+            }
+        } catch (Exception e) {
+            error("unable to fetch remote styles for " + wmsLayerInfo.getNativeName());
+            LOGGER.log(
+                    Level.SEVERE,
+                    e.getMessage() + ":unable to fetch remote styles for " + wmsLayerInfo.getNativeName(),
+                    e);
+        }
+        // empty string to use whatever default remote server has
+        List<String> remoteSyles = new ArrayList<>();
+        remoteSyles.add("");
+        remoteSyles.addAll(getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles()));
+        DropDownChoice<String> remotStyles = new DropDownChoice<>(
+                "remoteStylesDropDown", new PropertyModel<>(wmsLayerInfo, "forcedRemoteStyle"), remoteSyles);
+
+        styleContainer.add(remotStyles);
+
+        LiveCollectionModel<String, Set<String>> stylesModel =
+                LiveCollectionModel.set(new PropertyModel<>(wmsLayerInfo, "selectedRemoteStyles"));
+        Palette<String> extraRemoteStyles = new Palette<>(
+                "extraRemoteStyles",
+                stylesModel,
+                new CollectionModel<>(getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles())),
+                new SimpleChoiceRenderer<>(),
+                10,
+                true);
+
+        extraRemoteStyles.add(new DefaultTheme());
+        styleContainer.add(extraRemoteStyles);
+
+        DropDownChoice<String> remoteForamts = new DropDownChoice<>(
+                "remoteFormatsDropDown",
+                new PropertyModel<>(wmsLayerInfo, "preferredFormat"),
+                wmsLayerInfo.availableFormats());
+
+        remoteForamtsContainer.add(remoteForamts);
+        // add format pallete
+
+        LiveCollectionModel<String, Set<String>> remoteFormatsModel =
+                LiveCollectionModel.set(new PropertyModel<>(wmsLayerInfo, "selectedRemoteFormats"));
+
+        Palette<String> remoteFormatsPalette = new Palette<>(
+                "remoteFormatsPalette",
+                remoteFormatsModel,
+                new CollectionModel<>(wmsLayerInfo.availableFormats()),
+                new SimpleChoiceRenderer<>(),
+                10,
+                true);
+
+        remoteFormatsPalette.add(new DefaultTheme());
+        remoteForamtsContainer.add(remoteFormatsPalette);
+        metaDataCheckBoxContainer.add(
+                new CheckBox("respectMetadataBBoxChkBox", new PropertyModel<>(wmsLayerInfo, "metadataBBoxRespected")));
+        // scale denominators
+        TextField<Double> minScale =
+                new TextField<>("minScale", new PropertyModel<>(wmsLayerInfo, "minScale"), Double.class);
+        scaleDenominatorContainer.add(minScale);
+        TextField<Double> maxScale =
+                new TextField<>("maxScale", new PropertyModel<>(wmsLayerInfo, "maxScale"), Double.class);
+        scaleDenominatorContainer.add(maxScale);
+
+        minScale.add(new ScalesValidator(minScale, maxScale));
+
+        TextArea<Object> vendorParameters =
+                new TextArea<>("vendorParameters", new PropertyModel<>(wmsLayerInfo, "vendorParameters")) {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        if (Map.class.isAssignableFrom(type)) {
+                            // The cast is safe because we explicitly check that the type is assignable from Map.
+                            return (IConverter<C>) new VendorParametersConvertor();
+                        }
+                        return super.getConverter(type);
+                    }
+                };
+        vendorParameters.setConvertEmptyInputStringToNull(false);
+        vendorParametersContainer.add(vendorParameters);
+    }
+
+    private Set<String> getRemoteStyleNames(final List<StyleInfo> styleInfoList) {
+        return styleInfoList.stream().map(s -> s.getName()).collect(Collectors.toSet());
+    }
+
+    // validator to make sure min scale smaller than max scale and vice-versa
+    private static class ScalesValidator implements IValidator<Double> {
+
+        /** serialVersionUID */
+        @Serial
+        private static final long serialVersionUID = 1349568700386246273L;
+
+        TextField<Double> minScale;
+        TextField<Double> maxScale;
+
+        public ScalesValidator(TextField<Double> minScale, TextField<Double> maxScale) {
+            this.minScale = minScale;
+            this.maxScale = maxScale;
+        }
+
+        private Double safeGet(String input, Double defaultValue) {
+            if (input == null || input.isEmpty()) return defaultValue;
+            else return Double.valueOf(input);
+        }
+
+        @Override
+        public void validate(IValidatable validatable) {
+            if (this.minScale.getInput() != null && this.maxScale.getInput() != null) {
+                // negative check
+                if (Double.valueOf(minScale.getInput()) < 0 || Double.valueOf(maxScale.getInput()) < 0) {
+                    validatable.error(new ValidationError("Scale denominator cannot be Negative"));
+                }
+                // if both are set perform check min < max
+
+                if (safeGet(minScale.getInput(), 0d) >= safeGet(maxScale.getInput(), Double.MAX_VALUE)) {
+                    validatable.error(new ValidationError("Minimum Scale cannot be greater than Maximum Scale"));
+                }
+            }
+        }
+    }
+
+    static class VendorParametersConvertor implements IConverter<Map<String, String>> {
+
+        @Override
+        public Map<String, String> convertToObject(String text, Locale locale) throws ConversionException {
+            Properties properties = new Properties();
+            if (text != null && !text.isEmpty()) {
+                try (StringReader reader = new StringReader(text)) {
+                    properties.load(reader); // Load properties from the string
+                } catch (IOException e) {
+                    throw new ConversionException(e);
+                }
+            }
+
+            // No empty keys as they break the url protocol when mapped to url parameters
+            return properties.entrySet().stream()
+                    .filter(e -> e.getKey() != null)
+                    .map(e -> Map.entry((String) e.getKey(), e.getValue() != null ? (String) e.getValue() : ""))
+                    .filter(e -> !Strings.isEmpty(e.getKey()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+
+        @Override
+        public String convertToString(Map<String, String> parameters, Locale locale) {
+            if (parameters != null && !parameters.isEmpty()) {
+                try (StringWriter writer = new StringWriter()) {
+                    parameters.forEach((key, value) -> writer.write(key + "=" + value + "\n"));
+                    return writer.toString();
+                } catch (IOException e) {
+                    throw new ConversionException(e);
+                }
+            }
+            return "";
+        }
+    }
+}

@@ -5,6 +5,7 @@
 package org.geoserver.backuprestore.rest;
 
 import com.thoughtworks.xstream.XStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,7 +13,6 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geoserver.config.util.XStreamPersister;
@@ -47,6 +47,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  *
  * @author "Alessio Fabiani" <alessio.fabiani@geo-solutions.it>, GeoSolutions
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 @RestController
 @ControllerAdvice
 @RequestMapping(
@@ -68,8 +69,8 @@ public class RestoreController extends AbstractBackupRestoreController {
         Object lookup = lookupRestoreExecutionsContext(null, true, false);
 
         if (lookup != null) {
-            if (lookup instanceof RestoreExecutionAdapter) {
-                return wrapObject((RestoreExecutionAdapter) lookup, RestoreExecutionAdapter.class);
+            if (lookup instanceof RestoreExecutionAdapter adapter) {
+                return wrapObject(adapter, RestoreExecutionAdapter.class);
             } else {
                 return wrapList((List<RestoreExecutionAdapter>) lookup, RestoreExecutionAdapter.class);
             }
@@ -94,13 +95,11 @@ public class RestoreController extends AbstractBackupRestoreController {
         Object lookup = lookupRestoreExecutionsContext(getExecutionIdFilter(restoreId), true, false);
 
         if (lookup != null) {
-            if (lookup instanceof RestoreExecutionAdapter) {
+            if (lookup instanceof RestoreExecutionAdapter adapter) {
                 if (restoreId.endsWith(".zip")) {
                     try {
                         // get your file as InputStream
-                        File file = ((RestoreExecutionAdapter) lookup)
-                                .getArchiveFile()
-                                .file();
+                        File file = adapter.getArchiveFile().file();
                         InputStream is = new FileInputStream(file);
                         // copy it to response's OutputStream
                         org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
@@ -110,7 +109,7 @@ public class RestoreController extends AbstractBackupRestoreController {
                         throw new RuntimeException("IOError writing file to output stream");
                     }
                 } else {
-                    return wrapObject((RestoreExecutionAdapter) lookup, RestoreExecutionAdapter.class);
+                    return wrapObject(adapter, RestoreExecutionAdapter.class);
                 }
             } else {
                 return wrapList((List<RestoreExecutionAdapter>) lookup, RestoreExecutionAdapter.class);
@@ -131,13 +130,13 @@ public class RestoreController extends AbstractBackupRestoreController {
         Object lookup = lookupRestoreExecutionsContext(executionId, true, false);
 
         if (lookup != null) {
-            if (lookup instanceof RestoreExecutionAdapter) {
+            if (lookup instanceof RestoreExecutionAdapter adapter) {
                 try {
                     getBackupFacade().abandonExecution(Long.valueOf(executionId));
                 } catch (Exception e) {
                     throw new IOException(e);
                 }
-                return wrapObject((RestoreExecutionAdapter) lookup, RestoreExecutionAdapter.class);
+                return wrapObject(adapter, RestoreExecutionAdapter.class);
             } else {
                 return wrapList((List<RestoreExecutionAdapter>) lookup, RestoreExecutionAdapter.class);
             }

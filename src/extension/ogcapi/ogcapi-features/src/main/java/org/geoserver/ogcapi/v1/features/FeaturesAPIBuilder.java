@@ -77,7 +77,11 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
             itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/ids"));
         }
         if (!features.sortBy(wfs)) {
-            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/filter-sortby"));
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/sortby"));
+        }
+        if (!features.propertySelection(wfs)) {
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/properties"));
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/exclude-properties"));
         }
 
         declareGetResponseFormats(api, "/collections/{collectionId}/items/{featureId}", FeaturesResponse.class);

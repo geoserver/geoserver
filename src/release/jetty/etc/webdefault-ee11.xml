@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+   xmlns="https://jakarta.ee/xml/ns/jakartaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+   metadata-complete="false"
+   version="6.1">
+
+  <!-- ===================================================================== -->
+  <!-- This file contains the default descriptor for web applications.       -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- The intent of this descriptor is to include jetty specific or common  -->
+  <!-- configuration for all webapps.   If a context has a webdefault-ee11.xml    -->
+  <!-- descriptor, it is applied before the context's own web.xml file       -->
+  <!--                                                                       -->
+  <!-- A context may be assigned a default descriptor by calling             -->
+  <!-- WebAppContext.setDefaultsDescriptor(String).                          -->
+  <!--                                                                       -->
+  <!-- This file is present in the jetty-webapp.jar, and is used as the      -->
+  <!-- defaults descriptor if no other is explicitly set on a context.       -->
+  <!--                                                                       -->
+  <!-- A copy of this file is also placed into the $JETTY_HOME/etc dir of    -->
+  <!-- the  distribution, and is referenced by some of the other xml files,  -->
+  <!-- eg the jetty-deploy.xml file.                                         -->
+  <!-- ===================================================================== -->
+
+  <description>
+    Default web.xml file.  
+    This file is applied to a Web application before its own WEB_INF/web.xml file
+  </description>
+  
+  <!-- ==================================================================== -->
+  <!-- Removes static cache of Methods from java.beans.Introspector to      -->
+  <!-- ensure webapp classloader can be released on undeploy                -->
+  <!-- ==================================================================== -->  
+  <listener>
+   <listener-class>org.eclipse.jetty.ee11.servlet.listener.IntrospectorCleaner</listener-class>
+  </listener>
+  
+
+  <!-- ==================================================================== -->
+  <!-- Context params to control Session Cookies                            -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <!--
+    UNCOMMENT TO ACTIVATE 
+    <context-param> 
+      <param-name>org.eclipse.jetty.session.SessionDomain</param-name> 
+      <param-value>127.0.0.1</param-value> 
+    </context-param> 
+    <context-param>
+      <param-name>org.eclipse.jetty.session.SessionPath</param-name>
+      <param-value>/</param-value>
+    </context-param>
+    <context-param>
+      <param-name>org.eclipse.jetty.session.MaxAge</param-name>
+      <param-value>-1</param-value>
+    </context-param>
+  -->
+
+  <!-- ==================================================================== -->
+  <!-- The default servlet.                                                 -->
+  <!-- This servlet, normally mapped to /, provides the handling for static -->
+  <!-- content, OPTIONS and TRACE methods for the context.                  -->
+  <!-- The following initParameters are supported:                          -->
+  <!--  
+ *  acceptRanges      If true, range requests and responses are
+ *                    supported
+ *
+ *  dirAllowed        If true, directory listings are returned if no
+ *                    welcome file is found. Else 403 Forbidden.
+ *
+ *  welcomeServlets   If false, then only serve welcome resources when they exist
+ *                    on the file system.  If they also map to a Servlet, then the
+ *                    servlet will be used to generate the response.
+ *                    If true, then dispatch welcome resources to a matching Servlet
+ *                    (for example mapped to {@code *.welcome}), even if the welcome
+ *                    resource does not exist on file system.
+ *                    If exact, then dispatch welcome resource to a Servlet when
+ *                    the resource does not exist on the file system, but only if the
+ *                    mapping is exactly the same as the welcome resource
+ *                    (for example /index.welcome})
+ *                    Defaults to false.
+ *
+ *  redirectWelcome   If true, welcome files are redirected rather than
+ *                    forwarded to.
+ *
+ *  gzip              If set to true, then static content will be served as
+ *                    gzip content encoded if a matching resource is
+ *                    found ending with ".gz" (default false) 
+ *                    (deprecated: use precompressed)
+ *                    
+ *  precompressed     If set to a comma separated list of encoding types (that may be
+ *                    listed in a requests Accept-Encoding header) to file
+ *                    extension mappings to look for and serve. For example:
+ *                    "br=.br,gzip=.gz,bzip2=.bz".
+ *                    If set to a boolean True, then a default set of compressed formats
+ *                    will be used, otherwise no precompressed formats.
+ *
+ *  baseResource      Set to replace the context resource base
+ *
+ *  resourceCache     If set, this is a context attribute name, which the servlet
+ *                    will use to look for a shared ResourceCache instance.
+ *
+ *  relativeBaseResource
+ *                    Set with a pathname relative to the base of the
+ *                    servlet context root. Useful for only serving static content out
+ *                    of only specific subdirectories.
+ *
+ *  stylesheet        Set with the location of an optional stylesheet that will be used
+ *                    to decorate the directory listing html.
+ *                    
+ *  etags             If True, weak etags will be generated and handled.
+ *
+ *  maxCacheSize      The maximum total size of the cache or 0 for no cache.
+ *  maxCachedFileSize The maximum size of a file to cache
+ *  maxCachedFiles    The maximum number of files to cache
+ *
+ *  minMappedFileSize The minimum size in bytes of a file that will be used with file mapping;
+ *                    or 0 for no file mapping; or -1 (or not set) for a default size of 1MB.
+ *  maxMappedFileSize The maximum size in bytes of a file that will be used with file mapping;
+ *                    or -1 (or not set) for a default size of MAX_VALUE.
+ *
+ *  cacheControl      If set, all static content will have this value set as the cache-control
+ *                    header.
+ *
+ * encodingHeaderCacheSize
+ *                    Max entries in a cache of ACCEPT-ENCODING headers.
+ *
+ * otherGzipFileExtensions  
+ *                    defaults to .svgz but a comma separated list of gzip equivalent file extensions can be supplied
+ *
+ -->
+ <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <servlet>
+    <servlet-name>default</servlet-name>
+    <servlet-class>org.eclipse.jetty.ee11.servlet.DefaultServlet</servlet-class>
+    <init-param>
+      <param-name>acceptRanges</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>dirAllowed</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>welcomeServlets</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>redirectWelcome</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxCacheSize</param-name>
+      <param-value>256000000</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxCachedFileSize</param-name>
+      <param-value>200000000</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxCachedFiles</param-name>
+      <param-value>2048</param-value>
+    </init-param>
+    <init-param>
+      <param-name>etags</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>minMappedFileSize</param-name>
+      <param-value>-1</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxMappedFileSize</param-name>
+      <param-value>-1</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+
+  <!-- ==================================================================== -->
+  <!-- JSP Servlet                                                          -->
+  <!-- This is the jasper JSP servlet.                                      -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <!-- The JSP page compiler and execution servlet, which is the mechanism  -->
+  <!-- used by the jsp container to support JSP pages.  Traditionally,      -->
+  <!-- this servlet is mapped to URL pattern "*.jsp".                       -->
+  <!-- See https://jetty.org/docs/              -->
+  <!-- for applicable configuration params.                                 -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <servlet id="jsp">
+    <servlet-name>jsp</servlet-name>
+    <servlet-class>org.eclipse.jetty.ee11.jsp.JettyJspServlet</servlet-class>
+    <init-param>
+      <param-name>xpoweredBy</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>compilerTargetVM</param-name>
+      <param-value>1.8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>compilerSourceVM</param-name>
+      <param-value>1.8</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>jsp</servlet-name>
+    <url-pattern>*.jsp</url-pattern>
+    <url-pattern>*.jspf</url-pattern>
+    <url-pattern>*.jspx</url-pattern>
+    <url-pattern>*.xsp</url-pattern>
+    <url-pattern>*.JSP</url-pattern>
+    <url-pattern>*.JSPF</url-pattern>
+    <url-pattern>*.JSPX</url-pattern>
+    <url-pattern>*.XSP</url-pattern>
+  </servlet-mapping>
+
+
+  <!-- ==================================================================== -->
+  <!-- Default session configuration                                        -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+
+  <!-- ==================================================================== -->
+  <!-- Default MIME mappings                                                -->
+  <!-- The default MIME mappings are provided by the mime.properties        -->
+  <!-- resource in the jetty-http.jar file.  Additional or modified         -->
+  <!-- mappings may be specified here                                       -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <!-- UNCOMMENT TO ACTIVATE
+  <mime-mapping>
+    <extension>mysuffix</extension>
+    <mime-type>mymime/type</mime-type>
+  </mime-mapping>
+  -->
+
+  <!-- ==================================================================== -->
+  <!-- Default welcome files                                                -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+
+  <!-- ==================================================================== -->
+  <!-- Default locale encodings                                             -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <locale-encoding-mapping-list>
+    <locale-encoding-mapping>
+      <locale>ar</locale>
+      <encoding>ISO-8859-6</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>be</locale>
+      <encoding>ISO-8859-5</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>bg</locale>
+      <encoding>ISO-8859-5</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>ca</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>cs</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>da</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>de</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>el</locale>
+      <encoding>ISO-8859-7</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>en</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>es</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>et</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>fi</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>fr</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>hr</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>hu</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>is</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>it</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>iw</locale>
+      <encoding>ISO-8859-8</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>ja</locale>
+      <encoding>Shift_JIS</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>ko</locale>
+      <encoding>EUC-KR</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>lt</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>lv</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>mk</locale>
+      <encoding>ISO-8859-5</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>nl</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>no</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>pl</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>pt</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>ro</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>ru</locale>
+      <encoding>ISO-8859-5</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>sh</locale>
+      <encoding>ISO-8859-5</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>sk</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>sl</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>sq</locale>
+      <encoding>ISO-8859-2</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>sr</locale>
+      <encoding>ISO-8859-5</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>sv</locale>
+      <encoding>ISO-8859-1</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>tr</locale>
+      <encoding>ISO-8859-9</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>uk</locale>
+      <encoding>ISO-8859-5</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>zh</locale>
+      <encoding>GB2312</encoding>
+    </locale-encoding-mapping>
+    <locale-encoding-mapping>
+      <locale>zh_TW</locale>
+      <encoding>Big5</encoding>
+    </locale-encoding-mapping>
+  </locale-encoding-mapping-list>
+
+  <!-- ==================================================================== -->
+  <!-- Disable TRACE method with security constraint                        -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Disable TRACE</web-resource-name>
+      <url-pattern>/</url-pattern>
+      <http-method>TRACE</http-method>
+    </web-resource-collection>
+    <auth-constraint/>
+  </security-constraint>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Enable everything but TRACE</web-resource-name>
+      <url-pattern>/</url-pattern>
+      <http-method-omission>TRACE</http-method-omission>
+    </web-resource-collection>
+  </security-constraint>
+
+</web-app>
+

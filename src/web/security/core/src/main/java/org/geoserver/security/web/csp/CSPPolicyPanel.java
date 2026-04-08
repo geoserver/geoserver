@@ -4,6 +4,9 @@
  */
 package org.geoserver.security.web.csp;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -14,7 +17,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.security.csp.CSPConfiguration;
 import org.geoserver.security.csp.CSPPolicy;
 import org.geoserver.web.CatalogIconFactory;
@@ -30,6 +33,20 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 /** Panel for {@link CSPPolicy} objects. */
 public class CSPPolicyPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(CSPPolicyPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -8329354368660703089L;
 
     private static final Property<CSPPolicy> ENABLED = new BeanProperty<>("enabled", "enabled");
@@ -48,6 +65,7 @@ public class CSPPolicyPanel extends Panel {
         super(id);
         this.config = config;
         add(new AjaxLink<Void>("add") {
+            @Serial
             private static final long serialVersionUID = 5518438243807007190L;
 
             @Override
@@ -67,6 +85,7 @@ public class CSPPolicyPanel extends Panel {
      */
     private static IModel<List<Property<CSPPolicy>>> getProperties() {
         return new LoadableDetachableModel<>() {
+            @Serial
             private static final long serialVersionUID = 6024865833524314857L;
 
             @Override
@@ -78,6 +97,7 @@ public class CSPPolicyPanel extends Panel {
 
     private class CSPPolicyTablePanel extends ReorderableTablePanel<CSPPolicy> {
 
+        @Serial
         private static final long serialVersionUID = -3229289637490224342L;
 
         public CSPPolicyTablePanel(String id, List<CSPPolicy> rules) {
@@ -104,6 +124,7 @@ public class CSPPolicyPanel extends Panel {
 
         private Component editLink(String id, IModel<CSPPolicy> model, IModel<?> label) {
             return new SimpleAjaxLink<>(id, model, label) {
+                @Serial
                 private static final long serialVersionUID = -7009235253455625060L;
 
                 @Override
@@ -117,7 +138,8 @@ public class CSPPolicyPanel extends Panel {
 
         private Component removeLink(String id, CSPPolicy policy) {
             ImageAjaxLink<Void> link =
-                    new ImageAjaxLink<>(id, new PackageResourceReference(getClass(), "../img/icons/silk/delete.png")) {
+                    new ImageAjaxLink<>(id, new ContextRelativeResourceReference("img/icons/silk/delete.png")) {
+                        @Serial
                         private static final long serialVersionUID = 190400999968840349L;
 
                         @Override

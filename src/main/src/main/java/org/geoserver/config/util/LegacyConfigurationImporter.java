@@ -14,10 +14,10 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFactory;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.impl.JAIInfoImpl;
+import org.geoserver.config.impl.ImageProcessingInfoImpl;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 
@@ -116,18 +116,17 @@ public class LegacyConfigurationImporter {
         info.getSettings().setContact(contactInfo);
 
         // jai
-        JAIInfo jai = new JAIInfoImpl();
-        jai.setMemoryCapacity((Double) value(global.get("JaiMemoryCapacity"), JAIInfoImpl.DEFAULT_MemoryCapacity));
-        jai.setMemoryThreshold((Double) value(global.get("JaiMemoryThreshold"), JAIInfoImpl.DEFAULT_MemoryThreshold));
-        jai.setTileThreads((Integer) value(global.get("JaiTileThreads"), JAIInfoImpl.DEFAULT_TileThreads));
-        jai.setTilePriority((Integer) value(global.get("JaiTilePriority"), JAIInfoImpl.DEFAULT_TilePriority));
-        jai.setJpegAcceleration((Boolean) value(global.get("JaiJPEGNative"), JAIInfoImpl.DEFAULT_JPEGNative));
-        if (Boolean.TRUE.equals(value(global.get("JaiPNGNative"), JAIInfoImpl.DEFAULT_PNGNative))) {
-            jai.setPngEncoderType(JAIInfo.PngEncoderType.NATIVE);
-        }
-        jai.setRecycling((Boolean) value(global.get("JaiRecycling"), JAIInfoImpl.DEFAULT_Recycling));
-        jai.setAllowNativeMosaic((Boolean) value(global.get("JaiMosaicNative"), JAIInfoImpl.DEFAULT_MosaicNative));
-        info.setJAI(jai);
+        ImageProcessingInfo imagen = new ImageProcessingInfoImpl();
+        imagen.setMemoryCapacity(
+                (Double) value(global.get("JaiMemoryCapacity"), ImageProcessingInfoImpl.DEFAULT_MemoryCapacity));
+        imagen.setMemoryThreshold(
+                (Double) value(global.get("JaiMemoryThreshold"), ImageProcessingInfoImpl.DEFAULT_MemoryThreshold));
+        imagen.setTileThreads(
+                (Integer) value(global.get("JaiTileThreads"), ImageProcessingInfoImpl.DEFAULT_TileThreads));
+        imagen.setTilePriority(
+                (Integer) value(global.get("JaiTilePriority"), ImageProcessingInfoImpl.DEFAULT_TilePriority));
+        imagen.setRecycling((Boolean) value(global.get("JaiRecycling"), ImageProcessingInfoImpl.DEFAULT_Recycling));
+        info.setImageProcessing(imagen);
 
         geoServer.setGlobal(info);
 
@@ -135,7 +134,8 @@ public class LegacyConfigurationImporter {
         LoggingInfo logging = factory.createLogging();
 
         logging.setLevel((String) global.get("log4jConfigFile"));
-        logging.setLocation((String) global.get("logLocation"));
+        // Log location from legacy config is ignored (GeoServer 3.0+).
+        // Use GEOSERVER_LOG_LOCATION application property instead.
 
         if (global.get("suppressStdOutLogging") != null) {
             logging.setStdOutLogging(!get(global, "suppressStdOutLogging", Boolean.class));
@@ -168,7 +168,7 @@ public class LegacyConfigurationImporter {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends Object> T get(Map map, String key, Class<T> clazz, T def) {
+    protected <T> T get(Map map, String key, Class<T> clazz, T def) {
         Object o = map.get(key);
         if (o == null) {
             if (def != null) {
@@ -193,7 +193,7 @@ public class LegacyConfigurationImporter {
         return (T) o;
     }
 
-    protected <T extends Object> T get(Map map, String key, Class<T> clazz) {
+    protected <T> T get(Map map, String key, Class<T> clazz) {
         return get(map, key, clazz, null);
     }
 }

@@ -5,14 +5,14 @@
 package org.geoserver.geofence.server.rest;
 
 import com.thoughtworks.xstream.XStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.server.rest.xml.JaxbRule;
@@ -421,7 +421,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Invalid rules ids")
-    private class InvalidRulesIds extends RuntimeException {
+    private static class InvalidRulesIds extends RuntimeException {
         private static final long serialVersionUID = -5682676569555830473L;
     }
 }

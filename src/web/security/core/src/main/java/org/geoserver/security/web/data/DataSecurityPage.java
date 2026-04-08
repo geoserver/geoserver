@@ -6,6 +6,7 @@
 package org.geoserver.security.web.data;
 
 import java.io.File;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -94,7 +95,9 @@ public class DataSecurityPage extends AbstractSecurityPage {
                 new Model<>(CATALOG_MODES),
                 new CatalogModeRenderer());
         catalogModeChoice.add(new FormComponentUpdatingBehavior() {});
-        catalogModeChoice.setSuffix(" ");
+        // Wrap each radio input + label pair in a <div>...</div>
+        catalogModeChoice.setPrefix("<div>");
+        catalogModeChoice.setSuffix("</div>");
         form.add(catalogModeChoice);
 
         // Filesystem sandbox configuration, available only if the system administrator did
@@ -138,21 +141,13 @@ public class DataSecurityPage extends AbstractSecurityPage {
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         // Content-Security-Policy: inline styles must be nonce=...
-        String css = " #catalogMode {\n"
-                + "         display:block;\n"
-                + "         padding-top: 0.5em;\n"
-                + "       }\n"
-                + "       #catalogMode input {\n"
-                + "          display: block;\n"
-                + "          float: left;\n"
-                + "          clear:left;\n"
-                + "          padding-top:0.5em;\n"
-                + "          margin-bottom: 0.5em;\n"
-                + "       }\n"
-                + "       #catalogMode label {\n"
-                + "          clear:right;\n"
-                + "          margin-bottom: 0.5em;\n"
-                + "       }";
+        String css =
+                """
+                 #catalogMode {
+                    display:block;
+                    padding-top: 0.5em;
+                }\
+                """;
         response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataSecurityPage-1"));
     }
 
@@ -194,6 +189,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
     }
 
     private static class DirectoryExistsValidator implements IValidator<String> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override

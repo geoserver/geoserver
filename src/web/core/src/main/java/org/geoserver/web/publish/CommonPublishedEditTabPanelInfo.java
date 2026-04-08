@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.publish;
 
+import java.io.Serial;
 import org.geoserver.catalog.PublishedInfo;
 
 /**
@@ -13,6 +14,7 @@ import org.geoserver.catalog.PublishedInfo;
  */
 public class CommonPublishedEditTabPanelInfo extends PublishedEditTabPanelInfo<PublishedInfo> {
 
+    @Serial
     private static final long serialVersionUID = -388475157541960108L;
 
     @Override

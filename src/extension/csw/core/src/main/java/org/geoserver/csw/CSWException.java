@@ -5,6 +5,7 @@
  */
 package org.geoserver.csw;
 
+import java.io.Serial;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -15,6 +16,7 @@ import org.geoserver.platform.ServiceException;
 public class CSWException extends ServiceException {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 4265653177643108445L;
 
     public CSWException(String message) {

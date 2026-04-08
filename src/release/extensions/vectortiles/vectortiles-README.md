@@ -1,7 +1,7 @@
 VectorTiles
 ===========
 
-See the Vector Tiles for Geoserver documentation for install instructions and installation.
+See the Vector Tiles for GeoServer documentation for install instructions and installation.
 
 Install
 -------

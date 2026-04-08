@@ -5,12 +5,12 @@
  */
 package org.geoserver.cluster.client;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.configuration.ConnectionConfiguration;

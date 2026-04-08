@@ -9,8 +9,7 @@ import java.util.List;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geotools.api.feature.simple.SimpleFeature;
-import org.springframework.util.comparator.ComparableComparator;
-import org.springframework.util.comparator.NullSafeComparator;
+import org.springframework.util.comparator.Comparators;
 
 /**
  * Sorts feature by "code", that is, the operation name, along the service operation list, if available,
@@ -23,10 +22,8 @@ public class LinkFeatureComparator implements Comparator<SimpleFeature> {
     public static final LinkFeatureComparator INSTANCE = new LinkFeatureComparator();
 
     private LinkFeatureComparator() {}
-    ;
 
-    static final Comparator<String> STRING_COMPARATOR =
-            new NullSafeComparator<String>(new ComparableComparator<>(), true);
+    static final Comparator<String> STRING_COMPARATOR = Comparators.nullsLow(Comparator.<String>naturalOrder());
 
     @Override
     public int compare(SimpleFeature f1, SimpleFeature f2) {

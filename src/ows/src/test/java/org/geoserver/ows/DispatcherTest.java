@@ -12,9 +12,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,12 +35,6 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletResponse;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
@@ -254,10 +254,12 @@ public class DispatcherTest {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
-            String dtdExternal = "<!DOCTYPE foo [\n"
-                    + "        <!ENTITY % external SYSTEM \"invalid.xsd\">\n"
-                    + "        %external;\n"
-                    + "        ]>";
+            String dtdExternal =
+                    """
+                    <!DOCTYPE foo [
+                            <!ENTITY % external SYSTEM "invalid.xsd">
+                            %external;
+                            ]>""";
             String body = dtdExternal + "\n<Hello service=\"hello\"/>";
 
             try (FileOutputStream output = new FileOutputStream(file)) {
@@ -275,16 +277,9 @@ public class DispatcherTest {
                 req.setPostRequestElementName("Hello");
                 req.setService("hello");
 
-                try {
-                    Object request = dispatcher.parseRequestXML(null, input, req);
-                    fail("ServiceException expected due to invalid DTD reference:" + request);
-                } catch (SAXException e) {
-                    assertSame(e.getClass(), SAXException.class);
-                    String messsage = e.getMessage();
-                    assertFalse(messsage.contains("invalid.xsd"));
-                } catch (Throwable t) {
-                    fail("ServiceException expected, to test use use of XmlRequestReader.cleanException(t)");
-                }
+                SAXException e = assertThrows(SAXException.class, () -> dispatcher.parseRequestXML(null, input, req));
+                String messsage = e.getMessage();
+                assertFalse(messsage.contains("invalid.xsd"));
             }
         } finally {
             file.delete();
@@ -403,6 +398,11 @@ public class DispatcherTest {
                         }
 
                         @Override
+                        public int read(byte[] b, int off, int len) throws IOException {
+                            return stream.read(b, off, len);
+                        }
+
+                        @Override
                         public int available() {
                             return body.length();
                         }
@@ -475,6 +475,11 @@ public class DispatcherTest {
                         @Override
                         public int read() throws IOException {
                             return stream.read();
+                        }
+
+                        @Override
+                        public int read(byte[] b, int off, int len) throws IOException {
+                            return stream.read(b, off, len);
                         }
 
                         @Override
@@ -1111,6 +1116,43 @@ public class DispatcherTest {
 
         InternetHeaders headers = new InternetHeaders();
         headers.setHeader("Content-Disposition", "form-data; name=\"upload\"; filename=\"request.xml\"");
+        headers.setHeader("Content-Type", "application/xml");
+        body.addBodyPart(new MimeBodyPart(headers, xml.getBytes()));
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        body.writeTo(bout);
+
+        request.setContent(bout.toByteArray());
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        URL url = getClass().getResource("applicationContext.xml");
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
+            Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+            dispatcher.handleRequestInternal(request, response);
+
+            Assert.assertEquals("Hello world!", response.getContentAsString());
+        }
+    }
+
+    /**
+     * Test fix for GEOS-10509, where xml longer than XML_LOOKAHEAD gets truncated. It is a copy of
+     * testMultiPartFormUpload, with the xml size increased.
+     */
+    @Test
+    public void testLongXML() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("post");
+        // Force the size of the first tag to >8K
+        String xml = " ".repeat(Dispatcher.XML_LOOKAHEAD)
+                + "<Hello service='hello' message='Hello world!' version='1.0.0'/>";
+        MimeMultipart body = new MimeMultipart();
+        request.setContentType(body.getContentType());
+
+        InternetHeaders headers = new InternetHeaders();
+        headers.setHeader("Content-Disposition", "form-data; name=\"body\";");
         headers.setHeader("Content-Type", "application/xml");
         body.addBodyPart(new MimeBodyPart(headers, xml.getBytes()));
 

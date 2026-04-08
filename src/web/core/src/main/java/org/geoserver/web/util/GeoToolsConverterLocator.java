@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.util;
 
+import java.io.Serial;
 import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Level;
@@ -23,7 +24,9 @@ import org.geotools.util.logging.Logging;
  */
 public class GeoToolsConverterLocator implements IConverterLocator {
 
+    @Serial
     private static final long serialVersionUID = -8704868281264763254L;
+
     static final Logger LOGGER = Logging.getLogger(GeoToolsConverterLocator.class);
 
     @Override
@@ -38,7 +41,9 @@ public class GeoToolsConverterLocator implements IConverterLocator {
 
     static class GeoToolsConverter<T> implements IConverter<T> {
 
+        @Serial
         private static final long serialVersionUID = 3463117432947622403L;
+
         Set<ConverterFactory> factories;
         Class<T> target;
 

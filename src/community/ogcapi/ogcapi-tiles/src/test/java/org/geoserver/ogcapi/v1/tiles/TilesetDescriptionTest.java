@@ -79,7 +79,6 @@ public class TilesetDescriptionTest extends TilesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testTileJSONLayerGroup() throws Exception {
         DocumentContext doc = getAsJSONPath(
                 "/ogc/tiles/v1/collections/" + NATURE_GROUP + "/tiles/EPSG:900913/metadata?f=application%2Fjson", 200);

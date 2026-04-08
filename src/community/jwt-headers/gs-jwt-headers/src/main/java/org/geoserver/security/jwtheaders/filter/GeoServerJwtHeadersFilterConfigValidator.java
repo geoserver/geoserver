@@ -29,8 +29,8 @@ public class GeoServerJwtHeadersFilterConfigValidator extends FilterConfigValida
     /** Validates the configuration type and content. */
     @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
-        if (config instanceof GeoServerJwtHeadersFilterConfig) {
-            validateGeoServerJwtHeadersFilterConfig((GeoServerJwtHeadersFilterConfig) config);
+        if (config instanceof GeoServerJwtHeadersFilterConfig filterConfig) {
+            validateGeoServerJwtHeadersFilterConfig(filterConfig);
             super.validateFilterConfig(config);
         } else {
             throw new FilterConfigException(

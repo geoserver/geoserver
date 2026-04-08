@@ -4,10 +4,13 @@
  */
 package org.geoserver.featurestemplating.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +46,19 @@ import org.geotools.util.logging.Logging;
 
 // TODO WICKET8 - Verify this page works OK
 public abstract class TemplateInfoDataPanel extends Panel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(TemplateInfoDataPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     static final Logger LOGGER = Logging.getLogger(TemplateInfoDataPanel.class);
 
@@ -93,6 +109,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
         wsDropDown = new DropDownChoice<>("workspace", new PropertyModel<>(model, "workspace"), getWorkspaces());
         wsDropDown.setNullValid(true);
         wsDropDown.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 732177308220189475L;
 
             @Override
@@ -114,6 +131,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
         else ftiDropDown.setChoices(getFeatureTypesInfo(wsDropDown.getModelObject()));
         ftiDropDown.add(new OnChangeAjaxBehavior() {
 
+            @Serial
             private static final long serialVersionUID = 3510850205685746576L;
 
             @Override
@@ -155,6 +173,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
     AjaxSubmitLink uploadLink() {
         return new ConfirmOverwriteSubmitLink("upload", page.getForm()) {
 
+            @Serial
             private static final long serialVersionUID = 658341311654601761L;
 
             @Override
@@ -208,6 +227,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
 
     class ConfirmOverwriteSubmitLink extends AjaxSubmitLink {
 
+        @Serial
         private static final long serialVersionUID = 2673499149884774636L;
 
         public ConfirmOverwriteSubmitLink(String id, Form<?> form) {
@@ -219,6 +239,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
             super.updateAjaxAttributes(attributes);
             attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                 /** serialVersionUID */
+                @Serial
                 private static final long serialVersionUID = 8637613472102572505L;
 
                 @Override

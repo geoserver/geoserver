@@ -9,7 +9,7 @@ package org.geoserver.config;
  * The CapabilitiesErrorHandling class enumerates the modes of error handling GeoServer can use when streaming XML
  * documents (such as the WMS GetCapabilities response document.)
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public enum ResourceErrorHandling {
     /**

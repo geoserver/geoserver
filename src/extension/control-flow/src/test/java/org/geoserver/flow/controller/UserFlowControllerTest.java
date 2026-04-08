@@ -7,7 +7,7 @@ package org.geoserver.flow.controller;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
 import org.junit.Test;

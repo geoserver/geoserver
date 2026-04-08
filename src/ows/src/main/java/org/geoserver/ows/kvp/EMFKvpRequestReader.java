@@ -58,7 +58,7 @@ public class EMFKvpRequestReader extends KvpRequestReader {
         Method create = OwsUtils.method(factory.getClass(), "create" + className);
 
         try {
-            return create.invoke(factory, null);
+            return create.invoke(factory);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

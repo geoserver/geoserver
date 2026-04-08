@@ -5,12 +5,15 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -92,6 +95,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     static class ChooseColorPanel extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(AbstractStylePage.ChooseColorPanel.class);
+
         final TextField<String> chooser;
         final String initialColor;
 
@@ -139,6 +144,12 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     + "    }\n"
                     + "});";
             response.render(new OnDomReadyHeaderItem(enableSpectrum));
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
         }
     }
 
@@ -245,6 +256,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         });
 
         PanelCachingTab publishingTab = new PanelCachingTab(new AbstractTab(new Model<>("Publishing")) {
+            @Serial
             private static final long serialVersionUID = 4184410057835108176L;
 
             @Override
@@ -262,6 +274,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         });
 
         PanelCachingTab attributeTab = new PanelCachingTab(new AbstractTab(new Model<>("Layer Attributes")) {
+            @Serial
             private static final long serialVersionUID = 4184410057835108176L;
 
             @Override
@@ -306,6 +319,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 final Class<StyleEditTabPanel> panelClass = tabPanelInfo.getComponentClass();
 
                 tabs.add(new AbstractTab(titleModel) {
+                    @Serial
                     private static final long serialVersionUID = -6637277497986497791L;
 
                     @Override
@@ -371,8 +385,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 // Update preview if we are on the preview tab
                 if (style != null && tabbedPanel.getSelectedTab() == 2) {
                     tabbedPanel.visitChildren(StyleEditTabPanel.class, (component, visit) -> {
-                        if (component instanceof OpenLayersPreviewPanel) {
-                            OpenLayersPreviewPanel previewPanel = (OpenLayersPreviewPanel) component;
+                        if (component instanceof OpenLayersPreviewPanel previewPanel) {
                             try {
                                 target.appendJavaScript(previewPanel.getUpdateCommand());
                             } catch (Exception e) {
@@ -481,8 +494,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     private String sldErrorWithLineNo(Exception e) {
-        if (e instanceof SAXParseException) {
-            SAXParseException se = (SAXParseException) e;
+        if (e instanceof SAXParseException se) {
             return "line " + se.getLineNumber() + ": " + e.getLocalizedMessage();
         }
         String message = e.getLocalizedMessage();
@@ -524,7 +536,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     public void setRawStyle(Reader in) throws IOException {
-        try (BufferedReader bin = in instanceof BufferedReader ? (BufferedReader) in : new BufferedReader(in)) {
+        try (BufferedReader bin = in instanceof BufferedReader br ? br : new BufferedReader(in)) {
             StringBuilder builder = new StringBuilder();
             String line = null;
             while ((line = bin.readLine()) != null) {
@@ -606,8 +618,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     /** Called when a configuration change requires updating an inactive tab */
     protected void configurationChanged() {
         tabbedPanel.visitChildren(StyleEditTabPanel.class, (component, visit) -> {
-            if (component instanceof StyleEditTabPanel) {
-                ((StyleEditTabPanel) component).configurationChanged();
+            if (component instanceof StyleEditTabPanel panel) {
+                panel.configurationChanged();
             }
         });
     }
@@ -682,6 +694,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
              * (with validation + saving to the catalog)
              */
             AjaxSubmitLink link = new AjaxSubmitLink(linkId) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override

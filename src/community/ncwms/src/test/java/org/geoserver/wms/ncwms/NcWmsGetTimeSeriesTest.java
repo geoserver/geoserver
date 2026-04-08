@@ -169,8 +169,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         String[] csvLines = rawCsv.split("\\r?\\n");
         final int numberOfResults = 4;
         Assert.assertEquals("CSV Number of results", CSV_HEADER_ROWS + numberOfResults, csvLines.length);
-        double[] expectedValues =
-                new double[] {16.88799985218793, 13.399999686516821, 13.331999683286995, 17.120999863254838};
+        double[] expectedValues = {16.88799985218793, 13.399999686516821, 13.331999683286995, 17.120999863254838};
         final int referenceYear = 2014;
         for (int i = 0; i < numberOfResults; i++) {
             String date = (referenceYear + i) + "-01-01";
@@ -217,7 +216,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
 
         final int numberOfResults = 6;
         Assert.assertEquals("CSV Number of results", CSV_HEADER_ROWS + numberOfResults, csvLines.length);
-        double[] expectedValues = new double[] {
+        double[] expectedValues = {
             16.88799985218793,
             13.399999686516821,
             13.331999683286995,
@@ -238,8 +237,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
     @Test
     public void testEmptyResultsWhenNodata() throws Exception {
         setupRasterDimension(TIMESERIES, TIME, LIST, null, null, null);
-        String url = REQUEST_ON_NODATA_PIXEL;
-        String rawCsv = getAsString(url);
+        String rawCsv = getAsString(REQUEST_ON_NODATA_PIXEL);
         String[] csvLines = rawCsv.split("\\r?\\n");
 
         // Make sure we aren getting an empty value on nodata

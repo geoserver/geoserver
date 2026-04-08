@@ -190,8 +190,7 @@ public class LayerController extends AbstractCatalogController {
                     String prefix,
                     HierarchicalStreamWriter writer,
                     MarshallingContext context) {
-                if (obj instanceof StyleInfo) {
-                    StyleInfo style = (StyleInfo) obj;
+                if (obj instanceof StyleInfo style) {
                     StringBuilder link = new StringBuilder();
                     if (style.getWorkspace() != null) {
                         String wsName = style.getWorkspace().getName();
@@ -203,8 +202,7 @@ public class LayerController extends AbstractCatalogController {
                     link.append("/styles/").append(converter.encode(style.getName()));
                     converter.encodeLink(link.toString(), writer);
                 }
-                if (obj instanceof ResourceInfo) {
-                    ResourceInfo r = (ResourceInfo) obj;
+                if (obj instanceof ResourceInfo r) {
                     StringBuilder link = new StringBuilder("/workspaces/")
                             .append(converter.encode(r.getStore().getWorkspace().getName()))
                             .append("/");

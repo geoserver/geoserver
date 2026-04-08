@@ -21,12 +21,10 @@ import org.geotools.util.decorate.AbstractDecorator;
 import org.geotools.util.factory.Hints;
 
 /**
- * Delegates all methods to the provided delegate. Suclasses will override methods in order to perform their decoration
+ * Delegates all methods to the provided delegate. Subclasses will override methods in order to perform their decoration
  * work
  *
  * @author Andrea Aime - TOPP
- * @param <T>
- * @param <F>
  */
 public class DecoratingCoverageStoreInfo extends AbstractDecorator<CoverageStoreInfo> implements CoverageStoreInfo {
 
@@ -172,5 +170,15 @@ public class DecoratingCoverageStoreInfo extends AbstractDecorator<CoverageStore
     @Override
     public void setDisableOnConnFailure(boolean disableOnConnFailure) {
         delegate.setDisableOnConnFailure(disableOnConnFailure);
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        delegate.setModifiedBy(userName);
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return delegate.getModifiedBy();
     }
 }

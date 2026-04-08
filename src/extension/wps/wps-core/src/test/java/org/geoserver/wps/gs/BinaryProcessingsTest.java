@@ -90,7 +90,7 @@ public class BinaryProcessingsTest extends WPSTestSupport {
         try (InputStream is = getBinaryInputStream(response)) {
 
             ArcGridFormat format = new ArcGridFormat();
-            GridCoverage2D gc = format.getReader(is).read(null);
+            GridCoverage2D gc = format.getReader(is).read();
 
             assertTrue(new Envelope(144.9, 146.1, -40.9, -43.1).contains(new ReferencedEnvelope(gc.getEnvelope())));
 
@@ -159,7 +159,7 @@ public class BinaryProcessingsTest extends WPSTestSupport {
         try (InputStream is = getBinaryInputStream(response)) {
 
             ArcGridFormat format = new ArcGridFormat();
-            GridCoverage2D gc = format.getReader(is).read(null);
+            GridCoverage2D gc = format.getReader(is).read();
 
             assertTrue(new Envelope(144.9, 146.1, -40.9, -43.1).contains(new ReferencedEnvelope(gc.getEnvelope())));
 

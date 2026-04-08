@@ -113,11 +113,9 @@ public class LayerGroupHelper {
                 s = group.getStyles().get(i);
             }
 
-            if (p instanceof LayerInfo) {
-                LayerInfo l = (LayerInfo) p;
+            if (p instanceof LayerInfo l) {
                 layers.add(l);
-            } else if (p instanceof LayerGroupInfo) {
-                LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+            } else if (p instanceof LayerGroupInfo groupInfo) {
                 LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s);
                 if (lgStyle != null) allLayers(getCrs(groupInfo.getBounds()), lgStyle, layers);
                 else allLayers(groupInfo, layers);
@@ -154,11 +152,9 @@ public class LayerGroupHelper {
                 s = styles.get(i);
             }
 
-            if (p instanceof LayerInfo) {
-                LayerInfo l = (LayerInfo) p;
+            if (p instanceof LayerInfo l) {
                 layers.add(l);
-            } else if (p instanceof LayerGroupInfo) {
-                LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+            } else if (p instanceof LayerGroupInfo groupInfo) {
                 LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s);
                 if (lgStyle != null) allLayers(getCrs(groupInfo.getBounds()), lgStyle, layers);
                 else allLayers(groupInfo, layers);
@@ -196,8 +192,7 @@ public class LayerGroupHelper {
                 s = group.getStyles().get(i);
             }
 
-            if (p instanceof LayerInfo) {
-                LayerInfo l = (LayerInfo) p;
+            if (p instanceof LayerInfo l) {
                 publisheds.add(l);
             } else if (p instanceof LayerGroupInfo) {
                 publisheds.add(p);
@@ -221,8 +216,7 @@ public class LayerGroupHelper {
     private static void allGroups(LayerGroupInfo group, List<LayerGroupInfo> groups) {
         groups.add(group);
         for (PublishedInfo p : group.getLayers()) {
-            if (p instanceof LayerGroupInfo) {
-                LayerGroupInfo g = (LayerGroupInfo) p;
+            if (p instanceof LayerGroupInfo g) {
                 allGroups(g, groups);
             }
         }
@@ -246,8 +240,8 @@ public class LayerGroupHelper {
             StyleInfo s = group.getStyles().get(i);
             if (p instanceof LayerInfo) {
                 styles.add(group.getStyles().get(i));
-            } else if (p instanceof LayerGroupInfo) {
-                allStyles((LayerGroupInfo) p, styles);
+            } else if (p instanceof LayerGroupInfo groupInfo) {
+                allStyles(groupInfo, styles);
             } else if (p == null && s != null) {
                 expandStyleGroup(s, getCrs(group.getBounds()), null, styles);
             }
@@ -274,6 +268,7 @@ public class LayerGroupHelper {
         return layers;
     }
 
+    @SuppressWarnings("FallThrough") // switch intentionally falls through default
     private void allLayersForRendering(
             LayerGroupInfo group, LayerGroupStyle groupStyle, List<LayerInfo> layers, boolean root) {
         switch (group.getMode()) {
@@ -285,7 +280,7 @@ public class LayerGroupHelper {
                     throw new UnsupportedOperationException(
                             "LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
                 }
-                // continue to default behaviour:
+            // continue to default behaviour:
             default:
                 List<PublishedInfo> publishables = groupStyle == null ? group.getLayers() : groupStyle.getLayers();
                 List<StyleInfo> styles = groupStyle == null ? group.getStyles() : groupStyle.getStyles();
@@ -293,12 +288,10 @@ public class LayerGroupHelper {
                 for (int i = 0; i < size; i++) {
                     PublishedInfo p = publishables.get(i);
                     StyleInfo s = styles.get(i);
-                    if (p instanceof LayerInfo) {
-                        LayerInfo l = (LayerInfo) p;
+                    if (p instanceof LayerInfo l) {
                         layers.add(l);
-                    } else if (p instanceof LayerGroupInfo) {
+                    } else if (p instanceof LayerGroupInfo groupInfo) {
                         LayerGroupStyle gStyle = null;
-                        LayerGroupInfo groupInfo = (LayerGroupInfo) p;
                         gStyle = getStyleOrThrow(groupInfo, s);
                         allLayersForRendering(groupInfo, gStyle, layers, false);
                     } else if (p == null && s != null) {
@@ -331,6 +324,7 @@ public class LayerGroupHelper {
         return styles;
     }
 
+    @SuppressWarnings("FallThrough") // switch intentionally falls through default
     private void allStylesForRendering(
             LayerGroupInfo group, LayerGroupStyle groupStyle, List<StyleInfo> styles, boolean root) {
         switch (group.getMode()) {
@@ -342,7 +336,7 @@ public class LayerGroupHelper {
                     throw new UnsupportedOperationException(
                             "LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
                 }
-                // continue to default behaviour:
+            // continue to default behaviour:
             default:
                 List<PublishedInfo> publishables = groupStyle == null ? group.getLayers() : groupStyle.getLayers();
                 List<StyleInfo> stylesList = groupStyle == null ? group.getStyles() : groupStyle.getStyles();
@@ -350,19 +344,18 @@ public class LayerGroupHelper {
                 for (int i = 0; i < size; i++) {
                     PublishedInfo p = publishables.get(i);
                     StyleInfo s = stylesList.get(i);
-                    if (p instanceof LayerInfo) {
-                        if (((LayerInfo) p).getResource() instanceof WMSLayerInfo) {
+                    if (p instanceof LayerInfo layerInfo) {
+                        if (layerInfo.getResource() instanceof WMSLayerInfo) {
                             // pre 2.16.2, raster style was by default assigned to wms remote layers
                             // this was not a problem because the default style was always used to
                             // request the remote server, once we introduced the possibility tos
                             // elect remote styles this broke layer groups migrated form old data
                             // directories, we need now to ensure that a valid style is selected
-                            WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) ((LayerInfo) p).getResource();
+                            WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerInfo.getResource();
                             s = getRemoteWmsLayerStyle(wmsLayerInfo, s);
                         }
                         styles.add(s);
-                    } else if (p instanceof LayerGroupInfo) {
-                        LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+                    } else if (p instanceof LayerGroupInfo groupInfo) {
                         LayerGroupStyle groupStyle2 = getStyleOrThrow(groupInfo, s);
                         allStylesForRendering(groupInfo, groupStyle2, styles, false);
                     } else if (p == null && s != null) {
@@ -395,16 +388,15 @@ public class LayerGroupHelper {
         for (int i = 0; i < size; i++) {
             PublishedInfo p = publishable.get(i);
             StyleInfo s = styles.get(i);
-            if (p instanceof LayerInfo) {
-                if (((LayerInfo) p).getResource() instanceof WMSLayerInfo) {
-                    WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) ((LayerInfo) p).getResource();
+            if (p instanceof LayerInfo layerInfo) {
+                if (layerInfo.getResource() instanceof WMSLayerInfo) {
+                    WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerInfo.getResource();
                     s = getRemoteWmsLayerStyle(wmsLayerInfo, s);
                 }
                 styleInfos.add(s);
-            } else if (p instanceof LayerGroupInfo) {
-                LayerGroupInfo group = (LayerGroupInfo) p;
+            } else if (p instanceof LayerGroupInfo group) {
                 LayerGroupStyle groupStyle2 = getStyleOrThrow(group, s);
-                allStylesForRendering((LayerGroupInfo) p, groupStyle2, styleInfos, false);
+                allStylesForRendering(group, groupStyle2, styleInfos, false);
             } else if (p == null && s != null) {
                 expandStyleGroup(s, crs, null, styleInfos);
             }
@@ -502,7 +494,6 @@ public class LayerGroupHelper {
      *
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public Stack<LayerGroupInfo> checkLoops() {
         Stack<LayerGroupInfo> path = new Stack<>();
         if (checkLoops(group, group.getLayers(), group.getStyles(), path)) {
@@ -514,7 +505,6 @@ public class LayerGroupHelper {
         }
     }
 
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public String getLoopAsString(Stack<LayerGroupInfo> path) {
         if (path == null) {
             return "";
@@ -535,7 +525,6 @@ public class LayerGroupHelper {
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private boolean checkLoops(LayerGroupInfo group, List<LayerGroupStyle> groupStyles, Stack<LayerGroupInfo> path) {
         if (groupStyles != null) {
             for (LayerGroupStyle groupStyle : groupStyles) {
@@ -556,7 +545,6 @@ public class LayerGroupHelper {
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private boolean checkLoops(
             LayerGroupInfo group, List<PublishedInfo> layers, List<StyleInfo> styles, Stack<LayerGroupInfo> path) {
         path.push(group);
@@ -572,10 +560,9 @@ public class LayerGroupHelper {
                 } else {
                     s = styles.get(i);
                 }
-                if (child instanceof LayerGroupInfo) {
-                    LayerGroupInfo groupInfo = (LayerGroupInfo) child;
-                    if (isGroupInStack((LayerGroupInfo) child, path)) {
-                        path.push((LayerGroupInfo) child);
+                if (child instanceof LayerGroupInfo groupInfo) {
+                    if (isGroupInStack(groupInfo, path)) {
+                        path.push(groupInfo);
                         return true;
                     } else if (checkLoops(groupInfo, groupInfo.getLayers(), groupInfo.getStyles(), path)) {
                         return true;
@@ -600,7 +587,6 @@ public class LayerGroupHelper {
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the style group contains itself, or another LayerGroup contains itself
      */
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private boolean checkStyleGroupLoops(StyleInfo styleGroup, LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         try {
             StyledLayerDescriptor sld = styleGroup.getSLD();
@@ -662,7 +648,6 @@ public class LayerGroupHelper {
         }
     }
 
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private static boolean isGroupInStack(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         for (LayerGroupInfo groupInPath : path) {
             if (groupInPath.getId() != null && groupInPath.getId().equals(group.getId())) {
@@ -707,7 +692,7 @@ public class LayerGroupHelper {
     private static StyleInfo getRemoteWmsLayerStyle(WMSLayerInfo wmsLayerInfo, StyleInfo styleInfo) {
 
         if (styleInfo == null) styleInfo = wmsLayerInfo.getDefaultStyle();
-        else if (!wmsLayerInfo.findRemoteStyleByName(styleInfo.getName()).isPresent()) {
+        else if (wmsLayerInfo.findRemoteStyleByName(styleInfo.getName()).isEmpty()) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine(styleInfo.getName()
                         + " style is not a known remote style for WMS Layer "

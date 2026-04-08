@@ -91,8 +91,8 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
     }
 
     /**
-     * @see org.apache.wicket.resource.loader.IStringResourceLoader#loadStringResource(org.apache.wicket.Component,
-     *     java.lang.String)
+     * @see org.apache.wicket.resource.loader.IStringResourceLoader#loadStringResource(Component, String, Locale,
+     *     String, String)
      */
     @Override
     public String loadStringResource(

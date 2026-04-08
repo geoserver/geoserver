@@ -10,6 +10,7 @@
       "stac_version": "$${env('stac_version', '1.0.0')}",
       "license": "${license}",
       "type": "Collection",
+      "eo:sensorType": "${eo:sensorType}",
       "extent": {
         "spatial": {
           "bbox": [

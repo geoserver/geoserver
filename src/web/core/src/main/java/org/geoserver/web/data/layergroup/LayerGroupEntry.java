@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import org.geoserver.catalog.Catalog;
@@ -19,6 +20,7 @@ import org.geoserver.web.GeoServerApplication;
 /** Represents one layer in the layer group */
 public class LayerGroupEntry implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -2212620293553872451L;
 
     enum Type {

@@ -4,16 +4,22 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.config.util.patch.PatchProperty;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfo;
+import org.geoserver.opensearch.eo.security.EOProductAccessLimitInfo;
 
 public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
+    @Serial
     private static final long serialVersionUID = -6834845955630638054L;
 
     String openSearchAccessStoreId;
 
+    @PatchProperty("maximumRecordsPerPage")
     int maximumRecords = DEFAULT_MAXIMUM_RECORDS;
 
     int recordsPerPage = DEFAULT_RECORDS_PER_PAGE;
@@ -27,6 +33,11 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     String attribution;
 
     List<String> globalQueryables = new ArrayList<>();
+
+    boolean skipNumberMatched = false;
+
+    List<EOCollectionAccessLimitInfo> collectionLimits = new ArrayList<>();
+    List<EOProductAccessLimitInfo> productLimits = new ArrayList<>();
 
     @Override
     public int getRecordsPerPage() {
@@ -104,5 +115,33 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     @Override
     public void setAggregatesCacheTTLUnit(String aggregatesCacheTTLUnit) {
         this.aggregatesCacheTTLUnit = aggregatesCacheTTLUnit;
+    }
+
+    @Override
+    public boolean isSkipNumberMatched() {
+        return skipNumberMatched;
+    }
+
+    @Override
+    public void setSkipNumberMatched(boolean skipNumberMatched) {
+        this.skipNumberMatched = skipNumberMatched;
+    }
+
+    @Override
+    public List<EOCollectionAccessLimitInfo> getCollectionLimits() {
+        return collectionLimits;
+    }
+
+    public void setCollectionLimits(List<EOCollectionAccessLimitInfo> collectionLimits) {
+        this.collectionLimits = collectionLimits;
+    }
+
+    @Override
+    public List<EOProductAccessLimitInfo> getProductLimits() {
+        return productLimits;
+    }
+
+    public void setProductLimits(List<EOProductAccessLimitInfo> productLimits) {
+        this.productLimits = productLimits;
     }
 }

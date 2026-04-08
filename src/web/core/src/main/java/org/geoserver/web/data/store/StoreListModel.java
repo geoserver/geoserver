@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.geoserver.web.GeoServerApplication;
  * @author Andrea Aime - GeoSolutions
  */
 public class StoreListModel extends LoadableDetachableModel<List<StoreInfo>> {
+    @Serial
     private static final long serialVersionUID = -7742496075623731474L;
 
     @Override

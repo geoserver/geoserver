@@ -1,30 +1,14 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2021, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.ogcapi.v1.stac;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.function.BiConsumer;
-import net.sf.json.JSONObject;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
-import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
@@ -33,6 +17,8 @@ import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.expression.Literal;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeType;
 
 /** Class visiting a feature template and performing some action on the properties mapped via dynamic builders */
 class TemplatePropertyVisitor {
@@ -64,8 +50,8 @@ class TemplatePropertyVisitor {
         // dynamic include flat builders eat their parent node to perform dynamic merge,
         // get it out and visit its children directly, without further checks (the returned builder
         // is a key-less composite)
-        if (atb instanceof DynamicIncludeFlatBuilder) {
-            visitDynamicIncludeFlatBuilder(parentPath, (DynamicIncludeFlatBuilder) atb);
+        if (atb instanceof DynamicIncludeFlatBuilder builder) {
+            visitDynamicIncludeFlatBuilder(parentPath, builder);
             return;
         }
 
@@ -75,8 +61,7 @@ class TemplatePropertyVisitor {
         if (key == null && ((AbstractTemplateBuilder) atb).getKey() != null) return;
 
         String path = getPath(parentPath, key, skipPath);
-        if (atb instanceof DynamicValueBuilder) {
-            DynamicValueBuilder db = (DynamicValueBuilder) atb;
+        if (atb instanceof DynamicValueBuilder db) {
             propertyConsumer.accept(path, db);
         } else {
             for (TemplateBuilder child : atb.getChildren()) {
@@ -101,8 +86,7 @@ class TemplatePropertyVisitor {
         // found, as they are really coming from the database, so in fact, dynamic
         if (dataBuilder instanceof CompositeBuilder && dyn.getXpath() != null) {
             for (TemplateBuilder child : dataBuilder.getChildren()) {
-                if (child instanceof StaticBuilder) {
-                    StaticBuilder sb = (StaticBuilder) child;
+                if (child instanceof StaticBuilder sb) {
                     Expression keyex = sb.getKey();
                     if (!(keyex instanceof Literal)) continue;
                     String key = keyex.evaluate(null, String.class);
@@ -131,7 +115,7 @@ class TemplatePropertyVisitor {
             case NUMBER:
                 return Double.class;
             case STRING:
-                if (isDate(value.textValue())) return Date.class;
+                if (isDate(value.asString())) return Date.class;
                 return String.class;
             case BOOLEAN:
                 return Boolean.class;
@@ -155,14 +139,6 @@ class TemplatePropertyVisitor {
                 visitTemplateBuilder(parentPath, child, false);
             }
         }
-    }
-
-    private JSONObject evaluate(Expression exp) {
-        Object result = exp.evaluate(sampleFeature);
-        if (!(result instanceof JSONObject)) result = JSONFieldSupport.parseWhenJSON(exp, null, result);
-        if (result instanceof JSONObject) return (JSONObject) result;
-
-        return null;
     }
 
     private String getPath(String parentPath, String key, boolean skipPath) {

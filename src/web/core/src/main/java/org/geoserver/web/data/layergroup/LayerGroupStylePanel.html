@@ -1,32 +1,39 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <br/>
-    <div>
-        <fieldset>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LayerGroupStylePanel">
+        <br/>
+        <div>
+          <fieldset>
             <legend>
-                <wicket:message key="groupStyle">Layer Group Style</wicket:message>
+              <wicket:message key="groupStyle">Layer Group Style</wicket:message>
             </legend>
-            <ul>
-                <li><label for="layerGroupStyleName"><wicket:message key="layerGroupStyleName">Style Name</wicket:message></label></li>
-                <li>
-                    <div>
-                        <input id="layerGroupStyleName" wicket:id="layerGroupStyleName" type="text">
-                        <a class="remove-link" wicket:id="remove"><wicket:message key="removeStyle">Remove Style</wicket:message></a>
-                    </div>
-                </li>
-                <li>
-                    <div wicket:id="titleAndAbstract"/>
-                </li>
-                <li>
-                    <br/>
-                </li>
-                <li>
-                    <div wicket:id="layerGroupEntryPanel"></div>
-                </li>
-            </ul>
-        </fieldset>
-    </div>
-</wicket:panel>
-</body>
+            <div class="gs-form">
+              <div class="gs-form-group">
+                <label for="layerGroupStyleName">
+                  <wicket:message key="layerGroupStyleName">Style Name</wicket:message>
+                </label>
+                <div>
+                  <input id="layerGroupStyleName" wicket:id="layerGroupStyleName" type="text"/>
+                  <a class="remove-link" wicket:id="remove">
+                    <wicket:message key="removeStyle">Remove Style</wicket:message>
+                  </a>
+                </div>
+              </div>
+              <div class="gs-list-item-class">
+                <div wicket:id="titleAndAbstract"/>
+              </div>
+              <div class="gs-list-item-class">
+                <br/>
+              </div>
+              <div class="gs-list-item-class">
+                <div wicket:id="layerGroupEntryPanel"/>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

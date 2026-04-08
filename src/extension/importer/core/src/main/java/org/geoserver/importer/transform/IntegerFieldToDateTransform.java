@@ -9,6 +9,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -23,6 +24,7 @@ import org.geotools.api.feature.simple.SimpleFeature;
  */
 public class IntegerFieldToDateTransform extends AttributeRemapTransform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     transient Calendar calendar;
@@ -44,8 +46,8 @@ public class IntegerFieldToDateTransform extends AttributeRemapTransform {
             throws Exception {
         Object val = oldFeature.getAttribute(field);
         Date parsed = null;
-        if (val instanceof String) {
-            String s = ((String) val).trim();
+        if (val instanceof String string) {
+            String s = string.trim();
             if (s.length() > 0) {
                 val = Double.parseDouble(s);
             } else {

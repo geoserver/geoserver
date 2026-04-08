@@ -4,6 +4,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -13,7 +14,9 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class MaxBlockedThreadsException extends AuthenticationException {
 
+    @Serial
     private static final long serialVersionUID = -9016181675222375267L;
+
     private int count;
 
     public MaxBlockedThreadsException(int count) {

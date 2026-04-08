@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_10_0.dtd">
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+  <!-- ===================================================================== -->
+  <!-- Configure a SessionIdManager                                          -->
+  <!-- ===================================================================== -->
+  <Call name="addBean">
+    <Arg>
+      <New id="idMgr" class="org.eclipse.jetty.session.DefaultSessionIdManager">
+        <Arg>
+          <Ref refid="Server"/>
+        </Arg>
+        <Set name="workerName">
+          <Property name="jetty.sessionIdManager.workerName">
+            <Default>node<Env name="JETTY_WORKER_INSTANCE">
+                           <Default>
+                             <Env name="GAE_INSTANCE" deprecated="GAE_MODULE_INSTANCE">
+                               <Default>0</Default>
+                             </Env>
+                           </Default>
+                         </Env>
+            </Default>
+          </Property>
+        </Set>
+
+        <!-- ===================================================================== -->
+        <!-- Configure a session housekeeper to help with scavenging               -->
+        <!-- ===================================================================== -->
+        <Set name="sessionHouseKeeper"> 
+         <New class="org.eclipse.jetty.session.HouseKeeper">
+             <Set name="intervalSec" property="jetty.sessionScavengeInterval.seconds"/>
+         </New>
+        </Set>
+     </New>
+   </Arg>
+   <Arg type="java.lang.Boolean">true</Arg>
+  </Call>
+</Configure>

@@ -384,9 +384,9 @@ public class TimeKvpParserTest {
     }
 
     private static void assertInstant(Date expected, Object object) {
-        if (object instanceof DateRange) {
-            Assert.assertEquals(object + " Should start at", expected, ((DateRange) object).getMinValue());
-            Assert.assertEquals(object + " Should end at", expected, ((DateRange) object).getMaxValue());
+        if (object instanceof DateRange range) {
+            Assert.assertEquals(object + " Should start at", expected, range.getMinValue());
+            Assert.assertEquals(object + " Should end at", expected, range.getMaxValue());
         } else if (object instanceof Date) {
             Assert.assertEquals(expected, object);
         } else {

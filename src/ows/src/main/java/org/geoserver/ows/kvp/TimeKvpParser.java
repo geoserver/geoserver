@@ -17,7 +17,6 @@ import org.geoserver.ows.KvpParser;
  * @author Martin Desruisseaux
  * @author Simone Giannecchini, GeoSolutions SAS
  * @author Jonathan Meyer, Applied Information Sciences, jon@gisjedi.com
- * @version $Id$
  */
 public class TimeKvpParser extends KvpParser {
 

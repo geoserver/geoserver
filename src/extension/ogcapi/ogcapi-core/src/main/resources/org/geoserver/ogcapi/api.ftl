@@ -8,6 +8,10 @@
     <link rel="icon" type="image/png" href="${resourceLink('swagger-ui/favicon-32x32.png')}" sizes="32x32" />
     <link rel="icon" type="image/png" href="${resourceLink('swagger-ui/favicon-16x16.png')}" sizes="16x16" />
     <style>
+      :root {
+        color-scheme: only light;
+      }
+
       html
       {
         box-sizing: border-box;
@@ -37,5 +41,6 @@
     <script src="${resourceLink('swagger-ui/swagger-ui-standalone-preset.js')}"> </script>
     <script src="${resourceLink('webresources/ogcapi/api.js')}"></script>
     <input type="hidden" id="apiLocation" value="${model.getApiLocation()}"/>
+    <input type="hidden" id="oauth2RedirectUrl" value="${resourceLink('swagger-ui/oauth2-redirect.html')}"/>
   </body>
 </html>

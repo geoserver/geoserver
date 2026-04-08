@@ -23,8 +23,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.PlanarImage;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.eclipse.imagen.PlanarImage;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.kvp.TimeParser;
@@ -165,7 +165,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             // Have two threads work on encoding. The current thread builds the frames, and submits
             // them into a small queue that the encoder thread picks from
             BlockingQueue<BufferedImage> renderingQueue = new LinkedBlockingDeque<>(1);
-            BasicThreadFactory threadFactory = new BasicThreadFactory.Builder()
+            BasicThreadFactory threadFactory = BasicThreadFactory.builder()
                     .namingPattern("animation-encoder-%d")
                     .build();
             ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
@@ -248,8 +248,8 @@ public class DownloadAnimationProcess implements GeoServerProcess {
 
     private BufferedImage toBufferedImage(RenderedImage image) {
         BufferedImage frame;
-        if (image instanceof BufferedImage) {
-            frame = (BufferedImage) image;
+        if (image instanceof BufferedImage bufferedImage) {
+            frame = bufferedImage;
         } else {
             frame = PlanarImage.wrapRenderedImage(image).getAsBufferedImage();
             RasterCleaner.disposeImage(image);
@@ -259,10 +259,9 @@ public class DownloadAnimationProcess implements GeoServerProcess {
 
     private String toWmsTimeSpecification(Object parsedTime) {
         String mapTime;
-        if (parsedTime instanceof Date) {
-            mapTime = formatter.format(((Date) parsedTime).toInstant());
-        } else if (parsedTime instanceof DateRange) {
-            DateRange range = (DateRange) parsedTime;
+        if (parsedTime instanceof Date date) {
+            mapTime = formatter.format(date.toInstant());
+        } else if (parsedTime instanceof DateRange range) {
             mapTime = formatter.format(range.getMinValue().toInstant())
                     + "/"
                     + formatter.format(range.getMinValue().toInstant());

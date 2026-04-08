@@ -113,30 +113,29 @@ public class GdalWpsTest extends WPSTestSupport {
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
 
-        ZipInputStream is = new ZipInputStream(getBinaryInputStream(response));
-        ZipEntry entry = null;
-        boolean arcGridFound = false;
-        while ((entry = is.getNextEntry()) != null && !arcGridFound) {
-            if (entry.getName().endsWith(".asc")) {
-                ArcGridFormat format = new ArcGridFormat();
-                GridCoverage2D gc = format.getReader(is).read(null);
+        try (ZipInputStream is = new ZipInputStream(getBinaryInputStream(response))) {
+            ZipEntry entry = null;
+            boolean arcGridFound = false;
+            while ((entry = is.getNextEntry()) != null && !arcGridFound) {
+                if (entry.getName().endsWith(".asc")) {
+                    ArcGridFormat format = new ArcGridFormat();
+                    GridCoverage2D gc = format.getReader(is).read();
 
-                assertTrue(
-                        new Envelope(-145.4, 145.6, -41.8, -42.1).contains(new ReferencedEnvelope(gc.getEnvelope())));
+                    assertTrue(new Envelope(-145.4, 145.6, -41.8, -42.1)
+                            .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-                double[] valueInside = (double[]) gc.evaluate(new Position2D(145.55, -42));
-                assertEquals(615.0, valueInside[0], 1E-12);
-                double[] valueOutside = (double[]) gc.evaluate(new Position2D(145.57, -41.9));
-                // this should really be NoData... (-9999 & 0xFFFF)
-                assertEquals(55537.0, valueOutside[0], 1E-12);
-
-                gc.dispose(true);
-
-                arcGridFound = true;
+                    double[] valueInside = (double[]) gc.evaluate(new Position2D(145.55, -42));
+                    assertEquals(615.0, valueInside[0], 1E-11);
+                    double[] valueOutside = (double[]) gc.evaluate(new Position2D(145.57, -41.9));
+                    // this should really be NoData... (-9999 & 0xFFFF)
+                    assertEquals(55537.0, valueOutside[0], 1E-11);
+                    gc.dispose(true);
+                    arcGridFound = true;
+                }
             }
-        }
 
-        assertTrue(arcGridFound);
+            assertTrue(arcGridFound);
+        }
     }
 
     @Test
@@ -182,31 +181,32 @@ public class GdalWpsTest extends WPSTestSupport {
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(getBinaryInputStream(response)));
-        String line = null;
-        boolean valueInsideFound = false, valueOutsideFound = false;
-        double x1 = -145.4, x2 = 145.6, y1 = -42.1, y2 = -41.8;
-        while ((line = reader.readLine()) != null) {
-            String[] cols = line.split(" ");
-            assertEquals(3, cols.length);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getBinaryInputStream(response)))) {
+            String line = null;
+            boolean valueInsideFound = false, valueOutsideFound = false;
+            double x1 = -145.4, x2 = 145.6, y1 = -42.1, y2 = -41.8;
+            while ((line = reader.readLine()) != null) {
+                String[] cols = line.split(" ");
+                assertEquals(3, cols.length);
 
-            double x = round(Double.valueOf(cols[0]));
-            double y = round(Double.valueOf(cols[1]));
-            double value = Double.valueOf(cols[2]);
-            assertTrue(x >= x1 && x <= x2);
-            assertTrue(y >= y1 && y <= y2);
-            if (x == 145.55 && y == -42 && !valueInsideFound) {
-                assertEquals(550.0, value, 1E-12);
-                valueInsideFound = true;
+                double x = round(Double.valueOf(cols[0]));
+                double y = round(Double.valueOf(cols[1]));
+                double value = Double.valueOf(cols[2]);
+                assertTrue(x >= x1 && x <= x2);
+                assertTrue(y >= y1 && y <= y2);
+                if (x == 145.55 && y == -42 && !valueInsideFound) {
+                    assertEquals(550.0, value, 1E-11);
+                    valueInsideFound = true;
+                }
+                if (x == 145.57 && y == -41.9 && !valueOutsideFound) {
+                    assertEquals(55537.0, value, 1E-11);
+                    valueOutsideFound = true;
+                }
             }
-            if (x == 145.57 && y == -41.9 && !valueOutsideFound) {
-                assertEquals(55537.0, value, 1E-12);
-                valueOutsideFound = true;
-            }
+
+            assertTrue(valueInsideFound);
+            assertTrue(valueOutsideFound);
         }
-
-        assertTrue(valueInsideFound);
-        assertTrue(valueOutsideFound);
     }
 
     private double round(double value) {

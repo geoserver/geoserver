@@ -16,6 +16,11 @@ import org.geoserver.wps.WPSInfo;
 import org.junit.Test;
 
 public class WPSAdminPageTest extends WPSPagesTestSupport {
+    /** Location of general service panel within form */
+    final String SERVICE_ADMIN_PANEL = "tabs:panel";
+
+    /** Location of WMSAdminPanel within form */
+    final String WPS_ADMIN_PANEL = "tabs:panel:initial";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -35,7 +40,6 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
 
         // start the page
         tester.startPage(new WPSAdminPage());
-        // print(tester.getLastRenderedPage(), true, true);
 
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
         wps.setMaxAsynchronousTotalTime(6000);
@@ -44,15 +48,18 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         getGeoServer().save(wps);
 
         // test that components have been filled as expected
-        tester.assertComponent("form:keywords", KeywordsEditor.class);
-        tester.assertModelValue("form:keywords", wps.getKeywords());
-        tester.assertModelValue("form:maxSynchronousProcesses:", 16);
-        tester.assertModelValue("form:maxAsynchronousProcesses:", 16);
-        tester.assertModelValue("form:maxSynchronousExecutionTime:", 60);
-        tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
-        tester.assertModelValue("form:maxSynchronousTotalTime:", 120);
-        tester.assertModelValue("form:maxAsynchronousTotalTime:", 6000);
-        tester.assertModelValue("form:externalOutputDirectory:", "file:///foo/bar");
+        tester.assertComponent("form:" + SERVICE_ADMIN_PANEL + ":keywords", KeywordsEditor.class);
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":keywords", wps.getKeywords());
+
+        // change to WPS tab
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxSynchronousProcesses:", 16);
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxAsynchronousProcesses:", 16);
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxSynchronousExecutionTime:", 60);
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxAsynchronousExecutionTime:", 600);
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxSynchronousTotalTime:", 120);
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxAsynchronousTotalTime:", 6000);
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":externalOutputDirectory:", "file:///foo/bar");
     }
 
     @Test
@@ -66,10 +73,12 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         getGeoServer().save(wps);
 
         // test that components have been filled as expected
-        tester.assertModelValue("form:maxSynchronousExecutionTime:", 60);
-        tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
-        tester.assertModelValue("form:maxSynchronousTotalTime:", 60);
-        tester.assertModelValue("form:maxAsynchronousTotalTime:", 600);
+        // change to WPS tab
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxSynchronousExecutionTime:", 60);
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxAsynchronousExecutionTime:", 600);
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxSynchronousTotalTime:", 60);
+        tester.assertModelValue("form:" + WPS_ADMIN_PANEL + ":maxAsynchronousTotalTime:", 600);
     }
 
     @Test
@@ -90,6 +99,6 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         // print(tester.getLastRenderedPage(), true, true, true);
 
         // test that components have been filled as expected
-        tester.assertModelValue("form:maintainer", "TestMaintainer");
+        tester.assertModelValue("form:" + SERVICE_ADMIN_PANEL + ":maintainer", "TestMaintainer");
     }
 }

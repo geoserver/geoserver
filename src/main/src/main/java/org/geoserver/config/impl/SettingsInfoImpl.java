@@ -12,6 +12,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.util.patch.PatchProperty;
 
 public class SettingsInfoImpl implements SettingsInfo {
 
@@ -46,6 +47,9 @@ public class SettingsInfoImpl implements SettingsInfo {
     private boolean showCreatedTimeColumnsInAdminList = false;
 
     private boolean showModifiedTimeColumnsInAdminList = false;
+
+    @PatchProperty("showModifiedUserInAdminList")
+    private boolean showModifiedUserAdminList = false;
 
     protected Locale defaultLocale;
 
@@ -294,5 +298,15 @@ public class SettingsInfoImpl implements SettingsInfo {
     @Override
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
+    }
+
+    @Override
+    public boolean isShowModifiedUserInAdminList() {
+        return showModifiedUserAdminList;
+    }
+
+    @Override
+    public void setShowModifiedUserInAdminList(boolean showModifiedUserInAdminList) {
+        this.showModifiedUserAdminList = showModifiedUserInAdminList;
     }
 }

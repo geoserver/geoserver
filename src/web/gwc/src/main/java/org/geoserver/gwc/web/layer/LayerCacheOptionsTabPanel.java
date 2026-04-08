@@ -5,6 +5,9 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -13,6 +16,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.web.publish.PublishedEditTabPanel;
+import org.geoserver.web.publish.PublishedEditTabPanelInfo;
 
 /**
  * A contribution to the layer edit page to set up the layer caching options on a separate tab.
@@ -20,10 +24,23 @@ import org.geoserver.web.publish.PublishedEditTabPanel;
  * @author groldan
  * @see GeoServerTileLayerEditor
  * @see PublishedEditTabPanelInfo
- * @see LayerGroupCacheOptionsPanel
  */
 public class LayerCacheOptionsTabPanel extends PublishedEditTabPanel<PublishedInfo> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerCacheOptionsTabPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -2995387155768727100L;
 
     private GeoServerTileLayerEditor editor;

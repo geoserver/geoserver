@@ -4,13 +4,13 @@
  */
 package org.geoserver.featurestemplating.builders.flat;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
+import tools.jackson.databind.JsonNode;
 
 /** FlatStaticBuilder that concatenates its key to the parent key attribute */
 public class FlatStaticBuilder extends StaticBuilder implements FlatBuilder {

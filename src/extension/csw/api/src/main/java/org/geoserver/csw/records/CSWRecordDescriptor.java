@@ -309,7 +309,7 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
 
     private static CSWRecordDescriptor INSTANCE;
 
-    public static CSWRecordDescriptor getInstance() {
+    public static synchronized CSWRecordDescriptor getInstance() {
         if (INSTANCE == null) {
             // if there is a bean available, use the bean otherwise create other
             INSTANCE = GeoServerExtensions.bean(CSWRecordDescriptor.class);

@@ -118,7 +118,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
         assertEquals(ft1.getGeometryDescriptor().getType().getBinding(), Point.class);
 
         FeatureSource retyped = pool.getFeatureSource(info, null);
-        // assert FeatureSource is nicely wrapped inside Geoserver wrapper
+        // assert FeatureSource is nicely wrapped inside GeoServer wrapper
         assertTrue(retyped instanceof GeoServerFeatureSource);
         // assert FeatureSource has Geometry type set to Point
         assertEquals(retyped.getSchema().getGeometryDescriptor().getType().getBinding(), Point.class);
@@ -368,8 +368,8 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
             return ofNullable(simpleFeature.getProperty(name))
                     .flatMap(property -> ofNullable(property.getValue()))
                     .map(Object::toString)
-                    .orElseThrow(() ->
-                            new IllegalArgumentException(String.format("cannot get value of property [%s]", name)));
+                    .orElseThrow(
+                            () -> new IllegalArgumentException("cannot get value of property [%s]".formatted(name)));
         }
 
         public SimpleFeatureType defineGeometryAttributeFor(FeatureTypeInfo info, SimpleFeatureType src)

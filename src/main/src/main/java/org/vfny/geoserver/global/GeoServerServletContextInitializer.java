@@ -5,8 +5,8 @@
  */
 package org.vfny.geoserver.global;
 
+import jakarta.servlet.ServletContext;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -37,8 +37,7 @@ public class GeoServerServletContextInitializer implements ApplicationContextAwa
 
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
-        if (context instanceof WebApplicationContext) {
-            WebApplicationContext webContext = (WebApplicationContext) context;
+        if (context instanceof WebApplicationContext webContext) {
             ServletContext sc = webContext.getServletContext();
             if (sc == null) {
                 LOGGER.warning(

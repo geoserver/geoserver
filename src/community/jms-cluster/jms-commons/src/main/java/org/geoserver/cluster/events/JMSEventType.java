@@ -5,6 +5,7 @@
  */
 package org.geoserver.cluster.events;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.EventObject;
 
@@ -16,6 +17,7 @@ import java.util.EventObject;
 public abstract class JMSEventType<S extends Serializable> extends EventObject {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 8413744049417938375L;
 
     /** {@link EventObject#EventObject(Object)} */

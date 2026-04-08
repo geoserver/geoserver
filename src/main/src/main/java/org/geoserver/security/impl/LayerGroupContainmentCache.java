@@ -46,7 +46,7 @@ public class LayerGroupContainmentCache implements ApplicationListener<ContextRe
 
     /** Verifies a certain {@link PublishedInfo} is actually a {@link LayerInfo} */
     static final Predicate<PublishedInfo> IS_LAYER =
-            p -> p != null && p.getId() != null && p instanceof LayerInfo && ((LayerInfo) p).getResource() != null;
+            p -> p != null && p.getId() != null && p instanceof LayerInfo li && li.getResource() != null;
 
     /** Verifies a certain {@link PublishedInfo} is actually a {@link LayerGroupInfo} */
     static final Predicate<PublishedInfo> IS_GROUP = p -> p != null && p.getId() != null && p instanceof LayerGroupInfo;
@@ -358,8 +358,8 @@ public class LayerGroupContainmentCache implements ApplicationListener<ContextRe
             final HashSet<PublishedInfo> removedLayers = new HashSet<>(oldLayers);
             removedLayers.removeAll(newLayers);
             for (PublishedInfo removed : removedLayers) {
-                if (removed instanceof LayerInfo) {
-                    String resourceId = ((LayerInfo) removed).getResource().getId();
+                if (removed instanceof LayerInfo info) {
+                    String resourceId = info.getResource().getId();
                     Set<LayerGroupSummary> containers = resourceContainmentCache.get(resourceId);
                     if (containers != null) {
                         synchronized (resourceId) {
@@ -382,8 +382,8 @@ public class LayerGroupContainmentCache implements ApplicationListener<ContextRe
             final HashSet<PublishedInfo> addedLayers = new HashSet<>(newLayers);
             addedLayers.removeAll(oldLayers);
             for (PublishedInfo added : addedLayers) {
-                if (added instanceof LayerInfo) {
-                    String resourceId = ((LayerInfo) added).getResource().getId();
+                if (added instanceof LayerInfo info) {
+                    String resourceId = info.getResource().getId();
                     synchronized (resourceId) {
                         Set<LayerGroupSummary> containers =
                                 resourceContainmentCache.computeIfAbsent(resourceId, CONCURRENT_SET_BUILDER);

@@ -5,6 +5,11 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
+import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -29,6 +34,28 @@ import org.locationtech.jts.geom.Envelope;
  */
 public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(EnvelopePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            EnvelopePanel.class, EnvelopePanel.class.getSimpleName() + ".css")));
+        }
+        String oDomReadyScript = "\n";
+        oDomReadyScript += "\nEnvelopePanel_setup('" + this.getMarkupId() + "');";
+
+        response.render(OnDomReadyHeaderItem.forScript(oDomReadyScript));
+
+        response.render(JavaScriptContentHeaderItem.forReference(
+                new org.apache.wicket.request.resource.PackageResourceReference(
+                        EnvelopePanel.class, EnvelopePanel.class.getSimpleName() + ".js")));
+    }
+
+    @Serial
     private static final long serialVersionUID = -2975427786330616705L;
 
     protected Label minXLabel, minYLabel, maxXLabel, maxYLabel, minZLabel, maxZLabel;
@@ -118,6 +145,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
         crsPanel = new CRSPanel("crs", new PropertyModel<>(this, "crs"));
         crsContainer.add(crsPanel);
         add(crsContainer);
+        setOutputMarkupId(true);
     }
 
     private void addBoundingBoxValidators() {
@@ -172,9 +200,9 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
             this.maxY = e.getMaxY();
             this.crs = e.getCoordinateReferenceSystem();
             if (is3D()) {
-                if (e instanceof ReferencedEnvelope3D) {
-                    this.minZ = ((ReferencedEnvelope3D) e).getMinZ();
-                    this.maxZ = ((ReferencedEnvelope3D) e).getMaxZ();
+                if (e instanceof ReferencedEnvelope3D envelope3D) {
+                    this.minZ = envelope3D.getMinZ();
+                    this.maxZ = envelope3D.getMaxZ();
                 } else {
                     this.minZ = Double.NaN;
                     this.maxZ = Double.NaN;

@@ -22,7 +22,7 @@ SET search_path = smartappschematest, pg_catalog;
 SET default_tablespace = '';
 SET default_with_oids = false;
 
-CREATE TABLE smartappschematest.meteo_observations (id integer NOT NULL,parameter_id integer NOT NULL,station_id integer NOT NULL,"time" timestamp without time zone,value double PRECISION, decimal_value float4);
+CREATE TABLE smartappschematest.meteo_observations (id integer NOT NULL,parameter_id integer NOT NULL,station_id integer NOT NULL,"time" timestamp without time zone,value double PRECISION, decimal_value float4, unsupported_column xml, universal_id uuid);
 ALTER TABLE smartappschematest.meteo_observations OWNER TO postgres;
 CREATE SEQUENCE meteo_observations_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 ALTER TABLE smartappschematest.meteo_observations_id_seq OWNER TO postgres;
@@ -37,7 +37,7 @@ ALTER TABLE smartappschematest.meteo_maintainers OWNER TO postgres;
 CREATE TABLE smartappschematest.meteo_stations_maintainers (id integer NOT NULL, station_id integer, manteiner_id integer);
 ALTER TABLE smartappschematest.meteo_stations_maintainers OWNER TO postgres;
 
-INSERT INTO smartappschematest.meteo_observations (id, parameter_id, station_id, "time", value, decimal_value) VALUES (1,1,13,'2016-12-19 06:26:40',20, 20.3);
+INSERT INTO smartappschematest.meteo_observations (id, parameter_id, station_id, "time", value, decimal_value, universal_id) VALUES (1,1,13,'2016-12-19 06:26:40',20, 20.3, 'a1b2c3d4-e5f6-7890-1234-567890abcdef');
 INSERT INTO smartappschematest.meteo_observations (id, parameter_id, station_id, "time", value, decimal_value) VALUES (2,2,13,'2016-12-19 06:27:13',155, 155.4);
 INSERT INTO smartappschematest.meteo_observations (id, parameter_id, station_id, "time", value, decimal_value) VALUES (3,1,7,'2016-12-19 06:28:31',35, 31.1);
 INSERT INTO smartappschematest.meteo_observations (id, parameter_id, station_id, "time", value, decimal_value) VALUES (4,1,7,'2016-12-19 06:28:55',25, 25.3);

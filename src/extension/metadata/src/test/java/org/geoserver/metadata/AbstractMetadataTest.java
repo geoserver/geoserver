@@ -37,6 +37,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  *
  * @author Niels Charlier
  */
+@SuppressWarnings("deprecation") // for SpringJUnit4ClassRunner, Spring switched to JUnit5
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath*:/applicationContext.xml", "classpath*:/applicationSecurityContext.xml"})
 @WebAppConfiguration // we need web app context to have data directory set.

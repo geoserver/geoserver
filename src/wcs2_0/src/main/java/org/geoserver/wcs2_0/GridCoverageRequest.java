@@ -7,7 +7,7 @@ package org.geoserver.wcs2_0;
 
 import java.util.List;
 import java.util.Map;
-import javax.media.jai.Interpolation;
+import org.eclipse.imagen.Interpolation;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;

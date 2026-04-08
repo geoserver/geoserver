@@ -4,11 +4,13 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geowebcache.azure.AzureBlobStoreInfo;
 
 public class AzureBlobStoreType implements BlobStoreType<AzureBlobStoreInfo> {
+    @Serial
     private static final long serialVersionUID = 7349157660150568235L;
 
     @Override

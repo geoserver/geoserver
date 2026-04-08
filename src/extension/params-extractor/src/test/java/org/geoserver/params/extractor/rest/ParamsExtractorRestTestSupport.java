@@ -10,12 +10,12 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.json.JSON;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.kordamp.json.JSON;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

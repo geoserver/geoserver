@@ -100,8 +100,8 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
 
     @Override
     public Authentication get(String filterName, String cacheKey) {
-        readLock.lock();
         boolean hasTobeRemoved = false;
+        readLock.lock();
         try {
             long currentTime = System.currentTimeMillis();
             AuthenticationCacheEntry entry = cache.get(new AuthenticationCacheKey(filterName, cacheKey));

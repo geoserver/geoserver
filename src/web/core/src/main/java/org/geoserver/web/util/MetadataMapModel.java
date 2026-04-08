@@ -32,7 +32,7 @@ public class MetadataMapModel<T> implements IModel<T> {
     protected Serializable value;
 
     /**
-     * @deprecated use @link{MetadataMapModel(IModel<MetadataMap>, String, Class<?>)} instead. This constructor is not
+     * @deprecated use {@code MetadataMapModel(IModel<MetadataMap>, String, Class<?>)} instead. This constructor is not
      *     safe with (de)serialization and can cause bugs with for example the hazelcast module.
      */
     @Deprecated

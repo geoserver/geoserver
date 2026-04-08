@@ -5,16 +5,16 @@
 
 package org.geoserver.security.jwtheaders.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
@@ -155,11 +155,10 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
                 request.getHeader(filterConfig.getJwtConfiguration().getUserNameHeaderAttributeName());
         JwtHeaderUserNameExtractor extractor =
                 new JwtHeaderUserNameExtractor(getFilterConfig().getJwtConfiguration());
-        String userName = extractor.extractUserName(headerValue);
-
-        if (userName == null) return null;
+        String userName;
 
         try {
+            userName = extractor.extractUserName(headerValue);
             tokenValidator.validate(headerValue);
         } catch (Exception e) {
             return null;
@@ -167,13 +166,14 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
 
         if (userName != null) {
             request.setAttribute(HTTP_ATTRIBUTE_CONFIG_ID, filterConfig.getId());
+            LOG.fine("Extracted user name from JWT token: " + userName);
         }
 
         return userName;
     }
 
     /**
-     * extracts the roles from the request (cf JwtHeadersRolesExtractor). It uses the standard Geoserver infrastructure
+     * extracts the roles from the request (cf JwtHeadersRolesExtractor). It uses the standard GeoServer infrastructure
      * (superclass) for getting the "standard" roles (i.e. Header, UserGroupService, RoleService)
      */
     @Override
@@ -190,6 +190,7 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
                     request.getHeader(filterConfig.getJwtConfiguration().getRolesHeaderName());
             JwtHeadersRolesExtractor extractor = new JwtHeadersRolesExtractor(filterConfig.getJwtConfiguration());
             var roles = extractor.getRoles(headerValue);
+            LOG.fine("Extracted roles from JWT token: " + String.join(", ", roles));
             return roles.stream().map(x -> new GeoServerRole(x)).collect(Collectors.toList());
         }
 

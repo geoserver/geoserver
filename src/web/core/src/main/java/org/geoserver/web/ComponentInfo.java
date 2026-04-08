@@ -88,4 +88,17 @@ public abstract class ComponentInfo<C extends Component> implements Serializable
     public void setAuthorizer(ComponentAuthorizer authorizer) {
         this.authorizer = authorizer;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder(getClass().getSimpleName());
+        sb.append("{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", title='").append(title).append('\'');
+        sb.append(", description='").append(description).append('\'');
+        sb.append(", componentClass=").append(componentClass);
+        sb.append(", authorizer=").append(authorizer);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<StyledLayerDescriptor version="1.0.0"
+                       xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc">
+    <NamedLayer>
+        <Name>categorize</Name>
+        <UserStyle>
+            <Title>Region</Title>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Title>Region</Title>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">
+                                <ogc:Function name="Categorize">
+                                    <ogc:PropertyName>population</ogc:PropertyName>
+
+                                    <ogc:Literal>#FF0000</ogc:Literal>
+                                    <ogc:Literal>10000</ogc:Literal>
+                                    <ogc:Literal>#6495ED</ogc:Literal>
+                                    <ogc:Literal>20000</ogc:Literal>
+                                    <ogc:Literal>#B0C4DE</ogc:Literal>
+                                    <ogc:Literal>30000</ogc:Literal>
+                                    <ogc:Literal>#00FFFF</ogc:Literal>
+
+                                </ogc:Function>
+                            </CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+</StyledLayerDescriptor>

@@ -40,7 +40,6 @@ public class LegacyConfigurationImporterTest {
 
         assertEquals("DEFAULT_LOGGING", logging.getLevel());
         assertTrue(logging.isStdOutLogging());
-        assertEquals("logs/geoserver.log", logging.getLocation());
         assertFalse(info.getSettings().isVerbose());
         assertFalse(info.getSettings().isVerboseExceptions());
         assertEquals(8, info.getSettings().getNumDecimals());

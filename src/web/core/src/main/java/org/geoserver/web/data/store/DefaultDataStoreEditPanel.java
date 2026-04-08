@@ -5,8 +5,11 @@
  */
 package org.geoserver.web.data.store;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -69,6 +72,20 @@ import org.xml.sax.EntityResolver;
 @SuppressWarnings("serial")
 public class DefaultDataStoreEditPanel extends StoreEditPanel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DefaultDataStoreEditPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -1969433619372747193L;
 
     /**
@@ -116,6 +133,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         final IModel<Map<String, Serializable>> paramsModel = new PropertyModel<>(model, "connectionParameters");
 
         ListView<String> paramsList = new ListView<>("parameters", keys) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -246,8 +264,8 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
     private boolean isEmpty(Object value) {
         if (value == null) {
             return true;
-        } else if (value instanceof String) {
-            return ((String) value).isEmpty();
+        } else if (value instanceof String string) {
+            return string.isEmpty();
         } else {
             return false;
         }

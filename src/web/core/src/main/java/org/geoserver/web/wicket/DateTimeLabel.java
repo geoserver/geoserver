@@ -4,6 +4,9 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -19,9 +22,23 @@ import org.geotools.util.logging.Logging;
  */
 public class DateTimeLabel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DateTimeLabel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     static final Logger LOGGER = Logging.getLogger(DateTimeLabel.class);
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -665729388275555894L;
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -36,8 +53,7 @@ public class DateTimeLabel extends Panel {
         if (model.getObject() != null) {
             Object val = model.getObject();
             // type check
-            if (val instanceof Date) {
-                Date date = (Date) val;
+            if (val instanceof Date date) {
                 formattedDateString = dateFormat.format(date);
                 formattedTimeString = timeFormat.format(date);
             } else LOGGER.severe("expected instance of java.util.Date as Model object in DateTimeLabel");

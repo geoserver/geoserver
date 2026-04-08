@@ -1,0 +1,17 @@
+type: object
+required:
+  - bbox
+properties:
+  bbox:
+    type: array
+    oneOf:
+      - minItems: 4
+        maxItems: 4
+      - minItems: 6
+        maxItems: 6
+    items:
+      type: number
+  crs:
+    type: string
+    format: uri
+    default: "http://www.opengis.net/def/crs/OGC/1.3/CRS84"

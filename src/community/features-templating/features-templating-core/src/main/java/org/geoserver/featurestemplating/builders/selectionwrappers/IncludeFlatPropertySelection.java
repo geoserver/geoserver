@@ -4,8 +4,6 @@
  */
 package org.geoserver.featurestemplating.builders.selectionwrappers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
@@ -15,6 +13,8 @@ import org.geoserver.featurestemplating.builders.visitors.PropertySelectionHandl
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
 import org.geotools.api.feature.Property;
 import org.geotools.api.feature.type.PropertyType;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** A PropertySelectionWrapper meant to wrap a DynamicIncludeFlatBuilder. */
 public class IncludeFlatPropertySelection extends PropertySelectionWrapper {

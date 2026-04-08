@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.user;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.SortedSet;
 import org.apache.wicket.model.Model;
@@ -16,6 +17,7 @@ import org.geoserver.web.GeoServerApplication;
 
 public class ConfirmRemovalUserPanel extends AbstractConfirmRemovalPanel<GeoServerUser> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ConfirmRemovalUserPanel(String id, Model<Boolean> model, List<GeoServerUser> roots) {

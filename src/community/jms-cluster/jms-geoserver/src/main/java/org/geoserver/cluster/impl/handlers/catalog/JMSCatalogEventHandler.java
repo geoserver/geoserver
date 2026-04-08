@@ -6,10 +6,10 @@
 package org.geoserver.cluster.impl.handlers.catalog;
 
 import com.thoughtworks.xstream.XStream;
+import jakarta.jms.JMSException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.jms.JMSException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.event.CatalogEvent;
@@ -55,8 +55,7 @@ public abstract class JMSCatalogEventHandler extends JMSEventHandler<String, Cat
     public CatalogEvent deserialize(String s) throws Exception {
 
         final Object source = xstream.fromXML(s);
-        if (source instanceof CatalogEvent) {
-            final CatalogEvent ev = (CatalogEvent) source;
+        if (source instanceof CatalogEvent ev) {
             if (ev.getSource() != null) OwsUtils.resolveCollections(ev.getSource());
             if (LOGGER.isLoggable(Level.FINE)) {
                 final CatalogInfo info = ev.getSource();

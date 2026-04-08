@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -15,6 +16,7 @@ import java.io.Serializable;
 public class DimensionDefaultValueSetting implements Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 7964431537211881227L;
 
     public static String TIME_CURRENT = "current";

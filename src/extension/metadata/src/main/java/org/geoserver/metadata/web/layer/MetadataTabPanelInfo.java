@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.layer;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.model.IModel;
@@ -16,6 +17,7 @@ import org.geoserver.web.publish.PublishedEditTabPanelInfo;
 
 public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = 7092956796960461825L;
 
     @Override

@@ -80,6 +80,7 @@ public class UnsupportedParameterTypeProcessFilter extends ProcessSelector imple
                         }
                     }
                 } catch (Throwable t) {
+                    LOGGER.log(Level.CONFIG, "Blacklisting process " + name.getURI() + " as it cannot be loaded", t);
                     processBlacklist.add(name);
                 }
 

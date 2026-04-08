@@ -7,6 +7,7 @@ package org.geoserver.web.data.layer;
 
 import static org.geoserver.web.data.layer.LayerProvider.CREATED_TIMESTAMP;
 import static org.geoserver.web.data.layer.LayerProvider.ENABLED;
+import static org.geoserver.web.data.layer.LayerProvider.MODIFIED_BY;
 import static org.geoserver.web.data.layer.LayerProvider.MODIFIED_TIMESTAMP;
 import static org.geoserver.web.data.layer.LayerProvider.NAME;
 import static org.geoserver.web.data.layer.LayerProvider.SRS;
@@ -18,14 +19,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
@@ -43,13 +45,26 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geotools.api.filter.Filter;
 
 /**
  * Page listing all the available layers. Follows the usual filter/sort/page approach, provides ways to bulk delete
  * layers and to add new ones
  */
 public class LayerPage extends GeoServerSecuredPage {
-    LayerProvider provider = new LayerProvider();
+    LayerProvider provider = new LayerProvider() {
+        @Override
+        protected Filter getFilter() {
+            Filter baseFilter = super.getFilter();
+            StringValue wsParam = getPageParameters().get("workspace");
+            if (wsParam.isNull() || wsParam.isEmpty()) {
+                return baseFilter;
+            }
+            String targetWs = wsParam.toString();
+            Filter workspaceFilter = Predicates.equal("resource.store.workspace.name", targetWs);
+            return Predicates.and(baseFilter, workspaceFilter);
+        }
+    };
     GeoServerTablePanel<LayerInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
@@ -63,7 +78,7 @@ public class LayerPage extends GeoServerSecuredPage {
                     String id, IModel<LayerInfo> itemModel, Property<LayerInfo> property) {
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
-                    f.add(new Image("layerIcon", icons.getSpecificLayerIcon(itemModel.getObject())));
+                    f.add(icons.getIcon("layerIcon", icons.getSpecificLayerIcon(itemModel.getObject())));
                     return f;
                 } else if (property == STORE) {
                     return storeLink(id, itemModel);
@@ -74,9 +89,9 @@ public class LayerPage extends GeoServerSecuredPage {
                     // ask for enabled() instead of isEnabled() to account for disabled
                     // resource/store
                     boolean enabled = layerInfo.enabled();
-                    PackageResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
+                    ResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
-                    f.add(new Image("layerIcon", icon));
+                    f.add(icons.getIcon("layerIcon", icon));
                     return f;
                 } else if (property == SRS) {
                     return new Label(id, SRS.getModel(itemModel));
@@ -86,6 +101,8 @@ public class LayerPage extends GeoServerSecuredPage {
                     return new DateTimeLabel(id, MODIFIED_TIMESTAMP.getModel(itemModel));
                 } else if (property == CREATED_TIMESTAMP) {
                     return new DateTimeLabel(id, CREATED_TIMESTAMP.getModel(itemModel));
+                } else if (property == MODIFIED_BY) {
+                    return new Label(id, MODIFIED_BY.getModel(itemModel));
                 }
                 throw new IllegalArgumentException("Don't know a property named " + property.getName());
             }
@@ -123,7 +140,7 @@ public class LayerPage extends GeoServerSecuredPage {
                 id,
                 ResourceConfigurationPage.class,
                 linkModel,
-                ResourceConfigurationPage.NAME,
+                ResourceConfigurationPage.LAYER,
                 layerName,
                 ResourceConfigurationPage.WORKSPACE,
                 wsName);
@@ -153,7 +170,7 @@ public class LayerPage extends GeoServerSecuredPage {
                 id,
                 ResourceConfigurationPage.class,
                 new Model<>(linkTitle),
-                ResourceConfigurationPage.NAME,
+                ResourceConfigurationPage.LAYER,
                 layerName,
                 ResourceConfigurationPage.WORKSPACE,
                 wsName);

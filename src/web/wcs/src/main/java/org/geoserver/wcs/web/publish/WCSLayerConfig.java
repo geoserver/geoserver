@@ -5,6 +5,9 @@
  */
 package org.geoserver.wcs.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +33,20 @@ import org.geotools.util.SuppressFBWarnings;
 /** A configuration panel for CoverageInfo properties that related to WCS publication */
 public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(WCSLayerConfig.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 6120092654147588736L;
 
     private static final List<String> WCS_FORMATS =
@@ -55,6 +72,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         add(new TextField<>("newRequestSRS", new PropertyModel<>(this, "newRequestSRS")));
 
         add(new Button("deleteSelectedRequestSRSs") {
+            @Serial
             private static final long serialVersionUID = 8363252127939759315L;
 
             @Override
@@ -65,6 +83,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         });
 
         add(new Button("addNewRequestSRS") {
+            @Serial
             private static final long serialVersionUID = -3493317500980471055L;
 
             @Override
@@ -80,6 +99,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         add(new TextField<>("newResponseSRS", new PropertyModel<>(this, "newResponseSRS")));
 
         add(new Button("deleteSelectedResponseSRSs") {
+            @Serial
             private static final long serialVersionUID = -8727831157546262491L;
 
             @Override
@@ -90,6 +110,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         });
 
         add(new Button("addNewResponseSRS") {
+            @Serial
             private static final long serialVersionUID = -2888152896129259019L;
 
             @Override
@@ -112,6 +133,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         new SimpleChoiceRenderer<>(),
                         7,
                         false) {
+                    @Serial
                     private static final long serialVersionUID = 6815545819673802290L;
 
                     /** Override otherwise the header is not i18n'ized */
@@ -142,6 +164,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         new SimpleChoiceRenderer<>(),
                         10,
                         false) {
+                    @Serial
                     private static final long serialVersionUID = -2463012775305597908L;
 
                     /** Override otherwise the header is not i18n'ized */
@@ -162,6 +185,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     static class WCSFormatsModel extends LoadableDetachableModel<ArrayList<String>> {
 
+        @Serial
         private static final long serialVersionUID = 1802421566341456007L;
 
         WCSFormatsModel() {
@@ -176,6 +200,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     static class WCSInterpolationModel extends LoadableDetachableModel<ArrayList<String>> {
 
+        @Serial
         private static final long serialVersionUID = 7328612985196203413L;
 
         WCSInterpolationModel() {

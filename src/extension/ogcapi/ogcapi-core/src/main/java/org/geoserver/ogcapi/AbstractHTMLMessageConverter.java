@@ -6,7 +6,6 @@ package org.geoserver.ogcapi;
 
 import static org.geoserver.ows.URLMangler.URLType.RESOURCE;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -34,6 +33,7 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Base class for {@link org.springframework.http.converter.HttpMessageConverter} that encode a HTML document based on a
@@ -179,9 +179,9 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     }
 
     private Object unwrapArgument(Object v) {
-        if (v instanceof TemplateModel) {
+        if (v instanceof TemplateModel model) {
             try {
-                return DeepUnwrap.permissiveUnwrap((TemplateModel) v);
+                return DeepUnwrap.permissiveUnwrap(model);
             } catch (TemplateModelException e) {
                 LOGGER.log(Level.WARNING, "", e);
             }
@@ -228,8 +228,11 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
         return requestInfo.getBaseURL();
     }
 
-    /** Purges iterators that might have been used when walking over GeoTools features */
+    /** Purges iterators and other AutoCloseable resources used during template rendering */
     protected void purgeIterators() {
+        // handles TemplateFeatureIterator closing FetureIterators
         FreemarkerTemplateSupport.FC_FACTORY.purge();
+        // closes other AutoCloseables such as org.geoserver.catalog.util.CloseableIterator
+        AutoCloseableTracker.purge();
     }
 }

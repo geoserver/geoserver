@@ -5,6 +5,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
+import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -23,6 +24,15 @@ public class HTMLComplexFeaturesResponseApiTest extends TemplateComplexTestSuppo
                 SupportedFormat.HTML,
                 templateMappedFeature,
                 MF_HTML,
+                ".xhtml",
+                "gsml",
+                mappedFeature);
+        setUpSchemaOverride(
+                null,
+                null,
+                SupportedFormat.HTML,
+                "HTMLQueryablesSchema.xhtml",
+                "MappedFeatureHTML",
                 ".xhtml",
                 "gsml",
                 mappedFeature);
@@ -65,5 +75,12 @@ public class HTMLComplexFeaturesResponseApiTest extends TemplateComplexTestSuppo
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Part']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Role']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'interbedded component']", doc);
+    }
+
+    @Test
+    public void testQueryablesOverride() throws Exception {
+        String docStr = getAsString(
+                "ogc/features/v1/collections/gsml:MappedFeature/queryables?f=text/html" + MF_HTML_PARAM, "UTF-8");
+        Assert.assertTrue(docStr.contains("testPropertyForSchemaOverride"));
     }
 }

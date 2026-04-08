@@ -19,7 +19,7 @@ public class GWCSynchEnv implements ApplicationContextAware {
 
     GeoServerEnvironment gsEnvironment;
 
-    private boolean forceSync = false;
+    private volatile boolean forceSync = false;
 
     /**
      * Constructor to inject the GeoServerEnvironment.

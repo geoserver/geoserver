@@ -1,9 +1,10 @@
 package org.geoserver.taskmanager.web;
 
+import java.io.Serial;
+import java.time.Duration;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.time.Duration;
 import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.util.InitConfigUtil;
@@ -13,6 +14,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 
 public class InitConfigurationPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -1979472322459593225L;
 
     private IModel<Configuration> configurationModel;
@@ -32,8 +34,9 @@ public class InitConfigurationPage extends GeoServerSecuredPage {
         if (schedulerReference == null) { // empty batch
             setResponsePage(new ConfigurationPage(InitConfigUtil.unwrap(configurationModel.getObject())));
         } else {
-            add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+            add(new AbstractAjaxTimerBehavior(Duration.ofSeconds(1)) {
 
+                @Serial
                 private static final long serialVersionUID = -8006498530965431853L;
 
                 @Override

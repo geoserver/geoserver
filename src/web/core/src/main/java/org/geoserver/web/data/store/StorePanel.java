@@ -9,13 +9,14 @@ import static org.geoserver.web.data.store.StoreProvider.ENABLED;
 import static org.geoserver.web.data.store.StoreProvider.NAME;
 import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -25,6 +26,7 @@ import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.ConfirmationAjaxLink;
 import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GSModalWindow;
@@ -39,13 +41,13 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
  *
  * @author Justin Deoliveira
  * @author Gabriel Roldan
- * @version $Id$
  * @see StorePage
  * @see StoreProvider
  */
 @SuppressWarnings("serial")
 public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
+    @Serial
     private static final long serialVersionUID = 5957961031378924960L;
 
     private GSModalWindow popupWindow;
@@ -70,10 +72,10 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         if (property == StoreProvider.DATA_TYPE) {
             final StoreInfo storeInfo = itemModel.getObject();
 
-            PackageResourceReference storeIcon = icons.getStoreIcon(storeInfo);
+            ResourceReference storeIcon = icons.getStoreIcon(storeInfo);
 
             Fragment f = new Fragment(id, "iconFragment", this);
-            f.add(new Image("storeIcon", storeIcon));
+            f.add(new CachingImage("storeIcon", storeIcon));
 
             return f;
         } else if (property == WORKSPACE) {
@@ -82,19 +84,21 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             return storeNameLink(id, itemModel);
         } else if (property == ENABLED) {
             final StoreInfo storeInfo = itemModel.getObject();
-            PackageResourceReference enabledIcon;
+            ResourceReference enabledIcon;
             if (storeInfo.isEnabled()) {
                 enabledIcon = icons.getEnabledIcon();
             } else {
                 enabledIcon = icons.getDisabledIcon();
             }
             Fragment f = new Fragment(id, "iconFragment", this);
-            f.add(new Image("storeIcon", enabledIcon));
+            f.add(new CachingImage("storeIcon", enabledIcon));
             return f;
         } else if (property == StoreProvider.MODIFIED_TIMESTAMP) {
             return new DateTimeLabel(id, StoreProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
         } else if (property == StoreProvider.CREATED_TIMESTAMP) {
             return new DateTimeLabel(id, StoreProvider.CREATED_TIMESTAMP.getModel(itemModel));
+        } else if (property == StoreProvider.MODIFIED_BY) {
+            return new Label(id, StoreProvider.MODIFIED_BY.getModel(itemModel));
         }
         return null;
     }
@@ -104,6 +108,9 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         IModel storeNameModel = NAME.getModel(itemModel);
         String storeName = (String) storeNameModel.getObject();
         StoreInfo store = getCatalog().getStoreByName(wsName, storeName, StoreInfo.class);
+        if (store == null) {
+            return new Label(id, storeNameModel);
+        }
         if (store instanceof DataStoreInfo) {
             return new SimpleBookmarkableLink(
                     id,
@@ -148,7 +155,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     private Component workspaceLink(String id, IModel<StoreInfo> itemModel) {
         IModel nameModel = WORKSPACE.getModel(itemModel);
         return new SimpleBookmarkableLink(
-                id, WorkspaceEditPage.class, nameModel, "name", (String) nameModel.getObject());
+                id, WorkspaceEditPage.class, nameModel, "workspace", (String) nameModel.getObject());
     }
 
     protected Component removeLink(String id, final IModel itemModel) {

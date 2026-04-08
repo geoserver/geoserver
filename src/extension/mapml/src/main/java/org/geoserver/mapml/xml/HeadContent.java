@@ -8,12 +8,12 @@
 
 package org.geoserver.mapml.xml;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * Java class for headContent complex type.
@@ -52,7 +52,7 @@ public class HeadContent {
     @XmlElement(name = "map-link", type = Link.class, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Link> links;
 
-    @XmlElement(name = "map-style", type = String.class, namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(name = "map-style", namespace = "http://www.w3.org/1999/xhtml")
     protected String style;
 
     public void setTitle(String title) {
@@ -113,7 +113,7 @@ public class HeadContent {
 
     /** Returns the CSS style for the eventual map-span elements */
     public String getStyle() {
-        return style;
+        return this.style;
     }
 
     /** Sets the CSS style for the eventual map-span elements */

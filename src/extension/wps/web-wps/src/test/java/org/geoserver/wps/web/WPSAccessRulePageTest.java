@@ -40,7 +40,7 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
         GeoServerTablePanel<ProcessGroupInfo> processFilterTable =
                 (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("form:processFilterTable");
         ProcessFactoryInfoProvider dp = (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();
-        assertEquals(dp.getItems().get(0).getFilteredProcesses().size(), 1);
+        assertEquals(1, dp.getItems().get(0).getFilteredProcesses().size());
     }
 
     @Test

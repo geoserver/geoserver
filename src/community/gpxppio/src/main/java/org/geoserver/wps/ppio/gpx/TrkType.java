@@ -117,7 +117,7 @@ public class TrkType {
      */
     public List<LinkType> getLink() {
         if (link == null) {
-            link = new ArrayList<LinkType>();
+            link = new ArrayList<>();
         }
 
         return this.link;
@@ -170,7 +170,7 @@ public class TrkType {
      */
     public List<TrksegType> getTrkseg() {
         if (trkseg == null) {
-            trkseg = new ArrayList<TrksegType>();
+            trkseg = new ArrayList<>();
         }
 
         return this.trkseg;

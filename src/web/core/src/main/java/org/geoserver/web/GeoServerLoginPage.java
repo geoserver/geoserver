@@ -5,8 +5,8 @@
  */
 package org.geoserver.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.Request;
@@ -42,8 +42,7 @@ public class GeoServerLoginPage extends GeoServerBasePage {
         try {
             if (parameters.get("error").toBoolean()) {
                 Exception exception = getAuthenticationException();
-                if (exception instanceof ConcurrentAuthenticationException) {
-                    ConcurrentAuthenticationException cae = (ConcurrentAuthenticationException) exception;
+                if (exception instanceof ConcurrentAuthenticationException cae) {
                     error(new ParamResourceModel("concurrentAuthenticationError", this, cae.getCount()).getString());
                 } else {
                     error(new ParamResourceModel("error", this).getString());
@@ -66,8 +65,8 @@ public class GeoServerLoginPage extends GeoServerBasePage {
         }
 
         Object exception = session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-        if (exception instanceof AuthenticationException) {
-            return (AuthenticationException) exception;
+        if (exception instanceof AuthenticationException authenticationException) {
+            return authenticationException;
         } else {
             return null;
         }

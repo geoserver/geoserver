@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.beans;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -16,6 +17,7 @@ public class DummyAction implements Action {
 
     public static final String NAME = "actionDummy";
 
+    @Serial
     private static final long serialVersionUID = 2055260073253741911L;
 
     @Override

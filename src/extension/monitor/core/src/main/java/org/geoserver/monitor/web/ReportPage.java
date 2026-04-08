@@ -5,11 +5,13 @@
  */
 package org.geoserver.monitor.web;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.geoserver.web.GeoServerSecuredPage;
 
 public class ReportPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -8211624833480293771L;
 
     public ReportPage() {

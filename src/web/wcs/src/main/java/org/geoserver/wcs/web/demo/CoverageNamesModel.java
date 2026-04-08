@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs.web.demo;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.geoserver.web.GeoServerApplication;
  * @author Andrea Aime - GeoSolutions
  */
 public class CoverageNamesModel extends LoadableDetachableModel<List<String>> {
+    @Serial
     private static final long serialVersionUID = 6445323794739973799L;
 
     @Override

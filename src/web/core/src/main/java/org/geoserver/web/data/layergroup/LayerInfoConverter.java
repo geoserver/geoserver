@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import java.util.Locale;
 import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.LayerInfo;
@@ -12,6 +13,7 @@ import org.geoserver.web.GeoServerApplication;
 
 public class LayerInfoConverter implements IConverter<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = -3540868744266790608L;
 
     @Override

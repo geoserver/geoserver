@@ -5,8 +5,8 @@
  */
 package org.geoserver.cluster.configuration;
 
+import jakarta.servlet.ServletContext;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -77,8 +77,8 @@ public class ApplicationProperties implements ApplicationContextAware {
      * @return The property value, or null if not found
      */
     public static String getProperty(String propertyName, ApplicationContext context) {
-        if (context instanceof WebApplicationContext) {
-            return getProperty(propertyName, ((WebApplicationContext) context).getServletContext());
+        if (context instanceof WebApplicationContext applicationContext) {
+            return getProperty(propertyName, applicationContext.getServletContext());
         } else {
             return getProperty(propertyName, (ServletContext) null);
         }

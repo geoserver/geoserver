@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +55,7 @@ import org.hibernate.exception.ConstraintViolationException;
 
 // TODO WICKET8 - Verify this page works OK
 public class BatchPage extends GeoServerSecuredPage {
+    @Serial
     private static final long serialVersionUID = -5111795911981486778L;
 
     private static final Logger LOGGER = Logging.getLogger(BatchPage.class);
@@ -108,6 +110,7 @@ public class BatchPage extends GeoServerSecuredPage {
         form.add(applyButton);
 
         form.add(new TextField<String>("name", new PropertyModel<String>(batchModel, "name")) {
+            @Serial
             private static final long serialVersionUID = -3736209422699508894L;
 
             @Override
@@ -137,6 +140,7 @@ public class BatchPage extends GeoServerSecuredPage {
                         new PropertyModel<String>(batchModel, "workspace"),
                         new ArrayList<String>(workspaces)) {
 
+                    @Serial
                     private static final long serialVersionUID = -9058423608027219299L;
 
                     @Override
@@ -183,6 +187,7 @@ public class BatchPage extends GeoServerSecuredPage {
         elementsPanel.setOutputMarkupId(true);
 
         form.add(new AjaxLink<Object>("cancel") {
+            @Serial
             private static final long serialVersionUID = -6892944747517089296L;
 
             @Override
@@ -213,6 +218,7 @@ public class BatchPage extends GeoServerSecuredPage {
 
     protected AjaxSubmitLink saveOrApplyButton(final String id, final boolean doReturn) {
         return new AjaxSubmitLink(id) {
+            @Serial
             private static final long serialVersionUID = 3735176778941168701L;
 
             @Override
@@ -254,6 +260,7 @@ public class BatchPage extends GeoServerSecuredPage {
     protected AjaxSubmitLink addButton() {
         return new AjaxSubmitLink("addNew") {
 
+            @Serial
             private static final long serialVersionUID = 7320342263365531859L;
 
             @Override
@@ -263,6 +270,7 @@ public class BatchPage extends GeoServerSecuredPage {
                 dialog.setInitialHeight(100);
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                    @Serial
                     private static final long serialVersionUID = 7410393012930249966L;
 
                     private DropDownPanel panel;
@@ -326,6 +334,7 @@ public class BatchPage extends GeoServerSecuredPage {
 
     protected AjaxSubmitLink removeButton() {
         return new AjaxSubmitLink("removeSelected") {
+            @Serial
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
@@ -335,6 +344,7 @@ public class BatchPage extends GeoServerSecuredPage {
                 dialog.setInitialHeight(100);
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                    @Serial
                     private static final long serialVersionUID = -5552087037163833563L;
 
                     @Override
@@ -369,6 +379,7 @@ public class BatchPage extends GeoServerSecuredPage {
     protected GeoServerTablePanel<BatchElement> elementsPanel() {
         return new GeoServerTablePanel<BatchElement>("tasksPanel", new BatchElementsModel(batchModel), true) {
 
+            @Serial
             private static final long serialVersionUID = -8943273843044917552L;
 
             @Override

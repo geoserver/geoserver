@@ -30,25 +30,25 @@ public class JwtHeadersFilterTest {
         // trivial cases
 
         // no existing auth
-        Assert.isTrue(!filter1.existingAuthIsFromThisConfig(null));
+        Assert.isTrue(!filter1.existingAuthIsFromThisConfig(null), "must be true");
         // not from us
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(null, null, null);
-        Assert.isTrue(!filter1.existingAuthIsFromThisConfig(auth));
+        Assert.isTrue(!filter1.existingAuthIsFromThisConfig(auth), "must be true");
 
         // details, but wrong type
         auth.setDetails(new WebAuthenticationDetails(null, null));
-        Assert.isTrue(!filter1.existingAuthIsFromThisConfig(auth));
+        Assert.isTrue(!filter1.existingAuthIsFromThisConfig(auth), "must be true");
 
         // more complex cases
         // details is JwtHeaders, but wrong id
         auth.setDetails(new JwtHeadersWebAuthenticationDetails(
                 config2.getId(), new GeoServerAbstractTestSupport.GeoServerMockHttpServletRequest("", "")));
-        Assert.isTrue(!filter1.existingAuthIsFromThisConfig(auth));
+        Assert.isTrue(!filter1.existingAuthIsFromThisConfig(auth), "must be true");
 
         // details is JwtHeaders,right id
         auth.setDetails(new JwtHeadersWebAuthenticationDetails(
                 config1.getId(), new GeoServerAbstractTestSupport.GeoServerMockHttpServletRequest("", "")));
-        Assert.isTrue(filter1.existingAuthIsFromThisConfig(auth));
+        Assert.isTrue(filter1.existingAuthIsFromThisConfig(auth), "must be true");
     }
 
     @Test
@@ -59,16 +59,16 @@ public class JwtHeadersFilterTest {
         filter1.initializeFromConfig(config1);
 
         // trivial cases
-        Assert.isTrue(!filter1.principleHasChanged(null, null));
-        Assert.isTrue(!filter1.principleHasChanged(null, "aaa"));
+        Assert.isTrue(!filter1.principleHasChanged(null, null), "must be true");
+        Assert.isTrue(!filter1.principleHasChanged(null, "aaa"), "must be true");
 
         UsernamePasswordAuthenticationToken auth_aaa = new UsernamePasswordAuthenticationToken("aaa", null, null);
         UsernamePasswordAuthenticationToken auth_bbb = new UsernamePasswordAuthenticationToken("bbb", null, null);
 
         // aaa->aaa
-        Assert.isTrue(!filter1.principleHasChanged(auth_aaa, "aaa"));
+        Assert.isTrue(!filter1.principleHasChanged(auth_aaa, "aaa"), "must be true");
 
         /// bbb->aaa
-        Assert.isTrue(filter1.principleHasChanged(auth_bbb, "aaa"));
+        Assert.isTrue(filter1.principleHasChanged(auth_bbb, "aaa"), "must be true");
     }
 }

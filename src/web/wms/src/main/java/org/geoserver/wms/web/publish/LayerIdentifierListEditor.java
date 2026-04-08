@@ -5,6 +5,9 @@
  */
 package org.geoserver.wms.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +48,20 @@ import org.springframework.util.Assert;
 // TODO WICKET8 - Verify this page works OK
 public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIdentifierInfo>> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerIdentifierListEditor.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 5098470663723800345L;
 
     private ListView<LayerIdentifierInfo> identifiers;
@@ -58,6 +75,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
     private final AuthorityURLListEditor availableAuthoritiesProvider;
 
     private class AuthListModel extends LoadableDetachableModel<List<String>> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -117,6 +135,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
 
         identifiers = new ListView<>("identifiers", new ArrayList<>(getModelObject())) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -150,6 +169,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                 // remove link
                 AjaxLink<Integer> link = new AjaxLink<>("removeLink", new Model<>(item.getIndex())) {
 
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -177,6 +197,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
 
         // add new identifier button
         AjaxButton button = new AjaxButton("addIdentifier") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

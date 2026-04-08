@@ -7,8 +7,6 @@ package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +15,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /** Base OGC API document class with shared link generation facilities */
 public class AbstractDocument {
@@ -24,6 +24,15 @@ public class AbstractDocument {
     protected String id;
     protected String htmlTitle;
     protected final List<Link> links = new ArrayList<>();
+
+    protected AbstractDocument() {}
+
+    /** Copy constructor */
+    public AbstractDocument(AbstractDocument other) {
+        this.id = other.id;
+        this.htmlTitle = other.htmlTitle;
+        this.links.addAll(other.links.stream().map(Link::new).collect(Collectors.toList()));
+    }
 
     /** Adds a link to the document */
     public void addLink(Link link) {

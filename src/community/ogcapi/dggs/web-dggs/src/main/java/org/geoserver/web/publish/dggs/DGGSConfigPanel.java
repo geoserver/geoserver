@@ -4,11 +4,13 @@
  */
 package org.geoserver.web.publish.dggs;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_MAXRES_KEY;
 import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_MINRES_KEY;
 import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_OFFSET_KEY;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Arrays;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -32,7 +34,22 @@ import org.geotools.util.decorate.Wrapper;
 /** Configures a layer DGGS related attributes */
 public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(DGGSConfigPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 6469105227923320272L;
+
     private final TextField<Integer> minResolution;
     private final TextField<Integer> maxResolution;
 
@@ -45,7 +62,7 @@ public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
         // Adding the min and max resolution editors
         @SuppressWarnings("PMD.CloseResource") // owned by the store
-        DGGSInstance dggs = getDGGS(model);
+        DGGSInstance<?> dggs = getDGGS(model);
         int[] resolutions = dggs.getResolutions();
         int minDggsRes = Arrays.stream(resolutions).min().orElse(0);
         int maxDggsRes = Arrays.stream(resolutions).max().orElse(Integer.MAX_VALUE);
@@ -78,13 +95,13 @@ public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
         minResolution.getForm().add(new MinMaxValidator(minResolution, maxResolution));
     }
 
-    private static DGGSInstance getDGGS(IModel<LayerInfo> model) throws IOException {
+    private static DGGSInstance<?> getDGGS(IModel<LayerInfo> model) throws IOException {
         FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject().getResource();
         FeatureSource fs = fti.getFeatureSource(null, null);
-        if (fs instanceof Wrapper) {
-            fs = ((Wrapper) fs).unwrap(DGGSFeatureSource.class);
+        if (fs instanceof Wrapper wrapper) {
+            fs = wrapper.unwrap(DGGSFeatureSource.class);
         }
-        return ((DGGSFeatureSource) fs).getDGGS();
+        return ((DGGSFeatureSource<?>) fs).getDGGS();
     }
 
     public class MinMaxValidator implements IFormValidator {

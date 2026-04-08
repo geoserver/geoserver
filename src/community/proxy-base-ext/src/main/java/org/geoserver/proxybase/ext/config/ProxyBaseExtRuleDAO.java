@@ -145,7 +145,7 @@ public class ProxyBaseExtRuleDAO {
     public static final class ProxyBaseExtException extends RuntimeException {
 
         public ProxyBaseExtException(Throwable cause, String message, Object... messageArguments) {
-            super(String.format(message, messageArguments), cause);
+            super(message.formatted(messageArguments), cause);
         }
     }
     /** Support class for XStream serialization */

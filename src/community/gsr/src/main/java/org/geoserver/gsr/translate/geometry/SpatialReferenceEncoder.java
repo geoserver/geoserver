@@ -9,16 +9,16 @@
  */
 package org.geoserver.gsr.translate.geometry;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.util.JSONBuilder;
 import org.geoserver.gsr.model.geometry.SpatialReference;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKID;
 import org.geoserver.gsr.model.geometry.SpatialReferenceWKT;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.util.JSONBuilder;
 
 public class SpatialReferenceEncoder {
     /**
@@ -28,11 +28,9 @@ public class SpatialReferenceEncoder {
      * @param json a JSONBuilder which the json representation is added to
      */
     public static void toJson(SpatialReference sr, JSONBuilder json) {
-        if (sr instanceof SpatialReferenceWKID) {
-            final SpatialReferenceWKID wkid = (SpatialReferenceWKID) sr;
+        if (sr instanceof SpatialReferenceWKID wkid) {
             json.object().key("wkid").value(wkid.getWkid()).endObject();
-        } else if (sr instanceof SpatialReferenceWKT) {
-            SpatialReferenceWKT wkt = (SpatialReferenceWKT) sr;
+        } else if (sr instanceof SpatialReferenceWKT wkt) {
             json.object().key("wkt").value(wkt.getWkt()).endObject();
         }
     }
@@ -80,8 +78,8 @@ public class SpatialReferenceEncoder {
      */
     public static CoordinateReferenceSystem coordinateReferenceSystemFromSpatialReference(SpatialReference sr) {
 
-        if (sr instanceof SpatialReferenceWKID) {
-            int wkid = ((SpatialReferenceWKID) sr).getWkid();
+        if (sr instanceof SpatialReferenceWKID iD) {
+            int wkid = iD.getWkid();
 
             try {
                 return CRS.decode("EPSG:" + wkid);
@@ -91,8 +89,8 @@ public class SpatialReferenceEncoder {
             }
         }
 
-        if (sr instanceof SpatialReferenceWKT) {
-            String wkt = ((SpatialReferenceWKT) sr).getWkt();
+        if (sr instanceof SpatialReferenceWKT kT) {
+            String wkt = kT.getWkt();
             try {
                 return CRS.parseWKT(wkt);
             } catch (FactoryException e) {

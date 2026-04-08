@@ -5,7 +5,10 @@
 
 package org.geoserver.elasticsearch;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -45,6 +48,20 @@ import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
 @SuppressWarnings("WeakerAccess")
 public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ElasticConfigurationPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 3382530429105288433L;
 
     private LayerInfo _layerInfo;
@@ -86,6 +103,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
     protected ElasticConfigurationPage getElasticConfigurationPage(
             final String panelId, final IModel<?> model, final GSModalWindow modal, boolean isRefresh) {
         modal.setWindowClosedCallback(new GSModalWindow.WindowClosedCallback() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -109,8 +127,6 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
                 } else {
                     LOGGER.log(Level.INFO, "DataLayerEditTabPanel is not present, cannot refresh the attribute panel");
                 }
-
-                modal.close(target);
             }
         });
         return new ElasticConfigurationPage(panelId, model, isRefresh) {
@@ -160,7 +176,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
     /*
      * Open modal dialog on window load
      */
-    private class OpenWindowOnLoadBehavior extends AbstractDefaultAjaxBehavior {
+    private static class OpenWindowOnLoadBehavior extends AbstractDefaultAjaxBehavior {
         @Override
         protected void respond(AjaxRequestTarget target) {
             GSModalWindow window = (GSModalWindow) getComponent();

@@ -23,7 +23,7 @@ public class FeatureGSExclusion implements ProcessFilter {
     @Override
     public ProcessFactory filterFactory(ProcessFactory pf) {
         if (pf instanceof VectorProcessFactory
-                || (pf instanceof DelegatingProcessFactory
+                || (pf instanceof DelegatingProcessFactory factory
                         && ((DelegatingProcessFactory) pf).getInnermostDelegate() instanceof VectorProcessFactory)) {
             return null;
         }

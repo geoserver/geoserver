@@ -19,6 +19,15 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements C
     private Class<GeoServerSecurityProvider> filterClass;
     private String include;
     private String loginPath;
+    private String method = "post";
+    private boolean enabled = true;
+
+    /**
+     * Set this to true if you want the login button to just be an external link - instead of a form. This allows for
+     * easier content-security-policy management since a form that redirect externally is typically not allowed. a)
+     * shouldn't have any form field (i.e. user/password) #include = null b) should be GET (method="GET")
+     */
+    private boolean justUseExternalLink = false;
 
     /** Name of the login extension; it will determine also the order displayed for the icons */
     public void setName(String name) {
@@ -94,9 +103,39 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements C
         this.loginPath = loginPath;
     }
 
+    /** @return the method */
+    public String getMethod() {
+        return method;
+    }
+
+    /** @param pMethod the method to set */
+    public void setMethod(String pMethod) {
+        method = pMethod;
+    }
+
     /** Sorts by name the Login extensions */
     @Override
     public int compareTo(LoginFormInfo other) {
         return getName().compareTo(other.getName());
+    }
+
+    /** @return the enabled */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /** @param pEnabled the enabled to set */
+    public void setEnabled(boolean pEnabled) {
+        enabled = pEnabled;
+    }
+
+    /** @return the justUseExternalLink */
+    public boolean isJustUseExternalLink() {
+        return justUseExternalLink;
+    }
+
+    /** @param pJustUseExternalLink mark this form as Just-Use-External-Link */
+    public void setJustUseExternalLink(boolean pJustUseExternalLink) {
+        justUseExternalLink = pJustUseExternalLink;
     }
 }

@@ -32,6 +32,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.LinkedProperties;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class DefaultControlFlowConfigurationTest {
 
     @Test
     public void testParsing() throws Exception {
-        Properties p = new PropertyFileWatcher.LinkedProperties();
+        Properties p = new LinkedProperties();
         p.put("timeout", "10");
         p.put("ows.global", "100");
         p.put("ows.wms.getmap", "8");

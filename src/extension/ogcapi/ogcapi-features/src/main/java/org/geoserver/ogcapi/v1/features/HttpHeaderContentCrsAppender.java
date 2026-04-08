@@ -4,10 +4,10 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
@@ -30,9 +30,9 @@ public class HttpHeaderContentCrsAppender extends AbstractDispatcherCallback {
     public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
 
         // is this a feature response we are about to encode?
-        if (result instanceof FeaturesResponse) {
+        if (result instanceof FeaturesResponse featuresResponse) {
             HttpServletResponse httpResponse = request.getHttpResponse();
-            FeatureCollectionResponse fcr = ((FeaturesResponse) result).getResponse();
+            FeatureCollectionResponse fcr = featuresResponse.getResponse();
             CoordinateReferenceSystem crs = Optional.ofNullable(fcr)
                     .map(fct -> fct.getFeatures().get(0))
                     .map(fc -> fc.getSchema())

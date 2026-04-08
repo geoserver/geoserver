@@ -5,16 +5,16 @@
  */
 package org.geoserver.flow;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.flow.config.DefaultControlFlowConfigurator;
 import org.geoserver.flow.controller.SingleQueueFlowController;
@@ -189,8 +189,8 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
 
     private static String getControllerEnterMessage(FlowController controller, Request requestWithOperation) {
         String message = "Request [" + requestWithOperation + "] enter " + controller;
-        if (controller instanceof SingleQueueFlowController) {
-            int requests = ((SingleQueueFlowController) controller).getRequestsInQueue();
+        if (controller instanceof SingleQueueFlowController flowController) {
+            int requests = flowController.getRequestsInQueue();
             message += "/" + requests;
         }
         return message;
@@ -198,18 +198,19 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
 
     private static String getControllerExitMessage(FlowController controller, Request requestWithOperation) {
         String message = "Request [" + requestWithOperation + "] exit  " + controller;
-        if (controller instanceof SingleQueueFlowController) {
-            int requests = ((SingleQueueFlowController) controller).getRequestsInQueue();
+        if (controller instanceof SingleQueueFlowController flowController) {
+            int requests = flowController.getRequestsInQueue();
             message += "/" + requests;
         }
         return message;
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // context
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        if (applicationContext instanceof ConfigurableApplicationContext) {
+        if (applicationContext instanceof ConfigurableApplicationContext context) {
             // register default beans if needed
-            registDefaultBeansIfNeeded((ConfigurableApplicationContext) applicationContext);
+            registDefaultBeansIfNeeded(context);
         } else {
             // we cannot regist default beans, there is nothing else we can do about this
             LOGGER.warning("Application context not configurable, control-flow default beans will not be registered.");

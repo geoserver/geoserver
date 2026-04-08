@@ -4,6 +4,9 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
@@ -30,6 +33,20 @@ import org.quartz.CronExpression;
 
 public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FrequencyPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -1661388086707143932L;
 
     private static final Pattern TIME_PATTERN = Pattern.compile("^(\\d\\d?):(\\d\\d?)$");
@@ -64,7 +81,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
                 int hour = Integer.parseInt(matcher.group(2));
                 if (minutes <= 60 && hour < 24) {
                     typeModel.setObject(Type.DAILY);
-                    timeModel.setObject(String.format("%02d", hour) + ":" + String.format("%02d", minutes));
+                    timeModel.setObject("%02d".formatted(hour) + ":" + "%02d".formatted(minutes));
                 }
             } else {
                 matcher = FrequencyUtil.WEEKLY_PATTERN.matcher(model.getObject());
@@ -74,7 +91,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
                     DayOfWeek day = FrequencyUtil.findDayOfWeek(matcher.group(3));
                     if (minutes <= 60 && hour < 24 && day != null) {
                         typeModel.setObject(Type.WEEKLY);
-                        timeModel.setObject(String.format("%02d", hour) + ":" + String.format("%02d", minutes));
+                        timeModel.setObject("%02d".formatted(hour) + ":" + "%02d".formatted(minutes));
                         dayOfWeekModel.setObject(day);
                     }
                 } else {
@@ -85,7 +102,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
                         int day = Integer.parseInt(matcher.group(3));
                         if (minutes <= 60 && hour < 24 && day > 0 && day <= 28) {
                             typeModel.setObject(Type.MONTHLY);
-                            timeModel.setObject(String.format("%02d", hour) + ":" + String.format("%02d", minutes));
+                            timeModel.setObject("%02d".formatted(hour) + ":" + "%02d".formatted(minutes));
                             dayOfMonthModel.setObject(day);
                         }
                     }
@@ -101,6 +118,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
         add(new DropDownChoice<Type>(
                         "type", typeModel, Arrays.asList(Type.values()), new EnumChoiceRenderer<Type>(this))
                 .add(new AjaxFormSubmitBehavior("change") {
+                    @Serial
                     private static final long serialVersionUID = -7698014209707408962L;
 
                     @Override
@@ -113,6 +131,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
         add(new WebMarkupContainer("dayOfWeekLabel"));
         add(new DropDownChoice<DayOfWeek>(
                 "dayOfWeek", dayOfWeekModel, Arrays.asList(DayOfWeek.values()), new EnumChoiceRenderer<DayOfWeek>() {
+                    @Serial
                     private static final long serialVersionUID = 246492731661118407L;
 
                     @Override
@@ -129,6 +148,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
                         27, 28)));
         add(new WebMarkupContainer("timeLabel"));
         add(new TextField<String>("time", timeModel).add(new IValidator<String>() {
+            @Serial
             private static final long serialVersionUID = -3170061736947280260L;
 
             @Override
@@ -145,6 +165,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
             }
         }));
         add(new TextField<String>("custom", (IModel<String>) getDefaultModel()).add(new IValidator<String>() {
+            @Serial
             private static final long serialVersionUID = -3170061736947280260L;
 
             @Override

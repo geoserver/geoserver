@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver.extension</groupId>
+    <artifactId>gs-wcs</artifactId>
+    <version>3.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.extension</groupId>
+  <artifactId>gs-wcs-integration</artifactId>
+  <packaging>jar</packaging>
+  <name>WCS Integration Tests</name>
+  <description>Integration tests for cross-version WCS functionality</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wcs</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-wcs1_0</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- update these later as we gradually migrate these versions -->
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-wcs1_1</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- update these later as we gradually migrate these versions -->
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wcs2_0</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

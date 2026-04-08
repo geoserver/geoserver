@@ -458,9 +458,32 @@ public class PipelineBuilder {
          * be return - the others are removed.
          */
         private Geometry onlyPolygon(Geometry result) {
-            if ((result instanceof Polygon) || (result instanceof MultiPolygon)) {
-                return result;
+            if (result instanceof Polygon p) {
+                return (p.isEmpty()) ? null : p;
             }
+
+            if (result instanceof MultiPolygon mp) {
+                int n = mp.getNumGeometries();
+                boolean hasEmpty = false;
+                for (int i = 0; i < n; i++) {
+                    if (mp.getGeometryN(i).isEmpty()) {
+                        hasEmpty = true;
+                        break;
+                    }
+                }
+                if (!hasEmpty) return mp;
+
+                // If it's a multipolygon, rebuild it without empty parts
+                Polygon[] kept = java.util.stream.IntStream.range(0, n)
+                        .mapToObj(i -> (Polygon) mp.getGeometryN(i))
+                        .filter(p -> !p.isEmpty())
+                        .toArray(Polygon[]::new);
+
+                if (kept.length == 0) return null;
+                if (kept.length == 1) return kept[0];
+                return result.getFactory().createMultiPolygon(kept);
+            }
+
             @SuppressWarnings("unchecked")
             List<Polygon> polys = org.locationtech.jts.geom.util.PolygonExtracter.getPolygons(result);
             if (polys.isEmpty()) {
@@ -475,7 +498,12 @@ public class PipelineBuilder {
             // systems will not correctly
             // deal with a GeometryCollection with multiple polygons in them.
             // The best strategy is to just create a (potentially) invalid multipolygon.
-            return new MultiPolygon(polys.toArray(new Polygon[polys.size()]), result.getFactory());
+            Polygon[] kept =
+                    polys.stream().filter(p -> p != null && !p.isEmpty()).toArray(Polygon[]::new);
+
+            if (kept.length == 0) return null;
+            if (kept.length == 1) return kept[0];
+            return result.getFactory().createMultiPolygon(kept);
         }
 
         private Geometry onlyLines(Geometry result) {

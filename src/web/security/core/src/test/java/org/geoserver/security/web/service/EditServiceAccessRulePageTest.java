@@ -53,13 +53,14 @@ public class EditServiceAccessRulePageTest extends AbstractSecurityWicketTestSup
         form = tester.newFormTester("form");
         form.submit("save");
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
         tester.assertRenderedPage(ServiceAccessRulePage.class);
 
         ServiceAccessRule rule = getRule("wms.GetMap");
         assertNotNull(rule);
         assertEquals(1, rule.getRoles().size());
-        assertEquals(GeoServerRole.ANY_ROLE, rule.getRoles().iterator().next());
+        String actual = rule.getRoles().iterator().next();
+        assertEquals(GeoServerRole.ANY_ROLE.getAuthority(), actual);
     }
 
     @Test

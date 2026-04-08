@@ -229,8 +229,8 @@ public class Paths {
     /**
      * True if path is valid.
      *
-     * <p>For details see {@link #valid(boolean, String)} which will provide an IllegalArgument describing validation
-     * problem detected.
+     * <p>For details see {@link #valid(String)} which will provide an IllegalArgument describing validation problem
+     * detected.
      *
      * @param path Resource path
      * @return True if path is valid

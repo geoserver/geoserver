@@ -305,7 +305,7 @@ public class LocalWorkspaceCatalogTest {
      * No local workspace is set this means the prefix should be included since the global capabilities is probably
      * being created.
      *
-     * <p>The No Geoserver part is just to verify there are no nullpointer exceptions because of a coding error
+     * <p>The No GeoServer part is just to verify there are no nullpointer exceptions because of a coding error
      */
     @Test
     public void testGetNoGeoserverLocalWorkspacePrefixedLayerNameBehaviour() {

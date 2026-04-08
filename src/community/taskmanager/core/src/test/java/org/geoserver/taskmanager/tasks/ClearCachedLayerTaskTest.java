@@ -168,7 +168,6 @@ public class ClearCachedLayerTaskTest extends AbstractTaskManagerTest {
         final GeoServerTileLayer tileLayer =
                 new GeoServerTileLayer(gwc.getLayerInfoByName("DEM"), gwc.getConfig(), gwc.getGridSetBroker());
         tileLayer.getInfo().setEnabled(true);
-        tileLayer.getInfo().setInMemoryCached(false);
         gwc.add(tileLayer);
 
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");

@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.role;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,6 +14,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -23,6 +26,21 @@ import org.geoserver.web.GeoServerApplication;
 @SuppressWarnings("serial")
 public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole> {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(RolePaletteFormComponent.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    private final SubmitLink addRoleLink;
+
     public RolePaletteFormComponent(String id, IModel<List<GeoServerRole>> model) {
         this(id, model, new RolesModel());
     }
@@ -30,25 +48,7 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
     public RolePaletteFormComponent(
             String id, IModel<List<GeoServerRole>> model, IModel<List<GeoServerRole>> choicesModel) {
         super(id, model, choicesModel, new ChoiceRenderer<>("authority", "authority"));
-
-        //        rolePalette = new Palette<GeoServerRole>(
-        //                "roles", , choicesModel,
-        //                , 10, false) {
-        //            // trick to force the palette to have at least one selected elements
-        //            // tried with a nicer validator but it's not used at all, the required thing
-        //            // instead is working (don't know why...)
-        //            protected Recorder<GeoServerRole> newRecorderComponent() {
-        //                Recorder<GeoServerRole> rec = super.newRecorderComponent();
-        //                //add any behaviours that need to be added
-        //                rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
-        //                toAdd.clear();
-        //                /*if (isRequired)
-        //                    rec.setRequired(true);
-        //                if (behavior!=null)
-        //                    rec.add(behavior);*/
-        //                return rec;
-        //            }
-        //        };
+        getPalette().setLabel(new Model<>("roles"));
 
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
         final String roleServiceName = roleService.getName();
@@ -58,13 +58,14 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
             add(new Label(
                     "roles", new StringResourceModel("rolesFromActiveService", this).setParameters(roleServiceName)));
 
-        add(
-                new SubmitLink("addRole") {
-                    @Override
-                    public void onSubmit() {
-                        setResponsePage(new NewRolePage(roleServiceName).setReturnPage(this.getPage()));
-                    }
-                }.setVisible(roleService.canCreateStore()));
+        this.addRoleLink = new SubmitLink("addRole") {
+            @Override
+            public void onSubmit() {
+                setResponsePage(new NewRolePage(roleServiceName).setReturnPage(this.getPage()));
+            }
+        };
+        addRoleLink.setVisible(roleService.canCreateStore());
+        add(addRoleLink);
     }
 
     public GeoServerSecurityManager getSecurityManager() {
@@ -96,5 +97,10 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
     protected String getAvailableHeaderPropertyKey() {
         // TODO Auto-generated method stub
         return "RolePaletteFormComponent.availableHeader";
+    }
+
+    /** Hides the add role link */
+    public void hideAddRoleLink() {
+        addRoleLink.setVisible(false);
     }
 }

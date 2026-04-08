@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+   <body>
+      <wicket:panel>
+         <fieldset>
+            <legend><wicket:message key="cswServiceControl">CSW Service Control</wicket:message></legend>
+            <div wicket:id="disabledVersions"></div>
+         </fieldset>
+         <fieldset>
+            <legend>
+               <span>
+                  <wicket:message key="CSWLayerConfig.directDownloadSettings">DirectDownload settings</wicket:message>
+               </span>
+            </legend>
+            <div class="gs-unordered-list-class">
+               <div class="gs-list-item-class">
+                  <input id="directDownloadEnabled" class="field" type="checkbox" wicket:id="directDownloadEnabled" />
+                  <label class="choice">
+                     <wicket:message key="directDownloadEnabled">Enable directDownload link creations</wicket:message>
+                  </label>
+               </div>
+               <div class="gs-list-item-class">
+                  <label>
+                     <wicket:message key="CSWLayerConfig.maxDownloadSize">maxdownloadsize</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="maxDownloadSize" class="field" />
+               </div>
+            </div>
+         </fieldset>
+      </wicket:panel>
+   </body>
+</html>
+

@@ -11,4 +11,10 @@
         <constructor-arg ref="templateConfiguration"/>
     </bean>
 
+    <bean id="schemaCallbackOGC"
+          class="org.geoserver.featurestemplating.ogcapi.SchemaCallBackOGC">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="schemaConfiguration"/>
+    </bean>
+
 </beans>

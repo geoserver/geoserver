@@ -23,8 +23,7 @@ class CogEncryptedFieldsProvider implements EncryptedFieldsProvider {
 
     @Override
     public Set<String> getEncryptedFields(StoreInfo info) {
-        if (info instanceof CoverageStoreInfo) {
-            CoverageStoreInfo storeInfo = (CoverageStoreInfo) info;
+        if (info instanceof CoverageStoreInfo storeInfo) {
             String storeType = storeInfo.getType();
             if (COG_FORMAT_TYPE.equalsIgnoreCase(storeType)) {
                 Map<String, Serializable> connectionParams = info.getConnectionParameters();

@@ -109,7 +109,7 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
         if (!fileService.checkFileExists("appschema/MappedFeature.properties")) {
             try (InputStream in =
                     getClass().getResource("appschema/MappedFeature.properties").openStream()) {
-                fileService.create("appschema/MappedFeature.properties", in);
+                fileService.create("MappedFeature.properties", in);
             }
         }
         // add gsml namespace

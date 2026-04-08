@@ -217,8 +217,8 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
     protected boolean isNull(Object value) {
         boolean isNull = false;
         if (value == null || value.equals("null") || "".equals(value)) isNull = true;
-        else if (value instanceof List) {
-            isNull = ((List) value).isEmpty();
+        else if (value instanceof List list1) {
+            isNull = list1.isEmpty();
         } else if (value.getClass().isArray()) {
             List list = Converters.convert(value, List.class);
             isNull = list.isEmpty();

@@ -11,9 +11,9 @@ import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand;
 import it.geosolutions.imageio.pam.PAMParser;
 import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
-import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.util.Utilities;
 
 /**
@@ -39,8 +39,7 @@ public class FilterFunction_gridCoverageStats extends FunctionExpressionImpl {
         try { // attempt to get value and perform conversion
             arg0 = (getExpression(0).evaluate(feature, String.class));
             Object val = null;
-            if (feature instanceof GridCoverage2D) {
-                GridCoverage2D coverage = (GridCoverage2D) feature;
+            if (feature instanceof GridCoverage2D coverage) {
                 val = evaluate(coverage, arg0);
             }
             if (val != null) {
@@ -62,9 +61,8 @@ public class FilterFunction_gridCoverageStats extends FunctionExpressionImpl {
      */
     public Object evaluate(final GridCoverage2D coverage, final String statName) {
         Utilities.ensureNonNull("coverage", coverage);
-        final Object prop = coverage.getProperty(Utils.PAM_DATASET);
-        if (prop != null && prop instanceof PAMDataset) {
-            final PAMDataset dataset = (PAMDataset) prop;
+        final Object prop = coverage.getProperty(GridCoverage2DReader.PAM_DATASET);
+        if (prop != null && prop instanceof PAMDataset dataset) {
             // Need to play with channel selection to deal with different raster bands
             final PAMRasterBand band = dataset.getPAMRasterBand().get(0);
             if (band != null) {

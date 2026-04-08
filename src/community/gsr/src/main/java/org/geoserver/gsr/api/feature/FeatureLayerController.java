@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import net.sf.json.*;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
@@ -34,6 +33,7 @@ import org.geoserver.gsr.translate.feature.LayerEditsEncoder;
 import org.geoserver.gsr.translate.map.LayerDAO;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geotools.feature.FeatureCollection;
+import org.kordamp.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -383,8 +383,8 @@ public class FeatureLayerController extends AbstractGSRController {
      */
     private FeatureArray jsonStringToFeatureArray(String jsonString) {
         JSON json = JSONSerializer.toJSON(jsonString);
-        if (json instanceof JSONArray) {
-            return LayerEditsEncoder.featureArrayFromJSON((JSONArray) json);
+        if (json instanceof JSONArray array) {
+            return LayerEditsEncoder.featureArrayFromJSON(array);
         } else {
             LOGGER.info("Submitted JSON is not an array, as expected.");
             throw new JSONException();
@@ -400,8 +400,8 @@ public class FeatureLayerController extends AbstractGSRController {
      */
     private ServiceEdits jsonStringToServiceEdits(String jsonString) {
         JSON json = JSONSerializer.toJSON(jsonString);
-        if (json instanceof JSONArray) {
-            return LayerEditsEncoder.serviceEditsFromJSON((JSONArray) json);
+        if (json instanceof JSONArray array) {
+            return LayerEditsEncoder.serviceEditsFromJSON(array);
         } else {
             LOGGER.info("Submitted JSON is not an array, as expected.");
             throw new JSONException();

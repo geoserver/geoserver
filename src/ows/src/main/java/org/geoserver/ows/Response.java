@@ -108,7 +108,7 @@ public abstract class Response {
      *
      * @param value The value to serialize
      * @param operation The operation being performed.
-     * @return The mime type of the response, must not be <code>null</code>
+     * @return The mime type of the response, must not be {@code null}
      */
     public abstract String getMimeType(Object value, Operation operation) throws ServiceException;
 
@@ -176,9 +176,9 @@ public abstract class Response {
 
     /**
      * Returns the charset for this response, the Dispatcher will set it in the ServletResponse. The default
-     * implementation returns <code>null</code>, in this case no encoding should be set. Subclasses returning text
-     * documents (CSV,HTML,JSON) should override taking into account SettingsInfo.getCharset() as well as the specific
-     * encoding requirements of the returned format.
+     * implementation returns {@code null}, in this case no encoding should be set. Subclasses returning text documents
+     * (CSV,HTML,JSON) should override taking into account SettingsInfo.getCharset() as well as the specific encoding
+     * requirements of the returned format.
      */
     public String getCharset(Operation operation) {
         return null;

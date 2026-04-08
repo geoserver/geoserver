@@ -25,7 +25,6 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wcs.kvp.GetCoverageRequestReader;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.WebCoverageService20;
 import org.geotools.api.coverage.grid.GridCoverage;
@@ -45,7 +44,6 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
 
     static final double EPS = 10E-6;
     WCSConfiguration configuration;
-    GetCoverageRequestReader kvpreader;
     WebCoverageService20 service;
 
     static {
@@ -108,7 +106,6 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
 
     @Before
     public void setup() {
-        kvpreader = (GetCoverageRequestReader) applicationContext.getBean("wcs111GetCoverageRequestReader");
         service = (WebCoverageService20) applicationContext.getBean("wcs20ServiceTarget");
         configuration = new WCSConfiguration();
     }

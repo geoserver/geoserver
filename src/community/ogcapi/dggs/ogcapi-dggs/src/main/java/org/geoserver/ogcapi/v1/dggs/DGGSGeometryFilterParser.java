@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIException;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.FactoryException;
@@ -36,18 +37,28 @@ class DGGSGeometryFilterParser {
     Filter filter = Filter.INCLUDE;
     Geometry geometry;
     FilterFactory ff;
-    DGGSInstance dggs;
+    DGGSInstance<?> dggs;
+    AttributeDescriptor zoneIdAttribute;
     Class<? extends Geometry> geometryType = Polygon.class;
 
-    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance dggs) {
+    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance<?> dggs) {
         this.ff = ff;
         this.dggs = dggs;
     }
 
-    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance dggs, Class<? extends Geometry> geometryType) {
+    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance<?> dggs, AttributeDescriptor zoneIdAttribute) {
+        this(ff, dggs, null, zoneIdAttribute);
+    }
+
+    public DGGSGeometryFilterParser(
+            FilterFactory ff,
+            DGGSInstance<?> dggs,
+            Class<? extends Geometry> geometryType,
+            AttributeDescriptor zoneIdAttribute) {
         this.ff = ff;
         this.dggs = dggs;
         this.geometryType = geometryType;
+        this.zoneIdAttribute = zoneIdAttribute;
     }
 
     public void setBBOX(String bbox) throws FactoryException {
@@ -97,11 +108,12 @@ class DGGSGeometryFilterParser {
         if (zoneIds != null && !zoneIds.isEmpty()) {
             String[] identifiers = zoneIds.split("\\s*,\\s*");
             this.geometry = null;
-            Iterator<Zone> zoneIterator =
-                    Arrays.stream(identifiers).map(id -> dggs.getZone(id)).iterator();
-            this.filter = DGGSFilterTransformer.getFilterFrom(dggs, zoneIterator, resolution);
+            Iterator<Zone> zoneIterator = Arrays.stream(identifiers)
+                    .map(id -> dggs.getZoneFromString(id))
+                    .iterator();
+            this.filter = DGGSFilterTransformer.getFilterFrom(dggs, zoneIterator, resolution, null, zoneIdAttribute);
             this.geometry = CascadedPolygonUnion.union(Arrays.stream(identifiers)
-                    .map(id -> dggs.getZone(id).getBoundary())
+                    .map(id -> dggs.getZoneFromString(id).getBoundary())
                     .collect(Collectors.toList()));
         }
     }

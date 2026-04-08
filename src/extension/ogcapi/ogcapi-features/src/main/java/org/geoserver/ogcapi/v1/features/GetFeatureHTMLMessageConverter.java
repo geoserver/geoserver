@@ -15,10 +15,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.TypeInfoCollectionWrapper;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractServiceHTMLMessageConverter;
 import org.geoserver.ogcapi.FreemarkerTemplateSupport;
-import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
@@ -40,8 +40,8 @@ public class GetFeatureHTMLMessageConverter extends AbstractServiceHTMLMessageCo
 
     private FeatureTypeInfo getResource(FeatureCollection collection) {
         FeatureTypeInfo info = null;
-        if (collection instanceof TypeInfoCollectionWrapper) {
-            info = ((TypeInfoCollectionWrapper) collection).getFeatureTypeInfo();
+        if (collection instanceof TypeInfoCollectionWrapper wrapper) {
+            info = wrapper.getFeatureTypeInfo();
         }
         if (info == null && collection.getSchema() != null) {
             info = geoServer
@@ -95,8 +95,8 @@ public class GetFeatureHTMLMessageConverter extends AbstractServiceHTMLMessageCo
                             model.put("featureInfo", typeInfo);
                             model.put("data", fc);
                             // allow building a collection backlink
-                            if (fc instanceof TypeInfoCollectionWrapper && includeCollectionLink()) {
-                                FeatureTypeInfo info = ((TypeInfoCollectionWrapper) fc).getFeatureTypeInfo();
+                            if (fc instanceof TypeInfoCollectionWrapper wrapper && includeCollectionLink()) {
+                                FeatureTypeInfo info = wrapper.getFeatureTypeInfo();
                                 if (info != null) {
                                     model.put("collection", info.prefixedName());
                                 }

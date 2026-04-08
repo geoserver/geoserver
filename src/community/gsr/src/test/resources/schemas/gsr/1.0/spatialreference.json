@@ -1,6 +1,6 @@
 {
-    "$schema":"http://json-schema.org/draft-03/schema#",
-    "id": "http://schemas.opengis.net/gsr/1.0/spatialreference.json",
+    "$schema":"https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://schemas.opengis.net/gsr/1.0/spatialreference.json",
 
     "title":"spatial reference",
     "type":"object",

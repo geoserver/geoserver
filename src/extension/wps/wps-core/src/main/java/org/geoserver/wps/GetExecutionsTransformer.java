@@ -203,10 +203,10 @@ public class GetExecutionsTransformer extends TransformerBase {
                                 .getExceptionReport()
                                 .getException();
                         for (Object ex : exceptions) {
-                            if (ex instanceof ExceptionType) {
-                                stackTrace.append(((ExceptionType) ex).getExceptionCode());
+                            if (ex instanceof ExceptionType type) {
+                                stackTrace.append(type.getExceptionCode());
                                 stackTrace.append(": ");
-                                stackTrace.append(((ExceptionType) ex).getExceptionText());
+                                stackTrace.append(type.getExceptionText());
                                 stackTrace.append("\n");
                             }
                         }
@@ -330,8 +330,7 @@ public class GetExecutionsTransformer extends TransformerBase {
             start("wps:DataInputs");
             for (Object input : inputs) {
                 // Encode Inputs on the Status Response
-                if (input instanceof InputType) {
-                    InputType ii = (InputType) input;
+                if (input instanceof InputType ii) {
                     start("wps:Input");
                     if (ii.getIdentifier() != null) {
                         element("ows:Identifier", ii.getIdentifier().getValue());
@@ -378,12 +377,9 @@ public class GetExecutionsTransformer extends TransformerBase {
                                                 inputAttributes);
                                     }
                                 } else {
-                                    if (processParameterIO instanceof LiteralPPIO) {
+                                    if (processParameterIO instanceof LiteralPPIO iO) {
                                         try {
-                                            element(
-                                                    "wps:LiteralData",
-                                                    ((LiteralPPIO) processParameterIO).encode(complexData),
-                                                    inputAttributes);
+                                            element("wps:LiteralData", iO.encode(complexData), inputAttributes);
                                         } catch (Exception e) {
                                             LOGGER.log(Level.WARNING, "", e);
                                         }
@@ -493,9 +489,9 @@ public class GetExecutionsTransformer extends TransformerBase {
                         if (ppio.isComplex(parameters.get(inputId), ctx)) {
                             encodeComplexInput(status, attributes, reference, inputAttributes, (ComplexPPIO) ppio);
                         } else {
-                            if (ppio instanceof LiteralPPIO) {
+                            if (ppio instanceof LiteralPPIO iO) {
                                 try {
-                                    element("wps:LiteralData", ((LiteralPPIO) ppio).encode(reference.getBody()));
+                                    element("wps:LiteralData", iO.encode(reference.getBody()));
                                 } catch (Exception e) {
                                     LOGGER.log(Level.WARNING, "", e);
                                 }
@@ -521,13 +517,12 @@ public class GetExecutionsTransformer extends TransformerBase {
                 ComplexPPIO ppio) {
             try {
                 Object out = ppio.decode(reference.getBody());
-                if (out instanceof ExecuteType) {
-                    ExecuteType exec = (ExecuteType) out;
+                if (out instanceof ExecuteType exec) {
                     start("wps:ComplexData", inputAttributes);
                     encodeExecuteRequest(status, exec, attributes);
                     end("wps:ComplexData");
-                } else if (out instanceof GetFeatureType) {
-                    encodeGetFeatureType(inputAttributes, (GetFeatureType) out);
+                } else if (out instanceof GetFeatureType type) {
+                    encodeGetFeatureType(inputAttributes, type);
                 } else {
                     element("wps:ComplexData", "<![CDATA[" + out.toString() + "]]", inputAttributes);
                 }
@@ -584,8 +579,7 @@ public class GetExecutionsTransformer extends TransformerBase {
             start("wps:DataOutputs");
             for (Object output : outputs) {
                 // Encode Outputs on the Status Response
-                if (output instanceof DocumentOutputDefinitionType) {
-                    DocumentOutputDefinitionType oo = (DocumentOutputDefinitionType) output;
+                if (output instanceof DocumentOutputDefinitionType oo) {
                     final AttributesImpl outputDefinitionTypeAttributes = new AttributesImpl();
                     outputDefinitionTypeAttributes.addAttribute(
                             "", "asReference", "asReference", "", String.valueOf(oo.isSetAsReference()));

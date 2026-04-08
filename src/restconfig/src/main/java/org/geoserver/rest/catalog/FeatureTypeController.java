@@ -196,13 +196,12 @@ public class FeatureTypeController extends AbstractCatalogController {
 
         // now, does the feature type exist? If not, create it
         DataAccess dataAccess = dsInfo.getDataStore(null);
-        if (dataAccess instanceof DataStore) {
+        if (dataAccess instanceof DataStore dataStore) {
             String typeName = ftInfo.getName();
             if (ftInfo.getNativeName() != null) {
                 typeName = ftInfo.getNativeName();
             }
             boolean typeExists = false;
-            DataStore dataStore = (DataStore) dataAccess;
             for (String name : dataStore.getTypeNames()) {
                 if (name.equals(typeName)) {
                     typeExists = true;
@@ -215,10 +214,16 @@ public class FeatureTypeController extends AbstractCatalogController {
             boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
 
             if (!virtual && !typeExists) {
-                dataStore.createSchema(buildFeatureType(ftInfo));
-                // the attributes created might not match up 1-1 with the actual spec due to
-                // limitations of the data store, have it re-compute them
-                ftInfo.getAttributes().clear();
+                SimpleFeatureType featureType = buildFeatureType(ftInfo);
+                dataStore.createSchema(featureType);
+
+                if (!featureTypeAttributesContainRestrictions(ftInfo)) {
+                    // the attributes created aren't customized with restrictions
+                    // and might not match up 1-1 with the actual spec due to
+                    // limitations of the data store, have it re-compute them
+                    ftInfo.getAttributes().clear();
+                }
+
                 List<String> typeNames = Arrays.asList(dataStore.getTypeNames());
                 // handle Oracle oddities
                 // TODO: use the incoming store capabilites API to better handle the name
@@ -285,6 +290,10 @@ public class FeatureTypeController extends AbstractCatalogController {
         headers.setLocation(uriComponents.toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>("", headers, HttpStatus.CREATED);
+    }
+
+    private boolean featureTypeAttributesContainRestrictions(FeatureTypeInfo ftInfo) {
+        return ftInfo.getAttributes().stream().anyMatch(attr -> attr.getRange() != null || attr.getOptions() != null);
     }
 
     @GetMapping(
@@ -393,10 +402,10 @@ public class FeatureTypeController extends AbstractCatalogController {
             FeatureTypeInfo featureType, String workspaceName, String storeName, String featureTypeName) {
         if (featureType == null && storeName == null) {
             throw new ResourceNotFoundException(
-                    String.format("No such feature type: %s,%s", workspaceName, featureTypeName));
+                    "No such feature type: %s,%s".formatted(workspaceName, featureTypeName));
         } else if (featureType == null) {
             throw new ResourceNotFoundException(
-                    String.format("No such feature type: %s,%s,%s", workspaceName, storeName, featureTypeName));
+                    "No such feature type: %s,%s,%s".formatted(workspaceName, storeName, featureTypeName));
         }
     }
 
@@ -490,12 +499,10 @@ public class FeatureTypeController extends AbstractCatalogController {
                     String prefix,
                     HierarchicalStreamWriter writer,
                     MarshallingContext context) {
-                if (obj instanceof NamespaceInfo) {
-                    NamespaceInfo ns = (NamespaceInfo) obj;
+                if (obj instanceof NamespaceInfo ns) {
                     converter.encodeLink("/namespaces/" + converter.encode(ns.getPrefix()), writer);
                 }
-                if (obj instanceof DataStoreInfo) {
-                    DataStoreInfo ds = (DataStoreInfo) obj;
+                if (obj instanceof DataStoreInfo ds) {
                     converter.encodeLink(
                             "/workspaces/"
                                     + converter.encode(ds.getWorkspace().getName())

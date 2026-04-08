@@ -25,7 +25,7 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * The DownloadEstimatorProcess is used for checking if the download request does not exceeds the defined limits.
+ * The DownloadEstimatorProcess is used for checking if the download request does not exceed the defined limits.
  *
  * @author "Alessio Fabiani - alessio.fabiani@geo-solutions.it"
  */
@@ -67,7 +67,7 @@ public class DownloadEstimatorProcess implements GeoServerProcess {
     public Boolean execute(
             @DescribeParameter(name = "layerName", min = 1, description = "Original layer to download")
                     String layerName,
-            @DescribeParameter(name = "filter", min = 0, description = "Optional Vectorial Filter") Filter filter,
+            @DescribeParameter(name = "filter", min = 0, description = "Optional Filter") Filter filter,
             @DescribeParameter(name = "targetCRS", min = 0, description = "Target CRS")
                     CoordinateReferenceSystem targetCRS,
             @DescribeParameter(name = "RoiCRS", min = 0, description = "Region Of Interest CRS")
@@ -148,19 +148,17 @@ public class DownloadEstimatorProcess implements GeoServerProcess {
         // 1. DataStore -> look for vectorial data download
         // 2. CoverageStore -> look for raster data download
         // ////
-        if (resourceInfo instanceof FeatureTypeInfo) {
+        if (resourceInfo instanceof FeatureTypeInfo featureTypeInfo) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Working with Vectorial dataset");
             }
-            final FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) resourceInfo;
 
             return new VectorEstimator(limits).execute(featureTypeInfo, roi, clip, filter, targetCRS, progressListener);
 
-        } else if (resourceInfo instanceof CoverageInfo) {
+        } else if (resourceInfo instanceof CoverageInfo coverage) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Working with Raster dataset");
             }
-            final CoverageInfo coverage = (CoverageInfo) resourceInfo;
             return new RasterEstimator(limits, catalog)
                     .execute(
                             progressListener,

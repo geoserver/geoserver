@@ -6,6 +6,8 @@
 
 package org.geoserver.security;
 
+import java.io.Serial;
+
 /**
  * System filter chain which cannot be modified
  *
@@ -14,6 +16,7 @@ package org.geoserver.security;
 public class ConstantFilterChain extends RequestFilterChain {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ConstantFilterChain(String... patterns) {

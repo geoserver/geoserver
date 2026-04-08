@@ -10,12 +10,13 @@ import static org.geotools.coverage.grid.io.AbstractGridFormat.FOOTPRINT_BEHAVIO
 import static org.geotools.coverage.grid.io.AbstractGridFormat.INPUT_TRANSPARENT_COLOR;
 import static org.geotools.coverage.grid.io.AbstractGridFormat.OVERVIEW_POLICY;
 import static org.geotools.coverage.grid.io.AbstractGridFormat.RESCALE_PIXELS;
-import static org.geotools.coverage.grid.io.AbstractGridFormat.USE_JAI_IMAGEREAD;
+import static org.geotools.coverage.grid.io.AbstractGridFormat.USE_IMAGEN_IMAGEREAD;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ACCURATE_RESOLUTION;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ALLOW_MULTITHREADING;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.EXCESS_GRANULE_REMOVAL;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.MERGE_BEHAVIOR;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.OUTPUT_TRANSPARENT_COLOR;
+import static org.geotools.gce.imagemosaic.ImageMosaicFormat.SKIP_DUPLICATES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -71,6 +72,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.TestResourceAccessManager;
+import org.geoserver.test.PostGISTestResource;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.util.GeoServerDefaultLocale;
@@ -99,11 +101,15 @@ import org.geotools.referencing.CRS;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.security.core.Authentication;
 
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
+
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
 
     protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
 
@@ -249,10 +255,11 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         parametersList.visitChildren(ParamPanel.class, (c, v) -> {
             MapModel mapModel = (MapModel) c.getDefaultModel();
             String parameterKey = mapModel.getExpression();
-            if (USE_JAI_IMAGEREAD.getName().getCode().equals(parameterKey)
+            if (USE_IMAGEN_IMAGEREAD.getName().getCode().equals(parameterKey)
                     || ACCURATE_RESOLUTION.getName().getCode().equals(parameterKey)
                     || ALLOW_MULTITHREADING.getName().getCode().equals(parameterKey)
-                    || RESCALE_PIXELS.getName().getCode().equals(parameterKey)) {
+                    || RESCALE_PIXELS.getName().getCode().equals(parameterKey)
+                    || SKIP_DUPLICATES.getName().getCode().equals(parameterKey)) {
                 assertThat(parameterKey, c, CoreMatchers.instanceOf(CheckBoxParamPanel.class));
             } else if (EXCESS_GRANULE_REMOVAL.getName().getCode().equals(parameterKey)
                     || FOOTPRINT_BEHAVIOR.getName().getCode().equals(parameterKey)
@@ -834,27 +841,56 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         tester.assertInvisible(attributesPanel + "attributesTable");
         tester.assertVisible(attributesPanel + "attributesEditor");
+
         // check one attribute
-        String edit1 = "publishedinfo:tabs:panel:theList:1:content:attributePanel:attributesEditor:table"
-                + ":listContainer:items:1:itemProperties:";
-        tester.assertModelValue(edit1 + "2:component:text", "description");
-        tester.assertModelValue(edit1 + "3:component:type", java.lang.String.class);
-        tester.assertModelValue(edit1 + "4:component:area", "description");
-        tester.assertModelValue(edit1 + "5:component:description", null);
-        tester.assertModelValue(edit1 + "6:component:check", true);
+        String firstItemProperties = attributesPanel + "attributesEditor:table:listContainer:items:1:itemProperties";
+
+        // check rendering in attributes table
+        tester.assertModelValue(firstItemProperties + ":2:component:name", "description");
+        tester.assertModelValue(firstItemProperties + ":3:component:type", java.lang.String.class);
+        tester.assertModelValue(firstItemProperties + ":4:component:description", null);
+        tester.assertModelValue(firstItemProperties + ":5:component", "Nillable: true\n");
 
         // customize one attribute
-        String formEdit1 = "tabs:panel:theList:1:content:attributePanel:attributesEditor:table"
-                + ":listContainer:items:1:itemProperties:";
-        form.setValue(formEdit1 + "2:component:text", "abstract");
-        String cql = "Concatenate(description, ' and more!')";
-        form.setValue(formEdit1 + "4:component:area", cql);
-        form.setValue(formEdit1 + "5:component:description", "attribute described");
-        form.setValue(formEdit1 + "6:component:check", "false");
+
+        // open the attribute edit modal
+        tester.executeAjaxEvent(firstItemProperties + ":6:component:link", "click");
+
+        tester.assertVisible(attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog");
+
+        String editAttributeForm =
+                "tabs:panel:theList:1:content:attributePanel:attributesEditor:dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:attributeForm";
+
+        // rename the attribute
+        form.setValue(editAttributeForm + ":name", "abstract");
+        // change attribute source CQL
+        String newSource = "Concatenate(description, ' and more!')";
+        form.setValue(editAttributeForm + ":source", newSource);
+        // change attribute description
+        String newDescription = "attribute described";
+        form.setValue(editAttributeForm + ":description", newDescription);
+        // make the attribute not nillable
+        form.setValue(editAttributeForm + ":nillable", "false");
+
+        // click on dialog submit button
+        tester.executeAjaxEvent(
+                attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog:content:content:form:submit",
+                "click");
+
+        tester.assertInvisible(attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog");
 
         // save
         form.submit("apply");
         tester.assertNoErrorMessage();
+
+        // check changes rendering in attributes table
+        tester.assertModelValue(firstItemProperties + ":2:component:name", "abstract");
+        assertEquals(
+                tester.getComponentFromLastRenderedPage(firstItemProperties + ":4:component:description")
+                        .getDefaultModelObjectAsString(),
+                newDescription);
+        tester.assertModelValue(
+                firstItemProperties + ":5:component", "Source: Concatenate(description, ' and more!')\n");
 
         // check saving happened
         FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(layerId);
@@ -863,8 +899,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals(6, attributes.size());
         AttributeTypeInfo att = attributes.get(0);
         assertEquals("abstract", att.getName());
-        assertEquals("attribute described", att.getDescription().toString(GeoServerDefaultLocale.get()));
-        assertEquals(cql, att.getSource());
+        assertEquals(newDescription, att.getDescription().toString(GeoServerDefaultLocale.get()));
+        assertEquals(newSource, att.getSource());
     }
 
     @Test
@@ -875,8 +911,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         ds.setWorkspace(cat.getDefaultWorkspace());
         ds.setEnabled(true);
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo");
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
         SimpleFeatureSource fs1 = getFeatureSource(SystemTestData.FORESTS);
         DataStore store = (DataStore) ds.getDataStore(null);
@@ -913,7 +948,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertTrue(text.contains("Basic Resource Info"));
         assertTrue(text.contains("Feature Type Details"));
         assertTrue(text.contains("Edit sql view"));
-        assertTrue(text.contains("Failed to load attribute list, internal error is: Column NAD not found"));
+        assertTrue(text.contains(
+                "Failed to load attribute list, internal error is: ERROR: column &quot;fid&quot; does not exist"));
 
         // After updating SQL view correctly error message should not be present
         VirtualTable vt1 = new VirtualTable("test", "SELECT FID,NAME FROM \"Forests\"");
@@ -961,16 +997,28 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.assertInvisible(attributesPanel + "attributesTable");
         tester.assertVisible(attributesPanel + "attributesEditor");
 
-        // customize one attribute, just rename it
-        String firstItemProperties =
-                "tabs:panel:theList:1:content:attributePanel:attributesEditor:table:listContainer:items:1:itemProperties";
-        form.setValue(firstItemProperties + ":2:component:text", "abstract");
+        // customize one attribute renaming it
+        String firstItemProperties = attributesPanel + "attributesEditor:table:listContainer:items:1:itemProperties";
 
-        // now move it down
-        // - simulate blur happening only in the browser as the editor loses focus)
-        // - simulate click on the down link
-        tester.executeAjaxEvent("publishedinfo:" + firstItemProperties + ":2:component:text", "blur");
-        tester.executeAjaxEvent("publishedinfo:" + firstItemProperties + ":1:component:down:link", "click");
+        // open the attribute edit modal
+        tester.executeAjaxEvent(firstItemProperties + ":6:component:link", "click");
+
+        tester.assertVisible(attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog");
+
+        // rename the attribute
+        form.setValue(
+                "tabs:panel:theList:1:content:attributePanel:attributesEditor:dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:attributeForm:name",
+                "abstract");
+
+        // click on dialog submit button
+        tester.executeAjaxEvent(
+                attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog:content:content:form:submit",
+                "click");
+
+        tester.assertInvisible(attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog");
+
+        // move attribute down clicking on the down link
+        tester.executeAjaxEvent(firstItemProperties + ":1:component:down:link", "click");
 
         // save
         form.submit("apply");

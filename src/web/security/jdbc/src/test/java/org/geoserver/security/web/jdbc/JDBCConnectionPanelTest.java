@@ -103,15 +103,15 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         FormTester ftester = tester.newFormTester("form");
         ftester.setValue(relBase + "userName", "user1");
         ftester.setValue(relBase + "password", "pw");
-        ftester.setValue(relBase + "driverClassName", "org.h2.Driver");
-        ftester.setValue(relBase + "connectURL", "jdbc:h2");
+        ftester.setValue(relBase + "driverClassName", "org.hsqldb.jdbc.JDBCDriver");
+        ftester.setValue(relBase + "connectURL", "jdbc:hsqldb:file");
         ftester.submit();
 
         tester.assertNoErrorMessage();
         assertEquals("user1", config.getUserName());
         assertEquals("pw", config.getPassword());
-        assertEquals("org.h2.Driver", config.getDriverClassName());
-        assertEquals("jdbc:h2", config.getConnectURL());
+        assertEquals("org.hsqldb.jdbc.JDBCDriver", config.getDriverClassName());
+        assertEquals("jdbc:hsqldb:file", config.getConnectURL());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         JDBCUserGroupServiceConfig theConfig = new JDBCUserGroupServiceConfig();
         theConfig.setUserName("user1");
         theConfig.setPassword("pw");
-        theConfig.setDriverClassName("org.h2.Driver");
+        theConfig.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
         theConfig.setConnectURL("jdbc:foo");
 
         setupPanel(theConfig);
@@ -134,8 +134,8 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         JDBCUserGroupServiceConfig theConfig = new JDBCUserGroupServiceConfig();
         theConfig.setUserName("user1");
         theConfig.setPassword("pw");
-        theConfig.setDriverClassName("org.h2.Driver");
-        theConfig.setConnectURL("jdbc:h2:file:target/db");
+        theConfig.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
+        theConfig.setConnectURL("jdbc:hsqldb:file:target/db");
 
         setupPanel(theConfig);
         tester.assertRenderedPage(FormTestPage.class);

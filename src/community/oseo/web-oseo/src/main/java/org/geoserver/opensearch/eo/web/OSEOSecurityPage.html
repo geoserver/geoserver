@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+    <title><wicket:message key="title">OSEO security</wicket:message></title>
+</wicket:head>
+<body>
+<wicket:extend>
+    <form wicket:id="form" class="pt-3">
+        <fieldset>
+            <legend><span><wicket:message key="collectionSecurity">EO Collection security</wicket:message></span>
+            </legend>
+            <div class="gs-unordered-list-class action-group">
+                <div class="gs-list-item-class"> <a class="add-link" href="#" wicket:id="addCollectionRule"><wicket:message key="addNew" /></a></div>
+            </div>
+            <div class="gs-unordered-list-class" wicket:id="collectionLimitsContainer">
+                <div class="gs-list-item-class">
+                    <div wicket:id="collectionLimits"></div>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend><span><wicket:message key="productSecurity">EO Product security</wicket:message></span>
+            </legend>
+            <div class="gs-unordered-list-class action-group">
+                <div class="gs-list-item-class"> <a class="add-link" href="#" wicket:id="addProductRule"><wicket:message key="addNew" /></a></div>
+            </div>
+            <div class="gs-unordered-list-class" wicket:id="productLimitsContainer">
+                <div class="gs-list-item-class">
+                    <div wicket:id="productLimits"></div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="button-group toolbar-sticky selfclear">
+            <button wicket:id="submit" class="form-button-save primary" type="submit">
+                <wicket:message key="save"/>
+            </button>
+            <button wicket:id="apply" class="form-button-apply outline-primary" type="submit">
+                <wicket:message key="apply"/>
+            </button>
+            <button wicket:id="cancel" class="form-button-cancel outline-danger" type="submit">
+                <wicket:message key="cancel"/>
+            </button>
+        </div>
+    </form>
+</wicket:extend>
+</body>
+</html>

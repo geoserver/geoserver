@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +53,22 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  *
  * @param <T>
  */
-// TODO WICKET8 - Verify this page works OK
 public abstract class GeoServerTablePanel<T> extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerTablePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -5275268446479549108L;
 
     private static final int DEFAULT_ITEMS_PER_PAGE = 25;
@@ -100,6 +116,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
     boolean selectAllValue;
     boolean pageable;
+
+    private String tableChangeJS;
 
     /** Builds a non selectable table */
     public GeoServerTablePanel(final String id, final GeoServerDataProvider<T> dataProvider) {
@@ -154,6 +172,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         filterForm.setOutputMarkupId(true);
         add(filterForm);
         filter = new TextField<>("filter", new Model<>()) {
+            @Serial
             private static final long serialVersionUID = -1252520208030081584L;
 
             @Override
@@ -193,6 +212,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         listContainer.setOutputMarkupId(true);
         add(listContainer);
         dataView = new DataView<>("items", dataProvider) {
+            @Serial
             private static final long serialVersionUID = 7201317388415148823L;
 
             @Override
@@ -240,6 +260,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     protected ListView<Property<T>> buildLinksListView(final GeoServerDataProvider<T> dataProvider) {
         return new ListView<>("sortableLinks", dataProvider.getVisibleProperties()) {
 
+            @Serial
             private static final long serialVersionUID = -7565457802398721254L;
 
             @Override
@@ -275,6 +296,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         // create one component per viewable property
         ListView<Property<T>> items = new ListView<>("itemProperties", propertyList) {
 
+            @Serial
             private static final long serialVersionUID = -4552413955986008990L;
 
             @Override
@@ -382,6 +404,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         sa.setOutputMarkupId(true);
         sa.add(new AjaxFormComponentUpdatingBehavior("click") {
 
+            @Serial
             private static final long serialVersionUID = 1154921156065269691L;
 
             @Override
@@ -392,6 +415,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 // update table and the checkbox itself
                 target.add(getComponent());
                 target.add(listContainer);
+                if (tableChangeJS != null) {
+                    target.appendJavaScript(tableChangeJS);
+                }
 
                 // allow subclasses to play on this change as well
                 onSelectionUpdate(target);
@@ -406,6 +432,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         cb.setVisible(selectable);
         cb.add(new AjaxFormComponentUpdatingBehavior("click") {
 
+            @Serial
             private static final long serialVersionUID = -2419184741329470638L;
 
             @Override
@@ -546,6 +573,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     <S> AjaxLink<S> sortLink(final GeoServerDataProvider<T> dataProvider, ListItem<S> item) {
         return new AjaxLink<>("link", item.getModel()) {
 
+            @Serial
             private static final long serialVersionUID = -6180419488076488737L;
 
             @Override
@@ -560,6 +588,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 }
                 setSelection(false);
                 target.add(listContainer);
+                if (tableChangeJS != null) {
+                    target.appendJavaScript(tableChangeJS);
+                }
                 rememeberSort();
             }
         };
@@ -589,6 +620,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         target.add(navigatorTop);
         target.add(navigatorBottom);
         target.add(filterForm);
+        if (tableChangeJS != null) {
+            target.appendJavaScript(tableChangeJS);
+        }
     }
 
     /** Sets back to the first page, clears the selection and */
@@ -601,6 +635,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     /** Turns filtering abilities on/off. */
     public void setFilterVisible(boolean filterVisible) {
         filterForm.setVisible(filterVisible);
+    }
+
+    /** Sets a JavaScript string to execute whenever the table is redrawn in the browser */
+    public void setTableChangeJS(String tableChangeJS) {
+        this.tableChangeJS = tableChangeJS;
     }
 
     public void processInputs() {
@@ -634,7 +673,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
 
     protected class PagerDelegate implements Serializable {
+        @Serial
         private static final long serialVersionUID = -6928477338531850338L;
+
         long fullSize, size, first, last;
 
         public PagerDelegate() {
@@ -704,6 +745,20 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     protected class Pager extends Panel {
 
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(GeoServerTablePanel.Pager.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        @Serial
         private static final long serialVersionUID = 6128188748404971154L;
 
         GeoServerPagingNavigator navigator;
@@ -721,6 +776,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         /** Builds a paging navigator that will update both of the labels when the page changes. */
         private GeoServerPagingNavigator updatingPagingNavigator() {
             return new GeoServerPagingNavigator("navigator", dataView) {
+                @Serial
                 private static final long serialVersionUID = -1795278469204272385L;
 
                 @Override
@@ -732,6 +788,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                     navigatorBottom.updateMatched();
                     target.add(navigatorTop);
                     target.add(navigatorBottom);
+                    if (tableChangeJS != null) {
+                        target.appendJavaScript(tableChangeJS);
+                    }
                 }
             };
         }
@@ -743,7 +802,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
 
     public class SelectionModel implements IModel<Boolean> {
+        @Serial
         private static final long serialVersionUID = 7681891298556441330L;
+
         int index;
 
         public SelectionModel(int index) {

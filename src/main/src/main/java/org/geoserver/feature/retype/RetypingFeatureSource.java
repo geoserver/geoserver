@@ -48,10 +48,10 @@ public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
             throws IOException {
         FeatureTypeMap map = new FeatureTypeMap(wrapped.getSchema(), targetSchema);
 
-        if (wrapped instanceof SimpleFeatureLocking) {
-            return new RetypingFeatureLocking((SimpleFeatureLocking) wrapped, map);
-        } else if (wrapped instanceof SimpleFeatureStore) {
-            return new RetypingFeatureStore((SimpleFeatureStore) wrapped, map);
+        if (wrapped instanceof SimpleFeatureLocking locking) {
+            return new RetypingFeatureLocking(locking, map);
+        } else if (wrapped instanceof SimpleFeatureStore featureStore) {
+            return new RetypingFeatureStore(featureStore, map);
         } else {
             return new RetypingFeatureSource(wrapped, map);
         }
@@ -211,7 +211,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
     public boolean isWrapperFor(Class<?> iface) {
         // first drill down to the latest wrapper, then check if the last delegate actually
         // implements the required interface
-        if (wrapped instanceof Wrapper) return ((Wrapper) wrapped).isWrapperFor(iface);
+        if (wrapped instanceof Wrapper wrapper) return wrapper.isWrapperFor(iface);
         else if (iface.isInstance(wrapped)) return true;
         else return false;
     }
@@ -221,7 +221,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
     public <T> T unwrap(Class<T> iface) throws IllegalArgumentException {
         // first drill down to the latest wrapper, then check if the last delegate actually
         // implements the required interface and return it
-        if (wrapped instanceof Wrapper) return ((Wrapper) wrapped).unwrap(iface);
+        if (wrapped instanceof Wrapper wrapper) return wrapper.unwrap(iface);
         else if (iface.isInstance(wrapped)) return (T) wrapped;
         else throw new IllegalArgumentException("Cannot unwrap to the requested interface " + iface);
     }

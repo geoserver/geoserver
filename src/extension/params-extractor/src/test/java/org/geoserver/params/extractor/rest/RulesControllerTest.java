@@ -15,13 +15,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.params.extractor.RulesDao;
 import org.geoserver.util.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -132,7 +132,7 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
         JSONObject param = json.getJSONObject("Rule");
         assertEquals(0, param.get("id"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
         assertEquals(3, param.get("position"));
         assertEquals("cql_filter", param.get("parameter"));
         assertEquals(1, param.get("remove"));
@@ -145,7 +145,7 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
         JSONObject param = json.getJSONObject("Rule");
         assertEquals(1, param.get("id"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
         assertEquals("^.*?(/([^/]+?))/[^/]+$", param.get("match"));
         assertEquals("cql_filter", param.get("parameter"));
         assertEquals(2, param.get("remove"));
@@ -158,7 +158,7 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
         JSONObject param = json.getJSONObject("Rule");
         assertEquals(2, param.get("id"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
         assertEquals(4, param.get("position"));
         assertEquals("cql_filter", param.get("parameter"));
         assertEquals("seq='$2'", param.get("transform"));
@@ -178,11 +178,13 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPutRuleXML() throws Exception {
-        String ruleXML = "<Rule id=\"0\"\n"
-                + "          position=\"5\"\n"
-                + "          parameter=\"foobar\"\n"
-                + "          remove=\"2\"\n"
-                + "          transform=\"abc='$2'\"/>";
+        String ruleXML =
+                """
+                <Rule id="0"
+                          position="5"
+                          parameter="foobar"
+                          remove="2"
+                          transform="abc='$2'"/>""";
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/params-extractor/rules/0", ruleXML, "application/xml");
         assertEquals(200, response.getStatus());
@@ -200,13 +202,16 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPutRuleJson() throws Exception {
-        String ruleJSON = "{\"Rule\": {\n"
-                + "  \"id\": 0,\n"
-                + "  \"position\": 5,\n"
-                + "  \"parameter\": \"foobar\",\n"
-                + "  \"transform\": \"abc='$2'\",\n"
-                + "  \"remove\": 2\n"
-                + "}}";
+        String ruleJSON =
+                """
+                {"Rule": {
+                  "id": 0,
+                  "position": 5,
+                  "parameter": "foobar",
+                  "transform": "abc='$2'",
+                  "remove": 2
+                }}\
+                """;
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/params-extractor/rules/0", ruleJSON, "application/json");
         assertEquals(200, response.getStatus());
@@ -216,7 +221,7 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
         // checking it matches the current serialization
         JSONObject param = json.getJSONObject("Rule");
         assertEquals(0, param.get("id"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
         assertEquals(5, param.get("position"));
         assertEquals("foobar", param.get("parameter"));
         assertEquals(2, param.get("remove"));
@@ -225,11 +230,13 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPostRuleXML() throws Exception {
-        String ruleXML = "<Rule "
-                + "          position=\"5\"\n"
-                + "          parameter=\"foobar\"\n"
-                + "          remove=\"2\"\n"
-                + "          transform=\"abc='$2'\"/>";
+        String ruleXML =
+                """
+                <Rule \
+                          position="5"
+                          parameter="foobar"
+                          remove="2"
+                          transform="abc='$2'"/>""";
         MockHttpServletResponse response =
                 postAsServletResponse("/rest/params-extractor/rules", ruleXML, "application/xml");
         checkCreateWithPost(response);
@@ -237,12 +244,15 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPostEchoJSON() throws Exception {
-        String ruleJSON = "{\"Rule\": {\n"
-                + "  \"position\": 5,\n"
-                + "  \"parameter\": \"foobar\",\n"
-                + "  \"transform\": \"abc='$2'\",\n"
-                + "  \"remove\": 2\n"
-                + "}}";
+        String ruleJSON =
+                """
+                {"Rule": {
+                  "position": 5,
+                  "parameter": "foobar",
+                  "transform": "abc='$2'",
+                  "remove": 2
+                }}\
+                """;
         MockHttpServletResponse response =
                 postAsServletResponse("/rest/params-extractor/rules", ruleJSON, "application/json");
         checkCreateWithPost(response);

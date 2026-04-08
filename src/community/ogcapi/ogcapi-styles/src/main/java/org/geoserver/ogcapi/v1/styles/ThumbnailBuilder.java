@@ -57,8 +57,7 @@ public class ThumbnailBuilder {
         defaulter.autoSetMissingProperties(request);
 
         WebMap map = wms.getMap(request);
-        if (map instanceof RenderedImageMap) {
-            RenderedImageMap rim = (RenderedImageMap) map;
+        if (map instanceof RenderedImageMap rim) {
             return rim.getImage();
         }
 

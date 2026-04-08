@@ -7,13 +7,23 @@ package org.geoserver.monitor.kafka;
 
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.geoserver.monitor.*;
+import org.geoserver.monitor.Category;
+import org.geoserver.monitor.Monitor;
+import org.geoserver.monitor.MonitorConfig;
+import org.geoserver.monitor.MonitorDAO;
+import org.geoserver.monitor.Query;
+import org.geoserver.monitor.RequestData;
+import org.geoserver.monitor.RequestDataRecord;
+import org.geoserver.monitor.RequestDataVisitor;
+import org.geoserver.monitor.Status;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 

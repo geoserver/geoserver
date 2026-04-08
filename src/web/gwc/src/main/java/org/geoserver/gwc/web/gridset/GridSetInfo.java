@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.gridset;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import si.uom.NonSI;
 import si.uom.SI;
 
 class GridSetInfo implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String name;

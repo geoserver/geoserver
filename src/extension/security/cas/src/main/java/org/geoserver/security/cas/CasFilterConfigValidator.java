@@ -28,8 +28,8 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
     @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
-        if (config instanceof CasAuthenticationFilterConfig) {
-            validateCASFilterConfig((CasAuthenticationFilterConfig) config);
+        if (config instanceof CasAuthenticationFilterConfig filterConfig) {
+            validateCASFilterConfig(filterConfig);
         } else {
             super.validateFilterConfig(config);
         }

@@ -41,7 +41,7 @@ public class JobQueue {
     ThreadPoolExecutor pool =
             new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>()) {
                 @Override
-                protected <T extends Object> RunnableFuture<T> newTaskFor(Callable<T> callable) {
+                protected <T> RunnableFuture<T> newTaskFor(Callable<T> callable) {
                     if (callable instanceof Job) {
                         return new Task<>((Job<T>) callable);
                     }
@@ -50,15 +50,15 @@ public class JobQueue {
 
                 @Override
                 protected void beforeExecute(Thread t, Runnable r) {
-                    if (t != null && r instanceof Task) {
-                        ((Task) r).started();
+                    if (t != null && r instanceof Task task) {
+                        task.started();
                     }
                 }
 
                 @Override
                 protected void afterExecute(Runnable r, Throwable t) {
-                    if (t != null && r instanceof Task) {
-                        ((Task) r).setError(t);
+                    if (t != null && r instanceof Task task) {
+                        task.setError(t);
                     }
                 }
             };

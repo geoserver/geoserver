@@ -192,7 +192,9 @@ public class TiledCRS {
             zoom = i;
             Bounds pxb = this.getPixelBounds(prjb, i);
             if (!(dsplyb.getWidth() >= pxb.getWidth() && dsplyb.getHeight() >= pxb.getHeight())) {
-                zoom = i - 1;
+                if (zoom != 0) {
+                    zoom = i - 1;
+                }
                 break;
             }
         }
@@ -461,7 +463,7 @@ public class TiledCRS {
     }
 
     /** Compares two tile coordinates and ranks them by distance from the constructed center point. */
-    protected class TileComparator implements Comparator<TileCoordinates> {
+    protected static class TileComparator implements Comparator<TileCoordinates> {
         private final Point centre;
 
         /** @param centre */

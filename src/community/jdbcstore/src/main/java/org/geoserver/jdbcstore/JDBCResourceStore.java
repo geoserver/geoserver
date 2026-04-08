@@ -153,7 +153,7 @@ public class JDBCResourceStore implements ResourceStore {
 
     @Override
     public Resource get(String path) {
-        List<String> pathNames = Paths.names(path);
+        List<String> pathNames = Paths.names(Paths.valid(path));
         if (oldResourceStore != null
                 && pathNames.size() > 0
                 && ArrayUtils.contains(dir.getConfig().getIgnoreDirs(), pathNames.get(0))) {
@@ -205,7 +205,7 @@ public class JDBCResourceStore implements ResourceStore {
         public InputStream in() {
             final Lock lock = lock();
             try {
-                entry.createResource();
+                entry.verifyResource();
                 return getIStream();
             } finally {
                 lock.release();
@@ -350,8 +350,8 @@ public class JDBCResourceStore implements ResourceStore {
             List<ResourceNotification.Event> eventsRename =
                     SimpleResourceNotificationDispatcher.createRenameEvents(this, dest);
             boolean result;
-            if (dest instanceof JDBCResource) {
-                result = entry.renameTo(((JDBCResource) dest).entry);
+            if (dest instanceof JDBCResource resource) {
+                result = entry.renameTo(resource.entry);
             } else {
                 result = Resources.renameByCopy(this, dest);
             }

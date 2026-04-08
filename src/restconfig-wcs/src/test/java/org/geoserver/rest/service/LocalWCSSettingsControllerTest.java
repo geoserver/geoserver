@@ -8,12 +8,8 @@ package org.geoserver.rest.service;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
-import net.sf.json.JSON;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
@@ -24,6 +20,8 @@ import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.wcs.WCSInfo;
 import org.junit.After;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -164,13 +162,9 @@ public class LocalWCSSettingsControllerTest extends CatalogRESTTestSupport {
                 200,
                 deleteAsServletResponse(RestBaseController.ROOT_PATH + "/services/wcs/workspaces/sf/settings")
                         .getStatus());
-        boolean thrown = false;
-        try {
-            getAsJSON(RestBaseController.ROOT_PATH + "/services/wcs/sf/settings.json");
-        } catch (JSONException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/services/wcs/sf/settings.json");
+        assertEquals(404, response.getStatus());
     }
 
     private void removeLocalWorkspace() {

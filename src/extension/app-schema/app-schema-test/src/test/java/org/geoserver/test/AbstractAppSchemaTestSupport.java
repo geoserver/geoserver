@@ -33,9 +33,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -66,6 +63,9 @@ import org.geotools.jdbc.SQLDialect;
 import org.geotools.xml.resolver.SchemaCache;
 import org.geotools.xml.resolver.SchemaCatalog;
 import org.geotools.xml.resolver.SchemaResolver;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -90,7 +90,6 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
     protected static final String XMLNS = "http://www.w3.org/2000/xmlns/";
 
     /** WFS namespaces, for use by XMLUnit. A seen in WFSTestSupport, plus xlink. */
-    @SuppressWarnings("serial")
     private final Map<String, String> WFS_NAMESPACES = Map.ofEntries(
             entry("wfs", "http://www.opengis.net/wfs"),
             entry("ows", "http://www.opengis.net/ows"),
@@ -148,6 +147,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         DataAccessRegistry.unregisterAndDisposeAll();
         AppSchemaDataAccessRegistry.clearAppSchemaProperties();
         AppSchemaXSDRegistry.getInstance().dispose();
+        SchemaCache.enableAutomaticConfiguration(); // reset default behavior
         catalog = null;
     }
 
@@ -271,8 +271,8 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      */
     private SchemaCatalog getSchemaCatalog() {
         if (catalog == null) {
-            if (testData instanceof AbstractAppSchemaMockData) {
-                catalog = ((AbstractAppSchemaMockData) testData).getSchemaCatalog();
+            if (testData instanceof AbstractAppSchemaMockData data) {
+                catalog = data.getSchemaCatalog();
             }
         }
         return catalog;
@@ -554,10 +554,10 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         JDBCDataStore store = (JDBCDataStore) source;
         SQLDialect dialect = store.getSQLDialect();
         FilterToSQL original = null;
-        if (dialect instanceof BasicSQLDialect) {
-            original = ((BasicSQLDialect) dialect).createFilterToSQL();
-        } else if (dialect instanceof PreparedStatementSQLDialect) {
-            original = ((PreparedStatementSQLDialect) dialect).createPreparedFilterToSQL();
+        if (dialect instanceof BasicSQLDialect lDialect1) {
+            original = lDialect1.createFilterToSQL();
+        } else if (dialect instanceof PreparedStatementSQLDialect lDialect) {
+            original = lDialect.createPreparedFilterToSQL();
             // disable prepared statements to have literals actually encoded in the SQL
             ((PreparedFilterToSQL) original).setPrepareEnabled(false);
         }
@@ -593,7 +593,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         try (InputStream input = NormalizedMultiValuesTest.class.getResourceAsStream(resourcePath)) {
             return IOUtils.toString(input);
         } catch (Exception exception) {
-            throw new RuntimeException(String.format("Error reading resource '%s'.", resourcePath));
+            throw new RuntimeException("Error reading resource '%s'.".formatted(resourcePath));
         }
     }
 

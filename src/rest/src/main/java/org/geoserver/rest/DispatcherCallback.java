@@ -4,8 +4,8 @@
  */
 package org.geoserver.rest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
 
 /** Provides callbacks for the life cycle of a rest request. */
@@ -29,8 +29,8 @@ public interface DispatcherCallback {
 
     /** Attempts to unwrap the Controller in case the handler is annotation driven, returns the handler otherwise */
     static Object getControllerBean(Object handler) {
-        if (handler instanceof HandlerMethod) {
-            return ((HandlerMethod) handler).getBean();
+        if (handler instanceof HandlerMethod method) {
+            return method.getBean();
         }
         return handler;
     }

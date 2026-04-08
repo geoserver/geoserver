@@ -12,7 +12,7 @@ import org.geoserver.web.MenuPageInfo;
 /**
  * MenuPageInfo for OGC service configuration pages.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 @SuppressWarnings("serial")
 public class ServiceMenuPageInfo<T extends GeoServerBasePage> extends MenuPageInfo<T> {

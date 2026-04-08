@@ -7,6 +7,8 @@ package org.geoserver.web;
 
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -17,8 +19,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.ConverterLocator;
@@ -31,7 +31,9 @@ import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.csp.CSPDirective;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
+import org.apache.wicket.protocol.http.FetchMetadataResourceIsolationPolicy;
+import org.apache.wicket.protocol.http.OriginResourceIsolationPolicy;
+import org.apache.wicket.protocol.http.ResourceIsolationRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
@@ -116,8 +118,7 @@ public class GeoServerApplication extends WebApplication
      * an attempt is made to look up an internationalized error message for it.
      */
     public static String getMessage(Component c, Exception e) {
-        if (e instanceof ValidationException) {
-            ValidationException ve = (ValidationException) e;
+        if (e instanceof ValidationException ve) {
             try {
                 if (ve.getParameters() == null) {
                     return new ParamResourceModel(ve.getKey(), c, ve.getParameters()).getString();
@@ -212,10 +213,23 @@ public class GeoServerApplication extends WebApplication
         return GeoServerExtensions.extensions(type, getApplicationContext());
     }
 
+    /**
+     * Returns a versioned (cache-busted) URL for the given servlet-context-relative asset path. The version token is a
+     * deployment/build identifier derived from manifest metadata and cached for the application lifetime (until
+     * {@link #clearWicketCaches()} is called).
+     *
+     * @param path e.g. {@code "css/geoserver.css"}
+     * @return e.g. {@code "css/geoserver.css?v=20260326"}
+     */
+    public String versioned(String path) {
+        return AssetVersionManager.versioned(path, getServletContext());
+    }
+
     /** Clears all the wicket caches so that resources and localization files will be re-read */
     public void clearWicketCaches() {
         getResourceSettings().getPropertiesFactory().clearCache();
         getResourceSettings().getLocalizer().clearCache();
+        AssetVersionManager.clearCache();
     }
 
     /**
@@ -281,21 +295,23 @@ public class GeoServerApplication extends WebApplication
         // Don't add a new lister each time init() is called
         List<IRequestCycleListener> csrfListenersToRemove = new ArrayList<>();
         for (IRequestCycleListener listener : getRequestCycleListeners()) {
-            if (listener instanceof CsrfPreventionRequestCycleListener) {
+            if (listener instanceof ResourceIsolationRequestCycleListener) {
                 csrfListenersToRemove.add(listener);
             }
         }
         for (IRequestCycleListener listener : csrfListenersToRemove) {
             getRequestCycleListeners().remove(listener);
         }
-        CsrfPreventionRequestCycleListener csrfListener = new CsrfPreventionRequestCycleListener();
         if (!geoserverCsrfDisabled) {
+            OriginResourceIsolationPolicy csrfListener = new OriginResourceIsolationPolicy();
             if (geoserverCsrfWhitelist != null && !"".equals(geoserverCsrfWhitelist.trim())) {
                 for (String origin : geoserverCsrfWhitelist.split(",")) {
                     csrfListener.addAcceptedOrigin(origin.trim());
                 }
             }
-            getRequestCycleListeners().add(csrfListener);
+            ResourceIsolationRequestCycleListener isolationListener =
+                    new ResourceIsolationRequestCycleListener(new FetchMetadataResourceIsolationPolicy(), csrfListener);
+            getRequestCycleListeners().add(isolationListener);
         }
 
         getRequestCycleListeners().add(new FeedbackPanelAjaxListener());
@@ -316,6 +332,9 @@ public class GeoServerApplication extends WebApplication
                         .setRenderStrategy(
                                 defaultIsRedirect ? RenderStrategy.REDIRECT_TO_BUFFER : RenderStrategy.ONE_PASS_RENDER);
         }
+
+        // Allow extension points to customize the GeoServerApplication initialization phase
+        getBeansOfType(GeoServerApplicationInitializer.class).forEach(initializer -> initializer.init(this));
     }
 
     @Override
@@ -361,8 +380,8 @@ public class GeoServerApplication extends WebApplication
 
     /** Grabs the locale from cookies, if possible, otherwise defaults to English */
     public Locale getLocaleFromCookies(Request request) {
-        if (request instanceof WebRequest) {
-            List<Cookie> cookies = ((WebRequest) request).getCookies();
+        if (request instanceof WebRequest webRequest) {
+            List<Cookie> cookies = webRequest.getCookies();
 
             for (Cookie cookie : cookies) {
                 if (LANGUAGE_COOKIE_NAME.equals(cookie.getName())) {
@@ -451,14 +470,12 @@ public class GeoServerApplication extends WebApplication
         }
 
         private void processHandler(RequestCycle cycle, IRequestHandler handler) {
-            if (handler instanceof IPageRequestHandler) {
-                IPageRequestHandler pageHandler = (IPageRequestHandler) handler;
+            if (handler instanceof IPageRequestHandler pageHandler) {
                 Class<? extends IRequestablePage> pageClass = pageHandler.getPageClass();
                 for (WicketCallback callback : callbacks) {
                     callback.onRequestTargetSet(cycle, pageClass);
                 }
-            } else if (handler instanceof IRequestHandlerDelegate) {
-                IRequestHandlerDelegate delegator = (IRequestHandlerDelegate) handler;
+            } else if (handler instanceof IRequestHandlerDelegate delegator) {
                 processHandler(cycle, delegator.getDelegateHandler());
             }
         }

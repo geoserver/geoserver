@@ -25,7 +25,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -100,8 +99,7 @@ public class CatalogUtil {
 
     public GSResourceEncoder syncMetadata(ResourceInfo resource, String name) {
         final GSResourceEncoder re;
-        if (resource instanceof CoverageInfo) {
-            CoverageInfo coverage = (CoverageInfo) resource;
+        if (resource instanceof CoverageInfo coverage) {
             final GSCoverageEncoder coverageEncoder = new GSCoverageEncoder();
             for (String format : coverage.getSupportedFormats()) {
                 coverageEncoder.addSupportedFormats(format);
@@ -166,8 +164,7 @@ public class CatalogUtil {
         }
 
         // dimensions, must happen after setName or strange things happen (gs-man bug)
-        if (resource instanceof CoverageInfo) {
-            CoverageInfo coverage = (CoverageInfo) resource;
+        if (resource instanceof CoverageInfo coverage) {
             for (CoverageDimensionInfo di : coverage.getDimensions()) {
                 ((GSCoverageEncoder) re)
                         .addCoverageDimensionInfo(
@@ -252,7 +249,7 @@ public class CatalogUtil {
             // subdirectories for pictures
             Set<String> dirs = new HashSet<>();
             for (String picturePath : pictures) {
-                Path parent = Paths.get(picturePath).getParent();
+                Path parent = Path.of(picturePath).getParent();
                 if (parent != null) {
                     dirs.add(parent.toString());
                 }
@@ -298,8 +295,8 @@ public class CatalogUtil {
         if (uri.getScheme() != null && !uri.getScheme().equals("file")) {
             return null;
         } else {
-            Path styleDirPath = Paths.get(styleRes.parent().dir().getAbsolutePath());
-            Path imagePath = Paths.get(uri);
+            Path styleDirPath = Path.of(styleRes.parent().dir().getAbsolutePath());
+            Path imagePath = Path.of(uri);
             Path result = styleDirPath.relativize(imagePath).normalize();
             if (result.startsWith("..")) {
                 return null;

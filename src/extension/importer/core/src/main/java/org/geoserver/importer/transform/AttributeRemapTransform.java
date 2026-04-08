@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import org.geoserver.importer.ImportTask;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.feature.simple.SimpleFeature;
@@ -20,6 +21,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
  */
 public class AttributeRemapTransform extends AbstractTransform implements InlineVectorTransform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** field to remap */

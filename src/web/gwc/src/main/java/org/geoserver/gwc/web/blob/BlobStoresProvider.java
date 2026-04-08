@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.geowebcache.config.BlobStoreInfo;
  */
 public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
 
+    @Serial
     private static final long serialVersionUID = 4400431816195261839L;
 
     public static final Property<BlobStoreInfo> ID = new BeanProperty<>("id", "id");

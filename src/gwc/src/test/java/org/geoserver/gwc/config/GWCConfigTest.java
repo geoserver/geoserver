@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,6 +74,26 @@ public class GWCConfigTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testSaneConfigPreservesMetaTilingThreadsZero() {
+        // Test that setting metaTilingThreads = 0 is preserved through saneConfig()
+        // A value of 0 means "disable concurrency" which is a valid configuration choice
+        GWCConfig config = new GWCConfig();
+        config.setMetaTilingThreads(0);
+
+        // Make config insane by clearing a required field
+        config.getDefaultCachingGridSetIds().clear();
+        assertFalse(config.isSane());
+
+        // Get sane config - this should preserve metaTilingThreads = 0
+        GWCConfig saneConfig = config.saneConfig();
+        assertTrue(saneConfig.isSane());
+
+        // BUG: This assertion will FAIL because metaTilingThreads becomes null instead of 0
+        // Expected: 0 (disable concurrency), Actual: null (auto-detect/enable concurrency)
+        assertEquals(Integer.valueOf(0), saneConfig.getMetaTilingThreads());
+    }
+
+    @Test
     public void testClone() {
         GWCConfig clone = config.clone();
         assertEquals(config, clone);
@@ -82,8 +101,6 @@ public class GWCConfigTest extends GeoServerSystemTestSupport {
         assertNotSame(config.getDefaultCoverageCacheFormats(), clone.getDefaultCoverageCacheFormats());
         assertNotSame(config.getDefaultOtherCacheFormats(), clone.getDefaultOtherCacheFormats());
         assertNotSame(config.getDefaultVectorCacheFormats(), clone.getDefaultVectorCacheFormats());
-        assertNotSame(config.getCacheConfigurations(), clone.getCacheConfigurations());
-        assertTrue(clone.getCacheConfigurations().containsKey(GuavaCacheProvider.class.toString()));
     }
 
     @Test

@@ -1,12 +1,22 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-	<fieldset>
-	  <legend><span><wicket:message key="connectionParameters">Connection Parameters</wicket:message></span></legend>
-	  <div wicket:id="uri"></div>
-	  <div wicket:id="max_hive_depth"></div>
-	  <wicket:child></wicket:child>
-	</fieldset>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GeoParquetDataStoreEditPanel">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="connectionParameters">Connection Parameters</wicket:message>
+            </span>
+          </legend>
+          <div wicket:id="uri"/>
+          <div wicket:id="max_hive_depth"/>
+          <div wicket:id="use_aws_credential_chain"/>
+          <div wicket:id="aws_region"/>
+          <div wicket:id="aws_profile"/>
+          <wicket:child/>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

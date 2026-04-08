@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +32,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
@@ -55,6 +57,20 @@ import org.geotools.util.logging.Logging;
 
 @SuppressWarnings("serial")
 public class FeatureResourceConfigurationPanel extends ResourceConfigurationPanel {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(FeatureResourceConfigurationPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     static final Logger LOGGER = Logging.getLogger(FeatureResourceConfigurationPanel.class);
 
     GSModalWindow reloadWarningDialog;
@@ -94,11 +110,11 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         attributePanel.add(attributesEditor);
         attributesEditor.setVisible(customizeFeatureType);
 
-        CheckBox customizeCheck =
-                new CheckBox("customizeFeatureType", new PropertyModel<>(this, "customizeFeatureType"));
+        CheckBox customizeCheck = new CheckBox("customizeFeatureType", Model.of(customizeFeatureType));
         customizeCheck.add(new AjaxFormComponentUpdatingBehavior("click") {
             @Override
             protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                customizeFeatureType = customizeCheck.getModelObject();
                 customizeCheck.processInput();
                 nativeAttributePanel.setVisible(!customizeFeatureType);
                 attributesEditor.setVisible(customizeFeatureType);
@@ -241,6 +257,20 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
     }
 
     static class ReloadWarningDialog extends Panel {
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(FeatureResourceConfigurationPanel.ReloadWarningDialog.class);
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public ReloadWarningDialog(String id, StringResourceModel message) {
             super(id);
             add(new Label("message", message));
@@ -278,9 +308,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         if (cqlFilterString != null && !cqlFilterString.isEmpty()) {
             cqlFilter = ECQL.toFilter(cqlFilterString);
             FeatureType ft = typeInfo.getFeatureType();
-            if (ft instanceof SimpleFeatureType) {
-
-                SimpleFeatureType sft = (SimpleFeatureType) ft;
+            if (ft instanceof SimpleFeatureType sft) {
                 BeanToPropertyValueTransformer transformer = new BeanToPropertyValueTransformer("localName");
                 Collection<String> featureAttributesNames = CollectionUtils.collect(
                         sft.getAttributeDescriptors(), ad -> (String) transformer.transform(ad));

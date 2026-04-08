@@ -5,11 +5,11 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.Service;
@@ -40,8 +40,7 @@ public class CiteComplianceHack implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        if (handler instanceof Dispatcher) {
-            Dispatcher dispatcher = (Dispatcher) handler;
+        if (handler instanceof Dispatcher dispatcher) {
             String service = findService(dispatcher, request, response);
             if (service != null
                     && (service.equalsIgnoreCase(getInfo().getId())

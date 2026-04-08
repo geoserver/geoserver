@@ -11,11 +11,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -49,11 +49,11 @@ public class LayerAttributesTest extends SLDServiceBaseTest {
             JSONObject json = (JSONObject) getAsJSON(restPath);
             JSONObject layerAttributes = (JSONObject) json.get("Attributes");
             String layer = (String) layerAttributes.get("@layer");
-            assertEquals(layer, "cite:Buildings");
+            assertEquals("cite:Buildings", layer);
             JSONArray attributes = (JSONArray) layerAttributes.get("Attribute");
-            assertEquals(attributes.toArray().length, 3);
-            assertEquals(((JSONObject) attributes.get(0)).get("name"), "FID");
-            assertEquals(((JSONObject) attributes.get(0)).get("type"), "String");
+            assertEquals(3, attributes.toArray().length);
+            assertEquals("FID", ((JSONObject) attributes.get(0)).get("name"));
+            assertEquals("String", ((JSONObject) attributes.get(0)).get("type"));
         }
     }
 

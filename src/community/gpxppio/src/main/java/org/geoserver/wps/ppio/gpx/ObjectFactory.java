@@ -11,8 +11,6 @@
 //
 package org.geoserver.wps.ppio.gpx;
 
-import javax.xml.namespace.QName;
-
 /**
  * This object contains factory methods for each Java content interface and Java element interface generated in the
  * org.geotools.gpx.bean package.
@@ -23,8 +21,6 @@ import javax.xml.namespace.QName;
  * this class.
  */
 public class ObjectFactory {
-    private static final QName _Gpx_QNAME = new QName("http://www.topografix.com/GPX/1/1", "gpx");
-
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:
      * org.geotools.gpx.bean

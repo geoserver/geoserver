@@ -5,6 +5,7 @@
  */
 package org.vfny.geoserver.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -19,7 +20,6 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,7 +76,7 @@ public final class Requests {
     /**
      * Appends a query string to a url.
      *
-     * <p>This method checks <code>url</code> to see if the appended query string requires a '?' or '&' to be prepended.
+     * <p>This method checks {@code url} to see if the appended query string requires a '?' or '&amp;' to be prepended.
      *
      * @param url The base url.
      * @param queryString The query string to be appended, should not contain the '?' character.

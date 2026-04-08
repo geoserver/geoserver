@@ -97,8 +97,8 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
     }
 
     protected String getMapName(Map<?, ?> map) {
-        if (map instanceof NamedMap) {
-            return ((NamedMap<?, ?>) map).getName();
+        if (map instanceof NamedMap<?, ?> namedMap) {
+            return namedMap.getName();
         } else {
             return "root";
         }
@@ -156,16 +156,14 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
      * @param object the Object to be converted
      */
     protected void insert(Element elem, Object object) {
-        if (object instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) object;
+        if (object instanceof Map<?, ?> map) {
             for (Map.Entry<?, ?> entry : map.entrySet()) {
                 Element newElem =
                         elem.getOwnerDocument().createElement(entry.getKey().toString());
                 insert(newElem, entry.getValue());
                 elem.appendChild(newElem);
             }
-        } else if (object instanceof Collection) {
-            Collection<?> collection = (Collection<?>) object;
+        } else if (object instanceof Collection<?> collection) {
 
             for (Object entry : collection) {
                 Element newElem = elem.getOwnerDocument().createElement("entry");

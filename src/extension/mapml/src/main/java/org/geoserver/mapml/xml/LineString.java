@@ -8,13 +8,13 @@
 
 package org.geoserver.mapml.xml;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlMixed;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * Java class for anonymous complex type.
@@ -35,10 +35,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(
         name = "",
         propOrder = {"coordinates"})
-public class LineString {
+@XmlRootElement(name = "map-linestring", namespace = "http://www.w3.org/1999/xhtml")
+public class LineString implements MapMLElement {
 
-    @XmlMixed
-    @XmlElementRef(name = "map-coordinates", type = Coordinates.class, namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(name = "map-coordinates", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Coordinates> coordinates;
 
     /**

@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,11 +30,14 @@ import org.geotools.util.factory.Hints;
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-@SuppressWarnings("deprecation")
 public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 659498790758954330L;
+
+    public static final String USE_JAI_IMAGEREAD = "USE_JAI_IMAGEREAD";
+    public static final String USE_IMAGEN_IMAGEREAD = "USE_IMAGEN_IMAGEREAD";
 
     protected String nativeFormat;
 
@@ -127,6 +131,12 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     @Override
     public Map<String, Serializable> getParameters() {
+        // migrate old JAI parameter to ImageN one
+        if (parameters != null && parameters.containsKey(USE_JAI_IMAGEREAD)) {
+            // upgrade to ImageN
+            parameters.put(USE_IMAGEN_IMAGEREAD, parameters.get(USE_JAI_IMAGEREAD));
+            parameters.remove(USE_JAI_IMAGEREAD);
+        }
         return parameters;
     }
 

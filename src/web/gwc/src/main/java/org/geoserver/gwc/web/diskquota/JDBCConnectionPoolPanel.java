@@ -5,6 +5,9 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -23,6 +26,20 @@ import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfigurat
 
 public class JDBCConnectionPoolPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(JDBCConnectionPoolPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -1579697287836672528L;
 
     public JDBCConnectionPoolPanel(String id, IModel<ConnectionPoolConfiguration> model) {
@@ -89,11 +106,14 @@ public class JDBCConnectionPoolPanel extends Panel {
      * @author Andrea Aime - GeoSolutions
      */
     private static class ContainsAutoCompleteBehavior extends AutoCompleteBehavior<String> {
+        @Serial
         private static final long serialVersionUID = 993566054116148859L;
+
         private List<String> choices;
 
         public ContainsAutoCompleteBehavior(List<String> choices) {
             super(new AbstractAutoCompleteTextRenderer<>() {
+                @Serial
                 private static final long serialVersionUID = 3192368880726583011L;
 
                 @Override

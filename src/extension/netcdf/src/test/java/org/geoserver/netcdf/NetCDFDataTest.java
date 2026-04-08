@@ -48,7 +48,7 @@ public class NetCDFDataTest {
             Assert.assertNotNull(coverageNames);
             Assert.assertTrue(coverageNames.length > 0);
             // Reading of one coverage
-            GridCoverage2D coverage = reader.read(coverageNames[0], null);
+            GridCoverage2D coverage = reader.read(coverageNames[0]);
             // Check if the coverage exists
             Assert.assertNotNull(coverage);
         } finally {

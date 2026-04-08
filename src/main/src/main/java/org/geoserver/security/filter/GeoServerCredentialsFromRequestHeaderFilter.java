@@ -4,6 +4,12 @@
  */
 package org.geoserver.security.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -14,12 +20,6 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.config.CredentialsFromRequestHeaderFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.GeoServerRole;
@@ -148,7 +148,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
         LOGGER.log(Level.FINER, "logged in as {0}", us);
         Collection<GeoServerRole> roles = new ArrayList<>();
         for (GrantedAuthority grauth : auth.getAuthorities()) {
-            roles.add((GeoServerRole) grauth);
+            if (grauth instanceof GeoServerRole gsRole) roles.add(gsRole);
         }
         if (!roles.contains(GeoServerRole.AUTHENTICATED_ROLE)) {
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);

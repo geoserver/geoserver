@@ -22,4 +22,30 @@
     </#list>
   </div>
 
+  <#if model.getLinkUrl('prev', 'text/html')?? || model.getLinkUrl('next', 'text/html')??>
+    <div>
+    <nav>
+      <ul class="pagination">
+      <#if model.getLinkUrl('prev', 'text/html')??>
+        <li class="page-item">
+          <a class="page-link" id="prevPage" href="${model.getLinkUrl('prev', 'text/html')}">Previous page</a>
+        </li>
+      <#else>
+        <li class="page-item disabled">
+          <a class="page-link" id="prevPage" href="#" tabindex="-1" aria-disabled="true">Previous page</a>
+        </li>
+      </#if>
+      <#if model.getLinkUrl('next', 'text/html')??>
+        <li class="page-item">
+          <a class="page-link" id="nextPage" href="${model.getLinkUrl('next', 'text/html')}">Next page</a>
+        </li>
+      <#else>
+        <li class="page-item disabled">
+          <a class="page-link" id="nextPage" href="#" tabindex="-1" aria-disabled="true">Next page</a>
+        </li>
+      </#if>
+      </ul>
+    </nav>
+    </#if>
+
 <#include "common-footer.ftl">

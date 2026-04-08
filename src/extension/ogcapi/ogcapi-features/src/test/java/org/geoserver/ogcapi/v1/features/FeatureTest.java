@@ -4,8 +4,9 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
-import static org.geoserver.ogcapi.JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
+import static org.geoserver.ogcapi.SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
 import static org.geoserver.ogcapi.v1.features.JSONFGFeaturesResponse.COORD_REF_SYS;
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -85,7 +86,6 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // matchers make for generic varargs
     public void testGetLayerAsGeoJsonReproject() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
         MockHttpServletResponse response = getAsMockHttpServletResponse(
@@ -565,10 +565,13 @@ public class FeatureTest extends FeaturesTestSupport {
 
         try {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-            String request = "{\n"
-                    + "  \"filter\": {\"op\":\"=\",\"args\":[{\"property\":\"name\"},\"name-f001\"]},"
-                    + "  \"filter-lang\": \"cql2-json\"\n"
-                    + "}";
+            String request =
+                    """
+                    {
+                      "filter": {"op":"=","args":[{"property":"name"},"name-f001"]},\
+                      "filter-lang": "cql2-json"
+                    }\
+                    """;
             DocumentContext json =
                     postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
@@ -587,10 +590,13 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testSearchCql2TextFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        String request = "{\n"
-                + "  \"filter\": \"BBOX(pointProperty,38,1,40,3)\",\n"
-                + "  \"filter-lang\": \"cql-text\"\n"
-                + "}";
+        String request =
+                """
+                {
+                  "filter": "BBOX(pointProperty,38,1,40,3)",
+                  "filter-lang": "cql-text"
+                }\
+                """;
 
         WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
         FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
@@ -744,7 +750,6 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testSearchCRSFilter() throws Exception {
         WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
         FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
@@ -887,6 +892,25 @@ public class FeatureTest extends FeaturesTestSupport {
         } finally {
             featureServiceInfo.setSearch(null); // default
             featureServiceInfo.setSortBy(null); // enable
+            getGeoServer().save(wfsInfo);
+        }
+    }
+
+    @Test
+    public void testSearchNextLinkPresent() throws Exception {
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setSearch(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+            String request = "{\"limit\":1}";
+            DocumentContext json =
+                    postAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(1, json.read("links[?(@.rel == 'next')]", List.class).size());
+        } finally {
+            featureServiceInfo.setSearch(null); // default
             getGeoServer().save(wfsInfo);
         }
     }
@@ -1259,5 +1283,101 @@ public class FeatureTest extends FeaturesTestSupport {
         assertThrows(PathNotFoundException.class, () -> feature.read("geometry"));
         assertEquals("Point", feature.read("place.type"));
         assertArrayEquals(new double[] {22, 78}, feature.read("place.coordinates", double[].class), 1d);
+    }
+
+    @Test
+    public void testCharset() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/features/v1/collections/" + roadSegments + "/items", StandardCharsets.UTF_8.name());
+        assertEquals(200, response.getStatus());
+        assertEquals("UTF-8", response.getCharacterEncoding());
+    }
+
+    @Test
+    public void testPropertySelectionItems() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        features.setPropertySelection(true);
+        getGeoServer().save(wfs);
+        try {
+            // positive selection
+            String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+            String basePath = "ogc/features/v1/collections/" + roadSegments + "/items";
+            DocumentContext fc = getAsJSONPath(basePath + "?properties=the_geom,FID", 200);
+            assertEquals("FeatureCollection", fc.read("type", String.class));
+            assertEquals(5, (int) fc.read("features.length()", Integer.class));
+            // check only the_geom and ID are present
+            DocumentContext feature = readContext(fc, "features[0]");
+            assertNotNull(feature.read("geometry"));
+            Map props = feature.read("properties", Map.class);
+            assertEquals(1, props.size());
+            assertNotNull(props.get("FID"));
+
+            // negative selection
+            fc = getAsJSONPath(
+                    "ogc/features/v1/collections/" + roadSegments + "/items?exclude-properties=the_geom,FID", 200);
+            assertEquals("FeatureCollection", fc.read("type", String.class));
+            assertEquals(5, (int) fc.read("features.length()", Integer.class));
+            // the_geom and ID are gone, NAME is available
+            feature = readContext(fc, "features[0]");
+            assertNull(feature.read("geometry"));
+            props = feature.read("properties", Map.class);
+            assertEquals(1, props.size());
+            assertNotNull(props.get("NAME"));
+
+            // both positive and negative (not allowed, bad request)
+            DocumentContext error = getAsJSONPath(
+                    "ogc/features/v1/collections/" + roadSegments
+                            + "/items?properties=the_geom,FID&exclude-properties=FID",
+                    400);
+            assertEquals("InvalidParameterValue", error.read("code"));
+            assertThat(
+                    error.read("description"),
+                    allOf(containsString("properties"), containsString("exclude-properties")));
+        } finally {
+            // restore defaults
+            features.setPropertySelection(null);
+            getGeoServer().save(wfs);
+        }
+    }
+
+    @Test
+    public void testPropertySelectionItem() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        features.setPropertySelection(true);
+        getGeoServer().save(wfs);
+        try {
+            // positive selection
+            String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+            String basePath = "ogc/features/v1/collections/" + roadSegments + "/items/RoadSegments.1107532045088";
+            DocumentContext feature = getAsJSONPath(basePath + "?properties=the_geom,FID", 200);
+            assertEquals("Feature", feature.read("type", String.class));
+            assertNotNull(feature.read("geometry"));
+            Map props = feature.read("properties", Map.class);
+            assertEquals(1, props.size());
+            assertNotNull(props.get("FID"));
+
+            // negative selection
+            feature = getAsJSONPath(basePath + "?exclude-properties=the_geom,FID", 200);
+            assertEquals("Feature", feature.read("type", String.class));
+            // the_geom and ID are gone, NAME is available
+            assertNull(feature.read("geometry"));
+            props = feature.read("properties", Map.class);
+            assertEquals(1, props.size());
+            assertNotNull(props.get("NAME"));
+
+            // both positive and negative (not allowed, bad request)
+            DocumentContext error = getAsJSONPath(basePath + "?properties=the_geom,FID&exclude-properties=FID", 400);
+            assertEquals("InvalidParameterValue", error.read("code"));
+            assertThat(
+                    error.read("description"),
+                    allOf(containsString("properties"), containsString("exclude-properties")));
+        } finally {
+            // restore defaults
+            features.setPropertySelection(null);
+            getGeoServer().save(wfs);
+        }
     }
 }

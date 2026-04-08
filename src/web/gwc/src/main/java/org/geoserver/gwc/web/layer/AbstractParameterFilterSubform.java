@@ -6,6 +6,7 @@
 
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -22,6 +23,7 @@ import org.geowebcache.filter.parameters.ParameterFilter;
  */
 public abstract class AbstractParameterFilterSubform<T extends ParameterFilter> extends FormComponentPanel<T> {
 
+    @Serial
     private static final long serialVersionUID = -213688039804104263L;
 
     protected Component normalize;
@@ -33,8 +35,7 @@ public abstract class AbstractParameterFilterSubform<T extends ParameterFilter> 
     @Override
     public void convertInput() {
         visitChildren((component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         });

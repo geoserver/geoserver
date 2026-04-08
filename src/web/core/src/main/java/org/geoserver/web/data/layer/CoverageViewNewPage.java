@@ -6,6 +6,7 @@
 package org.geoserver.web.data.layer;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -22,6 +23,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 public class CoverageViewNewPage extends CoverageViewAbstractPage {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -4030117120916582767L;
 
     public CoverageViewNewPage(PageParameters params) throws IOException {

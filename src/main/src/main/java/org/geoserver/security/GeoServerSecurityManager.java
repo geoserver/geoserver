@@ -16,8 +16,8 @@ import com.thoughtworks.xstream.converters.collections.AbstractCollectionConvert
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,11 +31,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.rmi.server.UID;
 import java.security.InvalidKeyException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,7 +51,6 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
@@ -204,16 +200,16 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /** default config file name */
     public static final String CONFIG_FILENAME = "config.xml";
 
-    /** master password config file name */
+    /** Application property allowing root user to authenticate using keystore password. */
+    public static final String GEOSERVER_ROOT_LOGIN_ENABLED = "GEOSERVER_ROOT_LOGIN_ENABLED";
+
+    /** keystore password config file name */
     public static final String MASTER_PASSWD_CONFIG_FILENAME = "masterpw.xml";
 
-    /** master password info file name */
-    public static final String MASTER_PASSWD_INFO_FILENAME = "masterpw.info";
-
-    /** master password digest file name */
+    /** keystore password digest file name */
     public static final String MASTER_PASSWD_DIGEST_FILENAME = "masterpw.digest";
 
-    /** default master password */
+    /** default keystore password */
     public static final char[] MASTER_PASSWD_DEFAULT = "geoserver".toCharArray();
 
     /** the core spring authentication provider manager */
@@ -234,10 +230,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /** current security config */
     SecurityManagerConfig securityConfig = new SecurityManagerConfig();
 
-    /** current master password config */
+    /** current keystore password config */
     MasterPasswordConfig masterPasswordConfig = new MasterPasswordConfig();
 
-    /** digested master password */
+    /** digested keystore password */
     volatile String masterPasswdDigest;
 
     /** cached user groups */
@@ -292,7 +288,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         this.dataDir = dataDir;
 
         /*
-         * JD we have to ensure that the master password is initialized first thing, before the
+         * JD we have to ensure that the keystore password is initialized first thing, before the
          * catalog since we need to decrypt configuration the passwords, the rest of the security
          * initializes occurs at the end of startup
          */
@@ -375,7 +371,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /** Reload the configuration which may have been updated in the meanwhile; after a restore as an instance. */
     public void reload() {
         try {
-            Resource masterPasswordInfo = security().get(MASTER_PASSWD_INFO_FILENAME);
+            Resource masterPasswordInfo = security().get("masterpw.info");
             if (masterPasswordInfo.getType() != Type.UNDEFINED) {
                 LOGGER.warning(masterPasswordInfo.path()
                         + " is a security risk. Please read this file and remove it afterward");
@@ -383,11 +379,25 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         }
+        try {
+            Resource userPropertiesOld = security().get("users.properties.old");
+            if (userPropertiesOld.getType() != Type.UNDEFINED) {
+                LOGGER.warning(userPropertiesOld.path()
+                        + " is a security risk (containing user passwords in plain text). Please remove this file.");
+            }
+        } catch (Exception e1) {
+            throw new RuntimeException(e1);
+        }
 
         // migrate from old security config
         try {
-            Version securityVersion = getSecurityVersion();
+            final Version securityVersion = getSecurityVersion();
 
+            if (securityVersion.compareTo(CURR_VERSION) < 0) {
+                LOGGER.log(
+                        Level.CONFIG,
+                        "Start security migration from version %s to %s".formatted(securityVersion, CURR_VERSION));
+            }
             boolean migratedFrom21 = false;
             if (securityVersion.compareTo(VERSION_2_2) < 0) {
                 migratedFrom21 = migrateFrom21();
@@ -408,6 +418,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             if (securityVersion.compareTo(CURR_VERSION) < 0) {
                 writeCurrentVersion();
             }
+            LOGGER.log(
+                    Level.CONFIG,
+                    "End security migration check, current version is %s (previous was %s)"
+                            .formatted(CURR_VERSION, securityVersion));
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         }
@@ -419,7 +433,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         try {
             // check for an outstanding masster password change
             keyStoreProvider.commitMasterPasswordChange();
-            // check if there is an outstanding master password change in case of SPrin injection
+            // check if there is an outstanding keystore password change in case of spring injection
             init();
             for (GeoServerSecurityProvider securityProvider :
                     GeoServerExtensions.extensions(GeoServerSecurityProvider.class)) {
@@ -505,16 +519,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         for (String fName : listFilters()) {
             SecurityFilterConfig fConfig = loadFilterConfig(fName, mh);
             if (fConfig != null) {
-                if (fConfig instanceof J2eeAuthenticationBaseFilterConfig) {
-                    J2eeAuthenticationBaseFilterConfig j2eeConfig = (J2eeAuthenticationBaseFilterConfig) fConfig;
+                if (fConfig instanceof J2eeAuthenticationBaseFilterConfig j2eeConfig) {
                     // add default J2EE RoleSource that was the only one possible
                     // before 2.5
                     if (j2eeConfig.getRoleSource() == null) {
                         j2eeConfig.setRoleSource(J2EERoleSource.J2EE);
                     }
-                } else if (fConfig instanceof PreAuthenticatedUserNameFilterConfig) {
-                    PreAuthenticatedUserNameFilterConfig userNameConfig =
-                            (PreAuthenticatedUserNameFilterConfig) fConfig;
+                } else if (fConfig instanceof PreAuthenticatedUserNameFilterConfig userNameConfig) {
                     RoleSource rs = userNameConfig.getRoleSource();
                     if (rs != null) {
                         // use the right RoleSource enum
@@ -531,8 +542,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 GeoServerExtensions.extensions(GeoServerSecurityProvider.class)) {
             securityProvider.destroy(this);
         }
-        userGroupServices.clear();
-        roleServices.clear();
+        clearCaches();
 
         userGroupServiceHelper.destroy();
         roleServiceHelper.destroy();
@@ -564,14 +574,21 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * loads configuration and initializes the security subsystem.
      */
     void init() throws Exception {
+        clearCaches();
         init(loadMasterPasswordConfig());
         init(loadSecurityConfig());
         fireChanged();
     }
 
+    private void clearCaches() {
+        userGroupServices.clear();
+        roleServices.clear();
+        passwordValidators.clear();
+    }
+
     synchronized void init(SecurityManagerConfig config) throws Exception {
 
-        // load the master password provider
+        // load the keystore password provider
 
         //  prepare the keystore providing needed key material
         getKeyStoreProvider().reloadKeyStore();
@@ -776,7 +793,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return get("security/filter");
     }
 
-    /** Master password provider root */
+    /** Keystore password provider root */
     public Resource masterPasswordProvider() throws IOException {
         return get("security/masterpw");
     }
@@ -833,8 +850,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     List<String> calculateAdminGroups(UserDetails userDetails) throws IOException {
-        if (userDetails instanceof GeoServerUser) {
-            Properties props = ((GeoServerUser) userDetails).getProperties();
+        if (userDetails instanceof GeoServerUser user) {
+            Properties props = user.getProperties();
             if (GroupAdminProperty.has(props)) {
                 return Arrays.asList(GroupAdminProperty.get(props));
             }
@@ -854,7 +871,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Loads a role {@link SecurityRoleServiceConfig} from a named configuration. <code>null</code> if not found
+     * Loads a role {@link SecurityRoleServiceConfig} from a named configuration. {@code null} if not found
      *
      * @param name The name of the role service configuration.
      */
@@ -899,7 +916,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Loads a password encoder with the specified name.
      *
-     * @return The password encoder, or <code>null</code> if non found matching the name.
+     * @return The password encoder, or {@code null} if non found matching the name.
      */
     public GeoServerPasswordEncoder loadPasswordEncoder(String name) {
         GeoServerPasswordEncoder encoder = (GeoServerPasswordEncoder) GeoServerExtensions.bean(name);
@@ -1029,8 +1046,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             LOGGER.info("Strong cryptography is available");
         } catch (InvalidKeyException e) {
             strongEncryptionAvaialble = false;
-            LOGGER.warning("Strong cryptography is NOT available"
-                    + "\nDownload and installation the of unlimted length policy files is recommended");
+            LOGGER.warning(
+                    """
+                    Strong cryptography is NOT available
+                    Download and installation the of unlimted length policy files is recommended""");
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Strong cryptography is NOT available, unexpected error", ex);
             strongEncryptionAvaialble = false; // should not happen
@@ -1241,7 +1260,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Loads an authentication provider config from a named configuration. <code>null</code> if not found
+     * Loads an authentication provider config from a named configuration. {@code null} if not found
      *
      * @param name The name of the authentication provider service configuration.
      */
@@ -1509,26 +1528,26 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         fireChanged();
     }
 
-    /** Returns the master password configuration. */
+    /** Returns the keystore password configuration. */
     public MasterPasswordConfig getMasterPasswordConfig() {
         return new MasterPasswordConfig(masterPasswordConfig);
     }
 
     /**
-     * Saves the master password configuration.
+     * Saves the keystore password configuration.
      *
      * @param config The new configuration.
-     * @param currPasswd The current master password.
+     * @param currPasswd The current keystore password.
      * @param newPasswd The new password, may be null depending on strategy used.
      * @param newPasswdConfirm The confirmation password
      * @throws MasterPasswordChangeException If there is a validation error with the new config
-     * @throws PasswordPolicyException If the new password violates the master password policy
+     * @throws PasswordPolicyException If the new password violates the keystore password policy
      */
     public synchronized void saveMasterPasswordConfig(
             MasterPasswordConfig config, char[] currPasswd, char[] newPasswd, char[] newPasswdConfirm)
             throws Exception {
 
-        // load the (possibly new) master password provider
+        // load the (possibly new) keystore password provider
         MasterPasswordProviderConfig mpProviderConfig = loadMasterPassswordProviderConfig(config.getProviderName());
         MasterPasswordProvider mpProvider = loadMasterPasswordProvider(config.getProviderName());
 
@@ -1567,7 +1586,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                     }
                 }
 
-                // save out the master password config
+                // save out the keystore password config
                 saveMasterPasswordConfig(config);
 
                 // redigest
@@ -1584,7 +1603,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 // error occurred, roll back
                 ksProvider.abortMasterPasswordChange();
 
-                // revert to old master password config
+                // revert to old keystore password config
                 this.masterPasswordConfig = oldConfig;
                 this.masterPasswdDigest = oldMasterPasswdDigest;
                 saveMasterPasswordDigest(oldMasterPasswdDigest);
@@ -1594,38 +1613,58 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
     }
 
-    /** Saves master password config out directly, not during a password change. */
+    /** Saves keystore password config out directly, not during a password change. */
     public void saveMasterPasswordConfig(MasterPasswordConfig config) throws IOException {
         xStreamPersist(security().get(MASTER_PASSWD_CONFIG_FILENAME), config, globalPersister());
         this.masterPasswordConfig = new MasterPasswordConfig(config);
     }
 
-    /** Checks the specified password against the master password. */
+    /** Checks the specified password against the keystore password. */
     public boolean checkMasterPassword(String passwd) {
         return checkMasterPassword(passwd.toCharArray(), true);
     }
 
-    /** Checks the specified password against the master password. */
+    /**
+     * Checks the specified password against the keystore password.
+     *
+     * <p>The ability to use forLogin {@code true} is optional, and can be defined by the application property
+     * ROOT_LOGIN_ENABLED, or the setting {@link MasterPasswordProviderConfig#isLoginEnabled()}.
+     *
+     * @param passwd The password to check
+     * @param forLogin Indicate if the check is intended to authenticate the "root" user for login
+     */
     public boolean checkMasterPassword(String passwd, boolean forLogin) {
         return checkMasterPassword(passwd.toCharArray(), forLogin);
     }
 
-    /** Checks the specified password against the master password. */
+    /** Checks the specified password against the keystore password. */
     public boolean checkMasterPassword(char[] passwd) {
         return checkMasterPassword(passwd, true);
     }
 
-    /** Checks the specified password against the master password. */
+    /**
+     * Checks the specified password against the keystore password.
+     *
+     * <p>The ability to use forLogin {@code true} is optional, and can be defined by the application property
+     * ROOT_LOGIN_ENABLED, or the setting {@link MasterPasswordProviderConfig#isLoginEnabled()}.
+     *
+     * @param passwd The password to check
+     * @param forLogin Indicate if the check is intended to authenticate the "root" user for login
+     */
     public boolean checkMasterPassword(char[] passwd, boolean forLogin) {
         try {
-            if (forLogin
-                    && !this.masterPasswordProviderHelper
+            if (forLogin) {
+                final String value = GeoServerExtensions.getProperty(GEOSERVER_ROOT_LOGIN_ENABLED);
+                if (value != null) {
+                    if (!Boolean.parseBoolean(value)) return false;
+                } else {
+                    if (!this.masterPasswordProviderHelper
                             .loadConfig(this.masterPasswordConfig.getProviderName(), true)
-                            .isLoginEnabled()) {
-                return false;
+                            .isLoginEnabled()) return false;
+                }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load master password provider config", e);
+            throw new RuntimeException("Unable to load keystore password provider config", e);
         }
 
         GeoServerDigestPasswordEncoder pwEncoder = loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
@@ -1636,7 +1675,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                         // look for file
                         masterPasswdDigest = loadMasterPasswordDigest();
                     } catch (IOException e) {
-                        throw new RuntimeException("Unable to create master password digest", e);
+                        throw new RuntimeException("Unable to create keystore password digest", e);
                     }
                 }
             }
@@ -1676,7 +1715,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Returns the master password in plain text.
+     * Returns the keystore password in plain text.
      *
      * <p>This method is package protected and only allowed to be called by classes in this package.
      *
@@ -1724,9 +1763,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Loads a user {@link MasterPasswordProviderConfig} from a named configuration.
      *
-     * <p>This method returns <code>null</code> if the provider config is not found.
+     * <p>This method returns {@code null} if the provider config is not found.
      *
-     * @param name The name of the master password provider configuration.
+     * @param name The name of the keystore password provider configuration.
      */
     public MasterPasswordProviderConfig loadMasterPassswordProviderConfig(String name) throws IOException {
         return masterPasswordProviderHelper.loadConfig(name, true);
@@ -1735,22 +1774,22 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Loads a user {@link MasterPasswordProvider} from a named configuration.
      *
-     * <p>This method returns <code>null</code> if the provider config is not found.
+     * <p>This method returns {@code null} if the provider config is not found.
      *
-     * @param name The name of the master password provider configuration.
+     * @param name The name of the keystore password provider configuration.
      */
     protected MasterPasswordProvider loadMasterPasswordProvider(String name) throws IOException {
         return masterPasswordProviderHelper.load(name);
     }
 
-    /** Saves/persists a master password provider configuration. */
+    /** Saves/persists a keystore password provider configuration. */
     public void saveMasterPasswordProviderConfig(MasterPasswordProviderConfig config)
             throws IOException, SecurityConfigException {
         saveMasterPasswordProviderConfig(config, true);
     }
 
     /**
-     * Saves master password provider configuration, optionally skipping validation.
+     * Saves keystore password provider configuration, optionally skipping validation.
      *
      * <p>Validation only skipped during migration.
      */
@@ -1775,7 +1814,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         masterPasswordProviderHelper.saveConfig(config);
     }
 
-    /** Removes a master password provider configuration. */
+    /** Removes a keystore password provider configuration. */
     public void removeMasterPasswordProvder(MasterPasswordProviderConfig config)
             throws IOException, SecurityConfigException {
 
@@ -1786,7 +1825,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         masterPasswordProviderHelper.removeConfig(config.getName());
     }
 
-    /** Lists all available master password provider configurations. */
+    /** Lists all available keystore password provider configurations. */
     public SortedSet<String> listMasterPasswordProviders() throws IOException {
         return listFiles(masterPasswordProvider());
     }
@@ -1797,7 +1836,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
     }
 
-    /** @return the master password used for the migration */
+    /** @return the keystore password used for the migration */
     char[] extractMasterPasswordForMigration(Properties props) throws Exception {
 
         Map<String, String> candidates = new HashMap<>();
@@ -1815,7 +1854,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 UserAttribute attr = (UserAttribute) configAttribEd.getValue();
                 if (attr == null) continue;
 
-                // The master password policy is not yet available, the default is to
+                // The keystore password policy is not yet available, the default is to
                 // have a minimum of 8 chars --> all passwords shorter than 8 chars
                 // are no candidates
                 if (attr.getPassword() == null || attr.getPassword().length() < 8) continue;
@@ -1823,7 +1862,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 // The default password is not allowed
                 if (defaultPasswordAsString.equals(attr.getPassword())) continue;
 
-                // the  user named "admin" having a non default password is the primary candiate
+                // the  user named "admin" having a non default password is the primary candidate
                 if (GeoServerUser.ADMIN_USERNAME.equals(username)) {
                     candidates.put(GeoServerUser.ADMIN_USERNAME, attr.getPassword());
                     continue;
@@ -1843,88 +1882,21 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             masterPW = candidates.get(username);
         }
 
-        String message = null;
-        Resource info = security().get(MASTER_PASSWD_INFO_FILENAME);
-        char[] masterPasswordArray = null;
+        char[] keystorePasswordArray;
         if (masterPW != null) {
-            message = "Master password is identical to the password of user: " + username;
-            masterPasswordArray = masterPW.toCharArray();
-            writeMasterPasswordInfo(info, message, null);
+            LOGGER.config("Keystore password is identical to the password of user: " + username);
+            keystorePasswordArray = masterPW.toCharArray();
         } else {
-            message = "The generated master password is: ";
-            masterPasswordArray = getRandomPassworddProvider().getRandomPassword(8);
-            writeMasterPasswordInfo(info, message, masterPasswordArray);
+            LOGGER.config("Keystore password set to default.");
+            keystorePasswordArray = getRandomPassworddProvider().getRandomPassword(8);
         }
 
-        LOGGER.info("Information regarding the master password is in: " + info.path());
-        return masterPasswordArray;
-    }
-
-    /** Writes a file containing info about the master password. */
-    void writeMasterPasswordInfo(Resource file, String message, char[] masterPasswordArray) throws IOException {
-        try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(file.out()))) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            w.write("This file was created at " + dateFormat.format(new Date()));
-            w.newLine();
-            w.newLine();
-            w.write(message);
-            if (masterPasswordArray != null) {
-                w.write(masterPasswordArray);
-            }
-            w.newLine();
-            w.newLine();
-            w.write("Test the master password by logging in as user \"root\"");
-            w.newLine();
-            w.newLine();
-            w.write(
-                    "Note: To test 'Login with the master password' setting must be enabled for Master Password Provider.");
-            w.newLine();
-            w.newLine();
-            w.write("This file should be removed after reading !!!.");
-            w.newLine();
-        }
+        LOGGER.info("Information regarding the keystore password is available via REST API.");
+        return keystorePasswordArray;
     }
 
     /**
-     * Method to dump master password to a file
-     *
-     * <p>The file name is the shared secret between the administrator and GeoServer.
-     *
-     * <p>The method inspects the stack trace to check for an authorized calling method. The authenticated principal has
-     * to be an administrator
-     *
-     * <p>If authorization fails, a warning is written in the log and the return code is <code>false
-     * </code>. On success, the return code is <code>true</code>.
-     */
-    public boolean dumpMasterPassword(Resource file) throws IOException {
-        if (file.getType() != Resource.Type.UNDEFINED) {
-            LOGGER.warning("Master password dump attempted to overwrite existing resource");
-            return false;
-        }
-        if (checkAuthenticationForAdminRole() == false) {
-            LOGGER.warning("Unautorized user tries to dump master password");
-            return false;
-        }
-
-        String[][] allowedMethods = {
-            {"org.geoserver.security.GeoServerSecurityManagerTest", "testMasterPasswordDump"},
-            {"org.geoserver.security.web.passwd.MasterPasswordInfoPage", "dumpMasterPassword"}
-        };
-
-        String result = checkStackTrace(10, allowedMethods);
-
-        if (result != null) {
-            LOGGER.warning("Dump master password is called by an unautorized method\n" + result);
-            return false;
-        }
-
-        String message = "The current master password is: ";
-        writeMasterPasswordInfo(file, message, getMasterPassword());
-        return true;
-    }
-
-    /**
-     * Get master password for REST configuraton
+     * Get keystore password for REST configuration
      *
      * <p>The method inspects the stack trace to check for an authorized calling method. The authenticated principal has
      * to be an administrator
@@ -1934,22 +1906,22 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     public char[] getMasterPasswordForREST() throws IOException {
 
         if (checkAuthenticationForAdminRole() == false) {
-            throw new IOException("Unauthorized user tries to read master password");
+            throw new IOException("Unauthorized user tries to read keystore password");
         }
 
         String[][] allowedMethods = {{"org.geoserver.rest.security.MasterPasswordController", "masterPasswordGet"}};
 
         String result = checkStackTrace(10, allowedMethods);
         if (result != null) {
-            throw new IOException("Unauthorized method wants to read master password\n" + result);
+            throw new IOException("Unauthorized method wants to read keystore password\n" + result);
         }
 
         return getMasterPassword();
     }
 
     /**
-     * Checks if the stack trace contains allowed methods. It it contains allowed methods, return <code>null</code>, if
-     * not return a String listing the methods.
+     * Checks if the stack trace contains allowed methods. It it contains allowed methods, return {@code null}, if not
+     * return a String listing the methods.
      */
     String checkStackTrace(int countMethodsToCheck, String[][] allowedMethods) {
 
@@ -1997,9 +1969,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             return false; // already migrated
         }
 
-        LOGGER.info("Start security migration");
-
-        // master password configuration
+        // keystore password configuration
         MasterPasswordProviderConfig mpProviderConfig = loadMasterPassswordProviderConfig("default");
         if (mpProviderConfig == null) {
             mpProviderConfig = new URLMasterPasswordProviderConfig();
@@ -2011,7 +1981,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             ((URLMasterPasswordProviderConfig) mpProviderConfig).setEncrypting(true);
             saveMasterPasswordProviderConfig(mpProviderConfig, false);
 
-            // save out the default master password
+            // save out the default keystore password
             MasterPasswordProvider mpProvider = loadMasterPasswordProvider(mpProviderConfig.getName());
             Resource propFile = security().get("users.properties");
             Properties userprops = null;
@@ -2054,7 +2024,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
         validator = loadPasswordValidator(PasswordValidator.MASTERPASSWORD_NAME);
         if (validator == null) {
-            // Policy requires a minimum of 8 chars for the master password
+            // Policy requires a minimum of 8 chars for the keystore password
             PasswordPolicyConfig pwpconfig = new PasswordPolicyConfig();
             pwpconfig.setName(PasswordValidator.MASTERPASSWORD_NAME);
             pwpconfig.setClassName(PasswordValidatorImpl.class.getName());
@@ -2363,7 +2333,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             LOGGER.info("Renamed " + usersFile.path() + " to " + oldUserFile.path());
         }
 
-        LOGGER.info("End security migration");
         return true;
     }
 
@@ -2588,7 +2557,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /*
-     * loads the master password config
+     * loads the keystore password config
      */
     public MasterPasswordConfig loadMasterPasswordConfig() throws IOException {
         Resource resource = security().get(MASTER_PASSWD_CONFIG_FILENAME);
@@ -2681,8 +2650,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 if (isNew) {
                     config.setId(null);
                 }
-                if (e instanceof IOException) {
-                    throw (IOException) e;
+                if (e instanceof IOException exception) {
+                    throw exception;
                 }
                 throw new IOException(e);
             }
@@ -2744,8 +2713,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             service.setName(name);
             service.initializeFromConfig(config);
 
-            if (config instanceof FileBasedSecurityServiceConfig) {
-                FileBasedSecurityServiceConfig fileConfig = (FileBasedSecurityServiceConfig) config;
+            if (config instanceof FileBasedSecurityServiceConfig fileConfig) {
                 if (fileConfig.getCheckInterval() > 0) {
                     Resource resource = getConfigFile(fileConfig.getFileName());
                     if (resource == null) {
@@ -2815,8 +2783,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             // TODO: do we need this anymore?
             service.initializeFromConfig(config);
 
-            if (config instanceof FileBasedSecurityServiceConfig) {
-                FileBasedSecurityServiceConfig fileConfig = (FileBasedSecurityServiceConfig) config;
+            if (config instanceof FileBasedSecurityServiceConfig fileConfig) {
                 if (fileConfig.getCheckInterval() > 0) {
                     Resource resource = getConfigFile(fileConfig.getFileName());
                     if (resource == null) {
@@ -2921,13 +2888,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 }
             }
             if (provider == null) {
-                throw new IOException("No master password provider matching config: " + config);
+                throw new IOException("No keystore password provider matching config: " + config);
             }
 
             // ensure that the provider is a final class
             if (!Modifier.isFinal(provider.getClass().getModifiers())) {
-                throw new RuntimeException(
-                        "Master password provider class: " + provider.getClass().getCanonicalName() + " is not final");
+                throw new RuntimeException("Keystore password provider class: "
+                        + provider.getClass().getCanonicalName() + " is not final");
             }
 
             provider.setName(config.getName());
@@ -3170,14 +3137,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 if (StringUtils.hasLength(requestChain.getRoleFilterName()))
                     writer.addAttribute("roleFilterName", requestChain.getRoleFilterName());
 
-                if (requestChain instanceof VariableFilterChain) {
-                    if (StringUtils.hasLength(((VariableFilterChain) requestChain).getInterceptorName()))
-                        writer.addAttribute(
-                                "interceptorName", ((VariableFilterChain) requestChain).getInterceptorName());
-                    if (StringUtils.hasLength(((VariableFilterChain) requestChain).getExceptionTranslationName()))
-                        writer.addAttribute(
-                                "exceptionTranslationName",
-                                ((VariableFilterChain) requestChain).getExceptionTranslationName());
+                if (requestChain instanceof VariableFilterChain chain) {
+                    if (StringUtils.hasLength(chain.getInterceptorName()))
+                        writer.addAttribute("interceptorName", chain.getInterceptorName());
+                    if (StringUtils.hasLength(chain.getExceptionTranslationName()))
+                        writer.addAttribute("exceptionTranslationName", chain.getExceptionTranslationName());
                 }
 
                 writer.addAttribute("path", sb.toString());
@@ -3308,14 +3272,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
                 requestChain.setRoleFilterName(roleFilterName);
 
-                if (requestChain instanceof VariableFilterChain) {
-                    ((VariableFilterChain) requestChain).setInterceptorName(interceptorName);
+                if (requestChain instanceof VariableFilterChain chain) {
+                    chain.setInterceptorName(interceptorName);
                     if (StringUtils.hasLength(exceptionTranslationName))
-                        ((VariableFilterChain) requestChain).setExceptionTranslationName(exceptionTranslationName);
+                        chain.setExceptionTranslationName(exceptionTranslationName);
                     else
-                        ((VariableFilterChain) requestChain)
-                                .setExceptionTranslationName(
-                                        GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+                        chain.setExceptionTranslationName(
+                                GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
                 }
                 requestChain.setFilterNames(filterNames);
                 filterChain.getRequestChains().add(requestChain);

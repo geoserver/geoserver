@@ -269,17 +269,17 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
                 validator.checkExtensionPont(ep, "a.b.c");
                 fail("unknown class should fail");
             } catch (SecurityConfigException ex) {
-                assertEquals(ex.getId(), CLASS_NOT_FOUND_$1);
-                assertEquals(ex.getArgs()[0], "a.b.c");
+                assertEquals(CLASS_NOT_FOUND_$1, ex.getId());
+                assertEquals("a.b.c", ex.getArgs()[0]);
             }
 
             try {
                 validator.checkExtensionPont(ep, "java.lang.String");
                 fail("wrong class should fail");
             } catch (SecurityConfigException ex) {
-                assertEquals(ex.getId(), CLASS_WRONG_TYPE_$2);
-                assertEquals(ex.getArgs()[0], ep);
-                assertEquals(ex.getArgs()[1], "java.lang.String");
+                assertEquals(CLASS_WRONG_TYPE_$2, ex.getId());
+                assertEquals(ep, ex.getArgs()[0]);
+                assertEquals("java.lang.String", ex.getArgs()[1]);
             }
 
             String className = ep == GeoServerUserGroupService.class ? null : "";
@@ -287,7 +287,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
                 validator.checkExtensionPont(ep, className);
                 fail("no class should fail");
             } catch (SecurityConfigException ex) {
-                assertEquals(ex.getId(), CLASSNAME_REQUIRED);
+                assertEquals(CLASSNAME_REQUIRED, ex.getId());
                 assertEquals(0, ex.getArgs().length);
             }
 
@@ -296,7 +296,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
                 validator.checkServiceName(ep, name);
                 fail("no name should fail");
             } catch (SecurityConfigException ex) {
-                assertEquals(ex.getId(), NAME_REQUIRED);
+                assertEquals(NAME_REQUIRED, ex.getId());
                 assertEquals(0, ex.getArgs().length);
             }
         }
@@ -308,7 +308,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
             fail("passwd policy already exists should fail");
         } catch (SecurityConfigException ex) {
             assertEquals(PASSWD_POLICY_ALREADY_EXISTS_$1, ex.getId());
-            assertEquals(ex.getArgs()[0], PasswordValidator.DEFAULT_NAME);
+            assertEquals(PasswordValidator.DEFAULT_NAME, ex.getArgs()[0]);
         }
 
         PasswordPolicyConfig pwConfig = createPolicyConfig("default2", PasswordValidatorImpl.class, 1, 10);
@@ -318,7 +318,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
             fail("unknown passwd policy should fail");
         } catch (SecurityConfigException ex) {
             assertEquals(PASSWD_POLICY_NOT_FOUND_$1, ex.getId());
-            assertEquals(ex.getArgs()[0], "default2");
+            assertEquals("default2", ex.getArgs()[0]);
         }
 
         try {
@@ -329,7 +329,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
                     PasswordValidator.DEFAULT_NAME));
             fail("user group service already exists should fail");
         } catch (SecurityConfigException ex) {
-            assertEquals(ex.getId(), USERGROUP_SERVICE_ALREADY_EXISTS_$1);
+            assertEquals(USERGROUP_SERVICE_ALREADY_EXISTS_$1, ex.getId());
             assertEquals(ex.getArgs()[0], XMLUserGroupService.DEFAULT_NAME);
         }
 
@@ -342,8 +342,8 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
             validator.validateModifiedUserGroupService(ugConfig, ugConfig);
             fail("unknown user group service should fail");
         } catch (SecurityConfigException ex) {
-            assertEquals(ex.getId(), USERGROUP_SERVICE_NOT_FOUND_$1);
-            assertEquals(ex.getArgs()[0], "default2");
+            assertEquals(USERGROUP_SERVICE_NOT_FOUND_$1, ex.getId());
+            assertEquals("default2", ex.getArgs()[0]);
         }
 
         try {
@@ -351,8 +351,8 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
                     XMLRoleService.DEFAULT_NAME, GeoServerRoleService.class, GeoServerRole.ADMIN_ROLE.getAuthority()));
             fail("role service already exists should fail");
         } catch (SecurityConfigException ex) {
-            assertEquals(ex.getId(), ROLE_SERVICE_ALREADY_EXISTS_$1);
-            assertEquals(ex.getArgs()[0], XMLRoleService.DEFAULT_NAME);
+            assertEquals(ROLE_SERVICE_ALREADY_EXISTS_$1, ex.getId());
+            assertEquals(XMLRoleService.DEFAULT_NAME, ex.getArgs()[0]);
         }
 
         SecurityRoleServiceConfig config =
@@ -361,7 +361,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
             validator.validateModifiedRoleService(config, config);
             fail("unknown role service should fail");
         } catch (SecurityConfigException ex) {
-            assertEquals(ex.getId(), ROLE_SERVICE_NOT_FOUND_$1);
+            assertEquals(ROLE_SERVICE_NOT_FOUND_$1, ex.getId());
             assertEquals(ex.getArgs()[0], "default2");
         }
 
@@ -372,7 +372,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
                     XMLUserGroupService.DEFAULT_NAME));
             fail("auth provider already exists should fail");
         } catch (SecurityConfigException ex) {
-            assertEquals(ex.getId(), AUTH_PROVIDER_ALREADY_EXISTS_$1);
+            assertEquals(AUTH_PROVIDER_ALREADY_EXISTS_$1, ex.getId());
             assertEquals(ex.getArgs()[0], GeoServerAuthenticationProvider.DEFAULT_NAME);
         }
 
@@ -382,7 +382,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
             validator.validateModifiedAuthProvider(aConfig, aConfig);
             fail("unknown auth provider should fail");
         } catch (SecurityConfigException ex) {
-            assertEquals(ex.getId(), AUTH_PROVIDER_NOT_FOUND_$1);
+            assertEquals(AUTH_PROVIDER_NOT_FOUND_$1, ex.getId());
             assertEquals(ex.getArgs()[0], "default2");
         }
     }

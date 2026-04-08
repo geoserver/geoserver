@@ -1,0 +1,9 @@
+title: 'YSLD Cook Book: Simple polygon with stroke'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - polygon:
+        stroke-color: '#FFFFFF'
+        stroke-width: 2
+        fill-color: '#000080'

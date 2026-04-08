@@ -1,0 +1,56 @@
+<?xml version="1.0"?><!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_10_0.dtd">
+<!--
+  This is the HTTP configuration for clear-text HTTP.
+  For secure HTTP, a copy of this HttpConfiguration
+  object is made in jetty-ssl.xml.
+ -->
+<Configure id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
+  <Set name="secureScheme" property="jetty.httpConfig.secureScheme" />
+  <Set name="securePort" property="jetty.httpConfig.securePort" />
+  <Set name="inputBufferSize" property="jetty.httpConfig.inputBufferSize" />
+  <Set name="outputBufferSize" property="jetty.httpConfig.outputBufferSize" />
+  <Set name="outputAggregationSize" property="jetty.httpConfig.outputAggregationSize" />
+  <Set name="persistentConnectionsEnabled" property="jetty.httpConfig.persistentConnectionsEnabled" />
+  <Set name="requestHeaderSize" property="jetty.httpConfig.requestHeaderSize" />
+  <Set name="responseHeaderSize" property="jetty.httpConfig.responseHeaderSize" />
+  <Set name="maxResponseHeaderSize" property="jetty.httpConfig.maxResponseHeaderSize" />
+  <Set name="sendServerVersion" property="jetty.httpConfig.sendServerVersion" />
+  <Set name="sendDateHeader" property="jetty.httpConfig.sendDateHeader" />
+  <Set name="headerCacheSize" property="jetty.httpConfig.headerCacheSize" />
+  <Set name="maxErrorDispatches" property="jetty.httpConfig.maxErrorDispatches" />
+  <Set name="relativeRedirectAllowed" property="jetty.httpConfig.relativeRedirectAllowed" />
+  <Set name="generateRedirectBody" property="jetty.httpConfig.generateRedirectBody" />
+  <Set name="useInputDirectByteBuffers" property="jetty.httpConfig.useInputDirectByteBuffers" />
+  <Set name="useOutputDirectByteBuffers" property="jetty.httpConfig.useOutputDirectByteBuffers" />
+  <Set name="minInputBufferSpace" property="jetty.httpConfig.minInputBufferSpace" />
+  <Set name="httpCompliance">
+    <Call class="org.eclipse.jetty.http.HttpCompliance" name="from">
+      <Arg><Property name="jetty.httpConfig.compliance" deprecated="jetty.http.compliance" default="RFC9110" /></Arg>
+    </Call>
+  </Set>
+  <Set name="uriCompliance">
+    <Call class="org.eclipse.jetty.http.UriCompliance" name="from">
+      <Arg><Property name="jetty.httpConfig.uriCompliance" default="DEFAULT" /></Arg>
+    </Call>
+  </Set>
+  <Set name="redirectUriCompliance">
+    <Call class="org.eclipse.jetty.http.UriCompliance" name="from">
+      <Arg><Property name="jetty.httpConfig.redirectUriCompliance" default="DEFAULT" /></Arg>
+    </Call>
+  </Set>
+  <Set name="requestCookieCompliance">
+    <Call class="org.eclipse.jetty.http.CookieCompliance" name="from">
+      <Arg><Property name="jetty.httpConfig.requestCookieCompliance" default="RFC6265" /></Arg>
+    </Call>
+  </Set>
+  <Set name="responseCookieCompliance">
+    <Call class="org.eclipse.jetty.http.CookieCompliance" name="from">
+      <Arg><Property name="jetty.httpConfig.responseCookieCompliance" default="RFC6265" /></Arg>
+    </Call>
+  </Set>
+  <Set name="multiPartCompliance">
+    <Call class="org.eclipse.jetty.http.MultiPartCompliance" name="from">
+      <Arg><Property name="jetty.httpConfig.multiPartCompliance" default="RFC7578" /></Arg>
+    </Call>
+  </Set>
+</Configure>

@@ -15,6 +15,7 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
 
     protected String id;
     protected String name;
+
     protected boolean _default;
 
     protected MetadataMap metadata = new MetadataMap();
@@ -24,6 +25,8 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
     protected Date dateCreated;
 
     protected Date dateModified;
+
+    protected String modifiedBy;
 
     @Override
     public String getId() {
@@ -128,5 +131,15 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
     @Override
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userModified) {
+        this.modifiedBy = userModified;
     }
 }

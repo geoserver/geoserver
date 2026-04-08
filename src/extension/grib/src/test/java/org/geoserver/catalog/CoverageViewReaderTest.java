@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.media.jai.ImageLayout;
 import javax.xml.namespace.QName;
+import org.eclipse.imagen.ImageLayout;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
@@ -77,7 +77,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo("regional_currents", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
         final LayerInfo layerInfo = builder.buildLayer(coverageInfo);
         cat.add(layerInfo);
@@ -92,7 +92,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
 
         // Reordered bands coverage
         CoverageInfo coverageInfo = multiBandCoverageView.createCoverageInfo("multiband_select", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
         final LayerInfo layerInfoView = builder.buildLayer(coverageInfo);
         cat.add(layerInfoView);

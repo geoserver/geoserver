@@ -5,6 +5,9 @@
 
 package org.geoserver.solr;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +59,20 @@ import org.locationtech.jts.geom.Polygon;
  */
 public abstract class SolrConfigurationPage extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SolrConfigurationPage.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 5615867383881988931L;
 
     private static final Logger LOGGER = Logging.getLogger(SolrConfigurationPage.class);
@@ -105,6 +122,7 @@ public abstract class SolrConfigurationPage extends Panel {
 
         AjaxCheckBox checkBox = new AjaxCheckBox("hideEmpty", Model.of(Boolean.TRUE)) {
             /** */
+            @Serial
             private static final long serialVersionUID = 8715377219204904531L;
 
             @Override
@@ -119,6 +137,7 @@ public abstract class SolrConfigurationPage extends Panel {
 
         solr_form.add(new AjaxButton("solr_save") {
             /** */
+            @Serial
             private static final long serialVersionUID = 819555072210390051L;
 
             @Override
@@ -237,6 +256,7 @@ public abstract class SolrConfigurationPage extends Panel {
         GeoServerTablePanel<SolrAttribute> atts =
                 new GeoServerTablePanel<SolrAttribute>("solrAttributes", attProvider) {
                     /** */
+                    @Serial
                     private static final long serialVersionUID = 7306412054935816724L;
 
                     @Override
@@ -312,6 +332,7 @@ public abstract class SolrConfigurationPage extends Panel {
      */
     private static class GeometryTypeRenderer extends ChoiceRenderer<Class<?>> {
 
+        @Serial
         private static final long serialVersionUID = -6371918467884222834L;
 
         @Override

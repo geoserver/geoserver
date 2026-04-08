@@ -5,10 +5,12 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import org.springframework.security.core.Authentication;
 
 public class DefaultPageAuthorizer extends AdminComponentAuthorizer implements ComponentAuthorizer {
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override

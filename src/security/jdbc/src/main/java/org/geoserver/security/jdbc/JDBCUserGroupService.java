@@ -5,7 +5,6 @@
  */
 package org.geoserver.security.jdbc;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,7 +32,6 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geoserver.security.impl.Util;
-import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
 import org.geoserver.security.jdbc.config.JDBCUserGroupServiceConfig;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.PasswordEncodingType;
@@ -91,7 +89,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
 
     /**
      * Uses {@link #initializeDSFromConfig(SecurityNamedServiceConfig)} and
-     * {@link #checkORCreateJDBCPropertyFile(String, File, String)} for initializing
+     * {@link #checkORCreateJDBCPropertyFile(String, Resource, String)} for initializing
      *
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#initializeFromConfig(org.geoserver.security.config.SecurityNamedServiceConfig)
@@ -104,8 +102,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         passwordValidatorName = ((SecurityUserGroupServiceConfig) config).getPasswordPolicyName();
         initializeDSFromConfig(config);
 
-        if (config instanceof JDBCUserGroupServiceConfig) {
-            JDBCUserGroupServiceConfig jdbcConfig = (JDBCUserGroupServiceConfig) config;
+        if (config instanceof JDBCUserGroupServiceConfig jdbcConfig) {
 
             String fileNameDML = jdbcConfig.getPropertyFileNameDML();
             Resource file = checkORCreateJDBCPropertyFile(fileNameDML, getConfigRoot(), DEFAULT_DML_FILE);
@@ -115,7 +112,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             if (fileNameDDL != null && !fileNameDDL.isEmpty()) {
                 file = checkORCreateJDBCPropertyFile(fileNameDDL, getConfigRoot(), DEFAULT_DDL_FILE);
                 ddlProps = Util.loadUniversal(file.in());
-                createTablesIfRequired((JDBCSecurityServiceConfig) config);
+                createTablesIfRequired(jdbcConfig);
             }
 
             GeoServerPasswordEncoder enc = getSecurityManager().loadPasswordEncoder(passwordEncoderName);
@@ -446,8 +443,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /**
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupService#registerUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
+     * @see org.geoserver.security.GeoServerUserGroupService#registerUserGroupLoadedListener(UserGroupLoadedListener)
      */
     @Override
     public void registerUserGroupLoadedListener(UserGroupLoadedListener listener) {
@@ -455,8 +451,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /**
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupService#unregisterUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
+     * @see org.geoserver.security.GeoServerUserGroupService#unregisterUserGroupLoadedListener(UserGroupLoadedListener)
      */
     @Override
     public void unregisterUserGroupLoadedListener(UserGroupLoadedListener listener) {

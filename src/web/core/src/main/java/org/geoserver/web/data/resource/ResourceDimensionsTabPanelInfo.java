@@ -5,7 +5,10 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +44,20 @@ import org.geotools.util.logging.Logging;
  */
 public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerInfo> implements MetadataMapValidator {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ResourceDimensionsTabPanelInfo.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 4702596541385329270L;
 
     static final Logger LOGGER = Logging.getLogger(ResourceDimensionsTabPanelInfo.class);
@@ -70,8 +87,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
 
         // handle raster data custom dimensions
         final List<RasterDimensionModel> customDimensionModels = new ArrayList<>();
-        if (resource instanceof CoverageInfo) {
-            CoverageInfo ci = (CoverageInfo) resource;
+        if (resource instanceof CoverageInfo ci) {
             try {
                 GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
                 ReaderDimensionsAccessor ra = new ReaderDimensionsAccessor(reader);
@@ -80,7 +96,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
                     boolean hasRange = ra.hasRange(domain);
                     boolean hasResolution = ra.hasResolution(domain);
                     RasterDimensionModel mm =
-                            new RasterDimensionModel(metadata, domain, DimensionInfo.class, hasRange, hasResolution);
+                            new RasterDimensionModel<>(metadata, domain, DimensionInfo.class, hasRange, hasResolution);
                     if (mm.getObject() == null) {
                         mm.setObject(new DimensionInfoImpl());
                     }
@@ -149,7 +165,8 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         return info.isEnabled();
     }
 
-    class RasterDimensionModel<T> extends MetadataMapModel<T> {
+    static class RasterDimensionModel<T> extends MetadataMapModel<T> {
+        @Serial
         private static final long serialVersionUID = 4734439907138483817L;
 
         boolean hasRange;

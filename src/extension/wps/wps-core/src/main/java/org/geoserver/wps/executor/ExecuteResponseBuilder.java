@@ -35,7 +35,6 @@ import net.opengis.wps10.ProcessOutputsType1;
 import net.opengis.wps10.ProcessStartedType;
 import net.opengis.wps10.ResponseDocumentType;
 import net.opengis.wps10.Wps10Factory;
-import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -205,19 +204,25 @@ public class ExecuteResponseBuilder {
 
             Map<String, Parameter<?>> resultInfo = pf.getResultInfo(processName, null);
 
-            if (Optional.ofNullable(request.getResponseForm())
+            boolean outputSelectionInDocumentForm = Optional.ofNullable(request.getResponseForm())
                     .map(rf -> rf.getResponseDocument())
                     .map(rd -> rd.getOutput())
                     .filter(output -> !output.isEmpty())
-                    .isPresent()) {
+                    .isPresent();
+            boolean outputSelectionInRawDataForm = Optional.ofNullable(request.getResponseForm())
+                    .map(rf -> rf.getRawDataOutput())
+                    .isPresent();
+            if (outputSelectionInDocumentForm || outputSelectionInRawDataForm) {
                 // we have a selection of outputs, possibly with indication of mime type
                 // and reference encoding
-                EList outputs = request.getResponseForm().getResponseDocument().getOutput();
+                List outputs = outputSelectionInDocumentForm
+                        ? request.getResponseForm().getResponseDocument().getOutput()
+                        : List.of(request.getResponseForm().getRawDataOutput());
                 for (Object object : outputs) {
                     if (listener.isCanceled()) {
                         break;
                     }
-                    DocumentOutputDefinitionType odt = (DocumentOutputDefinitionType) object;
+                    OutputDefinitionType odt = (OutputDefinitionType) object;
                     String key = odt.getIdentifier().getValue();
                     Parameter<?> outputParam = resultInfo.get(key);
                     if (outputParam == null) {
@@ -226,7 +231,8 @@ public class ExecuteResponseBuilder {
                     }
 
                     String mimeType = odt.getMimeType();
-                    OutputDataType output = encodeOutput(key, outputParam, mimeType, odt.isAsReference(), listener);
+                    boolean asReference = odt instanceof DocumentOutputDefinitionType dodt && dodt.isAsReference();
+                    OutputDataType output = encodeOutput(key, outputParam, mimeType, asReference, listener);
                     processOutputs.getOutput().add(output);
                 }
             } else {
@@ -265,27 +271,24 @@ public class ExecuteResponseBuilder {
         }
 
         try {
-            if (reference && ppio instanceof ComplexPPIO) {
+            if (reference && ppio instanceof ComplexPPIO cppio) {
                 // encode as reference
                 OutputReferenceType outputReference = f.createOutputReferenceType();
                 output.setReference(outputReference);
-
-                ComplexPPIO cppio = (ComplexPPIO) ppio;
                 String name = key + "." + cppio.getFileExtension(o);
                 Resource outputResource = resourceManager.getOutputResource(status.getExecutionId(), name);
 
                 // write out the output, wrapping the output stream and other well known
                 // object in classes that will fail upon cancellation
                 try (OutputStream os = new CancellingOutputStream(outputResource.out(), listener)) {
-                    if (o instanceof FeatureCollection) {
-                        o = CancellingFeatureCollectionBuilder.wrap((FeatureCollection) o, listener);
+                    if (o instanceof FeatureCollection collection) {
+                        o = CancellingFeatureCollectionBuilder.wrap(collection, listener);
                     }
                     cppio.encode(o, os);
                 }
 
                 String mime;
-                if (o instanceof RawData) {
-                    RawData rawData = (RawData) o;
+                if (o instanceof RawData rawData) {
                     mime = rawData.getMimeType();
                 } else {
                     mime = cppio.getMimeType();
@@ -299,19 +302,17 @@ public class ExecuteResponseBuilder {
                 DataType data = f.createDataType();
                 output.setData(data);
 
-                if (ppio instanceof LiteralPPIO) {
+                if (ppio instanceof LiteralPPIO iO4) {
                     LiteralDataType literal = f.createLiteralDataType();
                     data.setLiteralData(literal);
 
-                    literal.setValue(((LiteralPPIO) ppio).encode(o));
-                } else if (ppio instanceof BoundingBoxPPIO) {
-                    BoundingBoxType bbox = ((BoundingBoxPPIO) ppio).encode(o);
+                    literal.setValue(iO4.encode(o));
+                } else if (ppio instanceof BoundingBoxPPIO iO3) {
+                    BoundingBoxType bbox = iO3.encode(o);
                     data.setBoundingBoxData(bbox);
-                } else if (ppio instanceof ComplexPPIO) {
+                } else if (ppio instanceof ComplexPPIO cppio) {
                     ComplexDataType complex = f.createComplexDataType();
                     data.setComplexData(complex);
-
-                    ComplexPPIO cppio = (ComplexPPIO) ppio;
                     complex.setMimeType(cppio.getMimeType());
 
                     if (o == null) {
@@ -321,14 +322,14 @@ public class ExecuteResponseBuilder {
                         complex.setMimeType(rawData.getMimeType());
                         complex.setEncoding("base64");
                         complex.getData().add(new RawDataEncoderDelegate(rawData));
-                    } else if (cppio instanceof XMLPPIO) {
+                    } else if (cppio instanceof XMLPPIO iO2) {
                         // encode directly
-                        complex.getData().add(new XMLEncoderDelegate((XMLPPIO) cppio, o));
-                    } else if (cppio instanceof CDataPPIO) {
-                        complex.getData().add(new CDataEncoderDelegate((CDataPPIO) cppio, o));
-                    } else if (cppio instanceof BinaryPPIO) {
+                        complex.getData().add(new XMLEncoderDelegate(iO2, o));
+                    } else if (cppio instanceof CDataPPIO iO1) {
+                        complex.getData().add(new CDataEncoderDelegate(iO1, o));
+                    } else if (cppio instanceof BinaryPPIO iO) {
                         complex.setEncoding("base64");
-                        complex.getData().add(new BinaryEncoderDelegate((BinaryPPIO) cppio, o));
+                        complex.getData().add(new BinaryEncoderDelegate(iO, o));
                     } else {
                         throw new WPSException("Don't know how to encode an output whose PPIO is " + cppio);
                     }

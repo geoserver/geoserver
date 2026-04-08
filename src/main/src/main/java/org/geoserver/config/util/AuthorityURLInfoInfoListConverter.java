@@ -7,12 +7,12 @@ package org.geoserver.config.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.impl.AuthorityURL;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONObject;
 
 /**
  * Utility class to serialize and deserialize a list of {@link AuthorityURLInfo} objects to and from String using a JSON

@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +24,7 @@ import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -42,6 +45,20 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 /** Allows to edit the list of layers contained in a layer group */
 public abstract class LayerGroupEntryPanel<T> extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerGroupEntryPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -5483938812185582866L;
 
     public static final Property<LayerGroupEntry> LAYER_TYPE = new PropertyPlaceholder<>("layerType");
@@ -143,6 +160,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         add(
                 layerTable = new ReorderableTablePanel<>("layers", LayerGroupEntry.class, items, propertiesModel) {
 
+                    @Serial
                     private static final long serialVersionUID = -3270471094618284639L;
 
                     @Override
@@ -185,6 +203,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     private AjaxLink<LayerInfo> addLayer(IModel<WorkspaceInfo> groupWorkspace) {
         return new AjaxLink<>("addLayer") {
+            @Serial
             private static final long serialVersionUID = -6143440041597461787L;
 
             @Override
@@ -193,6 +212,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
                 popupWindow.setContent(new LayerListPanel(popupWindow.getContentId(), groupWorkspace.getObject()) {
+                    @Serial
                     private static final long serialVersionUID = -47811496174289699L;
 
                     @Override
@@ -213,6 +233,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     private AjaxLink<LayerGroupInfo> addLayerGroup(IModel<WorkspaceInfo> groupWorkspace) {
         return new AjaxLink<>("addLayerGroup") {
+            @Serial
             private static final long serialVersionUID = -6600366636542152188L;
 
             @Override
@@ -221,6 +242,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseLayerGroup", this));
                 popupWindow.setContent(new LayerGroupListPanel(popupWindow.getContentId(), groupWorkspace.getObject()) {
+                    @Serial
                     private static final long serialVersionUID = 4052338807144204692L;
 
                     @Override
@@ -287,6 +309,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         CheckBox ds = new CheckBox("checkbox", new Model<>(entry.isDefaultStyle()));
         ds.add(new OnChangeAjaxBehavior() {
 
+            @Serial
             private static final long serialVersionUID = 7700386104410665242L;
 
             @Override
@@ -322,6 +345,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         // build and returns the link, but disable it if the style is the default
         SimpleAjaxLink<String> link = new SimpleAjaxLink<>(id, new Model<>(styleName)) {
 
+            @Serial
             private static final long serialVersionUID = 4677068931971673637L;
 
             @Override
@@ -333,6 +357,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                         new StyleListPanel(
                                 popupWindow.getContentId(),
                                 itemModel.getObject().getLayer()) {
+                            @Serial
                             private static final long serialVersionUID = -8463999379475701401L;
 
                             @Override
@@ -355,18 +380,19 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     Component removeLink(String id, IModel<LayerGroupEntry> itemModel) {
         final LayerGroupEntry entry = itemModel.getObject();
-        ImageAjaxLink<Object> link =
-                new ImageAjaxLink<>(id, new PackageResourceReference(getClass(), "../../img/icons/silk/delete.png")) {
+        ContextRelativeResourceReference icon = new ContextRelativeResourceReference("img/icons/silk/delete.png");
+        ImageAjaxLink<Object> link = new ImageAjaxLink<>(id, icon) {
 
-                    private static final long serialVersionUID = 4050942811476326745L;
+            @Serial
+            private static final long serialVersionUID = 4050942811476326745L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
 
-                        items.remove(entry);
-                        target.add(layerTable);
-                    }
-                };
+                items.remove(entry);
+                target.add(layerTable);
+            }
+        };
         link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
     }

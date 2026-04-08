@@ -4,7 +4,10 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -24,8 +27,22 @@ import org.geotools.util.logging.Logging;
  */
 public class LayerAttributePanel extends StyleEditTabPanel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerAttributePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     static final Logger LOGGER = Logging.getLogger(LayerAttributePanel.class);
 
+    @Serial
     private static final long serialVersionUID = -5936224477909623317L;
 
     public LayerAttributePanel(String id, AbstractStylePage parent) throws IOException {
@@ -34,6 +51,7 @@ public class LayerAttributePanel extends StyleEditTabPanel {
         // Change layer link
         PropertyModel<String> layerNameModel = new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(new SimpleAjaxLink<>("changeLayer", layerNameModel) {
+            @Serial
             private static final long serialVersionUID = 7341058018479354596L;
 
             @Override
@@ -68,10 +86,10 @@ public class LayerAttributePanel extends StyleEditTabPanel {
         if (this.get("attributePanel") != null) {
             this.remove("attributePanel");
         }
-        if (resource instanceof FeatureTypeInfo) {
-            this.add(new DataPanel("attributePanel", (FeatureTypeInfo) resource));
-        } else if (resource instanceof CoverageInfo) {
-            this.add(new BandsPanel("attributePanel", (CoverageInfo) resource));
+        if (resource instanceof FeatureTypeInfo info1) {
+            this.add(new DataPanel("attributePanel", info1));
+        } else if (resource instanceof CoverageInfo info) {
+            this.add(new BandsPanel("attributePanel", info));
         }
     }
 }

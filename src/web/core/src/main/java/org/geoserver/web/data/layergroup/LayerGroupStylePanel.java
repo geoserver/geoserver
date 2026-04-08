@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -23,6 +25,19 @@ import org.geoserver.web.data.resource.TitleAndAbstractPanel;
 
 /** UI Component for a single LayerGroupStyle. */
 public abstract class LayerGroupStylePanel extends FormComponentPanel<LayerGroupStyle> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerGroupStylePanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     private LayerGroupEntryPanel<LayerGroupStyle> groupEntryPanel;
     private TextField<String> name;

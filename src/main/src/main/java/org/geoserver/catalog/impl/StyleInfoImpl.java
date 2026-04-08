@@ -14,6 +14,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geotools.api.style.Style;
 import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.util.Version;
@@ -34,6 +35,7 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected String format = SLDHandler.FORMAT;
 
+    @PatchProperty("formatVersion")
     protected Version languageVersion = SLDHandler.VERSION_10;
 
     protected String filename;
@@ -47,6 +49,8 @@ public class StyleInfoImpl implements StyleInfo {
     protected Date dateCreated;
 
     protected Date dateModified;
+
+    protected String modifiedBy;
 
     protected StyleInfoImpl() {}
 
@@ -216,11 +220,7 @@ public class StyleInfoImpl implements StyleInfo {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-                .append('[')
-                .append(prefixedName())
-                .append(']')
-                .toString();
+        return getClass().getSimpleName() + '[' + prefixedName() + ']';
     }
 
     @Override
@@ -268,5 +268,15 @@ public class StyleInfoImpl implements StyleInfo {
     @Override
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        this.modifiedBy = userName;
     }
 }

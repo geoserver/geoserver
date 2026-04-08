@@ -38,7 +38,7 @@ public abstract class VectorDimension extends Dimension {
             source = DimensionsUtils.getFeatures(typeInfo);
         } catch (Exception exception) {
             throw new RuntimeException(
-                    String.format("Error getting feature source of vector '%s'.", resourceInfo.getName()), exception);
+                    "Error getting feature source of vector '%s'.".formatted(resourceInfo.getName()), exception);
         }
         // fix type name
         query = new Query(query);
@@ -47,9 +47,8 @@ public abstract class VectorDimension extends Dimension {
             return source.getFeatures(query);
         } catch (Exception exception) {
             throw new RuntimeException(
-                    String.format(
-                            "Error reading feature from layer '%s' for dimension '%s'.",
-                            resourceInfo.getName(), getDimensionName()),
+                    "Error reading feature from layer '%s' for dimension '%s'."
+                            .formatted(resourceInfo.getName(), getDimensionName()),
                     exception);
         }
     }
@@ -93,8 +92,8 @@ public abstract class VectorDimension extends Dimension {
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
         if (attrs != null) {
             Object o = attrs.getAttribute(MultiDimensionalExtension.SORT_BY_END, 0);
-            if (o instanceof Boolean) {
-                return (Boolean) o;
+            if (o instanceof Boolean boolean1) {
+                return boolean1;
             }
         }
         return false;

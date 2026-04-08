@@ -41,7 +41,7 @@ public class GeoServerPropertyOverrideConfigurer extends PropertyOverrideConfigu
     }
 
     @Override
-    public void setLocations(Resource[] locations) {
+    public void setLocations(Resource... locations) {
         Resource[] newLocations = new Resource[locations.length];
         for (int i = 0; i < locations.length; i++) {
             try {

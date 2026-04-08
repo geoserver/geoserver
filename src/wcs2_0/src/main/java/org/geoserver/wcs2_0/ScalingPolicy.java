@@ -5,16 +5,10 @@
  */
 package org.geoserver.wcs2_0;
 
-import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.RenderedImage;
-import javax.media.jai.Interpolation;
-import javax.media.jai.InterpolationNearest;
-import javax.media.jai.JAI;
-import javax.media.jai.Warp;
-import javax.media.jai.WarpAffine;
 import net.opengis.wcs20.ScaleAxisByFactorType;
 import net.opengis.wcs20.ScaleAxisType;
 import net.opengis.wcs20.ScaleByFactorType;
@@ -24,6 +18,12 @@ import net.opengis.wcs20.ScalingType;
 import net.opengis.wcs20.TargetAxisExtentType;
 import net.opengis.wcs20.TargetAxisSizeType;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.InterpolationNearest;
+import org.eclipse.imagen.Warp;
+import org.eclipse.imagen.WarpAffine;
+import org.eclipse.imagen.media.utilities.ImageLayout2;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.api.coverage.grid.GridEnvelope;
@@ -158,8 +158,9 @@ enum ScalingPolicy {
     ScaleToSize {
 
         /**
-         * In this case we must retain the lower bounds by scale the size, hence {@link ScaleDescriptor} JAI operation
-         * cannot be used. Same goes for {@link AffineDescriptor}, the only real option is {@link WarpDescriptor}.
+         * In this case we must retain the lower bounds by scale the size, hence {@link ScaleDescriptor} ImageN
+         * operation cannot be used. Same goes for {@link AffineDescriptor}, the only real option is
+         * {@link WarpDescriptor}.
          */
         @Override
         public GridCoverage2D scale(
@@ -225,7 +226,7 @@ enum ScalingPolicy {
             }
             // impose final
             final ImageLayout2 layout = new ImageLayout2(sourceMinX, sourceMinY, sizeX, sizeY);
-            hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
+            hints.add(new Hints(ImageN.KEY_IMAGE_LAYOUT, layout));
             final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
             final ParameterValueGroup parameters = operation.getParameters();
             parameters.parameter("Source").setValue(sourceGC);
@@ -366,7 +367,7 @@ enum ScalingPolicy {
                     destinationRectangle.y,
                     destinationRectangle.width,
                     destinationRectangle.height);
-            hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
+            hints.add(new Hints(ImageN.KEY_IMAGE_LAYOUT, layout));
 
             final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
             final ParameterValueGroup parameters = operation.getParameters();
@@ -466,7 +467,7 @@ enum ScalingPolicy {
      *
      * @param sourceGC the {@link GridCoverage2D} to scale.
      * @param scaling the instance of {@link ScalingType} that contains he type of scaling to perform.
-     * @param interpolation the {@link Interpolation} to use. In case it is <code>null</code> we will use the
+     * @param interpolation the {@link Interpolation} to use. In case it is {@code null} we will use the
      *     {@link InterpolationPolicy} default value.
      * @param hints {@link Hints} to use during this operation.
      * @param wcsinfo the current instance of {@link WCSInfo} that contains wcs config for GeoServer

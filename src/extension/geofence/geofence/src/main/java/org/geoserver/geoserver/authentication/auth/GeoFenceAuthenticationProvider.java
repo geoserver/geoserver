@@ -4,12 +4,12 @@
  */
 package org.geoserver.geoserver.authentication.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AuthUser;
 import org.geoserver.security.GeoServerAuthenticationProvider;
@@ -56,8 +56,7 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
         UsernamePasswordAuthenticationToken outTok = null;
         LOGGER.log(Level.FINE, "Auth request with {0}", authentication);
 
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            UsernamePasswordAuthenticationToken inTok = (UsernamePasswordAuthenticationToken) authentication;
+        if (authentication instanceof UsernamePasswordAuthenticationToken inTok) {
 
             AuthUser authUser = null;
             final String username = SecurityUtils.getUsername(inTok.getPrincipal());

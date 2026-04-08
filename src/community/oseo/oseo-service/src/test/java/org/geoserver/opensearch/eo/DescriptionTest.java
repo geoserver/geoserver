@@ -17,11 +17,21 @@ import java.io.ByteArrayInputStream;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.opensearch.eo.response.DescriptionResponse;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class DescriptionTest extends OSEOTestSupport {
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     @Test
     public void testExceptionInternalError() throws Exception {

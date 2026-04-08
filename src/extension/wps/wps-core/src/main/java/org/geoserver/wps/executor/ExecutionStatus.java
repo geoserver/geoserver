@@ -5,6 +5,7 @@
  */
 package org.geoserver.wps.executor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -30,6 +31,7 @@ public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus
 
     static final Logger LOGGER = Logging.getLogger(ExecutionStatus.class);
 
+    @Serial
     private static final long serialVersionUID = -2433524030271115410L;
 
     // TODO: find a GeoServer unified, non GUI specific way to get the node identifier

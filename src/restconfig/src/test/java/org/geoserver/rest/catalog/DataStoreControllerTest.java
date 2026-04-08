@@ -25,13 +25,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.config.CatalogModificationUserUpdater;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFinder;
@@ -42,6 +42,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -99,8 +102,8 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         Object datastores = ((JSONObject) json).getJSONObject("dataStores").get("dataStore");
         assertNotNull(datastores);
 
-        if (datastores instanceof JSONArray) {
-            assertEquals(catalog.getDataStoresByWorkspace("sf").size(), ((JSONArray) datastores).size());
+        if (datastores instanceof JSONArray array) {
+            assertEquals(catalog.getDataStoresByWorkspace("sf").size(), array.size());
         } else {
             assertEquals(1, catalog.getDataStoresByWorkspace("sf").size());
         }
@@ -587,5 +590,82 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertNotSame(featureTypeNew, featureType);
         assertNotNull(featureTypeNew.getDescriptor("description"));
         assertNotNull(featureTypeNew.getDescriptor("identifier"));
+    }
+
+    @Test
+    public void testPostWithModificationUserAsXMLWithTrackUserTrue() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(false);
+        createStoreForTrackUserTest(info);
+
+        DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
+        assertNotNull(newDataStore.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostWithModificationUserAsXMLWithTrackUserFalse() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "false");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        createStoreForTrackUserTest(info);
+
+        DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
+        assertNull(newDataStore.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostWithModificationUserAsXMLWithoutTrackUser() throws Exception {
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        createStoreForTrackUserTest(info);
+
+        DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
+        assertNotNull(newDataStore.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPutWithModificationUser() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        Document dom = getAsDOM(ROOT_PATH + "/workspaces/sf/datastores/sf.xml");
+        assertXpathEvaluatesTo("true", "/dataStore/enabled", dom);
+
+        String xml = "<dataStore>" + "<name>sf</name>" + "<enabled>false</enabled>" + "</dataStore>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        dom = getAsDOM(ROOT_PATH + "/workspaces/sf/datastores/sf.xml");
+        assertXpathEvaluatesTo("false", "/dataStore/enabled", dom);
+
+        assertFalse(catalog.getDataStoreByName("sf", "sf").isEnabled());
+        assertNotNull(catalog.getDataStoreByName("sf", "sf").getDateModified());
+        assertNotNull(catalog.getDataStoreByName("sf", "sf").getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    private void createStoreForTrackUserTest(GeoServerInfo info) throws Exception {
+        getGeoServer().save(info);
+        File dir = setupNewDataStore();
+        String xml = "<dataStore>"
+                + "<name>newDataStore</name>"
+                + "<connectionParameters>"
+                + "<namespace><string>sf</string></namespace>"
+                + "<directory>"
+                + "<string>"
+                + dir.getAbsolutePath()
+                + "</string>"
+                + "</directory>"
+                + "</connectionParameters>"
+                + "<workspace>sf</workspace>"
+                + "</dataStore>";
+        postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
     }
 }

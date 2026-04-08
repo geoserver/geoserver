@@ -317,4 +317,30 @@ public class FeatureDataConverter {
             }
         }
     };
+
+    /** Converter for GeoPackage format. Reduces the number of geometries to one. */
+    public static final FeatureDataConverter TO_GEOPACKAGE = new FeatureDataConverter() {
+
+        @Override
+        public SimpleFeatureType convertType(
+                SimpleFeatureType featureType, VectorFormat format, ImportData data, ImportTask item) {
+
+            SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+            typeBuilder.setName(convertTypeName(featureType.getTypeName()));
+
+            GeometryDescriptor gd = featureType.getGeometryDescriptor();
+            if (gd != null) {
+                typeBuilder.add(
+                        convertAttributeName(gd.getLocalName()), gd.getType().getBinding());
+            }
+            for (AttributeDescriptor att : featureType.getAttributeDescriptors()) {
+                if (att.equals(gd) || att instanceof GeometryDescriptor) {
+                    continue;
+                }
+                typeBuilder.add(
+                        convertAttributeName(att.getLocalName()), att.getType().getBinding());
+            }
+            return typeBuilder.buildFeatureType();
+        }
+    };
 }

@@ -17,8 +17,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import javax.media.jai.ImageLayout;
 import org.easymock.EasyMock;
+import org.eclipse.imagen.ImageLayout;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageViewReader;
@@ -60,7 +60,7 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
 
         final ParameterValue pv = ImageMosaicFormat.FILTER.createValue();
         pv.setValue(requestFilter);
-        secured.read(new GeneralParameterValue[] {pv});
+        secured.read(pv);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
 
         final ParameterValue pv = ImageMosaicFormat.FILTER.createValue();
         pv.setValue(requestFilter);
-        secured.read(new GeneralParameterValue[] {pv});
+        secured.read(pv);
     }
 
     @Test

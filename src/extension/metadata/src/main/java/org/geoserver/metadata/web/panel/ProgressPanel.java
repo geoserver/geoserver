@@ -5,6 +5,9 @@
 
 package org.geoserver.metadata.web.panel;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.io.Serializable;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -18,12 +21,26 @@ import org.wicketstuff.progressbar.ProgressionModel;
 
 public class ProgressPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ProgressPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     public interface EventHandler extends Serializable {
         void onFinished(AjaxRequestTarget target);
 
         void onCanceled(AjaxRequestTarget target);
     }
 
+    @Serial
     private static final long serialVersionUID = -258488244844400514L;
 
     private GSModalWindow window;
@@ -52,6 +69,7 @@ public class ProgressPanel extends Panel {
     public void start(AjaxRequestTarget target, IModel<Float> model, EventHandler handler) {
         ProgressBar progressBar =
                 new ProgressBar("content", new ProgressionModel() {
+                    @Serial
                     private static final long serialVersionUID = 5716227987463146386L;
 
                     @Override
@@ -59,6 +77,7 @@ public class ProgressPanel extends Panel {
                         return new Progression(cancelMe ? 100 : Math.round(100 * model.getObject()));
                     }
                 }) {
+                    @Serial
                     private static final long serialVersionUID = 6384204231727968702L;
 
                     @Override
@@ -74,6 +93,7 @@ public class ProgressPanel extends Panel {
 
         window.setContent(progressBar);
         window.setCloseButtonCallback(new GSModalWindow.CloseButtonCallback() {
+            @Serial
             private static final long serialVersionUID = 5570427983448661370L;
 
             @Override
@@ -83,10 +103,12 @@ public class ProgressPanel extends Panel {
             }
         });
         window.show(target);
+        progressBar.getParent().setOutputMarkupId(true);
         progressBar.start(target);
     }
 
-    protected class ProgressPage extends WebPage {
+    protected static class ProgressPage extends WebPage {
+        @Serial
         private static final long serialVersionUID = -6560263676965574430L;
 
         public ProgressPage(ProgressBar progressBar) {

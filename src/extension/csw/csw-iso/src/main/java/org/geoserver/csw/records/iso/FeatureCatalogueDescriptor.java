@@ -124,7 +124,7 @@ public class FeatureCatalogueDescriptor extends AbstractRecordDescriptor {
 
     private static FeatureCatalogueDescriptor INSTANCE;
 
-    public static FeatureCatalogueDescriptor getInstance() {
+    public static synchronized FeatureCatalogueDescriptor getInstance() {
         if (INSTANCE == null) {
             INSTANCE = GeoServerExtensions.bean(FeatureCatalogueDescriptor.class);
             if (INSTANCE == null) {

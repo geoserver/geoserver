@@ -6,6 +6,7 @@
 package org.geoserver.web.data.layer;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
@@ -21,6 +22,7 @@ import org.geotools.jdbc.VirtualTable;
  */
 public class SQLViewEditPage extends SQLViewAbstractPage {
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 7301602944709110330L;
 
     ResourceConfigurationPage previusPage;

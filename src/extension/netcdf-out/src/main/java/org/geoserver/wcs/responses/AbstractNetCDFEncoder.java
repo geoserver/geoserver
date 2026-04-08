@@ -12,11 +12,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.measure.UnitConverter;
-import javax.media.jai.iterator.RandomIter;
+import org.eclipse.imagen.iterator.RandomIter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -58,6 +59,14 @@ import ucar.units.UnitDBException;
 import ucar.units.UnitSystemException;
 
 public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
+
+    public static final String SHUFFLE_KEY = "shuffle";
+    public static final String DATA_PACKING_KEY = "dataPacking";
+    public static final String COMPRESSION_KEY = "compression";
+    public static final String VARIABLE_NAME_KEY = "variableName";
+    public static final String UOM_KEY = "uom";
+    public static final String COPY_GLOBAL_ATTRIBUTES_KEY = "copyGlobalAttributes";
+    public static final String COPY_VARIABLE_ATTRIBUTES_KEY = "copyVariableAttributes";
 
     protected static StandardUnitFormat SUF = StandardUnitFormat.instance();
 
@@ -226,8 +235,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             try {
                 return NetCDFUtilities.getDataset(sourceUrl);
             } catch (Exception e) {
-                LOGGER.info(
-                        String.format("Failed to open source URL %s as NetCDF/GRIB: %s", sourceUrl, e.getMessage()));
+                LOGGER.info("Failed to open source URL %s as NetCDF/GRIB: %s".formatted(sourceUrl, e.getMessage()));
             }
         }
         return null;
@@ -299,6 +307,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     @SuppressWarnings("PMD.MissingOverride")
     protected NetCDFLayerSettingsContainer getSettings(Map<String, String> encodingParameters) {
         Set<String> keys = encodingParameters.keySet();
+        NetCDFLayerSettingsContainer settings = null;
         if (keys != null && !keys.isEmpty() && keys.contains(WCS20GetCoverageResponse.COVERAGE_ID_PARAM)) {
             String coverageId = encodingParameters.get(WCS20GetCoverageResponse.COVERAGE_ID_PARAM);
             if (coverageId != null) {
@@ -312,14 +321,77 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                     }
                 }
                 if (map != null && !map.isEmpty() && map.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {
-                    NetCDFLayerSettingsContainer settings =
-                            map.get(NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFLayerSettingsContainer.class);
-                    return settings;
+                    settings = map.get(NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFLayerSettingsContainer.class);
                 }
             }
         }
+        if (hasEncodingParams(encodingParameters)) {
+            settings = applyEncodingOverrides(settings, encodingParameters);
+        }
 
-        return null;
+        return settings;
+    }
+
+    private boolean hasEncodingParams(Map<String, String> encodingParameters) {
+        return encodingParameters.containsKey(COMPRESSION_KEY)
+                || encodingParameters.containsKey(DATA_PACKING_KEY)
+                || encodingParameters.containsKey(SHUFFLE_KEY)
+                || encodingParameters.containsKey(VARIABLE_NAME_KEY)
+                || encodingParameters.containsKey(UOM_KEY);
+    }
+
+    private NetCDFLayerSettingsContainer applyEncodingOverrides(
+            NetCDFLayerSettingsContainer inputSettings, Map<String, String> encodingParameters) {
+        NetCDFLayerSettingsContainer settings =
+                inputSettings != null ? inputSettings.copy() : new NetCDFLayerSettingsContainer();
+
+        // Check for known keys and override accordingly
+        if (encodingParameters.containsKey(COMPRESSION_KEY)) {
+            String compressionLevel = encodingParameters.get(COMPRESSION_KEY);
+            try {
+                int cl = Integer.parseInt(compressionLevel);
+                settings.setCompressionLevel(cl);
+            } catch (NumberFormatException nfe) {
+                LOGGER.info("Specified compression level is not valid. compression = " + compressionLevel);
+            }
+        }
+        if (encodingParameters.containsKey(VARIABLE_NAME_KEY)) {
+            settings.setLayerName(encodingParameters.get(VARIABLE_NAME_KEY));
+        }
+        if (encodingParameters.containsKey(UOM_KEY)) {
+            settings.setLayerUOM(encodingParameters.get(UOM_KEY));
+        }
+        if (encodingParameters.containsKey(SHUFFLE_KEY)) {
+            String shuffle = encodingParameters.get(SHUFFLE_KEY);
+            boolean cs = Boolean.parseBoolean(shuffle);
+            settings.setShuffle(cs);
+        }
+        if (encodingParameters.containsKey(COPY_GLOBAL_ATTRIBUTES_KEY)) {
+            String copyGlobal = encodingParameters.get(COPY_GLOBAL_ATTRIBUTES_KEY);
+            boolean cpga = Boolean.parseBoolean(copyGlobal);
+            settings.setCopyGlobalAttributes(cpga);
+        }
+        if (encodingParameters.containsKey(COPY_VARIABLE_ATTRIBUTES_KEY)) {
+            String copyVariableAttributes = encodingParameters.get(COPY_VARIABLE_ATTRIBUTES_KEY);
+            boolean cpva = Boolean.parseBoolean(copyVariableAttributes);
+            settings.setCopyAttributes(cpva);
+        }
+        if (encodingParameters.containsKey(DATA_PACKING_KEY)) {
+            Optional<DataPacking> result = getDataPacking(encodingParameters.get(DATA_PACKING_KEY));
+            if (result.isPresent()) {
+                settings.setDataPacking(result.get());
+            }
+        }
+        return settings;
+    }
+
+    private static Optional<DataPacking> getDataPacking(String input) {
+        try {
+            return Optional.of(DataPacking.valueOf(input.toUpperCase()));
+        } catch (IllegalArgumentException | NullPointerException e) {
+            LOGGER.info("Specified DataPacking is not valid: " + input);
+            return Optional.empty();
+        }
     }
 
     protected int checkLevel(Integer level) {
@@ -599,6 +671,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             case INT:
                 matrix.setInt(matrixIndex, sample);
                 break;
+            default:
+                break;
         }
     }
 
@@ -685,7 +759,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                                     + "'%s' in NetCDF/GRIB %s has dimensions '%s'",
                             extra.getSource(), source.getLocation(), sourceVar.getDimensionsString()));
                 } else if (variableAlreadyDefined(writerb, extra.getOutput())) {
-                    LOGGER.info(String.format("Extra variable output '%s' already exists", extra.getOutput()));
+                    LOGGER.info("Extra variable output '%s' already exists".formatted(extra.getOutput()));
                 } else if (extra.getDimensions().split("\\s").length > 1) {
                     LOGGER.info(String.format(
                             "Extra variable output '%s' " + "has too many dimensions '%s'",

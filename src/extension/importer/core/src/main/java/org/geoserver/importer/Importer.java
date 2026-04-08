@@ -7,6 +7,8 @@ package org.geoserver.importer;
 
 import com.google.common.collect.Iterators;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.SingleValueConverter;
+import com.thoughtworks.xstream.converters.extended.AtomicIntegerConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -101,6 +103,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geopkg.GeoPkgDialect;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -473,9 +476,9 @@ public class Importer implements DisposableBean, ApplicationListener {
         try {
             ImportData data = context.getData();
             if (data != null) {
-                if (data instanceof RemoteData) {
+                if (data instanceof RemoteData remoteData) {
 
-                    data = ((RemoteData) data).resolve(this);
+                    data = remoteData.resolve(this);
                     context.setData(data);
                 }
 
@@ -515,16 +518,16 @@ public class Importer implements DisposableBean, ApplicationListener {
             data.prepare(context.progress());
         }
 
-        if (data instanceof FileData && ((FileData) data).getFile() != null) {
-            if (data instanceof Mosaic) {
-                return initForMosaic(context, (Mosaic) data);
-            } else if (data instanceof Directory) {
-                return initForDirectory(context, (Directory) data);
+        if (data instanceof FileData fileData && fileData.getFile() != null) {
+            if (data instanceof Mosaic mosaic) {
+                return initForMosaic(context, mosaic);
+            } else if (data instanceof Directory directory) {
+                return initForDirectory(context, directory);
             } else {
                 return initForFile(context, (FileData) data);
             }
-        } else if (data instanceof Database) {
-            return initForDatabase(context, (Database) data);
+        } else if (data instanceof Database database) {
+            return initForDatabase(context, database);
         }
 
         throw new IllegalStateException();
@@ -670,11 +673,10 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         // are we setting up an harvest against an existing store, and the input is also
         // multi-coverage?
-        if (targetStore instanceof CoverageStoreInfo
+        if (targetStore instanceof CoverageStoreInfo cs
                 && targetStore.getId() != null
                 && isMultiCoverageInput(format, data)) {
             LOGGER.log(Level.FINE, "Preparing to harvest images into {0}", targetStore);
-            CoverageStoreInfo cs = (CoverageStoreInfo) targetStore;
             GridCoverageReader reader = cs.getGridCoverageReader(null, null);
 
             if (!(reader instanceof StructuredGridCoverage2DReader)) {
@@ -717,12 +719,11 @@ public class Importer implements DisposableBean, ApplicationListener {
 
                 // in case of indirect import against a coverage store with no published
                 // layers, do not use the granule name, but the store name
-                if (!direct && targetStore instanceof CoverageStoreInfo) {
+                if (!direct && targetStore instanceof CoverageStoreInfo info) {
                     t.getLayer().setName(targetStore.getName());
                     t.getLayer().getResource().setName(targetStore.getName());
 
-                    if (!catalog.getCoveragesByStore((CoverageStoreInfo) targetStore)
-                            .isEmpty()) {
+                    if (!catalog.getCoveragesByStore(info).isEmpty()) {
                         t.setUpdateMode(UpdateMode.APPEND);
                     }
                 }
@@ -754,8 +755,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         GridFormat gf = (GridFormat) format;
         AbstractGridCoverage2DReader reader = gf.gridReader(data);
         try {
-            if (reader instanceof StructuredGridCoverage2DReader) {
-                StructuredGridCoverage2DReader structured = (StructuredGridCoverage2DReader) reader;
+            if (reader instanceof StructuredGridCoverage2DReader structured) {
                 // clean up eventual ancillary files (NetCDF case) as the image mosaic might want
                 // them created in some other way
                 structured.delete(false);
@@ -830,22 +830,22 @@ public class Importer implements DisposableBean, ApplicationListener {
                 }
 
                 if (style == null) {
-                    if (r instanceof FeatureTypeInfo) {
+                    if (r instanceof FeatureTypeInfo info1) {
                         // since this resource is still detached from the catalog we can't call
                         // through to get its underlying resource, so we depend on the "native"
                         // type provided from the format
                         FeatureType featureType =
                                 (FeatureType) task.getMetadata().get(FeatureType.class);
                         if (featureType != null) {
-                            style = styleGen.createStyle(styleHandler, (FeatureTypeInfo) r, featureType);
+                            style = styleGen.createStyle(styleHandler, info1, featureType);
                             LOGGER.log(Level.FINE, "Generated a style {0} for feature type {1}", new Object[] {
                                 style, featureType
                             });
                         } else {
                             throw new RuntimeException("Unable to compute style");
                         }
-                    } else if (r instanceof CoverageInfo) {
-                        style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
+                    } else if (r instanceof CoverageInfo info) {
+                        style = styleGen.createStyle(styleHandler, info);
                         LOGGER.log(Level.FINE, "Generated a style {0} for coverage {1}", new Object[] {style, r});
                     } else {
                         throw new RuntimeException("Unknown resource type :" + r.getClass());
@@ -931,8 +931,8 @@ public class Importer implements DisposableBean, ApplicationListener {
             throw new IOException(e);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof IOException) {
-                throw (IOException) cause;
+            if (cause instanceof IOException exception) {
+                throw exception;
             } else {
                 throw new IOException(cause);
             }
@@ -1060,7 +1060,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         });
     }
 
-    protected abstract class SecurityContextCopyingJob<T> extends Job<T> {
+    protected abstract static class SecurityContextCopyingJob<T> extends Job<T> {
         final RequestAttributes parentRequestAttributes;
         final Authentication auth;
         final Thread parentThread;
@@ -1191,11 +1191,10 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         boolean canceled = false;
         DataFormat format = task.getData().getFormat();
-        if (format instanceof VectorFormat) {
+        if (format instanceof VectorFormat vectorFormat) {
             try {
                 currentlyProcessing.put(task.getContext().getId(), task);
-                loadIntoDataStore(
-                        task, (DataStoreInfo) task.getStore(), (VectorFormat) format, (VectorTransformChain) tx);
+                loadIntoDataStore(task, (DataStoreInfo) task.getStore(), vectorFormat, (VectorTransformChain) tx);
                 canceled = task.progress().isCanceled();
 
                 FeatureTypeInfo featureType = (FeatureTypeInfo) task.getLayer().getResource();
@@ -1223,7 +1222,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                 }
             } catch (Throwable th) {
                 LOGGER.log(Level.SEVERE, "Error occured during import", th);
-                Exception e = (th instanceof Exception) ? (Exception) th : new Exception(th);
+                Exception e = (th instanceof Exception e1) ? e1 : new Exception(th);
                 task.setError(e);
                 task.setState(ImportTask.State.ERROR);
                 return;
@@ -1308,12 +1307,11 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     private void harvestImportData(StructuredGridCoverage2DReader sr, ImportData data) throws IOException {
-        if (data instanceof SpatialFile) {
-            SpatialFile sf = (SpatialFile) data;
+        if (data instanceof SpatialFile sf) {
             List<HarvestedSource> harvests = sr.harvest(null, sf.getFile(), null);
             checkSingleHarvest(harvests);
-        } else if (data instanceof Directory) {
-            harvestDirectory(sr, (Directory) data);
+        } else if (data instanceof Directory directory) {
+            harvestDirectory(sr, directory);
         } else {
             unsupportedHarvestFileData(data);
         }
@@ -1351,7 +1349,6 @@ public class Importer implements DisposableBean, ApplicationListener {
     void loadIntoDataStore(ImportTask task, DataStoreInfo store, VectorFormat format, VectorTransformChain tx)
             throws Throwable {
         ImportData data = task.getData();
-        @SuppressWarnings("PMD.CloseResource") // conditionally created, then closed
         FeatureReader reader = null;
 
         // using this exception to throw at the end
@@ -1384,6 +1381,8 @@ public class Importer implements DisposableBean, ApplicationListener {
             FeatureDataConverter featureDataConverter = FeatureDataConverter.DEFAULT;
             if (isShapefileDataStore(dataStore)) {
                 featureDataConverter = FeatureDataConverter.TO_SHAPEFILE;
+            } else if (isGeoPackageDataStore(dataStore)) {
+                featureDataConverter = FeatureDataConverter.TO_GEOPACKAGE;
             } else if (isOracleDataStore(dataStore)) {
                 featureDataConverter = FeatureDataConverter.TO_ORACLE;
             } else if (isPostGISDataStore(dataStore)) {
@@ -1431,9 +1430,8 @@ public class Importer implements DisposableBean, ApplicationListener {
             if (updateMode == UpdateMode.CREATE || updateMode == UpdateMode.REPLACE) {
                 // @todo HACK remove this at some point when timezone issues are fixed
                 // this will force postgis to create timezone w/ timestamp fields
-                if (dataStore instanceof JDBCDataStore) {
-                    JDBCDataStore ds = (JDBCDataStore) dataStore;
-                    // sniff for postgis (h2 is used in tests and will cause failure if this occurs)
+                if (dataStore instanceof JDBCDataStore ds) {
+                    // sniff for postgis
                     if (ds.getSqlTypeNameToClassMappings().containsKey("timestamptz")) {
                         ds.getSqlTypeToSqlTypeNameOverrides().put(java.sql.Types.TIMESTAMP, "timestamptz");
                     }
@@ -1495,11 +1493,11 @@ public class Importer implements DisposableBean, ApplicationListener {
             }
 
             // Move features
-            if (format instanceof DataStoreFormat) {
+            if (format instanceof DataStoreFormat storeFormat) {
                 error = copyFromFeatureSource(
                         data,
                         task,
-                        (DataStoreFormat) format,
+                        storeFormat,
                         dataStore,
                         transaction,
                         createdNativeTypeName,
@@ -1568,8 +1566,6 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     void loadIntoCoverageStore(ImportTask task, CoverageStoreInfo store, GridFormat format, RasterTransformChain tx)
             throws IOException {
-        @SuppressWarnings("PMD.CloseResource") // conditionally created, then closed
-
         // see if the store exposes a structured grid coverage reader
         // this is a ResourcePool reader, we should not close it
         GridCoverageReader reader = store.getGridCoverageReader(null, null);
@@ -1587,7 +1583,8 @@ public class Importer implements DisposableBean, ApplicationListener {
             ImportTask task, CoverageStoreInfo store, GridCoverageReader reader, boolean isStructured)
             throws IOException {
         final String errorMessage =
-                "Indirect raster import can only work against a structured grid coverage store (e.g., mosaic), this one is not: ";
+                "Indirect raster import can only work against a structured grid coverage store (e.g., mosaic), this"
+                        + " one is not: ";
         if (!(isStructured)) {
             throw new IllegalArgumentException(errorMessage + store);
         }
@@ -1672,8 +1669,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     private List<File> getFiles(GridCoverage2DReader reader) throws IOException {
         ServiceInfo info = reader.getInfo();
         List<File> files = new ArrayList<>();
-        if (info instanceof FileServiceInfo) {
-            FileServiceInfo filesInfo = (FileServiceInfo) info;
+        if (info instanceof FileServiceInfo filesInfo) {
             // We are dealing with singleFile store so we can store the files in a list
             try (CloseableIterator<FileGroupProvider.FileGroup> fileIterator = filesInfo.getFiles(null)) {
                 FileGroupProvider.FileGroup fileGroup = fileIterator.next();
@@ -2060,22 +2056,20 @@ public class Importer implements DisposableBean, ApplicationListener {
         return dataStore instanceof ShapefileDataStore || dataStore instanceof DirectoryDataStore;
     }
 
-    boolean isOracleDataStore(DataStore dataStore) {
+    boolean isGeoPackageDataStore(DataStore dataStore) {
         return dataStore instanceof JDBCDataStore
+                && ((JDBCDataStore) dataStore).getSQLDialect() instanceof GeoPkgDialect;
+    }
+
+    boolean isOracleDataStore(DataStore dataStore) {
+        return dataStore instanceof JDBCDataStore jdbcds
                 && "org.geotools.data.oracle.OracleDialect"
-                        .equals(((JDBCDataStore) dataStore)
-                                .getSQLDialect()
-                                .getClass()
-                                .getName());
+                        .equals(jdbcds.getSQLDialect().getClass().getName());
     }
 
     boolean isPostGISDataStore(DataStore dataStore) {
-        return dataStore instanceof JDBCDataStore
-                && ((JDBCDataStore) dataStore)
-                        .getSQLDialect()
-                        .getClass()
-                        .getName()
-                        .startsWith("org.geotools.data.postgis");
+        return dataStore instanceof JDBCDataStore jdbcds
+                && jdbcds.getSQLDialect().getClass().getName().startsWith("org.geotools.data.postgis");
     }
 
     /*
@@ -2212,6 +2206,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         xs.allowTypeHierarchy(Exception.class);
         xs.allowTypeHierarchy(StackTraceElement.class);
         xs.allowTypeHierarchy(Class.class);
+        xs.registerConverter((SingleValueConverter) new AtomicIntegerConverter());
 
         // normal serialization handles only references in the catalog, the importer
         // is playing with objects that are not persisted in the catalog yet instead

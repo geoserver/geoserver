@@ -79,8 +79,8 @@ public class EncodingHints extends HashMap<String, Object> {
      */
     public <T> T get(String key, Class<T> cast, T defaultValue) {
         Object result = get(key);
-        if (result instanceof Expression && !Expression.class.isAssignableFrom(cast)) {
-            result = ((Expression) result).evaluate(null);
+        if (result instanceof Expression expression && !Expression.class.isAssignableFrom(cast)) {
+            result = expression.evaluate(null);
         }
         T value = Converters.convert(result, cast);
         if (value == null) value = defaultValue;

@@ -5,9 +5,12 @@
  */
 package org.geoserver.cluster.hazelcast.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import com.hazelcast.cluster.Cluster;
 import com.hazelcast.cluster.Member;
 import com.hazelcast.core.HazelcastInstance;
+import java.io.Serial;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,20 @@ import org.geoserver.web.GeoServerApplication;
 
 public class NodeInfoDialog extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(NodeInfoDialog.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -6118539402031076763L;
 
     public NodeInfoDialog(String id) {
@@ -36,7 +53,8 @@ public class NodeInfoDialog extends Panel {
         add(new Label("host", address.getHostName()));
         add(new Label("port", String.valueOf(address.getPort())));
 
-        add(new WebMarkupContainer("cluster").add(new ListView<Member>("members", new MembersDetachableModel()) {
+        add(new WebMarkupContainer("cluster").add(new ListView<>("members", new MembersDetachableModel()) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -47,20 +65,20 @@ public class NodeInfoDialog extends Panel {
                 int port = address.getPort();
                 String local = m.localMember() ? " (this)" : "";
 
-                item.add(new Label("label", String.format("%s:%d%s", ip, port, local)));
+                item.add(new Label("label", "%s:%d%s".formatted(ip, port, local)));
             }
         }));
     }
 
     private static class MembersDetachableModel extends LoadableDetachableModel<List<Member>> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
         protected List<Member> load() {
             HazelcastInstance hz = getHazelcast();
             Cluster c = hz.getCluster();
-            List<Member> members = new ArrayList<Member>(c.getMembers());
-            return members;
+            return new ArrayList<>(c.getMembers());
         }
     }
 

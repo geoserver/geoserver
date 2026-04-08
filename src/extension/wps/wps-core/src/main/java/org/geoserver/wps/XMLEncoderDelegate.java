@@ -36,4 +36,8 @@ public class XMLEncoderDelegate implements EncoderDelegate {
     public XMLPPIO getPPIO() {
         return ppio;
     }
+
+    public Object getObject() {
+        return object;
+    }
 }

@@ -254,6 +254,6 @@ public class RulesBuilderTest {
         String expectedMessage = "Cannot perform unique value classification over "
                 + "vector data with a number of distinct values greater "
                 + "than 7";
-        assertEquals(exception.getMessage(), expectedMessage);
+        assertEquals(expectedMessage, exception.getMessage());
     }
 }

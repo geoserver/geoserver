@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
-import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
 import org.geoserver.ogcapi.APIBBoxParser;
@@ -46,6 +45,7 @@ import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.geojson.GeoJSONReader;
+import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -376,17 +376,44 @@ class QueryResultBuilder {
     }
 
     private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q) throws IOException {
-        // get the items
-        FeatureCollection<FeatureType, Feature> items = source.getFeatures(q);
+        // the counts if necessary
+        OSEOInfo oseo = getService();
+        BigInteger matched = null;
+        boolean nextPage;
+        FeatureCollection<FeatureType, Feature> items;
+        int returned;
+        if (oseo.isSkipNumberMatched()) {
+            if (q.getMaxFeatures() == Query.DEFAULT_MAX) {
+                items = source.getFeatures(q);
+                returned = items.size();
+                nextPage = false;
+            } else {
+                // get the items, plus one to check for next page
+                Query nextQuery = new Query(q);
+                nextQuery.setMaxFeatures(q.getMaxFeatures() + 1);
+                items = source.getFeatures(nextQuery);
+                returned = items.size();
+                if (returned > q.getMaxFeatures()) {
+                    nextPage = true;
+                    items = new MaxFeaturesFeatureCollection<>(items, q.getMaxFeatures());
+                    returned = q.getMaxFeatures();
+                } else {
+                    nextPage = false;
+                }
+            }
+        } else {
+            Query matchedQuery = new Query(q);
+            matchedQuery.setMaxFeatures(-1);
+            matchedQuery.setStartIndex(0);
+            matchedQuery.setSortBy(SortBy.UNSORTED); // no need to sort for counting
+            matched = BigInteger.valueOf(source.getCount(matchedQuery));
 
-        // the counts
-        Query matchedQuery = new Query(q);
-        matchedQuery.setMaxFeatures(-1);
-        matchedQuery.setStartIndex(0);
-        int matched = source.getCount(matchedQuery);
-        int returned = items.size();
+            items = source.getFeatures(q);
+            returned = items.size();
+            nextPage = (q.getStartIndex() + returned < matched.intValue());
+        }
 
-        return new QueryResult(q, items, BigInteger.valueOf(matched), returned);
+        return new QueryResult(q, items, matched, returned, nextPage);
     }
 
     private Filter buildTimeFilter(String time) throws ParseException, IOException {
@@ -403,9 +430,8 @@ class QueryResultBuilder {
         if (timeSpec instanceof Date) {
             // range containment
             return FF.between(FF.literal(timeSpec), FF.property("timeStart"), FF.property("timeEnd"));
-        } else if (timeSpec instanceof DateRange) {
+        } else if (timeSpec instanceof DateRange dateRange) {
             // range overlap filter
-            DateRange dateRange = (DateRange) timeSpec;
             Literal before = FF.literal(dateRange.getMinValue());
             Literal after = FF.literal(dateRange.getMaxValue());
             Filter lower = FF.lessOrEqual(FF.property("timeStart"), after);
@@ -423,9 +449,7 @@ class QueryResultBuilder {
         // do we map for a specific collection, or have to deal with multiple ones?
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
-        TemplateBuilder builder;
         STACSortablesMapper mapper = null;
-        STACQueryablesBuilder stacQueryablesBuilder = null;
         String collectionId = null;
         if (collectionIds != null && !collectionIds.isEmpty()) {
             // right now assuming multiple collections means using search, where the

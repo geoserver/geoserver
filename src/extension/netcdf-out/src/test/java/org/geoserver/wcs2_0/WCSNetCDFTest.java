@@ -69,7 +69,6 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected GetCoverageType parse(String url) throws Exception {
         Map<String, Object> rawKvp = new CaseInsensitiveMap<>(KvpUtils.parseQueryString(url));
         Map<String, Object> kvp = new CaseInsensitiveMap<>(parseKvp(rawKvp));

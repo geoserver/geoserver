@@ -5,6 +5,9 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +33,24 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
  */
 public class LayerChooser extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(LayerChooser.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = -127345071729297975L;
 
     private static class LayerProvider extends GeoServerDataProvider<LayerInfo> {
+        @Serial
         private static final long serialVersionUID = -2117784735301652240L;
 
         private AbstractStylePage parent;
@@ -42,6 +60,7 @@ public class LayerChooser extends Panel {
         }
 
         public static Property<LayerInfo> workspace = new AbstractProperty<>("Workspace") {
+            @Serial
             private static final long serialVersionUID = -7055816211775541759L;
 
             @Override
@@ -51,6 +70,7 @@ public class LayerChooser extends Panel {
         };
 
         public static Property<LayerInfo> store = new AbstractProperty<>("Store") {
+            @Serial
             private static final long serialVersionUID = -4021230907568644439L;
 
             @Override
@@ -60,6 +80,7 @@ public class LayerChooser extends Panel {
         };
 
         public static Property<LayerInfo> name = new AbstractProperty<>("Layer") {
+            @Serial
             private static final long serialVersionUID = 8913729089849537790L;
 
             @Override
@@ -92,6 +113,7 @@ public class LayerChooser extends Panel {
         super(id);
         LayerProvider provider = new LayerProvider(parent);
         GeoServerTablePanel<LayerInfo> table = new GeoServerTablePanel<>("layer.table", provider) {
+            @Serial
             private static final long serialVersionUID = 1196129584558094662L;
 
             @Override
@@ -101,6 +123,7 @@ public class LayerChooser extends Panel {
 
                 if (property == LayerProvider.name) {
                     return new Fragment(id, "layer.link", LayerChooser.this) {
+                        @Serial
                         private static final long serialVersionUID = -7619814477490657757L;
 
                         {
@@ -109,6 +132,7 @@ public class LayerChooser extends Panel {
                                     add(new Label("layer.name", new Model<>(text)));
                                 }
 
+                                @Serial
                                 private static final long serialVersionUID = 8020574396677784792L;
 
                                 @Override

@@ -4,6 +4,7 @@
  */
 package org.geoserver.system.status;
 
+import java.io.Serial;
 import java.util.List;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OSHISystemInfoMonitor extends BaseSystemInfoCollector implements DisposableBean {
 
+    @Serial
     private static final long serialVersionUID = 502867203324474735L;
 
     public static String NAME = OSHISystemInfoCollector.class.getSimpleName();

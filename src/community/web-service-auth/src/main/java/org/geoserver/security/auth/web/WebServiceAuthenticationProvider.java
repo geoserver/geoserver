@@ -4,26 +4,29 @@
  */
 package org.geoserver.security.auth.web;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -68,9 +71,8 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
         String responseBody = null;
         try (CloseableHttpClient client = buildHttpClient()) {
             HttpGet get = createGetRequest(authentication);
-            try (CloseableHttpResponse httpResponse = client.execute(get)) {
-
-                int statusCode = httpResponse.getStatusLine().getStatusCode();
+            responseBody = client.execute(get, httpResponse -> {
+                int statusCode = httpResponse.getCode();
 
                 if (statusCode != HttpServletResponse.SC_OK)
                     throw new AuthenticationServiceException("Web Service Authentication failed for "
@@ -79,13 +81,14 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
                             + statusCode);
 
                 HttpEntity entity = httpResponse.getEntity();
-                responseBody = IOUtils.toString(entity.getContent());
-                if (responseBody == null)
+                String result = IOUtils.toString(entity.getContent());
+                if (result == null)
                     throw new AuthenticationServiceException("Web Service Authentication Failed for "
                             + authentication.getPrincipal().toString());
-                verboseLog("External authentication service response:" + responseBody);
+                verboseLog("External authentication service response:" + result);
                 roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-            }
+                return result;
+            });
         } catch (IOException e) {
             throw new AuthenticationServiceException(
                     "Web Service Authentication Failed for "
@@ -202,10 +205,18 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
 
     private CloseableHttpClient buildHttpClient() {
         RequestConfig clientConfig = RequestConfig.custom()
-                .setConnectTimeout(this.config.getConnectionTimeOut() * 1000)
-                .setSocketTimeout(this.config.getReadTimeoutOut() * 1000)
+                .setResponseTimeout(this.config.getReadTimeoutOut() * 1000, TimeUnit.MILLISECONDS)
                 .build();
-        return HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).build();
+        ConnectionConfig connectionConfig = ConnectionConfig.custom()
+                .setConnectTimeout(this.config.getConnectionTimeOut() * 1000, TimeUnit.MILLISECONDS)
+                .build();
+        PoolingHttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
+                .setDefaultConnectionConfig(connectionConfig)
+                .build();
+        return HttpClientBuilder.create()
+                .setDefaultRequestConfig(clientConfig)
+                .setConnectionManager(cm)
+                .build();
     }
 
     private HttpGet createGetRequest(Authentication authentication) throws MalformedURLException {
@@ -216,7 +227,7 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
         verboseLog("External authentication call URL:"
                 + authenticationURL
                 + " with headers:"
-                + Stream.of(httpGet.getAllHeaders()).collect(Collectors.toMap(Header::getName, Header::getValue)));
+                + Stream.of(httpGet.getHeaders()).collect(Collectors.toMap(Header::getName, Header::getValue)));
         return httpGet;
     }
 

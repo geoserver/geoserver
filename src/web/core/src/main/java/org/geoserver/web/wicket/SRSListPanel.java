@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -48,7 +51,22 @@ import org.geoserver.web.wicket.SRSProvider.SRS;
  */
 public abstract class SRSListPanel extends Panel {
 
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(SRSListPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
+    @Serial
     private static final long serialVersionUID = 3777350932084160337L;
+
     GeoServerTablePanel<SRS> table;
 
     /** Creates the new SRS list panel. */
@@ -62,6 +80,7 @@ public abstract class SRSListPanel extends Panel {
 
         table = new GeoServerTablePanel<>("table", srsProvider) {
 
+            @Serial
             private static final long serialVersionUID = 6182776235846912573L;
 
             @Override
@@ -106,6 +125,7 @@ public abstract class SRSListPanel extends Panel {
     protected Component createLinkForCode(String linkId, IModel<SRS> itemModel) {
         return new SimpleAjaxLink<>(linkId, (IModel<Object>) SRSProvider.IDENTIFIER.getModel(itemModel)) {
 
+            @Serial
             private static final long serialVersionUID = -1330723116026268069L;
 
             @Override

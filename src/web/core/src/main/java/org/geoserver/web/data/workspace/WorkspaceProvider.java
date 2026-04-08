@@ -6,8 +6,10 @@
 package org.geoserver.web.data.workspace;
 
 import static org.geoserver.catalog.Predicates.sortBy;
+import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 
 import com.google.common.collect.Streams;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -24,6 +26,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.api.filter.Filter;
@@ -45,19 +48,22 @@ import org.geotools.api.filter.sort.SortBy;
  */
 public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
 
+    @Serial
     private static final long serialVersionUID = -2464073552094977958L;
 
     public static Property<WorkspaceInfo> NAME = new BeanProperty<>("name", "name");
 
     /**
-     * "Default" is not a {@link WorkspaceInfo} attribute, this property relies on {@link #iterator()} decorating the
-     * default workspace, so {@link Catalog#getDefaultWorkspace()} doesn't need to be called for each item.
+     * "Default" is not a {@link WorkspaceInfo} attribute, this property relies on {@link #iterator(long, long)}
+     * decorating the default workspace, so {@link Catalog#getDefaultWorkspace()} doesn't need to be called for each
+     * item.
      *
      * @see #decorateDefault(WorkspaceInfo, WorkspaceInfo)
      * @see #isDefaultWorkspace(WorkspaceInfo)
      */
     public static Property<WorkspaceInfo> DEFAULT = new AbstractProperty<>("default") {
 
+        @Serial
         private static final long serialVersionUID = 7732697329315316826L;
 
         @Override
@@ -73,6 +79,8 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
     public static final Property<WorkspaceInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
     public static final Property<WorkspaceInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
+
+    static final Property<WorkspaceInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
 
     public WorkspaceProvider() {
         setSort(NAME.getName(), SortOrder.ASCENDING);
@@ -155,6 +163,13 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
         SettingsInfo settings = getSettings();
         if (settings.isShowCreatedTimeColumnsInAdminList()) modifiedPropertiesList.add(CREATED_TIMESTAMP);
         if (settings.isShowModifiedTimeColumnsInAdminList()) modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        String trackUser = GeoServerExtensions.getProperty(TRACK_USER);
+        if (trackUser == null
+                        && GeoServerApplication.get()
+                                .getGeoServer()
+                                .getSettings()
+                                .isShowModifiedUserInAdminList()
+                || Boolean.parseBoolean(trackUser)) modifiedPropertiesList.add(MODIFIED_BY);
         return modifiedPropertiesList;
     }
 

@@ -112,8 +112,9 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         List<GeoServerHomePageContentProvider> providers =
                 geoServerApplication.getBeansOfType(GeoServerHomePageContentProvider.class);
         assertFalse(providers.isEmpty());
-        tester.assertComponent("contributedContent", org.apache.wicket.markup.html.list.ListView.class);
-        tester.assertModelValue("contributedContent", providers);
+
+        tester.assertComponent("previewContent", org.apache.wicket.markup.html.list.ListView.class);
+        tester.assertModelValue("previewContent", providers);
     }
 
     @Test
@@ -307,6 +308,11 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
     }
 
     public static class MockHomePageContentProvider implements GeoServerHomePageContentProvider {
+        @Override
+        public boolean checkContext(boolean isAdmin, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+            return !isAdmin;
+        }
+
         @Override
         public Component getPageBodyComponent(final String id) {
             return new Label(id, "MockHomePageContentProvider");

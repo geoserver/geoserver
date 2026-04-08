@@ -523,20 +523,21 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             InternationalString description = InternationalStringUtils.growable(
                     publishedInfo.getInternationalAbstract(), publishedInfo.getAbstract());
             return description.toString(locale);
-        } else if (workspaceInfo != null) {
+        } else {
             GeoServer gs = getGeoServer();
             ContactInfo contactInfo = gs.getSettings().getContact();
 
-            SettingsInfo settings = gs.getSettings(workspaceInfo);
-            if (settings != null) {
-                contactInfo = settings.getContact();
+            if (workspaceInfo != null) {
+                SettingsInfo settings = gs.getSettings(workspaceInfo);
+                if (settings != null) {
+                    contactInfo = settings.getContact();
+                }
             }
             InternationalString title =
                     InternationalStringUtils.growable(contactInfo.getInternationalWelcome(), contactInfo.getWelcome());
 
             return title.toString(locale);
         }
-        return null; // not available
     }
     /**
      * Lookup welcome title, using {@code publishedInfo} and {@code workspaceInfo} if provided.
@@ -689,19 +690,23 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             NumberFormat numberFormat = NumberFormat.getIntegerInstance(getLocale());
             numberFormat.setGroupingUsed(true);
 
-            BookmarkablePageLink layersLink = new BookmarkablePageLink<>("layersLink", LayerPage.class, this.getPageParameters());
+            BookmarkablePageLink layersLink =
+                    new BookmarkablePageLink<>("layersLink", LayerPage.class, this.getPageParameters());
             layersLink.add(new Label("nlayers", numberFormat.format(layerCount)));
             catalogLinks.add(layersLink);
 
-            BookmarkablePageLink groupsLink = new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class, this.getPageParameters());
+            BookmarkablePageLink groupsLink =
+                    new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class, this.getPageParameters());
             groupsLink.add(new Label("ngroups", numberFormat.format(groupCount)));
             catalogLinks.add(groupsLink);
 
-            BookmarkablePageLink storesLink = new BookmarkablePageLink<>("storesLink", StorePage.class, this.getPageParameters());
+            BookmarkablePageLink storesLink =
+                    new BookmarkablePageLink<>("storesLink", StorePage.class, this.getPageParameters());
             storesLink.add(new Label("nstores", numberFormat.format(storesCount)));
             catalogLinks.add(storesLink);
 
-            BookmarkablePageLink workspacesLink = new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class, this.getPageParameters());
+            BookmarkablePageLink workspacesLink =
+                    new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class, this.getPageParameters());
             workspacesLink.add(new Label("nworkspaces", numberFormat.format(wsCount)));
             catalogLinks.add(workspacesLink);
 
@@ -709,8 +714,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 if (publishedInfo instanceof LayerInfo) {
                     catalogLinks.setVisible(false);
                 }
-            }
-            else  if (workspaceInfo != null) {
+            } else if (workspaceInfo != null) {
                 workspacesLink.setVisible(false); // hide from workspace welcome page
             }
 

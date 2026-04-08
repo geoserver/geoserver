@@ -1,4 +1,4 @@
-/* (c) 2026Open Source Geospatial Foundation - all rights reserved
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -29,7 +28,6 @@ import org.apache.wicket.model.Model;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerHomePageContentProvider;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
@@ -77,14 +75,13 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
             add(vectorPreview("vectorPreview"));
         }
 
-        /**
-         * Return the application instance.
-         */
+        /** Return the application instance. */
         protected GeoServerApplication getGeoServerApplication() {
             return (GeoServerApplication) getApplication();
         }
         /**
          * Setup commonPreview div, which will only be visible when commonFormatLinks are available.
+         *
          * @param id wicket id
          * @return common preview
          */
@@ -98,7 +95,7 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                     GeoServerHomePage homePage = (GeoServerHomePage) PreviewPanel.this.getPage();
                     PublishedInfo layerInfo = homePage.getPublishedInfo();
 
-                    List links = commonFormatLinks(new PreviewLayer(layerInfo));
+                    List<ExternalLink> links = commonFormatLinks(new PreviewLayer(layerInfo));
                     commonPreview.setVisible(!links.isEmpty());
                     return links;
                 }
@@ -138,7 +135,7 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                     GeoServerHomePage homePage = (GeoServerHomePage) PreviewPanel.this.getPage();
                     PublishedInfo layerInfo = homePage.getPublishedInfo();
 
-                    List links = mapFormatLinks(new PreviewLayer(layerInfo));
+                    List<ExternalLink> links = mapFormatLinks(new PreviewLayer(layerInfo));
                     mapPreview.setVisible(!links.isEmpty());
                     return links;
                 }
@@ -158,7 +155,8 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
         private List<ExternalLink> mapFormatLinks(PreviewLayer layer) {
             List<String> formats = new ArrayList<>();
 
-            final List<GetMapOutputFormat> outputFormats = getGeoServerApplication().getBeansOfType(GetMapOutputFormat.class);
+            final List<GetMapOutputFormat> outputFormats =
+                    getGeoServerApplication().getBeansOfType(GetMapOutputFormat.class);
             for (GetMapOutputFormat producer : outputFormats) {
                 Set<String> producerFormats = new HashSet<>(producer.getOutputFormatNames());
                 producerFormats.add(producer.getMimeType());
@@ -198,7 +196,7 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                     GeoServerHomePage homePage = (GeoServerHomePage) PreviewPanel.this.getPage();
                     PublishedInfo layerInfo = homePage.getPublishedInfo();
 
-                    List links = vectorFormatLinks(new PreviewLayer(layerInfo));
+                    List<ExternalLink> links = vectorFormatLinks(new PreviewLayer(layerInfo));
                     vectorPreview.setVisible(!links.isEmpty());
                     return links;
                 }
@@ -243,7 +241,6 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
             return vectorFormatLinks;
         }
 
-
         private void prepareFormatList(List<String> formats, FormatComparator comparator) {
             Collections.sort(formats, comparator);
             String prev = null;
@@ -277,6 +274,7 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
          */
         private class FormatComparator implements Comparator<String> {
             String prefix;
+
             public FormatComparator(String prefix) {
                 this.prefix = prefix;
             }
@@ -288,6 +286,5 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                 return t1.compareTo(t2);
             }
         }
-
     }
 }

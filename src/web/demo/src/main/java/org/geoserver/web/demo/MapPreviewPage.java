@@ -275,8 +275,8 @@ public class MapPreviewPage extends GeoServerBasePage {
     }
 
     /**
-     * Translate format (if translation available).
-     *[
+     * Translate format (if translation available). [
+     *
      * @param prefix protocol
      * @param format output format
      * @return format translation (defaults to format if unavailable)

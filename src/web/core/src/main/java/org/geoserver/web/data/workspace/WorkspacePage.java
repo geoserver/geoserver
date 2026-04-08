@@ -60,7 +60,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
                 LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
                 if (gi != null) {
                     LayerGroupHelper helper = new LayerGroupHelper(gi);
-                    List<String> ids = new ArrayList<String>();
+                    List<String> ids = new ArrayList<>();
                     for (LayerInfo li : helper.allLayers()) {
                         if (li.getResource() != null
                                 && li.getResource().getStore() != null

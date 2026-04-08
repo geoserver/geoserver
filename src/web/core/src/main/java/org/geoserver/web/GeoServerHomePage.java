@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -502,7 +501,8 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         }
     }
 
-    /** Gets the title from the PageName.title resource, falling back on "GeoServer" if not found */
+    /** Uses welcome title, falling back to the PageName.title resource if not defined. */
+    @Override
     protected String getTitle() {
         String welcomeText = getWelcomeTitle();
         if (!Strings.isEmpty(welcomeText)) {
@@ -564,6 +564,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     }
 
     /** Gets the page title from the contact information, falling back on PageName.title resource if not found. */
+    @Override
     String getPageTitle() {
         String titleText = getWelcomeTitle();
         if (!Strings.isEmpty(titleText)) {
@@ -803,8 +804,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         return providersModel;
     }
 
-    private <T> IModel<List<GeoServerHomePageContentProvider>> getGeoServerHomePageContentProvider(
-            final boolean isAdmin) {
+    private IModel<List<GeoServerHomePageContentProvider>> getGeoServerHomePageContentProvider(final boolean isAdmin) {
         IModel<List<GeoServerHomePageContentProvider>> providersModel = new LoadableDetachableModel<>() {
             @Serial
             private static final long serialVersionUID = 3042209889224234563L;
@@ -814,12 +814,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 GeoServerApplication app = getGeoServerApplication();
                 List<GeoServerHomePageContentProvider> providers =
                         app.getBeansOfType(GeoServerHomePageContentProvider.class);
-                providers.removeIf(new Predicate<GeoServerHomePageContentProvider>() {
-                    @Override
-                    public boolean test(GeoServerHomePageContentProvider provider) {
-                        return !provider.checkContext(isAdmin, workspaceInfo, publishedInfo);
-                    }
-                });
+                providers.removeIf(provider -> !provider.checkContext(isAdmin, workspaceInfo, publishedInfo));
                 return providers;
             }
         };

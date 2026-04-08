@@ -2359,3 +2359,43 @@ div.value-wide {
   bottom: 0;
   z-index: 10;
 }
+
+.gs-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  vertical-align: middle;
+}
+
+.gs-icon-add { background-image: url('../svg/icons/silk/add.svg'); }
+.gs-icon-arrow-down { background-image: url('../img/icons/silk/arrow_down.png'); }
+.gs-icon-arrow-inwards { background-image: url('../img/icons/silk/arrow_inwards.png'); }
+.gs-icon-arrow-out { background-image: url('../img/icons/silk/arrow_out.png'); }
+.gs-icon-arrow-redo { background-image: url('../img/icons/silk/arrow_redo.png'); }
+.gs-icon-arrow-refresh { background-image: url('../img/icons/silk/arrow_refresh.png'); }
+.gs-icon-arrow-undo { background-image: url('../img/icons/silk/arrow_undo.png'); }
+.gs-icon-arrow-up { background-image: url('../img/icons/silk/arrow_up.png'); }
+.gs-icon-bin { background-image: url('../img/icons/silk/bin.png'); }
+.gs-icon-delete { background-image: url('../img/icons/silk/delete.png'); }
+.gs-icon-error { background-image: url('../img/icons/silk/error.png'); }
+.gs-icon-find-next { background-image: url('../img/icons/silk/find_next.png'); }
+.gs-icon-find { background-image: url('../img/icons/silk/find.png'); }
+.gs-icon-help { background-image: url('../img/icons/silk/help.png'); }
+.gs-icon-information { background-image: url('../img/icons/silk/information.png'); }
+.gs-icon-magnifier { background-image: url('../img/icons/silk/magnifier.png'); }
+.gs-icon-palette { background-image: url('../img/icons/silk/palette.png'); }
+.gs-icon-pencil { background-image: url('../img/icons/silk/pencil.png'); }
+.gs-icon-photo { background-image: url('../img/icons/silk/photo.png'); }
+.gs-icon-text-align-right { background-image: url('../img/icons/silk/text_align_right.png'); }
+.gs-icon-text-replace { background-image: url('../img/icons/silk/text_replace.png'); }
+.gs-icon-xhtml-go { background-image: url('../img/icons/silk/xhtml_go.png'); }
+
+button:has(.gs-icon),
+.button:has(.gs-icon) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}

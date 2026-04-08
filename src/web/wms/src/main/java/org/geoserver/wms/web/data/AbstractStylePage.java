@@ -69,6 +69,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.FileTypes;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -760,6 +761,13 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         while (Resources.exists(res)) {
                             imageFileName = getImageFileName(fu, ++teller);
                             res = dd.getStyles(styleModel.getObject().getWorkspace(), imageFileName);
+                        }
+                        try (InputStream is = fu.getInputStream()) {
+                            FileTypes.assertSimpleImage(is, true);
+                        } catch (Exception e) {
+                            error(e.getMessage());
+                            target.add(imagePanel.getFeedback());
+                            return false;
                         }
                         try (InputStream is = fu.getInputStream()) {
                             try (OutputStream os = res.out()) {

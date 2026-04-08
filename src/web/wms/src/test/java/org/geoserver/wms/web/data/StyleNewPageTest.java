@@ -8,16 +8,18 @@ package org.geoserver.wms.web.data;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileReader;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -41,6 +43,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class StyleNewPageTest extends GeoServerWicketTestSupport {
+
+    // this is a tiny PNG (in byte[]) for test cases to have a real PNG (instead of byte[0]).  From AI (Gemini 3, April
+    // 8, 2026).
+    private String tinyPngHex =
+            "89504E470D0A1A0A0000000D49484452000000010000000108000000003A7E01050000000A49444154789C6360000000020001737501F80000000049454E44AE426082";
+    private byte[] tinyPng = HexFormat.of().parseHex(tinyPngHex);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -506,6 +514,10 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         FormTester formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
         org.apache.wicket.util.file.File file = new org.apache.wicket.util.file.File(
                 dd.getStyles().get("');foo('.png").file().getPath());
+
+        // we need a real png or the upload will be rejected
+        FileUtils.writeByteArrayToFile(file, tinyPng);
+
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit");
         String response = tester.getLastResponseAsString();

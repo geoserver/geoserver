@@ -755,7 +755,11 @@
         <artifactId>wicketstuff-select2</artifactId>
         <version>${wicket.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-core</artifactId>
+        <version>3.3.0</version>
+      </dependency>
       <dependency>
         <groupId>org.mapfish.print</groupId>
         <artifactId>print-lib</artifactId>

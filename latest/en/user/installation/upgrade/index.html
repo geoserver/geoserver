@@ -31022,7 +31022,7 @@ If the NETCDF_DATA_DIR JAVA_OPT is configured, these hidden folders are grouped 
 </li>
 <li>gribfile.ncx4</li>
 <li>gribfile.gbx9</li>
-<li>.gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured <a href="https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.md#netcdf-files-in-read-only-directories">NETCDF_DATA_DIR</a> (if defined).</li>
+<li>.gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured <a href="../../extensions/netcdf/netcdf/#netcdf-files-in-read-only-directories">NETCDF_DATA_DIR</a> (if defined).</li>
 <li>
 <p>The screenshot below represents an actual example of a tpcprblty.2019100912.incremental.grib2 file with related auxiliary/cache files</p>
 <p><img alt="" src="../images/grib_auxiliary_files.png" /></p>
@@ -31041,7 +31041,7 @@ If the NETCDF_DATA_DIR JAVA_OPT is configured, these hidden folders are grouped 
 <li>Based on the above example, the naming convention is that granules for VariableA are stored on table named VariableA and so on.</li>
 </ul>
 </li>
-<li>Recreate the indexer.xml and auxiliary.xml file as reported in the <a href="https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.md#setting-up-a-basic-mosaic">NetCDF documentation</a>. (At the end, GRIB file are served through the NetCDF libraries)</li>
+<li>Recreate the indexer.xml and auxiliary.xml file as reported in the <a href="../../extensions/netcdf/netcdf/#setting-up-a-basic-mosaic">NetCDF documentation</a>. (At the end, GRIB file are served through the NetCDF libraries)</li>
 </ol>
 <h4 id="configuration-cleanup">Configuration cleanup<a class="headerlink" href="#configuration-cleanup" title="Permanent link">&para;</a></h4>
 <p>The GeoServer configuration refers to the "native name" of the variables, as reported by the underlying libraries, which might have changed during the upgrade.</p>
@@ -31057,7 +31057,7 @@ If the NETCDF_DATA_DIR JAVA_OPT is configured, these hidden folders are grouped 
 <p>Remove the affected store, either Mosaic or GRIB Store, referring to the problematic GRIB files.</p>
 <ul>
 <li>Follow up standard procedure to delete affected stores and underlying layer</li>
-<li>Alternatively, consider using <a href="https://docs.geoserver.org/stable/en/api/#1.0.0/coveragestores.yaml/">REST APIs</a> to do that by referring to the DELETE method for <code>/workspaces/{workspace}/coveragestores/{store}</code> . Use <code>?recurse=true&amp;purge=metadata</code> to delete layers and auxiliary files as well</li>
+<li>Alternatively, consider using <a href="../../../api?urls.primaryName=Coverage%20Stores">REST APIs</a> to do that by referring to the DELETE method for <code>/workspaces/{workspace}/coveragestores/{store}</code> . Use <code>?recurse=true&amp;purge=metadata</code> to delete layers and auxiliary files as well</li>
 </ul>
 </li>
 <li>

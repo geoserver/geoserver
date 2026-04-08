@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -342,18 +343,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             @Override
             public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
                 MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
-                String ws = getPageParameters().get("workspace").toOptionalString();
-                final boolean hasWorkspace = !Strings.isEmpty(ws);
-                final boolean includeWorkspace = info.isIncludeWorkspaceParam();
-
+                final Map<String, String> ctxParams = collectContextParams(info);
                 BookmarkablePageLink<GeoServerBasePage> link =
                         new BookmarkablePageLink<>("link", info.getComponentClass()) {
                             @Override
                             public PageParameters getPageParameters() {
                                 PageParameters pageParams = super.getPageParameters();
-                                if (hasWorkspace && includeWorkspace) {
-                                    pageParams.add("workspace", ws);
-                                }
+                                ctxParams.forEach(pageParams::add);
                                 return pageParams;
                             }
                         };
@@ -361,13 +357,14 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
                 final StringResourceModel baseTitle = new StringResourceModel(info.getTitleKey(), null, null);
                 link.add(new Label("link.label", baseTitle));
-                WebMarkupContainer wsIndicator = new WebMarkupContainer("link.wsIndicator");
-                if (hasWorkspace && includeWorkspace) {
-                    wsIndicator.add(AttributeModifier.replace("title", ws));
+                WebMarkupContainer ctxIndicator = new WebMarkupContainer("link.ctxIndicator");
+                String ctxTitle = buildContextTitle(ctxParams);
+                if (!ctxTitle.isEmpty()) {
+                    ctxIndicator.add(AttributeModifier.replace("title", ctxTitle));
                 } else {
-                    wsIndicator.setVisible(false);
+                    ctxIndicator.setVisible(false);
                 }
-                link.add(wsIndicator);
+                link.add(ctxIndicator);
                 item.add(link);
             }
         });
@@ -480,6 +477,29 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 .orElse(Locale.ENGLISH);
     }
 
+    /**
+     * Collects the context page parameters (workspace, layer, group, name) that the given {@link ComponentInfo} wants
+     * forwarded in its navigation link, based on its {@code contextParams} setting.
+     */
+    private Map<String, String> collectContextParams(ComponentInfo<?> info) {
+        PageParameters currentParams = getPageParameters();
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String paramName : List.of("workspace", "layer", "group", "name")) {
+            if (info.includesContextParam(paramName)) {
+                String value = currentParams.get(paramName).toOptionalString();
+                if (!Strings.isEmpty(value)) {
+                    result.put(paramName, value);
+                }
+            }
+        }
+        return result;
+    }
+
+    /** Builds a display title from context params, joining values with " > " (e.g. "ws > layerName"). */
+    private String buildContextTitle(Map<String, String> ctxParams) {
+        return String.join(" > ", ctxParams.values());
+    }
+
     private void createCategoryComponent(
             ListItem<Category> item, Category category, Map<Category, List<MenuPageInfo<GeoServerBasePage>>> links) {
         item.add(new Label("category.header", new StringResourceModel(category.getNameKey(), null, null)));
@@ -493,18 +513,14 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     private void createMenuComponent(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
         MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
-        String ws = getPageParameters().get("workspace").toOptionalString();
-        final boolean hasWorkspace = !Strings.isEmpty(ws);
-        final boolean includeWorkspace = info.isIncludeWorkspaceParam();
+        final Map<String, String> ctxParams = collectContextParams(info);
         BookmarkablePageLink<Page> link = new BookmarkablePageLink<>("link", info.getComponentClass()) {
 
             @Override
             public PageParameters getPageParameters() {
                 PageParameters pageParams = super.getPageParameters();
                 pageParams.add(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
-                if (hasWorkspace && includeWorkspace) {
-                    pageParams.add("workspace", ws);
-                }
+                ctxParams.forEach(pageParams::add);
                 return pageParams;
             }
         };
@@ -512,13 +528,14 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         link.add(AttributeModifier.replace("title", new StringResourceModel(info.getDescriptionKey(), null, null)));
         final StringResourceModel baseTitle = new StringResourceModel(info.getTitleKey(), null, null);
         link.add(new Label("link.label", baseTitle));
-        WebMarkupContainer wsIndicator = new WebMarkupContainer("link.wsIndicator");
-        if (hasWorkspace && includeWorkspace) {
-            wsIndicator.add(AttributeModifier.replace("title", ws));
+        WebMarkupContainer ctxIndicator = new WebMarkupContainer("link.ctxIndicator");
+        String ctxTitle = buildContextTitle(ctxParams);
+        if (!ctxTitle.isEmpty()) {
+            ctxIndicator.add(AttributeModifier.replace("title", ctxTitle));
         } else {
-            wsIndicator.setVisible(false);
+            ctxIndicator.setVisible(false);
         }
-        link.add(wsIndicator);
+        link.add(ctxIndicator);
         WebComponent image;
         if (info.getIcon() != null) {
             if (info.getIcon().startsWith("/")) {

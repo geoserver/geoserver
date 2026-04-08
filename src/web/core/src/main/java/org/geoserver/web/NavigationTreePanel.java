@@ -118,15 +118,28 @@ public class NavigationTreePanel extends Panel {
                 SidebarNewMenuItemInfo info = item.getModelObject();
                 String titleKey = info.getTitleKey();
 
-                String workspaceParam =
-                        getPage().getPageParameters().get("workspace").toOptionalString();
-                boolean hasWorkspace = !Strings.isEmpty(workspaceParam);
-                boolean includeWorkspaceParam = info.isIncludeWorkspaceParam();
+                PageParameters pageParams = getPage().getPageParameters();
+                String workspaceParam = pageParams.get("workspace").toOptionalString();
+                String layerParam = pageParams.get("layer").toOptionalString();
+                String groupParam = pageParams.get("group").toOptionalString();
+                String nameParam = pageParams.get("name").toOptionalString();
 
                 PageParameters linkParams = null;
-                if (hasWorkspace && includeWorkspaceParam) {
+                if (info.includesContextParam("workspace") && !Strings.isEmpty(workspaceParam)) {
                     linkParams = new PageParameters();
                     linkParams.add("workspace", workspaceParam);
+                }
+                if (info.includesContextParam("layer") && !Strings.isEmpty(layerParam)) {
+                    if (linkParams == null) linkParams = new PageParameters();
+                    linkParams.add("layer", layerParam);
+                }
+                if (info.includesContextParam("group") && !Strings.isEmpty(groupParam)) {
+                    if (linkParams == null) linkParams = new PageParameters();
+                    linkParams.add("group", groupParam);
+                }
+                if (info.includesContextParam("name") && !Strings.isEmpty(nameParam)) {
+                    if (linkParams == null) linkParams = new PageParameters();
+                    linkParams.add("name", nameParam);
                 }
 
                 BookmarkablePageLink<Void> link = linkParams != null
@@ -139,13 +152,18 @@ public class NavigationTreePanel extends Panel {
                     label = new Label("label", "");
                 }
                 link.add(label);
-                WebMarkupContainer wsIndicator = new WebMarkupContainer("wsIndicator");
-                if (hasWorkspace && includeWorkspaceParam) {
-                    wsIndicator.add(AttributeModifier.replace("title", workspaceParam));
+                WebMarkupContainer ctxIndicator = new WebMarkupContainer("ctxIndicator");
+                List<String> ctxParts = new ArrayList<>();
+                if (!Strings.isEmpty(workspaceParam) && info.includesContextParam("workspace"))
+                    ctxParts.add(workspaceParam);
+                if (!Strings.isEmpty(layerParam) && info.includesContextParam("layer")) ctxParts.add(layerParam);
+                if (!Strings.isEmpty(groupParam) && info.includesContextParam("group")) ctxParts.add(groupParam);
+                if (!ctxParts.isEmpty()) {
+                    ctxIndicator.add(AttributeModifier.replace("title", String.join(" > ", ctxParts)));
                 } else {
-                    wsIndicator.setVisible(false);
+                    ctxIndicator.setVisible(false);
                 }
-                link.add(wsIndicator);
+                link.add(ctxIndicator);
                 item.add(link);
             }
         });

@@ -33,20 +33,35 @@ public abstract class ComponentInfo<C extends Component> implements Serializable
     ComponentAuthorizer authorizer = ComponentAuthorizer.ALLOW;
 
     /**
-     * When {@code true}, and a {@code workspace} page parameter is present in the current request, the UI may scope the
-     * component's label/link to that workspace (e.g. append {@code (workspace_name)} to the label and keep the
-     * {@code workspace} parameter when navigating).
+     * Comma-separated list of page parameter names to carry forward in navigation links (e.g. {@code "workspace"},
+     * {@code "workspace,layer"}, {@code "workspace,group"}). The special value {@code "all"} includes every available
+     * context parameter ({@code workspace}, {@code layer}, {@code name}, {@code group}).
      *
-     * <p>Defaults to {@code false} and must be explicitly enabled by extension point beans that want workspace context.
+     * <p>Defaults to {@code null} (no context parameters forwarded). Must be explicitly set by extension-point beans
+     * that want context-aware navigation.
      */
-    boolean includeWorkspaceParam = false;
+    String contextParams = null;
 
-    public boolean isIncludeWorkspaceParam() {
-        return includeWorkspaceParam;
+    public String getContextParams() {
+        return contextParams;
     }
 
-    public void setIncludeWorkspaceParam(boolean includeWorkspaceParam) {
-        this.includeWorkspaceParam = includeWorkspaceParam;
+    public void setContextParams(String contextParams) {
+        this.contextParams = contextParams;
+    }
+
+    /**
+     * Returns {@code true} if the given page parameter name should be forwarded in navigation links, as determined by
+     * the {@link #contextParams} setting.
+     */
+    public boolean includesContextParam(String paramName) {
+        if (contextParams == null || contextParams.isBlank()) return false;
+        String trimmed = contextParams.trim();
+        if ("all".equalsIgnoreCase(trimmed)) return true;
+        for (String p : trimmed.split(",")) {
+            if (paramName.equalsIgnoreCase(p.trim())) return true;
+        }
+        return false;
     }
 
     /** The id of the component. */

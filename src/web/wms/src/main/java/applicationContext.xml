@@ -97,7 +97,7 @@
      <property name="icon" value="palette.png"/>
      <property name="order" value="30"/>
      <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-     <property name="includeWorkspaceParam" value="true" />
+     <property name="contextParams" value="all" />
   </bean>  
 
   <!-- Sidebar "New" menu items of new styles -->
@@ -107,7 +107,7 @@
     <property name="componentClass" value="org.geoserver.wms.web.data.StyleNewPage" />
     <property name="order" value="50" />
     <property name="icon" value="../../img/icons/silk/add_style.png" />
-    <property name="includeWorkspaceParam" value="true" />
+    <property name="contextParams" value="all" />
   </bean>
 
   <!-- Styles breadcrumb options for workspace -->

@@ -1803,8 +1803,8 @@ form a.collapsed {
   text-decoration: none;
 }
 
-/* Workspace context indicator shown next to nav items when scoped to a workspace */
-.gs-ws-indicator {
+/* Context indicator shown next to nav items when scoped to a context (workspace, layer, group) */
+.gs-ctx-indicator {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
@@ -1814,14 +1814,14 @@ form a.collapsed {
   margin-top: 0.25rem;
 }
 
-.gs-ws-indicator::before {
+.gs-ctx-indicator::before {
   content: "";
   display: inline-block;
   width: 13px;
   height: 11px;
   background-color: currentColor;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A1 1 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A1 1 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z'/%3E%3C/svg%3E");
   mask-size: contain;
   mask-repeat: no-repeat;
 }

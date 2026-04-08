@@ -29790,7 +29790,7 @@
 </code></pre></div>
 <p>Within this directory, we have to place the shape files. There is already a sub directory <strong><code>data</code></strong> which will be used. Within this sub directory, create a directory <strong><code>streams</code></strong>.</p>
 <p>Within <strong><code>{GEOSERVER_DATA_DIR}/data/streams</code></strong> create another sub directory called <strong><code>0</code></strong>. ( 0 meaning "no generalized geometries").</p>
-<p>This tutorial is based on a shape file, which you can download from here <a href="streams.zip">Streams</a>. Unzip this file into <strong><code>{GEOSERVER_DATA_DIR}/data/streams/0</code></strong>.</p>
+<p>This tutorial is based on a shape file, which you can download from here <a href="../streams.zip">Streams</a>. Unzip this file into <strong><code>{GEOSERVER_DATA_DIR}/data/streams/0</code></strong>.</p>
 <p>Look for the <strong><code>WEB-INF/lib/</code></strong> directory of your GeoServer installation. There must be a file called <strong><code>gt-feature-pregeneralized-{version}-jar</code></strong>. This jar file includes a tool for generalizing shape files. Open a cmd line and execute the following:</p>
 <div class="highlight"><pre><span></span><code>cd &lt;GEOSERVER_DATA_DIR&gt;/data/streams/0
 java -jar &lt;GEOSERVER_INSTALLATION&gt;/WEB-INF/lib/gt-feature-pregeneralized-{version}.jar generalize 0/streams.shp . 5,10,20,50

@@ -1,0 +1,14 @@
+{
+  "version": 8,
+  "name": "airports",
+  "sprite": "http://localhost:8080/geoserver/styles/sprites",
+  "layers": [
+      {
+          "id": "airports",
+          "type": "symbol",
+          "layout": {
+              "icon-image": "airport"
+          }
+      }
+  ]
+}

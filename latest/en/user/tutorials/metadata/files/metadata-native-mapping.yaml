@@ -1,0 +1,25 @@
+customNativeMappings:
+  - type: METADATALINKS
+    mapping:
+      value: http://localhost/geoserver/csw?Service=CSW&Request=GetRecordById&Version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadata-identifier}
+      type: text/xml
+      metadataType: ISO19115:2003
+  - type: KEYWORDS
+    mapping:
+      value: ${keyword-inspire-theme-label}
+      vocabulary: GEMET
+  - type: KEYWORDS
+    mapping:
+      value: ${keyword-gemet-concept}
+      vocabulary: GEMET
+  - type: KEYWORDS
+    mapping:
+      value: ${keyword-free}
+  - type: KEYWORDS
+    mapping:
+      value: ${keyword-custom-thesaurus/keyword/keyword-label}
+      vocabulary: ${keyword-custom-thesaurus/thesaurus-vocabulary}
+  - type: IDENTIFIERS
+    mapping:
+      value: ${data-identifier}
+      authority: Geoserver

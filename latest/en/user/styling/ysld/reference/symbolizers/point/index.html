@@ -29937,13 +29937,13 @@
 <tr>
 <td><code>stroke-graphic</code></td>
 <td>No</td>
-<td>A design or pattern to be used along the stroke. Output will always be a linear repeating pattern, and as such is not tied to the value of <code>stroke-width</code>. Can either be a mark consisting of a common shape or a URL that points to a graphic. The <code>&lt;graphic_options&gt;</code> should consist of a mapping containing <code>symbols:</code> followed by an <code>external:</code> or <code>mark:</code>, with appropriate parameters as detailed in the <a href="../point.md">Point symbolizer</a> section. Cannot be used with <code>stroke-graphic-fill</code>.</td>
+<td>A design or pattern to be used along the stroke. Output will always be a linear repeating pattern, and as such is not tied to the value of <code>stroke-width</code>. Can either be a mark consisting of a common shape or a URL that points to a graphic. The <code>&lt;graphic_options&gt;</code> should consist of a mapping containing <code>symbols:</code> followed by an <code>external:</code> or <code>mark:</code>, with appropriate parameters as detailed in the <a href="./">Point symbolizer</a> section. Cannot be used with <code>stroke-graphic-fill</code>.</td>
 <td>N/A</td>
 </tr>
 <tr>
 <td><code>stroke-graphic-fill</code></td>
 <td>No</td>
-<td>A design or pattern to be used for the fill of the stroke. The area that is to be filled is tied directly to the value of <code>stroke-width</code>. Can either be a mark consisting of a common shape or a URL that points to a graphic. The <code>&lt;graphic_options&gt;</code> should consist of a mapping containing <code>symbols:</code> followed by an <code>external:</code> or <code>mark:</code>, with appropriate parameters as detailed in the <a href="../point.md">Point symbolizer</a> section. Cannot be used with <code>stroke-graphic</code>.</td>
+<td>A design or pattern to be used for the fill of the stroke. The area that is to be filled is tied directly to the value of <code>stroke-width</code>. Can either be a mark consisting of a common shape or a URL that points to a graphic. The <code>&lt;graphic_options&gt;</code> should consist of a mapping containing <code>symbols:</code> followed by an <code>external:</code> or <code>mark:</code>, with appropriate parameters as detailed in the <a href="./">Point symbolizer</a> section. Cannot be used with <code>stroke-graphic</code>.</td>
 <td>N/A</td>
 </tr>
 </tbody>
@@ -29973,7 +29973,7 @@
 <tr>
 <td><code>fill-graphic</code></td>
 <td>No</td>
-<td>A design or pattern to be used for the fill of the feature. Can either be a mark consisting of a common shape or a URL that points to a graphic. The <code>&lt;graphic_options&gt;</code> should consist of a mapping containing <code>symbols:</code> followed by an <code>external:</code> or <code>mark:</code>, with appropriate parameters as detailed in the <a href="../point.md">Point symbolizer</a> section.</td>
+<td>A design or pattern to be used for the fill of the feature. Can either be a mark consisting of a common shape or a URL that points to a graphic. The <code>&lt;graphic_options&gt;</code> should consist of a mapping containing <code>symbols:</code> followed by an <code>external:</code> or <code>mark:</code>, with appropriate parameters as detailed in the <a href="./">Point symbolizer</a> section.</td>
 <td>None</td>
 </tr>
 </tbody>
@@ -30120,19 +30120,19 @@
 <tr>
 <td><code>geometry</code></td>
 <td>No</td>
-<td>Specifies which attribute to use as the geometry (see <a href="../../../../sld/extensions/geometry-transformations.md">Geometry transformations in SLD</a>)</td>
+<td>Specifies which attribute to use as the geometry (see <a href="../../../../sld/extensions/geometry-transformations/">Geometry transformations in SLD</a>)</td>
 <td>First geometry attribute found (usually named <code>geom</code> or <code>the_geom</code>)</td>
 </tr>
 <tr>
 <td><code>uom</code></td>
 <td>No</td>
-<td>Unit of measure used for width calculations (see <a href="../../../../sld/extensions/uom.md">Specifying symbolizer sizes in ground units</a>)</td>
+<td>Unit of measure used for width calculations (see <a href="../../../../sld/extensions/uom/">Specifying symbolizer sizes in ground units</a>)</td>
 <td>pixel</td>
 </tr>
 </tbody>
 </table>
 <p>The following properties are equivalent to SLD "vendor options".</p>
-<p>Additional "vendor options" property for <a href="../../../../sld/extensions/label-obstacles.md">Label Obstacles</a>:</p>
+<p>Additional "vendor options" property for <a href="../../../../sld/extensions/label-obstacles/">Label Obstacles</a>:</p>
 <table>
 <thead>
 <tr>
@@ -30146,13 +30146,13 @@
 <tr>
 <td><code>x-labelObstacle</code></td>
 <td>No</td>
-<td>Marks the symbolizer as an obstacle such that labels drawn via a <a href="../text.md">text symbolizer</a> will not be drawn over top of these features. Options are <code>true</code> or <code>false</code>. Note that the bounding boxes of features are used when calculating obstacles, so unintended effects may occur when marking a line or polygon symbolizer as an obstacle.</td>
+<td>Marks the symbolizer as an obstacle such that labels drawn via a <a href="../text/">text symbolizer</a> will not be drawn over top of these features. Options are <code>true</code> or <code>false</code>. Note that the bounding boxes of features are used when calculating obstacles, so unintended effects may occur when marking a line or polygon symbolizer as an obstacle.</td>
 <td><code>false</code></td>
 </tr>
 </tbody>
 </table>
 <p>Additional "vendor options" properties for <a href="../../../../sld/extensions/composite-blend/">Color compositing and color blending</a>:</p>
-<p>Additional "vendor options" properties for <a href="../../../../sld/extensions/composite-blend/index.md">Color compositing and color blending</a>:</p>
+<p>Additional "vendor options" properties for <a href="../../../../sld/extensions/composite-blend/">Color compositing and color blending</a>:</p>
 <table>
 <thead>
 <tr>
@@ -30172,13 +30172,13 @@
 <tr>
 <td><code>x-composite-base</code></td>
 <td>No</td>
-<td>Allows the rendering engine to use the symbolizer mapping to define a "base" buffer for subsequent compositing and blending using <code>x-composite</code>. See the section on <a href="../../featurestyles.md#ysld_reference_featurestyles_composite">Feature Styles</a> for more details.</td>
+<td>Allows the rendering engine to use the symbolizer mapping to define a "base" buffer for subsequent compositing and blending using <code>x-composite</code>. See the section on <a href="../../featurestyles/#ysld_reference_featurestyles_composite">Feature Styles</a> for more details.</td>
 <td><code>false</code></td>
 </tr>
 </tbody>
 </table>
 <p>Additional "vendor options" properties for <a href="../../../../sld/extensions/rendering-selection/">Rendering Selection</a>:</p>
-<p>Additional "vendor options" properties for <a href="../../../../sld/extensions/rendering-selection.md">Rendering Selection</a>:</p>
+<p>Additional "vendor options" properties for <a href="../../../../sld/extensions/rendering-selection/">Rendering Selection</a>:</p>
 <table>
 <thead>
 <tr>

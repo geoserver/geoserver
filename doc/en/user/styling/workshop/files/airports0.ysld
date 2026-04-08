@@ -1,0 +1,10 @@
+name: airports
+title: Airports
+scale: [min, max]
+symbolizers:
+- point:
+    size: 16
+    symbols:
+    - external:
+        url: airport.svg
+        format: image/svg

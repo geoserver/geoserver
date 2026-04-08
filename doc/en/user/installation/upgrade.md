@@ -337,7 +337,7 @@ Due to the above compatibility issues, **some** layers based on underlying GRIB 
 - gribfile.ncx3
 - gribfile.ncx4
 - gribfile.gbx9
-- .gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured [NETCDF_DATA_DIR](https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.md#netcdf-files-in-read-only-directories) (if defined).
+- .gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured [NETCDF_DATA_DIR](../extensions/netcdf/netcdf.md#netcdf-files-in-read-only-directories) (if defined).
 - The screenshot below represents an actual example of a tpcprblty.2019100912.incremental.grib2 file with related auxiliary/cache files
 
     ![](images/grib_auxiliary_files.png)
@@ -351,7 +351,7 @@ Due to the above compatibility issues, **some** layers based on underlying GRIB 
 2.  If using a datastore.properties connecting to an actual DB, clean up the tables from the DB
     - Assuming that all the GRIB files belonging to the same ImageMosaic are affected by the same issue, you can delete the related tables and allow the imageMosaic reconfiguration to recreate them.
     - Based on the above example, the naming convention is that granules for VariableA are stored on table named VariableA and so on.
-3.  Recreate the indexer.xml and auxiliary.xml file as reported in the [NetCDF documentation](https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.md#setting-up-a-basic-mosaic). (At the end, GRIB file are served through the NetCDF libraries)
+3.  Recreate the indexer.xml and auxiliary.xml file as reported in the [NetCDF documentation](../extensions/netcdf/netcdf.md#setting-up-a-basic-mosaic). (At the end, GRIB file are served through the NetCDF libraries)
 
 #### Configuration cleanup
 
@@ -368,7 +368,7 @@ If the above did not help, then a full cleanup of the GeoServer configuration is
 1.  Remove the affected store, either Mosaic or GRIB Store, referring to the problematic GRIB files.
 
     - Follow up standard procedure to delete affected stores and underlying layer
-    - Alternatively, consider using [REST APIs](https://docs.geoserver.org/stable/en/api/#1.0.0/coveragestores.yaml/) to do that by referring to the DELETE method for `/workspaces/{workspace}/coveragestores/{store}` . Use `?recurse=true&purge=metadata` to delete layers and auxiliary files as well
+    - Alternatively, consider using [REST APIs]({{ api_url3 }}?urls.primaryName=Coverage%20Stores) to do that by referring to the DELETE method for `/workspaces/{workspace}/coveragestores/{store}` . Use `?recurse=true&purge=metadata` to delete layers and auxiliary files as well
 
 2.  Recreate the stores and layers using the known procedures.
 

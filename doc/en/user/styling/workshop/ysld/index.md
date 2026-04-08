@@ -2,8 +2,13 @@
 
 GeoServer styling can be used for a range of creative effects. This section introduces the <span class="title-ref">YSLD Extension</span> which can be used as alternative to SLD files.
 
-<div class="toctree" maxdepth="1">
+<div class="grid cards" markdown>
 
-ysld linestring polygon point raster done
+- [YSLD Quickstart](ysld.md)
+- [Lines](linestring.md)
+- [Polygons](polygon.md)
+- [Points](point.md)
+- [Rasters](raster.md)
+- [YSLD Workbook Conclusion](done.md)
 
 </div>

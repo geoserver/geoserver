@@ -22,8 +22,11 @@ A Mapbox style document is an alternative to SLD, with different strengths and w
 
 Mapbox style document support is not a part of GeoServer by default, but is available as an optional extension to install.
 
-<div class="toctree" maxdepth="2">
+<div class="grid cards" markdown>
 
-installing source reference/index cookbook/index
+- [Installing the GeoServer MBStyle extension](installing.md)
+- [Publishing a GeoServer Layer for use with Mapbox Styles](source.md)
+- [MBStyle references](reference/index.md)
+- [MBStyle Cookbook](cookbook/index.md)
 
 </div>

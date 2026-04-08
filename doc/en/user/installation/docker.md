@@ -120,7 +120,7 @@ docker run -it -p 8080:8080 \
 ```
 {% endif %}
 
-This will download and install the [YSLD](../../styling/ysld/) and [OGCAPI - Features](../../services/features/) extension.
+This will download and install the [YSLD](../styling/ysld/index.md) and [OGCAPI - Features](../services/features/index.md) extension.
 
 Here is a list of available extensions (taken from the [build server](https://build.geoserver.org/geoserver/main/ext-latest/)):
 

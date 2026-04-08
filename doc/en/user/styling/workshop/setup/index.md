@@ -2,8 +2,9 @@
 
 Content:
 
-<div class="toctree" maxdepth="1">
+<div class="grid cards" markdown>
 
-install data
+- [Extension Install](install.md)
+- [Course Data](data.md)
 
 </div>

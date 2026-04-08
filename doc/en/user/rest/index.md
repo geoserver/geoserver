@@ -79,3 +79,24 @@ The following links provide direct access to the GeoServer REST API documentatio
 ## Examples
 
 This section contains a number of examples which illustrate some of the most common uses of the REST API. They are grouped by endpoint.
+
+<div class="grid cards" markdown>
+
+- [About](about.md)
+- [Fonts](fonts.md)
+- [Layer groups](layergroups.md)
+- [Layers](layers.md)
+- [Security](security.md)
+- [Styles](styles.md)
+- [Workspaces](workspaces.md)
+- [Stores](stores.md)
+- [Uploading a new image mosaic](imagemosaic.md)
+- [App Schema](appschema.md)
+- [URL Checks](urlchecks.md)
+- [Filter Chains](filterchains.md)
+- [Auth Filters](authenticationfilters.md)
+- [Auth Providers (How-To)](authenticationproviders.md)
+- [User/Group Services](usergroupservices.md)
+- [REST configuration API reference](api/index.md)
+
+</div>

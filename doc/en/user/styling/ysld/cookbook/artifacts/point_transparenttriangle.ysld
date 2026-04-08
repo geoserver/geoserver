@@ -1,0 +1,14 @@
+title: 'YSLD Cook Book: Transparent triangle'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - point:
+        size: 12
+        symbols:
+        - mark:
+            shape: triangle
+            stroke-color: '#000000'
+            stroke-width: 2
+            fill-color: '#009900'
+            fill-opacity: 0.2

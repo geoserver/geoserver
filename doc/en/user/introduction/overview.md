@@ -24,4 +24,4 @@ GeoServer is [OGC certified](https://portal.ogc.org/public_ogc/compliance/produc
 
 *OGC, OGC®, and CERTIFIED OGC COMPLIANT are trademarks or registered trademarks of the Open Geospatial Consortium, Inc. in the United States and other countries.*
 
-Thanks to [Gaia3D](https://gaia3d.com/) and [GeoCat BV](https://https//www.geocat.net) for sponsoring 2026 CITE Certification.
+Thanks to [Gaia3D](https://gaia3d.com/) and [GeoCat BV](https://www.geocat.net) for sponsoring 2026 CITE Certification.

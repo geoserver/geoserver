@@ -112,4 +112,4 @@ Many SLD parameters allow their values to be of **mixed type**. This means that 
 
 Using expressions in parameter values provides the ability to determine styling dynamically on a per-feature basis, by computing parameter values from feature properties. Using computed parameters is an alternative to using rules in some situations, and may provide a more compact SLD document.
 
-GeoServer also supports using substitution variables provided in WMS requests. This is described in [Variable substitution](variables.md).
+GeoServer also supports using substitution variables provided in WMS requests. This is described in [Variable substitution](../extensions/substitution.md).

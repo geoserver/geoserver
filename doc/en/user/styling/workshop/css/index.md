@@ -2,8 +2,13 @@
 
 GeoServer styling can be used for a range of creative effects. This section introduces the <span class="title-ref">CSS Extension</span> which can be used to quickly generate SLD files.
 
-<div class="toctree" maxdepth="1">
+<div class="grid cards" markdown>
 
-css linestring polygon point raster done
+- [CSS Quickstart](css.md)
+- [Lines](linestring.md)
+- [Polygons](polygon.md)
+- [Points](point.md)
+- [Rasters](raster.md)
+- [CSS Workbook Conclusion](done.md)
 
 </div>

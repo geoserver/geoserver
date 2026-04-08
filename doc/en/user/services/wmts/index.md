@@ -2,8 +2,8 @@
 
 This section describes the Web Map Tile Service (WMTS).
 
-<div class="toctree" maxdepth="2">
+<div class="grid cards" markdown>
 
-webadmin
+- [WMTS settings](webadmin.md)
 
 </div>

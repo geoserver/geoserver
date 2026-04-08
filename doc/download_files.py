@@ -55,6 +55,10 @@ def scan_download_links(docs_dir: str) -> Set[Tuple[str, str]]:
                 if link_path.startswith('#'):
                     continue
                 
+                # Skip Jinja2 template variables (expanded later by macros plugin)
+                if '{{' in link_path or '{%' in link_path:
+                    continue
+                
                 # Get relative path from markdown file
                 md_relative = md_file.relative_to(docs_path)
                 

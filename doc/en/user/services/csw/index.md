@@ -6,8 +6,8 @@ For more information on CSW, please refer to [OGC OpenGIS Implementation Specifi
 
 <div class="grid cards" markdown>
 
-- [Installing CSW](installing.md)
-- [CSW features](features.md)
+- [Installing Catalog Services for Web (CSW)](installing.md)
+- [Catalog Services for the Web (CSW) features](features.md)
 - [DirectDownload](directdownload.md)
 
 </div>

@@ -12,8 +12,10 @@ Each section uses data created especially for the MBStyle Cookbook, with shapefi
 | Line | `mbstyle_cookbook_line.zip <artifacts/mbstyle_cookbook_line.zip>` |
 | Polygon | `mbstyle_cookbook_polygon.zip <artifacts/mbstyle_cookbook_polygon.zip>` |
 
-<div class="toctree" maxdepth="2">
+<div class="grid cards" markdown>
 
-points lines polygons
+- [Points](points.md)
+- [Lines](lines.md)
+- [Polygons](polygons.md)
 
 </div>

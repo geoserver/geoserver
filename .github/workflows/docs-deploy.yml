@@ -92,7 +92,7 @@ jobs:
       # Build only on pull_request (no deploy)
       - name: Build documentation (PR validation)
         if: github.event_name == 'pull_request'
-        run: mkdocs build 2>&1 | grep -vF "contains an unrecognized relative link '../../api?urls.primaryName="
+        run: mkdocs build 2>&1 | grep -vF "../../api?urls.primaryName="
 
       # Set default version (stable only)
       - name: Set default version

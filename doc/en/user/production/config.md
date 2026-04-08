@@ -138,7 +138,7 @@ Management of web services using environmental variables is standard practice wh
 
 The `GEOSERVER_LOG_LOCATION` application property is the only way to set the log file location. The Admin Console and REST API do not allow changing this setting.
 
-See [Configuring the log location](../configuration/logging/#logging_location) for more information.
+See [Configuring the log location](../configuration/logging.md#logging_location) for more information.
 
 ### Disable the GeoServer web administration interface
 

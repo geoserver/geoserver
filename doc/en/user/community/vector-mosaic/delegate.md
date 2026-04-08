@@ -21,7 +21,7 @@ An example of a delegate in property datastore format can be found [here](https:
 
 # Creating an Index with ogrtindex
 
-The [ogrtindex](<https://gdal.org/programs/ogrtindex.html) commandline tool from the GDAL library can be used to collect all data sets in a directory, and create an index table for it. The format of the location is slightly different than the one GeoServer expects, as it uses a `location,tableIndex` format, so a quick SQL needs to be run to make it match.    
+The [ogrtindex](https://gdal.org/programs/ogrtindex.html) commandline tool from the GDAL library can be used to collect all data sets in a directory, and create an index table for it. The format of the location is slightly different than the one GeoServer expects, as it uses a `location,tableIndex` format, so a quick SQL needs to be run to make it match.    
 
 Here is an example that generates a delegate shapefile from a directory of shapefiles.  The third step below uses `ogr2ogr` commandline to trim a comma and number that `ogrtindex` appends to the end of the granule reference, and to turn the file location into a valid URL.  
 

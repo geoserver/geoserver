@@ -12,7 +12,7 @@ Helping to develop GeoServer is the obvious way to help out. Developers usually 
 
 You can find the project on [github.com/geoserver](https://github.com/geoserver/geoserver). Anyone can submit pull requests, following our [contributing policy](https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md), which will be evaluated by the team.
 
-To learn more about contributing to the GeoServer codebase, we recommend reading the [Developers Guide](../../../developer/) and joining GeoServer Developers (see below).
+To learn more about contributing to the GeoServer codebase, we recommend reading the [Developers Guide](../../developer/index.md) and joining GeoServer Developers (see below).
 
 !!! note
     For [commit access](../../developer/policies/committing.md) new developers can request to work on a community module immediately, or make contributions over time to earn a nomination for full commit access.
@@ -24,7 +24,7 @@ Another crucial way to help out is with documentation. Whether it's adding tutor
 Our official documentation is contained as part of our [official code repository](https://github.com/geoserver/geoserver). Anyone can submit pull requests, which will be evaluated by the team.
 
 !!! info "See Also"
-    To learn more about contributing to the GeoServer documentation, we recommend reading the [Documentation Guide](../../../docguide/) and joining GeoServer Developers (see below).
+    To learn more about contributing to the GeoServer documentation, we recommend reading the [Documentation Guide](../../docguide/index.md) and joining GeoServer Developers (see below).
 
 !!! note
     For typos and other small changes you can use the **Edit Page** link on any page. Please see [Quick Fix](../../docguide/quickfix.md) example.

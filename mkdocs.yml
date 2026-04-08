@@ -144,6 +144,9 @@ extra_javascript:
 
 not_in_nav: |
   en/docguide/sphinx.md
+  en/index.md
+  en/LICENSE.md
+  en/release/rest.md
 
 nav:
   - Home: index.md
@@ -538,6 +541,7 @@ nav:
         - en/user/rest/api/featuretypes.md
         - en/user/rest/api/coveragestores.md
         - en/user/rest/api/coverages.md
+        - en/user/rest/api/crs.md
         - en/user/rest/api/styles.md
         - en/user/rest/api/layers.md
         - en/user/rest/api/logging.md
@@ -792,6 +796,10 @@ nav:
       - Dynamic colormap generation: en/user/community/colormap/index.md
       - CoverageJSON output format: en/user/community/cov-json/index.md
       - DDS/BIL(World Wind Data Formats) Extension: en/user/community/dds/index.md
+      - DuckDB:
+        - en/user/community/duckdb/index.md
+        - en/user/community/duckdb/installing.md
+        - en/user/community/duckdb/configuration.md
       - Elasticsearch data store: en/user/community/elasticsearch/index.md
       - Features-Autopopulate Extension: en/user/community/features-autopopulate/index.md
       - Features-Templating Extension:
@@ -895,6 +903,7 @@ nav:
         - en/user/community/pmtiles-store/index.md
         - en/user/community/pmtiles-store/installing.md
         - en/user/community/pmtiles-store/usage.md
+      - PNG/Wind community module: en/user/community/png-wind/index.md
       - Proxy Base Extension:
         - en/user/community/proxy-base-ext/index.md
         - en/user/community/proxy-base-ext/install.md

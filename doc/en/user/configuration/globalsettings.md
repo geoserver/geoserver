@@ -124,9 +124,9 @@ Global Settings are also used to control the GeoServer application as a whole.
 
 #### Log Location {: #config_globalsettings_log_location }
 
-The log file location must be set using the `GEOSERVER_LOG_LOCATION` [application property](../configuration/logging/#logging_location). A log location may be a directory or a file, and can be specified as an absolute path (e.g., **`C:\GeoServer\GeoServer.log`**) or a relative one (for example, **`geoserver.log`**). Relative paths are relative to the GeoServer data directory. Default is **`logs/geoserver.log`**.
+The log file location must be set using the `GEOSERVER_LOG_LOCATION` [application property](logging.md#logging_location). A log location may be a directory or a file, and can be specified as an absolute path (e.g., **`C:\GeoServer\GeoServer.log`**) or a relative one (for example, **`geoserver.log`**). Relative paths are relative to the GeoServer data directory. Default is **`logs/geoserver.log`**.
 
-See [Configuring the log location](logging/#logging_location) for details (this setting is applied to the FileAppender or RollingFile `geoserverlogfile` appender).
+See [Configuring the log location](logging.md#logging_location) for details (this setting is applied to the FileAppender or RollingFile `geoserverlogfile` appender).
 
 !!! note
     As of GeoServer 3.0, the log location can no longer be set via the Admin Console or REST API. Use the `GEOSERVER_LOG_LOCATION` application property instead.

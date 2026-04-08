@@ -5,8 +5,8 @@ The `printing` module for GeoServer allows easy hosting of the Mapfish printing 
 <div class="grid cards" markdown>
 
 - [Printing Installation](install.md)
-- [General structure](configuration.md)
-- [Commands](protocol.md)
+- [Printing Configuration](configuration.md)
+- [Printing Protocol](protocol.md)
 - [Printing FAQ](faq.md)
 
 </div>

@@ -13,10 +13,10 @@ This guide covers creating and maintaining the GeoServer {{ release }} User Manu
 - [Quickfix](quickfix.md)
 - [Contributing](contributing.md)
 - [Workflow](workflow.md)
-- [Install](install.md)
-- [Markdown](markdown.md)
-- [Style](style.md)
-- [Tutorial](tutorial.md)
+- [Installing mkdocs](install.md)
+- [Markdown Syntax](markdown.md)
+- [Style Guidelines](style.md)
+- [Writing a Tutorial](tutorial.md)
 
 </div>
 

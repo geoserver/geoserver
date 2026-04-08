@@ -10,8 +10,8 @@
               <wicket:message key="GeoServerTileLayerEditor.title">Tile caching configuration</wicket:message>
             </span>
           </legend>
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class choiceItem">
+          <div class="gs-form">
+            <div class="choiceItem">
               <input id="createTileLayer" wicket:id="createTileLayer" type="checkbox"/>
               <label for="createTileLayer" wicket:id="createTileLayerLabel">Create a cached Layer for this Layer/Group</label>
             </div>
@@ -51,12 +51,12 @@
                     </label>
                     <select class="select" id="gutter" wicket:id="gutter"/>
                   </div>
-                  <div class="gs-list-item-class choiceItem">
+                  <div class="gs-list-item-class">
                     <span class="fieldname">
                       <wicket:message key="cacheFormats">Cache formats:</wicket:message>
                     </span>
                     <div wicket:id="cacheFormatsGroup">
-                      <div wicket:id="cacheFormats" class="p-1">
+                      <div wicket:id="cacheFormats" class="choiceItem">
                         <input wicket:id="cacheFormatsOption" type="checkbox"/>
                         <label for="cacheFormatsOption" wicket:id="name">[this is where name will be]</label>
                       </div>

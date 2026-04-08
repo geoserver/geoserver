@@ -98,7 +98,7 @@ Your css selectors should look like this to avoid modifying styles outside the p
     margin-left: auto;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1024px) {
     .gs-panel-EnvelopePanel .dataentry {
         grid-template-columns: auto auto;
     }

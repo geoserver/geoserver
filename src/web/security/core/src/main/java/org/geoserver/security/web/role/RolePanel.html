@@ -5,25 +5,29 @@
     <wicket:panel>
       <div class="gs-panel-RolePanel">
         <form>
-          <div wicket:id="header">
-            <div wicket:id="message"></div>
-            <div class="mb-2">
-              <wicket:message key="RolePanel.title"></wicket:message>
-            </div>
-            <div class="gs-unordered-list-class action-group">
-              <div class="gs-list-item-class">
-                <a class="button outline-primary" href="#" wicket:id="addNew">
-                  <wicket:message key="addNew"></wicket:message>
-                </a>
+          <fieldset>
+            <legend>
+              <div class="mb-2">
+                <wicket:message key="RolePanel.title"></wicket:message>
               </div>
-              <div class="gs-list-item-class">
-                <a class="button outline-danger" href="#" wicket:id="removeSelected">
-                  <wicket:message key="removeSelected"></wicket:message>
-                </a>
+            </legend>
+            <div wicket:id="header">
+              <div wicket:id="message"></div>
+              <div class="gs-unordered-list-class action-group">
+                <div class="gs-list-item-class">
+                  <a class="button outline-primary" href="#" wicket:id="addNew">
+                    <wicket:message key="addNew"></wicket:message>
+                  </a>
+                </div>
+                <div class="gs-list-item-class">
+                  <a class="button outline-danger" href="#" wicket:id="removeSelected">
+                    <wicket:message key="removeSelected"></wicket:message>
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-          <div wicket:id="table"></div>
+            <div wicket:id="table"></div>
+          </fieldset>
         </form>
         <div wicket:id="dialog"></div>
       </div>

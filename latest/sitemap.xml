@@ -529,18 +529,6 @@
          <lastmod>2026-04-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/jms-cluster/activemq/JDBC/</loc>
-         <lastmod>2026-04-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/jms-cluster/activemq/SharedFolder/</loc>
-         <lastmod>2026-04-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/jms-cluster/activemq/activemqBroker/</loc>
-         <lastmod>2026-04-08</lastmod>
-    </url>
-    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/jwt-headers/</loc>
          <lastmod>2026-04-08</lastmod>
     </url>
@@ -766,26 +754,6 @@
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/proxy-base-ext/usage/</loc>
-         <lastmod>2026-04-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/remote-wps/</loc>
-         <lastmod>2026-04-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/remote-wps/install_geoserver/</loc>
-         <lastmod>2026-04-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/remote-wps/install_python/</loc>
-         <lastmod>2026-04-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/remote-wps/install_xmpp/</loc>
-         <lastmod>2026-04-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/remote-wps/running_example/</loc>
          <lastmod>2026-04-08</lastmod>
     </url>
     <url>

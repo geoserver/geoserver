@@ -344,15 +344,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
                 MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
                 final Map<String, String> ctxParams = collectContextParams(info);
+                PageParameters linkParams = new PageParameters();
+                ctxParams.forEach(linkParams::add);
                 BookmarkablePageLink<GeoServerBasePage> link =
-                        new BookmarkablePageLink<>("link", info.getComponentClass()) {
-                            @Override
-                            public PageParameters getPageParameters() {
-                                PageParameters pageParams = super.getPageParameters();
-                                ctxParams.forEach(pageParams::add);
-                                return pageParams;
-                            }
-                        };
+                        new BookmarkablePageLink<>("link", info.getComponentClass(), linkParams);
                 link.add(AttributeModifier.replace(
                         "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
                 final StringResourceModel baseTitle = new StringResourceModel(info.getTitleKey(), null, null);
@@ -361,6 +356,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 String ctxTitle = buildContextTitle(ctxParams);
                 if (!ctxTitle.isEmpty()) {
                     ctxIndicator.add(AttributeModifier.replace("title", ctxTitle));
+                    ctxIndicator.add(AttributeModifier.append("class", buildContextIndicatorClass(ctxParams)));
                 } else {
                     ctxIndicator.setVisible(false);
                 }
@@ -500,6 +496,17 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         return String.join(" > ", ctxParams.values());
     }
 
+    /**
+     * Returns the CSS modifier class for the context indicator based on the most specific param that the link will
+     * actually forward (as captured in {@code ctxParams}), so the icon matches the link's navigation destination scope.
+     */
+    private String buildContextIndicatorClass(Map<String, String> ctxParams) {
+        if (ctxParams.containsKey("group")) return "gs-ctx-indicator--group";
+        if (ctxParams.containsKey("layer") || ctxParams.containsKey("name")) return "gs-ctx-indicator--layer";
+        if (ctxParams.containsKey("workspace")) return "gs-ctx-indicator--workspace";
+        return "";
+    }
+
     private void createCategoryComponent(
             ListItem<Category> item, Category category, Map<Category, List<MenuPageInfo<GeoServerBasePage>>> links) {
         item.add(new Label("category.header", new StringResourceModel(category.getNameKey(), null, null)));
@@ -514,16 +521,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     private void createMenuComponent(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
         MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
         final Map<String, String> ctxParams = collectContextParams(info);
-        BookmarkablePageLink<Page> link = new BookmarkablePageLink<>("link", info.getComponentClass()) {
-
-            @Override
-            public PageParameters getPageParameters() {
-                PageParameters pageParams = super.getPageParameters();
-                pageParams.add(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
-                ctxParams.forEach(pageParams::add);
-                return pageParams;
-            }
-        };
+        PageParameters linkParams = new PageParameters();
+        linkParams.add(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
+        ctxParams.forEach(linkParams::add);
+        BookmarkablePageLink<Page> link = new BookmarkablePageLink<>("link", info.getComponentClass(), linkParams);
 
         link.add(AttributeModifier.replace("title", new StringResourceModel(info.getDescriptionKey(), null, null)));
         final StringResourceModel baseTitle = new StringResourceModel(info.getTitleKey(), null, null);
@@ -532,6 +533,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         String ctxTitle = buildContextTitle(ctxParams);
         if (!ctxTitle.isEmpty()) {
             ctxIndicator.add(AttributeModifier.replace("title", ctxTitle));
+            ctxIndicator.add(AttributeModifier.append("class", buildContextIndicatorClass(ctxParams)));
         } else {
             ctxIndicator.setVisible(false);
         }

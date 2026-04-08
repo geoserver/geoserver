@@ -14,6 +14,9 @@ aside.gs-sidebar {
     position: relative;
 }
 .gs-sidebar ul {
+    padding-left: 0;
+}
+.gs-sidebar ul ul {
     padding-left: 1.1rem;
 }
 .gs-sidebar li ul:after {

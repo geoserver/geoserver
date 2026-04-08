@@ -97,6 +97,19 @@ public class NewLayerPage extends GeoServerSecuredPage {
         this(null);
     }
 
+    @Override
+    public PageParameters getPageParameters() {
+        PageParameters params = super.getPageParameters();
+        if (params.isEmpty() && storeId != null) {
+            StoreInfo store = getCatalog().getStore(storeId, StoreInfo.class);
+            if (store != null) {
+                return new PageParameters()
+                        .add("workspace", store.getWorkspace().getName());
+            }
+        }
+        return params;
+    }
+
     public NewLayerPage(String storeId) {
         this.storeId = storeId != null ? storeId : resolveStoreIdFromWorkspaceParam();
 

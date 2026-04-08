@@ -6,6 +6,7 @@ package org.geoserver.web;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -160,6 +161,15 @@ public class NavigationTreePanel extends Panel {
                 if (!Strings.isEmpty(groupParam) && info.includesContextParam("group")) ctxParts.add(groupParam);
                 if (!ctxParts.isEmpty()) {
                     ctxIndicator.add(AttributeModifier.replace("title", String.join(" > ", ctxParts)));
+                    String ctxClass;
+                    if (!Strings.isEmpty(groupParam) && info.includesContextParam("group")) {
+                        ctxClass = "gs-ctx-indicator--group";
+                    } else if (!Strings.isEmpty(layerParam) && info.includesContextParam("layer")) {
+                        ctxClass = "gs-ctx-indicator--layer";
+                    } else {
+                        ctxClass = "gs-ctx-indicator--workspace";
+                    }
+                    ctxIndicator.add(AttributeModifier.append("class", ctxClass));
                 } else {
                     ctxIndicator.setVisible(false);
                 }
@@ -188,14 +198,14 @@ public class NavigationTreePanel extends Panel {
         AjaxLink<Void> globalSectionSelect = new AjaxLink<>("globalSectionSelect") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                navigateToHome(null, null);
+                navigateToHome(null, null, null);
             }
         };
         globalSectionContainer.add(globalSectionSelect);
         globalSectionContainer.add(new Label("globalCount", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return String.valueOf(getTotalWorkspaceItems() + getTotalGlobalItems());
+                return NavigationTreePanel.this.formatCount(getTotalWorkspaceItems() + getTotalGlobalItems());
             }
         }));
 
@@ -219,7 +229,7 @@ public class NavigationTreePanel extends Panel {
                 AjaxLink<Void> layerSelect = new AjaxLink<>("layerSelect") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        navigateToHome(null, childInfo.name);
+                        navigateToHome(null, childInfo.name, childInfo.type);
                     }
                 };
                 layerSelect.add(AttributeModifier.replace("title", childInfo.name));
@@ -305,7 +315,7 @@ public class NavigationTreePanel extends Panel {
                 AjaxLink<Void> select = new AjaxLink<>("workspaceSelect") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        navigateToHome(ws.name, null);
+                        navigateToHome(ws.name, null, null);
                     }
                 };
                 if (ws.name.equals(selectedWorkspaceName)) {
@@ -316,7 +326,7 @@ public class NavigationTreePanel extends Panel {
                 workspaceName.setEscapeModelStrings(false);
                 select.add(workspaceName);
                 item.add(select);
-                item.add(new Label("workspaceLayerCount", String.valueOf(wsLayerCount)));
+                item.add(new Label("workspaceLayerCount", formatCount(wsLayerCount)));
 
                 WebMarkupContainer layersScroll = new WebMarkupContainer("layersScroll") {
                     @Override
@@ -371,7 +381,7 @@ public class NavigationTreePanel extends Panel {
                                 AjaxLink<Void> layerSelect = new AjaxLink<>("layerSelect") {
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
-                                        navigateToHome(ws.name, childInfo.name);
+                                        navigateToHome(ws.name, childInfo.name, childInfo.type);
                                     }
                                 };
                                 layerSelect.add(AttributeModifier.replace("title", childInfo.name));
@@ -556,8 +566,12 @@ public class NavigationTreePanel extends Panel {
     @Override
     protected void onConfigure() {
         super.onConfigure();
-        String paramWorkspace = getPage().getPageParameters().get("workspace").toOptionalString();
-        String paramLayer = getPage().getPageParameters().get("layer").toOptionalString();
+        PageParameters pageParams = getPage().getPageParameters();
+        String paramWorkspace = pageParams.get("workspace").toOptionalString();
+        // Support both "layer" (layers) and "group" (layer groups); also accept "layer" for
+        // legacy bookmarks that may contain a group name under the old "layer" key.
+        String paramLayer = pageParams.get("layer").toOptionalString();
+        if (paramLayer == null) paramLayer = pageParams.get("group").toOptionalString();
 
         // Re-sync selection state from page parameters on every render
         boolean selectionChanged = !java.util.Objects.equals(paramWorkspace, selectedWorkspaceName)
@@ -717,13 +731,17 @@ public class NavigationTreePanel extends Panel {
         boolean expanded = false;
     }
 
-    private void navigateToHome(String workspaceName, String layerName) {
+    private void navigateToHome(String workspaceName, String childName, ChildType childType) {
         PageParameters params = new PageParameters();
         if (workspaceName != null) {
             params.add("workspace", workspaceName);
         }
-        if (layerName != null) {
-            params.add("layer", layerName);
+        if (childName != null) {
+            if (childType == ChildType.LAYER_GROUP) {
+                params.add("group", childName);
+            } else {
+                params.add("layer", childName);
+            }
         }
         getPage().setResponsePage(GeoServerHomePage.class, params);
     }
@@ -776,6 +794,12 @@ public class NavigationTreePanel extends Panel {
             this.name = name;
             this.type = type;
         }
+    }
+
+    private String formatCount(int count) {
+        NumberFormat fmt = NumberFormat.getCompactNumberInstance(getLocale(), NumberFormat.Style.SHORT);
+        fmt.setMaximumFractionDigits(1);
+        return fmt.format(count);
     }
 
     private static WebComponent childIcon(String id, ChildType type) {

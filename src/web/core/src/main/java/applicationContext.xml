@@ -208,7 +208,7 @@
     <property name="icon" value="../../img/icons/silk/picture_empty.png" />
     <property name="order" value="20" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-    <property name="contextParams" value="all" />
+    <property name="contextParams" value="workspace,group" />
   </bean>
   <bean id="layerGroupMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="layerGroups" />
@@ -220,7 +220,7 @@
     <property name="icon" value="../../img/icons/silk/layers.png" />
     <property name="order" value="25" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-    <property name="contextParams" value="all" />
+    <property name="contextParams" value="workspace,group" />
   </bean>
 
   <!-- Demo menu item -->
@@ -707,7 +707,7 @@
     <property name="componentClass" value="org.geoserver.web.data.store.NewDataPage" />
     <property name="order" value="20" />
     <property name="icon" value="../../img/icons/silk/add_store.png" />
-    <property name="contextParams" value="all" />
+    <property name="contextParams" value="workspace" />
   </bean>
 
   <!-- Sidebar "New" menu items (used by NavigationTreePanel) -->
@@ -717,7 +717,7 @@
     <property name="componentClass" value="org.geoserver.web.data.layer.NewLayerPage" />
     <property name="order" value="30" />
     <property name="icon" value="../../img/icons/silk/add_layer.png" />
-    <property name="contextParams" value="all" />
+    <property name="contextParams" value="workspace" />
   </bean>
 
   <bean id="sidebarNewLayerGroup" class="org.geoserver.web.SidebarNewMenuItemInfo">
@@ -726,7 +726,7 @@
     <property name="componentClass" value="org.geoserver.web.data.layergroup.LayerGroupEditPage" />
     <property name="order" value="40" />
     <property name="icon" value="../../img/icons/silk/add_layergroup.png" />
-    <property name="contextParams" value="all" />
+    <property name="contextParams" value="workspace" />
   </bean>
 
 </beans>

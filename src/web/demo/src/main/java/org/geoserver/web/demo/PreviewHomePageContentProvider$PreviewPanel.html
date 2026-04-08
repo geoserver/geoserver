@@ -8,7 +8,7 @@
                 <label><wicket:message key="commonFormats">Common Formats</wicket:message></label>
                 <div class="linkBlock">
                     <span wicket:id="commonFormats">
-                        <a target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
+                        <a class="text-nowrap"  target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
                     </span>
                 </div>
             </div>
@@ -16,20 +16,23 @@
                 <label><wicket:message key="mapFormats">Mapping Formats</wicket:message></label>
                 <div class="linkBlock">
                     <span wicket:id="mapFormats">
-                        <a target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
+                        <a class="text-nowrap" target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
                     </span>
                 </div>
             </div>
+            <div wicket:id="vectorPreview" class="gs-form-group">
+                <label><wicket:message key="vectorFormats">Vector Formats</wicket:message></label>
+                <div class="linkBlock">
+                    <span wicket:id="vectorFormats">
+                        <a class="text-nowrap" target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
+                    </span>
+                </div>
+            </div>
+
             <!--
             <div wicket:id="tilePreview" class="gs-form-group">
                 <label><wicket:message key="tileFormats">Tile Formats</wicket:message></label>
                 <span wicket:id="tileFormats">
-                    <a target="_blank" href="#" wicket:id="theLink">theTitle</a>
-                </span>
-            </div>
-            <div wicket:id="vectorPreview" class="gs-form-group">
-                <label><wicket:message key="vectorFormats">Tile Formats</wicket:message></label>
-                <span wicket:id="vectorFormats">
                     <a target="_blank" href="#" wicket:id="theLink">theTitle</a>
                 </span>
             </div>

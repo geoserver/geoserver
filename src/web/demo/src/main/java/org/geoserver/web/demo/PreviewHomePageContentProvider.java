@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -31,6 +32,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerHomePageContentProvider;
+import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geotools.util.logging.Logging;
 
@@ -71,10 +73,8 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
         public PreviewPanel(String id) {
             super(id);
             add(commonPreview("commonPreview"));
-
             add(mapPreview("mapPreview"));
-
-
+            add(vectorPreview("vectorPreview"));
         }
 
         /**
@@ -119,7 +119,11 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
             List<CommonFormatLink> formats = getGeoServerApplication().getBeansOfType(CommonFormatLink.class);
             Collections.sort(formats);
             for (CommonFormatLink link : formats) {
-                links.add(link.getFormatLink(layer));
+                ExternalLink externaLink = link.getFormatLink(layer);
+                if (externaLink != null && externaLink.isVisible()) {
+                    // check links are visible (links may be invisible due to their service being disabled)
+                    links.add(externaLink);
+                }
             }
             return links;
         }
@@ -143,8 +147,7 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
             ListView<ExternalLink> mapFormats = new ListView<>("mapFormats", previewLinks) {
                 @Override
                 public void populateItem(ListItem<ExternalLink> item) {
-                    ExternalLink link = item.getModelObject();
-                    item.add(link);
+                    item.add(item.getModelObject());
                 }
             };
             mapPreview.add(mapFormats);
@@ -172,19 +175,74 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
             prepareFormatList(formats, new FormatComparator("format.wms."));
 
             List<ExternalLink> mapFormatLinks = new ArrayList<>();
-
-            int i=0;
-            for (String formatName : formats) {
-                String labelText = translateFormat("format.wms.", formatName);
-                String href = layer.getWmsLink() + "&format="+formatName;
-                ExternalLink mapLink = new ExternalLink("theLink",
-                        Model.of(href), Model.of(labelText));
-                i++;
-                mapLink.setOutputMarkupId(true);
-                mapFormatLinks.add(mapLink);
+            if (layer.hasServiceSupport("WMS")) {
+                for (String formatName : formats) {
+                    String labelText = translateFormat("format.wms.", formatName);
+                    String href = layer.getWmsLink() + "&format=" + formatName;
+                    ExternalLink mapLink = new ExternalLink("theLink", Model.of(href), Model.of(labelText));
+                    mapLink.add(AttributeModifier.append("title", formatName));
+                    mapLink.setVisible(layer.hasServiceSupport("WMS"));
+                    mapFormatLinks.add(mapLink);
+                }
             }
             return mapFormatLinks;
         }
+
+        private Component vectorPreview(String id) {
+            final WebMarkupContainer vectorPreview = new WebMarkupContainer(id);
+            vectorPreview.setOutputMarkupId(true);
+
+            LoadableDetachableModel<List<ExternalLink>> previewLinks = new LoadableDetachableModel<>() {
+                @Override
+                protected List<ExternalLink> load() {
+                    GeoServerHomePage homePage = (GeoServerHomePage) PreviewPanel.this.getPage();
+                    PublishedInfo layerInfo = homePage.getPublishedInfo();
+
+                    List links = vectorFormatLinks(new PreviewLayer(layerInfo));
+                    vectorPreview.setVisible(!links.isEmpty());
+                    return links;
+                }
+            };
+
+            ListView<ExternalLink> mapFormats = new ListView<>("vectorFormats", previewLinks) {
+                @Override
+                public void populateItem(ListItem<ExternalLink> item) {
+                    ExternalLink link = item.getModelObject();
+                    item.add(link);
+                }
+            };
+            vectorPreview.add(mapFormats);
+
+            return vectorPreview;
+        }
+
+        private List<ExternalLink> vectorFormatLinks(PreviewLayer layer) {
+            List<String> formats = new ArrayList<>();
+            final GeoServerApplication application = getGeoServerApplication();
+            for (WFSGetFeatureOutputFormat producer : application.getBeansOfType(WFSGetFeatureOutputFormat.class)) {
+                for (String format : producer.getOutputFormats()) {
+                    formats.add(format);
+                }
+            }
+            prepareFormatList(formats, new FormatComparator("format.wfs."));
+
+            List<ExternalLink> vectorFormatLinks = new ArrayList<>();
+
+            if (layer.getType() == PreviewLayer.PreviewLayerType.Vector && layer.hasServiceSupport("WFS")) {
+                for (String formatName : formats) {
+                    String labelText = translateFormat("format.wfs.", formatName);
+
+                    String href = layer.buildWfsLink() + "&format=" + formatName;
+                    ExternalLink downloadLink = new ExternalLink("theLink", Model.of(href), Model.of(labelText));
+                    downloadLink.add(AttributeModifier.append("title", formatName));
+
+                    vectorFormatLinks.add(downloadLink);
+                }
+            }
+
+            return vectorFormatLinks;
+        }
+
 
         private void prepareFormatList(List<String> formats, FormatComparator comparator) {
             Collections.sort(formats, comparator);

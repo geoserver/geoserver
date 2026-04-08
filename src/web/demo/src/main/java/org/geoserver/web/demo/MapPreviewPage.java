@@ -150,7 +150,11 @@ public class MapPreviewPage extends GeoServerBasePage {
         List<CommonFormatLink> formats = getGeoServerApplication().getBeansOfType(CommonFormatLink.class);
         Collections.sort(formats);
         for (CommonFormatLink link : formats) {
-            links.add(link.getFormatLink(layer));
+            ExternalLink externalLink = link.getFormatLink(layer);
+            if (externalLink != null && externalLink.isVisible()) {
+                // check links are visible (links may be invisible due to their service being disabled)
+                links.add(externalLink);
+            }
         }
         return links;
     }
@@ -272,7 +276,7 @@ public class MapPreviewPage extends GeoServerBasePage {
 
     /**
      * Translate format (if translation available).
-     *
+     *[
      * @param prefix protocol
      * @param format output format
      * @return format translation (defaults to format if unavailable)

@@ -8,7 +8,7 @@ To use this tutorial, you will need the [CSS extension](install.md) as well as t
 
 The SLD file for the default `states` layer looks like this:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor
   version="1.0.0"
@@ -128,7 +128,7 @@ First, got to the styles page and click on **Add a new style** link to start a n
 
 This creates an example style with a source similar to this one (the colors may differ):
 
-``` css
+```css
 /* @title cyan polygon */
 * {
     stroke: #000000;
@@ -160,7 +160,7 @@ Before moving on, let's save the style and preview it with the states layer:
 
 Let's use these basics to start translating the states style. The first rule in the SLD applies to states where the `PERSONS` field is less than two million:
 
-``` xml
+```xml
 <Rule>
   <Title>&lt; 2M</Title>
   <ogc:Filter>
@@ -181,7 +181,7 @@ Let's use these basics to start translating the states style. The first rule in 
 
 Using a [CQL](../../tutorials/cql/cql_tutorial.md)-based selector, and copying the names and values of the CssParameters over, we get:
 
-``` css
+```css
 [PERSONS < 2000000] {
   fill: #4DFF4D;
   fill-opacity: 0.7;
@@ -190,7 +190,7 @@ Using a [CQL](../../tutorials/cql/cql_tutorial.md)-based selector, and copying t
 
 For the second style, we have a `PropertyIsBetween` filter, which doesn't directly translate to CSS:
 
-``` xml
+```xml
 <Rule>
   <Title>2M - 4M</Title>
   <ogc:Filter>
@@ -216,7 +216,7 @@ For the second style, we have a `PropertyIsBetween` filter, which doesn't direct
 
 However, `PropertyIsBetween` can easily be replaced by a combination of two comparison selectors. In CSS, you can apply multiple selectors to a rule by simply placing them one after the other. Selectors separated by only blank-space must all be satisfied for a style to apply. Multiple such groups can be attached to a rule by separating them with commas (`,`). If a feature matches any of the comma-separated groups for a rule then that style is applied. Thus, the CSS equivalent of the second rule is:
 
-``` css
+```css
 [PERSONS >= 2000000] [PERSONS < 4000000] {
   fill: #FF4D4D;
   fill-opacity: 0.7;
@@ -225,7 +225,7 @@ However, `PropertyIsBetween` can easily be replaced by a combination of two comp
 
 The third rule can be handled in much the same manner as the first:
 
-``` css
+```css
 [PERSONS >= 4000000] {
   fill: #4D4DFF;
   fill-opacity: 0.7;
@@ -234,7 +234,7 @@ The third rule can be handled in much the same manner as the first:
 
 The fourth and final rule is a bit different. It applies a label and outline to all the states:
 
-``` xml
+```xml
 <Rule>
   <Title>Boundary</Title>
   <LineSymbolizer>
@@ -265,7 +265,7 @@ The fourth and final rule is a bit different. It applies a label and outline to 
 
 This introduces the idea of rendering an extracted value (`STATE_ABBR`) directly into the map, unlike all of the rules thus far. For this, you can use a CQL expression wrapped in square braces (`[]`) as the value of a CSS property. It is also necessary to surround values containing blank-space, such as `Times New Roman`, with single- or double-quotes (`"`, `'`). With these details in mind, let's write the rule:
 
-``` scss
+```scss
 * {
   stroke-width: 0.2;
   label: [STATE_ABBR];
@@ -279,7 +279,7 @@ This introduces the idea of rendering an extracted value (`STATE_ABBR`) directly
 
 Putting it all together, you should now have a style that looks like:
 
-``` scss
+```scss
 [PERSONS < 2000000] {
   fill: #4DFF4D;
   fill-opacity: 0.7;
@@ -325,7 +325,7 @@ You will see that the borders are missing! In the GeoServer CSS module, each typ
 
 Since we don't specify a `stroke` color, no stroke is applied. Let's add it, replacing the final rule so that it will now look like this:
 
-``` scss
+```scss
 * {
   stroke: black;
   stroke-width: 0.2;
@@ -352,7 +352,7 @@ We can move it into the `*` rule and have it applied everywhere. This works beca
 
 This brings the style down to only 21 lines:
 
-``` scss
+```scss
 [PERSONS < 2000000] {
   fill: #4DFF4D;
 }
@@ -383,7 +383,7 @@ The labels for this style are nice, but at lower zoom levels they seem a little 
 
 Keep the following properties in the main (`*`) rule:
 
-``` scss
+```scss
 * {
   fill-opacity: 0.7;
   stroke-width: 0.2;
@@ -392,7 +392,7 @@ Keep the following properties in the main (`*`) rule:
 
 Remove all the rest, moving them into a new rule:
 
-``` scss
+```scss
 [@sd < 20M] {
   label: [STATE_ABBR];
   label-anchor: 0.5 0.5;
@@ -407,7 +407,7 @@ Remove all the rest, moving them into a new rule:
 
 So far, we haven't set titles for any of the style rules. This doesn't really cause any problems while viewing maps, but GeoServer uses the title in auto-generating legend graphics. Without the titles, GeoServer falls back on the names, which in the CSS module are generated from the filters for each rule. Titles are not normally a part of CSS, so GeoServer looks for them in specially formatted comments before each rule. We can add titles like this:
 
-``` scss
+```scss
 /* @title Population < 2M */
 [PERSONS < 2000000] {
 
@@ -434,7 +434,7 @@ Because of the way that CSS is translated to SLD, each SLD rule is a combination
 
 The final CSS should look like this:
 
-``` scss
+```scss
 /* @title Population < 2M */
 [PERSONS < 2000000] {
   fill: #4DFF4D;
@@ -479,7 +479,7 @@ The final CSS should look like this:
 
 As a final variation, the style can be made more compact by leveraging rule nesting:
 
-``` scss
+```scss
 * {
   stroke: black;
   stroke-width: 0.2;

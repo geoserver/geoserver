@@ -67,7 +67,7 @@ Placing the above templates in the directory of layer tiger_roads and issuing th
 
 will produce the output:
 
-``` json
+```json
 {
   "header":"this is the header",
   "type":"FeatureCollection",
@@ -111,7 +111,7 @@ While taking care of moving header_json.ftl and footer_json.ftl into the templat
 
 will return the following result:
 
-``` json
+```json
 {
   "header":"this is the header",
   "type":"FeatureCollection",

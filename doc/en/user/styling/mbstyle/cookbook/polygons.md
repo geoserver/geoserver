@@ -31,7 +31,7 @@ This example shows a polygon filled in blue.
 
 [Download the "Simple polygon" MBStyle](artifacts/mbstyle_cookbook_polygons_simplepolygon.json)
 
-``` json
+```json
 {
   "version": 8,
   "name": "simple-polygon",
@@ -66,7 +66,7 @@ This example adds a 1 pixel white outline to the [Simple polygon](#mbstyle_cookb
 
 [Download the "Simple polygon with stroke" MBStyle](artifacts/mbstyle_cookbook_polygons_simplepolygonwithstroke.json)
 
-``` json
+```json
 {
   "version": 8,
   "name": "simple-polygon-outline",
@@ -99,7 +99,7 @@ This example builds on the [Simple polygon with stroke](#mbstyle_cookbook_polygo
 
 [Download the "Transparent polygon" MBStyle](artifacts/mbstyle_polygon_transparentpolygon.json)
 
-``` json
+```json
 {
   "version": 8,
   "name": "simple-polygon-transparent",

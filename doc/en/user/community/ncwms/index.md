@@ -31,7 +31,7 @@ Several ready to use palettes coming from the popular "color brewer" site are av
 
 The palette translates on the fly into a SLD with rendering transformation using the [Dynamic colormap generation](../colormap/index.md) module, in particular, the above style translates to the following style:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
   <sld:NamedLayer>
@@ -199,7 +199,7 @@ Since GeoServer 2.17, TIME parameter also supports 2 additional syntax even if n
 
 Sample CSV output:
 
-``` none
+```none
 # Latitude: 40.396728515625
 # Longitude: -0.6921386718750019
 Time (UTC),Temperature (degrees)
@@ -215,7 +215,7 @@ Sample chart output:
 
 **Note:** Since GeoServer 2.17, nodata pixels will not be reported in the result chart. Moreover, entries in CSV list related to nodata pixels will report time but will have no pixel value reported, as in the example below for times 2014-02-01 and 2014-05-01:
 
-``` none
+```none
 # Latitude: 40.396728515625
 # Longitude: -0.6921386718750019
 Time (UTC),Temperature (degrees)

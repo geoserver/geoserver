@@ -26,7 +26,7 @@ This example shows a two-color style with green at lower elevations and brown at
 
 [Download the "Two-color gradient" YSLD](artifacts/raster_twocolorgradient.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Two color gradient'
 feature-styles:
 - name: name
@@ -59,7 +59,7 @@ This example creates the same two-color gradient as in the [Two-color gradient](
 
 [Download the "Transparent gradient" YSLD](artifacts/raster_transparentgradient.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Transparent gradient'
 feature-styles:
 - name: name
@@ -90,7 +90,7 @@ This example normalizes the color output and then increases the brightness by a 
 
 [Download the "Brightness and contrast" YSLD](artifacts/raster_brightnessandcontrast.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Brightness and contrast'
 feature-styles:
 - name: name
@@ -126,7 +126,7 @@ This example creates a three-color gradient in primary colors.
 
 [Download the "Three-color gradient" YSLD](artifacts/raster_threecolorgradient.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Three color gradient'
 feature-styles:
 - name: name
@@ -160,7 +160,7 @@ This example creates an "alpha channel" effect such that higher values are incre
 
 [Download the "Alpha channel" YSLD](artifacts/raster_alphachannel.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Alpha channel'
 feature-styles:
 - name: name
@@ -193,7 +193,7 @@ This example shows a gradient that is not linearly interpolated but instead has 
 
 [Download the "Discrete colors" YSLD](artifacts/raster_discretecolors.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Discrete colors'
 feature-styles:
 - name: name
@@ -224,7 +224,7 @@ This example shows a gradient interpolated across eight different colors.
 
 [Download the "Many color gradient" YSLD](artifacts/raster_manycolorgradient.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Many color gradient'
 feature-styles:
 - name: name

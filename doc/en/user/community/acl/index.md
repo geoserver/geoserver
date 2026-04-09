@@ -24,7 +24,7 @@ The GeoServer ACL plugin requires GeoServer to be run with some System propertie
 
 If you choose to use Java System properties, add the following ones to the GeoServer JVM parameters, with the appropriate values:
 
-``` shell
+```shell
 -Dgeoserver.acl.client.basePath=https://example.com/acl/api
 -Dgeoserver.acl.client.username=geoserver
 -Dgeoserver.acl.client.password=ch4ng3m3
@@ -34,7 +34,7 @@ If you choose to use Java System properties, add the following ones to the GeoSe
 
 The ``geoserver.acl.client.enabled`` config property defaults to ``true`` so it's not required for the plugin to run. In order to completely disable the plugin, set it to `false`:
 
-``` shell
+```shell
 -Dgeoserver.acl.client.enabled=false
 ```
 
@@ -46,7 +46,7 @@ All the system properties mentioned above can be mapped to environment variables
 
 For example:
 
-``` shell
+```shell
 export GEOSERVER_ACL_CLIENT_ENABLED=false
 export GEOSERVER_ACL_CLIENT_BASEPATH=https://example.com/acl/api
 export GEOSERVER_ACL_CLIENT_USERNAME=geoserver
@@ -61,13 +61,13 @@ The GeoServer ACL API plugin implements a local cache for authorization requests
 
 The cache "expiration time", or "time to live", can be changed through the ``Dgeoserver.acl.client.cache.ttl`` configuration property, which accepts a ``java.time.Duration`` string. For example:
 
-``` shell
+```shell
 -Dgeoserver.acl.client.cache.ttl=PT5S
 ```
 
 or
 
-``` shell
+```shell
 export GEOSERVER_ACL_CLIENT_CACHE_TTL=PT5S
 ```
 
@@ -89,7 +89,7 @@ If you're implementing a workflow where you're managing ACL rules directly throu
 
 Alternatively, you can introduce a direct call to the GeoServer REST API to force clearing the cache using the ``/rest/reset`` endpoint. For example:
 
-``` shell
+```shell
 curl -u admin:geoserver -X POST "http://localhost:8080/geoserver/rest/reset"
 ```
 

@@ -81,7 +81,7 @@ Support for the [STAC Datacube Extension](https://github.com/stac-extensions/dat
 
 **JSON Template Example**:
 
-``` none
+```none
 "extent": {
   "spatial": {
     "bbox": [
@@ -115,7 +115,7 @@ Support for the [STAC Datacube Extension](https://github.com/stac-extensions/dat
 
 **HTML/FTL Example**:
 
-``` none
+```none
 <li><b>Extents</b>:
      <ul>
      <li data-tid='gbounds'>Geographic (WGS84):
@@ -213,7 +213,7 @@ Here is a Freemarker template snipped using the layer information:
 
 And here is a Features Templating JSON template exposing the same information, to use in the collection JSON output:
 
-``` json
+```json
 {
   "collections": [
     {

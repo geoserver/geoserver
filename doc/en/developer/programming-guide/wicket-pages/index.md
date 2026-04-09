@@ -6,7 +6,7 @@ This page explains the steps to follow in creating a page for the Wicket-based c
 
 In Wicket, each page has one corresponding Java class. To add a page, you need to create a new class that extends `org.geoserver.web.GeoServerBasePage`. You will also want to create a link somewhere that brings the user to your page. (In general, Wicket pages do not have reliable URLs, so you must explicitly create a link in an existing page and let Wicket generate the proper URL.) In the case where your class does not require arguments to its constructor, you can insert a link using Spring. Creating links in Spring requires that your page link text be internationalizable. We'll discuss internationalization in more depth later. The simplest possible Wicket extension for GeoServer involves 3 files. There is a Java class definition (this would be in **`src/main/java/org/geoserver/web/example/MyPage.java`**).
 
-``` java
+```java
 package org.geoserver.web.example;
 
 import org.geoserver.web.GeoServerBasePage;
@@ -18,7 +18,7 @@ public class MyPage extends GeoServerBasePage {
 
 There would also need to be a Spring application context document (**`src/main/java/applicationContext.xml`**):
 
-``` xml
+```xml
 <bean class="org.geoserver.web.MenuPageInfo" id="myPageLink">
     <!-- An internal identifier for the link component -->
     <property name="id" value="mypage"/> 
@@ -39,7 +39,7 @@ There would also need to be a Spring application context document (**`src/main/j
 
 The third necessary file is the default dictionary for internationalized strings, at **`src/main/resources/GeoServerApplication.properties`**:
 
-``` ini
+```ini
 org.geoserver.web.example.MyPage.page.title=My Example Page
 org.geoserver.web.example.MyPage.page.description=An example page for developers trying to extend the GeoServer UI.
 ```
@@ -62,7 +62,7 @@ At this point you've added a page to the UI, but it's not very interesting. In W
 
 Wicket provides quite a few components, of which several can be seen in the [Wicket Component Reference](https://examples7x.wicket.apache.org/compref/). In general, Wicket components require a Model object which handles the getting, setting, and conversion to/from String of the value associated with a component. For the purposes of this example, we will focus on one of the simplest, the Label, which simply replaces the contents of the element it is bound to with a value provided at runtime. Continuing the example from above, we can pass a String to the Label's constructor and it is transparently converted to a Model:
 
-``` java
+```java
 package org.geoserver.web.example;
 
 import org.geoserver.web.GeoServerBasePage;
@@ -77,7 +77,7 @@ public class MyPage extends GeoServerBasePage{
 
 The corresponding HTML source would live at **`src/main/java/org/geoserver/web/example/MyPage.html`**:
 
-``` html
+```html
 <html>
 <head></head>
 <body>
@@ -94,7 +94,7 @@ Of course, there are much more complicated (and useful) things we can do with Wi
 
 Of course, we can't have everything in the sidebar menu; for one thing, it defines only a static set of links while GeoServer is bound to contain lots of resources that vary from configuration to configuration. For another, some pages need to have arguments to their constructors. If you want to add a custom link to some page, you can use a Wicket Link component and customize the `onClick` behavior to call the appropriate constructor. (You can use `setResponsePage` in other methods that handle user input as well, such as on form submits. Check the Wicket documentation for more information.) An example:
 
-``` java
+```java
 //...
 import org.apache.wicket.markup.html.link.Link;
 //...
@@ -108,7 +108,7 @@ add(new Link("link"){
 
 The corresponding HTML would look like:
 
-``` html
+```html
 Follow this lovely <a href="#" wicket:id="link">link</a>.
 ```
 

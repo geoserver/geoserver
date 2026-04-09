@@ -18,7 +18,7 @@ The REST API allows you to set and retrieve information about the server itself.
 
 *Response*
 
-``` xml
+```xml
 <about>
  <resource name="GeoServer">
   <Build-Timestamp>11-Dec-2012 17:55</Build-Timestamp>
@@ -65,7 +65,7 @@ The REST API allows you to set and retrieve information about the server itself.
 
 *Response*
 
-``` xml
+```xml
 <about>
   <resource name="gwc-2.3.0">
     ...
@@ -120,7 +120,7 @@ The REST API allows you to set and retrieve information about the server itself.
 
 *Response*
 
-``` xml
+```xml
 <about>
  <resource name="control-flow-2.3.0">
   <GeoServerModule>extension</GeoServerModule>
@@ -180,7 +180,7 @@ The XML and JSON representations are quite similar. For each system information 
 
 Example of XML representation:
 
-``` xml
+```xml
 <metrics>
   <metric>
    <value>99614720</value>
@@ -197,7 +197,7 @@ Example of XML representation:
 
 Example of JSON representation:
 
-``` json
+```json
 {
     "metrics": {
         "metric": [

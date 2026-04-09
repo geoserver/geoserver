@@ -20,13 +20,13 @@ First, obtain a sample request. This can easily be done by going to the Layer Pr
 
 You can then paste this URL into a curl request:
 
-``` console
+```console
 curl -v "URL"
 ```
 
 For example:
 
-``` console
+```console
 curl -v "http://localhost:8090/geoserver/nurc/wms?LAYERS=nurc%3AArc_Sample&STYLES=&FORMAT=image%2Fjpeg&TILED=true&TILESORIGIN=-180%2C-90&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=-45,-45,0,0&WIDTH=256&HEIGHT=256"
 ```
 
@@ -46,7 +46,7 @@ This request was successfully handled by the GeoWebCache WMS.
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&LAYERS=states&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=256"
 ```
 
@@ -70,7 +70,7 @@ The following request is not handled by the GeoWebCache WMS because the image re
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&LAYERS=states&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=257"
 ```
 
@@ -87,7 +87,7 @@ The following request is not handled by the GeoWebCache WMS because the layer re
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&LAYERS=tasmania_roads&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=256"
 ```
 
@@ -104,7 +104,7 @@ The following request is not handled by the GeoWebCache WMS because the request 
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?BGCOLOR=0xAAAAAA&TILED=true&LAYERS=states&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=256"
 ```
 
@@ -121,7 +121,7 @@ The following request is not handled by the GeoWebCache WMS because the request 
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&LAYERS=states&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:26986&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=256"
 ```
 

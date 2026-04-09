@@ -18,7 +18,7 @@ Formats for PUT (keystore password change).
 
 ### XML
 
-``` xml
+```xml
 <masterPassword>
    <oldMasterPassword>oldPassword</oldMasterPassword>
    <newMasterPassword>newPassword</newMasterPassword>
@@ -27,7 +27,7 @@ Formats for PUT (keystore password change).
 
 ### JSON
 
-``` json
+```json
 { "oldMasterPassword":"oldPassword",
   "newMasterPassword":"newPassword" }
 ```

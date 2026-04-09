@@ -11,7 +11,7 @@ Consider a chloropleth map of the US states dataset using the fill color to indi
 !!! note
     It is to be noted that the following example specifies colors as hex string as opposed to native CSS color names, this is because the function syntax is expressed in CQL, which does not have support for native CSS color names.
 
-``` css
+```css
 * { 
   fill: [recode(strTrim(SUB_REGION),
          'N Eng', '#6495ED',
@@ -39,7 +39,7 @@ The `Categorize` filter function transforms a continuous-valued attribute into a
 
 In the following example a coropleth map is build associating a color to the state population density in the ranges [ <= 20], [20 - 100], and [ > 100].
 
-``` css
+```css
 * { 
   fill: [categorize(
          PERSONS / LAND_KM,
@@ -70,7 +70,7 @@ Both the interpolation method and mode are optional, and if provided, they are a
 
 In the following example the state population is mapped to a continuous color scale in a rather compact way using the interpolate function:
 
-``` css
+```css
 * { 
   fill: [Interpolate(
          PERSONS,

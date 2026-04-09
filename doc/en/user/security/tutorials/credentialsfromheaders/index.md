@@ -99,7 +99,7 @@ The result should be a 403 response signaling that access is denied. The output 
 
 This can be done with an HTTPD configuration that looks like the following:
 
-``` apacheconf
+```apacheconf
 <Location  /geoserver>
    Session On
    SessionEnv On

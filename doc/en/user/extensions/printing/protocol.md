@@ -23,7 +23,7 @@ HTTP command:
 
 Returns a JSON structure as such:
 
-``` javascript
+```javascript
 var printConfig = {
     "scales":[
         {"name":"25000"},
@@ -71,7 +71,7 @@ HTTP command:
 
 The "SPEC" parameter is a JSON structure like that:
 
-``` javascript
+```javascript
 {
     layout: 'A4 portrait',
     ...CUSTOM_PARAMS...
@@ -154,7 +154,7 @@ The spec defined in the "print.pdf" command must be included in the POST body.
 
 Returns a JSON structure like that:
 
-``` javascript
+```javascript
 {
     getURL: 'http:\/\/localhost:5000\/print\/56723.pdf'
 }
@@ -181,7 +181,7 @@ To print more than one map on a single page you need to:
 
 This is possible specifying a **maps** object in spec root object with a distinct key - object pair for each map. The key will refer the map block name as defined in yaml file. The object will contain layers and srs for the named map. Another **maps** object has to be specified inside the page object to describe positioning, scale and so on.
 
-``` javascript
+```javascript
 {
     ...
     maps: {
@@ -281,7 +281,7 @@ Standard mode:
 - matrixSet (Required) the name of the matrix set
 - matrixIds (Required) array of matrix ids e.g.:
 
-``` javascript
+```javascript
 [{
     "identifier": "0",
     "matrixSize": [1, 1],
@@ -464,13 +464,13 @@ The google map reader has several custom parameters that can be added to the req
 - pdfLayerName (Defaults to "t") PDF layer name.
 - markers (Optional) - add markers to the map: <http://code.google.com/apis/maps/documentation/staticmaps/#Markers>
 
-``` javascript
+```javascript
 markers: ['color:blue|label:S|46.5195933305192,6.566684726913701']
 ```
 
 - path (Optional) - add a path to the map: <http://code.google.com/apis/maps/documentation/staticmaps/#Paths>
 
-``` javascript
+```javascript
 path: 'color:0x0000ff|weight:5|46.5095933305192,6.506684726913701|46.5195933305192,6.526684726913701|46.5395933305192,6.536684726913701|46.5695933305192,6.576684726913701',
 ```
 

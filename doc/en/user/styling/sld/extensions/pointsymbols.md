@@ -159,7 +159,7 @@ For example, to use the "shield" symbol contained in the WebDings font, the Gnom
 
 The SLD to use the shield glyph as a symbol is:
 
-``` xml
+```xml
 <PointSymbolizer>
     <Graphic>
       <Mark>
@@ -194,7 +194,7 @@ For further information see the Javadoc of the GeoTools [MarkFactory](https://gi
 
 `<ExternalGraphic>` is the other way to define point symbology. Unlike marks, external graphics are used as-is, so the specification is somewhat simpler. The element content specifies a graphic `<OnlineResource>` using a URL or file path, and the graphic `<Format>` using a MIME type:
 
-``` xml
+```xml
 <PointSymbolizer>
     <Graphic>
        <ExternalGraphic>
@@ -209,7 +209,7 @@ As with `<Mark>`, a `<Size>` element can be optionally specified. When using ima
 
 If the path of the symbol file is relative, the file is looked for under `$GEOSERVER_DATA_DIR/styles`. For example:
 
-``` xml
+```xml
 <PointSymbolizer>
   <Graphic>
     <ExternalGraphic>
@@ -229,7 +229,7 @@ GeoServer can handle SVG images in which parts of the SVG-attributes are named p
 
 SVG Parameters are represented in a file like: [poi_peak.svg](https://github.com/qgis/QGIS/blob/master/images/svg/symbol/poi_peak.svg) as:
 
-``` xml
+```xml
 <svg enable-background="new 0 0 580 580" height="580" viewBox="0 0 580 580" width="580" xmlns="http://www.w3.org/2000/svg">
 <path d="m290.565 67.281l-255.498 442.534-1.087 1.885 511.229.393 2.18.002z" fill="param(fill)" 
  fill-opacity="param(fill-opacity)" stroke="param(outline)" stroke-opacity="param(outline-opacity)" stroke-width="param(outline-width)"/>
@@ -325,7 +325,7 @@ block=POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))
 
 The SLD to use the symbols defined in **`example.properties`** is:
 
-``` xml
+```xml
 <PointSymbolizer>
   <Graphic>
     <ExternalGraphic>
@@ -356,7 +356,7 @@ GeoServer improves this by allowing [CQL expressions](../../../filter/ecql_refer
 
 The simplest form of expression is a single attribute name, such as `${STATE_ABBR}`. For example, suppose we want to display the flags of the US states using symbols whose file names match the state name. The following style specifies the flag symbols using a single rule:
 
-``` xml
+```xml
 <ExternalGraphic>
    <OnlineResource xlink:type="simple" 
                    xlink:href="http://mysite.com/tn_${STATE_ABBR}.jpg"/>
@@ -366,7 +366,7 @@ The simplest form of expression is a single attribute name, such as `${STATE_ABB
 
 If manipulation of the attribute values is required a full CQL expression can be specified. For example, if the values in the `STATE_ABBR` attribute are uppercase but the URL requires a lowercase name, the CQL `strToLowerCase` function can be used:
 
-``` xml
+```xml
 <ExternalGraphic>
    <OnlineResource xlink:type="simple"
             xlink:href="http://mysite.com/tn_${strToLowerCase(STATE_ABBR)}.jpg" />

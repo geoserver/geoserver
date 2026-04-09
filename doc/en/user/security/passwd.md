@@ -56,7 +56,7 @@ GeoServer uses its own keystore for this purpose named `geoserver.jceks` which i
 
 The GeoServer keystore is password protected with a [Keystore password](#security_master_passwd). It is possible to access the contents of the keystore with external tools such as [keytool](https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.md). For example, this following command would prompt for the keystore password and list the contents of the keystore:
 
-``` bash
+```bash
 $ keytool -list -keystore geoserver.jceks -storetype "JCEKS"
 ```
 
@@ -97,7 +97,7 @@ Each user/group service uses a password policy to enforce these rules. The defau
 
 It is possible to parametrize users' passwords in a similar way to the catalog settings (see [Parameterize catalog settings](../datadirectory/configtemplate.md)). Parametrization is supported when the encryption method used to store the place holder in the password field is plain text or is reversible (pbe, strong pbe). Non reversible encoding for the placeholder (e.g. digest) is not supported. On the contrary the actual value can be defined in the `geoserver-environment.properties` with any password encoding method supported by GeoServer. Examples are provided below:
 
-``` properties
+```properties
 pwd.one=plain:clear_text_password
 pwd.two=digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw
 pwd.three=crypt1:xZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw

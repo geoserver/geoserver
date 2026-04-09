@@ -24,7 +24,7 @@ The first and obvious one is to split the original table into a set of separate 
 
 A second way is to use one table and separate geometry columns. So, if the table `findings` has a `geom` column, the restructured table will have `point`, `line` and `polygon` columns, each of them containing just one geometry type. After the restructuring, the symbolizers will refer to a specific geometry, for example:
 
-``` xml
+```xml
 <PolygonSymbolizer>
     <Geometry><ogc:PropertyName>polygon</ogc:PropertyName></Geometry>
 </PolygonSymbolizer>
@@ -36,7 +36,7 @@ This way each symbolizer will match only the geometry types it is supposed to re
 
 A third way is to add a geometry type column allowing standard filtering constructs to be used, and then build a separate rule per geometry type. In the example above a new attribute, `gtype` will be added containing the values `Point`, `Line` and `Polygon`. The following SLD template can be used after the change:
 
-``` xml
+```xml
 <Rule>
    <ogc:Filter>
       <ogc:PropertyIsEqualTo>
@@ -91,7 +91,7 @@ The `geometryType` function takes a geometry property and returns a string, whic
 
 Using this function, a `Rule` matching only single points can be written as:
 
-``` xml
+```xml
 <Rule>
    <ogc:PropertyIsEqualTo>
       <ogc:Function name="geometryType">
@@ -107,7 +107,7 @@ Using this function, a `Rule` matching only single points can be written as:
 
 The filter is more complex if it has to match all linear geometry types. In this case, it looks like:
 
-``` xml
+```xml
 <Rule>
    <ogc:Filter>
      <ogc:PropertyIsEqualTo>
@@ -134,7 +134,7 @@ This filter is read as `geometryType(geom) in ("LineString", "LinearRing", "Mult
 
 A slightly simpler alternative is to use the geometry `dimension` function to select geometries of a desired dimension. Dimension 0 selects Points and MultiPoints, dimension 1 selects LineStrings, LinearRings and MultiLineStrings, and dimension 2 selects Polygons and MultiPolygons. The following example shows how to select linear geometries:
 
-``` xml
+```xml
 <Rule>
    <ogc:PropertyIsEqualTo>
       <ogc:Function name="dimension">

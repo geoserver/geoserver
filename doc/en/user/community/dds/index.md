@@ -22,7 +22,7 @@ Once the extension is installed, the provided mime-types should appear in the la
 
 The mime-types will also be listed in the `GetCapabilities` document:
 
-``` xml
+```xml
 <Format>image/bil</Format>
 <Format>image/dds</Format>
 ```

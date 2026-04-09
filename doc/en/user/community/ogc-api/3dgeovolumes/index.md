@@ -33,7 +33,7 @@ The directory needs to contain a single file, a `collections.json` that represen
 
 Here is an example with a single collection defined:
 
-``` json
+```json
 {
     "collections": [
       {
@@ -113,7 +113,7 @@ To override an OGC API 3D Feature template:
 
 In particular, overriding the Cesium template allows to specify a custom access token, which will then enable the 3D terrain support. For example:
 
-``` html
+```html
 <html lang="en">
  <head>
      <meta charset="utf-8">

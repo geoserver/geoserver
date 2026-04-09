@@ -70,7 +70,7 @@ The properties available in the template are:
 
 The JSON output format (and JSONP if enabled) return feature content as a [GeoJSON](http://geojson.org/) document. Here is an example of a simple GeoJSON file;
 
-``` json
+```json
 {  "type": "Feature",
    "geometry": {
       "type": "Point",
@@ -84,7 +84,7 @@ The JSON output format (and JSONP if enabled) return feature content as a [GeoJS
 
 The output properties can include the use of lists and maps:
 
-``` json
+```json
 {
   "type": "Feature",
   "id": "example.3",

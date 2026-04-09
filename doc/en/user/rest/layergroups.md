@@ -18,7 +18,7 @@ The REST API allows you to create and modify layer groups in GeoServer.
 
 Given the following content saved as **`nycLayerGroup.xml`**:
 
-``` xml
+```xml
 <layerGroup>
   <name>nyc</name>
   <layers>

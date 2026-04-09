@@ -564,7 +564,9 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
             catalogLinks.add(new BookmarkablePageLink<>("storesLink", StorePage.class)
                     .add(new Label("nstores", numberFormat.format(storesCount))));
-            catalogLinks.add(new BookmarkablePageLink<>("addStoreLink", NewDataPage.class));
+            PageParameters newStoreParams = new PageParameters();
+            if (workspaceInfo != null) newStoreParams.add("workspace", workspaceInfo.getName());
+            catalogLinks.add(new BookmarkablePageLink<>("addStoreLink", NewDataPage.class, newStoreParams));
 
             catalogLinks.add(new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class)
                     .add(new Label("nworkspaces", numberFormat.format(wsCount))));

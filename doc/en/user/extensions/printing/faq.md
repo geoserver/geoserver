@@ -46,7 +46,7 @@ You need to set some system properties (http.proxy*) when you start your java pr
 
 By default, the browser's configured locale is used. You can force another locale in the print widget configuration:
 
-``` yaml
+```yaml
 {
   ...
   configUrl: 'print/info.json',

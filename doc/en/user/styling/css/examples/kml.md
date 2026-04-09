@@ -10,7 +10,7 @@ There is however a custom environment variable, set by the KML generator, that s
 
 The following example leverages this function to show a larger point symbol when points become clickable:
 
-``` css
+```css
 * { 
   mark: symbol("circle");
 }
@@ -48,7 +48,7 @@ Starting with GeoServer 2.4 the KML engine has been rewritten, and among other t
 
 The solution is to leverage the ability to respect marks appearance to the letter, and combine two superimposed marks to generate the desired output:
 
-``` css
+```css
 * { 
   mark: symbol('circle'), symbol('circle');
   mark-size: 12, 4;

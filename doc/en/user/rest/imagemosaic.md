@@ -53,7 +53,7 @@
 
 *Response*
 
-``` xml
+```xml
 <Schema>
       <attributes>
  <Attribute>
@@ -120,7 +120,7 @@
 
 *Response*
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wfs:FeatureCollection xmlns:gf="http://www.geoserver.org/rest/granules" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml">
   <gml:boundedBy>
@@ -221,7 +221,7 @@ Given a [empty.zip](artifacts/empty.zip) file containing:
 
 Given a `coverageconfig.xml`:
 
-``` xml
+```xml
 <coverage>
   <nativeCoverageName>NO2</nativeCoverageName>
   <name>NO2</name>

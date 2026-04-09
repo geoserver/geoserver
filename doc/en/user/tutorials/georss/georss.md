@@ -6,7 +6,7 @@ GeoServer supports [GeoRSS](http://georss.org/) as an output format allowing you
 
 If you are using a web browser which can render RSS feeds simply visit the URL <http://localhost:8080/geoserver/wms/reflect?layers=states&format=rss> in your browser. This is assuming a local GeoServer instance is running with an out of the box configuration. You should see a result that looks more or less like this:
 
-![](browser.png)
+![](browser.png)  
 *topp:states rss feed*
 
 ## Templating

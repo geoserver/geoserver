@@ -107,7 +107,7 @@ Enable secure, automatic credential discovery by checking the **Use AWS Credenti
 
 If you use multiple AWS profiles in your `~/.aws/credentials` file:
 
-``` ini
+```ini
 [default]
 aws_access_key_id = AKIAIOSFODNN7EXAMPLE
 aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY

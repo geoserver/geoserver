@@ -5,34 +5,36 @@
     <wicket:panel>
       <div class="gs-panel-UserPanel">
         <form>
-          <div class="gs-unordered-list-class" wicket:id="header">
-            <div class="gs-list-item-class" wicket:id="message"></div>
-            <div class="gs-list-item-class">
+          <fieldset>
+            <legend>
               <span>
                 <wicket:message key="UserPanel.title"></wicket:message>
               </span>
-            </div>
-            <div class="gs-list-item-class">
-              <div class="gs-unordered-list-class action-group">
-                <div class="gs-list-item-class">
-                  <a class="button outline-primary" href="#" wicket:id="addNew">
-                    <wicket:message key="addNew"></wicket:message>
-                  </a>
-                </div>
-                <div class="gs-list-item-class">
-                  <a class="button outline-danger" href="#" wicket:id="removeSelected">
-                    <wicket:message key="removeSelected"></wicket:message>
-                  </a>
-                </div>
-                <div class="gs-list-item-class">
-                  <a class="button outline-danger" href="#" wicket:id="removeSelectedWithRoles">
-                    <wicket:message key="removeSelectedWithRoles"></wicket:message>
-                  </a>
+            </legend>
+            <div class="gs-unordered-list-class" wicket:id="header">
+              <div class="gs-list-item-class" wicket:id="message"></div>
+              <div class="gs-list-item-class">
+                <div class="gs-unordered-list-class action-group">
+                  <div class="gs-list-item-class">
+                    <a class="button outline-primary" href="#" wicket:id="addNew">
+                      <wicket:message key="addNew"></wicket:message>
+                    </a>
+                  </div>
+                  <div class="gs-list-item-class">
+                    <a class="button outline-danger" href="#" wicket:id="removeSelected">
+                      <wicket:message key="removeSelected"></wicket:message>
+                    </a>
+                  </div>
+                  <div class="gs-list-item-class">
+                    <a class="button outline-danger" href="#" wicket:id="removeSelectedWithRoles">
+                      <wicket:message key="removeSelectedWithRoles"></wicket:message>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div wicket:id="table"></div>
+            <div wicket:id="table"></div>
+          </fieldset>
         </form>
         <div wicket:id="dialog"></div>
       </div>

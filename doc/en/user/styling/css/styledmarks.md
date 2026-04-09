@@ -2,7 +2,7 @@
 
 GeoServer's CSS module provides a collection of predefined symbols that you can use and combine to create simple marks, strokes, and fill patterns without needing an image editing program. You can access these symbols via the symbol() CSS function. For example, the built-in circle symbol makes it easy to create a simple 'dot' marker for a point layer:
 
-``` scss
+```scss
 * {
   mark: symbol(circle);
 }
@@ -62,7 +62,7 @@ Styling a built-in symbol is similar to styling a polygon feature. However, the 
 
 As an example, consider a situation where you are styling a layer that includes data about hospitals in your town. You can create a simple hospital logo by placing a red cross symbol on top of a white circle background:
 
-``` scss
+```scss
 [usage='hospital'] {
   mark: symbol('circle'), symbol('cross');
   :nth-mark(1) {
@@ -79,7 +79,7 @@ As an example, consider a situation where you are styling a layer that includes 
 
 Also an windbarb example where you get wind speed and direction from your data fields horSpeed and horDir (direction):
 
-``` scss
+```scss
 * {
   /* select windbard based on speed( here in meters per second, and south hemisphere) */
   mark: symbol('windbarbs://default(${horSpeed})[m/s]?hemisphere=s');

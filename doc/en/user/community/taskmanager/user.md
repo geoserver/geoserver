@@ -45,7 +45,7 @@ Furthermore, a property should be added to the `taskmanager.properties` file eac
 
 Task Manager allows any number of databases to be used both as sources and targets for data transfer operations. These are configured via the Spring configuration file. Currently only PostGIS is supported as a target (as well as a source), either via JNDI or directly via JDBC.
 
-``` xml
+```xml
 <bean class="org.geoserver.taskmanager.external.impl.PostgisDbSourceImpl"> 
     <property name="name" value="mypostgisdb"/> 
     <property name="host" value="hostname" /> 
@@ -63,7 +63,7 @@ Task Manager allows any number of databases to be used both as sources and targe
 </bean>
 ```
 
-``` xml
+```xml
 <bean class="org.geoserver.taskmanager.external.impl.PostgisJndiDbSourceImpl">
     <property name="name" value="mypostgisjndidb" />
     <property name="jndiName" value="java:/comp/env/jdbc/my-jndi-source" />
@@ -88,7 +88,7 @@ Roles can be specified for [security](#security) purposes.
 
 Other database systems should generally work as a source database (not for publishing) using the GenericDbSourceImpl (this has been tested with MS SQL).
 
-``` xml
+```xml
 <bean class="org.geoserver.taskmanager.external.impl.GenericDbSourceImpl">
     <property name="name" value="mysqldb" />
     <property name="driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/> 
@@ -101,7 +101,7 @@ Other database systems should generally work as a source database (not for publi
 
 There is also specific support for Informix as a source database (not for publishing).
 
-``` xml
+```xml
 <bean class="org.geoserver.taskmanager.external.impl.InformixDbSourceImpl">
     <property name="name" value="myinformixdb" />
     <property name="driver" value="com.informix.jdbc.IfxDriver"/> 
@@ -113,7 +113,7 @@ There is also specific support for Informix as a source database (not for publis
 
 It is also possible to use a source that does not support geometries, and translate them automatically from some raw type. To do this, one must create a table in the database that contains a list of all geometry columns that need to be translated. This can be configured as follows:
 
-``` xml
+```xml
 <bean name="geomtable" class="org.geoserver.taskmanager.external.impl.GeometryTableImpl">
     <!-- the name of your metadata table -->
    <property name="nameTable" value="Metadata_Geo" />
@@ -139,7 +139,7 @@ It is also possible to use a source that does not support geometries, and transl
 
 Task Manager allows any number of external geoservers to be used as targets for layer publications. These are configured via the Spring configuration file.
 
-``` xml
+```xml
 <bean class="org.geoserver.taskmanager.external.impl.ExternalGSImpl"> 
     <property name="name" value="mygs"/> 
     <property name="url" value="http://my.geoserver/geoserver" /> 
@@ -153,7 +153,7 @@ The ''supportsMetadata'' field indicates whether this target geoserver contains 
 
 The configuration above will log-in to geoserver using basic authentication. Task Manager also supports geoservers protected with keycloak:
 
-``` xml
+```xml
 <bean class="org.geoserver.taskmanager.external.impl.ExternalKeycloakGSImpl">
     <property name="name" value="keycloakgs"/>
     <property name="url" value="http://my.geoserver/geoserver"/>
@@ -175,7 +175,7 @@ File Services are used to upload and access files such as raster layers or vecto
 
 Regular file services provide support for rasters and vector files that are stored on the hard drive.
 
-``` xml
+```xml
 <bean class="org.geoserver.taskmanager.external.impl.FileServiceImpl">
     <property name="rootFolder" value="/tmp"/>
     <property name="name" value="Temporary Directory"/>
@@ -214,7 +214,7 @@ Roles can optionally be specified for [security](#security) purposes as follows:
 
 Amazon AWS S3 buckets are also supported.
 
-``` xml
+```xml
 <bean class="org.geoserver.taskmanager.external.impl.AWSFileServiceImpl">
     <property name="rootFolder" value="/tmp"/>
     <property name="anonymous" value="false"/>
@@ -252,26 +252,26 @@ Currently GeoServer Task Manager can only be configured and operated from the Ge
 
 From the templates page, new templates can be created (or copied from existing templates), existing templates can be edited and removed.
 
-![](img/templates.png)
+![](img/templates.png)  
 *templates*
 
 Once you open a new or existing template, attributes, tasks and batches can be edited. The attribute table adjusts automatically based on the information in the tasks table; and only the values must be filled in. In the task table, the name and parameters of each task can be edited, and new tasks can be created. Batches can be created and edited from here as well, however the template must exist in order to be able to do that (in case of a new template, you must click `apply` once before you can create new batches). New tasks must also be saved (again, via the `apply` button) before they can be added to a batch.
 
-![](img/template-db-workflow.png)
+![](img/template-db-workflow.png)  
 *template db workflow*
 
 ### Configurations
 
 From the [configurations](basic.md#configurations) page, new configurations can be created from scratch or from templates (or copied from existing configurations), existing configurations can be edited and removed.
 
-![](img/configurations.png)
+![](img/configurations.png)  
 *configurations*
 
 When removing a configuration, you have to option to do a *clean-up*, which will attempt to remove all resources (database tables, files, layers) that were created by (tasks of) this configuration. If this (partially) fails, the configuration will still be removed and the user will be notified.
 
 Once you open a new or existing configuration, attributes, tasks and batches can be edited.
 
-![](img/template-db-workflow-config2.png)
+![](img/template-db-workflow-config2.png)  
 *workflow config 2*
 
 The attribute table adjusts automatically based on the information in the tasks table; and only the values must be filled in. In the task table, the name and parameters of each task can be edited, and new tasks can be created. Tasks can only be removed if they are not part of a batch any longer. Batches can only be removed if they are not running anywhere. When removing a task, you have to option to do a *clean-up*, which will attempt to remove all resources (database tables, files, layers) that were created by this task. If this (partially) fails, the task will still be removed and the user will be notified.
@@ -286,20 +286,20 @@ It is also possible to import/export entire configurations to XML, for example t
 
 From the [batches](basic.md#batches) page, new independent batches (not associated with a configuration) can be created, existing batches can be edited and removed. All existing batches - independent as well as belonging to a configuration - are shown, unless they are special (if they start with a `@`) or if the configuration has not yet been completed (see [initializing templates](basic.md#initializing-templates)).
 
-![](img/batches.png)
+![](img/batches.png)  
 *batches*
 
 In case that the [conditions](basic.md#batches) are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).
 
-![](img/batchruns.png)
+![](img/batchruns.png)  
 *batchruns*
 
-![](img/batchrun.png)
+![](img/batchrun.png)  
 *batchrun*
 
 Once you open a new or existing batch, one can add or remove tasks from it and change the order of the tasks. You can also enable/disable the batch (if disabled, the batch is not scheduled) and choose the scheduling time. The user can choose between a daily schedule (with time), weekly (with day of week and time), monthly (with day of month and time) or specify a custom [cron expression](http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.md).
 
-![](img/template-db-workflow-batch-sync.png)
+![](img/template-db-workflow-batch-sync.png)  
 *batch synchronize*
 
 ## Task Types
@@ -377,40 +377,40 @@ A typical workflow for a new layer goes as follows:
 
 Taskmanager should be installed only on the `work geoserver`. Then we could make the following template:
 
-![](img/template-db-workflow.png)
+![](img/template-db-workflow.png)  
 *template db workflow*
 
 with the following batches:
 
-![](img/template-db-workflow-batches.png)
+![](img/template-db-workflow-batches.png)  
 *template db workflow batches*
 
 The `@Initialize` batch:
 
-![](img/template-db-workflow-batch-init.png)
+![](img/template-db-workflow-batch-init.png)  
 *batch initialize*
 
 The `PublishRemotely` batch:
 
-![](img/template-db-workflow-batch-pubrem.png)
+![](img/template-db-workflow-batch-pubrem.png)  
 *batch publish remotely*
 
 The `Synchronize` batch:
 
-![](img/template-db-workflow-batch-sync.png)
+![](img/template-db-workflow-batch-sync.png)  
 *batch synchronize*
 
 When we now create a new configuration based on this template we choose a source database, table name and layer name:
 
-![](img/template-db-workflow-config.png)
+![](img/template-db-workflow-config.png)  
 *workflow config*
 
 After clicking apply, the configuration is being initialized (the layer is created locally)\...
 
-![](img/template-db-workflow-initializing.png)
+![](img/template-db-workflow-initializing.png)  
 *initializing...*
 
 We can now fill in the rest of the details, save, and make the remote publication. The synchronization is scheduled weekly.
 
-![](img/template-db-workflow-config2.png)
+![](img/template-db-workflow-config2.png)  
 *workflow config 2*

@@ -19,7 +19,7 @@ The dataset contains several different values for z_order, in particular: -10, -
 
 Here is a sample CSS style using z-ordering, but not groups, to perform the display. Road casing is achieved by multiple FeatureTypeStyle, or `z-index` values in CSS:
 
-``` css
+```css
 [class = 'railways' and bridge = 1] {
   stroke: #333333;
   stroke-width: 8;
@@ -104,7 +104,7 @@ This is mostly happening because the various FeatureTypeStyle elements are not p
 
 A slight change in the CSS, grouping all levels in the same sortByGroup, solves the issues above:
 
-``` css
+```css
 [class = 'railways' and bridge = 1] {
   stroke: #333333;
   stroke-width: 8;

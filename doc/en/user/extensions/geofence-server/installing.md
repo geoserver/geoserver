@@ -60,7 +60,7 @@ As reported above, you are strongly encouraged to move to PostgreSQL/PostGIS.
 
 In order to instruct GeoFence to use PostgreSQL, you need to create the file **`<DATADIR>/geofence/geofence-datasource-ovr.properties`** with a content like this:
 
-``` properties
+```properties
 geofenceVendorAdapter.databasePlatform=org.hibernate.spatial.dialect.postgis.PostgisDialect
 geofenceDataSource.driverClassName=org.postgresql.Driver
 geofenceDataSource.url=jdbc:postgresql://<HOST>:<PORT>/<DATABASE>

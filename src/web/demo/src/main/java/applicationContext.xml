@@ -22,6 +22,7 @@
     <property name="order" value="5"/>
     <property name="descriptionKey" value="MapPreviewPage.description"/>
     <property name="componentClass" value="org.geoserver.web.demo.MapPreviewPage"/>
+    <property name="contextParams" value="workspace,group" />
   </bean>
   
   <bean id="mapPreviewKeyShortcut" class="org.geoserver.web.HeaderContribution">

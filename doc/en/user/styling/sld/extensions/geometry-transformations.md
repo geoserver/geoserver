@@ -16,7 +16,7 @@ Let's look at some examples.
 
 Here is an example that allows one to extract all the vertices of a geometry, and make them visible in a map, using the `vertices` function:
 
-``` xml
+```xml
 <PointSymbolizer>
   <Geometry>
     <ogc:Function name="vertices">
@@ -47,7 +47,7 @@ Applied to the sample ``tasmania_roads`` layer this will result in:
 
 The ``startPoint`` and ``endPoint`` functions can be used to extract the start and end point of a line.
 
-``` xml
+```xml
 <PointSymbolizer>
   <Geometry>
     <ogc:Function name="startPoint">
@@ -95,7 +95,7 @@ Applied to the sample ``tasmania_roads`` layer this will result in:
 
 The ``offset`` function can be used to create drop shadow effects below polygons. Notice that the offset values reflect the fact that the data used in the example is in a geographic coordinate system.
 
-``` xml
+```xml
 <PolygonSymbolizer>
   <Geometry>
      <ogc:Function name="offset">

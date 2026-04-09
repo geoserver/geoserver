@@ -153,7 +153,7 @@ Use `` **`file.txt`** `` (combine **bold** **monospace**) for files and path ref
 
 Material for markdown has extensive icon support, for most user interface elements we can directly make use of the appropriate icon in Markdown:
 
-- Use Material for mkdocs [Icons, Emojis](https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/) page to serach included icons.
+- Use Material for MkDocs [Icons, Emojis](https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/) page to serach included icons.
 - You can also refrence emojii by name
 - Add custom icons to **`overrides/.icons/silk`** .
 
@@ -215,7 +215,7 @@ Be considerate of file size:
 * If taking a screenshot with HiDPI display, process by 50% to 72 DPI.
   
     ![](img/screen-snap-scale.png)  
-    *Screen Snap scale to 72 DPI*
+    *Screenshot scale to 72 DPI*
     
     !!! tip
         You may find it faster to adjust monitor resolution in order
@@ -246,13 +246,13 @@ Crop for form and data entry steps:
     
     ```markdown
     ![](img/screen-snap-form.png)  
-    *Form screen snap*
+    *Form screenshot*
     ```
 
 === "Preview"
 
     ![](img/screen-snap-form.png)  
-    *Form screen snap*
+    *Form screenshot*
 
 Scale for smaller elements like dialogs and menus:
 
@@ -260,13 +260,13 @@ Scale for smaller elements like dialogs and menus:
     
     ```markdown
     ![](img/screen-snap-dialog.png){: width=50%}  
-    *Dialog screen snap*
+    *Dialog screenshot*
     ```
 
 === "Preview"
 
     ![](img/screen-snap-dialog.png){: width=50%}  
-    *Dialog screen snap*
+    *Dialog screenshot*
 
 
 ### Lists

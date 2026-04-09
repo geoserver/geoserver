@@ -4,13 +4,13 @@
 
 Both compositing and blending can be specified in SLD by adding the following VendorOption to either the end of a Symbolizer or FeatureTypeStyle:
 
-``` xml
+```xml
 <VendorOption name="composite">multiply</VendorOption>        
 ```
 
 In case a custom opacity is desired, it can be added after the operation name separated with a comma:
 
-``` xml
+```xml
 <VendorOption name="composite">multiply, 0.5</VendorOption>
 ```
 
@@ -28,7 +28,7 @@ In case a custom opacity is desired, it can be added after the operation name se
 
 For FeatureTypeStyles an additional vendor option can be added to control compositing groups:
 
-``` xml
+```xml
 <VendorOption name="composite-base">true</VendorOption>
 ```
 

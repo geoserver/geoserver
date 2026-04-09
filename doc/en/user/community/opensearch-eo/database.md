@@ -21,7 +21,7 @@ The `granule` table is designed to contain per product file information in case 
 
 The collection table currently looks as follows (check the SQL file in the installation instructions for a more up to date version of it):
 
-``` sql
+```sql
 create table collection (
   "id" serial primary key,
   "name" varchar,
@@ -66,7 +66,7 @@ The `collection_ogclink` table contains the OGC links towards the services provi
 
 The product table currently looks as follows (check the SQL file in the installation instructions for a more up to date version of it):
 
-``` sql
+```sql
 -- the products and attributes describing them
 create table product (
   "id" serial primary key,
@@ -134,7 +134,7 @@ The `product_ogclink` table contains the OGC links towards the services providin
 
 The OpenSearch module implements "OGC cross linking" by adding pointers to OGC services for to collection/product visualization and download.
 
-``` sql
+```sql
 -- links for collections
 create table collection_ogclink (
   "lid" serial primary key,
@@ -160,7 +160,7 @@ create table product_ogclink (
 
 This is done by adding a set of `owc:offering` elements in the Atom response, mapping directly from the table contents:
 
-``` xml
+```xml
 <owc:offering code="http://www.opengis.net/spec/owc/1.0/req/atom/wcs">
   <owc:operation method="GET" code="GetCapabilities" href="http://localhost/sentinel2/sentinel2-TCI/ows?service=WCS&amp;version=2.0.1&amp;request=GetCapabilities" type="application/xml"/>
 </owc:offering>
@@ -179,7 +179,7 @@ The contents of the tables need to be filled with the sane named elements of a O
 
 The granule table can be filled with information about the actual raster files making up a certain product in order to publish the collection as a GeoServer image mosaic:
 
-``` sql
+```sql
 -- the granules table (might be abstract, and we can use partitioning)
 create table granule (
   "gid" serial primary key,

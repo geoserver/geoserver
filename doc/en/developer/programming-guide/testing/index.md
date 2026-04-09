@@ -69,7 +69,7 @@ Phases 1 and 2 are referred to as the setup phase. It is during this phase that 
 
 By default, for performance reasons, the setup phase is executed only once for a system test. This can however be configured by annotating the test class with a special annotation named `TestSetup`. For example, to specify that the setup should be executed many times, for each test method of the class:
 
-``` java
+```java
 @TestSetup(run=TestSetupFrequency.REPEAT)
 public class MyTestCase extends GeoServerSystemTestSupport {
    ...
@@ -78,7 +78,7 @@ public class MyTestCase extends GeoServerSystemTestSupport {
 
 This however should be used only as a last resort since as mentioned before a repeated setup makes the test execute very slowly. An alternative to a repeated setup is to have the test case revert any changes that it makes during its execution, so that every test method can execute in a consistent state. The `GeoServerSystemTestSupport` contains a number of convenience methods for doing this. Consider the following test:
 
-``` java
+```java
 public class MyTestCase extends GeoServerSystemTestSupport {
 
    @Before
@@ -100,7 +100,7 @@ The test makes some changes to a particular layer but uses a before hook to reve
 
 A third method of controlling test setup frequency is available at the test case level. Annotating a test method with the `RunTestSetup` annotation will cause the test setup to be run before the test method is executed. For example:
 
-``` java
+```java
 public class MyTestCase extends GeoServerSystemTestSupport {
 
    @Before
@@ -144,7 +144,7 @@ As with any JUnit test various annotations are available to perform tasks at var
 
 This callback method is invoked before the system has been created. It is meant to provide the test with a way to configure what configuration gets created in the GeoServer data directory for the test. By default the test setup will create a standard set of vector layers. This method is where that should be changed, for instance to indicate that the test requires that raster layers be created as well. For example:
 
-``` java
+```java
 public class MySystemTest extends GeoServerSystemTestBase {
 
    protected void setUpTestData(SystemTestData testData) {
@@ -165,7 +165,7 @@ This callback method is invoked after the system has been created. It is meant f
 
 Depending on whether the test uses a single or repeated setup this method will be called once or many times. For this reason this method can not be used to simply initialize fields of the test class. For instance, consider the following:
 
-``` java
+```java
 public class MySystemTest extends GeoServerSystemTestBase {
 
     Catalog catalog;
@@ -194,7 +194,7 @@ public class MySystemTest extends GeoServerSystemTestBase {
 
 Since this is a one time setup, the onSetUp method is only executed once, before the test1 method. When the test2 method is executed it is actually a new instance of the test class, but the `onTestSetup` is not re-executed. The proper way to this initialization would be:
 
-``` java
+```java
 public class MySystemTest extends GeoServerSystemTestBase {
 
     Catalog catalog;
@@ -276,7 +276,7 @@ The GeoServer system test will create a data directory with a standard set of ve
 
 If you need to provide your test with a specific layer from a local datastore, for example to test handling a 3D shapefile then you will need code like:
 
-``` java
+```java
 @Override
 protected void setUpInternal(SystemTestData data) throws Exception {
     DataStoreInfo storeInfo =
@@ -318,7 +318,7 @@ private static LayerInfo createShapeLayer(Catalog catalog, DataStoreInfo storeIn
 
 Once the set up code has run you can request the layer as a WMS or WFS request using:
 
-``` java
+```java
 Document dom = getAsDOM("wfs?request=GetFeature&typenames=gs:tasmania_roads&version=2.0.0&service=wfs");
 ```
 
@@ -332,7 +332,7 @@ If you are writing a new module you may want to consider creating a new support 
 
 A request that needs a catalog item is provided via a mock class.
 
-``` java
+```java
 public class WMSValidatorTest extends GeoServerMockTestSupport {
 
   @Override
@@ -380,7 +380,7 @@ public class WMSValidatorTest extends GeoServerMockTestSupport {
 
 Requesting a simple panel, confirming output using component id
 
-``` java
+```java
 public class GraticuleStoreEditPanelTest extends GeoServerWicketTestSupport {
 
   @Override
@@ -427,7 +427,7 @@ public class GraticuleStoreEditPanelTest extends GeoServerWicketTestSupport {
 
 Requesting a page, confirming the output using component name:
 
-``` java
+```java
 public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
 
  @Test
@@ -445,7 +445,7 @@ public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
 
 Requesting a page, pressing a button, confirming the output using component name:
 
-``` java
+```java
 public void testBasicActions() {
   login();
 
@@ -487,7 +487,7 @@ public void testBasicActions() {
 
 Making a WFS request to a test data set:
 
-``` java
+```java
 public class GetFeatureBboxTest extends WFSTestSupport {
 
 @Test
@@ -516,7 +516,7 @@ public void testFeatureBoudingOn() throws Exception {
 
 making a request and checking output against reference image
 
-``` java
+```java
 public class GetMapIntegrationTest extends WMSTestSupport {
   ...
   @Override
@@ -558,7 +558,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
 GeoServer has a lot of log handling built in but in a default system much of the logging is surpressed. The following code shows how to initialise GeoServer's logging system. In general this should only be done during testing of your code as excessive logging slows down the build for everyone.
 
-``` java
+```java
 GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
 LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, "logs/geoserver.log");
 String path = getDataDirectory().getResourceLoader().getBaseDirectory().getPath();
@@ -586,7 +586,7 @@ This is used by GeoServerAbstractTestSupport `getLogConfiguration()` to initLogg
 
 You can override this value to make use of your own logging profile, here is an example from OpenLayersMapOutputFormatTest.
 
-``` java
+```java
 @Override
 protected String getLogConfiguration() {
     // needed for a test on logging capabilities
@@ -629,7 +629,7 @@ Mock tests, also referred to as integration tests, are a good way to test a comp
 
 A mock test is just a regular unit test that uses functions from the EasyMock library to create mock objects. There is however a base class named `GeoServerMockTestSupport` that is designed to provide a pre-created set of mock objects. These pre-created mock objects are designed to mimic the objects as they would be found in an actual running system. For example:
 
-``` java
+```java
 public class MyMockTest extends GeoServerMockTestSupport {
 
    @Test
@@ -651,7 +651,7 @@ The benefit of mock tests over system tests is the setup cost. Mock tests essent
 
 By default EasyMock can only mock up interfaces. To mock up classes requires the EasyMock classextension jar and also the cglib library. These can be declared in a maven pom like so:
 
-``` xml
+```xml
 <dependency>
   <groupId>org.easymock</groupId>
   <artifactId>easymockclassextension</artifactId>
@@ -670,7 +670,7 @@ The change is mostly transparent, however rather than importing `org.easymock.Ea
 
 All of the GeoServer base test classes live in the gs-main module. However since they live in the test packages a special dependency must be set up in the pom of the module depending on main. This looks like:
 
-``` xml
+```xml
 <dependency>
   <groupId>org.geoserver</groupId>
   <artifactId>gs-main</artifactId>
@@ -682,7 +682,7 @@ All of the GeoServer base test classes live in the gs-main module. However since
 
 Furthermore, in maven test scope dependencies are not transitive in the same way that regular dependencies are. Therefore some additional dependencies must also be declared:
 
-``` xml
+```xml
 <dependency>
  <groupId>com.mockrunner</groupId>
  <artifactId>mockrunner</artifactId>
@@ -706,7 +706,7 @@ Often a test requires some external resource such as a database or a server to o
 
 JUnit4 provides a handy way to do this with the `org.junit.Asssume` class. Methods of the class are called from a `@Before` hook or from a test method. For example consider the common case of connecting to a database:
 
-``` java
+```java
 public class MyTest {
 
     Connection connect() {
@@ -741,13 +741,13 @@ In the above example the `assumeNotNull` method will throw back an exception tel
 
 Use of Docker [Test Containers](https://testcontainers.com/) should be considered online tests, as the developer may not have docker available locally for use.
 
-``` java
+```java
 assumeTrue(DockerClientFactory.instance().isDockerAvailable());
 ```
 
 Using Docker Test Containers can be done by extending an existing test support base class, and managing the test container as shown in KeyCloakIntegrationTestSupport:
 
-``` java
+```java
 /** keycloak container setup. We bring in 2 realms - master-realm and gs-realm. */
 static KeycloakContainer keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:26.1")
         .withCopyToContainer(
@@ -781,25 +781,25 @@ Requirements: Python 3, docker, make
 
 Head over to the `build/acceptance` directory and build GeoServer with:
 
-``` shell
+```shell
 make war
 ```
 
 Build the docker image, setup the Python virtual environment and start the acceptance test docker composition with:
 
-``` shell
+```shell
 make up
 ```
 
 Now the tests are ready to be run with:
 
-``` shell
+```shell
 make test
 ```
 
 It's possible to run only a specific test file or a single test function with for example:
 
-``` shell
+```shell
 GEOSERVER_ACCEPTANCE_CONFIG=./config.yaml .venv/bin/pytest --pyargs geoserver_acceptance_tests.tests.test_gwc::test_tile_cache -vv
 ```
 
@@ -807,6 +807,6 @@ If you need to debug the tests, see the instructions in the [GeoServer acceptanc
 
 When you are done testing, stop the docker composition with:
 
-``` shell
+```shell
 make down
 ```

@@ -22,7 +22,7 @@ Follow some examples of the invocation of this process using GeoServer shipped `
 
 The examples can be tested with CURL:
 
-``` bash
+```bash
 curl -u admin:geoserver -H 'Content-type: xml' -XPOST -d@'wps-request.xml' http://localhost:8080/geoserver/wps
 ```
 
@@ -40,7 +40,7 @@ Request:
 
 The result:
 
-``` json
+```json
 {
   "AggregationAttribute": "PERSONS",
   "AggregationFunctions": ["Max", "Min", "Average", "Sum", "Count"],
@@ -61,7 +61,7 @@ This result should be interpreted like this:
 
 To obtain the result in the XML format the request ``wps:ResponseForm`` element needs to be changed to:
 
-``` xml
+```xml
 <wps:ResponseForm>
   <wps:RawDataOutput mimeType="text/xml">
     <ows:Identifier>result</ows:Identifier>
@@ -71,7 +71,7 @@ To obtain the result in the XML format the request ``wps:ResponseForm`` element 
 
 The result in XML format:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <AggregationResults>
   <Min>453588.0</Min>
@@ -94,7 +94,7 @@ Request:
 
 The result:
 
-``` json
+```json
 { 
   "AggregationAttribute": "PERSONS",
   "AggregationFunctions": ["Average", "Count"],
@@ -131,7 +131,7 @@ This result should be interpreted like this:
 
 The result in XML format:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <AggregationResults>
   <GroupByResult>

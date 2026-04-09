@@ -4,13 +4,13 @@ The GeoServer builds on Github Actions and <https://build.geoserver.org/> apply 
 
 In case you want to just run the build with the full checks locally, use the following command:
 
-``` bash
+```bash
 mvn clean install -Dqa
 ```
 
 Add extra parameters as you see fit, like `-T1C -nsu` to speed up the build:
 
-``` bash
+```bash
 mvn install -Prelease -Dqa -T1C -nsu -fae
 ```
 
@@ -36,13 +36,13 @@ Rules are configured in our build [build/qa/pmd-ruleset.xml](https://github.com/
 
 In order to activate the ***PMD*** checks, use the `-Ppmd` profile:
 
-``` bash
+```bash
 mvn verify -Ppmd
 ```
 
 Or run ``pmd:check`` (requires use of `initialize` to locate ``geoserverBaseDir/build/qa/pmd-ruleset.xml``):
 
-``` bash
+```bash
 mvn initialize pmd:check -Ppmd
 ```
 
@@ -70,7 +70,7 @@ If you do have a ***PMD*** failure it is worth checking the pmd website which of
 
 Occasionally PMD will report a false positive failure, for those it's possible to annotate the method or the class in question with a SuppressWarnings using `PMD.<RuleName`, e.g. if the above error was actually a legit use of `System.out.println` it could have been annotated with:
 
-``` java
+```java
 @SuppressWarnings("PMD.SystemPrintln")
 public void methodDoingPrintln(...) {
 ```
@@ -81,7 +81,7 @@ PMD can check for Closeable that are not getting property closed by the code, an
 
 The check is a bit fragile, in that there are multiple ways to close an object between direct calls, utilities and delegate methods. The configuration lists the type of methods, and the eventual prefix, that will be used to perform the close, for example:
 
-``` xml
+```xml
 <rule ref="category/java/errorprone.xml/CloseResource" >
     <properties>
         <property name="closeTargets" value="releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt"/>
@@ -136,13 +136,13 @@ Any failure to comply with the rules will show up as a compile error, e.g.:
 
 It is also possible to run the spotbugs:gui goal to have a Swing based issue explorer, e.g.:
 
-``` bash
+```bash
 mvn spotbugs:gui -Pspotbugs -f wms
 ```
 
 In case an invalid report is given, an annotation on the class/method/variable can be added to ignore it:
 
-``` java
+```java
 @SuppressFBWarnings("NP_GUARANTEED_DEREF")
 ```
 
@@ -168,25 +168,25 @@ This has been setup for incremental checking, with hidden **`.spotless-index`** 
 
 To run the plugin directly:
 
-``` bash
+```bash
 mvn spotless:apply
 ```
 
 When using `check` any failure to comply with the rules will show up as a compiler error in the build output.
 
-``` bash
+```bash
 mvn spotless:check
 ```
 
 When verifying `spotless.action` is used to choose `apply` or `check` (defaults to `apply`):
 
-``` bash
+```bash
 mvn verify -Dqa -Dspotless.action=check
 ```
 
 Property `spotless.apply.skip` is used to skip spotless plugin when running `qa` build:
 
-``` bash
+```bash
 mvn clean install -Dqa -Dspotless.apply.skip=true
 ```
 
@@ -209,7 +209,7 @@ The plugin is attached to verification phase to sort **`pom.xml`** files.
 
 To run the plugin directly:
 
-``` bash
+```bash
 mvn sortpom:sort
 ```
 
@@ -219,13 +219,13 @@ Verification checks if (ignoring whitespace changes) is the current **`pom.xml`*
 
 Property `pom.fmt.action` is used to choose `sort` or `verify` (defaults to `sort`):
 
-``` bash
+```bash
 mvn verify -Dqa -Dpom.fmt.action=verify
 ```
 
 Property `pom.fmt.skip` used to skip sortpom plugin when running `qa` build (defaults to `spotless.apply.skip` setting):
 
-``` bash
+```bash
 mvn clean install -Dqa -Dpom.fmt.skip=true
 ```
 
@@ -249,6 +249,6 @@ The checkstyle ruleset checks the following:
 
 To run the plugin directly:
 
-``` bash
+```bash
 mvn initialize checkstyle:check
 ```

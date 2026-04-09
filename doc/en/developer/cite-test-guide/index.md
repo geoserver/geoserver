@@ -543,13 +543,13 @@ As a result of the test run, a `logs/testng-results.xml` file will be generated,
 
 Make sure you've prepared the `geoserver.war` as instructed above with `make war`.
 
-``` shell
+```shell
 make clean build test suite=ogcapi-features10
 ```
 
 If there are test errors, a human readable summary will be printed to the console, similar to this:
 
-``` shell
+```shell
 test-method: verifyCollectionsPathCollectionCrsPropertyContainsDefaultCrs
 description: Implements A.1 Discovery, Abstract Test 2 (Requirement /req/crs/fc-md-crs-list B), crs property contains default crs in the collection objects in the path /collections
 depends-on-groups: crs-conformance
@@ -585,13 +585,13 @@ Since teamengine runs as a Docker container, in order to reach out to a GeoServe
 
 For the case of the `ogcapi-features10`, you can simply run
 
-``` shell
+```shell
 make ogcapi-features10-localhost
 ```
 
 And it'll print out
 
-``` shell
+```shell
 Running the ogcapi-features10 test suite with the teamengine REST API against http://172.17.0.1:8080/geoserver/ogc/features/v1
 ```
 
@@ -599,25 +599,25 @@ The `ogcapi-features10-localhost` target is a special case of `test-external`, w
 
 During development or troubleshooting, you might want to either use a different GeoServer port, or test only a specific workspace or feature type. For that you can use a custom `iut` (Instance Under Test) URL for the `test-external` make target. For example, to hit a GeoServer instance running on the host at port `9090`, and address only the `sf:archsites` layer, you can use a `iut` URL combining the `172.17.0.1` IP address and GeoServer's `/sf/archsites` virtual service:
 
-``` shell
+```shell
 make test-external suite=ogcapi-features10 iut="http://172.17.0.1:9090/geoserver/sf/archsites/ogc/features/v1"
 ```
 
 And it'll print out
 
-``` shell
+```shell
 Running the ogcapi-features10 test suite with the teamengine REST API against http://172.17.0.1:9090/geoserver/sf/archsites/ogc/features/v1
 ```
 
 Finally, run
 
-``` shell
+```shell
 make clean
 ```
 
 to stop the docker composition and clean up the `logs/` directory, or
 
-``` shell
+```shell
 make stop
 ```
 
@@ -657,7 +657,7 @@ Shortly before a major (2.xx.0) release, the following process should be followe
 
 4.  Start up the Docker services (PostgreSQL & 7x GeoServer instances) against an empty database directory
 
-``` shell
+```shell
 rm -rf /home/cite/postgis-data/wfs
 docker compose -f docker-compose.yml up
 ```

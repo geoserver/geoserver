@@ -20,12 +20,12 @@ The service can be used to get the attributes list for the given vector layer. T
 
 Get attributes for the states layer, in XML format
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/sldservice/states/attributes.xml
 ```
 
-``` xml
+```xml
 <Attributes layer="states">
   <Attribute>
     <name>P_FEMALE</name>
@@ -45,12 +45,12 @@ curl -v -u admin:geoserver -XGET
 
 Get attributes for the states layer, in JSON format
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/sldservice/states/attributes.json
 ```
 
-``` javascript
+```javascript
 {  
    "Attributes":{  
       "@layer":"states",
@@ -125,12 +125,12 @@ The `intervalsForUnique` parameter allows the user to control the number of clas
 
 A default (equalInterval) classification on the states layer LAND_KM attribute using a red based color range.
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/sldservice/states/classify.xml?attribute=LAND_KM&ramp=red
 ```
 
-``` xml
+```xml
 <Rules>
   <Rule>
     <Title> &gt; 159.1 AND &lt;= 344189.1</Title>
@@ -179,12 +179,12 @@ curl -v -u admin:geoserver -XGET
 
 A uniqueInterval classification on the states layer SUB_REGION attribute using a red based color range.
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/sldservice/states/classify.xml?attribute=SUB_REGION&ramp=red&method=uniqueInterval
 ```
 
-``` xml
+```xml
 <Rules>
   <Rule>
     <Title>E N Cen</Title>
@@ -222,23 +222,23 @@ curl -v -u admin:geoserver -XGET
 
 A uniqueInterval classification on the states layer SUB_REGION attribute using a red based color range and 3 intervals.
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/sldservice/states/classify.xml?attribute=SUB_REGION&ramp=red&method=uniqueInterval&intervals=3
 ```
 
-``` xml
+```xml
 <string>Intervals: 9</string>
 ```
 
 A quantile classification on the states layer PERSONS attribute with a custom color ramp and 3 **closed** intervals.
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/sldservice/states/classify.xml?attribute=PERSONS&ramp=CUSTOM&method=quantile&intervals=3&startColor=0xFF0000&endColor=0x0000FF
 ```
 
-``` xml
+```xml
 <Rules>
   <Rule>
     <Title> &gt; 453588.0 AND &lt;= 2477574.0</Title>
@@ -308,12 +308,12 @@ curl -v -u admin:geoserver -XGET
 
 A quantile classification on the states layer PERSONS attribute with a custom color ramp and 3 **open** intervals.
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/sldservice/states/classify.xml?attribute=PERSONS&ramp=CUSTOM&method=quantile&intervals=3&startColor=0xFF0000&endColor=0x0000FF&open=true
 ```
 
-``` xml
+```xml
 <Rules>
   <Rule>
     <Title> &lt;= 2477574.0</Title>
@@ -402,12 +402,12 @@ The parameters usable to customize the ColorMap are:
 
 A RED color ramp with 5 classes
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/sldservice/sfdem/rasterize.sld?min=0&max=100&classes=5&type=RAMP&ramp=RED&digits=1
 ```
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
     <sld:NamedLayer>
@@ -437,12 +437,12 @@ curl -v -u admin:geoserver -XGET
 
 A CUSTOM color ramp with 5 classes, with colors ranging from RED (0xFF0000) to BLUE (0x0000FF).
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/sldservice/sfdem/rasterize.sld?min=0&max=100&classes=5&type=RAMP&ramp=CUSTOM&digits=1&startColor=0xFF0000&endColor=0x0000FF
 ```
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
     <sld:NamedLayer>
@@ -480,7 +480,7 @@ curl -v -u admin:geoserver -XGET
 
 The service can be used to retrieve the capabilities of the SldService plugin. At the time of writing the endpoint will simply return a list of supported classification's methods for both raster and vector data. It can be useful i.e. for clients who might be dealing with different GeoServer versions to know which classification methods is available to be used. Follow the service's outputs in json and xml format:
 
-``` json
+```json
 {
 "capabilities": {
     "vector": {
@@ -506,7 +506,7 @@ The service can be used to retrieve the capabilities of the SldService plugin. A
  }
 ```
 
-``` xml
+```xml
 <capabilities>
   <vector>
       <classifications>quantile</classifications>

@@ -21,7 +21,7 @@ This REST API allows you to create and manage URL External Access Checks in GeoS
 
 *Response*
 
-``` json
+```json
 {"urlchecks":{"urlcheck":[
      {"name":"external","href":"http:\/\/localhost:8080\/geoserver\/rest\/urlchecks\/external.json"},
      {"name":"icons","href":"http:\/\/localhost:8080\/geoserver\/rest\/urlchecks\/icons.json"},
@@ -38,7 +38,7 @@ This REST API allows you to create and manage URL External Access Checks in GeoS
 
 *Response*
 
-``` xml
+```xml
 <urlChecks>
     <urlCheck>
         <name>external</name>
@@ -67,7 +67,7 @@ This REST API allows you to create and manage URL External Access Checks in GeoS
 
 *Response*
 
-``` xml
+```xml
 <regexUrlCheck>
     <name>icons</name>
     <description>External graphic icons</description>

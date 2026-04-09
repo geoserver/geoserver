@@ -45,7 +45,7 @@ Community module is are not yet ready for distribution with GeoServer release.
 
 For developers;
 
-``` bash
+```bash
 cd src
 mvn install -Pjwt-headers -DskipTests
 ```

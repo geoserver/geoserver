@@ -30,7 +30,7 @@ This example specifies points be styled as red circles with a diameter of 6 pixe
 
 [Download the "Simple point" YSLD](artifacts/point_simplepoint.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Simple Point'
 feature-styles:
 - name: name
@@ -60,7 +60,7 @@ This example adds a stroke (or border) around the [Simple point](#ysld_cookbook_
 
 [Download the "Simple point with stroke" YSLD](artifacts/point_simplepointwithstroke.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Simple point with stroke'
 feature-styles:
 - name: name
@@ -92,7 +92,7 @@ This example creates a square instead of a circle, colors it green, sizes it to 
 
 [Download the "Rotated square" YSLD](artifacts/point_rotatedsquare.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Rotated square'
 feature-styles:
 - name: name
@@ -123,7 +123,7 @@ This example draws a triangle, creates a black stroke identical to the [Simple p
 
 [Download the "Transparent triangle" YSLD](artifacts/point_transparenttriangle.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Transparent triangle'
 feature-styles:
 - name: name
@@ -156,7 +156,7 @@ This example styles each point as a graphic instead of as a simple shape.
 
 [Download the "Point as graphic" YSLD](artifacts/point_pointasgraphic.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Point as graphic'
 feature-styles:
 - name: name
@@ -190,7 +190,7 @@ This example shows a text label on the [Simple point](#ysld_cookbook_points_simp
 
 [Download the "Point with default label" YSLD](artifacts/point_pointwithdefaultlabel.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Point with default label'
 feature-styles:
 - name: name
@@ -228,7 +228,7 @@ This example improves the label style from the [Point with default label](#ysld_
 
 [Download the "Point with styled label" YSLD](artifacts/point_pointwithstyledlabel.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Point with styled label'
 feature-styles:
 - name: name
@@ -270,7 +270,7 @@ This example builds on the previous example, [Point with styled label](#ysld_coo
 
 [Download the "Point with rotated label" YSLD](artifacts/point_pointwithrotatedlabel.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Point with rotated label'
 feature-styles:
 - name: name
@@ -313,7 +313,7 @@ This example alters the size of the symbol based on the value of the population 
 
 [Download the "Attribute-based point" YSLD](artifacts/point_attribute.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Attribute-based point'
 feature-styles:
 - name: name
@@ -395,7 +395,7 @@ This example alters the style of the points at different zoom levels.
 
 [Download the "Zoom-based point" YSLD](artifacts/point_zoom.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Zoom-based point'
 feature-styles:
 - name: name

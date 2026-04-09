@@ -56,7 +56,7 @@ There are two possibilities how we can deploy our generalized shape files.
 
 First we need a XML config file
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <GeneralizationInfos version="1.0">
  <GeneralizationInfo dataSourceName="file:data/streams/0/streams.shp"  featureName="GenStreams" baseFeatureName="streams" geomPropertyName="the_geom">
@@ -150,7 +150,7 @@ Check the result by pressing **My GeoServer**, **Demo** and **Map Preview**. You
 
 No we need another XML configuration file
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <GeneralizationInfos version="1.0">
  <GeneralizationInfo dataSourceNameSpace="topp" dataSourceName="Streams_0"  featureName="GenStreams2" baseFeatureName="streams" geomPropertyName="the_geom">

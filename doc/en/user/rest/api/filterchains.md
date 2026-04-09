@@ -15,7 +15,7 @@ Formats:
 
 For Get (List - Response)
 
-``` xml
+```xml
 <filterChains>
     <filterChain>
         <name>web-test-2</name>
@@ -32,7 +32,7 @@ For Post (Create - Request)
 
 Content-Type: application/xml Authentication: XXXXXX
 
-``` xml
+```xml
 <filterChain>
     <name>web-test-2</name>
     <className>org.geoserver.security.HtmlLoginFilterChain</className>
@@ -62,7 +62,7 @@ For Post (Create - Response)
 
 For Get (list)
 
-``` json
+```json
 {
     "filterChains": {
         "filterChain": [
@@ -81,7 +81,7 @@ For Get (list)
 
 For Post (create - request)
 
-``` json
+```json
 {
     "filterChain": {
         "name": "rest",
@@ -109,10 +109,11 @@ For Post (create - request)
 
 For Post (create - response)
 
-``` json
 ```
-
-201 Created Content-Type: text/plain Location: "http://localhost:9002/geoserver/rest/security/filterChains/rest"
+201 Created
+Content-Type: text/plain
+Location: "http://localhost:9002/geoserver/rest/security/filterChains/rest"
+```
 
 ### Exceptions
 
@@ -138,7 +139,7 @@ Formats:
 
 Request GET: <http://localhost:9002/geoserver/rest/security/filterChains/web-test-1> Header Accept: application/xml
 
-``` xml
+```xml
 <filterChain>
     <name>web-test-1</name>
     <className>org.geoserver.security.HtmlLoginFilterChain</className>
@@ -162,7 +163,7 @@ Request GET: <http://localhost:9002/geoserver/rest/security/filterChains/web-tes
 
 Request PUT: <http://localhost:9002/geoserver/rest/security/filterChains/web-test-1> Header Content-Type: application/xml Header Accept: application/xml
 
-``` xml
+```xml
 <filterChain>
     <name>web-test-1</name>
     <className>org.geoserver.security.HtmlLoginFilterChain</className>
@@ -186,7 +187,7 @@ Request PUT: <http://localhost:9002/geoserver/rest/security/filterChains/web-tes
 
 Response Status: 200
 
-``` xml
+```xml
 <filterChain>
     <name>web-test-1</name>
     <className>org.geoserver.security.HtmlLoginFilterChain</className>
@@ -212,7 +213,7 @@ Request DELETE: <http://localhost:9002/geoserver/rest/security/filterChains/web-
 
 Response: Status: 200
 
-``` xml
+```xml
 <filterChain>
     <name>web-test-1</name>
     <className>org.geoserver.security.HtmlLoginFilterChain</className>
@@ -240,7 +241,7 @@ Request GET: <http://localhost:9002/geoserver/rest/security/filterChains/web-tes
 
 Response Status: 200
 
-``` json
+```json
 {
     "filterChain": {
         "name": "web-test-2",
@@ -270,7 +271,7 @@ Response Status: 200
 
 Request PUT: <http://localhost:9002/geoserver/rest/security/filterChains/web-test-2> Header Content-Type: application/json Header Accept: application/json
 
-``` json
+```json
 {
     "filterChain": {
         "name": "web-test-2",
@@ -300,7 +301,7 @@ Request PUT: <http://localhost:9002/geoserver/rest/security/filterChains/web-tes
 
 Response Status: 200
 
-``` json
+```json
 {
     "filterChain": {
         "name": "web-test-2",
@@ -332,7 +333,7 @@ Request DELETE: <http://localhost:9002/geoserver/rest/security/filterChains/web-
 
 Response: Status: 200
 
-``` json
+```json
 {
     "filterChain": {
         "name": "web-test-2",

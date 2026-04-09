@@ -8,7 +8,7 @@ A SpatialJSON response **may** contain a *Shared String Table*, which **may** co
 
 If present, a new `"sharedStrings"` property is available in the top-level `"FeatureCollection"` object:
 
-``` json
+```json
 {
   "type": "FeatureCollection",
 
@@ -38,7 +38,7 @@ In SpatialJSON, a feature's properties are basically stored in an array only (in
 
 These examples show how some feature's properties arrays are evaluated using the above string table:
 
-``` javascript
+```javascript
 /* showing properties array of feature #1 */
 properties: ["foo", 23, 2, null, true]
 

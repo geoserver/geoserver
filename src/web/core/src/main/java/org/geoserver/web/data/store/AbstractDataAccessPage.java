@@ -12,18 +12,20 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -63,6 +65,10 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
     protected StoreEditPanel storeEditPanel;
 
     public AbstractDataAccessPage() {}
+
+    protected Class<? extends Page> getDefaultReturnPage() {
+        return StorePage.class;
+    }
 
     /** */
     protected void initUI(final DataStoreInfo storeInfo) throws IllegalArgumentException {
@@ -143,7 +149,15 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                 workspacePanel.getFormComponent(), dataStoreNamePanel.getFormComponent(), dataStoreInfoId);
         paramsForm.add(storeNameValidator);
 
-        paramsForm.add(new BookmarkablePageLink<>("cancel", StorePage.class));
+        paramsForm.add(new Link<Void>("cancel") {
+            @Serial
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void onClick() {
+                doReturn(getDefaultReturnPage());
+            }
+        });
 
         paramsForm.add(new AjaxSubmitLink("save", paramsForm) {
             @Serial
@@ -300,5 +314,17 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
     @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
+
+    @Override
+    public PageParameters getPageParameters() {
+        PageParameters params = super.getPageParameters();
+        if (params.isEmpty() && workspacePanel != null) {
+            WorkspaceInfo ws = (WorkspaceInfo) workspacePanel.getDefaultModelObject();
+            if (ws != null) {
+                return new PageParameters().add("workspace", ws.getName());
+            }
+        }
+        return params;
     }
 }

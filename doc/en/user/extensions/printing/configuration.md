@@ -15,7 +15,7 @@ The server side uses a [YAML](http://www.yaml.org/) configuration file that defi
 
 Here is the general structure:
 
-``` yaml
+```yaml
 dpis:
   - 254
   - 190
@@ -107,13 +107,13 @@ Optional parts are shown with a question mark in the left margin. The question m
 
 Note: Sets of values like DPI can be entered in one of two forms:
 
-``` yaml
+```yaml
 dpi: [1,2,3,...]
 ```
 
 or
 
-``` yaml
+```yaml
 dpis:
   - 254
   - 190
@@ -190,7 +190,7 @@ Non-null values are:
 
 Both Keys and Security are options for accessing protected services. Keys are currently for Google maps premium accounts and Security is for other types and is more general Currently only BasicAuth is supported but other strategies can easily be added
 
-``` yaml
+```yaml
 security:
     - !basicAuth
         matcher: !dnsMatch
@@ -229,7 +229,7 @@ In addition a domain hostmatcher can be used to select a key based on the domain
 
 Finally google maps (for example) requires a client id as well that is associated with the private key. There for in the case of google premium services a legal key would be:
 
-``` yaml
+```yaml
 keys:
   - !key
     key: yxcvyxvcyxvyx
@@ -258,7 +258,7 @@ There are 3 ways to whitelist a host.
 
 ### Allowing every local services:
 
-``` yaml
+```yaml
 - !localMatch
   dummy: true
 ```
@@ -267,14 +267,14 @@ The "dummy" parameter is ignored, but mandatory to avoid a limitation in the YAM
 
 ### Allowing by DNS name:
 
-``` yaml
+```yaml
 - !dnsMatch
   host: labs.metacarta.com
 ```
 
 ### Allowing by IP address:
 
-``` yaml
+```yaml
 - !ipMatch
   ip: www.camptocamp.org
     ?   mask: 255.255.255.255
@@ -293,7 +293,7 @@ Allow to add some metadata to the generated PDF. They are visible in acroread in
 
 The structure is like that:
 
-``` yaml
+```yaml
 metaData:
     ?     title: ''
     ?     author: ''
@@ -309,7 +309,7 @@ All fields are optional and can use global variables, as defined in the [Block d
 
 The structure is like that:
 
-``` yaml
+```yaml
 pageSize: A4
     ?     landscape: false
     ?     marginLeft: 40
@@ -392,7 +392,7 @@ All the blocks can have a condition attribute that takes a spec attribute name. 
 
 Example: show text block only if in the spec the attribute name "showText" is given, is not equal to "false" and not equal to "0":
 
-``` yaml
+```yaml
 - !text
   text: 'mytext'
   condition: showText
@@ -400,7 +400,7 @@ Example: show text block only if in the spec the attribute name "showText" is gi
 
 ## Text block
 
-``` yaml
+```yaml
 - !text
   ?         font: Helvetica
   ?         fontSize: 12
@@ -431,7 +431,7 @@ The new configuration property ``asHTML`` (to be used in **`config.yaml`** text 
 
 ## Image block
 
-``` yaml
+```yaml
 - !image
   maxWidth: 200
   maxHeight: 100
@@ -457,7 +457,7 @@ We added support for Base64 encoded images uris to PDFUtils so that embedded ima
 
 Example url:
 
-``` yaml
+```yaml
 url: data:image/png;base64,<encoded image>
 ```
 
@@ -465,7 +465,7 @@ url: data:image/png;base64,<encoded image>
 
 This enhancement allow you add SVG content inside the specification of the print. You need to add a name into the image to manage:
 
-``` yaml
+```yaml
 - !columns
     width: 580
     height: 271
@@ -481,7 +481,7 @@ This enhancement allow you add SVG content inside the specification of the print
 
 Spec:
 
-``` yaml
+```yaml
 {
 ...
 chart1:{
@@ -495,7 +495,7 @@ then, the content its rendered inside the print page with the layout configurati
 
 ## Columns block
 
-``` yaml
+```yaml
 - !columns
   ?         config: {TABLE_CONFIG}
   ?         widths: [25,25,25,25]
@@ -528,7 +528,7 @@ Look at <http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleServer#Tableconfig
 
 Allowed only within a **mainPage**.
 
-``` yaml
+```yaml
 - !map
   width: 0
   height: 0
@@ -560,7 +560,7 @@ Display a scalebar.
 
 Allowed only within a **mainPage**.
 
-``` yaml
+```yaml
 - !scalebar
   maxSize: 150
   ?         type: line
@@ -629,7 +629,7 @@ Another property, ``preferredIntervalFractions``, can be specified to also use f
 
 Example:
 
-``` yaml
+```yaml
 preferredIntervals: [1,3,5,10]
 preferredIntervalFractions: [0.2,0.5]
 ```
@@ -640,7 +640,7 @@ Allows to display a table of the displayed feature's attributes.
 
 Allowed only within a *mainPage*.
 
-``` yaml
+```yaml
 - !attributes
   source: results
   ?         tableConfig: {TABLE_CONFIG}
@@ -658,7 +658,7 @@ The *columnWeigth* (MF_V1.2 only) allows to define a weight for the column width
 
 The **source** value defines the name of the entry in the root of the client's **spec**. For example, it would look like that:
 
-``` yaml
+```yaml
 {
   ...
   pages: [
@@ -683,7 +683,7 @@ The spec part is filled automatically by the 2 MapFish widgets when their [grids
 
 Here is a crazy example of columnDef that will show the name of the icon and it's bitmap side-by-side inside a single column:
 
-``` yaml
+```yaml
 columnDefs:
   icon:
     header: !text
@@ -720,7 +720,7 @@ Finally you can force a page break before any new group, using the ``groupOnNewP
 
 Display each layers along with its classes (icons and labels).
 
-``` yaml
+```yaml
 - !legends
   ?         backgroundColor: #FFFFFF
   ?         borders: false
@@ -839,7 +839,7 @@ Set the flag ``dontBreakItems`` to ``true`` on legends block if you want to rend
 
 The [columns block](#columns-block) and the [attributes block](#attributes-block) can take a table configuration object like that:
 
-``` yaml
+```yaml
 config:
   ?     borderWidth: 0
   ?     borderWidthLeft: 0
@@ -857,7 +857,7 @@ config:
 
 A cell configuration looks like that:
 
-``` yaml
+```yaml
 ?     row: {...}
 ?     col: {...}
 ?     borderWidth: 0
@@ -896,7 +896,7 @@ For example, if you want to draw an attribute block like that:
 
 You define that:
 
-``` yaml
+```yaml
 - !attributes
   tableConfig:
     borderWidth: 1
@@ -923,7 +923,7 @@ New layout to let you print a different number of pages dinamically.
 
 You need to put it in **`config.yaml`**:
 
-``` yaml
+```yaml
 dynamicImagesPage:
       rotation: true
       pageSize: 595 842
@@ -933,7 +933,7 @@ dynamicImagesPage:
 
 and when you called to the print servlet, you'll need to add this property to the spec:
 
-``` yaml
+```yaml
 imagesPages:[
      {firstPageConfiguration},
      {secondPageConfiguration}
@@ -952,7 +952,7 @@ The first use of this layout it's add a dynamic number of pages with differents 
 
 Example **`config.yaml`**:
 
-``` yaml
+```yaml
 ...
  dynamicImagesPage:
    rotation: true
@@ -1005,7 +1005,7 @@ Example **`config.yaml`**:
 
 spec:
 
-``` yaml
+```yaml
 {
 ...
 imagePages:[

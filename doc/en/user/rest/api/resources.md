@@ -34,7 +34,7 @@ Examples are given in XML. The JSON and HTML formats are analogue.
 
 #### Metadata
 
-``` xml
+```xml
 <ResourceMetaData>
    <name> nameOfFile </name>
    <parent> <path> path/to/parent </path>
@@ -49,7 +49,7 @@ Examples are given in XML. The JSON and HTML formats are analogue.
 
 #### Directories
 
-``` xml
+```xml
 <ResourceDirectory>`
    <name> nameOfDirectory </name>
    <parent> <path> path/to/parent </path>

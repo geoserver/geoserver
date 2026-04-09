@@ -33,7 +33,7 @@ This example specifies points be styled as red circles with a diameter of 6 pixe
 
 [View and download the full "Simple point" SLD](artifacts/point_simplepoint.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PointSymbolizer>
@@ -67,7 +67,7 @@ This example adds a stroke (or border) around the [Simple point](#sld_cookbook_p
 
 [View and download the full "Simple point with stroke" SLD](artifacts/point_simplepointwithstroke.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PointSymbolizer>
@@ -105,7 +105,7 @@ This example creates a square instead of a circle, colors it green, sizes it to 
 
 [View and download the full "Rotated square" SLD](artifacts/point_rotatedsquare.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PointSymbolizer>
@@ -140,7 +140,7 @@ This example draws a triangle, creates a black stroke identical to the [Simple p
 
 [View and download the full "Transparent triangle" SLD](artifacts/point_transparenttriangle.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PointSymbolizer>
@@ -179,7 +179,7 @@ This example styles each point as a graphic instead of as a simple shape.
 
 [View and download the full "Point as graphic" SLD](artifacts/point_pointasgraphic.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PointSymbolizer>
@@ -217,7 +217,7 @@ This example shows a text label on the [Simple point](#sld_cookbook_points_simpl
 
 [View and download the full "Point with default label" SLD](artifacts/point_pointwithdefaultlabel.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PointSymbolizer>
@@ -259,7 +259,7 @@ This example improves the label style from the [Point with default label](#sld_c
 
 [View and download the full "Point with styled label" SLD](artifacts/point_pointwithstyledlabel.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PointSymbolizer>
@@ -321,7 +321,7 @@ This example builds on the previous example, [Point with styled label](#sld_cook
 
 [View and download the full "Point with rotated label" SLD](artifacts/point_pointwithrotatedlabel.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PointSymbolizer>
@@ -384,7 +384,7 @@ This example alters the size of the symbol based on the value of the population 
 
 [View and download the full "Attribute-based point" SLD](artifacts/point_attribute.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <Name>SmallPop</Name>
@@ -503,7 +503,7 @@ This example alters the style of the points at different zoom levels.
 
 [View and download the full "Zoom-based point" SLD](artifacts/point_zoom.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <Name>Large</Name>

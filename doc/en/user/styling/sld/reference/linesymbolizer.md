@@ -70,7 +70,7 @@ Care should be taken when using it, as it might become a performance bottleneck.
 
 The following symbolizer is taken from the [Lines](../cookbook/lines.md) section in the [SLD Cookbook](../cookbook/index.md).
 
-``` xml
+```xml
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#0000FF</CssParameter>
@@ -90,7 +90,7 @@ The symbolizer styles a feature as a dashed blue line of width 3 pixels.
 
 The following style excerpt generates a solid line, and then a dashed blue line 3 pixels on the left of it.
 
-``` xml
+```xml
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#000000</CssParameter>
@@ -115,7 +115,7 @@ The following style excerpt generates a solid line, and then a dashed blue line 
 
 The following style excerpt builds a inward offset line for polygons.
 
-``` xml
+```xml
 <PolygonSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#000000</CssParameter>

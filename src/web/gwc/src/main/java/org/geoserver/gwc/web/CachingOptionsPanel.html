@@ -18,7 +18,7 @@
             </div>
             <div class="gs-list-item-class" wicket:id="container">
               <div wicket:id="configs">
-                <div>
+                <div class="gs-form">
                   <div class="gs-form-group">
                     <label>
                       <wicket:message key="GWCSettingsPage.lockProvider">lockProvider:</wicket:message>
@@ -35,18 +35,22 @@
                     <label>
                       <wicket:message key="GWCSettingsPage.metaTiling">Default meta tiling factors:</wicket:message>
                     </label>
-                    <div>
-                      <select class="select" id="metaTilingX" wicket:id="metaTilingX"/>
-                      <wicket:message key="GWCSettingsPage.metaTilingX">Tiles wide by </wicket:message>
-                      <select class="select" id="metaTilingY" wicket:id="metaTilingY"/>
-                      <wicket:message key="GWCSettingsPage.metaTilingY">Tiles high</wicket:message>
+                    <div class="gs-form">
+                      <div class="gs-form-group">
+                        <select class="select w-sm" id="metaTilingX" wicket:id="metaTilingX"/>
+                        <wicket:message key="GWCSettingsPage.metaTilingX">Tiles wide by </wicket:message>
+                      </div>
+                      <div class="gs-form-group">
+                        <select class="select w-sm" id="metaTilingY" wicket:id="metaTilingY"/>
+                        <wicket:message key="GWCSettingsPage.metaTilingY">Tiles high</wicket:message>
+                      </div>
                     </div>
                   </div>
                   <div class="gs-form-group">
                     <label>
                       <wicket:message key="GWCSettingsPage.gutter">Default gutter size:</wicket:message>
                     </label>
-                    <select class="select" id="gutter" wicket:id="gutter"/>
+                    <select class="select w-sm" id="gutter" wicket:id="gutter"/>
                   </div>
                   <div class="gs-list-item-class">
                     <label>

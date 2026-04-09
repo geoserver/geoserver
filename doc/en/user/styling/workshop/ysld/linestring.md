@@ -27,7 +27,7 @@ Reference:
 
 A line symbolizer is represented by a ``line`` key. You can make a completely default symbolizer by giving it an empty map
 
-``` yaml
+```yaml
 line:
 ```
 

@@ -14,7 +14,7 @@ Let *test:timeseries* be a sample layer related to a coverage with time dimensio
 
 A getCoverage request can be posted with a similar content to [http://server:port/geoserver/wcs](http://server:port/geoserver/wcs):
 
-``` xml
+```xml
 <wcs:GetCoverage service="WCS" version="2.0.1"
 xmlns:wcs="http://www.opengis.net/wcs/2.0"
 xmlns:gml="http://www.opengis.net/gml/3.2" 
@@ -45,7 +45,7 @@ xsi:schemaLocation="http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wc
 
 The outcome will be something like this:
 
-``` json
+```json
 {
   "type": "Coverage",
   "domain": {

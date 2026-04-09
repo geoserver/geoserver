@@ -121,7 +121,7 @@ The `<BBOX>` operator tests whether a geometry-valued property intersects a fixe
 
 - This filter selects features with a geometry that intersects the point (1,1).
 
-``` xml
+```xml
 <Intersects>
   <PropertyName>GEOMETRY</PropertyName>
   <gml:Point>
@@ -132,7 +132,7 @@ The `<BBOX>` operator tests whether a geometry-valued property intersects a fixe
 
 - This filter selects features with a geometry that overlaps a polygon.
 
-``` xml
+```xml
 <Overlaps>
   <PropertyName>Geometry</PropertyName>
   <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
@@ -147,7 +147,7 @@ The `<BBOX>` operator tests whether a geometry-valued property intersects a fixe
 
 - This filter selects features with a geometry that intersects the geographic extent [-10,0 : 10,10].
 
-``` xml
+```xml
 <BBOX>
   <PropertyName>GEOMETRY</PropertyName>
   <gml:Box srsName="urn:x-ogc:def:crs:EPSG:4326">
@@ -180,7 +180,7 @@ The content for `<Not>` is a single operand given by a [Condition](#filter_condi
 
 - This filter uses `<And>` to combine a comparison predicate and a spatial predicate:
 
-``` xml
+```xml
 <And>
    <PropertyIsEqualTo>
       <PropertyName>NAME</PropertyName>
@@ -238,7 +238,7 @@ The `<Literal>` element specifies a constant value. It contains data of one of t
 
 WFS 2.0 does not depend on any one GML version and thus requires an explicit namespace and schemaLocation for GML. In a GET request, namespaces can be placed on a Filter element (that is, `filter=` the block below, URL-encoded):
 
-``` xml
+```xml
 <fes:Filter
         xmlns:fes="http://www.opengis.net/fes/2.0"
         xmlns:gml="http://www.opengis.net/gml/3.2">

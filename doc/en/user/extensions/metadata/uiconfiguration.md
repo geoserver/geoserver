@@ -326,7 +326,7 @@ To create a feature catalog for a vector layer, a complex structure is needed to
 
 In the example the featureCatalog object has two attributes. A unique identifier of the type [UUID](#uuid) and the feature attribute field.
 
-![](images/fa01.png)
+![](images/fa01.png)  
 *e.g. Empty Feature attribute field*
 
 ``` YAML
@@ -344,12 +344,12 @@ In the example the featureCatalog object has two attributes. A unique identifier
 
 The `Generate` action will check the database metadata for that layer and generate a feature attribute for each column in the table.
 
-![](images/fa02.png)
+![](images/fa02.png)  
 *e.g. Feature attribute with generate feature types*
 
 Whitin each feature attribute there is another `Generate` action that will generate the domain.
 
-![](images/generate_domain.png)
+![](images/generate_domain.png)  
 *e.g. Generate domain dialog*
 
 There are two options to do this:
@@ -357,7 +357,7 @@ There are two options to do this:
 - Using the existing data in the database for this attribute.
 - Using data from a look-up table in the same database. In this case you must specify the table, an attribute from which to take values and an attribute from which to take definitions.
 
-![](images/fa03.png)
+![](images/fa03.png)  
 *e.g. Feature attribute with generate domain*
 
 ## Internationalization support

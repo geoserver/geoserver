@@ -51,7 +51,7 @@ This example specifies lines be colored black with a thickness of 3 pixels.
 
 [View and download the full "Simple line" SLD](artifacts/line_simpleline.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -80,7 +80,7 @@ This example shows how to draw lines with borders (sometimes called "cased lines
 
 [View and download the full "Line with border" SLD](artifacts/line_linewithborder.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
    <Rule>
     <LineSymbolizer>
@@ -129,7 +129,7 @@ This example alters the [Simple line](#sld_cookbook_lines_simpleline) to create 
 
 [View and download the full "Dashed line" SLD](artifacts/line_dashedline.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -159,7 +159,7 @@ This example alters the [Simple line](#sld_cookbook_lines_simpleline) to add a p
 
 [View and download the full "Dashed line" SLD](artifacts/line_offset.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -197,7 +197,7 @@ This example uses hatching to create a railroad style. Both the line and the hat
 
 [View and download the full "Railroad (hatching)" SLD](artifacts/line_railroad.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -247,7 +247,7 @@ This example uses a graphic stroke along with dash arrays to create a "dot and s
 
 [View and download the full "Spaced symbols" SLD](artifacts/line_dashspace.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -301,7 +301,7 @@ The example shows how to use these features to create two synchronized sequences
 
 [View and download the full "Spaced symbols" SLD](artifacts/line_dashdot.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -349,7 +349,7 @@ This example shows a text label on the simple line. This is how a label will be 
 
 [View and download the full "Line with default label" SLD](artifacts/line_linewithdefaultlabel.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -391,7 +391,7 @@ This example renders the text label to follow the contour of the lines.
 
 [View and download the full "Label following line" SLD](artifacts/line_labelfollowingline.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -439,7 +439,7 @@ This example optimizes label placement for lines such that the maximum number of
 
 [View and download the full "Optimized label" SLD](artifacts/line_optimizedlabel.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -484,7 +484,7 @@ This example improves the style of the labels from the [Optimized label placemen
 
 [View and download the full "Optimized and styled label" SLD](artifacts/line_optimizedstyledlabel.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <LineSymbolizer>
@@ -533,7 +533,7 @@ This example styles the lines differently based on the "type" (Road class) attri
 
 [View and download the full "Attribute-based line" SLD](artifacts/line_attributebasedline.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <Name>local-road</Name>
@@ -628,7 +628,7 @@ This example alters the [Simple line](#sld_cookbook_lines_simpleline) style at d
 
 [View and download the full "Zoom-based line" SLD](artifacts/line_zoombasedline.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <Name>Large</Name>

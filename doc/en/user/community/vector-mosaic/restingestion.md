@@ -23,7 +23,7 @@ The following example requires vectormosaic, ogcapi and geoparquet community mod
 
 First, a PostGIS table exists, defined with the following DDL:
 
-``` sql
+```sql
 CREATE TABLE public.burntarea (
   id serial4 NOT NULL,
   geometry public.geometry(polygon, 4326) NULL,

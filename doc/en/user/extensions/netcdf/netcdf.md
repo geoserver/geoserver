@@ -334,7 +334,7 @@ On Linux:
 
 This will generate the files and it's going to be good enough if each NetCDF contains the same coverages. The `indexer.xml` file might look as follows:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><Indexer>
   <domains>
     <domain name="time">
@@ -363,7 +363,7 @@ This will generate the files and it's going to be good enough if each NetCDF con
 
 While the `_auxiliary.xml` file might look like:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><Indexer>
   <coverages>
     <coverage>

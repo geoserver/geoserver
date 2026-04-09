@@ -15,7 +15,7 @@
 
 The following SLD invokes a Dynamic Color Map rendering transformation on a Coverage using colorMaps created on top of QuantumGIS SVG files. Dynamic Color Map Rendering Transformation takes data as first parameter (the coverage) and ColorRamp as second parameter which is a colorMap.
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0"
     xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
@@ -123,7 +123,7 @@ Key aspects of the SLD are:
 
 Alternatively, a ColorMap may be specified this way:
 
-``` xml
+```xml
 ..........
            <ogc:Function name="ras:DynamicColorMap">
              <ogc:Function name="parameter">
@@ -143,7 +143,7 @@ Alternatively, a ColorMap may be specified this way:
 
 or
 
-``` xml
+```xml
 ..........
            <ogc:Function name="ras:DynamicColorMap">
              <ogc:Function name="parameter">

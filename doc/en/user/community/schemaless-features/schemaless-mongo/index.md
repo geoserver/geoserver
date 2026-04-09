@@ -10,7 +10,7 @@ The default geometry can be defined by setting a geometry index on the desired g
 
 As an example of the obtained output we will use the Stations use case. In the MongoDB collection we have the following document among the others being served:
 
-``` json
+```json
 {
   "_id": {
  "$oid": "58e5889ce4b02461ad5af080"
@@ -55,7 +55,7 @@ As an example of the obtained output we will use the Stations use case. In the M
 
 The GeoJSON output for that specific document will be the following feature:
 
-``` json
+```json
 {
  "type": "Feature",
  "id": "58e5889ce4b02461ad5af080",

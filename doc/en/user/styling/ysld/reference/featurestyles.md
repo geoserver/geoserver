@@ -72,7 +72,7 @@ This final map is produced by composition:
 
 The following is the basic syntax of a feature style. Note that the contents of the block are not all expanded here.
 
-``` yaml
+```yaml
 feature-styles:
 - name: <text>
   title: <text>
@@ -165,7 +165,7 @@ When a style has a single feature style, it is possible to omit the syntax for t
 
 So the following complete styles are both equivalent:
 
-``` yaml
+```yaml
 feature-styles:
 - rules:
   - name: rule1
@@ -182,7 +182,7 @@ feature-styles:
         stroke-width: 1
 ```
 
-``` yaml
+```yaml
 rules:
 - name: rule1
   scale: [min,50000]
@@ -204,7 +204,7 @@ rules:
 
 This example shows how a smaller line can be drawn on top of a larger line, creating the effect of lines being drawn with a border or "casing":
 
-``` yaml
+```yaml
 feature-styles:
 - name: outer
   title: Outer line
@@ -336,7 +336,7 @@ feature-styles:
 
 Layer 2 (bottom/destination):
 
-``` yaml
+```yaml
 feature-styles:
 - rules:
   - title: Bottom/destination
@@ -367,7 +367,7 @@ feature-styles:
 
 Layer 2 (bottom/destination):
 
-``` yaml
+```yaml
 feature-styles:
 - rules:
   - title: Bottom/destination

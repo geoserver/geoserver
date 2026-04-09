@@ -59,7 +59,7 @@ If it is desired to display the input dataset in its original form, or transform
 
 `ras:Contour` is a **Raster-to-Vector** rendering transformation which extracts contour lines at specified levels from a raster DEM. The following SLD invokes the transformation and styles the contours as black lines.
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0" 
   xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
@@ -153,7 +153,7 @@ The result of using this transformation is shown in the following map image (whi
 
 `vec:Heatmap` is a **Vector-to-Raster** rendering transformation which generates a heatmap surface from weighted point data. The following SLD invokes a Heatmap rendering transformation on a featuretype with point geometries and an attribute `pop2000` supplying the weight for the points (in this example, a dataset of world urban areas is used). The output is styled using a color ramp across the output data value range [0 .. 1].
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0" 
     xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
@@ -251,7 +251,7 @@ This transformation styles a layer to produce a heatmap surface for the data in 
 
 The `Jiffle` rendering transformation allows to run map algebra on the bands of an input raster layer using the [Jiffle language](https://eclipse-imagen.github.io/imagen/guide/jiffle/). For example, the following style computes the NDVI index from a 13 bands Sentinel 2 image, in which the red and NIR bands are the forth and eight bands (Jiffle band indexes are zero based), and then displays the resulting index with a color map:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld
 http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
@@ -306,7 +306,7 @@ and then the display of the NDVI index computed with the above style:
 
 `vec:GroupCandidateSelection` is a **Vector-to-Vector** rendering transformation which filters a FeatureCollection according to the aggregate operation chosen (MIN or MAX) and the groups defined through attribute names. Given a feature collection, groups according to the defined grouping attributes, and returns the feature having the MIN or MAX value for the chosen attribute. One feature will be chosen for each group. The following SLD invokes the transformation:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
     <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns="http://www.opengis.net/sld" xmlns:st="http://www.stations.org/1.0" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.0">
      <sld:UserLayer>
@@ -361,6 +361,6 @@ This vector process accepts four parameters:
 
 By default GetFeatureInfo results are determined from the output after evaluating rendering transformation on the layer data. This behavior can be changed only for **raster** sources (i.e., raster-to-raster and raster-to-vector transformations). See section [Disabling GetFeatureInfo requests results transformation](../../../services/wms/webadmin.md#services_webadmin_wms_featureinfo_transformation) to disable this behavior on a global or per virtual service basis. The WMS setting can be overridden for individual FeatureTypeStyle elements using the `transformFeatureInfo` SLD vendor option (either `true` or `false`).
 
-``` xml
+```xml
 <VendorOption name="transformFeatureInfo">true</VendorOption>
 ```

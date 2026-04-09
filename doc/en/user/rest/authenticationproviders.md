@@ -46,7 +46,7 @@ Returns providers in the **current active order**.
 
 #### Response 200 (XML)
 
-``` xml
+```xml
 <authproviders>
   <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
     <id>52857278:13c7ffd66a8:-7ff0</id>
@@ -62,7 +62,7 @@ Returns providers in the **current active order**.
 
 #### Response 200 (JSON)
 
-``` json
+```json
 {
   "authproviders": [
     {
@@ -82,7 +82,7 @@ Returns providers in the **current active order**.
 
 #### Response 200 (XML)
 
-``` xml
+```xml
 <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
   <id>52857278:13c7ffd66a8:-7ff0</id>
   <name>default</name>
@@ -93,7 +93,7 @@ Returns providers in the **current active order**.
 
 #### Response 200 (JSON)
 
-``` json
+```json
 {
   "id": "52857278:13c7ffd66a8:-7ff0",
   "name": "default",
@@ -146,7 +146,7 @@ Optional `?position=N` (0-based) inserts the new provider at that index; omit to
 
 #### Response 201
 
-``` none
+```none
 Location: /geoserver/rest/security/authproviders/corporateLdap
 ```
 
@@ -251,11 +251,11 @@ Only **PUT** is allowed.
 
 All errors use a simple payload:
 
-``` json
+```json
 { "status": 400, "message": "Missing 'className' in JSON payload" }
 ```
 
-``` xml
+```xml
 <ErrorResponse>
   <status>400</status>
   <message>Missing 'className' in JSON payload</message>

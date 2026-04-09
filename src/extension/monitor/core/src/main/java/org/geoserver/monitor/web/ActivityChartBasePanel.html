@@ -8,16 +8,18 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-ActivityChartBasePanel">
-        <form wicket:id="form">
+        <form wicket:id="form" class="gs-form">
           <div class="gs-form-group">
-            <label for="from" class="inline">From</label>
-            <input type="text" wicket:id="from" id="start" class="pe-4 d-inline"/>
+            <label for="from">From</label>
+            <input type="text" wicket:id="from" id="start" class="w-md" />
           </div>
           <div class="gs-form-group">
-            <label for="to" class="inline">To</label>
-            <input type="text" wicket:id="to" id="end" class="d-inline"/>
+            <label for="to">To</label>
+            <input type="text" wicket:id="to" id="end" class="w-md" />
           </div>
-          <a href="#" wicket:id="refresh" class="refresh-link">Refresh</a>
+          <div class="button-group">
+            <a href="#" wicket:id="refresh" class="button">Refresh</a>
+          </div>
         </form>
         <img wicket:id="chart"/>
       </div>

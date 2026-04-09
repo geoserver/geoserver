@@ -13,7 +13,7 @@ First off, you need to find the JDBC driver for your database. Most often it is 
 
 Once that is done, the Tomcat configuration file **`{TOMCAT_HOME}/conf/context.xml`** needs to be edited in order to setup the connection pool. In the case of a local Oracle XE the setup might look like:
 
-``` xml
+```xml
 <Context>
    ...
    <Resource name="jdbc/oralocal"
@@ -94,7 +94,7 @@ For configuring the JNDI pool you need to move the Postgres JDBC driver (it shou
 
 Then the following code must be added to the Tomcat configuration file **`{TOMCAT_HOME}/conf/context.xml`** inside a Context tag.
 
-``` xml
+```xml
 <Context>
    <Resource name="jdbc/postgres"
       auth="Container"
@@ -135,7 +135,7 @@ For configuring the connection pool for SQLServer you need to configure the SQLS
 
 Then the following code must be written in the Tomcat configuration file **`{TOMCAT_HOME}/conf/context.xml`**
 
-``` xml
+```xml
 <Context>
    ...
       <Resource name="jdbc/sqlserver"

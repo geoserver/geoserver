@@ -30,7 +30,7 @@ Since the CSS module translates styles to SLD before any rendering occurs, its m
 
 String values consist of a small snippet of text. For example, a string could be a literal label to use for a subset of roads:
 
-``` css
+```css
 [lanes>20] {
     label: "Serious Freaking Highway";
 }
@@ -44,7 +44,7 @@ While labels aren't really a special type of value, they deserve a special menti
 
 If a label is a simple string value, then it works like any other string would:
 
-``` css
+```css
 [lanes > 20] {
     label: "Serious Freaking Highway";
 }
@@ -52,7 +52,7 @@ If a label is a simple string value, then it works like any other string would:
 
 However, if a label has multiple values, all of those values will be concatenated to form a single label:
 
-``` css
+```css
 [lanes > 20] {
    label: "Serious " "Freaking " "Highway";
 }
@@ -60,7 +60,7 @@ However, if a label has multiple values, all of those values will be concatenate
 
 Note the blank-space within the label strings here; *no blank-space is added* when concatenating strings, so you must be explicit about where you want it included. You can also mix CQL expressions in with literal string values here:
 
-``` css
+```css
 states {
    label: [STATE_NAME] " (" [STATE_ABBR] ")";
 }
@@ -90,7 +90,7 @@ Color values are relatively important to styling, so there are multiple ways to 
 
 When using external images to decorate map features, it is necessary to reference them by URL. This is done by a call to the `url` function. The URL value may be wrapped in single or double-quotes, or not at all. The same escaping rules as for string values. The `url` function is also a special case where the surrounding quote marks can usually be omitted. Some examples:
 
-``` css
+```css
 /* These properties are all equivalent. */
 
 * {
@@ -115,7 +115,7 @@ As defined in the SLD standard, GeoServer's `css` module also allows using a cer
 
 And others. Additionally, vendors can provide an extended set of well-known marks, a facet of the standard that is exploited by some GeoTools plugins to provide dynamic map features such as using characters from TrueType fonts as map symbols, or dynamic charting. In support of these extended mark names, the css module provides a `symbol` function similar to `url`. The syntax is the same, aside from the function name:
 
-``` css
+```css
 * {
     mark: symbol(circle);
     mark: symbol('ttf://Times+New+Roman&char=0x19b2');

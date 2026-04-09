@@ -4,7 +4,7 @@ Starting with GeoServer 2.10 the CSS modules supports rendering transformations 
 
 The property is a function call with a special key/value pair syntax, using the following template:
 
-``` scss
+```scss
 transformationName(key1:value1,key2:v21 v22 ... v2M,...,keyN:vN)
 ```
 
@@ -14,7 +14,7 @@ The transformation function is subject to cascading like all other properties, b
 
 This is an example of a CSS style extracting contour lines from a DEM, and also showing the single values when a suitable zoom level is reached:
 
-``` scss
+```scss
 /* @title Levels */
 * {
   transform: ras:Contour(levels: 1100 1200 1300 1400 1500 1600 1700);

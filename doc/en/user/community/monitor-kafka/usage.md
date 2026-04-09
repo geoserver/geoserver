@@ -57,7 +57,7 @@ The easiest way to do this is to enter the schema registry container with:
 
 Then you will see messages like this:
 
-``` json
+```json
 {
     "id": 2,
     "status": "FINISHED",

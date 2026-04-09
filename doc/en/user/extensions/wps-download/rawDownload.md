@@ -69,7 +69,7 @@ would be represented in the following forms:
 - in text/xml:`500116.08576537756,499994.25579707103 500116.08576537756,500110.1012210889 500286.2657688021,500110.1012210889 500286.2657688021,499994.25579707103 500116.08576537756,499994.25579707103`
 - in application/xml: the following xml
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><gml:Polygon xmlns:gml="http://www.opengis.net/gml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink">
   <gml:outerBoundaryIs>
     <gml:LinearRing>
@@ -81,7 +81,7 @@ would be represented in the following forms:
 
 The general structure of a WPS Download request POST payload consists of two parts: the first (`<wps:DataInputs>`) contains the input parameters for the process, and the second (`<wps:ResponseForm>`) contains details about delivering the output. A typical pseudo payload is the following:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
  <ows:Identifier>gs:WPS_Process_Name_Here</ows:Identifier>
  <wps:DataInputs>
@@ -104,7 +104,7 @@ The general structure of a WPS Download request POST payload consists of two par
 
 Each parameter for the process is defined in its own `<wps:Input>` xml block. In case of simple type data, such as layerName, outputFormat, targetCRS, etc, input params xml blocks have the following form:
 
-``` xml
+```xml
 <wps:Input>
  <ows:Identifier>layerName</ows:Identifier>
  <wps:Data>
@@ -115,7 +115,7 @@ Each parameter for the process is defined in its own `<wps:Input>` xml block. In
 
 Note the `<wps:LiteralData>` tags wrapping the parameter value. In case of geometry parameters, such as filter, ROI, the parameter's `<wps:Input>` block is different:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>ROI</ows:Identifier>
   <wps:Data>
@@ -130,7 +130,7 @@ Note that if the ROI parameter is defined as WKT, you will need to specify a Roi
 
 In case the ROI is defined using a REFERENCE source, the input block is slightly different:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>ROI</ows:Identifier>
   <wps:Reference mimeType="application/wkt" xlink:href="url_to_fetch_data" method="GET"/>
@@ -139,7 +139,7 @@ In case the ROI is defined using a REFERENCE source, the input block is slightly
 
 Note the `<wps:Reference>` tag replacing `<wps:ComplexData>` tag, and the extra `xlink:href="url_to_fetch_data"` parameter, which defines the url to perform the HTTP GET request. For POST request cases, tech method is switched to POST, and a `<wps:Body>` tag is used to wrap POST data:
 
-``` xml
+```xml
 <wps:Reference mimeType="application/wkt" xlink:href="url_to_fetch_data" method="POST">
   <wps:Body><![CDATA[request_body_data]]></wps:Body>
 </wps:Reference>
@@ -161,7 +161,7 @@ Compatible text formats for filter definitions are:
 
 For more details on filter formats/languages, one can see [../../filter/syntax](../../filter/syntax.md) and [../../filter/function](../../filter/function.md). Filter parameter applies to vector data. If this is the case with input data, a sample `<wps:Input>` block of a filter intersecting the polygon we used earlier as an example for ROI definition would be:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>filter</ows:Identifier>
   <wps:Data>
@@ -191,7 +191,7 @@ Assuming that a local geoserver instance (setup for wps/wps-download support) is
 
 using the following payload:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
  <ows:Identifier>gs:Download</ows:Identifier>
  <wps:DataInputs>
@@ -236,7 +236,7 @@ using the following payload:
 
 More parameters (from the parameter list above) can be used, for example, we can only select bands **0 and 2** from the original raster:
 
-``` xml
+```xml
 <wps:Input>
  <ows:Identifier>bandIndices</ows:Identifier>
  <wps:Data>
@@ -253,7 +253,7 @@ More parameters (from the parameter list above) can be used, for example, we can
 
 Or, use a **Region Of Interest** to crop the dataset:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>ROI</ows:Identifier>
   <wps:Data>
@@ -274,7 +274,7 @@ The result produced is a zipped file to download.
 
 The process can also be performed asynchronously. In this case, the second part (`wps:ResponseForm`) of the wps download payload slightly changes, by using the **storeExecuteResponse** and **status** parameters, set to **true** for the `<wps:ResponseDocument>`:
 
-``` xml
+```xml
 <wps:ResponseForm>
   <wps:ResponseDocument storeExecuteResponse="true" status="true">
     <wps:RawDataOutput mimeType="application/zip">
@@ -286,7 +286,7 @@ The process can also be performed asynchronously. In this case, the second part 
 
 In case of asynchronous execution, the initial request to download data returns an xml indication that the process has successfully started:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba" version="1.0.0">
   <wps:Process wps:processVersion="1.0.0">
       <ows:Identifier>gs:Download</ows:Identifier>
@@ -305,7 +305,7 @@ The response contains a `<wps:Status>` block indicating successful process creat
 
 When issued (and process has finished on the server), this GET request returns the result to download/process as a base64 encoded zip:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=0c596a4d-7ddb-4a4e-bf35-4a64b47ee0d3" version="1.0.0">
   <wps:Process wps:processVersion="1.0.0">
@@ -332,7 +332,7 @@ When issued (and process has finished on the server), this GET request returns t
 
 The `<wps:ResponseForm>` of the previous asynchronous request payload example can be modified to get back a link to the file to be downloaded instead of the base64 encoded data.
 
-``` xml
+```xml
 ...
 <wps:ResponseForm>
   <wps:ResponseDocument storeExecuteResponse="true" status="true">
@@ -347,7 +347,7 @@ Note `<wps:ResponseDocument>` contains a `<wps:Output>` instead of a `<wps:RawDa
 
 This time, when issued (and process has finished on the server), the GET request returns the result to download as a link as part of `<wps:Output><wps:Reference>` .
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
   <wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1" version="1.0.0">
   <wps:Process wps:processVersion="1.0.0">
@@ -374,7 +374,7 @@ By default, downloading vector data results in a Shapefile, compressed in a zip 
 
 Similarly, for raster data, by default the downloaded raster gets zipped, along with the SLD style associated to the layer. In some cases, this can be unnecessary, especially if the output TIFF already has some type of internal compression or if we simply want to get back the TIFF output file without the ancillary SLD. Let's consider downloading a RGB TIFF: the default raster.sld style won't add anything useful to the output. In that case it's possible to specify `image/tiff` in the Response's output `mimeType`: the output TIFF will be provided as is, without extra steps of compression and file management.
 
-``` xml
+```xml
 ...
 <wps:ResponseForm>
   <wps:ResponseDocument storeExecuteResponse="true" status="true">
@@ -397,7 +397,7 @@ Moreover, when copying back data resources from within the WPS machinery to the 
 
 The `writeParameters` input element of a process execution allows to specify parameters to be applied by the `outputFormat` encoder when producing the output file. Writing parameters are listed as multiple `<dwn:Parameter key="writingParameterName">value</dwn:Parameter>` within a `<dwn:Parameters>` parent element. See the below xml containing full syntax of a valid example for TIFF output format:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>writeParameters</ows:Identifier>
     <wps:Data>
@@ -494,7 +494,7 @@ This section will only show up if:
 
 Resampling the data to a different VerticalCRS as part of the Raster Download Process is possible by specifying the **targetVerticalCRS** parameter in the WPS Download request. For example:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>targetVerticalCRS</ows:Identifier>
   <wps:Data>

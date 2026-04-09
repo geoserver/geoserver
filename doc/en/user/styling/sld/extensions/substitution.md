@@ -8,7 +8,7 @@ Variables are specified in WMS `GetMap` requests by using the `env` request para
 
 In an SLD the variable values are accessed using the `env` function. The function retrieves a substitution variable value specified in the current request:
 
-``` xml
+```xml
 <ogc:Function name="env">
    <ogc:Literal>size</ogc:Literal>
 </ogc:Function>       
@@ -16,7 +16,7 @@ In an SLD the variable values are accessed using the `env` function. The functio
 
 A default value can be provided. It will be used if the variable was not specified in the request:
 
-``` xml
+```xml
 <ogc:Function name="env">
    <ogc:Literal>size</ogc:Literal>
    <ogc:Literal>6</ogc:Literal>
@@ -45,7 +45,7 @@ Mentioned variables (with exception of kmlOutputMode and wms_crs) are also propa
 
 The following SLD symbolizer has been parameterized in three places, with default values provided in each case:
 
-``` xml
+```xml
 <PointSymbolizer>
   <Graphic>
     <Mark>

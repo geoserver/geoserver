@@ -18,7 +18,7 @@ GeoServer is also able to use a `properties` file outside the GeoServer's DATA_D
 - By providing an environment variable named `ENV_PROPERTIES` and the path to the properties file as the value.
 - By providing a context parameter in the `WEB-INF/web.xml` file for the GeoServer application:
 
-``` xml
+```xml
 <web-app>
   ...
   <context-param>

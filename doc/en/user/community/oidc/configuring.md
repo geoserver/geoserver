@@ -50,7 +50,7 @@ The Redirect Base URI determines the public-facing URL that your IDP will redire
 
 For Docker and container deployments, always set the `PROXY_BASE_URL` environment variable to the externally accessible URL:
 
-``` bash
+```bash
 docker run -e PROXY_BASE_URL=https://geoserver.example.com/geoserver ...
 ```
 

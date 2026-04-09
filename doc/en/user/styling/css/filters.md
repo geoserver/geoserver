@@ -6,7 +6,7 @@ Filters limit the set of features affected by a rule's properties. There are sev
 
 Combination is done in the usual CSS way. A rule with two filters separated by a comma affects any features that match *either* filter, while a rule with two filters separated by only whitespace affects only features that match *both* filters. Here's an example using a basic attribute filter (described below):
 
-``` css
+```css
 /* Matches places where the lake is flooding */
 [rainfall>12] [lakes>1] {
     fill: black;
@@ -20,7 +20,7 @@ Combination is done in the usual CSS way. A rule with two filters separated by a
 
 When writing a selector that uses both *and* and *or* combinators, remember that the *and* combinator has higher precedence. For example:
 
-``` css
+```css
 restricted [cat='2'], [cat='3'], [cat='4'] [@sd <= 200k] [@sd > 100k] {
   fill: #EE0000;
 }
@@ -34,7 +34,7 @@ The above selector should be read as:
 
 If instead the intention was to combine in or just the three cat filters, the right syntax would have been:
 
-``` css
+```css
 restricted [cat='2' or cat='3' or cat='4'] [@sd <= 200k] [@sd > 100k] {
   fill: #EE0000;
 }
@@ -64,7 +64,7 @@ Supported predicate operators include the following:
 
 For example, to only render outlines for the states whose names start with letters in the first half of the alphabet, the rule would look like:
 
-``` css
+```css
 [STATE_NAME<='M'] {
     stroke: black;
 }
@@ -77,7 +77,7 @@ For example, to only render outlines for the states whose names start with lette
 
 When dealing with data from multiple sources, it may be useful to provide rules that only affect one of those sources. This is done very simply; just specify the name of the layer as a filter:
 
-``` css
+```css
 states {
     stroke: black;
 }
@@ -87,7 +87,7 @@ states {
 
 For layers that provide feature-level identifiers, you can style specific features simply by specifying the ID. This is done by prefixing the ID with a hash sign (`#`):
 
-``` css
+```css
 #states.2 {
     stroke: black;
 }
@@ -100,7 +100,7 @@ For layers that provide feature-level identifiers, you can style specific featur
 
 Often, there are aspects of a map that should change based on the context in which it is being viewed. For example, a road map might omit residential roads when being viewed at the state level, but feature them prominently at the neighborhood level. Details such as scale level are presented as pseudo-attributes; they look like property filters, but the property names start with an `@` symbol:
 
-``` css
+```css
 [roadtype = 'Residential'][@sd > 100k] {
     stroke: black;
 }
@@ -115,7 +115,7 @@ The context details that are provided are as follows:
 
 The scale value can be expressed as a plain number, for for brevity and readability the suffixes k (kilo), M (mega), G (giga) can be used, for example:
 
-``` css
+```css
 [@sd > 100k]
 [@sd < 12M]
 [@sd < 1G]
@@ -130,7 +130,7 @@ Similar to scale based control, one can limit the application of a rule by refer
 
 And example with results similar to the scale example would look as follows:
 
-``` css
+```css
 [roadtype = 'Residential'][@z < 13] {
     stroke: black;
 }
@@ -140,7 +140,7 @@ The @z variable can be used with the following comparison operators: ``<``, ``<=
 
 If other reference gridsets are desired, it's possible to use the `tileMatrixSet` directive at the top of the CSS file. For example:
 
-``` css
+```css
 @tileMatrixSet 'EPSG:4326'
 
 [roadtype = 'Residential'][@z < 13] {
@@ -184,7 +184,7 @@ For more discussion on using these selectors, see [Styled marks](styledmarks.md)
 
 Sometimes it is useful to have a rule that matches all features, for example, to provide some default styling for your map (remember, by default nothing is rendered). This is accomplished using a single asterisk `*` in place of the usual filter. This catch-all rule can be used in complex expressions, which may be useful if you want a rule to provide defaults as well as overriding values for some features:
 
-``` css
+```css
 * {
     stroke: black;
 }

@@ -25,7 +25,7 @@ The system sandbox is best suited in hosting environments, where the GeoServer a
 
 The regular sandbox can be configured by GeoServer full administrators in the user interface, from the **Security** -> **Data** page, or by adding the following entry in the `layers.properties` file:
 
-``` properties
+```properties
 # Set the sandbox for the workspace
 filesystemSandbox=/path/to/sandbox
 ```

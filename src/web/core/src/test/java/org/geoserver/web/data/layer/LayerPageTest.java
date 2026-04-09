@@ -114,7 +114,8 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
         assertEquals(1, table.getDataProvider().size());
 
-        // navigate to a ResourceConfigurationPage
+        // navigate to a ResourceConfigurationPage; the page derives workspace from the layer model,
+        // which will be carried back to LayerPage on save, scoping results to that workspace
         LayerInfo layerInfo = getCatalog().getLayers().get(0);
         tester.startPage(new ResourceConfigurationPage(layerInfo, false));
         tester.assertRenderedPage(ResourceConfigurationPage.class);
@@ -138,9 +139,9 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         // verify clear button has disappeared and filter is set to empty
         tester.assertInvisible("table:filterForm:clear");
         tester.assertModelValue("table:filterForm:filter", "");
-        // verify table is back to showing all items
+        // verify table is showing only layers from the workspace context (1 layer)
         table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
-        assertEquals(2, table.getDataProvider().size());
+        assertEquals(1, table.getDataProvider().size());
     }
 
     @Test

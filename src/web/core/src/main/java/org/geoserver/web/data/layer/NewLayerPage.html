@@ -5,8 +5,11 @@
 <body>
 <wicket:extend>
   <!-- Selector, used when no store has been specified in the constructor -->
-  <form wicket:id="selector">
-  	<wicket:message key="addALayerFrom">Add a layer from </wicket:message> <select wicket:id="storesDropDown"></select>
+  <form wicket:id="selector" class="gs-form">
+      <div class="gs-form-group">
+         <wicket:message key="addALayerFrom">Add a layer from </wicket:message> 
+         <select wicket:id="storesDropDown"></select>
+      </div>
   </form>
   
   <div class="gs-select-layer-container" wicket:id="selectLayersContainer">

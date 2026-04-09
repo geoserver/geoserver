@@ -67,28 +67,11 @@ client.dataStores().create(ds);
 mvn verify -Pdocker
 ```
 
-Will launch the geoserver docker container during maven's `pre-integration-tests` phase, run the tests at
-`integration-test`, and shut the container down at `post-integration-tests`.
+Will launch the geoserver docker container using `testcontainers`.
 
-### Run from an IDE:
-
-Have the GeoServer docker container running before executing the tests from the IDE:
+If using an external GeoServer, use the default constructor `IntegrationTestSupport()` and pass the connection parameters with system properties:
 
 ```
-docker run -it --rm --name gstests -p18080:8080 oscarfonts/geoserver:latest
-```
-
-Or rather
-
-```
-docker-compose -f docker-compose.yml up -d
-```
-
-The integration tests will look for an environment variable named `geoserver_api_url` to connect to, defaulting to `http://localhost:18080/geoserver/rest`.
-
-If GeoServer is running at a different address, pass the env variable to the test run configuration on the IDE:
-
-```
--Dgeoserver_api_url=http://localhost:18080/geoserver/rest
+mvn verify -Pdocker -Dgeoserver_api_url=http://localhost:8080/geoserver/rest -Dgeoserver_admin_user=admin -Dgeoserver_admin_password=geoserver
 ```
 

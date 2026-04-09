@@ -12,7 +12,7 @@ Some examples:
 
 So, if we wanted to order features based on a single "elevation" attribute we'd be using the following SLD snippet:
 
-``` xml
+```xml
 ...
 <sld:FeatureTypeStyle>
   <sld:Rule>
@@ -40,7 +40,7 @@ Line.3=LINESTRING(7 0, 7 10)|1
 
 Adding a "sortBy" rule to both `FeatureTypeStyle` objects will achieve no visible result:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0"
   xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
@@ -85,7 +85,7 @@ This is happening because while the roads are loaded in the right order, `Line.1
 
 In order to get both casing and z-ordering to work a new vendor option, `sortByGroup`, needs to be added to both `FeatureTypeStyle`, grouping them in a single z-ordering paint.
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0"
   xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"

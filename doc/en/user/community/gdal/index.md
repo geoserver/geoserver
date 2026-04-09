@@ -121,7 +121,7 @@ If gdal_translate is not available in the default path, the GDAL_DATA environmen
 
 The default configuration is equivalent to the following xml file:
 
-``` xml
+```xml
 <ToolConfiguration>
   <executable>gdal_translate</executable>
   <environment>

@@ -42,13 +42,13 @@ For a local PMTiles file, you can specify the path using either a `file://` URI 
 
 With URI scheme:
 
-``` none
+```none
 file:///var/geoserver/data/tiles/countries.pmtiles
 ```
 
 Without URI scheme:
 
-``` none
+```none
 /var/geoserver/data/tiles/countries.pmtiles
 ```
 
@@ -56,19 +56,19 @@ Without URI scheme:
 
 With URI scheme (forward slashes):
 
-``` none
+```none
 file:///C:/GeoServer/data/tiles/countries.pmtiles
 ```
 
 Without URI scheme (forward slashes):
 
-``` none
+```none
 C:/GeoServer/data/tiles/countries.pmtiles
 ```
 
 Without URI scheme (backslashes):
 
-``` none
+```none
 C:\GeoServer\data\tiles\countries.pmtiles
 ```
 
@@ -76,7 +76,7 @@ C:\GeoServer\data\tiles\countries.pmtiles
 
 For PMTiles files hosted on web servers that support HTTP range requests:
 
-``` none
+```none
 https://tiles.example.com/osm/world.pmtiles
 ```
 
@@ -86,13 +86,13 @@ If the server requires authentication, see the HTTP Authentication Parameters se
 
 For files stored in Amazon S3 buckets:
 
-``` none
+```none
 s3://my-tiles-bucket/regions/europe.pmtiles
 ```
 
 Or using the HTTPS URL format:
 
-``` none
+```none
 https://my-tiles-bucket.s3.us-west-2.amazonaws.com/regions/europe.pmtiles
 ```
 
@@ -102,7 +102,7 @@ The form will show additional S3-specific parameters in the advanced section (se
 
 For Azure Blob Storage, use the HTTPS URL format:
 
-``` none
+```none
 https://myaccount.blob.core.windows.net/tiles-container/cities/global.pmtiles
 ```
 
@@ -112,13 +112,13 @@ Additional Azure authentication parameters will appear in the advanced section.
 
 For Google Cloud Storage, use either format:
 
-``` none
+```none
 gs://my-tiles-bucket/world/basemap.pmtiles
 ```
 
 Or the HTTPS URL:
 
-``` none
+```none
 https://storage.googleapis.com/my-tiles-bucket/world/basemap.pmtiles
 ```
 

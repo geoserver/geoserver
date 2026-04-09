@@ -70,7 +70,9 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
             String css =
                     """
                      #edit {
-                       margin-top: -20px;\s
+                       position: absolute;\s
+                       right: 0;\s
+                       margin-top: -28px;\s
                        padding-bottom: 0.5em;\s
                        padding-right:1em;
                      }\

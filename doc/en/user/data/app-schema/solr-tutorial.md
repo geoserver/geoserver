@@ -8,7 +8,7 @@ A station data is composed of some meta-information about the station, e.g. it's
 
 Apache Solr data source configuration as a specific syntax and allow us to specify geometry attributes and to explicitly set the default geometry:
 
-``` xml
+```xml
 <sourceDataStores>
   <SolrDataStore>
     <id>stations</id>
@@ -28,7 +28,7 @@ In this particular case the `location` attribute contains a point geometry and w
 
 The complete mapping file is:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema">
     <namespaces>
@@ -109,7 +109,7 @@ When App-Schema detects the index layer is activated for a FeatureType, it will 
 
 Begin creating the SolrDataStore definition as usual along with the Postgis store definition:
 
-``` xml
+```xml
 (...)
 <sourceDataStores>
 (...)
@@ -151,7 +151,7 @@ Link a solr index as index layer on FeatureTypeMapping setting:
 - indexDataStore : The SolrDataStore id property from the store you use as index layer only.
 - indexType : The solr core to use.
 
-``` xml
+```xml
 <typeMappings>
 (...)
     <FeatureTypeMapping>
@@ -170,7 +170,7 @@ Link a solr index as index layer on FeatureTypeMapping setting:
 
 To link a solr core field as index for an AttributeMapping you only need to add an indexField definition with this format:
 
-``` xml
+```xml
 <AttributeMapping>
 (...)
   <indexField>${SOLR_FIELD_NAME}</indexField>
@@ -182,7 +182,7 @@ To link a solr core field as index for an AttributeMapping you only need to add 
 
 For example if you need to use solr fields: station_id and station_name; you will write on mapping:
 
-``` xml
+```xml
 <AttributeMapping>
     <targetAttribute>st:Station</targetAttribute>
     <idExpression>

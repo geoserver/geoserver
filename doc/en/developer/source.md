@@ -31,7 +31,7 @@ Git is a distributed version control system with a steep learning curve. Luckily
 
 To review global settings:
 
-``` bash
+```bash
 $ git config --global --get-regexp core.*
 ```
 
@@ -57,7 +57,7 @@ Some useful reading on this subject:
 
 When a repository is shared across different platforms it is necessary to have a strategy in place for dealing with file line endings. In general git is pretty good about dealing this without explicit configuration but to be safe developers should set the `core.autocrlf` setting to "input":
 
-``` bash
+```bash
 $ git config --global core.autocrlf input
 ```
 
@@ -82,13 +82,13 @@ Some useful reading on this subject:
 
 For those working on non case-sensitive, please keep in mind that our repository is case-sensitive:
 
-``` bash
+```bash
 $ git config --global core.ignorecase false
 ```
 
 Take extra care when adding files to prevent problems for others. To correct a file added with the wrong case:
 
-``` bash
+```bash
 $ git mv --cached HttpHandler.java HTTPHandler.java
 ```
 

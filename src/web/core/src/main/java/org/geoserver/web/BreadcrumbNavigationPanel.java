@@ -184,11 +184,12 @@ public class BreadcrumbNavigationPanel extends Panel {
                 contextMenuContainer.add(new Image("menuIcon", iconRef));
                 contextMenuContainer.add(new Label("currentLabel", bc.getLabel()));
 
+                final String bcLevel = bc.getLevel();
                 ListView<BreadcrumbContextMenuItemInfo> standaloneList =
                         new ListView<>("standaloneItems", menuData.standalone) {
                             @Override
                             protected void populateItem(ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem) {
-                                populateMenuLink(menuItemListItem, getPage().getPageParameters());
+                                populateMenuLink(menuItemListItem, getPage().getPageParameters(), bcLevel);
                             }
                         };
                 contextMenuContainer.add(standaloneList);
@@ -208,7 +209,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                                     protected void populateItem(
                                             ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem) {
                                         populateMenuLink(
-                                                menuItemListItem, getPage().getPageParameters());
+                                                menuItemListItem, getPage().getPageParameters(), bcLevel);
                                     }
                                 };
                         groupItem.add(categoryItemsList);
@@ -222,14 +223,19 @@ public class BreadcrumbNavigationPanel extends Panel {
     }
 
     private void populateMenuLink(
-            ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem, PageParameters currentParams) {
+            ListItem<BreadcrumbContextMenuItemInfo> menuItemListItem, PageParameters currentParams, String level) {
         BreadcrumbContextMenuItemInfo ctxMenu = menuItemListItem.getModelObject();
         String wName = currentParams.get("workspace").toString(null);
-        String lName = currentParams.get("layer").toString(null);
-        if (lName == null) lName = currentParams.get("name").toString(null);
-        if (lName == null) lName = currentParams.get("group").toString(null);
+        String lName;
+        if ("LAYER_GROUP".equals(level)) {
+            lName = currentParams.get("group").toString(null);
+            if (lName == null) lName = currentParams.get("layer").toString(null); // retro-compat
+        } else {
+            lName = currentParams.get("layer").toString(null);
+            if (lName == null) lName = currentParams.get("name").toString(null);
+        }
 
-        PageParameters targetParams = ctxMenu.getPageParameters(wName, lName);
+        PageParameters targetParams = ctxMenu.getPageParameters(wName, lName, level);
         BookmarkablePageLink<Void> menuLink =
                 new BookmarkablePageLink<>("menuLink", ctxMenu.getComponentClass(), targetParams);
 

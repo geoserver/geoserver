@@ -31,7 +31,7 @@ When performing a release, we don't require a "code freeze" in which no develope
 
 To obtain the GeoServer, GWC and GeoTools revisions that have passed testing, navigate to [geoserver.org/download > Development](https://geoserver.org/download), find the correct series (e.g. 2.17.x) and download a "binary" nightly build. From the download check the **`src/target/VERSION.txt`** file. For example:
 
-``` none
+```none
 version = 2.27-SNAPSHOT
 git revision = 1ee183d9af205080f1543dc94616bbe3b3e4f890
 git branch = origin/2.27.x

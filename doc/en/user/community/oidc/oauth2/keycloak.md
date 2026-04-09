@@ -19,7 +19,7 @@ This will setup a Docker container running Keycloak and setup a [Keycloak Realm]
 
 1.  Run Keycloak v26.1 as a Docker Container running on port 7777 with the admin login user "geoserver" and admin password "geoserver". This assumes your GeoServer is running on <http://localhost:8080>.
 
-``` bash
+```bash
 docker run --name geoserver_keycloak -p 7777:8080 \
    -e KC_BOOTSTRAP_ADMIN_USERNAME=geoserver \
    -e KC_BOOTSTRAP_ADMIN_PASSWORD=geoserver \
@@ -191,7 +191,7 @@ This is for technical people wanting to see the Access Token, ID Token, and User
 
 Sample Access Token (yours will be slightly different):
 
-``` json
+```json
 {
     "exp": 1759435301,
     "iat": 1759435001,
@@ -228,7 +228,7 @@ Sample Access Token (yours will be slightly different):
 
 Sample ID Token (yours will be slightly different):
 
-``` json
+```json
 {
     "exp": 1759435301,
     "iat": 1759435001,
@@ -276,7 +276,7 @@ Sample ID Token (yours will be slightly different):
 
 Sample userinfo (yours will be slightly different):
 
-``` json
+```json
 {
 "sub": "d28f1cb8-704b-4f5e-b24e-0385af136739",
 "resource_access": {

@@ -8,7 +8,7 @@ GeoServer extends Title and Abstract sections, so that text in different languag
 
 This is an example of the syntax to use:
 
-``` xml
+```xml
 <Title>This is the default title
   <Localized lang="en">English title</Localized>
   <Localized lang="it">Titolo in italiano</Localized>
@@ -27,7 +27,7 @@ GeoServer provides a `language` function that can be used to get the `LANGUAGE` 
 
 Here is an example providing **labels in multiple languages**, integrating the `language` function with `Recode` e.g:
 
-``` xml
+```xml
 <TextSymbolizer>
        <Label>
          <ogc:Function name="Recode">
@@ -52,7 +52,7 @@ The empty `<ogc:Literal/>` elements acts as the default language, matching a val
 
 It is also possible to use the `language` function in a rule filter, **filtering rules for both rendering and legend production** purposes. This one shows how to refer to different symbols based on the current language:
 
-``` xml
+```xml
 <Rule>
   <ogc:Filter>
     <ogc:PropertyIsEqualTo>
@@ -91,7 +91,7 @@ It is also possible to use the `language` function in a rule filter, **filtering
 
 Specifically for the external graphics, if the external symbols are all co-located, and follow a naming convention including the language identifier, then it's also possible to **embed the language in the symbol URL**:
 
-``` xml
+```xml
 <Rule>
   <PointSymbolizer>
     <Graphic>

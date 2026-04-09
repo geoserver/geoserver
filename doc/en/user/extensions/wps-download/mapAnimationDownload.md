@@ -25,7 +25,7 @@ A layer specification is a XML structure made of three parts:
 
 For example:
 
-``` xml
+```xml
 <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
   <dwn:Layer>
     <dwn:Capabilities>http://demo.geo-solutions.it/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</dwn:Name>
@@ -42,7 +42,7 @@ The `decoration` parameter specifies the file name (without extension) of the la
 
 Decorators are described in detail in the [WMS Decorations](../../services/wms/decoration.md) section. It is also possible to use [dynamic decoration layouts](../../services/wms/decoration.md#wms_dynamic_decorations), in this case the environment parameters for the decoration will be provided using `dwn:Parameter`, e.g.:
 
-``` xml
+```xml
 <dwn:Layer>
   <dwn:Name>theLayer</dwn:Name>
   <dwn:DecorationName>theDynamicDecoration</dwn:DecorationName>
@@ -62,7 +62,7 @@ The map download process uses the WMS machinery to produce the output, but it's 
 
 A download map issued against a set of local layers can look as follows:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:Execute version="1.0.0" service="WPS"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
@@ -143,7 +143,7 @@ In case the requested time could not be matched exactly, a warning will be issue
 
 In order to get both outputs, the following response form is recommended, which requires a reference (a link) for the map, while the warnings are included inline:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:Execute version="1.0.0" service="WPS"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
@@ -169,7 +169,7 @@ In order to get both outputs, the following response form is recommended, which 
 
 A sample response, reporting warnings, follows:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><wps:ExecuteResponse xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" service="WPS" serviceInstance="http://localhost:8080/geoserver/ows?" version="1.0.0" xml:lang="en">
   <wps:Process wps:processVersion="1.0.0">
     <ows:Identifier>gs:DownloadMap</ows:Identifier>
@@ -219,7 +219,7 @@ The download animation has all the basic parameters with the following variants/
 
 A sample animation request can look as follows:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:Execute version="1.0.0" service="WPS"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
@@ -290,7 +290,7 @@ A sample animation request can look as follows:
 
 The `formattedTimestamper` decoration ensures the frame time is included in the output animation, and looks as follows:
 
-``` xml
+```xml
 <layout>
   <decoration type="text" affinity="bottom,right" offset="6,6" size="auto">
     <option name="message"><![CDATA[
@@ -317,7 +317,7 @@ In case the requested time could not be matched exactly, a warning will be issue
 
 In order to get both outputs, the following response form is recommended, which requires a reference (a link) for the animation, while the warnings are included inline:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:Execute version="1.0.0" service="WPS"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
@@ -343,7 +343,7 @@ In order to get both outputs, the following response form is recommended, which 
 
 A sample response, reporting warnings and the frame count where they happened, follows:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><wps:ExecuteResponse xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" service="WPS" serviceInstance="http://localhost:8080/geoserver/ows?" version="1.0.0" xml:lang="en">
   <wps:Process wps:processVersion="1.0.0">
     <ows:Identifier>gs:DownloadAnimation</ows:Identifier>

@@ -22,6 +22,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.publish.PublishedConfigurationPage;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
@@ -99,6 +100,22 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                 isNew
                         ? info.getResource()
                         : getCatalog().getResource(info.getResource().getId(), ResourceInfo.class));
+    }
+
+    @Override
+    public PageParameters getPageParameters() {
+        PageParameters params = super.getPageParameters();
+        if (params.isEmpty() && myModel != null) {
+            LayerInfo layer = getPublishedInfo();
+            if (layer != null && layer.getResource() != null) {
+                PageParameters derived = new PageParameters();
+                WorkspaceInfo ws = layer.getResource().getStore().getWorkspace();
+                if (ws != null) derived.add(WORKSPACE, ws.getName());
+                derived.add(LAYER, layer.getName());
+                return derived;
+            }
+        }
+        return params;
     }
 
     private void updateResourceInLayerModel(ResourceInfo resource) {

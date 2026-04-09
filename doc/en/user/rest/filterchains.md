@@ -20,7 +20,7 @@ The REST API allows you to list, create, upload, update, and delete filterChains
 
 200 OK
 
-``` xml
+```xml
 <filterChainList>
     <filterChain>
         <name>web-test-1</name>
@@ -49,7 +49,7 @@ The REST API allows you to list, create, upload, update, and delete filterChains
 !!! abstract "curl"
     curl --location --request PUT 'http://localhost:9002/geoserver/rest/security/filterChains/web-test-2' --header 'Content-Type: application/xml' --header 'Authorization: XXXXXX' --data @request.xml
 
-``` xml
+```xml
 <filterChain>
     <name>web-test-2</name>
     <className>org.geoserver.security.HtmlLoginFilterChain</className>
@@ -93,7 +93,7 @@ The REST API allows you to list, create, upload, update, and delete filterChains
 !!! abstract "curl"
     curl --location --request POST 'http://localhost:9002/geoserver/rest/security/filterChains' --header 'Content-Type: application/xml' --header 'Authorization: XXXXXX' --data @request.xml
 
-``` xml
+```xml
 <filterChain>
     <name>web-test-2</name>
     <className>org.geoserver.security.HtmlLoginFilterChain</className>
@@ -126,7 +126,7 @@ The REST API allows you to list, create, upload, update, and delete filterChains
 
 200 OK
 
-``` xml
+```xml
 <filterChains>
     <filterChain>
         <name>web-test-2</name>
@@ -186,7 +186,7 @@ Supported values:
 
 Example prefix value:
 
-``` properties
+```properties
 geoserver.security.allowedAuthFilterChainClasses=com.example.security.*
 ```
 
@@ -244,13 +244,13 @@ To allow a custom authentication filter chain class, add its fully qualified nam
 
 Example using a system property:
 
-``` properties
+```properties
 -Dgeoserver.security.allowedAuthFilterChainClasses=com.example.security.CustomFilterChain
 ```
 
 Example using an environment variable:
 
-``` bash
+```bash
 export GEOSERVER_SECURITY_ALLOWED_AUTH_FILTERCHAIN_CLASSES=com.example.security.CustomFilterChain
 ```
 
@@ -258,19 +258,19 @@ To allow a custom authentication provider and its configuration class:
 
 System property:
 
-``` properties
+```properties
 -Dgeoserver.security.allowedAuthenticationProviderClasses=com.example.security.CustomAuthenticationProvider,com.example.security.CustomAuthenticationProviderConfig
 ```
 
 Environment variable:
 
-``` bash
+```bash
 export GEOSERVER_SECURITY_ALLOWED_AUTHENTICATION_PROVIDER_CLASSES=com.example.security.CustomAuthenticationProvider,com.example.security.CustomAuthenticationProviderConfig
 ```
 
 To allow classes in a custom package:
 
-``` properties
+```properties
 -Dgeoserver.security.allowedAuthenticationProviderClasses=com.example.security.*
 ```
 

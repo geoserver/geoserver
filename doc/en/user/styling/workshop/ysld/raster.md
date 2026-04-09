@@ -267,7 +267,7 @@ This exploration focuses on accurately communicating differences in value, rathe
 1.  A special effect that is effective with grayscale information is automatic contrast adjustment.
 2.  Make use of a simple contrast enhancement with `usgs:dem`:
 
-``` yaml
+```yaml
 symbolizers:
 - raster:
     opacity: 1.0
@@ -306,7 +306,7 @@ Image processing can be used to enhance the output to highlight small details or
 
 1.  The **contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for ``normalize`` or ``histogram`` or ``none``;
 
-``` yaml
+```yaml
 symbolizers:
 - raster:
     opacity: 1.0
@@ -320,7 +320,7 @@ symbolizers:
 
 2.  The **raster-gamma** property is used adjust the brightness of **contrast-enhancement** output. Values less than 1 are used to brighten the image while values greater than 1 darken the image.
 
-``` yaml
+```yaml
 symbolizers:
 - raster:
     opacity: 1.0

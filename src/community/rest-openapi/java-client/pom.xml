@@ -48,6 +48,11 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -131,58 +136,10 @@
             </executions>
             <configuration>
               <skipITs>false</skipITs>
-              <systemProperties>
-                <geoserver_api_url>http://localhost:${geoserver.port}/geoserver/rest</geoserver_api_url>
-                <geoserver_admin_user>admin</geoserver_admin_user>
-                <geoserver_admin_password>geoserver</geoserver_admin_password>
-              </systemProperties>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>com.dkanejs.maven.plugins</groupId>
-            <artifactId>docker-compose-maven-plugin</artifactId>
-            <version>4.0.0</version>
-            <executions>
-              <execution>
-                <id>up</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>up</goal>
-                </goals>
-                <configuration>
-                  <awaitCmd>curl</awaitCmd>
-                  <awaitCmdArgs>http://localhost:${geoserver.port}/geoserver/web</awaitCmdArgs>
-                  <awaitTimeout>60</awaitTimeout>
-                </configuration>
-              </execution>
-              <execution>
-                <id>down</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>down</goal>
-                </goals>
-                <inherited>true</inherited>
-              </execution>
-            </executions>
-            <configuration>
-              <skip>${docker-compose.skip}</skip>
-              <composeFile>${project.basedir}/docker-compose.yml</composeFile>
-              <envVars>
-                <GEOSERVER_PORT>${geoserver.port}</GEOSERVER_PORT>
-              </envVars>
-              <detachedMode>true</detachedMode>
-              <verbose>false</verbose>
-              <removeVolumes>true</removeVolumes>
-              <removeImages>true</removeImages>
-              <removeImagesType>local</removeImagesType>
             </configuration>
           </plugin>
         </plugins>
       </build>
-      <properties>
-        <geoserver.port>18080</geoserver.port>
-        <docker-compose.skip>false</docker-compose.skip>
-      </properties>
     </profile>
   </profiles>
 </project>

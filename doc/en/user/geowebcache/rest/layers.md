@@ -18,11 +18,11 @@ URL: `/gwc/rest/layers.xml`
 
 The following example will request a full list of layers:
 
-``` xml
+```xml
 curl -u admin:geoserver "http://localhost:8080/geoserver/gwc/rest/layers"
 ```
 
-``` xml
+```xml
 <layers>
   <layer>
     <name>img states</name>
@@ -73,13 +73,13 @@ The examples below use the [cURL](http://curl.haxx.se/) tool, though the example
 
 The following example will add a new layer to GeoWebCache:
 
-``` console
+```console
 curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @layer.xml  "http://localhost:8080/geoserver/gwc/rest/layers/newlayer.xml"
 ```
 
 The **`layer.xml`** file is defined as the following:
 
-``` xml
+```xml
 <wmsLayer>
   <name>newlayer</name>
   <mimeFormats>
@@ -104,13 +104,13 @@ The **`layer.xml`** file is defined as the following:
 
 The following example will add a new layer to both GeoServer and GeoWebCache:
 
-``` console
+```console
 curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @poi.xml  "http://localhost:8080/geoserver/gwc/rest/layers/tiger:poi.xml"
 ```
 
 The **`poi.xml`** file is defined as the following:
 
-``` xml
+```xml
 <GeoServerLayer>
   <id>LayerInfoImpl--570ae188:124761b8d78:-7fd0</id>
   <enabled>true</enabled>
@@ -143,7 +143,7 @@ The **`poi.xml`** file is defined as the following:
 
 This example modifies the layer definition via the **`layer.xml`** file. The request adds a parameter filter and a grid subset to the existing `tiger:poi` tile layer:
 
-``` xml
+```xml
 <GeoServerLayer>
  <enabled>true</enabled>
  <name>tiger:poi</name>
@@ -195,7 +195,7 @@ This example modifies the layer definition via the **`layer.xml`** file. The req
 
 Instead of PUT, use the HTTP POST method instead:
 
-``` console
+```console
 curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d @poi.xml  "http://localhost:8080/geoserver/gwc/rest/layers/tiger:poi.xml"
 ```
 
@@ -205,7 +205,7 @@ Deleting a GeoWebCache tile layer deletes the layer configuration *as well as th
 
 To delete a layer, use the HTTP DELETE method against the layer resource:
 
-``` console
+```console
 curl -v -u admin:geoserver -XDELETE "http://localhost:8080/geoserver/gwc/rest/layers/newlayer.xml"
 ```
 

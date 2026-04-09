@@ -36,7 +36,7 @@ One can edit the SLD files directly instead of using the CSS extension. For the 
 
 The following is a skeleton of a SLD document. It can be used as a base on which to expand upon to create more interesting and complicated styles.
 
-``` xml
+```xml
 <StyledLayerDescriptor version="1.0.0"
    xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
    xmlns="http://www.opengis.net/sld"
@@ -68,7 +68,7 @@ In order to test the code snippets in this document, create an SLD with the cont
 
 In SLD, styles for points are specified via a PointSymbolizer. An empty PointSymbolizer element will result in a default KML style:
 
-``` xml
+```xml
 <PointSymbolizer>
 </PointSymbolizer>
 ```
@@ -83,7 +83,7 @@ Three aspects of points that can be specified are *color*, *opacity*, and the *i
 
 The color of a point is specified with a `CssParameter` element and a `fill` attribute. The color is specified as a six digit hexadecimal code.
 
-``` xml
+```xml
 <PointSymbolizer>
    <Graphic>
       <Mark>
@@ -103,7 +103,7 @@ The color of a point is specified with a `CssParameter` element and a `fill` att
 
 The opacity of a point is specified with a CssParameter element and a `fill-opacity` attribute. The opacity is specified as a floating point number between **0** and **1**, with 0 being completely transparent, and 1 being completely opaque.
 
-``` xml
+```xml
 <PointSymbolizer>
    <Graphic>
       <Mark>
@@ -123,7 +123,7 @@ The opacity of a point is specified with a CssParameter element and a `fill-opac
 
 An icon different from the default can be specified with the `ExternalGraphic` element:
 
-``` xml
+```xml
 <PointSymbolizer>
    <Graphic>
       <ExternalGraphic>
@@ -141,7 +141,7 @@ An icon different from the default can be specified with the `ExternalGraphic` e
 
 In Figure 7, the custom icon is specified as a remote URL. It is also possible to place the graphic in the GeoServer `styles` directory, and then specify the filename only:
 
-``` xml
+```xml
 <PointSymbolizer>
    <Graphic>
       <ExternalGraphic>
@@ -161,7 +161,7 @@ In Figure 7, the custom icon is specified as a remote URL. It is also possible t
 
 Styles for lines are specified via a `LineSymbolizer`. An empty `LineSymbolizer` element will result in a default KML style:
 
-``` xml
+```xml
 <LineSymbolizer>
 </LineSymbolizer>
 ```
@@ -176,7 +176,7 @@ The aspects of the resulting line which can be specified via a `LineSymbolizer` 
 
 The color of a line is specified with a `CssParameter` element and a `stroke` attribute. The color is specified as a six digit hexadecimal code.
 
-``` xml
+```xml
 <LineSymbolizer>
    <Stroke>
       <CssParameter name="stroke">#ff0000</CssParameter>
@@ -192,7 +192,7 @@ The color of a line is specified with a `CssParameter` element and a `stroke` at
 
 The width of a line is specified with a `CssParameter` element and a `stroke-width` attribute. The width is specified as an integer (in pixels):
 
-``` xml
+```xml
 <LineSymbolizer>
    <Stroke>
       <CssParameter name="stroke-width">5</CssParameter>
@@ -208,7 +208,7 @@ The width of a line is specified with a `CssParameter` element and a `stroke-wid
 
 The opacity of a line is specified with a `CssParameter` element and a `fill-opacity` attribute. The opacity is specified as a floating point number between **0** and **1**, with 0 being completely transparent, and 1 being completely opaque.
 
-``` xml
+```xml
 <LineSymbolizer>
    <Stroke>
       <CssParameter name="stroke-opacity">0.5</CssParameter>
@@ -224,7 +224,7 @@ The opacity of a line is specified with a `CssParameter` element and a `fill-opa
 
 Styles for polygons are specified via a `PolygonSymbolizer`. An empty `PolygonSymbolizer` element will result in a default KML style:
 
-``` xml
+```xml
 <PolygonSymbolizer>
 </PolygonSymbolizer>
 ```
@@ -235,7 +235,7 @@ Polygons have more options for styling than points and lines, as polygons have b
 
 The outline color of a polygon is specified with a `CssParameter` element and `stroke` attribute inside of a `Stroke` element. The color is specified as a 6 digit hexadecimal code:
 
-``` xml
+```xml
 <PolygonSymbolizer>
    <Stroke>
       <CssParameter name="stroke">#0000FF</CssParameter>
@@ -251,7 +251,7 @@ The outline color of a polygon is specified with a `CssParameter` element and `s
 
 The outline width of a polygon is specified with a `CssParameter` element and `stroke-width` attribute inside of a `Stroke` element. The width is specified as an integer.
 
-``` xml
+```xml
 <PolygonSymbolizer>
    <Stroke>
       <CssParameter name="stroke-width">5</CssParameter>
@@ -267,7 +267,7 @@ The outline width of a polygon is specified with a `CssParameter` element and `s
 
 The stroke opacity of a polygon is specified with a `CssParameter` element and `stroke` attribute inside of a `Stroke` element. The opacity is specified as a floating point number between **0** and **1**, with 0 being completely transparent, and 1 being completely opaque.
 
-``` xml
+```xml
 <PolygonSymbolizer>
    <Stroke>
       <CssParameter name="stroke-opacity">0.5</CssParameter>
@@ -283,7 +283,7 @@ The stroke opacity of a polygon is specified with a `CssParameter` element and `
 
 The fill color of a polygon is specified with a `CssParameter` element and `fill` attribute inside of a `Fill` element. The color is specified as a six digit hexadecimal code:
 
-``` xml
+```xml
 <PolygonSymbolizer>
    <Fill>
       <CssParameter name="fill">#0000FF</CssParameter>
@@ -299,7 +299,7 @@ The fill color of a polygon is specified with a `CssParameter` element and `fill
 
 The fill opacity of a polygon is specified with a `CssParameter` element and `fill-opacity` attribute inside of a `Fill` element. The opacity is specified as a floating point number between **0** and **1**, with 0 being completely transparent, and 1 being completely opaque.
 
-``` xml
+```xml
 <PolygonSymbolizer>
    <Fill>
       <CssParameter name="fill-opacity">0.5</CssParameter>
@@ -319,7 +319,7 @@ There are two ways to specify a label for a feature in Google Earth. The first i
 
 Specifying labels via a Freemarker template involves creating a special text file called `title.ftl` and placing it into the `workspaces/<ws name>/<datastore name>/<feature type name>` directory (inside the GeoServer data directory) for the dataset to be labeled. For example, to create a template to label the `states` dataset by state name one would create the file here: `<data_dir>/workspaces/topp/states_shapefile/states/title.ftl`. The content of the file would be:
 
-``` none
+```none
 ${STATE_NAME.value}
 ```
 
@@ -333,7 +333,7 @@ For more information on Placemark Templates, please see our full tutorial (LINK 
 
 In SLD labels are specified with the Label element of a `TextSymbolizer`. (Note the `ogc:` prefix on the `PropertyName` element.)
 
-``` xml
+```xml
 <TextSymbolizer>
    <Label>
       <ogc:PropertyName>STATE_NAME</ogc:PropertyName>
@@ -351,7 +351,7 @@ The aspects of the resulting label which can be specified via a `TextSymbolizer`
 
 The color of a label is specified with a `CssParameter` element and `fill` attribute inside of a `Fill` element. The color is specified as a six digit hexadecimal code:
 
-``` xml
+```xml
 <TextSymbolizer>
    <Label>
       <ogc:PropertyName>STATE_NAME</ogc:PropertyName>
@@ -370,7 +370,7 @@ The color of a label is specified with a `CssParameter` element and `fill` attri
 
 The opacity of a label is specified with a `CssParameter` element and `fill-opacity` attribute inside of a `Fill` element. The opacity is specified as a floating point number between **0** and **1**, with 0 being completely transparent, and 1 being completely opaque.
 
-``` xml
+```xml
 <TextSymbolizer>
    <Label>
       <ogc:PropertyName>STATE_NAME</ogc:PropertyName>
@@ -395,7 +395,7 @@ When working with KML, each feature is linked to a description, accessible when 
 
 It is possible to modify this default behavior. Much like with featureType titles, which are edited by creating a `title.ftl` template, a custom description can be used by creating template called `description.ftl` and placing it into the feature type directory (inside the GeoServer data directory) for the dataset. For instance, to create a template to provide a description for the states dataset, one would create the file: `<data_dir>/workspaces/topp/states_shapefile/states/description.ftl`. As an example, if the content of the description template is:
 
-``` none
+```none
 This is the state of ${STATE_NAME.value}.
 ```
 

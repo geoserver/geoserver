@@ -88,7 +88,7 @@ See [troubleshooting](../advanced.md#community_oidc_troubleshooting).
 
 Example GitHub UserInfo:
 
-``` json
+```json
 {
     "login" : "davidblasby",
     "id" : 4893,

@@ -34,7 +34,7 @@ The security configuration can also be managed using the REST API, they are part
 
 and it would yield the following XML:
 
-``` xml
+```xml
 <oseo>
   <id>OSEOInfoImpl--77996715:1647eb68e30:-8000</id>
   <enabled>true</enabled>

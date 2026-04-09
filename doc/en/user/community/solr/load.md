@@ -6,7 +6,7 @@ The current example has been developed and tested using GDAL 1.11 and SOLR 4.8, 
 
 The SOLR instance is supposed to have the following definitions in its schema:
 
-``` xml
+```xml
 <field name="geo" type="location_rpt" indexed="true" stored="true" multiValued="true" />  
 <dynamicField name="*_i"  type="int"    indexed="true"  stored="true"/>
 <dynamicField name="*_s"  type="string"  indexed="true"  stored="true" />

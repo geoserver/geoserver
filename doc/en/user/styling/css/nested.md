@@ -8,7 +8,7 @@ Nesting is a pure syntax improvement, as such it does not actually provide extra
 
 This is an example of a CSS style using only cascading to get a different shape, fill and stroke color for a point symbol in case the `type` attribute equals to `important`:
 
-``` scss
+```scss
 [@sd < 3000] {
   mark: symbol(circle)
 }
@@ -30,7 +30,7 @@ This is an example of a CSS style using only cascading to get a different shape,
 
 This second version uses rule nesting getting a more compact expression, putting related symbology element close by:
 
-``` scss
+```scss
 [@sd < 3000] {
    mark: symbol(circle);
    :mark {

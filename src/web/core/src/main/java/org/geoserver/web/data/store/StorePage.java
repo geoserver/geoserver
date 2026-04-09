@@ -14,6 +14,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -120,8 +121,11 @@ public class StorePage extends GeoServerSecuredPage {
     protected Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
-        // the add button
-        header.add(new BookmarkablePageLink<>("addNew", NewDataPage.class));
+        // the add button - forward workspace param so NewDataPage can propagate it to sub-pages
+        String ws = getPageParameters().get("workspace").toOptionalString();
+        PageParameters newDataParams = new PageParameters();
+        if (ws != null && !ws.isEmpty()) newDataParams.add("workspace", ws);
+        header.add(new BookmarkablePageLink<>("addNew", NewDataPage.class, newDataParams));
 
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));

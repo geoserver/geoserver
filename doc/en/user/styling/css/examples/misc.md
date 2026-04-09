@@ -4,7 +4,7 @@
 
 The following produces square markers at each point, but these are sized such that the area of each marker is proportional to the `REPORTS` attribute. When zoomed in (when there are less points in view) the size of the markers is doubled to make the smaller points more noticeable.
 
-``` css
+```css
 * {
   mark: symbol(square);
 }
@@ -25,7 +25,7 @@ This example uses the `sqrt` function. There are many functions available for us
 
 In some cases, typically when using a database table with multiple geometry columns, it's necessary to specify which geometry to use. For example, let's suppose you have a table containing routes `start` and `end` both containing point geometries. The following CSS will style the start with a triangle mark, and the end with a square.
 
-``` css
+```css
 * {
     geometry: [start],          [end];
     mark:     symbol(triangle), symbol(square);
@@ -36,7 +36,7 @@ In some cases, typically when using a database table with multiple geometry colu
 
 Taking the previous example a bit further, we can also perform computations on-the-fly to generate the geometries that will be drawn. Any operation that is available for GeoServer [Geometry transformations in SLD](../../sld/extensions/geometry-transformations.md) is also available in CSS styles. To use them, we simply provide a more complex expression in the `geometry` property. For example, we could mark the start and end points of all the paths in a line layer (you can test this example out with any line layer, such as the `sf:streams` layer that is included in GeoServer's default data directory.)
 
-``` css
+```css
 * {
     geometry: [startPoint(the_geom)], [endPoint(the_geom)];
     mark:     symbol(triangle),       symbol(square);
@@ -47,7 +47,7 @@ Taking the previous example a bit further, we can also perform computations on-t
 
 As one more riff on the geometry examples, we'll show how to render both the original line and the start/endpoints in a single style. This is accomplished by using `stroke-geometry` and `mark-geometry` to specify that different geometry expressions should be used for symbols compared with strokes.
 
-``` css
+```css
 * {
     stroke-geometry: [the_geom];
     stroke:          blue;

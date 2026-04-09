@@ -6,7 +6,7 @@ However, it's also possible to create a style with multiple layers, and then use
 
 For example, a style duplicating the Tasmania sample layer group could look like this (usage of the `Flat` mode is recommended):
 
-``` scss
+```scss
 @mode 'Flat';
 
 topp:tasmania_state_boundaries {

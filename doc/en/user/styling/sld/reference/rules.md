@@ -49,7 +49,7 @@ The following example shows the use of scale selection in a pair of rules. The r
 - at scales **above** 1:20,000 (*larger* scales, with scale denominators *smaller* than 20,000) features are symbolized with 10-pixel red squares,
 - at scales **at or below** 1:20,000 (*smaller* scales, with scale denominators *larger* than 20,000) features are symbolized with 4-pixel blue triangles.
 
-``` xml
+```xml
 <Rule>
    <MaxScaleDenominator>20000</MaxScaleDenominator>
    <PointSymbolizer>
@@ -84,7 +84,7 @@ Within an SLD document each `<FeatureTypeStyle>` can contain many rules. Multipl
 
 The following rule applies only to features which have a `POPULATION` attribute greater than 100,000, and symbolizes the features as red points.
 
-``` xml
+```xml
 <Rule>
    <ogc:Filter>
      <ogc:PropertyIsGreaterThan>
@@ -104,7 +104,7 @@ The following rule applies only to features which have a `POPULATION` attribute 
 
 An additional rule can be added which applies to features whose `POPULATION` attribute is less than 100,000, and symbolizes them as green points.
 
-``` xml
+```xml
 <Rule>
   <ogc:Filter>
     <ogc:PropertyIsLessThan>

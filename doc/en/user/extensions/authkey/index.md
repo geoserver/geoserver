@@ -235,7 +235,7 @@ With some Java programming it is possible to programmatically create and registe
 
 In order to provide your custom mapper you have to implement the `org.geoserver.security.AuthenticationKeyMapper` interface and then register said bean in the Spring application context. Alternatively it is possible to subclass from `org.geoserver.security.AbstractAuthenticationKeyMapper`. A mapper (key provider) has to implement
 
-``` java
+```java
 /**
  * 
  * Maps a unique authentication key to a username. Since usernames are
@@ -289,7 +289,7 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
 
 The mapper would have to be registered in the Spring application context in a `applicationContext.xml` file in the root of your jar. Example for an implementation named `com.mycompany.security.SuperpowersMapper`:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>

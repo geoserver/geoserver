@@ -134,13 +134,13 @@ To require files or directories to exist, use any of the methods above to set `G
 
 Environment variable:
 
-``` console
+```console
 export GEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml
 ```
 
 Servlet context parameter:
 
-``` xml
+```xml
 <web-app>
   ...
   <context-param>
@@ -153,7 +153,7 @@ Servlet context parameter:
 
 Java system property:
 
-``` console
+```console
 CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml"
 ```
 
@@ -163,13 +163,13 @@ To specify multiple files or directories that must exist, separate them with the
 
 Environment variable:
 
-``` console
+```console
 export GEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data
 ```
 
 Servlet context parameter:
 
-``` xml
+```xml
 <web-app>
   ...
   <context-param>
@@ -182,7 +182,7 @@ Servlet context parameter:
 
 Java system property:
 
-``` console
+```console
 CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data"
 ```
 
@@ -215,7 +215,7 @@ The data directory loader can be configured with the following environment varia
 
 Example usage with environment variables:
 
-``` bash
+```bash
 # Disable the optimized loader
 export GEOSERVER_DATA_DIR_LOADER_ENABLED=false
 
@@ -228,7 +228,7 @@ export GEOSERVER_DATA_DIR_LOADER_THREADS=8
 
 Example usage with system properties:
 
-``` bash
+```bash
 # Start GeoServer with customized loader settings
 CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_DATA_DIR_LOADER_ENABLED=true -DGEOSERVER_DATA_DIR_LOADER_THREADS=4"
 ```

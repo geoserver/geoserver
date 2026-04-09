@@ -31,13 +31,13 @@ As soon as your Geotiffs gets beyond some tens of megabytes you'll want to add t
 
 Inner tiling sets up the image layout so that it's organized in tiles instead of simple stripes (rows). This allows much quicker access to a certain area of the geotiff, and the GeoServer readers will leverage this by accessing only the tiles needed to render the current display area. The following sample command instructs [gdal_translate](http://www.gdal.org/gdal_translate.md) to create a tiled [geotiff](http://www.gdal.org/frmt_gtiff.md).
 
-``` xml
+```xml
 gdal_translate -of GTiff -projwin -180 90 -50 -10 -co "TILED=YES" bigDataSet.ecw myTiff.tiff
 ```
 
 An overview is a downsampled version of the same image, that is, a zoomed out version, which is usually much smaller. When GeoServer needs to render the Geotiff, it'll look for the most appropriate overview as a starting point, thus reading and converting way less data. Overviews can be added using [gdaladdo](http://www.gdal.org/gdaladdo.md), or the OverviewsEmbedded command included in Geotools. Here is a sample of using gdaladdo to add overviews that are downsampled 2, 4, 8 and 16 times compared to the original:
 
-``` xml
+```xml
 gdaladdo -r average mytiff.tif 2 4 8 16
 ```
 
@@ -51,7 +51,7 @@ So, what you need is a way to have tiling on intermediate levels as well. This i
 
 This plugin assumes you have create various seamless image mosaics, each for a different resolution level of the original image. In the mosaic, tiles are actual files (for more info about mosaics, see the [ImageMosaic](../data/raster/imagemosaic/index.md)). The whole pyramid structures looks like the following:
 
-``` xml
+```xml
 rootDirectory
     +- pyramid.properties
     +- 0

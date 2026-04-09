@@ -38,7 +38,7 @@ The basis of the ID Token, Access Token, and UserInfo is a [JSON](https://en.wik
 
 Here is an example of a [Keycloak](https://www.keycloak.org/) ID Token:
 
-``` json
+```json
 {
    "exp": 1708555947,
    "iat": 1708555647,
@@ -79,7 +79,7 @@ Many IDPs (including Keycloak) form the ID Token, Access Token (JWT), and UserIn
 
 In this token's JSON claims, notice this part:
 
-``` json
+```json
 "resource_access": {
     "live-key2":  {
         "roles": 
@@ -99,7 +99,7 @@ If you choose the Access Token as your role source, you can also use ``scope`` f
 
 For **very** advanced users (not recommended - only do this if your IDP uses this mechanism), you can also extract other parts from the code response. This is only provided to help with opaque (non-JWT) Access Tokens. Here is what a typical code response looks like:
 
-``` json
+```json
 {
     "access_token": "....",
     "token_type": "Bearer",

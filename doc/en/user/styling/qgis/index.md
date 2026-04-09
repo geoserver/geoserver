@@ -136,7 +136,7 @@ The next example shows how to style an aerial image instead.
 
 1.  Download an aerial image (for example from [USGS Landsat image archives](https://landsatlook.usgs.gov/sentinel2/viewer.md)) if you do not already have one. Give it a name (`aerial` in this example) and **save it as GeoTIFF**
 
-    ![](images/landsat_usgs_sentinel2.png)
+    ![](images/landsat_usgs_sentinel2.png)  
     *aerial.tiff*
 
 2.  Open GeoServer, **create a new Store** (see [Add a Store](../../data/webadmin/stores.md#data_webadmin_stores_add_a_store)), **add a GeoTIFF Raster Data Source** to the Store and **connect** it to your `aerial.tif` file

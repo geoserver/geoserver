@@ -50,7 +50,7 @@ This function returns the value of environment variables defined in various cont
 
 Example usage in a default Symbolizer:
 
-``` xml
+```xml
 <PointSymbolizer uom="http://www.opengeospatial.org/se/units/metre">
   <Graphic>
   ...

@@ -56,7 +56,7 @@ By default GeoServer will publish every process found in SPI or registered in th
 
 The `org.geoserver.wps.process.ProcessFilter` interface can be implemented to exert some control over how the processes are getting published. The interface looks as follow:
 
-``` java
+```java
 public interface ProcessFilter {
     ProcessFactory filterFactory(ProcessFactory pf);
 }
@@ -78,7 +78,7 @@ The GeoServer code base provides (by default) two implementations of a `ProcessF
 
 Once the ProcessFilter is coded it can be activated by declaring it in the Spring application context, for example the `ProcessSelector` subclass that controls which processes can be exposed based on the WPS admin panel configuration is registered in `applicationContext.xml` as follows:
 
-``` xml
+```xml
 <!-- The default process filters -->
 <bean id="unsupportedParameterTypeProcessFilter" class="org.geoserver.wps.UnsupportedParameterTypeProcessFilter"/>
 <bean id="configuredProcessesFilter" class="org.geoserver.wps.DisabledProcessesSelector"/>

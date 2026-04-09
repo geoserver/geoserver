@@ -28,7 +28,7 @@ This example specifies points be styled as red circles with a diameter of 6 pixe
 
 ### Code
 
-``` scss
+```scss
 * { 
   mark: symbol(circle); 
   mark-size: 6px;
@@ -52,7 +52,7 @@ This example adds a stroke (or border) around the [Simple point](#css_cookbook_p
 
 ### Code
 
-``` scss
+```scss
 * { 
   mark: symbol(circle); 
   mark-size: 6px;
@@ -78,7 +78,7 @@ This example creates a square instead of a circle, colors it green, sizes it to 
 
 ### Code
 
-``` scss
+```scss
 * { 
   mark: symbol(square); 
   mark-size: 12px;
@@ -103,7 +103,7 @@ This example draws a triangle, creates a black stroke identical to the [Simple p
 
 ### Code
 
-``` scss
+```scss
 * { 
   mark: symbol(triangle); 
   mark-size: 12;
@@ -130,7 +130,7 @@ This example styles each point as a graphic instead of as a simple shape.
 
 ### Code
 
-``` scss
+```scss
 * { 
   mark: url(smileyface.png); 
   mark-mime: "image/png";
@@ -155,7 +155,7 @@ This example shows a text label on the [Simple point](#css_cookbook_points_simpl
 
 ### Code
 
-``` scss
+```scss
 * { 
   mark: symbol(circle);
   mark-size: 6px;
@@ -181,7 +181,7 @@ This example improves the label style from the [Point with default label](#css_c
 
 ### Code
 
-``` scss
+```scss
 * { 
   mark: symbol(circle);
   mark-size: 6px;
@@ -215,7 +215,7 @@ This example builds on the previous example, [Point with styled label](#css_cook
 
 ### Code
 
-``` scss
+```scss
 * { 
   mark: symbol(circle);
   mark-size: 6px;
@@ -249,7 +249,7 @@ This example alters the size of the symbol based on the value of the population 
 
 ### Code
 
-``` scss
+```scss
 * {
   mark: symbol(circle);
   :mark {
@@ -302,7 +302,7 @@ This example alters the style of the points at different zoom levels.
 
 ### Code
 
-``` scss
+```scss
 * {
   mark: symbol(circle);
 }
@@ -347,7 +347,7 @@ The result of this style is that points are drawn larger as one zooms in and sma
 
 While this example uses on purpose cascading to show a different possible setup, the same style could be written as:
 
-``` scss
+```scss
 * {
   mark: symbol(circle);
   :mark {

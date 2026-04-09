@@ -248,7 +248,7 @@ Below is shown a snippet of the Capabilities document for each presentation case
 
 Setting the presentation to **List**, all mosaic times are listed:
 
-``` xml
+```xml
 <Dimension name="time" default="current" units="ISO8601">
    2009-10-01T00:00:00.000Z,2009-11-01T00:00:00.000Z,2009-12-01T00:00:00.000Z,2010-01-01T00:00:00.000Z,2010-02-01T00:00:00.000Z,2010-03-01T00:00:00.000Z,2010-04-01T00:00:00.000Z,2010-05-01T00:00:00.000Z,2010-06-01T00:00:00.000Z,2010-07-01T00:00:00.000Z,2010-08-01T00:00:00.000Z,2010-09-01T00:00:00.000Z,2010-10-01T00:00:00.000Z,2010-11-01T00:00:00.000Z,2010-12-01T00:00:00.000Z,2011-01-01T00:00:00.000Z,2011-02-01T00:00:00.000Z,2011-03-01T00:00:00.000Z,2011-04-01T00:00:00.000Z,2011-05-01T00:00:00.000Z,2011-06-01T00:00:00.000Z,2011-07-01T00:00:00.000Z,2011-08-01T00:00:00.000Z,2011-09-01T00:00:00.000Z
 </Dimension>
@@ -256,7 +256,7 @@ Setting the presentation to **List**, all mosaic times are listed:
 
 Setting the presentation to **Continuous interval** only the start, end and interval extent times are listed:
 
-``` xml
+```xml
 <Dimension name="time" default="current" units="ISO8601">
    2009-10-01T00:00:00.000Z/2011-09-01T00:00:00.000Z/P1Y11MT10H
 </Dimension>
@@ -264,7 +264,7 @@ Setting the presentation to **Continuous interval** only the start, end and inte
 
 Setting the presentation to **Interval and resolutions** gives to user the possibility to specify the resolutions of the interval:
 
-``` xml
+```xml
 <Dimension name="time" default="current" units="ISO8601">
    2009-10-01T00:00:00.000Z/2011-09-01T00:00:00.000Z/P1DT12H
 </Dimension>

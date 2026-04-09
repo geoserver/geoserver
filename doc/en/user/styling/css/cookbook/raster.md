@@ -24,7 +24,7 @@ This example shows a two-color style with green at lower elevations and brown at
 
 ### Code
 
-``` css
+```css
 * {
   raster-channels: auto;
   raster-color-map: 
@@ -57,7 +57,7 @@ This example creates the same two-color gradient as in the [Two-color gradient](
 
 ### Code
 
-``` css
+```css
 * {
   raster-channels: auto;
   raster-opacity: 0.3;
@@ -80,7 +80,7 @@ This example normalizes the color output and then increases the brightness by a 
 
 ### Code
 
-``` css
+```css
 * {
   raster-channels: auto;
   raster-contrast-enhancement: normalize;
@@ -104,7 +104,7 @@ This example creates a three-color gradient in primary colors. In addition, we w
 
 ### Code
 
-``` css
+```css
 * {
   raster-channels: auto;
   raster-color-map: 
@@ -130,7 +130,7 @@ This example creates an "alpha channel" effect such that higher values are incre
 
 ### Code
 
-``` css
+```css
 * {
   raster-channels: auto;
   raster-color-map: color-map-entry(#008000, 70)
@@ -154,7 +154,7 @@ This example shows a gradient that is not linearly interpolated but instead has 
 
 ### Code
 
-``` css
+```css
 * {
   raster-channels: auto;
   raster-color-map-type: intervals;
@@ -177,7 +177,7 @@ This example shows a gradient interpolated across eight different colors.
 
 ### Code
 
-``` css
+```css
 * {
   raster-channels: auto;
   raster-color-map: 

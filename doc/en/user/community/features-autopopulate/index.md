@@ -15,7 +15,7 @@ In particular what we want to do is:
 
 We can leverage on two GeoServer `CQL Expressions` that allow us to get thos values at runtime
 
-``` ini
+```ini
 EDITOR=env('GSUSER')
 LAST_UPDATE=now()
 ```
@@ -28,7 +28,7 @@ The function `now()` gets the current timestamp and returns back the date-time.
 
 What we need to do then is to create a file named `transactionCustomizer.properties` inside the folder `$GEOSERVER_DATADIR/workspaces/topp/states` with the current key-value pairs
 
-``` ini
+```ini
 EDITOR=env('GSUSER')
 LAST_UPDATE=now()
 ```

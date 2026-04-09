@@ -95,7 +95,7 @@ Selection of an appropriate color palette is difficult, with a tension between w
 
 6.  The initial **5-class Accent** color scheme does reasonably well.
 
-    ![](img/color_04_accent.png)
+    ![](img/color_04_accent.png)  
     *5-class accent*
 
 7.  One of our requirements is to help readers locate their county. To assist with that let's turn on roads and cities.

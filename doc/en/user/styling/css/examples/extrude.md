@@ -10,7 +10,7 @@ The extrusion part of the CSS produces the darker grey areas. The isometric func
 
 The last step was to add an offset to the geometry producing the lighter grey areas as a top surface. The extrusion above works on each state from the ground up based on the population size. It is therefore necessary to offset the geometry in the Y axis with the same height used for the geometry extrusion. This adds the geometry at the top of the extrusion giving the effect of a top surface.
 
-``` css
+```css
 @mode "Flat";
 /* EXTRUDING THE POLYGON */
 * {

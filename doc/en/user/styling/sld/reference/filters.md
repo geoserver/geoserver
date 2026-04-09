@@ -39,7 +39,7 @@ Other available **value comparison operators** are:
 
 - The following filter selects features whose `NAME` attribute has the value of "New York":
 
-``` xml
+```xml
 <PropertyIsEqualTo>
    <PropertyName>NAME</PropertyName>
    <Literal>New York</Literal>
@@ -48,7 +48,7 @@ Other available **value comparison operators** are:
 
 - The following filter selects features whose geometry area is greater than 1,000,000:
 
-``` xml
+```xml
 <PropertyIsGreaterThan>
    <ogc:Function name="area"> 
      <PropertyName>GEOMETRY</PropertyName>
@@ -97,7 +97,7 @@ The content is an optional `<PropertyName>` element, and a GML envelope literal.
 
 - The following filter selects features with a geometry that intersects the point (1,1):
 
-``` xml
+```xml
 <Intersects>
    <PropertyName>GEOMETRY</PropertyName>
    <Literal>
@@ -110,7 +110,7 @@ The content is an optional `<PropertyName>` element, and a GML envelope literal.
 
 - The following filter selects features with a geometry that intersects the box [-10,0 : 10,10]:
 
-``` xml
+```xml
 <ogc:BBOX>
   <ogc:PropertyName>GEOMETRY</ogc:PropertyName>
   <gml:Box srsName="urn:x-ogc:def:crs:EPSG:4326">
@@ -138,7 +138,7 @@ The content for `<And>` and `<Or>` is two filter operator elements. The content 
 
 - The following filter uses `<And>` to combine a comparison operator and a spatial operator:
 
-``` xml
+```xml
 <And>
    <PropertyIsEqualTo>
       <PropertyName>NAME</PropertyName>

@@ -163,7 +163,7 @@ As of GeoServer 3.0, the **Log location** setting has been removed from the Admi
 
         The [log file location](../configuration/logging/#logging_location) must now be set using the `GEOSERVER_LOG_LOCATION` application property which can be set as system property, environment variable, or servlet context parameter:
 
-``` shell
+```shell
 # System property
 -DGEOSERVER_LOG_LOCATION=/var/log/geoserver/geoserver.log
 
@@ -236,7 +236,7 @@ Additionally, the image processing engine is now ImageN:
 
 This `USE_IMAGEN_IMAGEREAD` parameter is used by image mosaic and a few other coverage readers, and is normally called "deferred loading" in the UI. GeoServer will migrate the parameter name automatically when layers are saved, and compatibility with REST scripts using the old name is preserved. If you want to migrate the data directory to the new parameter in bulk, look up all the coverage.xml files and replace the parameter name in them. For example, on Linux, the following command will perform a migration:
 
-``` shell
+```shell
 find <GEOSERVER_DATA_DIR> -name coverage.xml -exec sed -i 's/USE_JAI_IMAGEREAD/USE_IMAGEN_IMAGEREAD/g' {} \;
 ```
 
@@ -419,7 +419,7 @@ In some cases valid requests may be blocked if the names of GeoServer resources 
 
 The ArcGRID output format for WCS has been removed in GeoServer 2.24.0. If you have been using this format, you will need to switch to another text based format, such as GML coverage, or can get back the ArcGRID format by installing the [WCS GDAL](../community/gdal/index.md) community module and use a configuration like the following (please adapt to your system):
 
-``` xml
+```xml
 <ToolConfiguration>
   <executable>gdal_translate</executable>
   <environment>

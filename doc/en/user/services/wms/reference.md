@@ -118,7 +118,7 @@ Experimenting with this feature is a good way to get to know the GetMap paramete
 
 Example WMS request using a GetMap XML document is:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <ogc:GetMap xmlns:ogc="http://www.opengis.net/ows"
             xmlns:gml="http://www.opengis.net/gml"
@@ -232,7 +232,7 @@ http://localhost:8080/geoserver/wms?
 
 The result will be:
 
-``` xml
+```xml
 {
 "type":"FeatureCollection",
 "features":[
@@ -315,7 +315,7 @@ An example request in XML (default) format on a layer is: :
 
 > <http://localhost:8080/geoserver/topp/wms?service=WMS> &version=1.1.1 &request=DescribeLayer &layers=topp:coverage
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE WMS_DescribeLayerResponse SYSTEM "http://localhost:8080/geoserver/schemas/wms/1.1.1/WMS_DescribeLayerResponse.dtd">
 <WMS_DescribeLayerResponse version="1.1.1">

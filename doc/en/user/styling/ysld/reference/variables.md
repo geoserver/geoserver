@@ -69,7 +69,7 @@ The line that contains the variable will be replaced with the contents of the de
 
 Name background color for both polygon fill and halo outline:
 
-``` yaml
+```yaml
 define: &background_color '#998088'
 define: &text_color "#111122"
 
@@ -92,7 +92,7 @@ feature-styles:
 
 Define a block of stroke parameters for reuse in each rule:
 
-``` yaml
+```yaml
 define: &stroke_style
   stroke: '#FF0000'
   stroke-width: 2

@@ -93,7 +93,7 @@ Here below I have drawn the structure of a typical legend, where some elements o
 
 Take as an instance one of the SLD files attached to this page, each row in the above table draws its essence from the ColorMapEntry element as shown here below:
 
-``` xml
+```xml
 <ColorMapEntry color="#732600" quantity="9888" opacity="1.0" label="<-70 mm"/>
 ```
 
@@ -243,7 +243,7 @@ A simple http request can be used:
 
 Which returns a JSON response:
 
-``` javascript
+```javascript
 {"Legend": [{
   "layerName": "states",
   "title": "USA Population",
@@ -486,7 +486,7 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 
 In any case where one or more vendor options is included in the symbolizer there will be a `vendor-options` element included in the output. This object will include one line for each vendor option.
 
-``` javascript
+```javascript
 "vendor-options": {
   "labelAllGroup": "true",
   "spaceAround": "10",

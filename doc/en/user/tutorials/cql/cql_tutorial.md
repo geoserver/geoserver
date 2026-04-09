@@ -12,7 +12,7 @@ This tutorial introduces the CQL/ECQL language by example. For a full reference,
 
 The following examples use the `topp:states` sample layer shipped with GeoServer. They demonstrate how CQL filters work by using the WMS [CQL_FILTER vendor parameter](../../services/wms/vendor.md) to alter the data displayed by WMS requests. The easiest way to follow the tutorial is to open the GeoServer Map Preview for the `topp:states` layer. Click on the *Options* button at the top of the map preview to open the advanced options toolbar. The example filters can be entered in the *Filter: CQL* box.
 
-![](gettingStarted.png)
+![](gettingStarted.png)  
 *topp:states preview with advanced toolbar open.*
 
 The attributes used in the filter examples are those included in the layer. For example, the following are the attribute names and values for the Colorado feature:
@@ -99,7 +99,7 @@ CQL/ECQL can use any of the [filter functions](../../filter/function_reference.m
 
 For example, suppose we want to find all states whose name contains an "m", regardless of letter case. We can use the `strToLowerCase` to turn all the state names to lowercase and then use a like comparison: `strToLowerCase(STATE_NAME) like '%m%'`:
 
-![](mstates.png)
+![](mstates.png)  
 *strToLowerCase(STATE_NAME) like '%m%'*
 
 ## Geometric filters

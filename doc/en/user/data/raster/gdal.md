@@ -53,7 +53,7 @@ The imageio-ext plugin is tested with the GDAL 3.2 SWIG bindings, included in th
 
 We recommend matching the version **`gdal`** jar to the version of gdal available in your environment:
 
-``` console
+```console
 gdalinfo --version
 ```
 
@@ -70,7 +70,7 @@ For Windows, [gisinternals.com](http://www.gisinternals.com/release.php) provide
 
 Unpack the **`zip`** file in a suitable location, and then set the following variables before starting up GeoServer:
 
-``` bat
+```bat
 set PATH=%PATH%;C:\<unzipped_package>\bin;C:\<unzipped_package>\bin\gdal\java
 set GDAL_DRIVER_PATH=C:\<unzipped_package>\bin\gdal\plugins
 set GDAL_DATA=C:\<unzipped_package>\bin\gdal-data
@@ -95,7 +95,7 @@ WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni i
 
 Taking a look at the `jsl74.ini` configuration file available inside the GeoServer installation , there is this useful entry:
 
-``` ini
+```ini
 ;The java command line
 ;The entry method below using a parameter list still works but the command line variant is more convenient.
 ;Everything separated by whitespace on a java command line is broken down into a parameter here. 

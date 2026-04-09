@@ -27,7 +27,7 @@ Base path: `/geoserver/rest`
 
 ## Error body
 
-``` json
+```json
 { "status": 400, "message": "Reason here" }
 ```
 

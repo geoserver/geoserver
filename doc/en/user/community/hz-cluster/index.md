@@ -12,7 +12,7 @@ The module can be simply dropped in GeoServer own ``WEB-INF/lib`` directory, and
 
 If multicast is not available, then one can customize the `hazelcast.xml` file found in the `GEOSERVER_DATA_DIR/cluster` directory, disabling multicast and enabling TCP/IP or AWS instead. Here are sample contents for the file, for reference:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 Configure Hazelcast for clustering GeoServer's catalog and web sessions
@@ -60,7 +60,7 @@ https://docs.hazelcast.com/hazelcast/5.3/configuration/configuring-declaratively
 
 In the same directory a ``cluster.properties`` file can be found, that can be used to tune the event notification mechanism. The default settings are sufficient for small catalogs, for larger ones it is recommended to set the ``sync_method`` to ``event``, which will avoid a full data directory reload. One might also want to have a shorter ``sync_delay`` (can be set to zero).
 
-``` properties
+```properties
 #
 # Configuration for cluster module
 #
@@ -100,7 +100,7 @@ The session sharing is enabled by default in the configuration files, but in ord
 
 1)  Open the file, and place the following XML block as the first filter declaration in the file:
 
-``` xml
+```xml
 <filter>
   <filter-name>hazelcast</filter-name>
   <filter-class>org.geoserver.cluster.hazelcast.web.HzSessionShareFilter</filter-class>
@@ -109,7 +109,7 @@ The session sharing is enabled by default in the configuration files, but in ord
 
 2)  Scroll down and look for filter mappings, and add the following as the first filter mapping:
 
-``` xml
+```xml
 <filter-mapping>
   <filter-name>hazelcast</filter-name>
   <url-pattern>/*</url-pattern>
@@ -118,7 +118,7 @@ The session sharing is enabled by default in the configuration files, but in ord
 
 3)  Finally, reach out to the section that declares listeners, and add the following as well (order is not important here):
 
-``` xml
+```xml
 <listener>
   <listener-class>org.geoserver.cluster.hazelcast.web.HzSessionShareListener</listener-class>
 </listener>

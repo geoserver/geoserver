@@ -26,7 +26,7 @@ An MBTiles file will correspond to an SQLite database file. In order to limit th
 
 To configure the databases files granularity the user needs to provide a file path template. The default file path template for the MBTiles blob store is this one:
 
-``` none
+```none
 {layer}/{grid}{format}{params}/{z}-{x}-{y}.sqlite
 ```
 
@@ -34,7 +34,7 @@ This file template will stores all the tiles belonging to a certain layer in a s
 
 Follows an example of what the blob store root directory structure may look like when using the default path template:
 
-``` none
+```none
 .
 |-- nurc_Pk50095
 |   `-- EPSG_4326image_pngnull
@@ -71,13 +71,13 @@ It is also possible to use parameters values, like *style* for example. If the p
 
 A valid MBTiles file will need some metadata, the image format and layer name will be automatically added when an MBTiles file is created. The user can provide the remaining metadata using a properties file whose name must follow this pattern:
 
-``` none
+```none
 <layerName>.metadata
 ```
 
 As an example, to add metadata `description` and `attribution` entries to layer `tiger_roads` a file named `tiger_roads.properties` with the following content should be present in the metadata directory:
 
-``` none
+```none
 description=ny_roads
 attribution=geoserver
 ```
@@ -122,7 +122,7 @@ There is four ways to invoke this operation. Follows an example of all those var
 
 Replace a single file uploading the replacement file:
 
-``` none
+```none
 curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
   -F "file=@tiles_0_0.sqlite"
   -F "destination=EPSG_4326/sf_restricted/image_png/null/10/tiles_0_0.sqlite"
@@ -132,7 +132,7 @@ curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
 
 Replace a single file using a file already present on the system:
 
-``` none
+```none
 curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
   -F "source=/tmp/tiles_0_0.sqlite"
   -F "destination=EPSG_4326/sf_restricted/image_png/null/10/tiles_0_0.sqlite"
@@ -142,7 +142,7 @@ curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
 
 Replace multiple files uploading a ZIP file:
 
-``` none
+```none
 curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
   -F "file=@tiles.zip"
   -F "layer=sf:restricted"
@@ -151,7 +151,7 @@ curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
 
 Replace multiple files using a directory already present on the system:
 
-``` none
+```none
 curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
   -F "source=/tmp/tiles"
   -F "layer=sf:restricted"

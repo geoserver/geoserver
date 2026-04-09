@@ -11,7 +11,7 @@ The `GeoServer` interface is configured as a spring bean with access to:
 
 Access to `GeoServer` configuration is available to spring beans during application startup and shutdown:
 
-``` java
+```java
 public Bean implements DisposableBean {} 
 
     GeoServer gs;
@@ -27,13 +27,13 @@ public Bean implements DisposableBean {}
 
 `GeoServer` can be looked up once the application is running:
 
-``` java
+```java
 GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
 ```
 
 Also available for use via wicket (via `GeoServerApplication` web application):
 
-``` java
+```java
 GeoServer gs = page.getGeoServerApplication().getGeoServer();
 ```
 

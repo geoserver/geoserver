@@ -4,7 +4,7 @@
 
 In traditional GeoJSON, every feature in a (simple feature) feature collection has its own schema information. That is, every feature contains all its (not necessarily short) attribute names. Except the geometry name, these names are used as the keys in the `"properties"` map:
 
-``` json
+```json
 {
   "type": "FeatureCollection",
   "features": [
@@ -54,7 +54,7 @@ In traditional GeoJSON, every feature in a (simple feature) feature collection h
 
 Since all features have the same schema information, SpatialJSON does not write attribute names for every feature. Instead, a single `"schemaInformation"` property is added to the end of the top-level `"FeatureCollection"` object:
 
-``` json
+```json
 {
   "type": "FeatureCollection",
   "features": [

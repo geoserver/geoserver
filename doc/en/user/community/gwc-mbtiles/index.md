@@ -31,7 +31,7 @@ Locate the ``layers`` section of the config or add it if missing.
 
 Then define a new ``mbTilesLayer`` node for each new MBTilesLayer you want to add. A GWC configuration containing a configured MBTiles Layer would look like this:
 
-``` xml
+```xml
 <gwcConfiguration>
   <!-- ... -->
   <layers>

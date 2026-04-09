@@ -27,7 +27,7 @@ Consider a choropleth map of the US states dataset using the fill color to indic
 
 The symbolizer for this style is:
 
-``` xml
+```xml
 <PolygonSymbolizer>
    <Fill>
      <CssParameter name="fill">
@@ -86,7 +86,7 @@ Consider a choropleth map of the US states dataset using the fill color to indic
 
 The symbolizer for this style is:
 
-``` xml
+```xml
 <PolygonSymbolizer>
    <Fill>
      <CssParameter name="fill">
@@ -132,7 +132,7 @@ Because the interpolation is being performed over color values, the method param
 
 The symbolizer for this style is:
 
-``` xml
+```xml
 <PolygonSymbolizer>
    <Fill>
      <CssParameter name="fill">

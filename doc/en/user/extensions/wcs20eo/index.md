@@ -48,7 +48,7 @@ The second step is finding and activating the EO extensions for a suitable grid 
 
 Once that is done the capabilities document (e.g. `http://localhost:8080/geoserver/ows?service=WCS&version=2.0.1&request=GetCapabilities` for WCS 2.0 will contain an indication that a coverage set is present:
 
-``` xml
+```xml
 <wcs:Extension>
   <wcseo:DatasetSeriesSummary>
     <ows:WGS84BoundingBox>
@@ -66,7 +66,7 @@ Once that is done the capabilities document (e.g. `http://localhost:8080/geoserv
 
 And issuing a DescribeEOCoverageSet (e.g. `http://localhost:8080/geoserver/ows?service=WCS&version=2.0.1&request=DescribeEOCoverageSet&eoId=nurc__watertemp_dss`) on it will return the following:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wcseo:EOCoverageSetDescription xmlns:eop="http://www.opengis.net/eop/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wcsgs="http://www.geoserver.org/wcsgs/2.0" xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0" xmlns:om="http://www.opengis.net/om/2.0" xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:wcs="http://www.opengis.net/wcs/2.0" xmlns:wcseo="http://www.opengis.net/wcseo/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" numberMatched="4" numberReturned="4" xsi:schemaLocation="http://www.opengis.net/wcseo/1.0 http://localhost:8080/geoserver/schemas/wcseo/1.0/wcsEOAll.xsd">
   <wcs:CoverageDescriptions>

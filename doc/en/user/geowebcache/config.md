@@ -31,7 +31,7 @@ If upgrading from a version prior to 2.2.0, a migration process is run which cre
 
 GeoWebCache will automatically store cached tiles in a `gwc` directory inside your GeoServer data directory. To set a different directory, stop GeoServer (if it is running) and add the following code to your GeoServer **`web.xml`** file (located in the **`WEB-INF`** directory):
 
-``` xml
+```xml
 <context-param>
    <param-name>GEOWEBCACHE_CACHE_DIR</param-name>
    <param-value>C:\temp</param-value>

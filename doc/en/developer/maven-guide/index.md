@@ -158,7 +158,7 @@ GeoServer uses Maven's Bill of Materials (BOM) pattern to centrally manage depen
 
 The root `src/pom.xml` imports multiple BOMs in the `<dependencyManagement>` section:
 
-``` xml
+```xml
 <dependencyManagement>
   <dependencies>
     <!-- GeoTools platform dependencies BOM - provides managed versions for third-party libraries -->
@@ -204,7 +204,7 @@ The root `src/pom.xml` imports multiple BOMs in the `<dependencyManagement>` sec
 
 When adding GeoTools, Spring Framework, or Spring Security dependencies to any module, **do not specify the version**. The appropriate BOM will automatically provide the correct version:
 
-``` xml
+```xml
 <dependencies>
   <!-- GeoTools dependencies - no version specified -->
   <dependency>
@@ -228,7 +228,7 @@ When adding GeoTools, Spring Framework, or Spring Security dependencies to any m
 
 For GeoTools test JARs, use the `<classifier>tests</classifier>` approach instead of `<type>test-jar</type>`:
 
-``` xml
+```xml
 <dependency>
   <groupId>org.geotools</groupId>
   <artifactId>gt-jdbc</artifactId>

@@ -2,13 +2,13 @@
 
 A directive is a CSS top level declaration that allows control of some aspects of the stylesheet application or translation to SLD. All directives are declared at the beginning of the CSS sheet and follow the same syntax:
 
-``` css
+```css
 @name value;
 ```
 
 For example:
 
-``` scss
+```scss
 @mode 'Flat';
 @styleName 'The name';
 @styleTitle 'The title';

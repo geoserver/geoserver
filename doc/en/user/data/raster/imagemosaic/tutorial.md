@@ -65,7 +65,7 @@ The first operation is to create the CoverageStore specifying, for example, the 
 
 Inside the Coverage Editor Publishing tab, you can specify the **dem** default style in order to represent the visualization style of the mosaic. The following is an example style:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0"
   xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
@@ -137,7 +137,7 @@ The configuration parameters are as follows:
 
 In this example we are going to create a mosaic that will serve aerial imagery, specifically RGB GeoTIFFs. Because this is visual data, in the Coverage Editor you can use the basic `raster` style, which is just a stub SLD to instruct the GeoServer raster renderer to not do anything particular in terms of color management:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0"
   xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"

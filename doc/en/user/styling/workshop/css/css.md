@@ -25,7 +25,7 @@ Using just these key properties and the selector ``*``, you will be able to visu
 
 For example, here is the key property **stroke** providing a gray representation for line or polygon data:
 
-``` css
+```css
 * {
    stroke: gray;
 }
@@ -33,7 +33,7 @@ For example, here is the key property **stroke** providing a gray representation
 
 Here is the key property **fill** providing a blue fill for polygon data:
 
-``` css
+```css
 * {
    fill: #2020ED;
 }
@@ -41,7 +41,7 @@ Here is the key property **fill** providing a blue fill for polygon data:
 
 Here is the key property **mark** showing the use of the well-known symbol `square`:
 
-``` css
+```css
 * {
    mark: symbol(square);
 }
@@ -49,7 +49,7 @@ Here is the key property **mark** showing the use of the well-known symbol `squa
 
 Here is the key property **label** generating labels using the ``CITY_NAME`` feature attribute:
 
-``` css
+```css
 * {
    label: [CITY_NAME];
 }
@@ -57,7 +57,7 @@ Here is the key property **label** generating labels using the ``CITY_NAME`` fea
 
 Here is the key property **halo-radius** providing an outline around generated label:
 
-``` css
+```css
 * {
    label: [NAME];
    halo-radius: 1;
@@ -73,7 +73,7 @@ Reference:
 
 We have already seen a CSS style composed of a single rule:
 
-``` css
+```css
 * {
   mark: symbol(circle);
 }
@@ -81,7 +81,7 @@ We have already seen a CSS style composed of a single rule:
 
 We can also make a rule that only applies to a specific FeatureType:
 
-``` css
+```css
 populated_places {
   mark: symbol(triangle);
 }
@@ -89,7 +89,7 @@ populated_places {
 
 We can make a style consisting of more than one rule, carefully choosing the selector for each rule. In this case we are using a selector to style capital cities with a star, and non-capital with a circle:
 
-``` css
+```css
 [ FEATURECLA = 'Admin-0 capital' ] {
   mark: symbol(star);
   mark-size: 6px;
@@ -105,7 +105,7 @@ The feature attribute test performed above uses **Constraint Query Language (CQL
 
 Rule selectors can also be triggered based on the state of the rendering engine. In this example we are only applying labels when zoomed in:
 
-``` css
+```css
 [@scale < 20000000] {
    label: [ NAME ];
 }
@@ -122,7 +122,7 @@ Reference:
 
 In the above example feature attribute selection we repeated information. An alternate approach is to make use of CSS **Cascading** and factor out common properties into a general rule:
 
-``` css
+```css
 [ FEATURECLA = 'Admin-0 capital' ] {
   mark: symbol(star);
 }
@@ -144,7 +144,7 @@ When a shape is represented using a symbol, we have a second challenge: document
 
 Example of using a pseudo-selector:
 
-``` css
+```css
 * {
   mark: symbol(circle);
 }
@@ -167,7 +167,7 @@ In this example the ``:mark`` pseudo-selector is used select the circle mark, an
 
 The above pseudo-selectors apply to all symbols, but to be specific the syntax ``nth-symbol(1)`` can be used:
 
-``` css
+```css
 * {
   mark: symbol(circle);
 }
@@ -252,7 +252,7 @@ Content is not drawn by more than one rule. When content satisfies the condition
 
 Here is an example using CSS:
 
-``` css
+```css
 * {
   mark: url(airport.svg);
   mark-mime: "image/svg";

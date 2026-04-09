@@ -24,7 +24,7 @@ The examples below use the [cURL](http://curl.haxx.se/) tool, though the example
 
 The following XML request initiates a seeding task:
 
-``` console
+```console
 curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d '<seedRequest><name>nurc:Arc_Sample</name><srs><number>4326</number></srs><zoomStart>1</zoomStart><zoomStop>12</zoomStop><format>image/png</format><type>truncate</type><threadCount>2</threadCount></seedRequest>'  "http://localhost:8080/geoserver/gwc/rest/seed/nurc:Arc_Sample.xml"
 ```
 
@@ -46,7 +46,7 @@ curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d '<seedRequest><
 
 The following is a more complete XML fragment for a seed request, including parameter filters:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <seedRequest>
   <name>topp:states</name>
@@ -90,7 +90,7 @@ The following is a more complete XML fragment for a seed request, including para
 
 The following XML request initiates a truncating task:
 
-``` console
+```console
 curl -v -u admin:geoserver -XPOST -H "Content-type: application/json" -d "{'seedRequest':{'name':'topp:states','bounds':{'coords':{ 'double':['-124.0','22.0','66.0','72.0']}},'srs':{'number':4326},'zoomStart':1,'zoomStop':12,'format':'image\/png','type':'truncate','threadCount':4}}}"  "http://localhost:8080/geoserver/gwc/rest/seed/nurc:Arc_Sample.json"
 ```
 
@@ -156,11 +156,11 @@ The returned `Task Status` value will be one of the following:
 
 The example below returns the current state of tasks for the `topp:states` layer:
 
-``` console
+```console
 curl -u <user>:<password> -v -XGET http://localhost:8080/geoserver/gwc/rest/seed/topp:states.json
 ```
 
-``` json
+```json
 {"long-array-array":[[17888,44739250,18319,1,1],[17744,44739250,18468,2,1],[16608,44739250,19733,3,0],[0,1000,1000,4,0]]}
 ```
 
@@ -168,11 +168,11 @@ In the above response, tasks `1` and `2` for the `topp:states` layer are running
 
 The example below returns a list of tasks for all the layers.
 
-``` console
+```console
 curl -u <user>:<password> -XGET http://localhost:8080/geoserver/gwc/rest/seed.json
 ```
 
-``` json
+```json
 {"long-array-array":[[2240,327426,1564,2,1],[2368,327426,1477,3,1],[2272,327426,1541,4,1],[2176,327426,1611,5,1],[1056,15954794690,79320691,6,1],[1088,15954794690,76987729,7,1],[1040,15954794690,80541010,8,1],[1104,15954794690,75871965,9,1]]}
 ```
 
@@ -196,7 +196,7 @@ It is possible to terminate individual or all pending and/or running tasks. Use 
 
 The following request terminates all running seed and truncate tasks.
 
-``` console
+```console
 curl -v -u admin:geoserver -d "kill_all=all"  "http://localhost:8080/geoserver/gwc/rest/seed"
 ```
 

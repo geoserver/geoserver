@@ -18,9 +18,11 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -34,6 +36,7 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -94,8 +97,21 @@ public class NewLayerPage extends GeoServerSecuredPage {
         this(null);
     }
 
+    @Override
+    public PageParameters getPageParameters() {
+        PageParameters params = super.getPageParameters();
+        if (params.isEmpty() && storeId != null) {
+            StoreInfo store = getCatalog().getStore(storeId, StoreInfo.class);
+            if (store != null) {
+                return new PageParameters()
+                        .add("workspace", store.getWorkspace().getName());
+            }
+        }
+        return params;
+    }
+
     public NewLayerPage(String storeId) {
-        this.storeId = storeId;
+        this.storeId = storeId != null ? storeId : resolveStoreIdFromWorkspaceParam();
 
         // the store selector, used when no store is initially known
         Form<?> selector = new Form<>("selector");
@@ -192,6 +208,27 @@ public class NewLayerPage extends GeoServerSecuredPage {
         }
     }
 
+    private String resolveStoreIdFromWorkspaceParam() {
+        String workspaceName = getPageParameters().get("workspace").toOptionalString();
+        if (Strings.isEmpty(workspaceName)) {
+            return null;
+        }
+
+        Catalog catalog = getCatalog();
+        WorkspaceInfo workspace = catalog.getWorkspaceByName(workspaceName);
+        if (workspace == null) {
+            return null;
+        }
+
+        StoreInfo defaultDataStore = catalog.getDefaultDataStore(workspace);
+        if (defaultDataStore != null) {
+            return defaultDataStore.getId();
+        }
+
+        java.util.List<StoreInfo> stores = catalog.getStoresByWorkspace(workspace, StoreInfo.class);
+        return stores.isEmpty() ? null : stores.get(0).getId();
+    }
+
     Component newFeatureTypeLink() {
         return new AjaxLink<Void>("createFeatureType") {
 
@@ -271,8 +308,26 @@ public class NewLayerPage extends GeoServerSecuredPage {
     }
 
     private Select2DropDownChoice<StoreInfo> storesDropDown() {
+        IModel<java.util.List<StoreInfo>> storeChoices = new LoadableDetachableModel<>() {
+            @Override
+            protected java.util.List<StoreInfo> load() {
+                String workspaceName = getPageParameters().get("workspace").toOptionalString();
+                java.util.List<StoreInfo> stores;
+                if (!Strings.isEmpty(workspaceName)) {
+                    WorkspaceInfo workspace = getCatalog().getWorkspaceByName(workspaceName);
+                    if (workspace == null) {
+                        return java.util.Collections.emptyList();
+                    }
+                    stores = new java.util.ArrayList<>(getCatalog().getStoresByWorkspace(workspace, StoreInfo.class));
+                    stores.sort(java.util.Comparator.comparing(StoreInfo::getName));
+                } else {
+                    stores = new StoreListModel().getObject();
+                }
+                return stores;
+            }
+        };
         final Select2DropDownChoice<StoreInfo> stores = new Select2DropDownChoice<>(
-                "storesDropDown", new Model<>(), new StoreListModel(), new StoreListChoiceRenderer());
+                "storesDropDown", new Model<>(), storeChoices, new StoreListChoiceRenderer());
         stores.setOutputMarkupId(true);
         stores.add(new AjaxFormComponentUpdatingBehavior("change") {
 

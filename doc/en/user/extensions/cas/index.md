@@ -62,7 +62,7 @@ In order to use the CAS custom attributes the server must be configured to extra
 
 For example, the following `cas.properties` file sets up a JDBC user source, as well as JDBC attribute repository (this configuration file might useful for testing purposes, but not setup for production):
 
-``` none
+```none
 cas.server.name=https://localhost:8443
 cas.server.prefix=${cas.server.name}/cas
 server.ssl.key-store=file:/etc/cas/config/thekeystore
@@ -100,7 +100,7 @@ cas.service-registry.json.location=classpath:/services
 
 The database has the following two tables for users and roles:
 
-``` sql
+```sql
 CREATE TABLE public.users (
     id bigint NOT NULL,
     disabled boolean,
@@ -120,7 +120,7 @@ CREATE TABLE public.roles (
 
 A sample service configuration for GeoServer might look as follows (again, setup for testing and development only):
 
-``` json
+```json
 {
   "@class" : "org.apereo.cas.services.RegexRegisteredService",
   "serviceId" : "^http(s)?://localhost:[\\d]+/geoserver/.*",

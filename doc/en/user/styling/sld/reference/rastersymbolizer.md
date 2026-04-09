@@ -25,7 +25,7 @@ The following elements can be used inside the `<RasterSymbolizer>` element.
 
 The `<Opacity>` element sets the transparency level for the entire rendered image. As is standard, the values range from zero (0) to one (1), with zero being transparent, and one being opaque. The syntax is:
 
-``` xml
+```xml
 <Opacity>0.5</Opacity>
 ```
 
@@ -43,7 +43,7 @@ A color map can be refined by adding additional intermediate entries. This is us
 
 For example, a simple ColorMap can define a color gradient from color #323232 to color #BBBBBB over quantity values from -300 to 200:
 
-``` xml
+```xml
 <ColorMap>
       <ColorMapEntry color="#323232" quantity="-300" label="label1" opacity="1"/>
       <ColorMapEntry color="#BBBBBB" quantity="200" label="label2" opacity="1"/>
@@ -54,7 +54,7 @@ For example, a simple ColorMap can define a color gradient from color #323232 to
 
 A more refined example defines a color gradient from color #FFCC32 through color #BBBBBB, running through color #3645CC and color #CC3636. The bottom color #FFCC32 is defined to be transparent This simulates an alpha channel, since pixels with values of -300 and below will not be rendered. Notice that the default opacity is 1 (opaque) when not specified.
 
-``` xml
+```xml
 <ColorMap>
       <ColorMapEntry color="#FFCC32" quantity="-300" label="label1" opacity="0"/>
       <ColorMapEntry color="#3645CC" quantity="0" label="label2" opacity="1"/>
@@ -73,7 +73,7 @@ The `<ColorMap>` `type` attribute specifies the kind of ColorMap to use. There a
 
 `type="ramp"` is the default ColorMap type. It specifies that colors should be interpolated for values between the color map entries. The result is shown in the following example.
 
-``` xml
+```xml
 <ColorMap type="ramp">
        <ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
        <ColorMapEntry color="#2851CC" quantity="0" label="values" opacity="1"/>
@@ -93,7 +93,7 @@ The `<ColorMap>` `type` attribute specifies the kind of ColorMap to use. There a
 
 `type="values"` means that only pixels with the specified entry quantity values are rendered. Pixels with other values are not rendered. Using the example set of color map entries:
 
-``` xml
+```xml
 <ColorMap type="values">
        <ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
        ...
@@ -107,7 +107,7 @@ The result image is:
 
 `type="intervals"` value means that each interval defined by two entries is rendered using the color of the first (lowest-value) entry. No color interpolation is applied across the intervals. Using the example set of color map entries:
 
-``` xml
+```xml
 <ColorMap type="intervals" extended="true">
        <ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
        ...
@@ -137,7 +137,7 @@ All of the ColorMapEntry attributes (color, quantity, label and opacity) can be 
 
 CQL expressions are useful to make the color map dynamic, using values taken from the client:
 
-``` xml
+```xml
 <ColorMapEntry color="#00FF00" quantity="${env('low',3)}" label="Low" opacity="1"/>
 <ColorMapEntry color="#FFFF00" quantity="${env('medium',10)}" label="Medium" opacity="1"/>
 <ColorMapEntry color="#FF0000" quantity="${env('high',1000)}" label="High" opacity="1"/>
@@ -155,7 +155,7 @@ The `<ChannelSelection>` element specifies how dataset bands are mapped to image
 
 The following example maps source channels 1, 2 and 3 to the red, green, and blue color channels.
 
-``` xml
+```xml
 <ChannelSelection>
      <RedChannel>
           <SourceChannelName>1</SourceChannelName>
@@ -173,7 +173,7 @@ The following example maps source channels 1, 2 and 3 to the red, green, and blu
 
 The next example shows selecting a single band of an RGB image as a grayscale channel, and re-colorizing it via a ColorMap:
 
-``` xml
+```xml
 <RasterSymbolizer>
        <Opacity>1.0</Opacity>
        <ChannelSelection>
@@ -200,7 +200,7 @@ By replacing Strings with Expressions in `<SourceChannelName>`, context free fun
 
 The following example shows how to set the Red, Green and Blue channels and to map them into the desired bands. Here below, the `env` function will set, by default in the WMS request, the RedChannel on the second band, the GreenChannel on the fifth band and the BlueChannel on the seventh band.
 
-``` xml
+```xml
 <RasterSymbolizer>
 <ChannelSelection>
    <RedChannel>
@@ -235,7 +235,7 @@ The following example shows how to set the Red, Green and Blue channels and to m
 
 The style Schema supports also the SLD 1.1 and CSS. As a CSS examples:
 
-``` xml
+```xml
 * { raster-channels: [env('B1','1')] '2' '3'; }
 
 * { raster-channels: @B1(1)  '2' '3';}
@@ -249,7 +249,7 @@ One can specify the `env` request parameters in the WMS request to switch the ba
 
 Now let us suppose that we want to work on a single band and to exclude all the remaining bands in order to render a monochromatic raster. As an SLD example:
 
-``` xml
+```xml
 <RasterSymbolizer>
   <Opacity>1.0</se:Opacity>
   <ChannelSelection>
@@ -275,7 +275,7 @@ The Schema above will render the channel "7" by default. As before, you can choo
 
 Finally, you can add a ColorMap on the selected channel as the following:
 
-``` xml
+```xml
 <RasterSymbolizer>
  <Opacity>1.0</Opacity>
  <ChannelSelection>
@@ -317,13 +317,13 @@ There are three types of enhancements possible:
 
 These examples turn on Normalize and Histogram, respectively:
 
-``` xml
+```xml
 <ContrastEnhancement>
       <Normalize/>
 </ContrastEnhancement>
 ```
 
-``` xml
+```xml
 <ContrastEnhancement>
       <Histogram/>
 </ContrastEnhancement>
@@ -331,7 +331,7 @@ These examples turn on Normalize and Histogram, respectively:
 
 This example increases the brightness of the image by a factor of two.
 
-``` xml
+```xml
 <ContrastEnhancement>
       <GammaValue>2</GammaValue>
 </ContrastEnhancement>
@@ -354,7 +354,7 @@ Supported algorithms are:
 
 Here below some examples
 
-``` xml
+```xml
 <ContrastEnhancement>
   <Normalize>
    <VendorOption name="algorithm">StretchToMinimumMaximum</VendorOption>
@@ -366,7 +366,7 @@ Here below some examples
 
 This example will apply a Normalized ContrastEnhancement by linearly stretch from pixel values [50, 100] to [0, 255]
 
-``` xml
+```xml
 <ContrastEnhancement>
   <Normalize>
    <VendorOption name="algorithm">ClipToMinimumMaximum</VendorOption>
@@ -376,7 +376,7 @@ This example will apply a Normalized ContrastEnhancement by linearly stretch fro
 </ContrastEnhancement>
 ```
 
-``` xml
+```xml
 <ContrastEnhancement>
   <Normalize>
    <VendorOption name="algorithm">ClipToMinimumMaximum</VendorOption>
@@ -388,7 +388,7 @@ This example will apply a Normalized ContrastEnhancement by linearly stretch fro
 
 Here below a more complex example that shows the possibility to control the values from a client using env functions. This is extremely interesting for interactive applications.
 
-``` xml
+```xml
 ...
 <ContrastEnhancement>
    <Normalize>
@@ -427,7 +427,7 @@ The `<ShadedRelief>` element can be used to create a 3-D effect, by selectively 
 
 BrightnessOnly, which takes no parameters, applies shading in WHAT WAY? ReliefFactor sets the amount of exaggeration of the shading (for example, to make hills appear higher). According to the OGC SLD specification, a value of around 55 gives "reasonable results" for Earth-based datasets:
 
-``` xml
+```xml
 <ShadedRelief>
       <BrightnessOnly />
       <ReliefFactor>55</ReliefFactor>
@@ -450,7 +450,7 @@ Sometimes raster data is comprised of multiple image sets. Take, for example, a 
 
 **AVERAGE** takes each overlapping point and displays their average value. **RANDOM** determines which image gets displayed according to chance (which can sometimes result in a crisper image). **LATEST_ON_TOP** and **EARLIEST_ON_TOP** sets the determining factor to be the internal timestamp on each image in the dataset. None of these elements have any parameters, and are all called in the same way:
 
-``` xml
+```xml
 <OverlapBehavior>
       <AVERAGE />
 </OverlapBehavior>
@@ -465,7 +465,7 @@ The above sets the OverlapBehavior to AVERAGE.
 
 Given the situation mentioned previously of the image composite, it is possible to style each image so as to have an outline. One can even set a fill color and opacity of each image; a reason to do this would be to "gray-out" an image. To use ImageOutline, you would define a <LineSymbolizer> or <PolygonSymbolizer> inside of the element:
 
-``` xml
+```xml
 <ImageOutline>
       <LineSymbolizer>
          <Stroke>

@@ -108,7 +108,7 @@ public class BreadcrumbContextMenuItemInfoTest {
 
         assertEquals("myWorkspace", params.get("workspace").toString());
         assertEquals("myLayer", params.get("layer").toString());
-        assertEquals("myLayer", params.get("group").toString());
+        assertTrue(params.get("group").isNull());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class BreadcrumbContextMenuItemInfoTest {
 
         assertTrue(params.get("workspace").isNull());
         assertEquals("myLayer", params.get("layer").toString());
-        assertEquals("myLayer", params.get("group").toString());
+        assertTrue(params.get("group").isNull());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class BreadcrumbContextMenuItemInfoTest {
 
         assertEquals("ws", params.get("workspace").toString());
         assertEquals("res", params.get("layer").toString());
-        assertEquals("res", params.get("group").toString());
+        assertTrue(params.get("group").isNull());
     }
 
     @Test
@@ -207,6 +207,6 @@ public class BreadcrumbContextMenuItemInfoTest {
 
         assertEquals("ws", params.get("workspace").toString());
         assertEquals("res", params.get("layer").toString());
-        assertEquals("res", params.get("group").toString());
+        assertTrue(params.get("group").isNull());
     }
 }

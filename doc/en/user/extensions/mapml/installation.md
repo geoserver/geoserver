@@ -115,7 +115,7 @@ MapML supports the serving of vector feature representations of the data. This r
 
 If the "Use Features" checkbox is checked, the output MapML on the Layer Preview page will define a feature-based reference to the WMS server. When making WMS request add ``mapmlusefeatures:true`` to the FORMAT_OPTIONS parameter. Otherwise, an image-based reference will be used. Note that when applied to raster data map-tile elements will be generated for the requested coverage area. MapML <map-extent> element with a feature link:
 
-``` html
+```html
 <map-extent units="WGS84" label="Manhattan (NY) points of interest" checked="checked">
   <map-input name="z" type="zoom" min="0" max="21"/>
   <map-input name="xmin" type="location" rel="map" position="top-left" axis="longitude" units="gcrs" min="-74.0118315772888" max="-74.00153046439813"/>
@@ -289,7 +289,7 @@ If all goes well, you should see the layers stacked on the map and in the layer 
 
 MapML visualization is supported by the MapML.js project. The MapML viewer is built into the GeoServer layer and layer group preview facility. You can find out more about MapML.js at the project ``website <https://maps4html.org/web-map-doc/>``. Here is a simple, self-contained example of an HTML page that uses the <mapml-viewer> and <map-layer> elements:
 
-``` html
+```html
 <!DOCTYPE html>
 <html lang="en">
   <head>

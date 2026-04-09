@@ -62,7 +62,7 @@ http://example.com/geoserver/wfs?
 
 The equivalent request using POST:
 
-``` xml
+```xml
 <GetCapabilities
  service="WFS"
  xmlns="http://www.opengis.net/wfs"
@@ -302,7 +302,7 @@ http://example.com/geoserver/wfs?
 
 The same example in a POST request:
 
-``` xml
+```xml
 <wfs:GetPropertyValue service='WFS' version='2.0.0'
  xmlns:topp='http://www.openplans.org/topp'
  xmlns:fes='http://www.opengis.net/fes/2.0'
@@ -323,7 +323,7 @@ A **GetFeatureWithLock** operation is similar to a **GetFeature** operation, exc
 
 This POST example retrieves the features of the `topp:states` layer, but in addition locks those features for five minutes.
 
-``` xml
+```xml
 <wfs:GetFeatureWithLock service='WFS' version='2.0.0'
  handle='GetFeatureWithLock-tc1' expiry='5' resultType='results'
  xmlns:topp='http://www.openplans.org/topp'
@@ -345,7 +345,7 @@ A **CreateStoredQuery** operation creates a stored query on the WFS server. The 
 
 This POST example creates a new stored query (called "myStoredQuery") that filters the `topp:states` layer to those features that are within a given area of interest (`${AreaOfInterest}`):
 
-``` xml
+```xml
 <wfs:CreateStoredQuery service='WFS' version='2.0.0'
  xmlns:wfs='http://www.opengis.net/wfs/2.0'
  xmlns:fes='http://www.opengis.org/fes/2.0'
@@ -388,7 +388,7 @@ http://example.com/geoserver/wfs?
 
 The same example in a POST request:
 
-``` xml
+```xml
 <wfs:DropStoredQuery
  xmlns:wfs='http://www.opengis.net/wfs/2.0'
  service='WFS' id='myStoredQuery'/>
@@ -412,7 +412,7 @@ http://example.com/geoserver/wfs?
 
 The same example in a POST request:
 
-``` xml
+```xml
 <wfs:ListStoredQueries service='WFS'
  version='2.0.0'
  xmlns:wfs='http://www.opengis.net/wfs/2.0'/>
@@ -435,7 +435,7 @@ http://example.com/geoserver/wfs?
 
 The same example in a POST request:
 
-``` xml
+```xml
 <wfs:DescribeStoredQueries
  xmlns:wfs='http://www.opengis.net/wfs/2.0'
  service='WFS'>

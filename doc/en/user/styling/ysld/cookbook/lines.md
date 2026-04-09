@@ -48,7 +48,7 @@ This example specifies lines be colored black with a thickness of 3 pixels.
 
 [Download the "Simple line" YSLD](artifacts/line_simpleline.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Simple Line'
 feature-styles:
 - name: name
@@ -75,7 +75,7 @@ This example shows how to draw lines with borders (sometimes called "cased lines
 
 [Download the "Line with border" YSLD](artifacts/line_linewithborder.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Line with border'
 feature-styles:
 - name: name
@@ -118,7 +118,7 @@ This example alters the [Simple line](#ysld_cookbook_lines_simpleline) to create
 
 [Download the "Dashed line" YSLD](artifacts/line_dashedline.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Dashed line'
 feature-styles:
 - name: name
@@ -146,7 +146,7 @@ This example alters the [Simple line](#ysld_cookbook_lines_simpleline) to add a 
 
 [Download the "Offset line" YSLD](artifacts/line_offsetline.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Dashed line'
 feature-styles:
 - name: name
@@ -178,7 +178,7 @@ This example uses hatching to create a railroad style. Both the line and the hat
 
 [Download the "Railroad (hatching)" YSLD](artifacts/line_railroad.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Railroad (hatching)'
 feature-styles:
 - name: name
@@ -217,7 +217,7 @@ This example uses a graphic stroke along with dash arrays to create a "dot and s
 
 [Download the "Spaced symbols" YSLD](artifacts/line_dashspace.ysld)
 
-``` yaml
+```yaml
 name: Default Styler
 title: 'YSLD Cook Book: Dash/Space line'
 feature-styles:
@@ -262,7 +262,7 @@ The example shows how to use these features to create two synchronized sequences
 
 [Download the "Spaced symbols" YSLD](artifacts/line_dashdot.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Dash/Symbol line'
 feature-styles:
 - name: name
@@ -302,7 +302,7 @@ This example shows a text label on the simple line. This is how a label will be 
 
 [Download the "Line with default label" YSLD](artifacts/line_linewithdefaultlabel.ysld)
 
-``` yaml
+```yaml
 name: Default Styler
 title: 'YSLD Cook Book: Line with default label'
 feature-styles:
@@ -338,7 +338,7 @@ This example renders the text label to follow the contour of the lines.
 
 [Download the "Label following line" YSLD](artifacts/line_labelfollowingline.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Label following line'
 feature-styles:
 - name: name
@@ -376,7 +376,7 @@ This example optimizes label placement for lines such that the maximum number of
 
 [Download the "Optimized label" YSLD](artifacts/line_optimizedlabel.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Optimized label placement'
 feature-styles:
 - name: name
@@ -414,7 +414,7 @@ This example improves the style of the labels from the [Optimized label placemen
 
 [Download the "Optimized and styled label" YSLD](artifacts/line_optimizedstyledlabel.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Optimized and styled label'
 feature-styles:
 - name: name
@@ -454,7 +454,7 @@ This example styles the lines differently based on the "type" (Road class) attri
 
 [Download the "Attribute-based line" YSLD](artifacts/line_attributebasedline.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Attribute-based line'
 feature-styles:
 - name: name
@@ -524,7 +524,7 @@ This example alters the [Simple line](#ysld_cookbook_lines_simpleline) style at 
 
 [Download the "Zoom-based line" YSLD](artifacts/line_zoombasedline.ysld)
 
-``` yaml
+```yaml
 title: 'YSLD Cook Book: Zoom-based line'
 feature-styles:
 - name: name

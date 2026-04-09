@@ -42,7 +42,7 @@ Adds or lists authentication filters.
 
 ### Base URL used in examples
 
-``` bash
+```bash
 BASE="http://localhost:9002/geoserver/rest/security"
 ```
 
@@ -50,7 +50,7 @@ BASE="http://localhost:9002/geoserver/rest/security"
 
 #### XML
 
-``` bash
+```bash
 curl -u admin:geoserver \
      -H "Accept: application/xml" \
      "$BASE/authfilters"
@@ -58,7 +58,7 @@ curl -u admin:geoserver \
 
 #### Response: 200 OK
 
-``` xml
+```xml
 <authfilters>
   <authfilter>
     <name>Keycloak</name>
@@ -72,7 +72,7 @@ curl -u admin:geoserver \
 
 #### JSON
 
-``` bash
+```bash
 curl -u admin:geoserver \
      -H "Accept: application/json" \
      "$BASE/authfilters"
@@ -80,7 +80,7 @@ curl -u admin:geoserver \
 
 #### Response: 200 OK
 
-``` json
+```json
 {
   "authfilters": {
     "authfilter": [
@@ -97,7 +97,7 @@ curl -u admin:geoserver \
 
 #### XML
 
-``` bash
+```bash
 curl -u admin:geoserver \
      -H "Content-Type: application/xml" \
      -i \
@@ -141,7 +141,7 @@ XML
 
 #### JSON
 
-``` bash
+```bash
 curl -u admin:geoserver \
      -H "Content-Type: application/json" \
      -i \
@@ -212,7 +212,7 @@ View, update, or delete an existing authentication filter.
 
 #### XML
 
-``` bash
+```bash
 curl -u admin:geoserver \
      -H "Accept: application/xml" \
      "$BASE/authfilters/anonymous"
@@ -220,7 +220,7 @@ curl -u admin:geoserver \
 
 #### Response: 200 OK
 
-``` xml
+```xml
 <org.geoserver.security.config.AnonymousAuthenticationFilterConfig>
   <id>52857278:13c7ffd66a8:-7ff7</id>
   <name>anonymous</name>
@@ -230,7 +230,7 @@ curl -u admin:geoserver \
 
 #### JSON
 
-``` bash
+```bash
 curl -u admin:geoserver \
      -H "Accept: application/json" \
      "$BASE/authfilters/Keycloak"
@@ -238,7 +238,7 @@ curl -u admin:geoserver \
 
 #### Response: 200 OK
 
-``` json
+```json
 {
   "org.geoserver.security.oauth2.OpenIdConnectFilterConfig": {
     "id": "6bc4a33d:196d8c8ede2:-8000",
@@ -281,7 +281,7 @@ curl -u admin:geoserver \
 
 #### XML
 
-``` bash
+```bash
 curl -u admin:geoserver \
      -X PUT \
      -H "Content-Type: application/xml" \
@@ -302,7 +302,7 @@ XML
 
 #### JSON
 
-``` bash
+```bash
 curl -u admin:geoserver \
      -X PUT \
      -H "Content-Type: application/json" \
@@ -325,7 +325,7 @@ JSON
 
 ### DELETE --- Remove a filter
 
-``` bash
+```bash
 curl -u admin:geoserver \
      -X DELETE \
      "$BASE/authfilters/restInterceptor13"

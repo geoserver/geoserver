@@ -185,7 +185,7 @@ A service strategy is the method in which output is served to the client. This i
 
 In Apache Tomcat you can provide system property by creating **`conf/Catalina/localhost/geoserver.xml`**:
 
-``` xml
+```xml
 <Context>
   <Parameter name="serviceStrategy"
              value="PARTIAL-BUFFER2" override="false"/>
@@ -194,7 +194,7 @@ In Apache Tomcat you can provide system property by creating **`conf/Catalina/lo
 
 You can configure the default service strategy by modifying the **`web.xml`** file of your GeoServer instance:
 
-``` xml
+```xml
 <context-param>
     <param-name>serviceStrategy</param-name>
     <param-value>PARTIAL-BUFFER2</param-value>
@@ -380,6 +380,6 @@ GeoServer defaults to managing user sessions using cookies with the `HttpOnly` f
 
 It is strongly recommended that production environments also set the `Secure` flag on session cookies. This can be enabled by uncommenting the following in the **\`web.xml\`** file if the web interface is only being accessed through HTTPS but the flag may need to be set by a proxy server if the web interface needs to support both HTTP and HTTPS.
 
-``` xml
+```xml
 <secure>true</secure>
 ```

@@ -50,12 +50,17 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
         }
         final GeoServerTileLayer geoserverTileLayer = (GeoServerTileLayer) getModelObject();
         PublishedInfo publishedInfo = geoserverTileLayer.getPublishedInfo();
+
+        String ws = getPage().getPageParameters().get("workspace").toOptionalString();
+        PageParameters returnParams = (ws != null && !ws.isEmpty()) ? new PageParameters().add("workspace", ws) : null;
+
         if (publishedInfo instanceof LayerInfo info) {
             ResourceConfigurationPage resourceConfigPage = new ResourceConfigurationPage(info, false);
             // tell the resource/layer edit page to start up on the tile cache tab
             resourceConfigPage.setSelectedTab(LayerCacheOptionsTabPanel.class);
             if (returnPage != null) {
-                resourceConfigPage.setReturnPage(returnPage);
+                if (returnParams != null) resourceConfigPage.setReturnPage(returnPage, returnParams);
+                else resourceConfigPage.setReturnPage(returnPage);
             }
             setResponsePage(resourceConfigPage);
         } else if (publishedInfo instanceof LayerGroupInfo layerGroup) {
@@ -68,7 +73,8 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
             }
             LayerGroupEditPage layerGroupEditPage = new LayerGroupEditPage(parameters);
             if (returnPage != null) {
-                layerGroupEditPage.setReturnPage(returnPage);
+                if (returnParams != null) layerGroupEditPage.setReturnPage(returnPage, returnParams);
+                else layerGroupEditPage.setReturnPage(returnPage);
             }
             setResponsePage(layerGroupEditPage);
         }

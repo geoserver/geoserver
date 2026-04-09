@@ -10,7 +10,7 @@ Because rendering transformations can change the geometry type, it is important 
 
 The full syntax for using a rendering transformation is:
 
-``` yaml
+```yaml
 feature-styles
   ...
   transform:
@@ -37,7 +37,7 @@ The values in the `params` options typically include values, strings, or attribu
 
 With this in mind, the following `params` are assumed unless otherwise specified:
 
-``` yaml
+```yaml
 params:
   ...
   outputBBOX: ${env('wms_bbox')}
@@ -55,7 +55,7 @@ params:
 
 The following uses the `vec:Heatmap` process to convert a point layer to a heatmap raster:
 
-``` yaml
+```yaml
 title: Heatmap
 feature-styles:
 - transform:
@@ -81,7 +81,7 @@ feature-styles:
 
 The point stacker transform can be used to combine points that are close together. This transform acts on a point geometry layer, and combines any points that are within a single cell as specified by the `cellSize` parameter. The resulting geometry has attributes `geom` (the geometry), `count` (the number of features represented by this point) and `countUnique` (the number of unique features represented by this point). These attributes can be used to size and label the points based on how many points are combined together:
 
-``` yaml
+```yaml
 title: pointstacker
 feature-styles:
 - transform:

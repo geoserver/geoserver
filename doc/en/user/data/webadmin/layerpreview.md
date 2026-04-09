@@ -59,7 +59,7 @@ All image outputs can be initiated from a WMS getMap request on either a raster,
 
 A fragment of a simple GeoRSS for `nurc:Pk50095` using Atom:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
  <rss xmlns:atom="http://www.w3.org/2005/Atom"
       xmlns:georss="http://www.georss.org/georss" version="2.0">

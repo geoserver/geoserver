@@ -235,7 +235,7 @@ As an example to configure java logging:
 
 With java util logging configuration provided by **`logging.properties`**:
 
-``` properties
+```properties
 handlers=java.util.logging.ConsoleHandler
 
 java.util.logging.ConsoleHandler.level = ALL

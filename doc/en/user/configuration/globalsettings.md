@@ -18,13 +18,13 @@ GeoServer can have the capabilities documents report a proxy properly. "The Prox
 
 This setting is available in the Administration Console and REST API by GeoServer Administrator. This setting may also be managed using the `PROXY_BASE_URL` [application property](properties/index.md) defined by a System Administrator.
 
-``` bash
+```bash
 -DPROXY_BASE_URL=https://example.net/geoserver
 ```
 
 The Proxy Base URL field support environment parametrization (see [Parameterize catalog settings](../datadirectory/configtemplate.md) ) by activating the JVM parameter:
 
-``` bash
+```bash
 -DALLOW_ENV_PARAMETRIZATION=true
 ```
 
@@ -36,7 +36,7 @@ Once activated the environment parametrization Proxy Base URL can be parameters 
 
 Checking this box allows a by-request modification of the proxy URL using templates (templates based on HTTP proxy headers). This setting may also be managed using the `PROXY_BASE_URL_HEADERS` boolean system property or environment variable defined by a System Administrator: setting it to true will enable the headers variables usage for proxy base URL on all workspaces, overriding any GeoServer datadir configuration.
 
-``` bash
+```bash
 -DPROXY_BASE_URL_HEADERS=true
 ```
 

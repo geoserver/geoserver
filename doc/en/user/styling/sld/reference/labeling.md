@@ -25,7 +25,7 @@ The best way to explain these options is with examples.
 
 The anchor point determines where the label is placed relative to the label point.
 
-``` xml
+```xml
 <AnchorPoint>
   <AnchorPointX>
     0.5
@@ -44,7 +44,7 @@ The anchor point values---listed here as (X, Y) ordered pairs---are specified re
 
 So to have the anchor location centered just below the label (label top-centered), use (0.5, 0):
 
-``` xml
+```xml
 <AnchorPoint>
   <AnchorPointX>
     0.5
@@ -59,23 +59,23 @@ So to have the anchor location centered just below the label (label top-centered
 
 The following examples show how changing the anchor point affects the position of labels:
 
-![](img/point_x0y0_5.png)
+![](img/point_x0y0_5.png)  
 *(0, 0.5) places the label to the right of the label point*
 
-![](img/point_x0_5y0_5.png)
+![](img/point_x0_5y0_5.png)  
 *(0.5, 0.5) places the center of the label at the label point*
 
-![](img/point_x15y0_5.png)
+![](img/point_x15y0_5.png)  
 *(1, 0.5) places the label to the left of the label point*
 
-![](img/point_x0_5y0.png)
+![](img/point_x0_5y0.png)  
 *(0.5, 0) places the label horizontally centered above the label point*
 
 ### Displacement
 
 Displacement allows fine control of the placement of the label. The displacement values offset the location of the label from the anchor point by a specified number of pixels. The element syntax is:
 
-``` xml
+```xml
 <Displacement>
   <DisplacementX>
      10
@@ -100,7 +100,7 @@ Examples:
 
 The optional `<Rotation>` element specifies that labels should be rotated clockwise by a given number of degrees
 
-``` xml
+```xml
 <Rotation>
   45
 </Rotation>
@@ -134,7 +134,7 @@ The standard SLD LinePlacement element provides one optional sub-element, `<Perp
 
 The optional `<PerpendicularOffset>` element allows you to position a label above or below a line. (This is similar to the `<DisplacementY>` for label points described above.) The displacement value is specified in pixels. A positive value displaces upwards, a negative value downwards.
 
-``` xml
+```xml
 <LabelPlacement>
   <LinePlacement>
     <PerpendicularOffset>
@@ -160,7 +160,7 @@ The `<Label>` element in ``<TextSymbolizer>`` allows mixed content. This means i
 
 For example, if you want both a state name and its abbreviation to appear in a label, you can do the following:
 
-``` xml
+```xml
 <Label>
   <ogc:PropertyName>STATE_NAME</ogc:PropertyName> (<ogc:PropertyName>STATE_ABBR</ogc:PropertyName>)
 </Label>
@@ -172,7 +172,7 @@ If you need to add extra white space or newline, you'll stumble into an XML oddi
 
 So, what if you need to insert a newline or a sequence of two or more spaces between your property names? Enter CDATA. CDATA is a special XML section that has to be returned to the interpreter as-is, without following any whitespace handling rule. So, for example, if you wanted to have the state abbreviation sitting on the next line you'd use the following:
 
-``` xml
+```xml
 <Label>
   <ogc:PropertyName>STATE_NAME</ogc:PropertyName><![CDATA[
 ]]>(<ogc:PropertyName>STATE_ABBR</ogc:PropertyName>)
@@ -211,7 +211,7 @@ For example, take the following dataset of cities:
 
 More people know where New York City is than where Jersey City is. Thus we want to give the label "New York" priority so it will be visible when in conflict with (overlapping) "Jersey City". To do this we include the following code in the `<TextSymbolizer>`:
 
-``` xml
+```xml
 <Priority>
     <ogc:PropertyName>population</ogc:PropertyName>
 </Priority>
@@ -231,7 +231,7 @@ Without priority labeling, Jersey City could be labeled in preference to New Yor
 
 The `group` option allows displaying a single label for multiple features in a logical group.
 
-``` xml
+```xml
 <VendorOption name="group">yes</VendorOption>
 ```
 
@@ -262,7 +262,7 @@ When the `group` option is used, geometries with the same label are grouped toge
 
 The `labelAllGroup` option can be used in conjunction with the `group` option (see [Grouping Features (group)](#labeling_group)). It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
 
-``` xml
+```xml
 <VendorOption name="labelAllGroup">true</VendorOption>
 ```
 
@@ -270,7 +270,7 @@ The `labelAllGroup` option can be used in conjunction with the `group` option (s
 
 By default GeoServer will not render labels "on top of each other". By using the `spaceAround` option you can either allow labels to overlap, or add extra space around labels. The value supplied for the option is a positive or negative size, in pixels.
 
-``` xml
+```xml
 <VendorOption name="spaceAround">10</VendorOption>
 ```
 
@@ -302,13 +302,13 @@ The `followLine` option forces a label to follow the curve of the line. To use t
     
     You don't need to use followLine for straight lines. GeoServer will automatically follow the orientation of the line. However in this case `followLine` can be used to ensure the text isn't rendered if longer than the line.
 
-``` xml
+```xml
 <VendorOption name="followLine">true</VendorOption>  
 ```
 
 It is required to use `<LinePlacement>` along with this option to ensure that labels are placed along lines:
 
-``` xml
+```xml
 <LabelPlacement>
   <LinePlacement/>
 </LabelPlacement>
@@ -324,7 +324,7 @@ If used in conjunction with [repeat](#labeling_repeat), the value for `maxDispla
 
 For points this causes the renderer to start circling around the point in search of a empty stop to place the label, step by step increasing the size of the circle until the max displacement is reached. The same happens for polygons, around the polygon labelling point (normally the centroid).
 
-``` xml
+```xml
 <VendorOption name="maxDisplacement">10</VendorOption> 
 ```
 
@@ -332,7 +332,7 @@ For points this causes the renderer to start circling around the point in search
 
 The `repeat` option determines how often GeoServer displays labels along a line. Normally GeoServer labels each line only once, regardless of length. Specifying a positive value for this option makes the labeller attempt to draw the label every **repeat** pixels. For long or complex lines (such as contour lines) this makes labeling more informative.
 
-``` xml
+```xml
 <VendorOption name="repeat">100</VendorOption>
 ```
 
@@ -340,7 +340,7 @@ The `repeat` option determines how often GeoServer displays labels along a line.
 
 When used in conjunction with [followLine](#labeling_follow_line), the `maxAngleDelta` option sets the maximum angle, in degrees, between two subsequent characters in a curved label. Large angles create either visually disconnected words or overlapping characters. It is advised not to use angles larger than 30.
 
-``` xml
+```xml
 <VendorOption name="maxAngleDelta">15</VendorOption>
 ```
 
@@ -348,7 +348,7 @@ When used in conjunction with [followLine](#labeling_follow_line), the `maxAngle
 
 The `autoWrap` option wraps labels when they exceed the given width (in pixels). The size should be wide enough to accommodate the longest word, otherwise single words will be split over multiple lines.
 
-``` xml
+```xml
 <VendorOption name="autoWrap">50</VendorOption>
 ```
 
@@ -362,7 +362,7 @@ The renderer tries to draw labels along lines so that the text is upright, for m
 
 The `forceLeftToRight` option can be set to `false` to disable label flipping, making the label always follow the inherent orientation of the line being labelled:
 
-``` xml
+```xml
 <VendorOption name="forceLeftToRight">false</VendorOption>
 ```
 
@@ -370,7 +370,7 @@ The `forceLeftToRight` option can be set to `false` to disable label flipping, m
 
 By default labels are subject to **conflict resolution**, meaning the renderer will not allow any label to overlap with a label that has been already drawn. Setting the `conflictResolution` option to `false` causes this label to bypass conflict resolution. This means the label will be drawn even if it overlaps with other labels, and other labels drawn after it may overlap it.
 
-``` xml
+```xml
 <VendorOption name="conflictResolution">false</VendorOption>
 ```
 
@@ -386,7 +386,7 @@ GeoServer will remove labels if they are a particularly bad fit for the geometry
 
 The default value is 0.5, but it can be modified using:
 
-``` xml
+```xml
 <VendorOption name="goodnessOfFit">0.3</VendorOption>
 ```
 
@@ -394,7 +394,7 @@ The default value is 0.5, but it can be modified using:
 
 GeoServer normally tries to place labels horizontally within a polygon, and gives up if the label position is busy or if the label does not fit enough in the polygon. This option allows GeoServer to try alternate rotations for the labels.
 
-``` xml
+```xml
 <VendorOption name="polygonAlign">mbr</VendorOption>
 ```
 
@@ -408,7 +408,7 @@ GeoServer normally tries to place labels horizontally within a polygon, and give
 
 When a `<Graphic>` is specified for a label by default it is displayed at its native size and aspect ratio. The `graphic-resize` option instructs the renderer to magnify or stretch the graphic to fully contain the text of the label. If this option is used the `graphic-margin` option may also be specified.
 
-``` xml
+```xml
 <VendorOption name="graphic-resize">stretch</VendorOption>
 ```
 
@@ -434,7 +434,7 @@ When a `<Graphic>` is specified for a label by default it is displayed at its na
 
 The `graphic-margin` options specifies a margin (in pixels) to use around the label text when the `graphic-resize` option is specified.
 
-``` xml
+```xml
 <VendorOption name="graphic-margin">margin</VendorOption>
 ```
 
@@ -442,7 +442,7 @@ The `graphic-margin` options specifies a margin (in pixels) to use around the la
 
 The `partials` options instructs the renderer to render labels that cross the map extent, which are normally not painted since there is no guarantee that a map put on the side of the current one (tiled rendering) will contain the other half of the label. By enabling "partials" the style editor takes responsibility for the other half being there (maybe because the label points have been placed by hand and are assured not to conflict with each other, at all zoom levels).
 
-``` xml
+```xml
 <VendorOption name="partials">true</VendorOption>
 ```
 
@@ -450,7 +450,7 @@ The `partials` options instructs the renderer to render labels that cross the ma
 
 The `underlineText` option instruct the renderer to underline labels. The underline will work like a typical word processor text underline. The thickness and position of the underline will be defined by the font and color will be the same as the text. Spaces will also be underlined.
 
-``` xml
+```xml
 <VendorOption name="underlineText">true</VendorOption>
 ```
 
@@ -462,7 +462,7 @@ Some underlines examples:
 
 The `strikethroughText` option instruct the renderer to strikethrough labels. The strikethrough will work like a typical word processor text strikethrough. The thickness and position of the line will be defined by the font and color will be the same as the text. Spaces will also be stroken.
 
-``` xml
+```xml
 <VendorOption name="strikethroughText">true</VendorOption>
 ```
 
@@ -474,7 +474,7 @@ Some strikethrough examples:
 
 The `charSpacing` option controls the amount of space between characters, a positive value increases it, a negative value shrinks it (and will eventually make characters overlap). The value is specified in pixels.
 
-``` xml
+```xml
 <VendorOption name="charSpacing">3</VendorOption>
 ```
 
@@ -486,7 +486,7 @@ Example of adding 3 extra pixels of space between chars on road names:
 
 The `wordSpacing` option controls the amount of space between words, for this option only positive values (or zero) are accepted. The value is specified in pixels.
 
-``` xml
+```xml
 <VendorOption name="wordSpacing">5</VendorOption>
 ```
 
@@ -500,12 +500,12 @@ Comma separated list of label displacement directions for point/polygon labels (
 
 The following example sets the typical "diagonal displacement" typically used for points:
 
-``` xml
+```xml
 <VendorOption name="displacementMode">NE, NW, SW, SE</VendorOption>
 ```
 
 While this one allows displacement only in the vertical direction:
 
-``` xml
+```xml
 <VendorOption name="displacementMode">N, S</VendorOption>
 ```

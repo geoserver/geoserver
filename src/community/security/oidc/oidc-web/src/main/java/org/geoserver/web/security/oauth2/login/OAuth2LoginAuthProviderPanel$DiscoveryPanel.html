@@ -3,16 +3,20 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-OAuth2LoginAuthProviderPanel_DiscoveryPanel">
-        <label for="oidcDiscoveryUri">
-          <span>
-            <wicket:message key="discovery"/>
-          </span>
-        </label>
-        <input id="oidcDiscoveryUri" wicket:id="oidcDiscoveryUri" type="text" class="field"/>
-        <button id="discover" wicket:id="discover" type="button">
-          <wicket:message key="discover"/>
-        </button>
-        <a href="#" wicket:id="oidcDiscoveryUriKeyHelp" class="help-link"/>
+        <div class="gs-form-group">
+          <label for="oidcDiscoveryUri">
+            <span>
+              <wicket:message key="discovery"/>
+            </span>
+            <a href="#" wicket:id="oidcDiscoveryUriKeyHelp" class="help-link"/>
+          </label>
+          <div class="gs-input-group">
+            <input id="oidcDiscoveryUri" wicket:id="oidcDiscoveryUri" type="text" class="field"/>
+            <button id="discover" wicket:id="discover" type="button">
+              <wicket:message key="discover"/>
+            </button>
+          </div>
+        </div>
       </div>
     </wicket:panel>
   </body>

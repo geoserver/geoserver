@@ -10,6 +10,24 @@ aside.gs-sidebar {
 .gs-sidebar ul,
 .gs-sidebar li {
     list-style: none;
+    margin-bottom: 0;
+    position: relative;
+}
+.gs-sidebar ul {
+    padding-left: 0;
+}
+.gs-sidebar ul ul {
+    padding-left: 1.1rem;
+}
+.gs-sidebar li ul:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    top: 0;
+    left: 0.5rem;
+    border-left: 1px solid var(--gs-border-color);
 }
 .gs-sidebar h6,
 .gs-sidebar .gs-workspace-header {
@@ -21,9 +39,9 @@ aside.gs-sidebar {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-}
-.gs-sidebar .gs-global-list {
-    padding-left: 1rem;
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85rem;
 }
 .gs-sidebar img {
     height: 12px;
@@ -109,10 +127,19 @@ aside.gs-sidebar {
 .gs-sidebar a {
     color: inherit;
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .gs-sidebar .gs-workspace-header a:hover,
+.gs-sidebar .gs-section-header a:hover,
 .gs-sidebar .gs-layer-item a:hover {
     text-decoration: none;
+}
+.gs-sidebar h6:hover {
+    background-color: var(--gs-secondary-bg);
+    border-radius: 0.25rem;
 }
 .gs-sidebar li.is-active > .gs-workspace-header,
 .gs-sidebar li.gs-layer-item.is-active {
@@ -161,9 +188,12 @@ aside.gs-sidebar {
     padding-left: 0;
 }
 .gs-sidebar .gs-sidebar-new-menu a {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
     padding: 0.35rem 0.65rem;
     color: inherit;
+    width: 100%;
 }
 .gs-sidebar .gs-sidebar-new-menu a:hover {
     background: var(--gs-secondary-bg);
@@ -207,4 +237,8 @@ aside.gs-sidebar {
     margin-top: 0.5rem;
     padding: 0.5rem;
     color: var(--gs-secondary-color);
+}
+
+.gs-global-list .gs-layer-item {
+    padding-left: 1.2rem;
 }

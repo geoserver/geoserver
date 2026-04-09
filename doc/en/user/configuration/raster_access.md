@@ -51,7 +51,7 @@ Consider an untiled whole world request of an EPSG:4326 raster, towards EPSG:385
 
 This can be very time consuming (you may notice long rendering time for that). It's possible to put a limit on the maximum oversampling factor by adding the following java option to GeoServer startup script and restart it:
 
-``` xml
+```xml
 -Dorg.geotools.coverage.max.oversample=N
 ```
 

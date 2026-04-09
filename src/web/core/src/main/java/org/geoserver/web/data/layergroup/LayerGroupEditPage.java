@@ -22,6 +22,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.IValidator;
@@ -65,13 +66,21 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
     public LayerGroupEditPage() {
         this(true);
         setupPublished(getCatalog().getFactory().createLayerGroup());
+        applyWorkspaceFromParams(getPageParameters());
         postInit();
     }
 
     public LayerGroupEditPage(PageParameters parameters) {
-        this(false);
+        this(isNewRequest(parameters));
 
         String groupName = parameters.get(GROUP).toString();
+        if (Strings.isEmpty(groupName)) {
+            // Workspace-scoped "new" navigation passes only workspace, no group.
+            setupPublished(getCatalog().getFactory().createLayerGroup());
+            applyWorkspaceFromParams(parameters);
+            postInit();
+            return;
+        }
         String wsName = parameters.get(WORKSPACE).toOptionalString();
 
         LayerGroupInfo lg = wsName != null
@@ -86,6 +95,20 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
         setupPublished(lg);
         postInit();
+    }
+
+    private static boolean isNewRequest(PageParameters parameters) {
+        return Strings.isEmpty(parameters.get(GROUP).toString());
+    }
+
+    private void applyWorkspaceFromParams(PageParameters parameters) {
+        String wsName = parameters.get(WORKSPACE).toOptionalString();
+        if (!Strings.isEmpty(wsName)) {
+            WorkspaceInfo ws = getCatalog().getWorkspaceByName(wsName);
+            if (ws != null) {
+                getPublishedInfo().setWorkspace(ws);
+            }
+        }
     }
 
     private void postInit() {

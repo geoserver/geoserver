@@ -62,7 +62,7 @@ You can use the standard role source options in GeoServer (``Request Header``, `
 
 Using the example ``OIDC_id_token_payload`` (JSON) or ``OIDC_access_token`` (JWT) shown above, the claims are:
 
-``` json
+```json
 {
    "exp": 1708555947,
    "iat": 1708555647,

@@ -39,7 +39,7 @@ The temporal attribute is `RPT_YEAR` and is the one that matters to us. Ok, time
 1.  In your text editor of choice, create a new text file called `time.ftl`.
 2.  Add the following text:
 
-``` html
+```html
 ${RPT_YEAR.value?date('yyyy')}
 ```
 
@@ -75,7 +75,7 @@ Ok time to try it out.
 
 When setting up a time template for your own dataset the most important issue is the format of your temporal data. It may or may not be in a format in which GeoServer can read directly. You can check if the date/time format can be used directly by GeoServer by using the following time template. This is an example time template file (time.ftl) file without explicit formatting.
 
-``` html
+```html
 ${DATETIME_ATTRIBUTE_NAME.value}
 ```
 
@@ -87,7 +87,7 @@ Consider the date time `12:30 on January 01, 2007` specified in the following fo
 
 The process is similar for dates (no time). The date `01?01%2007` would be specified in a template with explicit formatting:
 
-``` html
+```html
 ${DATETIME_ATTRIBUTE_NAME.value?date("M?d%y")}
 ```
 

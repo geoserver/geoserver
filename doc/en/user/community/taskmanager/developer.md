@@ -8,7 +8,7 @@
 
 Task manager can be extended with custom made task types. Make your own implementation of the interface `TaskType` and let it be a spring bean. The name provided via the `Named` interface is used as a reference.
 
-``` java
+```java
 /**
  * A Task Type.
  * 
@@ -54,7 +54,7 @@ A ParameterInfo object contains a name, a [type](#parameter-type), whether they 
 
 The Task context looks as follows:
 
-``` java
+```java
 /**
  * Task Context used during batch run or task clean-up.
  * 
@@ -94,7 +94,7 @@ public interface TaskContext {
 
 The batch context looks as follows:
 
-``` java
+```java
 /**
  * During run, tasks create temporary objects that are committed to real objects during
  * the commit phase (such as a table name) This maps real objects
@@ -129,7 +129,7 @@ public interface BatchContext {
 
 The task result looks as follows:
 
-``` java
+```java
 /**
  * A handle of a task that was run but must still be committed or rolled back.
  * 
@@ -152,7 +152,7 @@ public interface TaskResult {
 
 This is an example of how a task type can create temporary object:
 
-``` java
+```java
 //inside TaskType.run method
 
 ctx.getBatchContext().put(originalObject, tempObject)
@@ -173,7 +173,7 @@ return new TaskResult() {
 
 Another task type would use this temporary object as follows:
 
-``` java
+```java
 //inside TaskType.run method
 
 Object tempObject = ctx.getBatchContext().get(originalObject, new Dependency() {
@@ -206,7 +206,7 @@ External Parameter Types (members of `ExtTypes` spring bean): * `dbName`: [datab
 
 Defining a new Parameter Type:
 
-``` java
+```java
 /**
  * 
  * A Parameter Type For a Task
@@ -260,7 +260,7 @@ public interface ParameterType {
 
 Actions are extensions to the taskmanager webGUI attached to particular parameter types.
 
-``` java
+```java
 public interface Action extends Named, Serializable {
 
     /**
@@ -295,7 +295,7 @@ In order to be linked to parameter types, an action must be spring bean. The nam
 
 Reports are user friendly representations of finished batch runs, that are sent to some destination right after the batch run has finished. A report has a type (`FAILED`, `CANCELLED` or `SUCCESS`), a title and a content. Use spring to configure a single report builder.
 
-``` java
+```java
 /**
  * A report builder generates a report from a batch.
  * One could write a custom one.
@@ -312,7 +312,7 @@ public interface ReportBuilder {
 
 Use spring to configure any number of report services.
 
-``` java
+```java
 /**
  * A report service sends a report to a particular destination.
  * One can add an unlimited amount of report services which will all be used.

@@ -158,6 +158,8 @@ components:
           $ref: "#/components/schemas/NumberRange"
         nullValues:
           type: array
+          nullable: false
+          default: []
           items:
             type: number
             format: double
@@ -338,6 +340,8 @@ components:
         disabledServices:
           description: a list of disabled services names for this resource (e.g. [WMS, WCS])
           type: array
+          nullable: false
+          default: []
           items:
             type: string
         keywords:

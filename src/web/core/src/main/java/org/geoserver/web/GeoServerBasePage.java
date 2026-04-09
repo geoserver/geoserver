@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,6 +50,7 @@ import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
@@ -97,6 +99,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     /** page class for this page to return to when the page is finished, could be null. */
     protected Class<? extends Page> returnPageClass;
+
+    /** optional page parameters to use when navigating to {@link #returnPageClass}. */
+    protected PageParameters returnPageParams;
 
     public static final String VERSION_3 = "jquery/jquery-3.5.1.js";
 
@@ -205,10 +210,21 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                     loginForm.add(new Label("link.label", ""));
                 }
 
+                String redirectUrl = null;
+                if (org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter.class
+                        .getName()
+                        .equals(info.getFilterClass().getName())) {
+                    String ws = getPageParameters().get("workspace").toOptionalString();
+                    if (ws != null && !ws.isEmpty()) {
+                        redirectUrl = "/web/?workspace=" + ws;
+                    }
+                }
                 LoginFormHTMLInclude include;
                 if (info.getInclude() != null) {
                     include = new LoginFormHTMLInclude(
-                            "login.include", new PackageResourceReference(info.getComponentClass(), info.getInclude()));
+                            "login.include",
+                            new PackageResourceReference(info.getComponentClass(), info.getInclude()),
+                            redirectUrl);
                 } else {
                     include = new LoginFormHTMLInclude("login.include", null);
                 }
@@ -327,11 +343,24 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             @Override
             public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
                 MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
+                final Map<String, String> ctxParams = collectContextParams(info);
+                PageParameters linkParams = new PageParameters();
+                ctxParams.forEach(linkParams::add);
                 BookmarkablePageLink<GeoServerBasePage> link =
-                        new BookmarkablePageLink<>("link", info.getComponentClass());
+                        new BookmarkablePageLink<>("link", info.getComponentClass(), linkParams);
                 link.add(AttributeModifier.replace(
                         "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
-                link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+                final StringResourceModel baseTitle = new StringResourceModel(info.getTitleKey(), null, null);
+                link.add(new Label("link.label", baseTitle));
+                WebMarkupContainer ctxIndicator = new WebMarkupContainer("link.ctxIndicator");
+                String ctxTitle = buildContextTitle(ctxParams);
+                if (!ctxTitle.isEmpty()) {
+                    ctxIndicator.add(AttributeModifier.replace("title", ctxTitle));
+                    ctxIndicator.add(AttributeModifier.append("class", buildContextIndicatorClass(ctxParams)));
+                } else {
+                    ctxIndicator.setVisible(false);
+                }
+                link.add(ctxIndicator);
                 item.add(link);
             }
         });
@@ -444,6 +473,40 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 .orElse(Locale.ENGLISH);
     }
 
+    /**
+     * Collects the context page parameters (workspace, layer, group, name) that the given {@link ComponentInfo} wants
+     * forwarded in its navigation link, based on its {@code contextParams} setting.
+     */
+    private Map<String, String> collectContextParams(ComponentInfo<?> info) {
+        PageParameters currentParams = getPageParameters();
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String paramName : List.of("workspace", "layer", "group", "name")) {
+            if (info.includesContextParam(paramName)) {
+                String value = currentParams.get(paramName).toOptionalString();
+                if (!Strings.isEmpty(value)) {
+                    result.put(paramName, value);
+                }
+            }
+        }
+        return result;
+    }
+
+    /** Builds a display title from context params, joining values with " > " (e.g. "ws > layerName"). */
+    private String buildContextTitle(Map<String, String> ctxParams) {
+        return String.join(" > ", ctxParams.values());
+    }
+
+    /**
+     * Returns the CSS modifier class for the context indicator based on the most specific param that the link will
+     * actually forward (as captured in {@code ctxParams}), so the icon matches the link's navigation destination scope.
+     */
+    private String buildContextIndicatorClass(Map<String, String> ctxParams) {
+        if (ctxParams.containsKey("group")) return "gs-ctx-indicator--group";
+        if (ctxParams.containsKey("layer") || ctxParams.containsKey("name")) return "gs-ctx-indicator--layer";
+        if (ctxParams.containsKey("workspace")) return "gs-ctx-indicator--workspace";
+        return "";
+    }
+
     private void createCategoryComponent(
             ListItem<Category> item, Category category, Map<Category, List<MenuPageInfo<GeoServerBasePage>>> links) {
         item.add(new Label("category.header", new StringResourceModel(category.getNameKey(), null, null)));
@@ -457,18 +520,24 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     private void createMenuComponent(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
         MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
-        BookmarkablePageLink<Page> link = new BookmarkablePageLink<>("link", info.getComponentClass()) {
-
-            @Override
-            public PageParameters getPageParameters() {
-                PageParameters pageParams = super.getPageParameters();
-                pageParams.add(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
-                return pageParams;
-            }
-        };
+        final Map<String, String> ctxParams = collectContextParams(info);
+        PageParameters linkParams = new PageParameters();
+        linkParams.add(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
+        ctxParams.forEach(linkParams::add);
+        BookmarkablePageLink<Page> link = new BookmarkablePageLink<>("link", info.getComponentClass(), linkParams);
 
         link.add(AttributeModifier.replace("title", new StringResourceModel(info.getDescriptionKey(), null, null)));
-        link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+        final StringResourceModel baseTitle = new StringResourceModel(info.getTitleKey(), null, null);
+        link.add(new Label("link.label", baseTitle));
+        WebMarkupContainer ctxIndicator = new WebMarkupContainer("link.ctxIndicator");
+        String ctxTitle = buildContextTitle(ctxParams);
+        if (!ctxTitle.isEmpty()) {
+            ctxIndicator.add(AttributeModifier.replace("title", ctxTitle));
+            ctxIndicator.add(AttributeModifier.append("class", buildContextIndicatorClass(ctxParams)));
+        } else {
+            ctxIndicator.setVisible(false);
+        }
+        link.add(ctxIndicator);
         WebComponent image;
         if (info.getIcon() != null) {
             if (info.getIcon().startsWith("/")) {
@@ -668,6 +737,17 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /**
+     * Sets the return page class and parameters to navigate to when this page is done its task.
+     *
+     * @see #doReturn()
+     */
+    public GeoServerBasePage setReturnPage(Class<? extends Page> returnPageClass, PageParameters returnPageParams) {
+        this.returnPageClass = returnPageClass;
+        this.returnPageParams = returnPageParams;
+        return this;
+    }
+
+    /**
      * Returns from the page by navigating to one of {@link #returnPage} or {@link #returnPageClass}, processed in that
      * order.
      *
@@ -691,17 +771,21 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      * then {@link GeoServerHomePage} is used.
      */
     protected void doReturn(Class<? extends Page> defaultPageClass) {
+        String ws = getPageParameters().get("workspace").toOptionalString();
+        PageParameters currentParams = (ws != null && !ws.isEmpty()) ? new PageParameters().add("workspace", ws) : null;
+
         if (returnPage != null) {
             setResponsePage(returnPage);
             return;
         }
         if (returnPageClass != null) {
-            setResponsePage(returnPageClass);
+            PageParameters params = returnPageParams != null ? returnPageParams : currentParams;
+            setResponsePage(returnPageClass, params);
             return;
         }
 
         defaultPageClass = defaultPageClass != null ? defaultPageClass : GeoServerHomePage.class;
-        setResponsePage(defaultPageClass);
+        setResponsePage(defaultPageClass, currentParams);
     }
 
     public void addFeedbackPanels(AjaxRequestTarget target) {

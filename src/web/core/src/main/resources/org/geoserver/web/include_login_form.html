@@ -4,6 +4,8 @@
     <label class="hidden" for="password"><wicket:message key="password">Password</wicket:message></label>
     <input autocomplete="${autocomplete}" id="password" type="password" name="password" value="" title="password" placeholder="password" wicket:message="title:password,placeholder:passwordGeoServer"/>
 
+    <input type="hidden" name="spring-security-redirect" value="${redirectUrl}" />
+
     <div class="choiceItem">
       <input id="_spring_security_remember_me" type="checkbox" name="_spring_security_remember_me" />
       <label class="shown" for="_spring_security_remember_me">

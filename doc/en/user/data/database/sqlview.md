@@ -138,7 +138,7 @@ The SQL `WHERE` clause produced by GeoServer using the context filters, e.g. the
 
 A typical use case for this functionality is the execution of analytic functions on top of the filtered results:
 
-``` sql
+```sql
 SELECT STATION_NAME,
        MEASUREMENT,
        MEASUREMENT_TYPE,

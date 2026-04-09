@@ -8,7 +8,7 @@ The use case for this tutorial will be to serve through app-schema the informati
 
 First of all let's insert some test data in a MongoDB data store:
 
-``` javascript
+```javascript
 db.stations.insert({
     "id": "1",
     "name": "station 1",
@@ -108,7 +108,7 @@ db.stations.createIndex({
 
 This is the schema that will be used to do the mappings in app-schema:
 
-``` xml
+```xml
 <xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:gml="http://www.opengis.net/gml"
            xmlns:st="http://www.stations.org/1.0"
@@ -181,7 +181,7 @@ When configuring app-schema mappings for a MongoDB source some connection parame
 
 - `objs_id_schema`, which specifies a comma separated list of MongoDB JSON object to be used to build the schema (not needed if `max_objs_schema` is present).
 
-``` xml
+```xml
 <Parameter>
   <name>objs_id_schema</name>
   <value>6eb85d889396eb0475f815ef,6eb85d889396eb0475f815eg</value>
@@ -190,7 +190,7 @@ When configuring app-schema mappings for a MongoDB source some connection parame
 
 - `max_objs_schema`, which specifies the max number of MongoDB JSON object to be used to build the schema and where a value of `-1` means all the objects present in the collection (not needed if `objs_id_schema` is present).
 
-``` xml
+```xml
 <Parameter>
   <name>max_objs_schema</name>
   <value>-1</value>
@@ -216,7 +216,7 @@ A station data is composed of some meta-information about the station and a list
 
 Follows a the complete mappings file:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -386,7 +386,7 @@ Follows a the complete mappings file:
 
 The mappings for the attributes are straightforward, for example the following mapping:
 
-``` xml
+```xml
 <AttributeMapping>
     <targetAttribute>st:contact/st:mail</targetAttribute>
     <sourceExpression>
@@ -399,7 +399,7 @@ The mapping above defines that the contact mail for a station will be available 
 
 The feature chaining is a little bit more complex. Let's take as an example the chaining between `StationFeature` and `Measurement` features. In the `StationFeature` feature type the link to the Measurement entity is defined with the following mapping:
 
-``` xml
+```xml
 <AttributeMapping>
     <targetAttribute>st:measurement</targetAttribute>
     <sourceExpression>
@@ -413,7 +413,7 @@ The feature chaining is a little bit more complex. Let's take as an example the 
 
 and in the `Measurement` feature type the link to the parent feature is defined with the following mapping:
 
-``` xml
+```xml
 <AttributeMapping>
     <targetAttribute>FEATURE_LINK[1]</targetAttribute>
     <sourceExpression>
@@ -434,7 +434,7 @@ Creating a MongoDB app-schema layer is similar to any other app-schema layer, ju
 
 Is possible to query with WFS complex features encoded in GML and GeoJson using complex features filtering capabilities. For example, querying all the stations that have a measurement value with a time stamp superior to `1482146964`:
 
-``` xml
+```xml
 <wfs:Query typeName="st:StationFeature">
     <ogc:Filter>
         <ogc:Filter>

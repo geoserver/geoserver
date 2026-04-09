@@ -24,7 +24,7 @@ In order to initiate an import of the `c:\data\tasmania` directory into the exis
 
 2.  This curl command can be used for the purpose:
 
-``` bash
+```bash
 curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
   -d @import.json \
   "http://localhost:8080/geoserver/rest/imports"

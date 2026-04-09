@@ -75,7 +75,7 @@ In this example the `license` is changed to reflect the natural earth terms of u
 
 Example from workspace OGC API - Features service ( `http://localhost:8080/geoserver/ne/ogc/features/v1/collections/?f=application%2Fjson`):
 
-``` json
+```json
 {
   "href": "https://www.naturalearthdata.com/about/terms-of-use/",
   "rel": "license",

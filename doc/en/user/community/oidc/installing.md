@@ -48,7 +48,7 @@ Community modules are not yet ready for distribution with GeoServer release.
 
 This will run GeoServer on port 9999 and install the OIDC module.
 
-``` bash
+```bash
 docker run -it -p 9999:8080 \
    --env INSTALL_EXTENSIONS=true \
    --env STABLE_EXTENSIONS="ysld,h2" \

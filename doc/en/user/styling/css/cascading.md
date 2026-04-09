@@ -29,7 +29,7 @@ In web pages CSS [specificity](http://www.w3.org/TR/CSS21/cascade.md#specificity
 
 Here are some examples from the CSS specification, from less specific to more specific:
 
-``` css
+```css
 *             {}  /* a=0 b=0 c=0 d=0 -> specificity = 0,0,0,0 */
 li            {}  /* a=0 b=0 c=0 d=1 -> specificity = 0,0,0,1 */
 li:first-line {}  /* a=0 b=0 c=0 d=2 -> specificity = 0,0,0,2 */
@@ -50,7 +50,7 @@ In cartographic CSS there are no HTML elements that could have a local style, so
 
 Here are some examples, from less to more specific:
 
-``` css
+```css
 *                  {}  /* a=0 b=0 c=0 d=0 -> specificity = 0,0,0,0 */
 topp:states        {}  /* a=0 b=0 c=0 d=1 -> specificity = 0,0,0,1 */
 :mark              {}  /* a=0 b=0 c=1 d=0 -> specificity = 0,0,1,0 */
@@ -91,7 +91,7 @@ In this mode the CSS will be translated almost 1:1 into a corresponding SLD, eac
 
 Care should be taken when writing rules with pseudo classes, they will be taken into consideration only if their selector matches the one of the preceding rule. Consider this example:
 
-``` css
+```css
 @mode "Flat";
 
 [type = 'Capital'] { 
@@ -111,7 +111,7 @@ Care should be taken when writing rules with pseudo classes, they will be taken 
 
 In the above example, the first rule with the `:mark` pseudo class will be taken into consideration and merged with the capital one, the second one instead will be ignored. The resulting SLD will thus not contain any stroke specification for the 'circle' mark:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" 
       xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" 
       xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
@@ -159,7 +159,7 @@ The main disadvantage is that there is no more a way to share common styling bit
 
 Consider the following CSS:
 
-``` css
+```css
 * { stroke: black; stroke-width: 10 }
 
 [cat = 'important'] { stroke: yellow; }

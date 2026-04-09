@@ -15,7 +15,7 @@ The response headers can be determined via a utility such as [cURL](http://curl.
 
 This is a sample request and response using cURL:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/gwc/service/wms?LAYERS=sde%3Abmworld&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG%3A4326&BBOX=-180,-38,-52,90&WIDTH=256&HEIGHT=256&tiled=true" > /dev/null 
 ```
 
@@ -58,7 +58,7 @@ Clients connecting to GeoWebCache can create a "conditional GET" request with th
 
 A query for a specific tile returns the `Last-Modified` response header:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/gwc/service/wms?LAYERS=img%20states&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A4326&BBOX=-135,45,-90,90&WIDTH=256&HEIGHT=256" >/dev/null
 ```
 
@@ -73,7 +73,7 @@ curl -v "http://localhost:8080/geoserver/gwc/service/wms?LAYERS=img%20states&FOR
 
 This request has the `If-Modified-Since` header set to one second after what was returned by `Last-Modified`:
 
-``` console
+```console
 curl --header "If-Modified-Since: Wed, 25 Jul 2012 00:42:01 GMT" -v "http://localhost:8080/geoserver/gwc/service/wms?LAYERS=img%20states&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A4326&BBOX=-135,45,-90,90&WIDTH=256&HEIGHT=256" >/dev/null
 ```
 
@@ -92,7 +92,7 @@ However, if you were to set the `If-Modified-Since` header to *before* the time 
 
 This example sets the `If-Modified-Since` header to one second before what was returned by `Last-Modified`:
 
-``` console
+```console
 curl --header "If-Modified-Since: Wed, 25 Jul 2012 00:41:59 GMT" -v "http://localhost:8080/geoserver/gwc/service/wms?LAYERS=img%20states&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A4326&BBOX=-135,45,-90,90&WIDTH=256&HEIGHT=256" >/dev/null
 ```
 

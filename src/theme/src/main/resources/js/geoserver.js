@@ -270,16 +270,54 @@
         }
 
         function syncResponsiveTableCards() {
-            window.addEventListener('resize', function() {
-                if (window.innerWidth < 768) {
-                    applyResponsiveTableCards();
-                } else {
-                    resetResponsiveTableCards();
+            if (window.innerWidth < 768) {
+                applyResponsiveTableCards();
+            } else {
+                resetResponsiveTableCards();
+            }
+        }
+        
+        function initializeResponsiveTableCards() {
+            var syncQueued = false;
+        
+            function queueResponsiveSync() {
+                if (syncQueued) return;
+                syncQueued = true;
+                window.requestAnimationFrame(function () {
+                    syncQueued = false;
+                    syncResponsiveTableCards();
+                });
+            }
+        
+            syncResponsiveTableCards();
+            window.addEventListener('resize', queueResponsiveSync);
+        
+            var mainContainer = document.getElementById('main') || document.body;
+            if (!mainContainer || typeof MutationObserver === 'undefined') return;
+        
+            var observer = new MutationObserver(function (mutations) {
+                for (var i = 0; i < mutations.length; i++) {
+                    var mutation = mutations[i];
+                    if (mutation.type !== 'childList') continue;
+                    if (mutation.addedNodes.length === 0 && mutation.removedNodes.length === 0) continue;
+                    queueResponsiveSync();
+                    break;
                 }
             });
+        
+            observer.observe(mainContainer, {
+                childList: true,
+                subtree: true
+            });
+        
+            return function cleanup() {
+                observer.disconnect();
+                window.removeEventListener('resize', queueResponsiveSync);
+            };
         }
-
+        
         // Initialize responsive table cards
+        initializeResponsiveTableCards();
         syncResponsiveTableCards();
 
         // Keep sticky UI elements clear of dynamic feedback panels

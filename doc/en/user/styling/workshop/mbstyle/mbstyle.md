@@ -63,7 +63,7 @@ The sources parameter consists of a collection of named sources which define vec
 
 A GeoServer vector tile source would be defined like this:
 
-``` json
+```json
 {
   "cookbook": {
     "type": "vector",

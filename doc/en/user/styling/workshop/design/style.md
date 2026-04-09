@@ -20,7 +20,7 @@ A line symbolizer documents how individual strokes are used to draw a line strin
 
 The SLD specification provides a default **stroke** used when drawing line strings. These values for color and width will be used if needed.
 
-``` xml
+```xml
 <LineSymbolizer>
   <Stroke/>
 </LineSymbolizer>
@@ -30,7 +30,7 @@ GeoServer includes a default **`line.sld`** file providing a blue stroke. This f
 
 From GeoServer's **line.sld** style:
 
-``` xml
+```xml
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#0000FF</CssParameter>
@@ -50,7 +50,7 @@ GeoServer includes a default **`polygon.sld`** file providing a gray fill and a 
 
 From GeoServer's **polygon.sld** style:
 
-``` xml
+```xml
 <PolygonSymbolizer>
   <Fill>
     <CssParameter name="fill">#AAAAAA</CssParameter>
@@ -70,7 +70,7 @@ A point symbolizer documents the "mark" used to represent a point. A mark may be
 
 From GeoServer's default **point.sld** style:
 
-``` xml
+```xml
 <PointSymbolizer>
   <Graphic>
     <Mark>
@@ -92,7 +92,7 @@ A text symbolizer provides details on how labels are to be drawn, including font
 
 From the **`populated_places.sld`** style:
 
-``` xml
+```xml
 <sld:TextSymbolizer>
     <sld:Label>
         <ogc:PropertyName>NAME</ogc:PropertyName>
@@ -128,7 +128,7 @@ A raster symbolizer provides a mapping from raster values to colors displayed. T
 
 From GeoServer's **`dem.sld`** style:
 
-``` xml
+```xml
 <RasterSymbolizer>
   <Opacity>1.0</Opacity>
   <ColorMap>

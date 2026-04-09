@@ -18,7 +18,7 @@ This section provides a quick introduction to YSLD syntax for mapping profession
 
 Individual statements (or directives) in a YSLD styling document are designed as key-value, or property-value pairs of the following form:
 
-``` yaml
+```yaml
 <property>: <value>
 ```
 
@@ -61,7 +61,7 @@ For example, a symbolizer block is a list, so every entry requires its own dash:
 
 The ``polygon:`` and ``text:`` objects (the individual symbolizers themselves) are mappings, and as such, the contents do not require dashes, only indents:
 
-``` yaml
+```yaml
 - polygon:
     stroke-color: '#808080'
     fill-color: '#FF0000'
@@ -71,7 +71,7 @@ The dash next to polygon means that the item itself is contained in a list, not 
 
 If you have a list that contains only one item, and there is no other content at higher levels of the list, you may omit the enclosing elements. For example, the following are equivalent:
 
-``` yaml
+```yaml
 feature-styles:
 - rules:
   - symbolizers:
@@ -82,7 +82,7 @@ feature-styles:
             fill-color: 'gray'
 ```
 >
-``` yaml
+```yaml
 point:
   symbols:
   - mark:
@@ -100,7 +100,7 @@ For example, the polygon symbolizer, since it is a mapping, contains certain par
 
 In this example, the following markup is **correct**:
 
-``` yaml
+```yaml
 - polygon:
     fill-color: '#808080'
     fill-opacity: 0.5
@@ -112,7 +112,7 @@ The parameters inside the polygon (symbolizer) are indented, meaning that they a
 
 Compare to the following **incorrect** markup:
 
-``` yaml
+```yaml
 - polygon:
   fill-color: '#808080'
   fill-opacity: 0.5
@@ -124,7 +124,7 @@ Compare to the following **incorrect** markup:
 
 We have already seen a CSS style composed of a single rule:
 
-``` yaml
+```yaml
 point:
   symbols:
   - mark:
@@ -134,7 +134,7 @@ point:
 
 We can make a style consisting of more than one rule, carefully choosing the selector for each rule. In this case we are using a selector to style capital cities with a star, and non-capital with a circle:
 
-``` yaml
+```yaml
 rules:
   - filter: ${FEATURECLA = 'Admin-0 capital'}
     scale: [min, max]
@@ -164,7 +164,7 @@ The feature attribute test performed above uses **Constraint Query Language (CQL
 
 Rule selectors can also be triggered based on the state of the rendering engine. In this example we are only applying labels when zoomed in:
 
-``` yaml
+```yaml
 rules:
   - scale: [min, '2.0E7']
     symbolizers:
@@ -197,19 +197,19 @@ It is customary, but not required, to place all definitions at the very top of t
 
 The syntax for defining a variable as a single value is:
 
-``` yaml
+```yaml
 define: &variable <value>
 ```
 
 The defined variable can then be used as a value by variable name with a `*`:
 
-``` yaml
+```yaml
 <directive>: *variable
 ```
 
 The syntax for defining a variable as a content block is:
 
-``` yaml
+```yaml
 define: &varblock
   <directive>: <value>
   <directive>: <value>
@@ -222,7 +222,7 @@ define: &varblock
 
 The syntax for using a variable block is to prepend the variable name with ``<<: *``. For example:
 
-``` yaml
+```yaml
 <block>:
 - <directive>: <value>
   <<: *varblock

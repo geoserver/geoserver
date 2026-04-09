@@ -56,7 +56,7 @@ The REST API allows you to create and manage workspaces in GeoServer.
 
 *Response*
 
-``` xml
+```xml
 <workspace>
   <name>acme</name>
   <dataStores>

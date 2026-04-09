@@ -188,7 +188,7 @@ An example cql_filter would then be `jsonPointer(city, '/population/average_age'
 
 While an example rule in a sld style sheet could be:
 
-``` xml
+```xml
 <Rule>
   <Name>Cities</Name>
      <ogc:Filter>

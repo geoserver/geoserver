@@ -17,7 +17,7 @@ Formats:
 
 ### XML
 
-``` xml
+```xml
 <catalog>
   <mode>HIDE</mode>
 </catalog>
@@ -25,7 +25,7 @@ Formats:
 
 ### JSON
 
-``` json
+```json
 {"mode":"HIDE" }
 ```
 
@@ -69,7 +69,7 @@ Formats for GET,POST and PUT:
 
 ### XML
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <rules>
    <rule resource="*.*.r">*</rule>

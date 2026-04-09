@@ -96,7 +96,7 @@ If ogr2ogr is not available in the default path, the GDAL_DATA is not set, or if
 
 The default GeoServer configuration is equivalent to the following xml file:
 
-``` xml
+```xml
 <OgrConfiguration>
   <ogr2ogrLocation>ogr2ogr</ogr2ogrLocation>
   <!-- <gdalData>...</gdalData> -->
@@ -166,7 +166,7 @@ Unlike the WFS case the WPS output formats are receiving different treatment in 
 
 In order to understand the nature of the output format a new optional configuration element, `<type>`, can be added to the `ogr2ogr.xml` configuration file in order to specify the output nature. The possible values are `binary`, `text`, `xml`, in case the value is missing, `binary` is assumed. Here is an example showing all possible combinations:
 
-``` xml
+```xml
 <OgrConfiguration>
     <ogr2ogrLocation>ogr2ogr</ogr2ogrLocation>
     <!-- <gdalData>...</gdalData> -->

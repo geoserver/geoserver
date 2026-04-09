@@ -97,7 +97,7 @@ The `<Graphic>` element specifies a graphic symbol to be displayed behind the la
 
 The following symbolizer is taken from the [Points](../cookbook/points.md) section in the [SLD Cookbook](../cookbook/index.md).
 
-``` xml
+```xml
 <TextSymbolizer>
   <Label>
     <ogc:PropertyName>name</ogc:PropertyName>
@@ -139,7 +139,7 @@ The displacement takes effect before the rotation during rendering, so the 25 pi
 
 The font size can also be set depending on the scale denominator as follows:
 
-``` xml
+```xml
 <CssParameter name="font-size">
   <ogc:Function name="Categorize">
     <!-- Value to transform -->

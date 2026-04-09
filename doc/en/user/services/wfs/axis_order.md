@@ -93,7 +93,7 @@ To review how this layer has been published:
 
 <http://localhost:8080/geoserver/ows?service=wfs&version=1.0.0&request=GetCapabilities>
 
-``` xml
+```xml
 <FeatureType><Name>topp:states</Name>
   <Title>USA Population</Title>
   <Abstract>This is some census data on the states.</Abstract>
@@ -224,7 +224,7 @@ WFS 1.0 *GetFeature* request defaults to GML2 output, and the default `EPSG:4326
 
 <http://localhost:8080/geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities>
 
-``` xml
+```xml
 <FeatureType>
   <Name>topp:states</Name>
   <Title>USA Population</Title>
@@ -450,7 +450,7 @@ WFS 1.1 *GetFeature* request defaults to GML3 output, and the default `urn:x-ogc
 
 <http://localhost:8080/geoserver/ows?service=wfs&version=2.0.0&request=GetCapabilities>
 
-``` xml
+```xml
 <FeatureType>
   <Name>topp:states</Name>
   <Title>USA Population</Title>

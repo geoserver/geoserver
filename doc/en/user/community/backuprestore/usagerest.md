@@ -23,7 +23,7 @@ Prepare a file containing with a JSON object representing the Backup procedure c
 
 `backup_post.json`:
 
-``` json
+```json
 {
    "backup":{
       "archiveFile":"/home/sg/BackupAndRestore/test_rest_1.zip",
@@ -50,7 +50,7 @@ Also an optional `Filter` can be passed to restrict the scope of the restore ope
 
 For example:
 
-``` json
+```json
 {
    "backup":{
       "archiveFile":"/home/sg/BackupAndRestore/test_rest_1.zip",
@@ -76,7 +76,7 @@ Content-Type: application/json
 Transfer-Encoding: chunked
 ```
 
-``` json
+```json
 {
    "backup":{
       "totalNumberOfSteps":9,
@@ -118,7 +118,7 @@ Transfer-Encoding: chunked
 
 At the end of the backup procedure you'll be able to download the generated archive to your local file system by making an HTTP GET request to the same endpoint, using the **backup ID** as above and adding the `.zip` at the end.
 
-``` bash
+```bash
 curl -u "admin:geoserver" -i -X GET  "http://mygeoserver/geoserver/rest/br/backup/1.zip" -o 1.zip
 ```
 
@@ -134,13 +134,13 @@ Status of the operation can be queried making an HTTP GET request to the locatio
 
 Replace `$ID` with the **ID** of the backup operation you'd like to inspect.
 
-``` bash
+```bash
 curl -u "admin:geoserver" http://mygeoserver/geoserver/rest/br/backup/1.json
 ```
 
 or
 
-``` bash
+```bash
 curl -u "admin:geoserver" http://mygeoserver/geoserver/rest/br/backup/1.xml
 ```
 
@@ -156,7 +156,7 @@ Here you are able to see the status of all the steps involved in the backup proc
 
 Cancel an in progress Backup by sending an HTTP DELETE request with the ID of the task
 
-``` bash
+```bash
 curl -v -XDELETE -u "admin:geoserver" http://mygeoserver/geoserver/rest/br/backup/$ID
 ```
 
@@ -168,7 +168,7 @@ Prepare a file with a JSON object representing the Restore procedure configurati
 
 `restore_post.json`:
 
-``` json
+```json
 {
    "restore":{
       "archiveFile":"/home/sg/BackupAndRestore/test_rest_1.zip",
@@ -224,7 +224,7 @@ If `archiveFile` is specified, the archive specified on that path of the remote 
 
 Then make a POST HTTP request to GeoServer's REST interface endpoint for the restore procedure
 
-``` bash
+```bash
 curl -u "admin:geoserver" -i -H "Content-Type: application/json" -X POST --data @restore_post.json http://mygeoserver/geoserver/rest/br/restore/
 ```
 
@@ -241,7 +241,7 @@ Content-Type: application/json
 Transfer-Encoding: chunked
 ```
 
-``` json
+```json
 {
    "restore":{
       "totalNumberOfSteps":9,
@@ -283,7 +283,7 @@ To upload the archive from our local system instead, omit the archiveFile parame
 
 `restore_post.json`:
 
-``` json
+```json
 {
    "restore":{
       "options":{
@@ -292,7 +292,7 @@ To upload the archive from our local system instead, omit the archiveFile parame
 }
 ```
 
-``` bash
+```bash
 curl -u "admin:geoserver" -i -H "Content-Type: application/json" --upload-file "archive_to_restore.zip" -X POST --data @restore_post.json http://localhost:8081/geoserver/rest/br/restore/
 ```
 
@@ -393,7 +393,7 @@ Here you are able to see the status of all the steps involved in the restore pro
 
 Cancel an in-progress Restore by sending an HTTP DELETE request:
 
-``` bash
+```bash
 curl -v -XDELETE -u "admin:geoserver" http://mygeoserver/geoserver/rest/br/restore/$ID
 ```
 

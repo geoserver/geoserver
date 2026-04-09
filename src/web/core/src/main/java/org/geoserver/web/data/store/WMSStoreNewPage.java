@@ -18,6 +18,7 @@ import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.EntityResolverProvider;
@@ -35,9 +36,18 @@ import org.xml.sax.EntityResolver;
 public class WMSStoreNewPage extends AbstractWMSStorePage {
 
     public WMSStoreNewPage() {
+        this(null);
+    }
+
+    public WMSStoreNewPage(final String workspaceName) {
         try {
             CatalogBuilder builder = new CatalogBuilder(getCatalog());
             WMSStoreInfo store = builder.buildWMSStore(null);
+
+            if (workspaceName != null && !workspaceName.isEmpty()) {
+                WorkspaceInfo ws = getCatalog().getWorkspaceByName(workspaceName);
+                if (ws != null) store.setWorkspace(ws);
+            }
 
             initUI(store);
 

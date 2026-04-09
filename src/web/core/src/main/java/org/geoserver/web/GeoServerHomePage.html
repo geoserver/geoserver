@@ -20,7 +20,6 @@
 
 <fieldset wicket:id="administration">
 	<legend><span><wicket:message key="administration">Administration</wicket:message></span></legend>
-<!--	<div wicket:id="catalogLinks"/>-->
 	<div class="gs-form" wicket:id="adminContent">
 		<span wicket:id="content"/>
 	</div>
@@ -52,39 +51,6 @@
     <div wicket:id="capsList" class="service-links"/>
   </div>
 </div>
-
-<wicket:fragment wicket:id="catalogLinksFragment">
-	<div class="catalog-links">
-		<div class="catalog-link">
-			<a wicket:id="layerLink">
-				<div class="catalog-link-content">
-					<span wicket:id="layerTitle">layer</span>
-				</div>
-			</a>
-		</div>
-		<div class="catalog-link">
-			<a wicket:id="groupLink">
-				<div class="catalog-link-content">
-					<span wicket:id="groupTitle">group</span>
-				</div>
-			</a>
-		</div>
-		<div class="catalog-link">
-			<a wicket:id="storeLink">
-				<div class="catalog-link-content">
-					<span wicket:id="storeTitle">store</span>
-				</div>
-			</a>
-		</div>
-		<div class="catalog-link">
-			<a wicket:id="workspaceLink">
-				<div class="catalog-link-content">
-					<span wicket:id="workspaceTitle">workspace</span>
-				</div>
-			</a>
-		</div>
-	</div>
-</wicket:fragment>
 
 <p>
 	<span wicket:id="footerMessage"></span> <span wicket:id="footerContact"></span>

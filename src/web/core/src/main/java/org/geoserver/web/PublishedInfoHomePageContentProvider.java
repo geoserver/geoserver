@@ -4,6 +4,10 @@
  */
 package org.geoserver.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -14,19 +18,11 @@ import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
-
-/**
- * Provides feedback on layer enabled, visible status when home page displaying layer.
- */
+/** Provides feedback on layer enabled, visible status when home page displaying layer. */
 public class PublishedInfoHomePageContentProvider implements GeoServerHomePageContentProvider {
     @Override
     public boolean checkContext(boolean isAdmin, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
-        return isAdmin && layerInfo != null &&
-                (!layerInfo.isAdvertised() || !layerInfo.isEnabled());
+        return isAdmin && layerInfo != null && (!layerInfo.isAdvertised() || !layerInfo.isEnabled());
     }
 
     @Override
@@ -43,7 +39,7 @@ public class PublishedInfoHomePageContentProvider implements GeoServerHomePageCo
             add(feedbackList("layerFeedback"));
         }
 
-        ListView<String> feedbackList(String id){
+        ListView<String> feedbackList(String id) {
 
             LoadableDetachableModel<List<String>> feedbackModel = new LoadableDetachableModel<List<String>>() {
                 @Override
@@ -65,17 +61,17 @@ public class PublishedInfoHomePageContentProvider implements GeoServerHomePageCo
                     return feedbackList;
                 }
             };
-            return new ListView<>(id, feedbackModel ){
+            return new ListView<>(id, feedbackModel) {
                 @Override
                 protected void populateItem(ListItem<String> item) {
                     String feedbackKey = item.getModelObject();
 
                     GeoServerHomePage homePage = (GeoServerHomePage) LayerFeedbackPanel.this.getPage();
                     PublishedInfo layerInfo = homePage.getPublishedInfo();
-                    StringResourceModel message =
-                        new StringResourceModel(feedbackKey, LayerFeedbackPanel.this).setParameters(layerInfo.getName());
+                    StringResourceModel message = new StringResourceModel(feedbackKey, LayerFeedbackPanel.this)
+                            .setParameters(layerInfo.getName());
 
-                    item.add(new Label("message", message ));
+                    item.add(new Label("message", message));
                 }
             };
         }

@@ -5,6 +5,7 @@
 package org.geoserver.web;
 
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+import static org.geoserver.web.util.WebUtils.toResourceName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +40,20 @@ public class PublishedInfoHomePageContentProvider implements GeoServerHomePageCo
             add(feedbackList("layerFeedback"));
         }
 
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), toResourceName(getClass(), "css"))));
+            }
+        }
+
         ListView<String> feedbackList(String id) {
 
-            LoadableDetachableModel<List<String>> feedbackModel = new LoadableDetachableModel<List<String>>() {
+            LoadableDetachableModel<List<String>> feedbackModel = new LoadableDetachableModel<>() {
                 @Override
                 protected List<String> load() {
                     GeoServerHomePage homePage = (GeoServerHomePage) LayerFeedbackPanel.this.getPage();

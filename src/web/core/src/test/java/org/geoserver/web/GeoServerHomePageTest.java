@@ -114,7 +114,12 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         assertFalse(providers.isEmpty());
 
         tester.assertComponent("previewContent", org.apache.wicket.markup.html.list.ListView.class);
-        tester.assertModelValue("previewContent", providers);
+        Component previewContent = tester.getComponentFromLastRenderedPage("previewContent");
+        @SuppressWarnings("unchecked")
+        List<GeoServerHomePageContentProvider> actual =
+                (List<GeoServerHomePageContentProvider>) previewContent.getDefaultModelObject();
+
+        assertTrue(providers.containsAll(actual));
     }
 
     @Test

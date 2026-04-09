@@ -192,10 +192,6 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             // add placeholder (even when not admin) to identify this page location
             administration.add(placeholderLabel("adminContent"));
         }
-        if (publishedInfo != null && publishedInfo instanceof LayerInfo) {
-            // hide all this for layer, we may need to bring this back for layer specific warnings guidance
-            // administration.setVisible(false);
-        }
 
         Locale locale = getLocale();
 

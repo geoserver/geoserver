@@ -46,8 +46,14 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
     static Logger LOGGER = Logging.getLogger(SecurityHomePageContentProvider.class);
 
     /** Only show to admin for top-level global context. */
+    @Override
     public boolean checkContext(boolean isAdmin, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         return isAdmin && workspaceInfo == null && layerInfo == null;
+    }
+
+    @Override
+    public int getOrder() {
+        return 0;
     }
 
     @Override

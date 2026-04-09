@@ -2312,6 +2312,12 @@ div.value-wide {
 .instruct {
   display: none;
 }
+.gs-inline-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
 @media (max-width: 768px) {
   .gs-form {
     gap: 0.25rem;

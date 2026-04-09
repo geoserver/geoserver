@@ -17316,10 +17316,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installing-the-libjpeg-turbo-native-library" class="md-nav__link">
+  <a href="#installing-the-geoserver-libjpeg-turbo-extension" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installing the libjpeg-turbo native library
+        Installing the GeoServer libjpeg-turbo extension
       
     </span>
   </a>
@@ -17327,10 +17327,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installing-the-geoserver-libjpeg-turbo-extension" class="md-nav__link">
+  <a href="#installing-the-libjpeg-turbo-native-library" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installing the GeoServer libjpeg-turbo extension
+        Installing the libjpeg-turbo native library
       
     </span>
   </a>
@@ -29807,10 +29807,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installing-the-libjpeg-turbo-native-library" class="md-nav__link">
+  <a href="#installing-the-geoserver-libjpeg-turbo-extension" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installing the libjpeg-turbo native library
+        Installing the GeoServer libjpeg-turbo extension
       
     </span>
   </a>
@@ -29818,10 +29818,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installing-the-geoserver-libjpeg-turbo-extension" class="md-nav__link">
+  <a href="#installing-the-libjpeg-turbo-native-library" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installing the GeoServer libjpeg-turbo extension
+        Installing the libjpeg-turbo native library
       
     </span>
   </a>
@@ -29890,40 +29890,7 @@
 <p class="admonition-title">Note</p>
 <p>This module depends on a successful installation of the libjpeg-turbo native libraries described in the next section.</p>
 </div>
-<h2 id="installing-the-libjpeg-turbo-native-library">Installing the libjpeg-turbo native library<a class="headerlink" href="#installing-the-libjpeg-turbo-native-library" title="Permanent link">&para;</a></h2>
-<p>Installing the libjpeg-turbo native library is a precondition to have the relative GeoServer Map Encoder properly installed; once the GeoServer extension has been installed as we explain in the following section, the needed JARs with the Java bridge to the library are in the classpath, therefore all we need to do is to install the native library itself to start encoding JPEG at turbo speed.</p>
-<ol>
-<li>
-<p>Linux users may also check if it is available from their package manager:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>apt<span class="w"> </span>get<span class="w"> </span>libjpeg-dev
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>apt<span class="w"> </span>get<span class="w"> </span>libjpeg-java
-</code></pre></div>
-</li>
-</ol>
-<p>To perform the installation of the libjpeg-turbo binaries (or native library) you have to perform the following steps:</p>
-<ol>
-<li>Go to the download site <a href="https://sourceforge.net/projects/libjpeg-turbo/files/">here</a> and download the latest available stable release (1.2.90 at the time of writing).</li>
-<li>Select the package that matches the target platform in terms of Operating System (e.g. Linux rather than Windows) and Architecture (32 vs 64 bits).</li>
-<li>Perform the installation using the target platform conventions. As an instance for Windows you should be using an installer that installs all the needed libs in a location at user's choice. On Ubuntu Linux systems you can use the <em>deb</em> files instead.</li>
-<li>Once the native libraries are installed, you have to make sure the GeoServer can load them. This should happen automatically after Step 2 on Linux, while on Windows you should make sure that the location where you placed the DLLs is part of the PATH environment variable for the Java Process for the GeoServer.</li>
-</ol>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>When installing on Windows, always make sure that the location where you placed the DLLs is part of the <code>PATH</code> environment variable for the Java Process for the GeoServer. This usually means that you have to add such location to the PATH environmental variable for the user that is used to run GeoServer or the system wide variables.</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>When installing on Linux, make sure that the location where you placed the DLLs is part of the <code>LD_LIBRARY_PATH</code> environment variable for the Java Process for the GeoServer. This usually happens automatically for the various Linux packages, but in some cases you might be forced to do that manually</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It does not hurt to add also the location where the native libraries are installed to the Java startup options <code>-Djava.library.path=&lt;absolute_and_valid_path&gt;</code>.</p>
-</div>
 <h2 id="installing-the-geoserver-libjpeg-turbo-extension">Installing the GeoServer libjpeg-turbo extension<a class="headerlink" href="#installing-the-geoserver-libjpeg-turbo-extension" title="Permanent link">&para;</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Before moving on make sure you installed the libjpeg-turbo binaries as per the section above.</p>
-</div>
 <ol>
 <li>
 <p>Login, and navigate to <strong>About &amp; Status &gt; About GeoServer</strong> and check <strong>Build Information</strong> to determine the exact version of GeoServer you are running.</p>
@@ -29941,6 +29908,39 @@
 <p>Extract the contents of the archive into the <strong><code>WEB-INF/lib</code></strong> directory of the GeoServer installation.</p>
 </li>
 </ol>
+<h2 id="installing-the-libjpeg-turbo-native-library">Installing the libjpeg-turbo native library<a class="headerlink" href="#installing-the-libjpeg-turbo-native-library" title="Permanent link">&para;</a></h2>
+<p>Installing the libjpeg-turbo native library is a prerequisite for properly enabling the corresponding GeoServer Map Encoder. Once the GeoServer extension is installed, the required JARs providing the Java bindings to the native library are already available on the classpath.</p>
+<p>The turbojpeg-X.X.X.jar bundle (at the time of writing, turbojpeg-8.5.0.jar), included in the libjpeg-turbo-plugin.zip, also contains the necessary native libraries. Therefore, the only remaining step is to install the native library itself to enable high-performance JPEG encoding.</p>
+<ol>
+<li>
+<p>Linux users may also check if it is available from their package manager:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>apt<span class="w"> </span>get<span class="w"> </span>libjpeg-dev
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>apt<span class="w"> </span>get<span class="w"> </span>libjpeg-java
+</code></pre></div>
+</li>
+</ol>
+<p>To perform the installation of the libjpeg-turbo binaries (or native library) you have to perform the following steps:</p>
+<ol>
+<li>
+<p>Extract the turbojpeg-X.X.X.jar file (located in the WEB-INF/lib directory of your GeoServer installation) into a temporary folder.</p>
+</li>
+<li>
+<p>Navigate to the META-INF/lib directory and select the package that matches your target platform, considering both the operating system (e.g., Linux or Windows) and the architecture (32-bit or 64-bit).</p>
+</li>
+<li>Copy the required native library (e.g., turbojpeg.dll for Windows or turbojpeg.so for Linux) to a location included in the Java process’s native library path for GeoServer. See the <strong>Notes</strong> below for further details.</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When installing on Windows, always make sure that the location where you placed the DLLs is part of the <code>PATH</code> environment variable for the Java Process for the GeoServer. This usually means that you have to add such location to the PATH environmental variable for the user that is used to run GeoServer or the system wide variables.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When installing on Linux, make sure that the location where you placed the DLLs is part of the <code>LD_LIBRARY_PATH</code> environment variable for the Java Process for the GeoServer. This usually happens automatically for the various Linux packages, but in some cases you might be forced to do that manually</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It does not hurt to add also the location where the native libraries are installed to the Java startup options <code>-Djava.library.path=&lt;absolute_and_valid_path&gt;</code>.</p>
+</div>
 <h2 id="checking-if-the-extension-is-enabled">Checking if the extension is enabled<a class="headerlink" href="#checking-if-the-extension-is-enabled" title="Permanent link">&para;</a></h2>
 <p>Once the extension is installed, the following lines should appear in the GeoServer log:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>10-mar-2013 19.16.28 it.geosolutions.imageio.plugins.turbojpeg.TurboJpegUtilities load

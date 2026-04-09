@@ -48,6 +48,8 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -55,6 +57,8 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DefaultCatalogFacade;
 import org.geoserver.config.ContactInfo;
@@ -64,8 +68,16 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.InternationalStringUtils;
 import org.geoserver.web.data.layer.LayerPage;
+import org.geoserver.web.data.layer.NewLayerPage;
+import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geoserver.web.data.layergroup.LayerGroupPage;
+import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.geoserver.web.data.store.CoverageStoreEditPage;
+import org.geoserver.web.data.store.DataAccessEditPage;
+import org.geoserver.web.data.store.NewDataPage;
 import org.geoserver.web.data.store.StorePage;
+import org.geoserver.web.data.store.WMSStoreEditPage;
+import org.geoserver.web.data.store.WMTSStoreEditPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
 import org.geotools.api.util.InternationalString;
 import org.geotools.feature.NameImpl;
@@ -189,13 +201,13 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         administration.setVisible(admin);
         add(administration);
 
-        if (admin) {
-            // show admin some additional details
-            administration.add(adminOverview());
-        } else {
-            // add catalogLinks placeholder (even when not admin) to identify this page location
-            administration.add(placeholderLabel("catalogLinks"));
-        }
+//        if (admin) {
+//            // show admin some additional details
+//            administration.add(catalogLinks());
+//        } else {
+//            // add catalogLinks placeholder (even when not admin) to identify this page location
+//            administration.add(placeholderLabel("catalogLinks"));
+//        }
 
         // adminContent content provided by plugins across the geoserver codebase
         // for example security warnings to admin
@@ -207,7 +219,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         }
         if (publishedInfo != null && publishedInfo instanceof LayerInfo) {
             // hide all this for layer, we may need to bring this back for layer specific warnings guidance
-            administration.setVisible(false);
+            // administration.setVisible(false);
         }
 
         Locale locale = getLocale();
@@ -433,6 +445,16 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             layer = toLayer(workspace, layer);
         }
 
+        String group = Optional.ofNullable(getPageParameters().get("group"))
+                .map(StringValue::toString)
+                .orElse(null);
+        if (group != null) {
+            workspace = toWorkspace(workspace, group);
+            group = toLayer(workspace, group);
+        }
+
+
+
         // Step 2: Look up workspaceInfo and layerInfo in catalog
         if (workspace != null) {
             if (this.workspaceInfo != null && this.workspaceInfo.getName().equals(workspace)) {
@@ -464,13 +486,16 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             LOGGER.fine("Parameter workspace not supplied, list global services");
         }
 
-        if (layer != null) {
+        String published = layer != null ? layer : group;
+
+        if (published != null) {
             if (this.publishedInfo != null && this.publishedInfo.getName().equals(layer)) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("Parameter layer='" + layer + "' home page previously configured for this layer");
+                    LOGGER.fine("Parameter layer='" + layer + "' or group='"+group+"' page previously configured for this layer");
                 }
-            } else {
-                this.publishedInfo = layerInfo(workspaceInfo, layer);
+            }
+            else {
+                this.publishedInfo = layerInfo(workspaceInfo, published);
                 if (publishedInfo != null) {
                     // Step 3: Double check workspace matches layer
                     String prefixedName = this.publishedInfo.prefixedName();
@@ -496,7 +521,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                         }
                     }
                 } else {
-                    LOGGER.fine("Parameter layer='" + layer + "' unable to locate a layer or layer group of this name");
+                    LOGGER.fine("Parameter layer='" + layer + "' or group='"+group+"' unable to locate a layer or layer group of this name");
                 }
             }
         } else {
@@ -621,7 +646,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         return placeHolder;
     }
 
-    private Fragment adminOverview() {
+    private Fragment catalogLinks() {
         Stopwatch sw = Stopwatch.createStarted();
         try {
             Fragment catalogLinks = new Fragment("catalogLinks", "catalogLinksFragment", this);
@@ -690,32 +715,29 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             NumberFormat numberFormat = NumberFormat.getIntegerInstance(getLocale());
             numberFormat.setGroupingUsed(true);
 
-            BookmarkablePageLink layersLink =
-                    new BookmarkablePageLink<>("layersLink", LayerPage.class, this.getPageParameters());
-            layersLink.add(new Label("nlayers", numberFormat.format(layerCount)));
+            Localizer localizer = getLocalizer();
+
+            BookmarkablePageLink layersLink = layersLink(layerCount,groupCount,storesCount,wsCount);
             catalogLinks.add(layersLink);
 
-            BookmarkablePageLink groupsLink =
-                    new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class, this.getPageParameters());
-            groupsLink.add(new Label("ngroups", numberFormat.format(groupCount)));
+            BookmarkablePageLink groupsLink = groupsLink(layerCount,groupCount,storesCount,wsCount);
             catalogLinks.add(groupsLink);
 
-            BookmarkablePageLink storesLink =
-                    new BookmarkablePageLink<>("storesLink", StorePage.class, this.getPageParameters());
-            storesLink.add(new Label("nstores", numberFormat.format(storesCount)));
+            BookmarkablePageLink storesLink = storeLink(layerCount,groupCount,storesCount,wsCount);
             catalogLinks.add(storesLink);
 
             BookmarkablePageLink workspacesLink =
-                    new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class, this.getPageParameters());
-            workspacesLink.add(new Label("nworkspaces", numberFormat.format(wsCount)));
+                    new BookmarkablePageLink<>("workspaceLink", WorkspacePage.class, this.getPageParameters());
+            workspacesLink.add(new Label("workspaceTitle",
+                    localizer.getString("workspaces", GeoServerHomePage.this)));
             catalogLinks.add(workspacesLink);
 
             if (publishedInfo != null) {
                 if (publishedInfo instanceof LayerInfo) {
-                    catalogLinks.setVisible(false);
+                    // catalogLinks.setVisible(false);
                 }
             } else if (workspaceInfo != null) {
-                workspacesLink.setVisible(false); // hide from workspace welcome page
+                // workspacesLink.setVisible(false); // hide from workspace welcome page
             }
 
             return catalogLinks;
@@ -726,6 +748,141 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                         "Admin summary of catalog links took " + sw.elapsed().toMillis() + " ms");
             }
         }
+    }
+
+    /**
+     * Create catalog layersLink based on current context summary.
+     */
+    private BookmarkablePageLink layersLink(int layerCount, int groupCount, int storesCount, int wsCount) {
+        BookmarkablePageLink layersLink;
+
+        Localizer localizer = getLocalizer();
+        if (layerCount == 0 && storesCount == 0) {
+            layersLink = new BookmarkablePageLink<>("layerLink", NewLayerPage.class);
+            layersLink.add(new Label("layerTitle",
+                    new StringResourceModel("layersCount", GeoServerHomePage.this).setParameters(layerCount)
+            ));
+            layersLink.setEnabled(false);
+        }
+        else if (layerCount == 0 && storesCount > 0) {
+            layersLink = new BookmarkablePageLink<>("layerLink", NewLayerPage.class);
+            layersLink.add(new Label("layerTitle",
+                    localizer.getString("addLayers", GeoServerHomePage.this)));
+        }
+        else if (layerCount == 1 && publishedInfo instanceof LayerInfo) {
+            PageParameters editLayersParams = new PageParameters()
+                    .add(ResourceConfigurationPage.LAYER, publishedInfo.getName())
+                    .add(ResourceConfigurationPage.WORKSPACE, ((LayerInfo) publishedInfo).getResource().getStore().getWorkspace().getName());
+            layersLink = new BookmarkablePageLink<>("layerLink", ResourceConfigurationPage.class, editLayersParams);
+            layersLink.add(new Label("layerTitle",
+                    localizer.getString("layersEdit", GeoServerHomePage.this)));
+        }
+        else {
+            layersLink = new BookmarkablePageLink<>("layerLink", LayerPage.class, this.getPageParameters());
+            layersLink.add(new Label("layerTitle",
+                    new StringResourceModel("layersCount", GeoServerHomePage.this).setParameters(layerCount)
+            ));
+        }
+        return layersLink;
+    }
+
+    /**
+     * Create catalog layersLink based on current context summary.
+     */
+    private BookmarkablePageLink groupsLink(int layerCount, int groupCount, int storesCount, int wsCount) {
+        BookmarkablePageLink groupsLink;
+
+        Localizer localizer = getLocalizer();
+        if (groupCount == 0 && layerCount == 0) {
+            groupsLink = new BookmarkablePageLink<>("groupLink", LayerGroupPage.class);
+            groupsLink.add(new Label("groupTitle",
+                    new StringResourceModel("groupsCount", GeoServerHomePage.this).setParameters(groupCount)
+            ));
+            groupsLink.setEnabled(false);
+        }
+        else if (groupCount == 0 && layerCount > 0) {
+            groupsLink = new BookmarkablePageLink<>("groupLink", LayerGroupEditPage.class);
+            groupsLink.add(new Label("groupTitle",
+                    localizer.getString("addGroups", GeoServerHomePage.this)));
+            groupsLink.setEnabled( publishedInfo == null);
+        }
+        else if (groupCount == 1 && publishedInfo instanceof LayerGroupInfo) {
+            PageParameters editGroupParams = new PageParameters()
+                    .add(LayerGroupEditPage.GROUP, publishedInfo.getName())
+                    .add(LayerGroupEditPage.WORKSPACE, ((LayerInfo) publishedInfo).getResource().getStore().getWorkspace().getName());
+            groupsLink = new BookmarkablePageLink<>("groupLink", LayerGroupEditPage.class, editGroupParams);
+            groupsLink.add(new Label("groupTitle",
+                    localizer.getString("groupsEdit", GeoServerHomePage.this)));
+        }
+        else {
+            groupsLink = new BookmarkablePageLink<>("groupLink", LayerGroupPage.class, this.getPageParameters());
+            groupsLink.add(new Label("groupTitle",
+                    new StringResourceModel("groupsCount", GeoServerHomePage.this).setParameters(groupCount)
+            ));
+            groupsLink.setEnabled( !(publishedInfo == null || publishedInfo instanceof LayerInfo));
+        }
+        return groupsLink;
+    }
+
+    /**
+     * Create catalog layersLink based on current context summary.
+     */
+    private BookmarkablePageLink storeLink(int layerCount, int groupCount, int storesCount, int wsCount) {
+        BookmarkablePageLink storesLink;
+
+        Localizer localizer = getLocalizer();
+        if (wsCount == 0) {
+            storesLink = new BookmarkablePageLink<>("storeLink", StorePage.class, this.getPageParameters());
+            storesLink.add(new Label("storeTitle",
+                    new StringResourceModel("storesCount", GeoServerHomePage.this).setParameters(storesCount)
+            ));
+            // do not show if no workspaces
+            storesLink.setEnabled(false);
+        }
+        else if (storesCount == 0 && wsCount > 0) {
+            PageParameters storeParams = new PageParameters();
+            if (workspaceInfo != null) storeParams.add("workspace", workspaceInfo.getName());
+            storesLink = new BookmarkablePageLink<>("storeLink", NewDataPage.class, storeParams );
+            storesLink.add(new Label("storeTitle",
+                    localizer.getString("addStores", GeoServerHomePage.this)));
+            // do not show for global layer group
+            storesLink.setEnabled(!(publishedInfo instanceof LayerGroupInfo));
+        }
+        else if (publishedInfo != null && publishedInfo instanceof LayerInfo) {
+            LayerInfo layerInfo = (LayerInfo) publishedInfo;
+            StoreInfo store = layerInfo.getResource().getStore();
+
+            PageParameters storeParams = new PageParameters();
+            storeParams.add(DataAccessEditPage.STORE_NAME, store.getName());
+            storeParams.add(DataAccessEditPage.WS_NAME, store.getWorkspace().getName());
+
+            // edit layer if we are showing a layer info
+            if (store instanceof DataStoreInfo) {
+                storesLink = new BookmarkablePageLink<>("storeLink", DataAccessEditPage.class, storeParams);
+            }
+            else if (store instanceof CoverageStoreInfo) {
+                storesLink = new BookmarkablePageLink<>("storeLink", CoverageStoreEditPage.class, storeParams);
+            }
+            else if (store instanceof WMSStoreInfo) {
+                storesLink = new BookmarkablePageLink<>("storeLink", WMSStoreEditPage.class, storeParams);
+            }
+            else if (store instanceof WMTSStoreInfo) {
+                storesLink = new BookmarkablePageLink<>("storeLink", WMTSStoreEditPage.class, storeParams);
+            }
+            else {
+                storesLink = new BookmarkablePageLink<>("storeLink", DataAccessEditPage.class, storeParams);
+                storesLink.setVisible(false);
+            }
+            storesLink.add(new Label("storeTitle",
+                    localizer.getString("storeEdit", GeoServerHomePage.this)));
+        }
+        else {
+            storesLink = new BookmarkablePageLink<>("storeLink", StorePage.class, this.getPageParameters());
+            storesLink.add(new Label("storeTitle",
+                    new StringResourceModel("storesCount", GeoServerHomePage.this).setParameters(storesCount)
+            ));
+        }
+        return storesLink;
     }
 
     /**

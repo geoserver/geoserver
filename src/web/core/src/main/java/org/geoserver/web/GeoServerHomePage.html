@@ -1,4 +1,5 @@
 <html xmlns:wicket="http://wicket.apache.org/">
+<link rel="stylesheet" href="GeoServerHomePage.css">
 <body>
 <wicket:extend>
 <div id="chooser" wicket:id="chooser">
@@ -19,7 +20,7 @@
 
 <fieldset wicket:id="administration">
 	<legend><span><wicket:message key="administration">Administration</wicket:message></span></legend>
-	<div wicket:id="catalogLinks"/>
+<!--	<div wicket:id="catalogLinks"/>-->
 	<div class="gs-form" wicket:id="adminContent">
 		<span wicket:id="content"/>
 	</div>
@@ -36,6 +37,8 @@
 	<div class="gs-form" wicket:id="previewContent">
 		<span wicket:id="content"/>
 	</div>
+	<p>
+	<p/>
 </div>
 
 <div id="services">
@@ -53,30 +56,30 @@
 <wicket:fragment wicket:id="catalogLinksFragment">
 	<div class="catalog-links">
 		<div class="catalog-link">
-			<a wicket:id="layersLink">
+			<a wicket:id="layerLink">
 				<div class="catalog-link-content">
-					<span wicket:id="nlayers"></span> <wicket:message key="layers">layers</wicket:message>
+					<span wicket:id="layerTitle">layer</span>
 				</div>
 			</a>
 		</div>
 		<div class="catalog-link">
-			<a wicket:id="groupsLink">
+			<a wicket:id="groupLink">
 				<div class="catalog-link-content">
-					<span wicket:id="ngroups"></span> <wicket:message key="groups">groups</wicket:message>
+					<span wicket:id="groupTitle">group</span>
 				</div>
 			</a>
 		</div>
 		<div class="catalog-link">
-			<a wicket:id="storesLink">
+			<a wicket:id="storeLink">
 				<div class="catalog-link-content">
-					<span wicket:id="nstores"></span> <wicket:message key="stores">stores</wicket:message>
+					<span wicket:id="storeTitle">store</span>
 				</div>
 			</a>
 		</div>
 		<div class="catalog-link">
-			<a wicket:id="workspacesLink">
+			<a wicket:id="workspaceLink">
 				<div class="catalog-link-content">
-					<span wicket:id="nworkspaces"></span> <wicket:message key="workspaces">workspaces</wicket:message>
+					<span wicket:id="workspaceTitle">workspace</span>
 				</div>
 			</a>
 		</div>

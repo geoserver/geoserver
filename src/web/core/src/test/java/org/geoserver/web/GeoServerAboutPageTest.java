@@ -33,7 +33,6 @@ public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
      * non-admin -> version info should NOT be there gets the page as ADMIN -> version info SHOULD be there
      */
     @Test
-    @Ignore
     public void testHideSensitiveInfo() throws Exception {
         logout();
         tester.executeUrl("./wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage");

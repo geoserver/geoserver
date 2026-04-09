@@ -729,4 +729,7 @@
     <property name="contextParams" value="workspace" />
   </bean>
 
+  <bean id="publishedInfoHomePageContentProvider"
+        class="org.geoserver.web.PublishedInfoHomePageContentProvider"/>
+
 </beans>

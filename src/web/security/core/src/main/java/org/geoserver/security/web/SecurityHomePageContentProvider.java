@@ -22,6 +22,8 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -42,6 +44,13 @@ import org.geotools.util.logging.Logging;
 public class SecurityHomePageContentProvider implements GeoServerHomePageContentProvider {
 
     static Logger LOGGER = Logging.getLogger(SecurityHomePageContentProvider.class);
+
+    /**
+     * Only show to admin for top-level global context.
+     */
+    public boolean checkContext(boolean isAdmin, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+        return isAdmin && workspaceInfo == null && layerInfo == null;
+    }
 
     @Override
     public Component getPageBodyComponent(String id) {

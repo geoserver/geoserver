@@ -65,6 +65,7 @@
               <generateModelDocumentation>false</generateModelDocumentation>
               <configOptions>
                 <useJakartaEe>true</useJakartaEe>
+                <enumPropertyNaming>${openapi.enumPropertyNaming}</enumPropertyNaming>
               </configOptions>
             </configuration>
           </execution>
@@ -85,6 +86,7 @@
               <generateModelDocumentation>false</generateModelDocumentation>
               <configOptions>
                 <useJakartaEe>true</useJakartaEe>
+                <enumPropertyNaming>${openapi.enumPropertyNaming}</enumPropertyNaming>
               </configOptions>
             </configuration>
           </execution>

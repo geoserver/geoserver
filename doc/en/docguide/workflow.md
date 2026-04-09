@@ -58,11 +58,11 @@ Inside this directory, there are four directories:
 
 ## Make changes
 
-Documentation in is written in [Markdown](https://www.markdownguide.org/), a lightweight markup syntax. For suggestions on writing Markdown for use with mkdocs, please see the section on [Markdown Syntax](markdown.md). For suggestions about writing style, please see the [Style Guidelines](style.md).
+Documentation in is written in [Markdown](https://www.markdownguide.org/), a lightweight markup syntax. For suggestions on writing Markdown for use with MkDocs, please see the section on [Markdown Syntax](markdown.md). For suggestions about writing style, please see the [Style Guidelines](style.md).
 
 ## Build and test locally
 
-You should install mkdocs on your local system (see the page on [Installing](install.md)) to build the documentation locally and view any changes made.
+You should install MkDocs on your local system (see the page on [Installing](install.md)) to build the documentation locally and view any changes made.
 
 1.  From the root of your GeoServer checkout, install python virtual environment:
 

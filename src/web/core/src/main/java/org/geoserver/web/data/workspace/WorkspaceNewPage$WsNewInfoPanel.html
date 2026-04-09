@@ -5,27 +5,29 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-WorkspaceNewPage_WsNewInfoPanel">
-        <div class="gs-unordered-list-class">
-          <div class="gs-list-item-class">
+        <div class="gs-form">
+          <div class="gs-form-group">
             <label for="name">Name</label>
             <input wicket:id="name" id="name" type="text" size="20"/>
           </div>
-          <div class="gs-list-item-class">
-            <label for="uri">
-              <wicket:message key="namespaceURI">Namespace URI</wicket:message>
-            </label>
-            <input wicket:id="uri" id="uri" type="text" size="60"/>
-            <div class="instruct">
-              <wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message>
+          <div class="gs-form-group">
+            <div class="gs-form-group-label">
+              <label for="uri">
+                <wicket:message key="namespaceURI">Namespace URI</wicket:message>
+              </label>
+              <div class="instruct">
+                <wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message>
+              </div>
             </div>
+            <input wicket:id="uri" id="uri" type="text" size="60"/>
           </div>
-          <div class="gs-list-item-class choiceItem">
+          <div class="choiceItem">
             <input wicket:id="default" id="default" type="checkbox"/>
             <label for="default">
               <wicket:message key="defaultWorkspace">Default workspace</wicket:message>
             </label>
           </div>
-          <div class="gs-list-item-class choiceItem">
+          <div class="choiceItem">
             <input wicket:id="isolated" id="isolated" type="checkbox"/>
             <label for="isolated">
               <wicket:message key="isolatedWorkspace">Isolated workspace</wicket:message>

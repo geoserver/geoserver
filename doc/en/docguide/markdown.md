@@ -153,7 +153,7 @@ Use `` **`file.txt`** `` (combine **bold** **monospace**) for files and path ref
 
 Material for markdown has extensive icon support, for most user interface elements we can directly make use of the appropriate icon in Markdown:
 
-- Use Material for mkdocs [Icons, Emojis](https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/) page to serach included icons.
+- Use Material for MkDocs [Icons, Emojis](https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/) page to serach included icons.
 - You can also refrence emojii by name
 - Add custom icons to **`overrides/.icons/silk`** .
 

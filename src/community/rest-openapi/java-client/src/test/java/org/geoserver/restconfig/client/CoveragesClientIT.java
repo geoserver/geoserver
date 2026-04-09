@@ -33,6 +33,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.RuleChain;
 import org.junit.rules.TestName;
 import org.junit.runners.MethodSorters;
 
@@ -41,7 +42,12 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.JVM)
 public class CoveragesClientIT {
 
-    public static @ClassRule IntegrationTestSupport support = new IntegrationTestSupport();
+    private static GeoServerContainer geoserverContainer = new GeoServerContainer();
+
+    private static IntegrationTestSupport support = new IntegrationTestSupport(geoserverContainer);
+
+    @ClassRule
+    public static RuleChain chain = RuleChain.outerRule(geoserverContainer).around(support);
 
     public @Rule TestName testName = new TestName();
     public @Rule ExpectedException ex = ExpectedException.none();
@@ -262,8 +268,8 @@ public class CoveragesClientIT {
                 ProjectionPolicy.FORCE_DECLARED,
                 created.getProjectionPolicy());
         assertEquals(Boolean.TRUE, created.getEnabled());
-        assertNull("Should have been [EPSG:26713]", created.getRequestSRS());
-        assertNull("Should have been [EPSG:26713]", created.getResponseSRS());
+        assertEquals("Should have been [EPSG:26713]", Collections.emptyList(), created.getRequestSRS());
+        assertEquals("Should have been [EPSG:26713]", Collections.emptyList(), created.getResponseSRS());
     }
 
     public @Test void createBadStoreName() {

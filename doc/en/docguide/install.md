@@ -1,6 +1,6 @@
-# Installing mkdocs
+# Installing MkDocs
 
-In order to work with mkdocs to generate and preview documentation you will need the following:
+In order to work with MkDocs to generate and preview documentation you will need the following:
 
 - [Python 3](https://www.python.org/download/)
 - [pip3](https://pypi.org/project/pip/) (Package Installer for Python, included with Python)
@@ -20,7 +20,7 @@ The best practice is to use a python virtual environment, so the tools required 
     pip install -r requirements.txt
     ```
  
-3. Confirm ***mkdocs*** is available:
+3. Confirm ***MkDocs*** is available:
 
     ```bash
     mkdocs --version

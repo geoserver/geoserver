@@ -15,3 +15,8 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+.gs-scale-group {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+}

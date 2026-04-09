@@ -49,7 +49,7 @@ theme:
     - navigation.top
     - navigation.tracking
     - navigation.indexes
-    - navigation.path
+#    - navigation.path
     - navigation.footer
 
 extra:

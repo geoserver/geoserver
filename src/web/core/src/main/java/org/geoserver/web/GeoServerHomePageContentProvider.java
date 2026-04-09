@@ -40,4 +40,9 @@ public interface GeoServerHomePageContentProvider {
      *     is provided.
      */
     public Component getPageBodyComponent(final String id);
+
+    /** Order of the home page content. */
+    default int getOrder() {
+        return 500;
+    }
 }

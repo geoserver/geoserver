@@ -9,6 +9,7 @@ import static org.geoserver.web.util.WebUtils.toResourceName;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -18,43 +19,40 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.util.string.Strings;
-import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.logging.Logging;
 
 /** Contributes metadata links section to GeoServer Home page. */
-public class MetadataHomePageContentProvider implements GeoServerHomePageContentProvider {
+public class DataLinkHomePageContentProvider implements GeoServerHomePageContentProvider {
 
     protected static final Logger LOGGER = Logging.getLogger(GeoServerHomePage.class);
 
     @Override
     public boolean checkContext(boolean isAdmin, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
-        return !isAdmin && layerInfo != null;
+        return !isAdmin && layerInfo != null && layerInfo instanceof LayerInfo;
     }
 
     @Override
     public int getOrder() {
-        return 1100;
+        return 900;
     }
 
     @Override
     public Component getPageBodyComponent(String id) {
-        return new MetadataPanel(id);
+        return new DataPanel(id);
     }
 
     /**
      * Preview panel for {@link GeoServerHomePage}. Panel models will require {@code getPage()} lookup to determine
      * context.
      */
-    static class MetadataPanel extends Panel {
-        private static final boolean isCssEmpty =
-                IsWicketCssFileEmpty(MetadataHomePageContentProvider.MetadataPanel.class);
+    static class DataPanel extends Panel {
+        private static final boolean isCssEmpty = IsWicketCssFileEmpty(DataPanel.class);
 
-        private final Component metadataPanel;
+        private final Component dataPanel;
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -67,10 +65,11 @@ public class MetadataHomePageContentProvider implements GeoServerHomePageContent
             }
         }
 
-        public MetadataPanel(String id) {
+        public DataPanel(String id) {
             super(id);
-            metadataPanel = metadataPanel("metadataPanel");
-            add(metadataPanel);
+            dataPanel = dataPanel("dataPanel");
+
+            add(dataPanel);
         }
 
         /** Return the application instance. */
@@ -84,58 +83,57 @@ public class MetadataHomePageContentProvider implements GeoServerHomePageContent
          * @param id wicket id
          * @return common preview
          */
-        private Component metadataPanel(String id) {
+        private Component dataPanel(String id) {
             final WebMarkupContainer container = new WebMarkupContainer(id);
             container.setOutputMarkupId(true);
 
-            LoadableDetachableModel<List<MetadataLinkInfo>> links = new LoadableDetachableModel<>() {
+            LoadableDetachableModel<List<DataLinkInfo>> links = new LoadableDetachableModel<>() {
                 @Override
-                protected List<MetadataLinkInfo> load() {
-                    GeoServerHomePage homePage = (GeoServerHomePage) MetadataPanel.this.getPage();
+                protected List<DataLinkInfo> load() {
+                    GeoServerHomePage homePage = (GeoServerHomePage) DataPanel.this.getPage();
                     PublishedInfo publishedInfo = homePage.getPublishedInfo();
-                    List<MetadataLinkInfo> links = new ArrayList<>();
+                    List<DataLinkInfo> links = new ArrayList<>();
 
                     if (publishedInfo != null && publishedInfo instanceof LayerInfo) {
                         LayerInfo layerInfo = (LayerInfo) publishedInfo;
-                        links.addAll(layerInfo.getResource().getMetadataLinks());
-                    } else if (publishedInfo != null && publishedInfo instanceof LayerGroupInfo) {
-                        LayerGroupInfo layerGroupInfo = (LayerGroupInfo) publishedInfo;
-                        links.addAll(layerGroupInfo.getMetadataLinks());
+                        links.addAll(layerInfo.getResource().getDataLinks());
                     }
                     // only show panel if we have something to share
-                    metadataPanel.setVisible(!links.isEmpty());
+                    dataPanel.setVisible(!links.isEmpty());
                     return links;
                 }
             };
-            ListView<MetadataLinkInfo> metadata = new ListView<>("metadata", links) {
+            ListView<DataLinkInfo> metadata = new ListView<>("data", links) {
                 @Override
-                public void populateItem(ListItem<MetadataLinkInfo> item) {
-                    MetadataLinkInfo info = item.getModelObject();
+                public void populateItem(ListItem<DataLinkInfo> item) {
+                    DataLinkInfo data = item.getModelObject();
 
-                    String type = info.getMetadataType();
-                    String about = info.getAbout();
-                    String url = info.getContent();
-                    String format = info.getType();
+                    String title = translateFormat("format.", data.getType());
 
-                    String title = about;
-                    if (Strings.isEmpty(title)) {
-                        title = format;
-                    }
-                    if (!Strings.isEmpty(type) && !"other".equalsIgnoreCase(type)) {
-                        title += " (" + type + ")";
-                    }
-
-                    ExternalLink link = new ExternalLink("theLink", url, title);
-                    if (!Strings.isEmpty(format)) {
-                        link.add(AttributeModifier.append("title", format));
-                    }
-
+                    ExternalLink link = new ExternalLink("theLink", data.getContent(), title);
+                    link.add(AttributeModifier.append("title", data.getType()));
                     item.add(link);
                 }
             };
             container.add(metadata);
 
             return container;
+        }
+
+        /**
+         * Translate format (if translation available).
+         *
+         * @param prefix protocol
+         * @param format output format
+         * @return format translation (defaults to format if unavailable)
+         */
+        private String translateFormat(String prefix, String format) {
+            try {
+                return getLocalizer().getString(prefix + format, this);
+            } catch (Exception e) {
+                LOGGER.log(Level.FINE, e.getMessage());
+                return format;
+            }
         }
     }
 }

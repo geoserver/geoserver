@@ -45,6 +45,11 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
     }
 
     @Override
+    public int getOrder() {
+        return 1000;
+    }
+
+    @Override
     public Component getPageBodyComponent(String id) {
         return new PreviewPanel(id);
     }

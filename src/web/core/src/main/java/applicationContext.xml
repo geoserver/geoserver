@@ -738,4 +738,9 @@
   <bean id="metadataHomePageContentProvider"
         class="org.geoserver.web.MetadataHomePageContentProvider"/>
 
+  <bean id="dataLinkHomePageContentProvider"
+        class="org.geoserver.web.DataLinkHomePageContentProvider"/>
+
+
+
 </beans>

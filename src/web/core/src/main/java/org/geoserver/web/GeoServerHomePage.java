@@ -7,6 +7,8 @@ package org.geoserver.web;
 
 import java.io.Serial;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -727,6 +729,8 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 List<GeoServerHomePageContentProvider> providers =
                         app.getBeansOfType(GeoServerHomePageContentProvider.class);
                 providers.removeIf(provider -> !provider.checkContext(isAdmin, workspaceInfo, publishedInfo));
+                Collections.sort(providers, Comparator.comparingInt(GeoServerHomePageContentProvider::getOrder));
+                Collections.reverse(providers);
                 return providers;
             }
         };

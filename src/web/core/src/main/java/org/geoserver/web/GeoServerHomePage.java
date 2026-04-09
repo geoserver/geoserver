@@ -27,7 +27,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -39,7 +38,6 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.INamedParameters;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
@@ -65,6 +63,7 @@ import org.geoserver.web.data.store.NewDataPage;
 import org.geoserver.web.data.store.StorePage;
 import org.geoserver.web.data.workspace.WorkspaceNewPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
+import org.geoserver.web.wicket.GsIcon;
 import org.geotools.api.util.InternationalString;
 import org.geotools.feature.NameImpl;
 
@@ -331,11 +330,8 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     private Form<GeoServerHomePage> selectionForm(final boolean ajax) {
 
         Form<GeoServerHomePage> form = new Form<>("form");
-        form.add(new Image(
-                "workspace.icon", new PackageResourceReference(GeoServerHomePage.class, "img/icons/silk/folder.png")));
-        form.add(new Image(
-                "layer.icon",
-                new PackageResourceReference(GeoServerHomePage.class, "img/icons/silk/picture_empty.png")));
+        form.add(new GsIcon("workspace.icon", "gs-icon-folder"));
+        form.add(new GsIcon("layer.icon", "gs-icon-picture-empty"));
 
         SubmitLink refresh = new SubmitLink("refresh") {
             @Override

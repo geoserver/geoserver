@@ -69,7 +69,7 @@
         <property name="descriptionKey" value="ActivityPage.description"/>
         <property name="componentClass" value="org.geoserver.monitor.web.ActivityPage"/>
         <property name="category" ref="monitorCategory"/>
-        <property name="icon" value="img/chart_bar.png"/>
+        <property name="icon" value="gs-icon-chart-bar"/>
         <property name="order" value="10"/>
    </bean>
    
@@ -79,7 +79,7 @@
         <property name="descriptionKey" value="ReportPage.description"/>
         <property name="componentClass" value="org.geoserver.monitor.web.ReportPage"/>
         <property name="category" ref="monitorCategory"/>
-        <property name="icon" value="img/table.png"/>
+        <property name="icon" value="gs-icon-table"/>
         <property name="order" value="20"/>
    </bean>
   

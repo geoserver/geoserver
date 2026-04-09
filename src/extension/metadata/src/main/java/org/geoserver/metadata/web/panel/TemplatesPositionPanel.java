@@ -14,7 +14,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.web.MetadataTemplateTracker;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -47,7 +46,7 @@ public class TemplatesPositionPanel extends Panel {
             GeoServerTablePanel<MetadataTemplate> tablePanel) {
         super(id, model);
         ImageAjaxLink<Object> upLink =
-                new ImageAjaxLink<>("up", new ContextRelativeResourceReference("img/icons/silk/arrow_up.png")) {
+                new ImageAjaxLink<>("up", "gs-icon-arrow-up") {
                     @Serial
                     private static final long serialVersionUID = -4165434301439054175L;
 
@@ -77,7 +76,7 @@ public class TemplatesPositionPanel extends Panel {
         add(upLink);
 
         ImageAjaxLink<Object> downLink =
-                new ImageAjaxLink<>("down", new ContextRelativeResourceReference("img/icons/silk/arrow_down.png")) {
+                new ImageAjaxLink<>("down", "gs-icon-arrow-down") {
                     @Serial
                     private static final long serialVersionUID = -8005026702401617344L;
 

@@ -28,7 +28,7 @@
     <div wicket:id="globalSectionContainer">
       <h6>
         <div class="gs-section-header">
-          <img wicket:id="globalIcon" alt="" />
+          <i wicket:id="globalIcon"></i>
           <a href="#" wicket:id="globalSectionSelect">
             <wicket:message key="NavigationTreePanel.global">GLOBAL</wicket:message>
           </a>
@@ -50,7 +50,7 @@
                     aria-label="Toggle workspace layers">
                     <span wicket:id="workspaceToggleIcon" class="gs-toggle-caret" aria-hidden="true"></span>
                   </div>
-                  <img wicket:id="workspaceIcon" alt="" />
+                  <i wicket:id="workspaceIcon"></i>
                   <a href="#" wicket:id="workspaceSelect">
                     <span wicket:id="workspaceName">Workspace</span>
                   </a>
@@ -62,7 +62,7 @@
               <div wicket:id="layersScroll" role="region" aria-label="Workspace layers">
                 <ul>
                   <li wicket:id="workspaceChildren" class="gs-layer-item">
-                    <img wicket:id="layerIcon" alt="" />
+                    <i wicket:id="layerIcon"></i>
                     <a href="#" wicket:id="layerSelect">
                       <span wicket:id="layerName">Layer</span>
                     </a>
@@ -75,7 +75,7 @@
         </div>
         <ul class="gs-global-list" wicket:id="globalChildrenContainer">
           <li wicket:id="globalChildren" class="gs-layer-item">
-            <img wicket:id="layerIcon" alt="" />
+            <i wicket:id="layerIcon"></i>
             <a href="#" wicket:id="layerSelect">
               <span wicket:id="layerName">Layer</span>
             </a>

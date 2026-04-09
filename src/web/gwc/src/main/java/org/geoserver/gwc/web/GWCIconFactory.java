@@ -7,7 +7,6 @@ package org.geoserver.gwc.web;
 
 import java.io.Serializable;
 import java.util.List;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.LayerInfo;
@@ -16,7 +15,6 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.CatalogIconFactory;
-import org.geoserver.web.GeoServerBasePage;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.wms.WMSLayer;
 
@@ -24,19 +22,15 @@ import org.geowebcache.layer.wms.WMSLayer;
 @SuppressWarnings("serial")
 public class GWCIconFactory implements Serializable {
 
-    public static final ResourceReference UNKNOWN_ICON =
-            new ContextRelativeResourceReference("img/icons/silk/error.png");
+    public static final String UNKNOWN_ICON = "gs-icon-error";
 
-    public static final ResourceReference DISABLED_ICON =
-            new ContextRelativeResourceReference("img/icons/silk/error.png");
+    public static final String DISABLED_ICON = "gs-icon-error";
 
-    public static final ResourceReference ENABLED_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/tick.png");
+    public static final String ENABLED_ICON = "gs-icon-tick";
 
-    public static final ResourceReference ADD_ICON = new ContextRelativeResourceReference("img/icons/silk/add.png");
+    public static final String ADD_ICON = "gs-icon-add";
 
-    public static final ResourceReference DELETE_ICON =
-            new ContextRelativeResourceReference("img/icons/silk/delete.png");
+    public static final String DELETE_ICON = "gs-icon-delete";
 
     public static final ResourceReference GRIDSET = new PackageResourceReference(GWCSettingsPage.class, "gridset.png");
 
@@ -101,7 +95,7 @@ public class GWCIconFactory implements Serializable {
     }
 
     /** Returns the appropriate icon for the specified layer type. */
-    public static ResourceReference getSpecificLayerIcon(final TileLayer layer) {
+    public static String getSpecificLayerIcon(final TileLayer layer) {
         if (layer instanceof GeoServerTileLayer gsTileLayer) {
             PublishedInfo published = gsTileLayer.getPublishedInfo();
             if (published instanceof LayerInfo info) {
@@ -110,7 +104,7 @@ public class GWCIconFactory implements Serializable {
             return CatalogIconFactory.GROUP_ICON;
         }
         if (layer instanceof WMSLayer) {
-            return GWC;
+            return "gs-icon-map";
         }
 
         List<GWCTileLayerIconCustomizer> iconCustomizers =
@@ -118,8 +112,8 @@ public class GWCIconFactory implements Serializable {
         for (GWCTileLayerIconCustomizer iconCustomizer : iconCustomizers) {
             // Stop scanning through the registered customizers as soon as the
             // suggested icon is not the UNKNOWN_ICON
-            ResourceReference ref = iconCustomizer.getLayerIcon(layer);
-            if (ref != null && ref != UNKNOWN_ICON) {
+            String ref = iconCustomizer.getLayerIcon(layer);
+            if (ref != null && !UNKNOWN_ICON.equals(ref)) {
                 return ref;
             }
         }
@@ -128,16 +122,16 @@ public class GWCIconFactory implements Serializable {
     }
 
     /** Returns a reference to a general purpose icon to indicate an enabled/properly configured resource */
-    public static ResourceReference getEnabledIcon() {
+    public static String getEnabledIcon() {
         return ENABLED_ICON;
     }
 
     /** Returns a reference to a general purpose icon to indicate a disabled/misconfigured/unreachable resource */
-    public static ResourceReference getDisabledIcon() {
+    public static String getDisabledIcon() {
         return DISABLED_ICON;
     }
 
-    public static ResourceReference getErrorIcon() {
+    public static String getErrorIcon() {
         return UNKNOWN_ICON;
     }
 }

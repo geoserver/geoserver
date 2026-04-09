@@ -11,8 +11,7 @@
         <property name="id" value="dggs-geometry" />
         <property name="factoryClass"
                   value="org.geotools.dggs.gstore.DGGSGeometryStoreFactory" />
-        <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-        <property name="icon" value="img/icons/geosilk/page_white_vector.png" />
+        <property name="icon" value="gs-icon-page-white-vector" />
         <property name="componentClass"
                   value="org.geoserver.web.data.store.dggs.DGGSGeometryStoreEditPanel" />
     </bean>

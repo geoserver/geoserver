@@ -735,4 +735,7 @@
   <bean id="catalogLinksHomePageContentProvider"
         class="org.geoserver.web.CatalogLinksHomePageContentProvider"/>
 
+  <bean id="metadataHomePageContentProvider"
+        class="org.geoserver.web.MetadataHomePageContentProvider"/>
+
 </beans>

@@ -35,7 +35,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.importer.BasicImportFilter;
 import org.geoserver.importer.Database;
@@ -50,6 +49,7 @@ import org.geoserver.importer.job.Task;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
+import org.geoserver.web.wicket.GsIcon;
 
 public class ImportPage extends GeoServerSecuredPage {
 

@@ -3,8 +3,10 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-GeoServerFileChooser">
-        <select wicket:id="roots"/>
-        <span wicket:id="breadcrumbs"/>
+        <div class="gs-inline-group">
+          <select wicket:id="roots" class="w-md" />
+          <span wicket:id="breadcrumbs"/>
+        </div>
         <div wicket:id="fileTable"/>
       </div>
     </wicket:panel>

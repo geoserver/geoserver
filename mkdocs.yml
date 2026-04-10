@@ -21,19 +21,19 @@ theme:
   logo: img/geoserver-logo.png
   favicon: img/geoserver.ico
   palette:
-    # Light mode
+    # Light mode  (colours set via extra.css to match the GeoServer app)
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: blue
-      accent: light-blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    # Dark mode
+    # Dark mode  (colours set via extra.css to match the GeoServer app)
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: blue
-      accent: light-blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -100,6 +100,7 @@ markdown_extensions:
       permalink: true
 
 extra_css:
+  - stylesheets/geoserver-brand.css
   - stylesheets/extra.css
 
 extra_javascript:

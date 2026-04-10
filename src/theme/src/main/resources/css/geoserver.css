@@ -1992,6 +1992,25 @@ label.gs-switch-label {
 .gs-user-dropdown-info ul:not(:has(li a)) > li {
   display: none;
 }
+
+.wicket-aa-container {
+  z-index: 100;
+  background: var(--gs-body-bg);
+  box-shadow: var(--gs-box-shadow-lg);
+}
+.wicket-aa-container ul {
+  list-style: none;
+  padding: 0;
+  max-height: 15rem;
+}
+.wicket-aa-container ul li {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+.wicket-aa-container ul li:hover {
+  background-color: var(--gs-secondary-bg);
+}
+
 @media (max-width: 768px) {
   .gs-header-hamburger {
     display: flex;

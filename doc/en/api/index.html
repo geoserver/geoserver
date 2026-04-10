@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>GeoServer API Documentation</title>
   <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+  <link rel="stylesheet" type="text/css" href="../../stylesheets/geoserver-brand.css" />
   <style>
     html {
       box-sizing: border-box;
@@ -176,17 +177,17 @@
     
     .md-doc-switcher-integrated__link:hover {
       background: #f5f5f5 !important;
-      color: #2196F3 !important;
+      color: var(--gs-brand-primary) !important;
     }
     
     .md-doc-switcher-integrated__link:focus {
-      outline: 2px solid #2196F3 !important;
+      outline: 2px solid var(--gs-brand-primary) !important;
       outline-offset: -2px !important;
       background: #f5f5f5 !important;
     }
     
     .md-doc-switcher-integrated__link--active {
-      background: #2196F3 !important;
+      background: var(--gs-brand-primary) !important;
       color: white !important;
       font-weight: 600 !important;
     }
@@ -198,39 +199,40 @@
     }
     
     .md-doc-switcher-integrated__link--active:hover {
-      background: #2196F3 !important;
+      background: var(--gs-brand-primary) !important;
       color: white !important;
     }
     
-    /* Custom blue theme to match GeoServer docs */
+    /* GeoServer brand theme — uses shared tokens from geoserver-brand.css */
     .swagger-ui .topbar {
-      background-color: #2196F3 !important;
-      border-bottom: 3px solid #1976D2;
+      background-color: var(--gs-brand-primary) !important;
+      border-bottom: 0.25em solid transparent;
+      border-image: var(--gs-brand-gradient) 1;
     }
     
     .swagger-ui .info .title {
-      color: #1976D2;
+      color: var(--gs-brand-primary);
     }
     
     .swagger-ui .btn.authorize,
     .swagger-ui .btn.execute {
-      background-color: #2196F3;
-      border-color: #2196F3;
+      background-color: var(--gs-brand-primary);
+      border-color: var(--gs-brand-primary);
     }
     
     .swagger-ui .btn.authorize:hover,
     .swagger-ui .btn.execute:hover {
-      background-color: #1976D2;
-      border-color: #1976D2;
+      background-color: var(--gs-brand-primary-dark);
+      border-color: var(--gs-brand-primary-dark);
     }
     
     .swagger-ui .opblock.opblock-get .opblock-summary-method {
-      background: #2196F3;
+      background: var(--gs-brand-primary);
     }
     
     .swagger-ui .opblock.opblock-get {
-      border-color: #2196F3;
-      background: rgba(33, 150, 243, 0.1);
+      border-color: var(--gs-brand-primary);
+      background: rgba(0, 118, 161, 0.1);
     }
     
     .info-banner {
@@ -402,8 +404,9 @@
             });
           }
           
-          // Inject documentation switcher into Swagger UI topbar
+          // Inject documentation switcher into Swagger UI topbar (only once)
           setTimeout(function() {
+            if (document.querySelector('.md-doc-switcher-integrated')) return;
             const topbar = document.querySelector('.swagger-ui .topbar');
             if (topbar) {
               // Create wrapper for topbar content

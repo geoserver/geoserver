@@ -2,13 +2,15 @@
 <html xmlns:wicket="http://wicket.apache.org/">
   <body>
     <wicket:panel>
-      <div class="gs-panel-ColorPickerPanel">
-        <label>
-          <span wicket:id="paramName">bar</span>
-        </label>
-        <span wicket:id="border">
-          <input wicket:id="paramValue" type="text"/>
-        </span>
+      <div class="gs-panel-ColorPickerPanel gs-form">
+        <div class="gs-form-group">
+          <label>
+            <span wicket:id="paramName">bar</span>
+          </label>
+          <span class="w-sm" wicket:id="border">
+            <input wicket:id="paramValue" type="text" />
+          </span>
+        </div>
       </div>
     </wicket:panel>
   </body>

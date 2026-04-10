@@ -11,7 +11,7 @@
             <outputDirectory></outputDirectory>
             <includes>
               <include>gs-jms*.jar</include>
-              <include>jms-api*.jar</include>
+              <include>*jms-api*.jar</include>
               <include>xbean-spring*.jar</include>
               <include>spring-jms*.jar</include>
               <!-- ALREADY IN GEOSERVER -->

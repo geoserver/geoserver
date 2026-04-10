@@ -53,7 +53,7 @@ jobs:
 
           if [ "$BRANCH" = "main" ]; then
             echo "version=latest" >> $GITHUB_OUTPUT
-            echo "title=Latest" >> $GITHUB_OUTPUT
+            echo "title=main (Latest)" >> $GITHUB_OUTPUT
             echo "aliases=main 3.0.x" >> $GITHUB_OUTPUT
             echo "is_default=false" >> $GITHUB_OUTPUT
           elif [ "$BRANCH" = "2.28.x" ]; then

@@ -208,13 +208,11 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                     exists = true;
                     path = c.getPageRelativePath();
 
-                    // check visible links
+                    // check visible links listed
                     ExternalLink olLink = (ExternalLink)
                             c.get("itemProperties:3:component:commonFormat:0").getDefaultModelObject();
                     ExternalLink gmlLink = (ExternalLink)
                             c.get("itemProperties:3:component:commonFormat:1").getDefaultModelObject();
-                    ExternalLink kmlLink = (ExternalLink)
-                            c.get("itemProperties:3:component:commonFormat:2").getDefaultModelObject();
 
                     assertEquals(
                             "http://localhost/context/cite/wms?service=WMS&amp;version=1.1.0&amp;"
@@ -228,9 +226,6 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                             containsString("http://localhost/context/cite/ows?service=WFS&amp;version=1"
                                     + ".0.0&amp;request=GetFeature&amp;"
                                     + "typeName=cite%3ALakes%20%2B%20a%20plus"));
-                    assertEquals(
-                            "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus",
-                            kmlLink.getDefaultModelObjectAsString());
 
                     // check formats
                     RepeatingView wmsFormats = (RepeatingView) c.get("itemProperties:4:component:menu:wms:wmsFormats");

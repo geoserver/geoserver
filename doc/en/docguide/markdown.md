@@ -338,7 +338,7 @@ To return to top level, use 0 indentation again. For example:
 Documentation uses pipe-tables only "List-packed" tables
 as they are supported by both ***mkdocs*** and ***pandoc***.
 
-Tables are constructed with Leading / tailing `|`, and headers seperated by `---`.
+Tables are constructed with Leading / tailing `|`, and headers separated by `---`.
 
 === "Markdown"
     

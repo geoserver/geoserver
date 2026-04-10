@@ -729,4 +729,18 @@
     <property name="contextParams" value="workspace" />
   </bean>
 
+  <bean id="publishedInfoHomePageContentProvider"
+        class="org.geoserver.web.PublishedInfoHomePageContentProvider"/>
+
+  <bean id="catalogLinksHomePageContentProvider"
+        class="org.geoserver.web.CatalogLinksHomePageContentProvider"/>
+
+  <bean id="metadataHomePageContentProvider"
+        class="org.geoserver.web.MetadataHomePageContentProvider"/>
+
+  <bean id="dataLinkHomePageContentProvider"
+        class="org.geoserver.web.DataLinkHomePageContentProvider"/>
+
+
+
 </beans>

@@ -1,3 +1,56 @@
+/*
+ * GeoServer Brand Theme
+ *
+ * Aligns the documentation theme with the main GeoServer web application.
+ * Source of truth: src/theme/src/main/resources/css/geoserver.css
+ *
+ * Key values from the app:
+ *   Primary:        #0076a1
+ *   Brand gradient: linear-gradient(to right, #cbe4a1 0%, #00abda 100%)
+ *   Link hover:     #005a7b
+ *   Dark primary:   #4ba0c4  (lighter for dark backgrounds)
+ */
+
+/* --- Light mode colour overrides --- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #0076a1;
+  --md-primary-fg-color--light: #2196f3;   /* kept for accent uses */
+  --md-primary-fg-color--dark:  #005a7b;
+  --md-primary-bg-color:        #ffffff;
+  --md-accent-fg-color:         #00abda;
+  --md-typeset-a-color:         #0076a1;
+}
+
+/* --- Dark mode colour overrides --- */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #0076a1;
+  --md-primary-fg-color--light: #4ba0c4;
+  --md-primary-fg-color--dark:  #004d66;
+  --md-accent-fg-color:         #00abda;
+  --md-typeset-a-color:         #4ba0c4;
+}
+
+/* --- Brand gradient on the header bottom border (mirrors the app) --- */
+.md-header {
+  border-bottom: 0.25em solid transparent;
+  border-image: linear-gradient(to right, #cbe4a1 0%, #00abda 100%) 1;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* --- Brand gradient on the navigation tabs bottom border --- */
+.md-tabs {
+  border-bottom: 0.2em solid transparent;
+  border-image: linear-gradient(to right, #cbe4a1 0%, #00abda 100%) 1;
+}
+
+/* --- Link hover colour to match the app --- */
+.md-typeset a:hover {
+  color: #005a7b;
+}
+[data-md-color-scheme="slate"] .md-typeset a:hover {
+  color: #79bad6;
+}
+
 /* 
  * GeoServer Documentation - Navigation Styles
  * 
@@ -435,4 +488,34 @@
   text-transform: uppercase !important;
   font-weight: 700 !important;
   letter-spacing: 0.05em !important;
+}
+
+
+/*
+ * Screenshot / image borders
+ *
+ * Makes documentation screenshots stand out from surrounding text.
+ * Emoji images are excluded so they render inline without a border.
+ */
+
+/* Light mode — subtle grey border + slight shadow */
+.md-typeset img {
+  border: 1px solid #ccc;
+  border-radius: var(--md-border-radius, 0.1rem);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Dark mode — lighter border that's visible on dark backgrounds */
+[data-md-color-scheme="slate"] .md-typeset img {
+  border-color: #495057;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* Exclude emoji / icon images from the border treatment */
+.md-typeset img.emojione,
+.md-typeset img.twemoji,
+.md-typeset img.emoji,
+.md-typeset img.gemoji {
+  border: none;
+  box-shadow: none;
 }

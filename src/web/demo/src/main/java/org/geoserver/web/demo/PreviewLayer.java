@@ -21,6 +21,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.ows.URLMangler.URLType;
@@ -71,6 +72,11 @@ public class PreviewLayer {
 
     public PreviewLayer(LayerGroupInfo groupInfo) {
         this.groupInfo = groupInfo;
+    }
+
+    public PreviewLayer(PublishedInfo info) {
+        this.groupInfo = info instanceof LayerGroupInfo ? (LayerGroupInfo) info : null;
+        this.layerInfo = info instanceof LayerInfo ? (LayerInfo) info : null;
     }
 
     public String getName() {

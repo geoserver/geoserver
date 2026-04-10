@@ -36,13 +36,13 @@ public class ContactPanel extends Panel {
 
     public ContactPanel(String id, final IModel<ContactInfo> model) {
         super(id, model);
-        add(new StringAndInternationalStringPanel("contactOrganization", model, this));
-        add(new StringAndInternationalStringPanel("onlineResource", model, this));
 
-        // setup the "welcome" text as either a textarea (non-international)
-        // or as a set of textareas (international).
+        // WELCOME
+
+        add(new StringAndInternationalStringPanel("title", model, "welcomeTitle", "title", "internationalTitle", this));
+        // setup the "welcome" text as either a textarea (non-international) or as a set of textareas (international).
         WebMarkupContainer abstractLabelContainer = new WebMarkupContainer("welcomeLabel");
-        abstractLabelContainer.add(new Label("welcomeLabel", new StringResourceModel("welcome", this)));
+        abstractLabelContainer.add(new Label("welcomeLabel", new StringResourceModel("welcomeDescription", this)));
         add(abstractLabelContainer);
         TextArea<String> area = new TextArea<>("welcome", new PropertyModel<>(model, "welcome"));
         add(area);
@@ -59,6 +59,9 @@ public class ContactPanel extends Panel {
                 };
         add(internationalStringPanelAbstract);
 
+        // CONTACT
+        add(new StringAndInternationalStringPanel("contactOrganization", model, this));
+        add(new StringAndInternationalStringPanel("onlineResource", model, this));
         add(new StringAndInternationalStringPanel("contactPerson", model, this));
         add(new StringAndInternationalStringPanel("contactPosition", model, this));
         add(new StringAndInternationalStringPanel("addressType", model, this));

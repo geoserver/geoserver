@@ -97,7 +97,7 @@ public class MapMLMapPreviewTest extends GeoServerWicketTestSupport {
         DataView<Component> data = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         for (Component datum : data) {
             MarkupContainer c = (MarkupContainer) datum;
-            Label l = (Label) c.get("itemProperties:2:component");
+            Label l = (Label) c.get("itemProperties:1:component");
             String model = l.getDefaultModelObjectAsString();
             if ("cgf:Lines".equals(model)) {
                 ExternalLink mapmlLink = (ExternalLink)

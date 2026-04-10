@@ -15,3 +15,12 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+.horizontal-form {
+      display: flex;
+      gap: 3rem;
+      align-items: center;
+}
+.horizontal-form > .gs-list-item-class {
+      display: flex;
+      gap: 0.5rem;
+}

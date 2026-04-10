@@ -28,7 +28,7 @@ import org.geoserver.security.csp.CSPHeaderDAO;
 import org.geoserver.security.csp.CSPPolicy;
 import org.geoserver.security.csp.CSPRule;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -386,7 +386,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
             tester.assertLabel(path + "0:component", Integer.toString(i));
             if (policy.isEnabled()) {
                 component = tester.getComponentFromLastRenderedPage(path + "2:component");
-                assertThat(component, instanceOf(Icon.class));
+                assertThat(component, instanceOf(GsIcon.class));
             } else {
                 tester.assertLabel(path + "2:component", "");
             }
@@ -429,16 +429,16 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
             tester.assertLabel(path + "0:component", Integer.toString(i));
             if (rule.isEnabled()) {
                 component = tester.getComponentFromLastRenderedPage(path + "2:component");
-                assertThat(component, instanceOf(Icon.class));
+                assertThat(component, instanceOf(GsIcon.class));
             } else {
                 tester.assertLabel(path + "2:component", "");
             }
             tester.assertLabel(path + "3:component:link:label", rule.getName());
             component = tester.getComponentFromLastRenderedPage(path + "4:component");
-            assertThat(component, instanceOf(Icon.class));
+            assertThat(component, instanceOf(GsIcon.class));
             assertEquals(
                     rule.getDescription(),
-                    tester.getTagById(component.getMarkupId()).getChild("img").getAttribute("title"));
+                    tester.getTagById(component.getMarkupId()).getAttribute("title"));
             tester.assertModelValue(path + "5:component", rule.getFilter());
             tester.assertModelValue(path + "6:component", rule.getDirectives());
         }

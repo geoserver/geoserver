@@ -6,10 +6,8 @@
 package org.geoserver.gwc.web.layer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.matchesRegex;
 import static org.hamcrest.Matchers.not;
@@ -196,15 +194,19 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testCachingImages() {
-        // test that the "?antiCache=###" query string is not appended to the img src
+        // test that icons are rendered as CSS icon elements (gs-icon-*), not img tags
         tester.startPage(CachedLayersPage.class);
         tester.assertRenderedPage(CachedLayersPage.class);
         tester.clickLink("table:navigatorBottom:navigator:next", true);
-        List<TagTester> images = TagTester.createTags(
-                tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("img"), false);
-        assertThat(images, not(empty()));
-        images.stream()
-                .map(image -> image.getAttribute("src"))
-                .forEach(src -> assertThat(src, allOf(containsString("/img/icons/"), endsWith(".png"))));
+        List<TagTester> icons = TagTester.createTags(
+                tester.getLastResponseAsString(),
+                tag -> tag.getName().equalsIgnoreCase("i")
+                        && tag.getAttribute("class") != null
+                        && tag.getAttribute("class").toString().contains("gs-icon"),
+                false);
+        assertThat(icons, not(empty()));
+        icons.stream()
+                .map(icon -> icon.getAttribute("class"))
+                .forEach(cls -> assertThat(cls, containsString("gs-icon")));
     }
 }

@@ -13,11 +13,14 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
 import org.apache.commons.io.FilenameUtils;
@@ -37,6 +40,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestException;
 import org.geoserver.security.FileAccessManager;
+import org.geoserver.util.FileTypes;
 import org.geotools.data.ows.URLCheckerException;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
@@ -128,9 +132,48 @@ public class RESTUtils {
         }
 
         try (OutputStream os = newFile.out()) {
-            IOUtils.copy(request.getInputStream(), os);
+            validateFileAndCopy(request.getInputStream(), os);
         }
         return newFile;
+    }
+
+    /**
+     * 1. copy file to temp folder </br> 2. validate file </br> 3. copy file to final destination </br>
+     *
+     * @param inputStream file (from user)
+     * @param os final location for file
+     */
+    private static void validateFileAndCopy(InputStream inputStream, OutputStream os) throws IOException {
+        Path tempFile = null;
+        try {
+            // create temp file and write the user's file into it
+            tempFile = java.nio.file.Files.createTempFile("prefix-", ".tmp");
+            java.nio.file.Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            // validate the file uploaded (and recurse if its a zip)
+            try (InputStream tempFileInputStream = java.nio.file.Files.newInputStream(tempFile)) {
+                FileTypes.validateFileNotInRejectList(tempFileInputStream);
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+
+            // copy the user's original file to the final destination
+            try (InputStream tempFileInputStream = java.nio.file.Files.newInputStream(tempFile)) {
+                IOUtils.copy(tempFileInputStream, os);
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+
+        } finally {
+            // cleanup temp file
+            if (tempFile != null) {
+                try {
+                    java.nio.file.Files.deleteIfExists(tempFile);
+                } catch (IOException e) {
+                    LOGGER.log(Level.INFO, "error deleting temp file: " + e.getMessage(), e);
+                }
+            }
+        }
     }
 
     /**

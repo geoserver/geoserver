@@ -34,6 +34,15 @@ public class FileTypes {
 
     static final Logger LOGGER = Logging.getLogger(FileTypes.class);
 
+    /**
+     * This MUST be an environment variable (i.e. not accessible via web ui).
+     *
+     * <p>Set this environment var to "true" to disable the REJECT_LIST_MIME_TYPES check.
+     */
+    static final String ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST = "GS_DISABLE_FILETYPES_REJECT_LIST";
+
+    static final MediaType ZIP_MEDIA_TYPE = MediaType.parse("application/zip");
+
     static TikaConfig tika = null;
 
     /*
@@ -46,6 +55,27 @@ public class FileTypes {
             LOGGER.log(Level.SEVERE, "Unable to initialize TikaConfig, file checks will not work", e);
         }
     }
+
+    /**
+     * reject-list of invalid types.
+     *
+     * <p>NOTE: use #getBaseType() on the type reported by TIKA.
+     *
+     * <p>i.e. "application/x-msdownload; format=pe32" should be rejected based on the base type
+     * "application/x-msdownload"
+     */
+    static final List<MediaType> REJECT_LIST_MIME_TYPES = List.of(
+            MediaType.parse("application/x-msdownload"), // windows: .exe or .dll
+            MediaType.parse("application/x-mach-o-universal"), // mac: Universal binary (i.e. application)
+            MediaType.parse("application/x-mach-o-dylib"), // mac: dynamic library (i.e. .so)
+            MediaType.parse("application/x-executable"), // linux: executables
+            MediaType.parse("application/x-elf"), // linux: ELF (exec or lib)
+            MediaType.parse("application/x-sharedlib"), // linux: shared lib
+            MediaType.parse("application/x-java-archive"), // java: jar
+            MediaType.parse("application/x-msi"), // windows: installer
+            MediaType.parse("application/x-httpd-jsp"), // java: jsp (note - not robust ident by tika)
+            MediaType.parse("application/hta") // windows: HTML app
+            );
 
     /** allow-list of simple image */
     static final List<MediaType> SIMPLE_IMAGE_MIME_TYPES = List.of(
@@ -68,6 +98,89 @@ public class FileTypes {
         }
 
         return new BufferedInputStream(inputStream);
+    }
+
+    /**
+     * validates a SINGLE (not-zip) file to see if it's in the reject-list.
+     *
+     * <p>use {link validateFileNotInRejectList} if your file might be a zip.
+     *
+     * <p>NOTE: turn this check off with the ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST (set to true).
+     *
+     * @param stream file (from user)
+     * @throws Exception if the file is in the reject-list, or is a .zip file (use validateFileNotInRejectList instead)
+     */
+    public static void assertSimpleFileNotInRejectList(InputStream stream) throws Exception {
+        String disableCheckEnvVarValue = System.getenv(ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST);
+        if (disableCheckEnvVarValue != null && disableCheckEnvVarValue.equalsIgnoreCase("true")) {
+            return; // no check
+        }
+
+        // does this stream support mark/rest (required by tika)
+        try {
+            stream.mark(10);
+            stream.reset();
+        } catch (IOException e) {
+            stream = new BufferedInputStream(stream); // wrap
+        }
+
+        MediaType detectedMediaType = tika.getDetector().detect(stream, new Metadata());
+        if (REJECT_LIST_MIME_TYPES.contains(detectedMediaType.getBaseType())) {
+            throw new IOException("Unsupported media type: " + detectedMediaType);
+        }
+
+        if (detectedMediaType.getBaseType().equals(ZIP_MEDIA_TYPE)) {
+            throw new IOException(
+                    "assertSimpleFileNotInRejectList: was given a .zip file.  Use validateFileNotInRejectList instead");
+        }
+        // not in reject-list (good)
+    }
+
+    /**
+     * If this is a simple (non-zip) file, then check that this file isn't in the reject-list.
+     *
+     * <p>If it is a zip file, check each file inside the zip to see if any of them are in the reject-list.
+     *
+     * <p>see {link assertSimpleFileNotInRejectList}.
+     *
+     * <p>NOTE: turn this check off with the ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST (set to true).
+     *
+     * @param stream file from user (could be .zip)
+     * @throws Exception either file is in the reject-list, or if it's a .zip file and a contained file is in the
+     *     reject-list
+     */
+    public static void validateFileNotInRejectList(InputStream stream) throws Exception {
+        String disableCheckEnvVarValue = System.getenv(ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST);
+        if (disableCheckEnvVarValue != null && disableCheckEnvVarValue.equalsIgnoreCase("true")) {
+            return; // no check
+        }
+
+        // does this stream support mark/rest (required by tika)
+        try {
+            stream.mark(10);
+            stream.reset();
+        } catch (IOException e) {
+            stream = new BufferedInputStream(stream); // wrap
+        }
+
+        MediaType detectedMediaType = tika.getDetector().detect(stream, new Metadata());
+        if (!detectedMediaType.getBaseType().equals(ZIP_MEDIA_TYPE)) {
+            // single file
+            assertSimpleFileNotInRejectList(stream);
+            return;
+        }
+
+        // this is a .zip file.  Look at all the files in the zip (non-recursive)
+        try (java.util.zip.ZipInputStream zipStream = new java.util.zip.ZipInputStream(stream)) {
+            java.util.zip.ZipEntry entry;
+            while ((entry = zipStream.getNextEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                assertSimpleFileNotInRejectList(zipStream);
+                zipStream.closeEntry();
+            }
+        }
     }
 
     /**

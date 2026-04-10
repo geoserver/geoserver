@@ -5,15 +5,17 @@
     <wicket:panel>
       <div class="gs-panel-ParamsExtractorRulePage_EchoParameterPanel">
         <fieldset>
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class pt-3">
+          <div class="gs-form">
+            <div class="gs-form-group">
               <label for="parameter">
                 <wicket:message key="parameter"></wicket:message>
               </label>
-              <input id="parameter" wicket:id="parameter" type="text" />
-              <span class="text-xs">
-                <wicket:message key="parameterEchoDescription"></wicket:message>
-              </span>
+              <div>
+                <input id="parameter" wicket:id="parameter" type="text" />
+                <span class="text-xs">
+                  <wicket:message key="parameterEchoDescription"></wicket:message>
+                </span>
+              </div>
             </div>
           </div>
         </fieldset>

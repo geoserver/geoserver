@@ -33,7 +33,7 @@ public class GsIconTest extends GeoServerWicketTestSupport {
                 tester.getLastResponseAsString(),
                 tag -> "i".equalsIgnoreCase(tag.getName())
                         && tag.getAttribute("class") != null
-                        && tag.getAttribute("class").contains("gs-icon-accept"),
+                        && tag.getAttribute("class").toString().contains("gs-icon-accept"),
                 false);
         assertThat("GsIcon must render an <i> element", iTags, not(empty()));
         assertEquals("i", iTags.get(0).getName());
@@ -53,9 +53,7 @@ public class GsIconTest extends GeoServerWicketTestSupport {
         tester.startComponentInPage(new GsIcon("icon", "gs-icon-add"));
 
         List<TagTester> imgTags = TagTester.createTags(
-                tester.getLastResponseAsString(),
-                tag -> "img".equalsIgnoreCase(tag.getName()),
-                false);
+                tester.getLastResponseAsString(), tag -> "img".equalsIgnoreCase(tag.getName()), false);
         assertThat("GsIcon must not render any <img> elements", imgTags, empty());
     }
 

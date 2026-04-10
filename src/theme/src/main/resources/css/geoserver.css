@@ -1022,9 +1022,7 @@ Welcome / Overview
 .refresh-link,
 .info-link,
 .help-link,
-.edit-link,
-.reset-link,
-.gwc-clear {
+.edit-link {
   background-color: transparent;
   background-attachment: scroll;
   background-position: left center;
@@ -1053,12 +1051,6 @@ Welcome / Overview
 }
 .edit-link {
   background-image: url(../svg/icons/silk-icon-scalable/pencil.svg);
-}
-.reset-link {
-  background-image: url(../svg/icons/silk-icon-scalable/bin.svg);
-}
-.gwc-clear {
-  background-image: url(../img/icons/clear_cache.png);
 }
 
 /* Search in table */

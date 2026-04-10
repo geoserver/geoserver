@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Page not found · GeoServer Documentation</title>
+  <link rel="stylesheet" href="/latest/stylesheets/geoserver-brand.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -26,7 +27,7 @@
       padding: 2.5rem 2rem;
       text-align: center;
     }
-    h1 { font-size: 5rem; margin: 0 0 .25rem; color: #1976d2; line-height: 1; }
+    h1 { font-size: 5rem; margin: 0 0 .25rem; color: var(--gs-brand-primary, #1976d2); line-height: 1; }
     h2 { font-size: 1.4rem; margin: 0 0 1.5rem; font-weight: 500; }
     #redirect-box {
       background: #e3f2fd;
@@ -36,7 +37,7 @@
       margin: 1.5rem 0;
     }
     #redirect-box p { margin: .4rem 0; font-size: .95rem; }
-    #redirect-link { color: #1565c0; word-break: break-all; }
+    #redirect-link { color: var(--gs-brand-link, #1565c0); word-break: break-all; }
     .actions { margin-top: 1rem; display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
     button {
       padding: .5rem 1.25rem;
@@ -45,8 +46,8 @@
       cursor: pointer;
       font-size: .9rem;
     }
-    #btn-go  { background: #1976d2; color: #fff; }
-    #btn-go:hover { background: #1565c0; }
+    #btn-go  { background: var(--gs-brand-primary, #1976d2); color: #fff; }
+    #btn-go:hover { background: var(--gs-brand-primary-dark, #1565c0); }
     #btn-cancel { background: #e0e0e0; color: #333; }
     #btn-cancel:hover { background: #bdbdbd; }
     .note { font-size: .8rem; color: #777; margin-top: 1.5rem; }
@@ -56,7 +57,6 @@
   <div class="card">
     <h1>404</h1>
     <h2>Page not found on this server</h2>
-
     <div id="redirect-box">
       <p>This looks like a link to archived GeoServer documentation.</p>
       <p>Redirecting to <a id="redirect-link" href="#"></a></p>
@@ -66,13 +66,9 @@
         <button id="btn-cancel" onclick="cancelRedirect()">Stay here</button>
       </div>
     </div>
-
-    <p class="note">
-      If you followed an internal link that should exist on this site,
-      please <a href="https://github.com/geoserver/geoserver/tree/main/doc/en">submit a fix</a>.
-    </p>
+    <p class="note">If you followed an internal link that should exist on this site,
+      please <a href="https://github.com/geoserver/geoserver/tree/main/doc/en">submit a fix</a>.</p>
   </div>
-
   <script>
     // Change this when the archive moves to docs-archive.geoserver.org
     var ARCHIVE_HOST = 'https://docs.geoserver.org';
@@ -81,7 +77,10 @@
     var LOCAL_PREFIXES = ['/latest/', '/main/', '/3.0.x/'];
 
     var path = window.location.pathname;
-    var isLocal = LOCAL_PREFIXES.some(function (p) { return path.indexOf(p) === 0 || path === p.slice(0, -1); });
+    var isLocal = LOCAL_PREFIXES.some(function (p) {
+      return path.indexOf(p) === 0 || path === p.slice(0, -1);
+    });
+
     var redirectUrl = ARCHIVE_HOST + path + window.location.search + window.location.hash;
 
     var linkEl      = document.getElementById('redirect-link');
@@ -97,7 +96,9 @@
     if (isLocal) {
       // For /latest/, a .html URL very likely maps to a trailing-slash URL in the new MkDocs build
       if (path.indexOf('/latest/') === 0 && path.slice(-5) === '.html') {
-        window.location.replace(path.slice(0, -5) + '/' + window.location.search + window.location.hash);
+        window.location.replace(
+          path.slice(0, -5) + '/' + window.location.search + window.location.hash
+        );
       } else {
         // Path should exist here but doesn't — don't auto-redirect to archive
         redirectBox.innerHTML =

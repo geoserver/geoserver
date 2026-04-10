@@ -15,7 +15,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.metadata.data.dto.AttributeConfiguration;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
@@ -23,6 +22,7 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.GsIcon;
 
 // TODO WICKET8 - Verify this page works OK
 public class AttributePositionPanel extends Panel {

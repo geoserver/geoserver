@@ -26,7 +26,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.geoserver.web.wicket.GsIcon;
 import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.GeoServerApplication;
@@ -34,6 +33,7 @@ import org.geoserver.web.netcdf.NetCDFSettingsContainer.ExtraVariable;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.VariableAttribute;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 

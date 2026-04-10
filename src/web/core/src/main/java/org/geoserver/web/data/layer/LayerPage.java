@@ -15,6 +15,8 @@ import static org.geoserver.web.data.layer.LayerProvider.STORE;
 import static org.geoserver.web.data.layer.LayerProvider.TITLE;
 import static org.geoserver.web.data.layer.LayerProvider.TYPE;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -26,6 +28,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.LayerGroupHelper;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StoreInfo;
@@ -57,12 +61,35 @@ public class LayerPage extends GeoServerSecuredPage {
         protected Filter getFilter() {
             Filter baseFilter = super.getFilter();
             StringValue wsParam = getPageParameters().get("workspace");
-            if (wsParam.isNull() || wsParam.isEmpty()) {
-                return baseFilter;
+            StringValue layerParam = getPageParameters().get("layer");
+
+            if (!layerParam.isEmpty()) {
+                String targetLayer;
+                if (!wsParam.isEmpty()) {
+                    targetLayer = wsParam.toString() + ":" + layerParam.toString();
+                } else {
+                    targetLayer = layerParam.toString();
+                }
+                LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
+                if (gi != null) {
+                    LayerGroupHelper helper = new LayerGroupHelper(gi);
+                    List<String> ids = new ArrayList<>();
+                    for (LayerInfo li : helper.allLayers()) {
+                        ids.add(li.getId());
+                    }
+                    return Predicates.and(baseFilter, Predicates.in("id", ids));
+                }
+                LayerInfo li = getCatalog().getLayerByName(targetLayer);
+                if (li != null) {
+                    return Predicates.and(baseFilter, Predicates.equal("id", li.getId()));
+                }
             }
-            String targetWs = wsParam.toString();
-            Filter workspaceFilter = Predicates.equal("resource.store.workspace.name", targetWs);
-            return Predicates.and(baseFilter, workspaceFilter);
+            if (!wsParam.isEmpty()) {
+                String targetWs = wsParam.toString();
+                Filter workspaceFilter = Predicates.equal("resource.store.workspace.name", targetWs);
+                return Predicates.and(baseFilter, workspaceFilter);
+            }
+            return baseFilter;
         }
     };
     GeoServerTablePanel<LayerInfo> table;

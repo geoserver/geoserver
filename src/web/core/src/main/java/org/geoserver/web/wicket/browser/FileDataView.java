@@ -117,9 +117,13 @@ public abstract class FileDataView extends Panel {
         //        provider.setDirectory(currentPosition);
         //        provider.setSort(new SortParam(NAME, true));
 
+        fileContent = new WebMarkupContainer("fileContent");
+        fileContent.setOutputMarkupId(true);
+        add(fileContent);
+
         final WebMarkupContainer table = new WebMarkupContainer("fileTable");
         table.setOutputMarkupId(true);
-        add(table);
+        fileContent.add(table);
 
         DataView<File> fileTable = new DataView<>("files", fileProvider) {
 
@@ -164,9 +168,7 @@ public abstract class FileDataView extends Panel {
             }
         };
 
-        fileContent = new WebMarkupContainer("fileContent");
         if (tableHeight != null) {
-            fileContent.setOutputMarkupId(true);
             fileContent.add(AttributeModifier.replace("class", "overflowAuto"));
             fileContent.add(new Behavior() {
                 @Serial
@@ -176,7 +178,7 @@ public abstract class FileDataView extends Panel {
                 public void renderHead(Component component, IHeaderResponse response) {
                     String script = "document.getElementById('"
                             + fileContent.getMarkupId()
-                            + "').style.height = '"
+                            + "').style.minHeight = '"
                             + StringEscapeUtils.escapeEcmaScript(tableHeight)
                             + "';";
                     response.render(OnLoadHeaderItem.forScript(script));
@@ -184,9 +186,7 @@ public abstract class FileDataView extends Panel {
             });
         }
 
-        fileContent.add(fileTable);
-
-        table.add(fileContent);
+        table.add(fileTable);
         table.add(new OrderByBorder<>("nameHeader", FileProvider.NAME, fileProvider));
         table.add(new OrderByBorder<>("lastModifiedHeader", FileProvider.LAST_MODIFIED, fileProvider));
         table.add(new OrderByBorder<>("sizeHeader", FileProvider.SIZE, fileProvider));

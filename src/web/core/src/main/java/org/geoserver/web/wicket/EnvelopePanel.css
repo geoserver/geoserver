@@ -26,19 +26,17 @@ Your css selectors should look like this to avoid modifying styles outside the p
     row-gap: 5px;
     align-items: center;
     margin-top: 10px;
-
-    border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);;
     width: fit-content;
-    padding: 7px 10px 7px 10px;;
-    border-radius: var(--gs-border-radius);
+    padding: 7px 10px 7px 10px;
 }
 
+.gs-panel-EnvelopePanel .dataentry {
+    border-right: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);
+}
 .gs-panel-EnvelopePanel .diagram {
     width: fit-content;
     padding: 7px 10px 0px 10px;
-    border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);
     margin-top: 10px;
-    margin-left: 10px;
     border-radius: var(--gs-border-radius);
 }
 .gs-panel-EnvelopePanel .diagram .gs-list-item-class div {

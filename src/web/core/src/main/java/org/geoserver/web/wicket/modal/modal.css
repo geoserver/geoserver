@@ -145,3 +145,12 @@ div.modal-dialog .resize-icon {
 .help ol li {
     display: list-item;
 }
+
+@media screen and (max-width: 768px) {
+    div.modal-dialog {
+        left: 0 !important;
+    }
+    div.wicket-modal {
+        width: 100vw !important;
+    }
+}

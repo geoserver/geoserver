@@ -15,3 +15,8 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+.gs-panel-RasterAttributeTableConfig .table-header > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+}

@@ -56,3 +56,4 @@ test_conversion
 # MkDocs build output
 mkdocs_output/
 .hypothesis*
+venv/

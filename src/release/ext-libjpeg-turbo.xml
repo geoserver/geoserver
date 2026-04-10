@@ -11,7 +11,7 @@
       <includes>
         <include>gs-libjpeg-turbo*.jar</include>
         <include>*imageio-ext-turbojpeg*.jar</include>
-        <include>*turbojpeg-wrapper-*.jar</include> 
+        <include>turbojpeg*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

@@ -28,28 +28,24 @@
                     <label for="blobStoreId">
                       <wicket:message key="blobStoreId"/>
                     </label>
-                    <select wicket:id="blobStoreId" id="blobStoreId"/>
+                    <select class="w-md" wicket:id="blobStoreId" id="blobStoreId"/>
                   </div>
                   <div class="gs-form-group">
                     <label>
                       <wicket:message key="metaTiling">Meta tiling factors</wicket:message>
                     </label>
-                    <div>
-                      <div class="gs-form-group">
-                        <select class="select w-sm" id="metaTilingX" wicket:id="metaTilingX"/>
-                        <wicket:message key="metaTilingX">Tiles wide by </wicket:message>
-                      </div>
-                      <div class="gs-form-group">
-                        <select class="select w-sm" id="metaTilingY" wicket:id="metaTilingY"/>
-                        <wicket:message key="metaTilingY">Tiles high</wicket:message>
-                      </div>
+                    <div class="gs-inline-group">
+                      <select class="w-sm" id="metaTilingX" wicket:id="metaTilingX"/>
+                      <wicket:message key="metaTilingX">Tiles wide by </wicket:message>
+                      <select class="w-sm" id="metaTilingY" wicket:id="metaTilingY"/>
+                      <wicket:message key="metaTilingY">Tiles high</wicket:message>
                     </div>
                   </div>
                   <div class="gs-form-group">
                     <label>
                       <wicket:message key="gutter">Gutter size:</wicket:message>
                     </label>
-                    <select class="select" id="gutter" wicket:id="gutter"/>
+                    <select class="w-sm" id="gutter" wicket:id="gutter"/>
                   </div>
                   <div class="gs-list-item-class">
                     <span class="fieldname">

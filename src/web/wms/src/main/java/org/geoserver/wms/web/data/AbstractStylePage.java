@@ -806,7 +806,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             }
             dialog.setTitle(new ParamResourceModel("chooseColor", AbstractStylePage.this.getPage()));
             dialog.setInitialWidth(410);
-            dialog.setInitialHeight(270);
+            dialog.setInitialHeight(310);
 
             dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 

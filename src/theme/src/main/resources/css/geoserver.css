@@ -995,50 +995,6 @@ table > tbody > tr:nth-of-type(odd) > * {
 Welcome / Overview
 -------------------------*/
 
-
-.catalog-links {
-  display: flex;
-  max-width: 1024px;
-  flex-wrap: wrap;
-}
-
-.catalog-link {
-  width: 25%;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.catalog-link-content {
-  text-align: center;
-  border: 1px solid var(--gs-border-color);
-  border-radius: var(--gs-border-radius);
-  width: calc(100% - 1rem);
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  box-shadow: var(--gs-box-shadow-sm);
-  height: 100%;
-  margin: auto;
-}
-
-.catalog-link-content a {
-  margin-bottom: 0;
-  margin-top: auto;
-}
-
-@media only screen and (max-width: 1024px) {
-  .catalog-link {
-    width: 50%;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  .catalog-link {
-    width: 100%;
-  }
-}
-
 #chooser .select {
   display: flex;
   min-width: 150px;
@@ -2037,6 +1993,25 @@ label.gs-switch-label {
 .gs-user-dropdown-info ul:not(:has(li a)) > li {
   display: none;
 }
+
+.wicket-aa-container {
+  z-index: 100;
+  background: var(--gs-body-bg);
+  box-shadow: var(--gs-box-shadow-lg);
+}
+.wicket-aa-container ul {
+  list-style: none;
+  padding: 0;
+  max-height: 15rem;
+}
+.wicket-aa-container ul li {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+.wicket-aa-container ul li:hover {
+  background-color: var(--gs-secondary-bg);
+}
+
 @media (max-width: 768px) {
   .gs-header-hamburger {
     display: flex;
@@ -2312,6 +2287,12 @@ div.value-wide {
 }
 .instruct {
   display: none;
+}
+.gs-inline-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 @media (max-width: 768px) {
   .gs-form {

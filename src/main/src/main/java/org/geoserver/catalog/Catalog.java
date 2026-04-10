@@ -1113,7 +1113,7 @@ public interface Catalog extends CatalogInfo {
     LayerGroupInfo getLayerGroup(String id);
 
     /**
-     * Returns the global layer group matching a particular name, or {@code null} if no such style could be found.
+     * Returns the global layer group matching a particular name, or {@code null} if no such layer group could be found.
      *
      * <p>If {@code prefixedName} contains a workspace name prefix (like in {@code topp:tasmania}, the layer group will
      * be looked up on that specific workspace ({@code topp}), otherwise it is assumed a global (with no workspace)

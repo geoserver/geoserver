@@ -15,3 +15,224 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+
+.gs-panel-CodeMirrorEditor {
+  --cm-editor-bg: var(--gs-body-bg);
+  --cm-editor-color: var(--gs-body-color);
+  --cm-gutter-bg: var(--gs-tertiary-bg);
+  --cm-gutter-border: var(--gs-border-color);
+  --cm-linenumber-color: var(--gs-secondary-color);
+  --cm-dialog-bg: var(--gs-body-bg);
+  --cm-dialog-color: var(--gs-body-color);
+  --cm-dialog-border: var(--gs-border-color);
+  --cm-hints-bg: var(--gs-body-bg);
+  --cm-hints-color: var(--gs-body-color);
+  --cm-hints-border: var(--gs-border-color);
+  --cm-hint-active-bg: var(--gs-primary);
+  --cm-hint-active-color: #fff;
+  --cm-cursor-color: var(--gs-body-color);
+  --cm-selection-bg: rgba(var(--gs-primary-rgb), 0.28);
+  --cm-selection-focus-bg: rgba(var(--gs-primary-rgb), 0.38);
+  --cm-active-line-bg: rgba(255, 255, 255, 0.05);
+  --cm-searching-bg: rgba(255, 193, 7, 0.35);
+  --cm-search-match-bg: rgba(255, 193, 7, 0.55);
+  --cm-search-match-border: rgba(255, 193, 7, 0.9);
+  --cm-scrollbar-filler-bg: var(--cm-editor-bg);
+  --cm-gutter-filler-bg: var(--cm-gutter-bg);
+  --cm-gutter-marker: var(--cm-editor-color);
+  --cm-gutter-marker-subtle: var(--cm-linenumber-color);
+  --cm-secondary-cursor: #a6a6a6;
+  --cm-fat-cursor-bg: #7e7;
+  --cm-ruler-color: #ccc;
+  --cm-matching-bracket: #0b0;
+  --cm-nonmatching-bracket: #a22;
+  --cm-matching-tag-bg: rgba(255, 150, 0, 0.3);
+  --cm-link-decoration: underline;
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor {
+  --cm-editor-bg: var(--gs-dark-bg-subtle);
+  --cm-editor-color: var(--gs-body-color);
+  --cm-gutter-bg: var(--gs-tertiary-bg);
+  --cm-gutter-border: var(--gs-border-color);
+  --cm-linenumber-color: var(--gs-secondary-color);
+  --cm-dialog-bg: var(--gs-dark-bg-subtle);
+  --cm-dialog-color: var(--gs-body-color);
+  --cm-dialog-border: var(--gs-border-color);
+  --cm-hints-bg: var(--gs-dark-bg-subtle);
+  --cm-hints-color: var(--gs-body-color);
+  --cm-hints-border: var(--gs-border-color);
+  --cm-hint-active-bg: var(--gs-primary);
+  --cm-hint-active-color: #fff;
+  --cm-cursor-color: var(--gs-emphasis-color);
+  --cm-selection-bg: rgba(var(--gs-primary-rgb), 0.22);
+  --cm-selection-focus-bg: rgba(var(--gs-primary-rgb), 0.32);
+  --cm-active-line-bg: rgba(var(--gs-white-rgb), 0.06);
+  --cm-searching-bg: rgba(var(--gs-warning-rgb), 0.28);
+  --cm-search-match-bg: rgba(var(--gs-warning-rgb), 0.38);
+  --cm-search-match-border: rgba(var(--gs-warning-rgb), 0.7);
+  --cm-scrollbar-filler-bg: var(--gs-dark-bg-subtle);
+  --cm-gutter-filler-bg: var(--gs-tertiary-bg);
+  --cm-gutter-marker: var(--gs-body-color);
+  --cm-gutter-marker-subtle: var(--gs-secondary-color);
+  --cm-syntax-keyword: var(--gs-primary-text-emphasis);
+  --cm-syntax-atom: var(--gs-info-text-emphasis);
+  --cm-syntax-number: var(--gs-warning-text-emphasis);
+  --cm-syntax-def: var(--gs-link-color);
+  --cm-syntax-variable-2: var(--gs-light-text-emphasis);
+  --cm-syntax-variable-3: var(--gs-success-text-emphasis);
+  --cm-syntax-comment: var(--gs-secondary-color);
+  --cm-syntax-string: var(--gs-success-text-emphasis);
+  --cm-syntax-string-2: var(--gs-warning-text-emphasis);
+  --cm-syntax-meta: var(--gs-secondary-text-emphasis);
+  --cm-syntax-qualifier: var(--gs-info-text-emphasis);
+  --cm-syntax-builtin: var(--gs-danger-text-emphasis);
+  --cm-syntax-tag: var(--gs-primary-text-emphasis);
+  --cm-syntax-attribute: var(--gs-warning-text-emphasis);
+  --cm-syntax-link: var(--gs-link-color);
+  --cm-syntax-error: var(--gs-danger-text-emphasis);
+  --cm-secondary-cursor: var(--gs-secondary-color);
+  --cm-fat-cursor-bg: rgba(var(--gs-success-rgb), 0.65);
+  --cm-ruler-color: var(--gs-border-color);
+  --cm-matching-bracket: var(--gs-success-text-emphasis);
+  --cm-nonmatching-bracket: var(--gs-danger-text-emphasis);
+  --cm-matching-tag-bg: rgba(var(--gs-warning-rgb), 0.22);
+}
+
+.gs-panel-CodeMirrorEditor .codemirror {
+  border: 1px solid var(--gs-border-color);
+  border-radius: var(--gs-border-radius);
+  background-color: var(--cm-editor-bg);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror {
+  background-color: var(--cm-editor-bg);
+  color: var(--cm-editor-color);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-gutters {
+  border-right: 1px solid var(--cm-gutter-border);
+  background-color: var(--cm-gutter-bg);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-linenumber {
+  color: var(--cm-linenumber-color);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-scrollbar-filler,
+.gs-panel-CodeMirrorEditor .CodeMirror-gutter-filler {
+  background-color: var(--cm-scrollbar-filler-bg);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-guttermarker {
+  color: var(--cm-gutter-marker);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-guttermarker-subtle {
+  color: var(--cm-gutter-marker-subtle);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-dialog {
+  background-color: var(--cm-dialog-bg);
+  color: var(--cm-dialog-color);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-dialog-top {
+  border-bottom: 1px solid var(--cm-dialog-border);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-dialog-bottom {
+  border-top: 1px solid var(--cm-dialog-border);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-hints {
+  background-color: var(--cm-hints-bg);
+  border-color: var(--cm-hints-border);
+  color: var(--cm-hints-color);
+}
+
+.gs-panel-CodeMirrorEditor .CodeMirror-hint {
+  color: var(--cm-hints-color);
+}
+
+.gs-panel-CodeMirrorEditor li.CodeMirror-hint-active {
+  background: var(--cm-hint-active-bg);
+  color: var(--cm-hint-active-color);
+}
+
+/* Dark-only editor syntax and interaction colors */
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .CodeMirror {
+  background-color: var(--cm-editor-bg);
+  color: var(--cm-editor-color);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .CodeMirror-cursor {
+  border-left-color: var(--cm-cursor-color);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .CodeMirror-secondarycursor {
+  border-left-color: var(--cm-secondary-cursor);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-fat-cursor .CodeMirror-cursor {
+  background: var(--cm-fat-cursor-bg);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .CodeMirror-ruler {
+  border-left-color: var(--cm-ruler-color);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .CodeMirror-selected {
+  background: var(--cm-selection-bg);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .CodeMirror-focused .CodeMirror-selected {
+  background: var(--cm-selection-focus-bg);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .CodeMirror-activeline-background {
+  background: var(--cm-active-line-bg);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-keyword { color: var(--cm-syntax-keyword); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-atom { color: var(--cm-syntax-atom); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-number { color: var(--cm-syntax-number); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-def { color: var(--cm-syntax-def); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-variable-2 { color: var(--cm-syntax-variable-2); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-variable-3 { color: var(--cm-syntax-variable-3); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-comment { color: var(--cm-syntax-comment); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-string { color: var(--cm-syntax-string); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-string-2 { color: var(--cm-syntax-string-2); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-meta { color: var(--cm-syntax-meta); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-qualifier { color: var(--cm-syntax-qualifier); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-builtin { color: var(--cm-syntax-builtin); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-tag { color: var(--cm-syntax-tag); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-attribute { color: var(--cm-syntax-attribute); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-link { color: var(--cm-syntax-link); }
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-s-default .cm-error { color: var(--cm-syntax-error); }
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-searching {
+  background: var(--cm-searching-bg);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .CodeMirror-search-match {
+  background: var(--cm-search-match-bg);
+  border-top-color: var(--cm-search-match-border);
+  border-bottom-color: var(--cm-search-match-border);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .cm-link {
+  text-decoration: var(--cm-link-decoration);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor div.CodeMirror span.CodeMirror-matchingbracket {
+  color: var(--cm-matching-bracket);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor div.CodeMirror span.CodeMirror-nonmatchingbracket {
+  color: var(--cm-nonmatching-bracket);
+}
+
+[data-gs-theme="dark"] .gs-panel-CodeMirrorEditor .CodeMirror-matchingtag {
+  background: var(--cm-matching-tag-bg);
+}

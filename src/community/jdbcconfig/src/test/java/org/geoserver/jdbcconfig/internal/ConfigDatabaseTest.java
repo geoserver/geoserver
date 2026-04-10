@@ -475,6 +475,45 @@ public class ConfigDatabaseTest {
     }
 
     @Test
+    public void testWMSCascadingRemoteStylesAfterCacheReload() throws Exception {
+        WorkspaceInfo ws = addWorkspace();
+
+        WMSStoreInfoImpl wmsStore = new WMSStoreInfoImpl(database.getCatalog());
+        wmsStore.setCapabilitiesURL(
+                ConfigDatabaseTest.class.getResource("/wms_capabilities.xml").toString());
+        wmsStore.setId("theWmsStore");
+        wmsStore.setName("fakeGeoServer");
+        wmsStore.setWorkspace(ws);
+        wmsStore.setUseConnectionPooling(false);
+        database.add(wmsStore);
+
+        CatalogBuilder cb = new CatalogBuilder(database.getCatalog());
+        cb.setStore(wmsStore);
+        WMSLayerInfoImpl wmsLayer = (WMSLayerInfoImpl) cb.buildWMSLayer("states");
+        wmsLayer.reset();
+        wmsLayer.setId("theWmsLayer");
+        wmsLayer.setForcedRemoteStyle("population");
+        wmsLayer.setSelectedRemoteStyles(new ArrayList<>(Arrays.asList("pophatch", "polygon")));
+        database.add(wmsLayer);
+        LayerInfoImpl layer = (LayerInfoImpl) cb.buildLayer(wmsLayer);
+        layer.setId("theLayer");
+        database.add(layer);
+
+        // clear cache to force re-fetch, triggering resolveTransient()
+        database.clearCache(layer);
+
+        LayerInfo reloaded = database.getById(layer.getId(), LayerInfo.class);
+        assertNotNull(reloaded);
+
+        StyleInfo defaultStyle = reloaded.getDefaultStyle();
+        assertRemoteStyle(defaultStyle);
+
+        // remote styles must not have catalog set by resolveTransient()
+        StyleInfoImpl unwrapped = (StyleInfoImpl) ModificationProxy.unwrap(defaultStyle);
+        assertNull("Remote style should not have catalog set by resolveTransient()", unwrapped.getCatalog());
+    }
+
+    @Test
     public void testWMTSStore() throws Exception {
         final WMTSStoreInfo store = addWMTSStore();
 

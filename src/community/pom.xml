@@ -128,7 +128,8 @@
         <module>gdal</module>
         <module>gwc-azure-blob</module>
         <module>gwc-gcs-blob</module>
-        <module>backup-restore</module>
+        <!-- backup-restore removed as it's not starting up properly after assembly. Maybe a Spring 7 incompatibility -->
+        <!--module>backup-restore</module-->
         <module>ncwms</module>
         <module>gwc-sqlite</module>
         <module>jwt-headers</module>
@@ -136,7 +137,8 @@
         <module>oseo</module>
         <module>s3-geotiff</module>
         <module>netcdf-ghrsst</module>
-        <module>taskmanager</module>
+        <!-- Taskmanager removed as it did go well through the GeoServer upgrade, the plugin is not starting up -->
+        <!--module>taskmanager</module-->
         <module>web-ogr</module>
         <module>ogcapi</module>
         <module>importer-jdbc</module>
@@ -160,7 +162,8 @@
         <module>graticule</module>
         <module>wfs-freemarker</module>
         <module>stac-datastore</module>
-        <module>acl</module>
+        <!-- This module won't start properly from geoserver + zip -->
+        <!--module>acl</module-->
         <module>geoparquet</module>
         <module>duckdb</module>
         <module>wps-download-netcdf</module>

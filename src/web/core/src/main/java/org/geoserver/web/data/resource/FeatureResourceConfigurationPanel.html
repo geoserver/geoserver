@@ -79,14 +79,17 @@
         </div>
         <div wicket:id="reloadWarningDialog"/>
         <fieldset>
-            <div class="gs-form">
-              <div class="gs-form-group">
-                <label for="cqlFilter">
-                  <wicket:message key="cqlFilter">cqlFilter</wicket:message>
-                </label>
-                <textarea wicket:id="cqlFilter" cols="40" rows="10"/>
-              </div>
+          <legend>
+            <wicket:message key="featureFiltering">Feature Filtering</wicket:message>
+          </legend>
+          <div class="gs-form">
+            <div class="gs-form-group">
+              <label for="cqlFilter">
+                <wicket:message key="cqlFilter">cqlFilter</wicket:message>
+              </label>
+              <textarea wicket:id="cqlFilter" cols="40" rows="10"/>
             </div>
+          </div>
         </fieldset> 
       </div>
     </wicket:panel>

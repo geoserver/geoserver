@@ -1,18 +1,16 @@
-name: Documentation Deployment
+name: Documentation GitHub CI
 
 on:
   push:
-    branches: [main, 2.28.x, 3.0.x, 3.1.x, afrigis-new-screenshots]
+    branches: [main, 3.0.x, 3.1.x, afrigis-new-screenshots]
     paths:
       - 'doc/**'
-      - 'mkdocs.yml'
-      - '.github/workflows/docs-deploy.yml'
+      - '.github/workflows/docs.yml'
   pull_request:
-    branches: [main, 3.0.x, 2.28.x]
+    branches: [main, 3.0.x, 3.1.x]
     paths:
       - 'doc/**'
-      - 'mkdocs.yml'
-      - '.github/workflows/docs-deploy.yml'
+      - '.github/workflows/docs.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -22,7 +20,7 @@ permissions:
   contents: write
 
 jobs:
-  build-docs:
+  mkdocs-build:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
@@ -53,7 +51,7 @@ jobs:
 
           if [ "$BRANCH" = "main" ]; then
             echo "version=latest" >> $GITHUB_OUTPUT
-            echo "title=Latest" >> $GITHUB_OUTPUT
+            echo "title=main (Latest)" >> $GITHUB_OUTPUT
             echo "aliases=main 3.0.x" >> $GITHUB_OUTPUT
             echo "is_default=false" >> $GITHUB_OUTPUT
           elif [ "$BRANCH" = "2.28.x" ]; then
@@ -94,6 +92,24 @@ jobs:
         if: github.event_name == 'pull_request'
         run: mkdocs build 2>&1 | grep -vF "../../api?urls.primaryName="
 
+      # Deploy custom 404 page to gh-pages root (GitHub Pages requires /404.html)
+      - name: Deploy 404 page
+        if: github.event_name == 'push'
+        run: |
+          # Copy 404.html to /tmp BEFORE switching branches (gh-pages won't have doc/)
+          cp doc/404.html /tmp/404.html
+          git fetch origin gh-pages
+          git checkout gh-pages
+          cp /tmp/404.html 404.html
+          git add 404.html
+          if git diff --cached --quiet; then
+            echo "404.html unchanged, skipping commit"
+          else
+            git commit -m "Update 404.html from doc/404.html"
+            git push origin gh-pages
+          fi
+          git checkout -
+
       # Set default version (stable only)
       - name: Set default version
         if: github.event_name == 'push' && steps.version.outputs.is_default == 'true'
@@ -103,9 +119,9 @@ jobs:
   # Deploy gh-pages content to GitHub Pages via Actions API.
   # This eliminates the ~15 min delay from pages-build-deployment.
   # Requires Pages source set to "GitHub Actions" in repo settings.
-  deploy-pages:
+  deploy-gh-pages:
     if: github.event_name == 'push'
-    needs: build-docs
+    needs: mkdocs-build
     runs-on: ubuntu-22.04
     permissions:
       pages: write

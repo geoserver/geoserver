@@ -1,3 +1,50 @@
+/*
+ * GeoServer Brand Theme
+ *
+ * Aligns the documentation theme with the main GeoServer web application.
+ * Brand tokens are defined in geoserver-brand.css (loaded via mkdocs.yml extra_css).
+ */
+
+/* --- Light mode colour overrides --- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        var(--gs-brand-primary);
+  --md-primary-fg-color--light: var(--gs-brand-primary-light);
+  --md-primary-fg-color--dark:  var(--gs-brand-primary-dark);
+  --md-primary-bg-color:        #ffffff;
+  --md-accent-fg-color:         var(--gs-brand-accent);
+  --md-typeset-a-color:         var(--gs-brand-link);
+}
+
+/* --- Dark mode colour overrides --- */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        var(--gs-brand-primary);
+  --md-primary-fg-color--light: var(--gs-brand-primary-light);
+  --md-primary-fg-color--dark:  #004d66;
+  --md-accent-fg-color:         var(--gs-brand-accent);
+  --md-typeset-a-color:         var(--gs-brand-link-dark);
+}
+
+/* --- Brand gradient on the header bottom border (mirrors the app) --- */
+.md-header {
+  border-bottom: 0.25em solid transparent;
+  border-image: var(--gs-brand-gradient) 1;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* --- Brand gradient on the navigation tabs bottom border --- */
+.md-tabs {
+  border-bottom: 0.2em solid transparent;
+  border-image: var(--gs-brand-gradient) 1;
+}
+
+/* --- Link hover colour to match the app --- */
+.md-typeset a:hover {
+  color: var(--gs-brand-link-hover);
+}
+[data-md-color-scheme="slate"] .md-typeset a:hover {
+  color: var(--gs-brand-link-dark-hover);
+}
+
 /* 
  * GeoServer Documentation - Navigation Styles
  * 
@@ -435,4 +482,34 @@
   text-transform: uppercase !important;
   font-weight: 700 !important;
   letter-spacing: 0.05em !important;
+}
+
+
+/*
+ * Screenshot / image borders
+ *
+ * Makes documentation screenshots stand out from surrounding text.
+ * Emoji images are excluded so they render inline without a border.
+ */
+
+/* Light mode — subtle grey border + slight shadow */
+.md-typeset img {
+  border: 1px solid #ccc;
+  border-radius: var(--md-border-radius, 0.1rem);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Dark mode — lighter border that's visible on dark backgrounds */
+[data-md-color-scheme="slate"] .md-typeset img {
+  border-color: #495057;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* Exclude emoji / icon images from the border treatment */
+.md-typeset img.emojione,
+.md-typeset img.twemoji,
+.md-typeset img.emoji,
+.md-typeset img.gemoji {
+  border: none;
+  box-shadow: none;
 }

@@ -1,0 +1,21 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class MetadataHomePageContentProvider$DataPanel
+
+The panel's html will be contained in a <div class='gs-panel-MetadataHomePageContentProvider_MetadataPanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-MetadataHomePageContentProvider_MetadataPanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/
+
+.linkBlock {
+    padding-top: 0.375rem;
+}

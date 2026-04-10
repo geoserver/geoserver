@@ -41,6 +41,7 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.LambdaModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -140,13 +141,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         add(new ExternalLink("faviconLink", faviconUrl, null));
 
         // page title
-        add(new Label("pageTitle", new LoadableDetachableModel<String>() {
-
-            @Override
-            protected String load() {
-                return getPageTitle();
-            }
-        }));
+        add(new Label("pageTitle", LambdaModel.of(this::getPageTitle)));
 
         // login / logout stuff
         GeoServerSecurityManager securityManager = getGeoServerApplication().getSecurityManager();
@@ -354,13 +349,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         add(new WebMarkupContainer(HEADER_PANEL));
 
         // allow the subclasses to initialize before getTitle/getDescription are called
-        add(new Label("gbpTitle", new LoadableDetachableModel<String>() {
-
-            @Override
-            protected String load() {
-                return getTitle();
-            }
-        }));
+        add(new Label("gbpTitle", LambdaModel.of(this::getTitle)));
         Label gbpDescription = new Label("gbpDescription", new LoadableDetachableModel<String>() {
 
             @Override
@@ -389,6 +378,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // sidebar
         boolean legacyHome = (this instanceof GeoServerHomePage) && GeoServerHomePage.isLegacyHomepageSelectorEnabled();
         NavigationTreePanel sidebar = new NavigationTreePanel("sidebar");
+        sidebar.setOutputMarkupId(true);
         sidebar.setVisible(!legacyHome);
         add(sidebar);
         BreadcrumbNavigationPanel breadcrumb = new BreadcrumbNavigationPanel("breadcrumbPanel");
@@ -637,6 +627,11 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         return NODE_INFO;
     }
 
+    /**
+     * Get title displayed at the top of the page in {@code page-header} h1.
+     *
+     * @return title displayed at the top of the page.
+     */
     protected String getTitle() {
         return new ParamResourceModel("title", this).getString();
     }
@@ -645,7 +640,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         return new ParamResourceModel("description", this).getString();
     }
 
-    /** Gets the page title from the PageName.title resource, falling back on "GeoServer" if not found */
+    /**
+     * Gets the page title as included in page header, from the PageName.title resource, falling back on "GeoServer" if
+     * not found
+     */
     String getPageTitle() {
         try {
             return "GeoServer: " + getTitle();

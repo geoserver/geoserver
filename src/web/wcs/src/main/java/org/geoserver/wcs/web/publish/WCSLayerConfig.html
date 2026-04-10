@@ -9,22 +9,26 @@
             <legend>
               <span>Request SRS</span>
             </legend>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
+            <div class="gs-form">
+              <div class="gs-form-group">
                 <label for="requestSRS">
                   <wicket:message key="wcs.data.resource.requestSRS">Current Request SRS List</wicket:message>
                 </label>
-                <select id="requestSRS" class="select" wicket:id="requestSRS" multiple="multiple"/>
-                <button wicket:id="deleteSelectedRequestSRSs" type="submit">
-                  <wicket:message key="wcs.data.resource.requestSRS.delete">Delete Selected</wicket:message>
-                </button>
+                <div class="gs-input-group">
+                  <select id="requestSRS" class="select" wicket:id="requestSRS" multiple="multiple"/>
+                  <button wicket:id="deleteSelectedRequestSRSs" type="submit">
+                    <wicket:message key="wcs.data.resource.requestSRS.delete">Delete Selected</wicket:message>
+                  </button>
+                </div>
               </div>
-              <div class="gs-list-item-class">
+              <div class="gs-form-group">
                 <label for="newRequestSRS">New Request SRS</label>
-                <input id="newRequestSRS" wicket:id="newRequestSRS" type="text"/>
-                <button wicket:id="addNewRequestSRS" type="submit">
-                  <wicket:message key="wcs.data.resource.requestSRS.add">Add SRS</wicket:message>
-                </button>
+                <div class="gs-input-group">
+                  <input id="newRequestSRS" wicket:id="newRequestSRS" type="text"/>
+                  <button wicket:id="addNewRequestSRS" type="submit">
+                    <wicket:message key="wcs.data.resource.requestSRS.add">Add SRS</wicket:message>
+                  </button>
+                </div>
               </div>
             </div>
           </fieldset>
@@ -32,22 +36,26 @@
             <legend>
               <span>Response SRS</span>
             </legend>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
+            <div class="gs-form">
+              <div class="gs-form-group">
                 <label for="responseSRS">
                   <wicket:message key="wcs.data.resource.responseSRS">Current Response SRS List </wicket:message>
                 </label>
-                <select id="responseSRS" class="select" wicket:id="responseSRS" multiple="multiple"/>
-                <button wicket:id="deleteSelectedResponseSRSs" type="submit">
-                  <wicket:message key="wcs.data.resource.responseSRS.delete">Delete Selected</wicket:message>
-                </button>
+                <div class="gs-input-group">
+                  <select id="responseSRS" class="select" wicket:id="responseSRS" multiple="multiple"/>
+                  <button wicket:id="deleteSelectedResponseSRSs" type="submit">
+                    <wicket:message key="wcs.data.resource.responseSRS.delete">Delete Selected</wicket:message>
+                  </button>
+                </div>
               </div>
-              <div class="gs-list-item-class">
+              <div class="gs-form-group">
                 <label for="newRequestSRS">New Request SRS</label>
-                <input id="newRequestSRS" wicket:id="newResponseSRS" type="text"/>
-                <button wicket:id="addNewResponseSRS" type="submit">
-                  <wicket:message key="wcs.data.resource.responseSRS.add">Add SRS</wicket:message>
-                </button>
+                <div class="gs-input-group">
+                  <input id="newRequestSRS" wicket:id="newResponseSRS" type="text"/>
+                  <button wicket:id="addNewResponseSRS" type="submit">
+                    <wicket:message key="wcs.data.resource.responseSRS.add">Add SRS</wicket:message>
+                  </button>
+                </div>
               </div>
             </div>
           </fieldset>
@@ -57,14 +65,14 @@
                 <wicket:message key="interpolationMethods">Interpolation Methods</wicket:message>
               </span>
             </legend>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
+            <div class="gs-form">
+              <div class="gs-form-group">
                 <label for="defaultInterpolationMethod">
                   <wicket:message key="defaultInterpolationMethod">Default Interpolation Method</wicket:message>
                 </label>
-                <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod"/>
+                <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod" class="w-md" />
               </div>
-              <div class="gs-list-item-class">
+              <div class="gs-form-group">
                 <label for="curInterpolationMethods">
                   <wicket:message key="curInterpolationMethods">Current Interpolation Methods</wicket:message>
                 </label>
@@ -76,14 +84,14 @@
             <legend>
               <span>Formats</span>
             </legend>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
+            <div class="gs-form">
+              <div class="gs-form-group">
                 <label for="nativeFormat">
                   <wicket:message key="wcs.data.resource.nativeFormat">Native Format</wicket:message>
                 </label>
-                <input id="nativeFormat" wicket:id="nativeFormat" type="text"/>
+                <input id="nativeFormat" wicket:id="nativeFormat" type="text" class="w-md" />
               </div>
-              <div class="gs-list-item-class">
+              <div class="gs-form-group">
                 <label for="formatPalette">
                   <wicket:message key="wcs.data.resource.supportedFormats">Supported Formats</wicket:message>
                 </label>

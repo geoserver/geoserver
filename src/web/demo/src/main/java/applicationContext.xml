@@ -13,7 +13,10 @@
     <constructor-arg index="1" value="GeoServer Web Demos"/>
     <property name="category" value="CORE"/>
   </bean>
-  
+
+  <bean id="previewHomePageContentProvider"
+        class="org.geoserver.web.demo.PreviewHomePageContentProvider"/>
+
   <bean id="layerListDemo" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="layerListDemo"/>
     <property name="titleKey" value="MapPreviewPage.title"/>

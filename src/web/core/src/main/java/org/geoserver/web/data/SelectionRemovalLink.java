@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
@@ -80,6 +81,10 @@ public class SelectionRemovalLink extends AjaxLink<Void> {
                     setEnabled(false);
                     target.add(SelectionRemovalLink.this);
                     target.add(catalogObjects);
+                    Component sidebar = getPage().get("sidebar");
+                    if (sidebar instanceof WebMarkupContainer) {
+                        target.add(sidebar);
+                    }
                 }
             }
         });

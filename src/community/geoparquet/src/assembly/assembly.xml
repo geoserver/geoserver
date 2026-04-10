@@ -22,6 +22,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gt-geoparquet*.jar</include>
+        <include>gt-duckdb*.jar</include>
         <include>duckdb_jdbc*.jar</include>
         <!-- jackson-databind is already provided by gs-ows -->
       </includes>

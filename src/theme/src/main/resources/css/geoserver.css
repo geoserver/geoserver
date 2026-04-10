@@ -1016,13 +1016,11 @@ Welcome / Overview
 }
 
 /* Special links */
-.add-link,
 .remove-link,
 .warning-link,
 .refresh-link,
 .info-link,
-.help-link,
-.edit-link {
+.help-link {
   background-color: transparent;
   background-attachment: scroll;
   background-position: left center;
@@ -1031,9 +1029,6 @@ Welcome / Overview
   background-size: 1rem;
 }
 
-.add-link {
-  background-image: url(../svg/icons/silk-icon-scalable/add.svg);
-}
 .remove-link {
   background-image: url(../svg/icons/silk-icon-scalable/delete.svg);
 }
@@ -1048,9 +1043,6 @@ Welcome / Overview
 }
 .help-link {
   background-image: url(../svg/icons/silk-icon-scalable/help.svg);
-}
-.edit-link {
-  background-image: url(../svg/icons/silk-icon-scalable/pencil.svg);
 }
 
 /* Search in table */

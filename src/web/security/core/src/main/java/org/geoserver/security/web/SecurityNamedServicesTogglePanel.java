@@ -72,7 +72,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
                      #edit {
                        position: absolute;\s
                        right: 0;\s
-                       margin-top: -28px;\s
+                       margin-top: -38px;\s
                        padding-bottom: 0.5em;\s
                        padding-right:1em;
                      }\

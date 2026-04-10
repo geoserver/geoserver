@@ -1015,7 +1015,9 @@ Welcome / Overview
   width: 100% !important;
 }
 
-/* Special links */
+/* Deprecated: Special links */
+/* These links are kept because used in some specific situation */
+/* In general we should use gs-icon in combination with button style */
 .remove-link,
 .warning-link,
 .refresh-link,

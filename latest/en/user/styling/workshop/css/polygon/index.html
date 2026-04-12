@@ -30091,7 +30091,7 @@
 <p>SLD uses a <strong>PolygonSymbolizer</strong> to describe how the shape of a polygon is drawn. The primary characteristic documented is the <strong>Fill</strong> used to shade the polygon interior. The use of a <strong>Stroke</strong> to describe the polygon boundary is optional.</p>
 </li>
 <li>
-<p>Labeling of a polygon is anchored to the centroid of the polygon. GeoServer provides a vendor option to allow labels to line wrap to remain within the polygon boundaries.</p>
+<p>labelling of a polygon is anchored to the centroid of the polygon. GeoServer provides a vendor option to allow labels to line wrap to remain within the polygon boundaries.</p>
 </li>
 </ul>
 <p>For our Polygon exercises we will try and limit our CSS documents to a single rule, in order to showcase the properties used for rendering.</p>
@@ -30109,11 +30109,15 @@
 <table>
 <thead>
 <tr>
-<th>Name:</th>
-<th><code>polygon_example</code></th>
+<th></th>
+<th></th>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>Name:</td>
+<td><code>polygon_example</code></td>
+</tr>
 <tr>
 <td>Workspace:</td>
 <td><code>No workspace</code></td>
@@ -30308,11 +30312,15 @@
 <table>
 <thead>
 <tr>
-<th>shape://horizline</th>
-<th>horizontal hatching</th>
+<th></th>
+<th></th>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>shape://horizline</td>
+<td>horizontal hatching</td>
+</tr>
 <tr>
 <td>shape://vertline</td>
 <td>vertical hatching</td>
@@ -30401,7 +30409,7 @@
 </li>
 </ol>
 <h2 id="label">Label<a class="headerlink" href="#label" title="Permanent link">&para;</a></h2>
-<p>Labeling polygons follows the same approach used for LineStrings.</p>
+<p>Labelling polygons follows the same approach used for LineStrings.</p>
 <p><img alt="image" src="../../style/img/PolygonLabel_CSS.svg" /></p>
 <p>The key properties <strong>fill</strong> and <strong>label</strong> are used to enable Polygon label generation.</p>
 <ol>
@@ -30471,7 +30479,7 @@
 </code></pre></div>
 </li>
 <li>
-<p>The labeling position remains at the polygon centroid. We adjust alignment by controlling which part of the label we are "snapping" into position.</p>
+<p>The labelling position remains at the polygon centroid. We adjust alignment by controlling which part of the label we are "snapping" into position.</p>
 <p><img alt="image" src="../../style/img/polygon_label_1.png" /></p>
 </li>
 <li>
@@ -30523,7 +30531,7 @@
 <p>Many of these parameters focus on controlling conflict resolution (when labels would otherwise overlap).</p>
 </li>
 <li>
-<p>Two common properties for controlling labeling are:</p>
+<p>Two common properties for controlling labelling are:</p>
 <p><strong>label-max-displacement</strong> indicates the maximum distance GeoServer should displace a label during conflict resolution.</p>
 <p><strong>label-auto-wrap</strong> allows any labels extending past the provided width will be wrapped into multiple lines.</p>
 </li>
@@ -30853,7 +30861,7 @@
 <h3 id="css.polygon.q3">Challenge Goodness of Fit<a class="headerlink" href="#css.polygon.q3" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
-<p>A subject we touched on during labeling was the conflict resolution GeoServer performs to ensure labels do not overlap.</p>
+<p>A subject we touched on during labelling was the conflict resolution GeoServer performs to ensure labels do not overlap.</p>
 </li>
 <li>
 <p>In addition to the vendor parameter for max displacement you can experiment with different values for "goodness of fit". These settings control how far GeoServer is willing to move a label to avoid conflict, and under what terms it simply gives up:</p>

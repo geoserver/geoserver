@@ -29893,7 +29893,7 @@
 <li>Languages can be configured and requested also according to local language variants (e.g. <code>AcceptLanguages=en fr-CA</code> or <code>AcceptLanguages=en,fr-CA</code>).</li>
 </ul>
 <p>If any i18n content has been specified with a local variant and the request parameters specifies only the language code the content will be encoded in the response. Keep in mind that the inverse situation content is recorded using a language code will not be available for local variant requests.</p>
-<p>Example: If the i18n content is specified with the local variant <code>fr-CA</code> and the requested only specifies a language code <code>AcceptLanguages=fr` the local variant</code>fr-CA<code>content will be used.  Example: If the i18n content is specified with the language code</code>fr<code>and the requested only specifies the local variant</code>AcceptLanguages=fr-CA<code>the language code</code>fr` content is unavailable.</p>
+<p>Example: If the i18n content is specified with the local variant <code>fr-CA</code> and the requested only specifies a language code <code>AcceptLanguages=fr</code> the local variant <code>fr-CA</code> content will be used. Example: If the i18n content is specified with the language code <code>fr</code> and the requested only specifies the local variant <code>AcceptLanguages=fr-CA</code> the language code <code>fr</code> content is unavailable.</p>
 <ul>
 <li>If a <code>*</code> is present among the parameter values, e.g. <code>AcceptLanguages=en fr *</code> or <code>AcceptLanguages=en,fr,*</code>, GeoServer will try to return the content in one of the specified language code.</li>
 </ul>

@@ -30055,7 +30055,7 @@
 <p>In order to create a new mosaic it is necessary to choose a workspace and store name in the <strong>Basic Store Info</strong> section, as well as a URL in the <strong>Connection Parameters</strong> section. Valid URLs include:</p>
 <ul>
 <li>The absolute path to the shapefile index, or a directory containing the shapefile index.</li>
-<li>The absolute path to the configuration file (<code>\*.properties````) or a directory containing the configuration file. If ````datastore.properties```` and ````indexer.properties</code>` exist, they should be in the same directory as this configuration file.</li>
+<li>The absolute path to the configuration file (<code>*.properties</code>) or a directory containing the configuration file. If <strong><code>datastore.properties</code></strong> and <strong><code>indexer.properties</code></strong> exist, they should be in the same directory as this configuration file.</li>
 <li>The absolute path of a directory where the files you want to mosaic reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data present in the given directory and any subdirectories.</li>
 </ul>
 </li>
@@ -30327,12 +30327,12 @@
 <ol>
 <li>Update the contents of the mosaic by copying the new files into place. (Subdirectories are acceptable.)</li>
 <li>Delete the index files. These files are contained in the top level directory containing the mosaic files and include (but are not limited to) the following:<ul>
-<li><strong>`\&lt;mosaic_name&gt;.dbf`</strong></li>
-<li><strong>`\&lt;mosaic_name&gt;.fix`</strong></li>
-<li><strong>`\&lt;mosaic_name&gt;.prj`</strong></li>
-<li><strong>`\&lt;mosaic_name&gt;.properties`</strong></li>
-<li><strong>`\&lt;mosaic_name&gt;.shp`</strong></li>
-<li><strong>`\&lt;mosaic_name&gt;.shx`</strong></li>
+<li><strong><code>&lt;mosaic_name&gt;.dbf</code></strong></li>
+<li><strong><code>&lt;mosaic_name&gt;.fix</code></strong></li>
+<li><strong><code>&lt;mosaic_name&gt;.prj</code></strong></li>
+<li><strong><code>&lt;mosaic_name&gt;.properties</code></strong></li>
+<li><strong><code>&lt;mosaic_name&gt;.shp</code></strong></li>
+<li><strong><code>&lt;mosaic_name&gt;.shx</code></strong></li>
 </ul>
 </li>
 <li><em>(Optional but recommended)</em> Edit the layer definition in GeoServer, making to sure to update the bounding box information (if changed).</li>
@@ -30355,13 +30355,13 @@
 <p>Create the mosaic in GeoServer.</p>
 </li>
 <li>
-<p>One important configuration setting is the <strong>SORTING</strong> parameter of the layer. In order to see the highest resolution imagery on top (the typical case), it must be set to <code>resolution A</code>. (For the case of lowest resolution on top, use <code>resolution D</code> .)</p>
+<p>One important configuration setting is the <strong>SORTING</strong> parameter of the layer. In order to see the highest resolution imagery on top (the typical case), it must be set to <code>resolution A</code>. (For the case of lowest resolution on top, use <code>resolution D</code>.)</p>
 </li>
 <li>
 <p>Make any other configuration changes.</p>
 </li>
 <li>
-<p>Also, in order to allow for multiple CRSs in a single mosaic, an <strong>`indexer.properties`</strong> file will need to be created. Use the following :</p>
+<p>Also, in order to allow for multiple CRSs in a single mosaic, an <strong><code>indexer.properties</code></strong> file will need to be created. Use the following :</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">GranuleAcceptors</span><span class="o">=</span><span class="s">org.geotools.gce.imagemosaic.acceptors.HeterogeneousCRSAcceptorFactory</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">GranuleHandler</span><span class="o">=</span><span class="s">org.geotools.gce.imagemosaic.granulehandler.ReprojectingGranuleHandlerFactory</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">HeterogeneousCRS</span><span class="o">=</span><span class="s">true</span>
@@ -30383,18 +30383,18 @@
 </li>
 </ol>
 <h2 id="referring-to-a-datastore-configured-in-geoserver">Referring to a datastore configured in GeoServer<a class="headerlink" href="#referring-to-a-datastore-configured-in-geoserver" title="Permanent link">&para;</a></h2>
-<p>It is possible to make the mosaic refer to an existing data store. The <strong>``datastore.properties``</strong> file in this case will contain only one or two properties, referring to the store to be used via the <code>StoreName</code> property. For simple cases, e.g., a PostGIS store, the following will be sufficient:</p>
+<p>It is possible to make the mosaic refer to an existing data store. The <strong><code>datastore.properties</code></strong> file in this case will contain only one or two properties, referring to the store to be used via the <code>StoreName</code> property. For simple cases, e.g., a PostGIS store, the following will be sufficient:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">StoreName</span><span class="o">=</span><span class="s">workspace:storename</span>
 </code></pre></div>
 <p>For Oracle or H2, it's best to also specify the SPI in order to inform the mosaic that it needs to work around specific limitations of the storage (e.g., forced uppercase attribute usage, limitation in attribute name length and the like):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="na">StoreName</span><span class="o">=</span><span class="s">workspace:storename</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="na">SPI</span><span class="o">=</span><span class="s">org.geotools.data.oracle.OracleNGDataStoreFactory</span>
 </code></pre></div>
-<p>The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using the directory name as the table name. In case a specific table name needs to be used, add an <strong>``indexer.properties``</strong> specifying the <code>TypeName</code> property, e.g.:</p>
+<p>The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using the directory name as the table name. In case a specific table name needs to be used, add an <strong><code>indexer.properties</code></strong> specifying the <code>TypeName</code> property, e.g.:</p>
 <blockquote>
 <p>TypeName=myMosaicTypeName</p>
 </blockquote>
-<p>In case the index "table" already exists instead, then a <strong>``indexer.properties``</strong> file will be required, with the following contents:</p>
+<p>In case the index "table" already exists instead, then a <strong><code>indexer.properties</code></strong> file will be required, with the following contents:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="na">UseExistingSchema</span><span class="o">=</span><span class="s">true</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="na">TypeName</span><span class="o">=</span><span class="s">nameOfTheFeatureTypeContainingTheIndex</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="na">AbsolutePath</span><span class="o">=</span><span class="s">true</span>

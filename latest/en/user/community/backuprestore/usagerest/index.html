@@ -30070,7 +30070,7 @@
 <p><img alt="" src="../images/usagerest001.png" /></p>
 <h3 id="query-status-of-backup-executions">Query status of Backup executions<a class="headerlink" href="#query-status-of-backup-executions" title="Permanent link">&para;</a></h3>
 <p>Status of the operation can be queried making an HTTP GET request to the location listed in the response.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>``http://mygeoserver/geoserver/rest/br/backup/$ID.{json/xml}``
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>http://mygeoserver/geoserver/rest/br/backup/$ID.{json/xml}
 </code></pre></div>
 <p>Replace <code>$ID</code> with the <strong>ID</strong> of the backup operation you'd like to inspect.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>-u<span class="w"> </span><span class="s2">&quot;admin:geoserver&quot;</span><span class="w"> </span>http://mygeoserver/geoserver/rest/br/backup/1.json

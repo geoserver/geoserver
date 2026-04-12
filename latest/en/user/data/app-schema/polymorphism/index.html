@@ -30137,7 +30137,7 @@
 <p>Polymorphism in this context refers to the ability of an attribute to have different forms. Depending on the source value, it could be encoded with a specific structure, type, as an xlink:href reference, or not encoded at all. To achieve this, we reuse feature chaining syntax and allow OCQL functions in the linkElement tag. Read more about <a href="../feature-chaining/">app-schema.feature-chaining</a>, if you're not familiar with the syntax.</p>
 <h2 id="data-type-polymorphism">Data-type polymorphism<a class="headerlink" href="#data-type-polymorphism" title="Permanent link">&para;</a></h2>
 <p>You can use normal feature chaining to get an attribute to be encoded as a certain type. For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;AttributeMapping&gt;</span><span class="w">                                                                                                                                                                                                                                                                                                                                                                                                    </span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;AttributeMapping&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nt">&lt;targetAttribute&gt;</span>ex:someAttribute<span class="nt">&lt;/targetAttribute&gt;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">&lt;sourceExpression&gt;</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span><span class="nt">&lt;OCQL&gt;</span>VALUE_ID<span class="nt">&lt;/OCQL&gt;</span>
@@ -30249,10 +30249,7 @@
 <p><strong>EXPRESSION</strong>: column name to get values from, or another function</p>
 </li>
 <li>
-<p><strong>key-n</strong>:</p>
-</li>
-<li>
-<p>key expression to map to value-n</p>
+<p><strong>key-n</strong>: key expression to map to value-n</p>
 <ul>
 <li>if the evaluated value of EXPRESSION doesn't match any key, nothing would be encoded for the attribute.</li>
 </ul>
@@ -30298,12 +30295,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>toXlinkHref(XLINK_HREF_EXPRESSION)
 </code></pre></div>
 <ul>
-<li>
-<p><strong>XLINK_HREF_EXPRESSION</strong>:</p>
-</li>
-<li>
-<p>could be a function or a literal</p>
-<ul>
+<li><strong>XLINK_HREF_EXPRESSION</strong>: could be a function or a literal<ul>
 <li>has to be wrapped in single quotes if it's a literal</li>
 </ul>
 </li>

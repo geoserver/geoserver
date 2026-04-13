@@ -998,7 +998,6 @@ public class GeoServerTileLayerTest {
     public void testGetTileWithMetaTilingExecutor() throws Exception {
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
-
         ExecutorService executorServiceSpy = spy(Executors.newFixedThreadPool(2));
         when(mockGWC.getMetaTilingExecutor()).thenReturn(executorServiceSpy);
 
@@ -1029,6 +1028,7 @@ public class GeoServerTileLayerTest {
 
         // 16 tiles to put in storage
         verify(result.getStorageBroker(), times(16)).put(Mockito.any());
+        executorServiceSpy.shutdown();
     }
 
     /**
@@ -1040,7 +1040,6 @@ public class GeoServerTileLayerTest {
     public void testGetTileWithMetaTilingExecutorButNoDispatcherRequest() throws Exception {
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
-
         ExecutorService executorServiceSpy = spy(Executors.newFixedThreadPool(2));
         when(mockGWC.getMetaTilingExecutor()).thenReturn(executorServiceSpy);
 
@@ -1071,6 +1070,7 @@ public class GeoServerTileLayerTest {
 
         // 16 tiles to put in storage
         verify(result.getStorageBroker(), times(16)).put(Mockito.any());
+        executorServiceSpy.shutdown();
     }
 
     @Test

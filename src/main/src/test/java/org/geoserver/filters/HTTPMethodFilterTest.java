@@ -85,7 +85,6 @@ public class HTTPMethodFilterTest {
         HTTPMethodFilter filter = new HTTPMethodFilter();
         MockFilterChain chain = new MockFilterChain() {
             @Override
-            @SuppressWarnings("PMD.CloseResource")
             public void doFilter(ServletRequest request, ServletResponse response)
                     throws IOException, ServletException {
                 ServletOutputStream os = response.getOutputStream();

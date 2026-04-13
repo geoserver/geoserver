@@ -2331,6 +2331,9 @@ div:has(> div > .gs-content-header)
   .gs-content-header > p {
   font-size: 0.875rem;
 }
+.i18n-panel table td:nth-child(1) {
+  width: 20rem;
+}
 @media (max-width: 768px) {
   .gs-form {
     gap: 0.25rem;

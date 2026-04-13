@@ -14908,6 +14908,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#configure-the-ldap-role-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure the LDAP role service
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -29832,6 +29843,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#configure-the-ldap-role-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure the LDAP role service
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -29920,9 +29942,13 @@
 </ol>
 <h2 id="test-a-ldap-login">Test a LDAP login<a class="headerlink" href="#test-a-ldap-login" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Navigate to the GeoServer home page and log out of the admin account.</li>
+<li>
+<p>Navigate to the GeoServer home page and log out of the admin account.</p>
+</li>
+<li>
+<p>Login as the user "GISUSER" with the password "secret".</p>
+</li>
 </ol>
-<h1 id="login-as-the-user-gisuser-with-the-password-secret">. Login as the user "GISUSER" with the password "secret".<a class="headerlink" href="#login-as-the-user-gisuser-with-the-password-secret" title="Permanent link">&para;</a></h1>
 <p><img alt="" src="images/ad3.jpg" /></p>
 <p>Logging in as GISUSER doesn't yield any administrative functionality because the GISUSER account has not been mapped to the administrator role. In the next section GeoServer will be configured to map groups from the LDAP database to roles.</p>
 <p>Now we will login with a user having administrative rights.</p>

@@ -30505,17 +30505,17 @@
 <p>Care should be taken when using it as it has different behavior for raster layers, vector layers, and layer groups. In particular:</p>
 <ul>
 <li>
-<p>| For <strong>raster layers</strong>, <code>sortBy</code> maps to a "SORTING" read parameter that the reader might expose (image mosaic exposes such parameter).
-  | In image mosaic, this causes the first granule found in the sorting will display on top, and then the others will follow.
-  | Thus, to sort a scattered mosaic of satellite images so that the most recent image shows on top, and assuming the time attribute is called <code>ingestion</code> in the mosaic index, the specification will be <code>&amp;sortBy=ingestion D</code>.</p>
+<p>For <strong>raster layers</strong>, <code>sortBy</code> maps to a "SORTING" read parameter that the reader might expose (image mosaic exposes such parameter).<br />
+  In image mosaic, this causes the first granule found in the sorting will display on top, and then the others will follow.<br />
+  Thus, to sort a scattered mosaic of satellite images so that the most recent image shows on top, and assuming the time attribute is called <code>ingestion</code> in the mosaic index, the specification will be <code>&amp;sortBy=ingestion D</code>.</p>
 </li>
 <li>
-<p>| For <strong>vector layers</strong>, <code>sortBy</code> maps to a sort by clause in the vector data source, and then painting happens using the normal "painter model" rules, so the first item returned is painted first, and then all others on top of it.
-  | Thus, to sort a set of event points so that the most recent event is painted on top, and assuming the attribute is called "date" in the vector layer, the specification will be <code>&amp;sortBy=date</code> or <code>&amp;sortBy=date A</code> (ascending direction being the default one).</p>
+<p>For <strong>vector layers</strong>, <code>sortBy</code> maps to a sort by clause in the vector data source, and then painting happens using the normal "painter model" rules, so the first item returned is painted first, and then all others on top of it.<br />
+  Thus, to sort a set of event points so that the most recent event is painted on top, and assuming the attribute is called "date" in the vector layer, the specification will be <code>&amp;sortBy=date</code> or <code>&amp;sortBy=date A</code> (ascending direction being the default one).</p>
 </li>
 <li>
-<p>| For <strong>layer groups</strong>, the sort specification is going to be copied over all internal layers, so the spec has to be valid for all of them, or an error will be reported.
-  | An empty spec can be used for layer groups in this case, for example, <code>layers=theGroup,theLayer&amp;sortBy=(),(date A)</code></p>
+<p>For <strong>layer groups</strong>, the sort specification is going to be copied over all internal layers, so the spec has to be valid for all of them, or an error will be reported.<br />
+  An empty spec can be used for layer groups in this case, for example, <code>layers=theGroup,theLayer&amp;sortBy=(),(date A)</code></p>
 </li>
 </ul>
 <h3 id="env">env<a class="headerlink" href="#env" title="Permanent link">&para;</a></h3>

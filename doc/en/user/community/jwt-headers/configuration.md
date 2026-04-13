@@ -18,9 +18,9 @@ The JWT Headers module covers three main use cases:
 
 If you are using [Apache's mod_auth_openidc](https://github.com/OpenIDC/mod_auth_openidc), then Apache will typically add:
 
-- an ``OIDC_id_token_payload`` header item (containing a JSON string of the ID token claims)
-- an ``OIDC_access_token`` header item (containing a base64 JWT Access Token)
-- optionally, a simple header item with individual claim values (i.e. ``OIDC_access_token``)
+- an `OIDC_id_token_payload` header item (containing a JSON string of the ID token claims)
+- an `OIDC_access_token` header item (containing a base64 JWT Access Token)
+- optionally, a simple header item with individual claim values (i.e. `OIDC_access_token`)
 
 Here are some example values;
 
@@ -36,23 +36,23 @@ OIDC_access_token: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItb0QyZXphc
 OIDC_preferred_username: david.blasby@geocat.net
 ```
 
-It is recommended to either use the ``OIDC_id_token_payload`` (JSON) or ``OIDC_access_token`` (JWT) header.
+It is recommended to either use the `OIDC_id_token_payload` (JSON) or `OIDC_access_token` (JWT) header.
 
 For `OIDC_id_token_payload`:
 
-- Request header attribute for User Name: ``OIDC_id_token_payload``
-- Format the Header value is in: ``JSON``
-- JSON path for the User Name: ``preferred_username``
+- Request header attribute for User Name: `OIDC_id_token_payload`
+- Format the Header value is in: `JSON`
+- JSON path for the User Name: `preferred_username`
 
 For `OIDC_access_token`:
 
-- Request header attribute for User Name: ``OIDC_access_token``
-- Format the Header value is in: ``JWT``
-- JSON path for the User Name: ``preferred_username``
+- Request header attribute for User Name: `OIDC_access_token`
+- Format the Header value is in: `JWT`
+- JSON path for the User Name: `preferred_username`
 
 ### New Role Source Options
 
-You can use the standard role source options in GeoServer (``Request Header``, ``User Group Service``, or ``Role Service``). The JWT Headers module adds two more role sources - ``Header Containing JSON String`` and ``Header containing JWT``.
+You can use the standard role source options in GeoServer (`Request Header`, `User Group Service`, or `Role Service`). The JWT Headers module adds two more role sources - `Header Containing JSON String` and `Header containing JWT`.
 
 | Config Option | Meaning |
 |----|----|
@@ -60,7 +60,7 @@ You can use the standard role source options in GeoServer (``Request Header``, `
 | Request Header attribute for Roles | Name of the header item the JSON or JWT is contained in |
 | JSON Path | Path in the JSON object or JWT claims that contains the roles. This should either be a simple string (single role) or a list of strings. |
 
-Using the example ``OIDC_id_token_payload`` (JSON) or ``OIDC_access_token`` (JWT) shown above, the claims are:
+Using the example `OIDC_id_token_payload` (JSON) or `OIDC_access_token` (JWT) shown above, the claims are:
 
 ```json
 {
@@ -101,7 +101,7 @@ Using the example ``OIDC_id_token_payload`` (JSON) or ``OIDC_access_token`` (JWT
 }
 ```
 
-In this JSON set of claims (mirrored in the JWT claims of the Access Token), and the two roles from the IDP are "GeonetworkAdministrator", and "GeoserverAdministrator". The JSON path to the roles is ``resource_access.live-key2.roles``.
+In this JSON set of claims (mirrored in the JWT claims of the Access Token), and the two roles from the IDP are "GeonetworkAdministrator", and "GeoserverAdministrator". The JSON path to the roles is `resource_access.live-key2.roles`.
 
 #### Role Conversion
 
@@ -109,22 +109,22 @@ The JWT Headers module also allows for converting roles (from the external IDP) 
 
 | Config Option | Meaning |
 |----|----|
-| Role Converter Map from External Roles to GeoServer Roles | This is a ";" delimited map in the form of ``ExternalRole1=GeoServerRole1;ExternalRole2=GeoServerRole2`` |
+| Role Converter Map from External Roles to GeoServer Roles | This is a ";" delimited map in the form of `ExternalRole1=GeoServerRole1;ExternalRole2=GeoServerRole2` |
 | Only allow External Roles that are explicitly named above | If checked, external roles that are not mentioned in the conversion map will be ignored. If unchecked, those external roles will be turned into GeoServer roles of the same name. |
 
-For example, a conversion map like ``GeoserverAdministrator=ROLE_ADMINISTRATOR`` will convert our IDP "GeoserverAdministrator" role to GeoServer's "ROLE_ADMINISTRATOR".
+For example, a conversion map like `GeoserverAdministrator=ROLE_ADMINISTRATOR` will convert our IDP "GeoserverAdministrator" role to GeoServer's "ROLE_ADMINISTRATOR".
 
 In our example, the user has two roles "GeoserverAdministrator" and "GeonetworkAdministrator". If the "Only allow External Roles that are explicitly named above" is checked, then GeoServer will only see the "ROLE_ADMINISTRATOR" role. If unchecked, it will see "ROLE_ADMINISTRATOR" and "GeonetworkAdministrator". In neither case will it see the converted "GeoserverAdministrator" roles.
 
 You can also have multiple GeoServer roles from one external (OIDC) role. For example, this role conversion:
 
-``GeoserverAdministrator=ROLE_ADMINISTRATOR;GeoserverAdministrator=ADMIN``
+`GeoserverAdministrator=ROLE_ADMINISTRATOR;GeoserverAdministrator=ADMIN`
 
-Will give users with the OIDC role ``GeoserverAdministrator`` two GeoServer roles - ``ROLE_ADMINISTRATOR`` and ``ADMIN``.
+Will give users with the OIDC role `GeoserverAdministrator` two GeoServer roles - `ROLE_ADMINISTRATOR` and `ADMIN`.
 
 ### JWT Validation
 
-If you are using Apache's ``mod_auth_openidc`` module, then you do *not* have to do JWT validation - Apache will ensure they are valid when it attaches the headers to the request.
+If you are using Apache's `mod_auth_openidc` module, then you do *not* have to do JWT validation - Apache will ensure they are valid when it attaches the headers to the request.
 
 However, if you are using robot access to GeoServer, you can attach an Access Token to the request header for access.
 
@@ -138,19 +138,19 @@ OR
 Authentication: `base64 JWT Access Token`
 ```
 
-You would then setup the user name to come from a JWT token in the ``Authentication`` header with a JSON path like ``preferred_username``.
+You would then setup the user name to come from a JWT token in the `Authentication` header with a JSON path like `preferred_username`.
 
 You can also extract roles from the Access Token in a similar manner - make sure your IDP imbeds roles inside the Access Token.
 
 | Config Option | Meaning |
 |----|----|
 | Validate JWT (Access Token) | If unchecked, do not do any validation. |
-| Validate Token Expiry | If checked, validate the ``exp`` claim in the JWT and ensure it is in the future. This should always be checked so you do not allow expired tokens. |
+| Validate Token Expiry | If checked, validate the `exp` claim in the JWT and ensure it is in the future. This should always be checked so you do not allow expired tokens. |
 | Validate JWT (Access Token) Signature | If checked, validate the Token's Signature |
-| JSON Web Key Set URL (jwks_uri) | URL for a JWK Set. This is typically called ``jwks_uri`` in the OIDC metadata configuration. This will be downloaded and used to check the JWT's signature. This should always be checked to ensure that the JWT has not been modified. |
+| JSON Web Key Set URL (jwks_uri) | URL for a JWK Set. This is typically called `jwks_uri` in the OIDC metadata configuration. This will be downloaded and used to check the JWT's signature. This should always be checked to ensure that the JWT has not been modified. |
 | Validate JWT (Access Token) Against Endpoint | If checked, validate the access token against an IDP's token verification URL. |
-| URL (userinfo_endpoint) | IDP's token validation URL. This URL will be retrieved by adding the Access Token to the ``Authentiation: Bearer <access token>`` header. It should return a HTTP 200 status code if the token is valid. This is recommened by the OIDC specification. |
-| Also validate Subject | If checked, the ``sub`` claim of the Access Token and the "userinfo_endpoint" ``sub`` claim will be checked to ensure they are equal. This is recommened by the OIDC specification. |
+| URL (userinfo_endpoint) | IDP's token validation URL. This URL will be retrieved by adding the Access Token to the `Authentiation: Bearer <access token>` header. It should return a HTTP 200 status code if the token is valid. This is recommened by the OIDC specification. |
+| Also validate Subject | If checked, the `sub` claim of the Access Token and the "userinfo_endpoint" `sub` claim will be checked to ensure they are equal. This is recommened by the OIDC specification. |
 | Validate JWT (Access Token) Audience | If checked, the audience of the Access Token is checked. This is recommened by the OIDC specification since this verifies that the Access Token is meant for us. |
-| Claim Name | The name of the claim the audience is in (``aud``, ``azp``, or ``appid`` claim) the Access Token. |
+| Claim Name | The name of the claim the audience is in (`aud`, `azp`, or `appid` claim) the Access Token. |
 | Required Claim Value | The value this claim must be (if the claim is a list of string, then it must contain this value). |

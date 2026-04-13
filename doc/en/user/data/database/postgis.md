@@ -80,7 +80,7 @@ Connection parameters supporting initial database creation:
 | Connection Parameter | Description |
 |----|----|
 | **create database** | Enable to define a new database on connection |
-| **create database params** | Additional CREATE DATABASE definition, example ``WITH TEMPLATE=postgis`` |
+| **create database params** | Additional CREATE DATABASE definition, example `WITH TEMPLATE=postgis` |
 
 When finished, click **Save**.
 

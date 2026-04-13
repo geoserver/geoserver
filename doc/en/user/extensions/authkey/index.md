@@ -225,8 +225,8 @@ If enabled, the service will automatically invoke the corresponding mapper synch
 
 By default the synchronization happens every 60 seconds. In the case an administrator needs to change the auto-sync frequency, he will need to:
 
-1.  Edit the file ``applicationContext.xml`` within the ``gs-authkey`` jar file
-2.  Edit the property ``autoSyncDelaySeconds`` of the ``authenticationKeyProvider`` bean
+1.  Edit the file `applicationContext.xml` within the `gs-authkey` jar file
+2.  Edit the property `autoSyncDelaySeconds` of the `authenticationKeyProvider` bean
 3.  Restart GeoServer
 
 ## Provider pluggability

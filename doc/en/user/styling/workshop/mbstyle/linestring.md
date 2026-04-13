@@ -25,7 +25,7 @@ Reference:
 
 ## Line
 
-A line layer is represented by the ``line`` type.
+A line layer is represented by the `line` type.
 
 ![](../style/img/LineStringStroke.svg)
 
@@ -37,10 +37,10 @@ A line layer is represented by the ``line`` type.
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | New style name:          | ``line_example`` |
+    | New style name:          | `line_example` |
     |--------------------------|----------------------------|
     | Workspace for new layer: | Leave blank                |
-    | Format:                  | ``MBStyle``      |
+    | Format:                  | `MBStyle`      |
 
 
 1.  Fill in the style editor
@@ -67,7 +67,7 @@ A line layer is represented by the ``line`` type.
 
     ![image](../style/img/line.png)
 
-4.  You can see the equivalent SLD by requesting ``http://localhost:8080/geoserver/rest/styles/line_example.sld?pretty=true`` which will currently show the default line symbolizer we created.
+4.  You can see the equivalent SLD by requesting `http://localhost:8080/geoserver/rest/styles/line_example.sld?pretty=true` which will currently show the default line symbolizer we created.
 
     ``` xml
     <?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
@@ -194,7 +194,7 @@ Our next example is significant as it introduces how text labels are generated.
 
 This is also our first example making use of a dynamic style (where a value comes from an attribute from your data).
 
-1.  To enable LineString labeling we add a ``symbol`` layer with a ``text-field``.
+1.  To enable LineString labeling we add a `symbol` layer with a `text-field`.
 
     Update `line_example` with the following:
 
@@ -228,7 +228,7 @@ This is also our first example making use of a dynamic style (where a value come
 
     ![image](../style/img/line_label_1.png)
 
-3.  We have used a feature property calculate a value for the label. The **label** is generated dynamically from the ``name`` attribute. Feature properties are supplied within curly braces, and must match the name of a property of the feature type.
+3.  We have used a feature property calculate a value for the label. The **label** is generated dynamically from the `name` attribute. Feature properties are supplied within curly braces, and must match the name of a property of the feature type.
 
     ```json hl_lines="19"
     {
@@ -289,7 +289,7 @@ This is also our first example making use of a dynamic style (where a value come
     }
     ```
 
-5.  The **text-color** property is set to ``black`` to provide the colour of the text. Notice how this is a **paint** property, unlike all the others which are **layout** properties.
+5.  The **text-color** property is set to `black` to provide the colour of the text. Notice how this is a **paint** property, unlike all the others which are **layout** properties.
 
     ```json hl_lines="24"
     {
@@ -322,7 +322,7 @@ This is also our first example making use of a dynamic style (where a value come
     }
     ```
 
-6.  The **symbol-placement** property is used to set how the label is placed with respect to the line. By default it is ``point`` which causes the label to be placed next to the midpoint as it would be for a point feature. When set to ``line`` it is placed along the line instead. **text-offset** specifies how far from the anchor the label should be placed, in both the x and y directions.
+6.  The **symbol-placement** property is used to set how the label is placed with respect to the line. By default it is `point` which causes the label to be placed next to the midpoint as it would be for a point feature. When set to `line` it is placed along the line instead. **text-offset** specifies how far from the anchor the label should be placed, in both the x and y directions.
 
     ```json hl_lines="20 21"
     {
@@ -403,7 +403,7 @@ The rendering engine collects all the generated labels during the rendering of e
 
 This section explores the use of rules with filters and zoom restrictions.
 
-1.  Replace the ``line_example`` MBStyle definition with:
+1.  Replace the `line_example` MBStyle definition with:
 
     ``` json
     {
@@ -601,7 +601,7 @@ In a classroom setting please divide the challenges between teams (this allows u
 
 ### Challenge One Rule Classification {: #mbstyle.line.q2 }
 
-1.  You can save a lot of typing by doing your classification in an expression using arithmetic or the ``Recode`` function
+1.  You can save a lot of typing by doing your classification in an expression using arithmetic or the `Recode` function
 
 2.  **Challenge:** Create a new style and classify the roads based on their scale rank using expressions in a single rule instead of multiple rules with filters.
 

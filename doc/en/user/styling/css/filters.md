@@ -54,7 +54,7 @@ Supported predicate operators include the following:
 
 | Operator | Meaning |
 |----|----|
-| `=` | The property must be exactly ``equal`` to the specified value. |
+| `=` | The property must be exactly `equal` to the specified value. |
 | `<>` | The property must not be exactly equal to the specified value. |
 | `>` | The property must be greater than (or alphabetically later than) the specified value. |
 | `>=` | The property must be greater than or equal to the specified value. |
@@ -136,7 +136,7 @@ And example with results similar to the scale example would look as follows:
 }
 ```
 
-The @z variable can be used with the following comparison operators: ``<``, ``<=``, ``=``, ``>``, ``>=``. In case of equality, the range between the median scale denominator below the zoom level, and the one above, is used. So for example, when using ``@z=13``, the translated SLD will use a range of scale denominators between 50k and 100k.
+The @z variable can be used with the following comparison operators: `<`, `<=`, `=`, `>`, `>=`. In case of equality, the range between the median scale denominator below the zoom level, and the one above, is used. So for example, when using `@z=13`, the translated SLD will use a range of scale denominators between 50k and 100k.
 
 If other reference gridsets are desired, it's possible to use the `tileMatrixSet` directive at the top of the CSS file. For example:
 

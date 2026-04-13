@@ -58,7 +58,7 @@ This will run the container, with the data directory included with the container
 This will run the container with a local data directory. The data directory will be [mounted](https://docs.docker.com/storage/bind-mounts/) into the docker container.
 
 !!! note
-    Change ``/MY/DATADIRECTORY`` to your data directory. If this directory is empty it will be populated with the standard GeoServer Sample Data Directory.
+    Change `/MY/DATADIRECTORY` to your data directory. If this directory is empty it will be populated with the standard GeoServer Sample Data Directory.
 
 1.  Make sure you have [Docker](https://www.docker.com/) installed.
 

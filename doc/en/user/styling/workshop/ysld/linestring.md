@@ -25,7 +25,7 @@ Reference:
 
 ## Line
 
-A line symbolizer is represented by a ``line`` key. You can make a completely default symbolizer by giving it an empty map
+A line symbolizer is represented by a `line` key. You can make a completely default symbolizer by giving it an empty map
 
 ```yaml
 line:
@@ -41,10 +41,10 @@ line:
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | New style name:          | ``line_example`` |
+    | New style name:          | `line_example` |
     |--------------------------|----------------------------|
     | Workspace for new layer: | Leave blank                |
-    | Format:                  | ``YSLD``         |
+    | Format:                  | `YSLD`         |
 
 
 1.  Choose **line** from the `Generate a default style` dropdown and click **generate**.
@@ -70,7 +70,7 @@ line:
 
     ![image](../style/img/line.png)
 
-3.  You can see the equivalent SLD by requesting ``http://localhost:8080/geoserver/rest/styles/line_example.sld?pretty=true`` which will currently show the default line symbolizer we created.
+3.  You can see the equivalent SLD by requesting `http://localhost:8080/geoserver/rest/styles/line_example.sld?pretty=true` which will currently show the default line symbolizer we created.
 
     ``` xml
     <?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
@@ -128,7 +128,7 @@ We only specified the line symbolizer, so all of the boilerplate around was gene
     ![image](../style/img/line_stroke.png)
 
 !!! note
-    The GeoServer rendering engine is quite sophisticated and allows the use of units of measure (such as ``m`` or ``ft``). While we are using pixels in this example, real world units will be converted using the current scale, allowing for lines that change width with the scale.
+    The GeoServer rendering engine is quite sophisticated and allows the use of units of measure (such as `m` or `ft`). While we are using pixels in this example, real world units will be converted using the current scale, allowing for lines that change width with the scale.
 
 ## Multiple Symbolizers
 
@@ -207,7 +207,7 @@ Our next example is significant as it introduces how text labels are generated.
 
 This is also our first example making use of a dynamic style (where a value comes from an attribute from your data).
 
-1.  To enable LineString labeling we add a ``text`` symbolizer witrh a ``label``.
+1.  To enable LineString labeling we add a `text` symbolizer witrh a `label`.
 
     Update `line_example` with the following:
 
@@ -224,7 +224,7 @@ This is also our first example making use of a dynamic style (where a value come
 
     ![image](../style/img/line_label_1.png)
 
-3.  We have used an expression to calculate a property value for label. The **label** is generated dynamically from the ``name`` attribute. Expressions are supplied within curly braces preceded with a dollar sign, and use Extended Constraint Query Language (ECQL) syntax.
+3.  We have used an expression to calculate a property value for label. The **label** is generated dynamically from the `name` attribute. Expressions are supplied within curly braces preceded with a dollar sign, and use Extended Constraint Query Language (ECQL) syntax.
 
     ```yaml hl_lines="6"
     symbolizers:
@@ -249,7 +249,7 @@ This is also our first example making use of a dynamic style (where a value come
         offset: 7px
     ```
 
-5.  The **fill-color** property is set to ``black`` to provide the colour of the text.
+5.  The **fill-color** property is set to `black` to provide the colour of the text.
 
     ```yaml hl_lines="7"
     symbolizers:
@@ -263,7 +263,7 @@ This is also our first example making use of a dynamic style (where a value come
         offset: 7px
     ```
 
-6.  The **placement** property is used to set how the label is placed with respect to the line. By default it is ``point`` which causes the label to be placed next to the midpoint as it would be for a point feature. When set to ``line`` it is placed along the line instead. **offset** specifies how far from the line the label should be placed.
+6.  The **placement** property is used to set how the label is placed with respect to the line. By default it is `point` which causes the label to be placed next to the midpoint as it would be for a point feature. When set to `line` it is placed along the line instead. **offset** specifies how far from the line the label should be placed.
 
     ```yaml hl_lines="8 9"
     symbolizers:
@@ -340,7 +340,7 @@ To take greater control over the GeoServer rendering engine we can use "vendor s
 
 This section explores the use of rules with filters and scale restrictions.
 
-1.  Replace the ``line_example`` YSLD definition with:
+1.  Replace the `line_example` YSLD definition with:
 
     ``[ yaml
     rules:
@@ -448,9 +448,9 @@ This section explores the use of rules with filters and scale restrictions.
 
     7.  When a rule has both a filter and a scale, it will trigger when both are true.
 
-    The first rule has ``else: true`` instead of a filter. This causes it to be applied after all other rules have been checked if none of them worked.
+    The first rule has `else: true` instead of a filter. This causes it to be applied after all other rules have been checked if none of them worked.
 
-    Since there are some things we need to specify more than once like the colour and filter for primary and secondary roads, even as they change size at different scales, they are given names with ``define`` so they can be reused. The filters are inserted inline using ``*name`` while the style is inserted as a block with ``<<: *name``
+    Since there are some things we need to specify more than once like the colour and filter for primary and secondary roads, even as they change size at different scales, they are given names with `define` so they can be reused. The filters are inserted inline using `*name` while the style is inserted as a block with `<<: *name`
 
     ![image](../style/img/line_06_adjust.png)
 
@@ -470,7 +470,7 @@ This section explores the use of rules with filters and scale restrictions.
 
     Vendor options can be used to enable some quite spectacular effects, while still providing a style that can be used by other applications.
 
-    1.  Update ``line_example`` with the following:
+    1.  Update `line_example` with the following:
 
     ``` yaml
     symbolizers:
@@ -483,7 +483,7 @@ This section explores the use of rules with filters and scale restrictions.
         x-followLine: true
     ```
 
-    The ``\#`` character is the comment character in YAML, so we have to quote strings that contain it like colours and in this expression.
+    The `\#` character is the comment character in YAML, so we have to quote strings that contain it like colours and in this expression.
 
     2.  The property **stroke-width** has been used to make our line thicker in order to provide a backdrop for our label.
 
@@ -555,7 +555,7 @@ This section explores the use of rules with filters and scale restrictions.
 
     ### Challenge One Rule Classification {: #ysld.line.q2 }
 
-    1.  You can save a lot of typing by doing your classification in an expression using arithmetic or the ``Recode`` function
+    1.  You can save a lot of typing by doing your classification in an expression using arithmetic or the `Recode` function
 
     2.  **Challenge:** Create a new style and classify the roads based on their scale rank using expressions in a single rule instead of multiple rules with filters.
 

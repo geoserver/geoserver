@@ -100,8 +100,8 @@ Give the structure required in output, it's not possible to use the simple featu
 
 The default templates are part of the GeoServer distribution, and are automatically copied to the data directory on startup, to allow for customization:
 
-- ``\$GEOSERVER_DATA_DIR/templates/os-eo/products.json`` is the [products template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/products.json)
-- ``\$GEOSERVER_DATA_DIR/templates/os-eo/collections.json`` is the [collections template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/collections.json)
+- `\$GEOSERVER_DATA_DIR/templates/os-eo/products.json` is the [products template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/products.json)
+- `\$GEOSERVER_DATA_DIR/templates/os-eo/collections.json` is the [collections template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/collections.json)
 
 The default templates work against the [default PostGIS database structure](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql) and can be customized to include new properties to follow eventual database modifications.
 

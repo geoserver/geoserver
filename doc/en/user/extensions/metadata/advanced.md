@@ -4,7 +4,7 @@
 
 ## Import from Geonetwork
 
-The **Import from Geonetwork** option allows the user to import existing metadata from [GeoNetwork](https://geonetwork-opensource.org//). Two confurations are needed for the import to work:
+The **Import from Geonetwork** option allows the user to import existing metadata from [GeoNetwork](https://geonetwork-opensource.org//). Two configurations are needed for the import to work:
 
 - **geonetworks:** configure a list geonetwork endpoints
 - **geonetworkmapping:** define the mapping between the geonetwork fields and the fields configured in the metadata module.
@@ -30,7 +30,7 @@ geonetworks:
 
 ### Geonetwork mapping configuration
 
-Each field from Geonetwork can be mapped to a native field from GeoServer or a field from the metadata module. The configuration for simple components are added under the yaml attribute ``geonetworkmapping``. The fields of the type `COMPLEX` are mapped under the attribute ``objectmapping``.
+Each field from Geonetwork can be mapped to a native field from GeoServer or a field from the metadata module. The configuration for simple components are added under the yaml attribute `geonetworkmapping`. The fields of the type `COMPLEX` are mapped under the attribute `objectmapping`.
 
 The example will map one field (UUID) from the geonetwork xml to UI.
 
@@ -54,7 +54,7 @@ objectmapping:
           geonetwork: .//gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode/@codeListValue
 ```
 
-Metadata from geonetwork can also be mapped to native fields. Do this by setting the ``mappingType`` to `NATIVE`
+Metadata from geonetwork can also be mapped to native fields. Do this by setting the `mappingType` to `NATIVE`
 
 ``` YAML
 -  geoserver: title

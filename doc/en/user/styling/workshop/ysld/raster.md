@@ -39,10 +39,10 @@ The **raster** symbolizer controls the display of raster data. By default, the r
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``image_example`` |
+    | Name:      | `image_example` |
     |------------|-----------------------------|
-    | Workspace: | ``No workspace``  |
-    | Format:    | ``YSLD``          |
+    | Workspace: | `No workspace`  |
+    | Format:    | `YSLD`          |
 
 
 1.  Choose **raster** from the `Generate a default style` dropdown and click **generate**.
@@ -83,10 +83,10 @@ The `usgs:dem` layer used for this exercise:
 1.  Return to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``raster_example`` |
+    | Name:      | `raster_example` |
     |------------|------------------------------|
-    | Workspace: | ``No workspace``   |
-    | Format:    | ``YSLD``           |
+    | Workspace: | `No workspace`   |
+    | Format:    | `YSLD`           |
 
 
 1.  Choose **raster** from the `Generate a default style` dropdown and click **generate**.
@@ -129,7 +129,7 @@ For qualitative data (such as land use) or simply to use color, we need a differ
 !!! note
     We can use a color map to artificially color a single band raster introducing smooth graduations for elevation or temperature models or clear differentiation for qualitative data.
 
-1.  Apply the following YAML to our ``usgs:DEM`` layer:
+1.  Apply the following YAML to our `usgs:DEM` layer:
 
     ```yaml hl_lines="4 5 6 7 8 9 10"
     symbolizers:
@@ -286,9 +286,9 @@ symbolizers:
 
 1.  The color-map **type** property dictates how the values are used to generate a resulting color.
 
-    - ``ramp`` is used for quantitative data, providing a smooth interpolation between the provided color values.
-    - ``intervals`` provides categorization for quantitative data, assigning each range of values a solid color.
-    - ``values`` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
+    - `ramp` is used for quantitative data, providing a smooth interpolation between the provided color values.
+    - `intervals` provides categorization for quantitative data, assigning each range of values a solid color.
+    - `values` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
 
 2.  **Challenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
 
@@ -304,7 +304,7 @@ Additional properties are available to provide slight image processing during vi
 
 Image processing can be used to enhance the output to highlight small details or to balance images from different sensors allowing them to be compared.
 
-1.  The **contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for ``normalize`` or ``histogram`` or ``none``;
+1.  The **contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for `normalize` or `histogram` or `none`;
 
 ```yaml
 symbolizers:

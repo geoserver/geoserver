@@ -11,7 +11,7 @@ The installation process is similar to other GeoServer community modules:
 
 1.  Login, and navigate to **About & Status > About GeoServer** and check **Build Information** to determine the exact version of GeoServer you are running.
 
-2.  Make sure you have downloaded and installed the ``app-schema`` extension first.
+2.  Make sure you have downloaded and installed the `app-schema` extension first.
 
     Visit the [website download](https://geoserver.org/download) page, change the **Archive** tab, and locate your release.
 
@@ -28,7 +28,7 @@ The installation process is similar to other GeoServer community modules:
 
     - {{ snapshot }} example: [smart-data-loader](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-smart-data-loader-plugin.zip)
 
-    The website lists active nightly builds to provide feedback to developers, you may also ``browse <https://build.geoserver.org/geoserver/>`` for earlier branches.
+    The website lists active nightly builds to provide feedback to developers, you may also `browse <https://build.geoserver.org/geoserver/>` for earlier branches.
 
 4.  Extract the contents of the archive into the **`WEB-INF/lib`** directory in GeoServer. Make sure you do not create any sub-directories during the extraction process.
 

@@ -96,7 +96,7 @@ The `stringParameterFilter` takes a collection of plain text strings. If the val
 
 ##### Regular Expression
 
-The ``regexParameterFilter`` takes a regular expression to match strings. This should be used with caution as it potentially allows an arbitrarily large number of caches to be created. Like the string filter, it can be normalized for case.
+The `regexParameterFilter` takes a regular expression to match strings. This should be used with caution as it potentially allows an arbitrarily large number of caches to be created. Like the string filter, it can be normalized for case.
 
 ##### List of Numbers
 

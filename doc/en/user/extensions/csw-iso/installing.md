@@ -29,4 +29,4 @@ To install the CSW ISO extension:
 
 5.  Verify that the CSW module was installed correctly by going to the Welcome page of the [Web administration interface](../../webadmin/index.md) and seeing that **CSW** is listed in the **Service Capabilities** list.
 
-    Open the CSW capabilities and search for the text ``gmd:MD_Metadata`` to verify that the ISO metadata profile was installed correctly.
+    Open the CSW capabilities and search for the text `gmd:MD_Metadata` to verify that the ISO metadata profile was installed correctly.

@@ -175,13 +175,13 @@ From the **Add attribute dialog** it is possible to define a new attribute for t
 - The type of the new attribute using the **Type** field. The most common types are available in a drop-down on editing, but it's possible to indicate any valid Java class, as long as GeoServer has a converter that goes from the value produced by the **Source** expression to the target type (new converters can be plugged in with some Java programming).
 - The source for the new attribute, which will be computed based on the **Source** CQL expression in the respective field.
 - A description for the new attribute, which will be visible wherever the feature type is described.
-- The ``nillability`` of the new attribute, for example, making the attribute mandatory even if it's not in the data source, and vice-versa.
+- The `nillability` of the new attribute, for example, making the attribute mandatory even if it's not in the data source, and vice-versa.
 
 ![](img/data_layers_feature_customize_add_attribute.png)
 
 *Add attribute dialog*
 
-For numeric or string types, the dialog also allows defining ``restrictions`` on the attribute value, which will be reported wherever the feature type is described. The restrictions set for an attribute are then available to clients, who may enforce them before applying changes to the feature type.
+For numeric or string types, the dialog also allows defining `restrictions` on the attribute value, which will be reported wherever the feature type is described. The restrictions set for an attribute are then available to clients, who may enforce them before applying changes to the feature type.
 
 Two kinds of restrictions are available, but only one can be specified at a time for an attribute:
 
@@ -203,7 +203,7 @@ When opening the **Edit attribute dialog** from a row in the attribute table, a 
 - Change the type of the attribute.
 - Change the source for the attribute.
 - Edit the description of the attribute.
-- Change the ``nillability`` of the attribute.
+- Change the `nillability` of the attribute.
 - Add or edit the restrictions on the attribute value (refer to the **Add attribute dialog** description above).
 
 Whenever an attribute has been edited with property values significantly different from the default, its representation in the **Feature Type Details** table displays these values in the **Details** column, as shown in the image below.
@@ -258,7 +258,7 @@ By default this behavior is inherited from the global WMS service settings (**WM
 
 ### Services Settings {: #data_webadmin_layers_services }
 
-GeoServer publishes ``virtual_layer_services`` associated with each layer using the configuration provided by [workspace services](workspaces.md#workspace_services)_, or default [global services](../../services/index.md). This configuration includes enable/disabled setting that determines if a service is available.
+GeoServer publishes `virtual_layer_services` associated with each layer using the configuration provided by [workspace services](workspaces.md#workspace_services)_, or default [global services](../../services/index.md). This configuration includes enable/disabled setting that determines if a service is available.
 
 For greater control the **Service Settings** allows specific services to be disabled.
 

@@ -29,7 +29,7 @@ The WPS JDBC extension is a WPS status storage for asynchronous requests. Main a
 
 ## Configuring the WPS JDBC properties
 
-1.  Create a file named ``jdbcstatusstore.props`` into the ``GEOSERVER_DATA_DIR`` root
+1.  Create a file named `jdbcstatusstore.props` into the `GEOSERVER_DATA_DIR` root
 
 2.  Update the sample content below accordingly to your connection parameters
 
@@ -54,8 +54,8 @@ The plugin allows sharing of the execution status among the nodes of the cluster
 
 Nevertheless, this won't be sufficient. You will need to share the Execution folder too, in order to allow the different instances to correctly retrieve the executions results.
 
-1.  Create a shared folder that all the nodes can reach somehow, e.g. by using ``nfs``
-2.  From the GeoServer Admin dashboard, go to the ``WPS`` menu and edit the Resource Storage Directory accordingly
+1.  Create a shared folder that all the nodes can reach somehow, e.g. by using `nfs`
+2.  From the GeoServer Admin dashboard, go to the `WPS` menu and edit the Resource Storage Directory accordingly
 
 ![](images/wps-resource-storage-directory.png)
 

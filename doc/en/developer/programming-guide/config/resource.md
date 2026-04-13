@@ -23,7 +23,7 @@ The methods in the Resource API use String parameter names consistently:
 
   In the case of the default FileSystemResourceStore, this is file path that is relative with respect to the data directory. To preserve generic behaviour compatible with any resource store, developers should not assume this to be the case.
 
-  Resource paths do not support the ``.`` and ``..`` relative directory names. Resource paths use forward slashes, similar to URL's and unix style file paths, and are OS-independent.
+  Resource paths do not support the `.` and `..` relative directory names. Resource paths use forward slashes, similar to URL's and unix style file paths, and are OS-independent.
 
 - `file path` parameter is an absolute path to a file in the file system.
 
@@ -117,7 +117,7 @@ for( Resource child : resource.list()) {
 }
 ```
 
-The method `isInternal()` returns whether the resource is part of the resource store or rather a wrapped file obtained by `File.asResource`. If this method returns ``false`` then `path()` returns a file path rather than a resource path.
+The method `isInternal()` returns whether the resource is part of the resource store or rather a wrapped file obtained by `File.asResource`. If this method returns `false` then `path()` returns a file path rather than a resource path.
 
 The methods `file()` and `dir()` may be used to obtain a file system representation of the resource. Depending on the resource store implementation, this may be the underlying storage entity (in the case of the default FileSystemResourceStore), or merely a cached entity. Changes to these should not be assumed to be permanent. These methods should only be used for input when a third library requires a file and does not support passing on streams.
 

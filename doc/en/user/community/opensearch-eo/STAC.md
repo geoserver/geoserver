@@ -38,8 +38,8 @@ All built-in templates are copied over to the data directory for customization, 
 
 Specifically for the JSON output:
 
-- ``\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/collections.json`` is the [collections template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/collections.json)
-- ``\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/items.json`` is the [items template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/items.json)
+- `\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/collections.json` is the [collections template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/collections.json)
+- `\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/items.json` is the [items template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/items.json)
 
 The JSON templates in the case of STAC also drive database querying, the exposed STAC properties are back-mapped into database properties by interpreting the template. It is advised to keep property mapping as simple as possible to allow usage of native SQL queries and indexes while accessing the database through the STAC API.
 
@@ -62,14 +62,14 @@ When dealing with JSON output for GET requests in the context of STAC service, t
 
 ## Datacube Extension Support
 
-Support for the [STAC Datacube Extension](https://github.com/stac-extensions/datacube) "cube_dimensions" elements is available in HTML and JSON templates via the ``eoSummaries`` function. ``eoSummaries`` supports presenting the following collection-wide summary statistics:
+Support for the [STAC Datacube Extension](https://github.com/stac-extensions/datacube) "cube_dimensions" elements is available in HTML and JSON templates via the `eoSummaries` function. `eoSummaries` supports presenting the following collection-wide summary statistics:
 
 - min - The minimum value of the field in the collection
 - max - The maximum value of the field in the collection
 - distinct - An array of distinct values of the field in the collection
 - bounds - Minimum and maximum dimension values of the spatial bounding box of the collection (either x or y, presented as a two value array or xmin, xmax, ymin, ymax presented as individual dimension values)
 
-``eoSummaries`` has three arguments:
+`eoSummaries` has three arguments:
 
 - aggregate - The type of summary statistic. One of "min", "max", "distinct", or "bounds".
 

@@ -121,7 +121,7 @@ Other settings provide additional [Global Settings](../../configuration/globalse
 
   With this setting disabled layers may be referenced directly (with no prefix) when accessed by a virtual web service. The layer `ne:countries` can be referenced as `countries` when this setting is disabled (and the layer is being accessed via a `ne` virtual web service).
 
-- **Root Directory for REST PathMapper**: setting used by the RESTful API as the ``Root Directory`` for uploaded files, following the structure:
+- **Root Directory for REST PathMapper**: setting used by the RESTful API as the `Root Directory` for uploaded files, following the structure:
 
       ${rootDirectory}/workspace/store[/<file>]
 

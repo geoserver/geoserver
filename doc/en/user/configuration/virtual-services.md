@@ -269,7 +269,7 @@ To disable global services, log into the GeoServer web administration interface 
 
 ### Isolated Workspaces {: #workspace_isolated }
 
-When publishing XML content each FeatureType is published into an XML Namespace. This allows a layer with the same name to be differentiated as they end up with a unique qualified name (in the form ``<namespace>:<layer-name>``). For this approach to avoid any conflicts each workspace is required to have a unique XML Namesapce.
+When publishing XML content each FeatureType is published into an XML Namespace. This allows a layer with the same name to be differentiated as they end up with a unique qualified name (in the form `<namespace>:<layer-name>`). For this approach to avoid any conflicts each workspace is required to have a unique XML Namesapce.
 
 Isolated workspaces allow GeoServer to configure two workspaces with the same XML Namespace, with the with the guarantee that can only be accessed different WFS or WMS Services. This places some restrictions (outlined in examples below) to ensure there is no opportunity for namespace conflict.
 

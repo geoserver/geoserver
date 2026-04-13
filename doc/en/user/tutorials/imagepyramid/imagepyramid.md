@@ -30,7 +30,7 @@ The [gdal_retile.py](http://www.gdal.org/gdal_retile.md) user guide provides a d
 - `-targetDir bmpyramid`: build the pyramid in the bmpyramid directory. The target directory must exist and be empty
 - `bmreduced.tiff`: the source file
 
-This will produce a number of TIFF files in bmpyramid along with the sub-directories ``1``, ``2,`` ``3``, and ``4``.
+This will produce a number of TIFF files in bmpyramid along with the sub-directories `1`, `2,` `3`, and `4`.
 
 Once that is done, and assuming the GeoServer image pyramid plug-in is already installed, it's possible to create the coverage store by pointing at the directory containing the pyramid and clicking save:
 
@@ -38,9 +38,9 @@ Once that is done, and assuming the GeoServer image pyramid plug-in is already i
 
 *Configuring a image pyramid store*
 
-When clicking save the store will look into the directory, recognize a ``gdal_retile`` generated structure and perform some background operations:
+When clicking save the store will look into the directory, recognize a `gdal_retile` generated structure and perform some background operations:
 
-- move all tiff files in the root to a newly create directory ``0``
+- move all tiff files in the root to a newly create directory `0`
 - create an image mosaic in all sub-directories (shapefile index plus property file)
 - create the root property file describing the whole pyramid structure
 
@@ -50,7 +50,7 @@ Once that is done the user will be asked to choose a coverage, which will be nam
 
 *Choosing the coverage for publishing*
 
-Publish the layer, and then setup the layer parameter ``USE_IMAGEN_IMAGEREAD`` to ``false`` to get better scalability:
+Publish the layer, and then setup the layer parameter `USE_IMAGEN_IMAGEREAD` to `false` to get better scalability:
 
 ![](layerParams.png)
 
@@ -67,9 +67,9 @@ Submit and go to the preview, the pyramid should be ready to use:
 The code that is auto-creating the pyramid indexes and metadata files might take time to run, especially if:
 
 - the pyramid zero level is composed of many thousands of files
-- the system is busy with the disk already and that results in higher times to move all the files to the ``0`` directory
+- the system is busy with the disk already and that results in higher times to move all the files to the `0` directory
 
-If the delay is too high the request to create the store will time out and might break the pyramid creation. So, in case of very big pyramids consider loosing some of the comfort and creating the ``0`` directory and moving the files by hand:
+If the delay is too high the request to create the store will time out and might break the pyramid creation. So, in case of very big pyramids consider loosing some of the comfort and creating the `0` directory and moving the files by hand:
 
     cd bmpyramid
     mkdir 0

@@ -9,7 +9,7 @@ For more examples, see the IDP-specific configuration examples - [Google](oauth2
 
 ## Extracting Roles from the OIDC IDP
 
-The ``oidc`` module allows for providing user roles with the standard GeoServer role providers. It also adds four new ones: ID Token, Access Token, UserInfo, and Microsoft Graph.
+The `oidc` module allows for providing user roles with the standard GeoServer role providers. It also adds four new ones: ID Token, Access Token, UserInfo, and Microsoft Graph.
 
 | Name | Meaning |
 |----|----|
@@ -20,7 +20,7 @@ The ``oidc`` module allows for providing user roles with the standard GeoServer 
 
 ## Role Configuration Overview
 
-1.  Choose a role source - typically ``ID Token``, but can also be ``Access Token`` or ``UserInfo``.
+1.  Choose a role source - typically `ID Token`, but can also be `Access Token` or `UserInfo`.
 
 ![](img/role-source-dropdown.png)
 
@@ -28,7 +28,7 @@ The ``oidc`` module allows for providing user roles with the standard GeoServer 
 
 ![](img/json-path.png)
 
-3.  Set the ``Role Converter Map`` so it converts the IDP's roles to GeoServer roles.
+3.  Set the `Role Converter Map` so it converts the IDP's roles to GeoServer roles.
 
 ![](img/roleConvert.png)
 
@@ -91,11 +91,11 @@ In this token's JSON claims, notice this part:
 }
 ```
 
-We would, therefore, specify the JSON Path to ``resource_access.live-key2.roles`` to get the two external IDP roles ("`GeonetworkAdminr`", and "`GeoserverAdmin`"). In keycloak, the JSON path will be of the form ``resource_access.<client name>.roles``. Other OIDC IDPs will put the roles in a different location.
+We would, therefore, specify the JSON Path to `resource_access.live-key2.roles` to get the two external IDP roles ("`GeonetworkAdminr`", and "`GeoserverAdmin`"). In keycloak, the JSON path will be of the form `resource_access.<client name>.roles`. Other OIDC IDPs will put the roles in a different location.
 
 ### Access Token
 
-If you choose the Access Token as your role source, you can also use ``scope`` for the JSON path. This will look at the OIDC IDP's [code response](https://auth0.com/docs/authenticate/login/oidc-conformant-authentication/oidc-adoption-auth-code-flow) to see what [scopes](https://auth0.com/docs/get-started/apis/scopes/openid-connect-scopes) are available.
+If you choose the Access Token as your role source, you can also use `scope` for the JSON path. This will look at the OIDC IDP's [code response](https://auth0.com/docs/authenticate/login/oidc-conformant-authentication/oidc-adoption-auth-code-flow) to see what [scopes](https://auth0.com/docs/get-started/apis/scopes/openid-connect-scopes) are available.
 
 For **very** advanced users (not recommended - only do this if your IDP uses this mechanism), you can also extract other parts from the code response. This is only provided to help with opaque (non-JWT) Access Tokens. Here is what a typical code response looks like:
 
@@ -117,13 +117,13 @@ See the [Azure/Entra Configuration](oauth2/azure.md)
 
 ## External-Internal Role Translation
 
-The ``oidc`` module provides an easy what to convert the name of an external IDP's role to a local GeoServer role.
+The `oidc` module provides an easy what to convert the name of an external IDP's role to a local GeoServer role.
 
 ![](img/roleConvert.png)
 
-In this example, the OIDC IDP will return a ``geoserverAdmin`` role (see ID Token example, above). You can configure GeoServer to understand what this means, however, this can be complex. Instead this defines a very simple translation from the role in the ID Token (``External Role Name``) to an internal GeoServer role name.
+In this example, the OIDC IDP will return a `geoserverAdmin` role (see ID Token example, above). You can configure GeoServer to understand what this means, however, this can be complex. Instead this defines a very simple translation from the role in the ID Token (`External Role Name`) to an internal GeoServer role name.
 
-In this example we are converting the IDP's ``geoserverAdmin`` role to ``ROLE_ADMINISTRATOR``.
+In this example we are converting the IDP's `geoserverAdmin` role to `ROLE_ADMINISTRATOR`.
 
 You can specify multiple translations separated by the "`;`" character.
 

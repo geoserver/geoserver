@@ -41,9 +41,9 @@ Navigate to **Data > Content Security Policy** to manage and configure the CSP h
 
 *CSP Configuration*
 
-Use the **Enable Content-Security-Policy header** checkbox to enable/disable this feature. This setting will enable/disable the CSP set by Wicket or any other modules setting their own CSP unless **Allow modules to override header** is set to ``true``.
+Use the **Enable Content-Security-Policy header** checkbox to enable/disable this feature. This setting will enable/disable the CSP set by Wicket or any other modules setting their own CSP unless **Allow modules to override header** is set to `true`.
 
-Use the **Report violations without enforcement** checkbox to switch the header name from `Content-Security-Policy` to `Content-Security-Policy-Report-Only`. This will tell the browser to report CSP violations without enforcing their effects to allow administrators and developers to experiment with different policies. This setting will apply to the CSP set by Wicket or any other modules setting their own CSP unless **Allow modules to override header** is set to ``true``.
+Use the **Report violations without enforcement** checkbox to switch the header name from `Content-Security-Policy` to `Content-Security-Policy-Report-Only`. This will tell the browser to report CSP violations without enforcing their effects to allow administrators and developers to experiment with different policies. This setting will apply to the CSP set by Wicket or any other modules setting their own CSP unless **Allow modules to override header** is set to `true`.
 
 Use the **Allow modules to override header** checkbox to allow Wicket web pages and other modules to completely overwrite the header that is set by this configuration. By default, when the CSP header is set by another component, GeoServer will attempt to append any non-fetch directives from the old header value that are not already in the new value. This is primarily intended to add the `form-action` and `frame-ancestors` directives to Wicket's CSP header.
 
@@ -202,7 +202,7 @@ Leaving the directives blank will cause this rule to use the directives from the
 
 The **Test Content Security Policy** form allows a URL to be checked, reporting the CSP header value that would be set for a GET request to that URL. This form will test the current CSP configuration in the page to allow administrators to verify the changes before saving them to the configuration file.
 
-Enter the URL to test in the **Test URL** text field and press the **Test** button to perform the test. The **Content-Security-Policy header value** text field will contain the CSP for the test URL with the string ``NONE`` being shown if no header would be set.
+Enter the URL to test in the **Test URL** text field and press the **Test** button to perform the test. The **Content-Security-Policy header value** text field will contain the CSP for the test URL with the string `NONE` being shown if no header would be set.
 
 ![](images/csp-test.png)
 
@@ -250,7 +250,7 @@ For more information see [GetFeatureInfo Templates](../tutorials/GetFeatureInfo/
 
 ### Serving Static Files
 
-GeoServer allows serving static files from the ``GEOSERVER_DATA_DIR/www`` folder as an easy way to provide html, images or scripts alongside geospatial content.
+GeoServer allows serving static files from the `GEOSERVER_DATA_DIR/www` folder as an easy way to provide html, images or scripts alongside geospatial content.
 
 The [application property](../configuration/properties/index.md) `GEOSERVER_STATIC_WEB_FILES_SCRIPT` controls the `Content-Security-Policy` for the static files location.
 

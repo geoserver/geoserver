@@ -186,7 +186,7 @@ Note:
 
     UNIT["km", 1000.0], \
 
-Set **`-Dorg.geotools.coverage.io.netcdf.convertAxis.km`** to ``true`` to activate the automatic conversion or ``false`` to deactivate it.
+Set **`-Dorg.geotools.coverage.io.netcdf.convertAxis.km`** to `true` to activate the automatic conversion or `false` to deactivate it.
 
 !!! note
     that is a global JVM setting: Any dataset with coordinates in km being configured before swapping the conversion behavior will need to be reconfigured to set the new Geometries and CRS.

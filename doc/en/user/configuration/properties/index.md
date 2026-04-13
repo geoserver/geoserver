@@ -135,7 +135,7 @@ Using `GEOSERVER_DATA_DIR` as an example:
     
           Other application servers provide a user interface to manage web application properties and are more intuitive.
 
-    - Not recommended: Hand editing the ``webapps/geoserver/WEB-INF/web.xml`` file:
+    - Not recommended: Hand editing the `webapps/geoserver/WEB-INF/web.xml` file:
 
       ``` xml
       <context-param>

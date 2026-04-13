@@ -2,7 +2,7 @@ GeoServer HTML documentation
 ============================
 
 This archive contains HTML documentation for GeoServer. To read these manuals, go into the
-appropriate folder and open the ``index.html`` file in a browser:
+appropriate folder and open the `index.html` file in a browser:
 
 * [index.html](index.html)
 

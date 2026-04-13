@@ -34,12 +34,12 @@ The only mandatory property for representation of linework is **stroke**. This i
 The use of **stroke** as a key property prevents CSS from having the idea of a default line color (as the **stroke** information must be supplied each time).
 
 1.  Navigate to the **CSS Styles** page.
-2.  Click **Choose a different layer** and select ``ne:roads`` from the list.
+2.  Click **Choose a different layer** and select `ne:roads` from the list.
 3.  Click **Create a new style** and choose the following:
 
-    | Workspace for new layer: | ``No workspace`` |
+    | Workspace for new layer: | `No workspace` |
     |--------------------------|----------------------------|
-    | New style name:          | ``line_example`` |
+    | New style name:          | `line_example` |
 
 
 1.  Replace the generated CSS definition with the following **stroke** example:
@@ -109,7 +109,7 @@ The use of **stroke** as a key property prevents CSS from having the idea of a d
     ![image](../style/img/line_stroke.png)
 
 !!! note
-    The GeoServer rendering engine is quite sophisticated and allows the use of units of measure (such as ``m`` or ``ft``). While we are using pixels in this example, real world units will be converted using the current scale.
+    The GeoServer rendering engine is quite sophisticated and allows the use of units of measure (such as `m` or `ft`). While we are using pixels in this example, real world units will be converted using the current scale.
 
 ## Z-Index
 
@@ -177,7 +177,7 @@ This is also our first example making use of a dynamic style (where the value of
 
     ![image](../style/img/line_label_1.png)
 
-3.  We have used an expression to calculate a property value for label. The **label** property is generated dynamically from the ``name`` attribute. Expressions are supplied within square brackets, making use of Constraint Query Language (CQL) syntax.
+3.  We have used an expression to calculate a property value for label. The **label** property is generated dynamically from the `name` attribute. Expressions are supplied within square brackets, making use of Constraint Query Language (CQL) syntax.
 
     ```css hl_lines="3"
     * {
@@ -197,7 +197,7 @@ This is also our first example making use of a dynamic style (where the value of
     }
     ```
 
-5.  The **font-fill** property is set to ``black`` provides the label color.
+5.  The **font-fill** property is set to `black` provides the label color.
 
     ```css hl_lines="4"
     * {
@@ -265,9 +265,9 @@ To take greater control over the GeoServer rendering engine we can use extra par
 
 ## Scale
 
-This section explores the use of attribute selectors and the ``@scale`` selector together to simplify the road dataset for display.
+This section explores the use of attribute selectors and the `@scale` selector together to simplify the road dataset for display.
 
-1.  Replace the ``line_example`` CSS definition with:
+1.  Replace the `line_example` CSS definition with:
 
     ``` css
     [scalerank < 4] {
@@ -358,7 +358,7 @@ In a classroom setting please divide the challenges between teams (this allows u
 
 Options can be used to enable some quite useful effects, while still providing a style that can be used by other applications.
 
-1.  Update ``line_example`` with the following:
+1.  Update `line_example` with the following:
 
     ``` css
     * {

@@ -22,15 +22,15 @@ Individual statements (or directives) in a YSLD styling document are designed as
 <property>: <value>
 ```
 
-The ``<property>`` is a string denoting the property name, while the ``<value>`` can be one of a number of different types depending on context.
+The `<property>` is a string denoting the property name, while the `<value>` can be one of a number of different types depending on context.
 
 | Integer    | Numerical value. May be surrounded by quotes.             |
 |------------|-----------------------------------------------------------|
 | Float      | Numerical value. May be surrounded by quotes.             |
 | Text       | Text value. If value is ambiguous, use single quotes.     |
-| Color      | Hexadecimal color of the form ``'#RRGGBB'``.  |
+| Color      | Hexadecimal color of the form `'#RRGGBB'`.  |
 | Tuple      | A list of values in brackets. e.g. `[0, 1]` |
-| Expression | CQL expression surrounded by ``\${ }``          |
+| Expression | CQL expression surrounded by `\${ }`          |
 
 ### Mappings and lists
 
@@ -59,7 +59,7 @@ For example, a symbolizer block is a list, so every entry requires its own dash:
 > >
 > >     :   \...
 
-The ``polygon:`` and ``text:`` objects (the individual symbolizers themselves) are mappings, and as such, the contents do not require dashes, only indents:
+The `polygon:` and `text:` objects (the individual symbolizers themselves) are mappings, and as such, the contents do not require dashes, only indents:
 
 ```yaml
 - polygon:
@@ -173,7 +173,7 @@ rules:
         fill-color: 'gray'
 ```
 
-In the above example the label is defined using the CQL Expression ``NAME``. This results in a dynamic style that generates each label on a case-by-case basis, filling in the label with the feature attribute ``NAME``.
+In the above example the label is defined using the CQL Expression `NAME`. This results in a dynamic style that generates each label on a case-by-case basis, filling in the label with the feature attribute `NAME`.
 
 Reference:
 
@@ -190,7 +190,7 @@ Variables in YSLD allow for a certain directive or block of directives to be def
 
 The two most-common use cases for using variables are:
 
-- To create a more-friendly name for a value (such as using myorange instead of ``#EE8000``)
+- To create a more-friendly name for a value (such as using myorange instead of `#EE8000`)
 - To define a block of directives to remove redundant content and to decrease file length
 
 It is customary, but not required, to place all definitions at the very top of the YSLD file.
@@ -220,7 +220,7 @@ define: &varblock
   ...
 ```
 
-The syntax for using a variable block is to prepend the variable name with ``<<: *``. For example:
+The syntax for using a variable block is to prepend the variable name with `<<: *`. For example:
 
 ```yaml
 <block>:
@@ -288,7 +288,7 @@ symbolizers:
         format: image/svg
 ```
 
-We use a point symbolizer to indicate we want this content drawn as a **Point** (line 16 in the SLD, line 5 in the YSLD). The point symbolizer declares an external graphic, which contains the URL ``airports.svg`` indicating the image that should be drawn (line 20 in the SLD, line 9 in the YSLD).
+We use a point symbolizer to indicate we want this content drawn as a **Point** (line 16 in the SLD, line 5 in the YSLD). The point symbolizer declares an external graphic, which contains the URL `airports.svg` indicating the image that should be drawn (line 20 in the SLD, line 9 in the YSLD).
 
 ## Tour
 
@@ -297,10 +297,10 @@ To confirm everything works, let's reproduce the airports style above.
 1.  Navigate to the **Styles** page.
 2.  Each time we edit a style, the contents of the associated SLD file are replaced. Rather than disrupt any of our existing styles we will create a new style. Click **Add a new style** and choose the following:
 
-    | Name:      | ``airports0`` |
+    | Name:      | `airports0` |
     |------------|-------------------------|
     | Workspace: | (leave empty)           |
-    | Format:    | ``YSLD``      |
+    | Format:    | `YSLD`      |
 
 
 1.  Replace the initial YSLD definition with our airport YSLD example and click **Apply**:
@@ -313,7 +313,7 @@ To confirm everything works, let's reproduce the airports style above.
     {%endraw%}
     ```
 
-2.  Click the **Layer Preview** tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select ``ne:airports`` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
+2.  Click the **Layer Preview** tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select `ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
 
     ![](../style/img/css_02_choose_data.png)
 

@@ -50,11 +50,11 @@ The use of Content Security Policy headers is an additional safety precaution in
 
   If you encounter any CSP problems please let us know, as an open-source project we depend on public feedback and testing to report these issues.
 
-  If you have recently upgraded GeoServer you may also try refreshing the page ``Control-R``, or reloading the page ignoring the cache content ``Control-Shift-R``.
+  If you have recently upgraded GeoServer you may also try refreshing the page `Control-R`, or reloading the page ignoring the cache content `Control-Shift-R`.
 
 - With these improved CSP safety measures GeoServer may now detect vulnerabilities in your environment that were previously undetected.
 
-  The `form-action 'self'` error above is an example, caused by a proxy forwarding a request to GeoServer using ``http:`` which did not match the ``https:`` defined by the GeoServer [Proxy Base URL](../configuration/globalsettings.md#proxy_base) setting.
+  The `form-action 'self'` error above is an example, caused by a proxy forwarding a request to GeoServer using `http:` which did not match the `https:` defined by the GeoServer [Proxy Base URL](../configuration/globalsettings.md#proxy_base) setting.
 
 - GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on [Content Security Policy](../security/csp.md) for very detailed information.
 

@@ -4,8 +4,8 @@ This module allows [JSON-based](https://en.wikipedia.org/wiki/JSON) headers (for
 
 If you are using something like [Apache's mod_auth_openidc](https://github.com/OpenIDC/mod_auth_openidc), then this module will allow you to;
 
-1.  Get the username from an Apache-provided ``OIDC_*`` header (either as simple-strings or as a component of a JSON object).
-2.  Get the user's roles from an Apache-provided ``OIDC_*`` header (as a component of a JSON object).
+1.  Get the username from an Apache-provided `OIDC_*` header (either as simple-strings or as a component of a JSON object).
+2.  Get the user's roles from an Apache-provided `OIDC_*` header (as a component of a JSON object).
 3.  The user's roles can also be from any of the standard GeoServer providers (i.e. User Group Service, Role Service, or Request Header).
 
 If you are using [OAUTH2/OIDC Access Tokens](https://www.oauth.com/oauth2-servers/access-tokens/):

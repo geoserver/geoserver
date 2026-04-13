@@ -44,12 +44,12 @@ Map Record attributes to xml [Record.properties](files/Record.properties)
 
 You may now see your custom metadata exposed by the built-in CSW service:
 
-e.g. ``https://my.host/geoserver/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd``.
+e.g. `https://my.host/geoserver/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd`.
 
 ## GeoNetwork configuration
 
 Create a GeoNetwork CSW harvester that points to your to GeoServer's CSW endpoint:
 
-e.g. ``https://my.host/geoserver/csw?Service=CSW&Request=Getcapabilities``.
+e.g. `https://my.host/geoserver/csw?Service=CSW&Request=Getcapabilities`.
 
 You may now start harvesting!

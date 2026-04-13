@@ -42,7 +42,7 @@ Once the extension is properly installed `MySQL` will show up as an option when 
 | `host` | The mysql server host name or ip address. |
 |----|----|
 | `port` | The port on which the mysql server is accepting connections. |
-| `database` | The name of the database to connect to. Can also contain a suffix with a connection URL query, such as ``mydbname?useSSL=false`` |
+| `database` | The name of the database to connect to. Can also contain a suffix with a connection URL query, such as `mydbname?useSSL=false` |
 | `user` | The name of the user to connect to the mysql database as. |
 | `password` | The password to use when connecting to the database. Left blank for no password. |
 | `max connections` `min connections` `validate connections` | Connection pool configuration parameters. See the [Database Connection Pooling](connection-pooling.md) section for details. |

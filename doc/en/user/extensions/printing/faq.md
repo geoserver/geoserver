@@ -59,7 +59,7 @@ By default, the browser's configured locale is used. You can force another local
 
 First edit the client/examples/examples.js file and make sure the URLs are correct.
 
-1.  If you don't want to install the server side, make sure you installed a proxy (see Configure Proxy). For example, test (must return a JSON content, not the proxy.cgi script's content) it with an URL like that (adapt the hostname, port and path): ``http://localhost/cgi-bin/proxy.cgi?url=http://demo.mapfish.org/mapfishsample/trunk/print/info.json``
-2.  If you installed the server side, make sure it works by calling the URL specified in the mapfish.SERVER_BASE_URL variable (must be the hostname/port your page is accessed through) added with ``/print/info.json``. For example, if you have ``mapfish.SERVER_BASE_URL="http://localhost/mapfish": http://localhost/mapfish/print/info.json``
+1.  If you don't want to install the server side, make sure you installed a proxy (see Configure Proxy). For example, test (must return a JSON content, not the proxy.cgi script's content) it with an URL like that (adapt the hostname, port and path): `http://localhost/cgi-bin/proxy.cgi?url=http://demo.mapfish.org/mapfishsample/trunk/print/info.json`
+2.  If you installed the server side, make sure it works by calling the URL specified in the mapfish.SERVER_BASE_URL variable (must be the hostname/port your page is accessed through) added with `/print/info.json`. For example, if you have `mapfish.SERVER_BASE_URL="http://localhost/mapfish": http://localhost/mapfish/print/info.json`
 
 If it still doesn't work, use firefox, install firebug and check in the console panel that the AJAX request made by the print widget works fine.

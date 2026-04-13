@@ -7,7 +7,7 @@ The RESTful API allows to create new stores and append new granules to mosaics v
 
     $GEOSERVER_DATA_DIR/data/<workspace>/<store>[/<file>]
 
-For changing the ``Root Directory`` from ``\$GEOSERVER_DATA_DIR/data`` to another directory, the user can define a parameter called ``Root Directory path`` inside [Global Settings Page](globalsettings.md#config_globalsettings_rest_root_dir) and [Workspace Settings Page](../data/webadmin/workspaces.md).
+For changing the `Root Directory` from `\$GEOSERVER_DATA_DIR/data` to another directory, the user can define a parameter called `Root Directory path` inside [Global Settings Page](globalsettings.md#config_globalsettings_rest_root_dir) and [Workspace Settings Page](../data/webadmin/workspaces.md).
 
 In order to avoid cross workspace contamination, the final path will always be:
 

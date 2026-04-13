@@ -216,6 +216,9 @@ h5 {
 legend {
   font-size: calc(1.02rem + 0.24vw);
 }
+legend:has(.help-link) .help-link {
+  margin-left: 0.5rem;
+}
 @media (min-width: 1200px) {
   legend {
     font-size: 1.2rem;

@@ -23,7 +23,7 @@ Here are step-by-step instructions to import multiple shapefiles in one operatio
 
     *Directory*
 
-6.  Back on the main form, select **Create new** next to **Workspace**, and enter ``ne`` to denote the workspace.
+6.  Back on the main form, select **Create new** next to **Workspace**, and enter `ne` to denote the workspace.
 
     !!! note
         Make sure the **Store** field reads **Create new** as well.
@@ -46,7 +46,7 @@ Here are step-by-step instructions to import multiple shapefiles in one operatio
 9.  In most cases, all files will be ready for import, but if the spatial reference system (SRS) is not recognized, you will need to manually input this but clicking **Advanced**
 
     !!! note
-        You will need to manually input the SRS if you used the Natural Earth data above. For each layer click on **Advanced** and set reprojection to ``EPSG:4326``.
+        You will need to manually input the SRS if you used the Natural Earth data above. For each layer click on **Advanced** and set reprojection to `EPSG:4326`.
     
         ![](images/using_advanced.png)
 

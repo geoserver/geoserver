@@ -29599,7 +29599,7 @@
   <span class="md-ellipsis">
     
   
-    Installing mkdocs
+    Installing MkDocs
   
 
     
@@ -29976,13 +29976,13 @@
 <ul>
 <li>
 <p><code>ogr2ogrLocation</code> can be just ogr2ogr if the command is in the path, otherwise it should be the full path to the executable. For example, on a Windows box with FWTools installed it might be:</p>
-<p><code>xml
-  &lt;ogr2ogrLocation&gt;c:\Programmi\FWTools2.2.8\bin\ogr2ogr.exe&lt;/ogr2ogrLocation&gt;</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;ogr2ogrLocation&gt;</span>c:\Programmi\FWTools2.2.8\bin\ogr2ogr.exe<span class="nt">&lt;/ogr2ogrLocation&gt;</span>
+</code></pre></div>
 </li>
 <li>
 <p><code>gdalData</code> must point to the GDAL data directory. For example, on a Windows box with FWTools installed it might be:</p>
-<p><code>xml
-  &lt;gdalData&gt;c:\Programmi\FWTools2.2.8\data&lt;/gdalData&gt;</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;gdalData&gt;</span>c:\Programmi\FWTools2.2.8\data<span class="nt">&lt;/gdalData&gt;</span>
+</code></pre></div>
 </li>
 <li>
 <p><code>Format</code> defines a single format, which is defined by the following tags:</p>
@@ -30005,43 +30005,43 @@
 <li>XML types can be integrated in the response as-is</li>
 </ul>
 <p>In order to understand the nature of the output format a new optional configuration element, <code>&lt;type&gt;</code>, can be added to the <code>ogr2ogr.xml</code> configuration file in order to specify the output nature. The possible values are <code>binary</code>, <code>text</code>, <code>xml</code>, in case the value is missing, <code>binary</code> is assumed. Here is an example showing all possible combinations:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;OgrConfiguration&gt;</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">&lt;ogr2ogrLocation&gt;</span>ogr2ogr<span class="nt">&lt;/ogr2ogrLocation&gt;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="cm">&lt;!-- &lt;gdalData&gt;...&lt;/gdalData&gt; --&gt;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&lt;formats&gt;</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span><span class="nt">&lt;Format&gt;</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">            </span><span class="nt">&lt;ogrFormat&gt;</span>MapInfo<span class="w"> </span>File<span class="nt">&lt;/ogrFormat&gt;</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">            </span><span class="nt">&lt;formatName&gt;</span>OGR-TAB<span class="nt">&lt;/formatName&gt;</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">            </span><span class="nt">&lt;fileExtension&gt;</span>.tab<span class="nt">&lt;/fileExtension&gt;</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">            </span><span class="nt">&lt;type&gt;</span>binary<span class="nt">&lt;/type&gt;</span><span class="w"> </span><span class="cm">&lt;!-- not really required, it’s the default --&gt;</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="nt">&lt;/Format&gt;</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span><span class="nt">&lt;Format&gt;</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">            </span><span class="nt">&lt;ogrFormat&gt;</span>MapInfo<span class="w"> </span>File<span class="nt">&lt;/ogrFormat&gt;</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">            </span><span class="nt">&lt;formatName&gt;</span>OGR-MIF<span class="nt">&lt;/formatName&gt;</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">            </span><span class="nt">&lt;fileExtension&gt;</span>.mif<span class="nt">&lt;/fileExtension&gt;</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">            </span><span class="nt">&lt;option&gt;</span>-dsco<span class="nt">&lt;/option&gt;</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">            </span><span class="nt">&lt;option&gt;</span>FORMAT=MIF<span class="nt">&lt;/option&gt;</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">        </span><span class="nt">&lt;/Format&gt;</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">        </span><span class="nt">&lt;Format&gt;</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">            </span><span class="nt">&lt;ogrFormat&gt;</span>CSV<span class="nt">&lt;/ogrFormat&gt;</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">            </span><span class="nt">&lt;formatName&gt;</span>OGR-CSV<span class="nt">&lt;/formatName&gt;</span>
-<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">            </span><span class="nt">&lt;fileExtension&gt;</span>.csv<span class="nt">&lt;/fileExtension&gt;</span>
-<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">            </span><span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
-<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">            </span><span class="nt">&lt;mimeType&gt;</span>text/csv<span class="nt">&lt;/mimeType&gt;</span>
-<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">            </span><span class="nt">&lt;option&gt;</span>-lco<span class="nt">&lt;/option&gt;</span>
-<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">            </span><span class="nt">&lt;option&gt;</span>GEOMETRY=AS_WKT<span class="nt">&lt;/option&gt;</span>
-<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">            </span><span class="nt">&lt;type&gt;</span>text<span class="nt">&lt;/type&gt;</span>
-<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">        </span><span class="nt">&lt;/Format&gt;</span>
-<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">        </span><span class="nt">&lt;Format&gt;</span>
-<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">            </span><span class="nt">&lt;ogrFormat&gt;</span>KML<span class="nt">&lt;/ogrFormat&gt;</span>
-<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">            </span><span class="nt">&lt;formatName&gt;</span>OGR-KML<span class="nt">&lt;/formatName&gt;</span>
-<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">            </span><span class="nt">&lt;fileExtension&gt;</span>.kml<span class="nt">&lt;/fileExtension&gt;</span>
-<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">            </span><span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
-<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">            </span><span class="nt">&lt;mimeType&gt;</span>application/vnd.google-earth.kml<span class="nt">&lt;/mimeType&gt;</span>
-<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">            </span><span class="nt">&lt;type&gt;</span>xml<span class="nt">&lt;/type&gt;</span>
-<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">        </span><span class="nt">&lt;/Format&gt;</span>
-<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">    </span><span class="nt">&lt;/formats&gt;</span>
-<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="nt">&lt;/OgrConfiguration&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;OgrConfiguration&gt;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="nt">&lt;ogr2ogrLocation&gt;</span>ogr2ogr<span class="nt">&lt;/ogr2ogrLocation&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="cm">&lt;!-- &lt;gdalData&gt;...&lt;/gdalData&gt; --&gt;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="nt">&lt;formats&gt;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="nt">&lt;Format&gt;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">            </span><span class="nt">&lt;ogrFormat&gt;</span>MapInfo<span class="w"> </span>File<span class="nt">&lt;/ogrFormat&gt;</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">            </span><span class="nt">&lt;formatName&gt;</span>OGR-TAB<span class="nt">&lt;/formatName&gt;</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">            </span><span class="nt">&lt;fileExtension&gt;</span>.tab<span class="nt">&lt;/fileExtension&gt;</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">            </span><span class="nt">&lt;type&gt;</span>binary<span class="nt">&lt;/type&gt;</span><span class="w"> </span><span class="cm">&lt;!-- not really required, it’s the default --&gt;</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">        </span><span class="nt">&lt;/Format&gt;</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">        </span><span class="nt">&lt;Format&gt;</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">            </span><span class="nt">&lt;ogrFormat&gt;</span>MapInfo<span class="w"> </span>File<span class="nt">&lt;/ogrFormat&gt;</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">            </span><span class="nt">&lt;formatName&gt;</span>OGR-MIF<span class="nt">&lt;/formatName&gt;</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">            </span><span class="nt">&lt;fileExtension&gt;</span>.mif<span class="nt">&lt;/fileExtension&gt;</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">            </span><span class="nt">&lt;option&gt;</span>-dsco<span class="nt">&lt;/option&gt;</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">            </span><span class="nt">&lt;option&gt;</span>FORMAT=MIF<span class="nt">&lt;/option&gt;</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">        </span><span class="nt">&lt;/Format&gt;</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">        </span><span class="nt">&lt;Format&gt;</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">            </span><span class="nt">&lt;ogrFormat&gt;</span>CSV<span class="nt">&lt;/ogrFormat&gt;</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">            </span><span class="nt">&lt;formatName&gt;</span>OGR-CSV<span class="nt">&lt;/formatName&gt;</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">            </span><span class="nt">&lt;fileExtension&gt;</span>.csv<span class="nt">&lt;/fileExtension&gt;</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">            </span><span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">            </span><span class="nt">&lt;mimeType&gt;</span>text/csv<span class="nt">&lt;/mimeType&gt;</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">            </span><span class="nt">&lt;option&gt;</span>-lco<span class="nt">&lt;/option&gt;</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="w">            </span><span class="nt">&lt;option&gt;</span>GEOMETRY=AS_WKT<span class="nt">&lt;/option&gt;</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="w">            </span><span class="nt">&lt;type&gt;</span>text<span class="nt">&lt;/type&gt;</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="w">        </span><span class="nt">&lt;/Format&gt;</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="w">        </span><span class="nt">&lt;Format&gt;</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="w">            </span><span class="nt">&lt;ogrFormat&gt;</span>KML<span class="nt">&lt;/ogrFormat&gt;</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="w">            </span><span class="nt">&lt;formatName&gt;</span>OGR-KML<span class="nt">&lt;/formatName&gt;</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="w">            </span><span class="nt">&lt;fileExtension&gt;</span>.kml<span class="nt">&lt;/fileExtension&gt;</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="w">            </span><span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="w">            </span><span class="nt">&lt;mimeType&gt;</span>application/vnd.google-earth.kml<span class="nt">&lt;/mimeType&gt;</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="w">            </span><span class="nt">&lt;type&gt;</span>xml<span class="nt">&lt;/type&gt;</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="w">        </span><span class="nt">&lt;/Format&gt;</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="w">    </span><span class="nt">&lt;/formats&gt;</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="nt">&lt;/OgrConfiguration&gt;</span>
 </code></pre></div>
 
 

@@ -15,6 +15,6 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
-.gs-panel-ParameterFilterEditor h4 {
+.gs-panel-ParameterFilterEditor .gs-content-divider {
       border-bottom: 2px solid var(--gs-border-color);
 }

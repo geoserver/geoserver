@@ -30171,9 +30171,11 @@
 <p>To link a layer with template navigate to <strong>Layers --&gt; Choose the layer --&gt; Metadata tab</strong> in the <strong>Link with Template</strong> panel choose a template from the dropdown and click <code>Link with template</code></p>
 <p>The values from the template will added to the metadata of the layer. How this is done depents on the type of the field.</p>
 <p>The field is not a list</p>
-<p>:   When the field is not a list the value will be replaced with the value from the template and the field will be read only. This will only happen for fields that are not empty in the template.</p>
+<div class="highlight"><pre><span></span><code>When the field is not a list the value will be replaced with the value from the template and the field will be read only. This will only happen for fields that are not empty in the template.
+</code></pre></div>
 <p>The Field is a list</p>
-<p>:   For Fields that are a list the values from the template will be added as read only fields. The duplicate values in list will be removed if there are any.</p>
+<div class="highlight"><pre><span></span><code>For Fields that are a list the values from the template will be added as read only fields. The duplicate values in list will be removed if there are any.
+</code></pre></div>
 <p>When multiple templates are linked with a layer the priority of the template will determine which values are added. If a field is present in both templates the value of the template with the highest priority will be picked. The priority is determined by the <a href="#template-order">template order</a></p>
 <h3 id="copy-from-other-layer">Copy from other Layer<a class="headerlink" href="#copy-from-other-layer" title="Permanent link">&para;</a></h3>
 <p>Choose another layer from the drop downbox click <code>Copy</code>. Content will be replaced with any metadata content from the other layer, except for UUID's, which will be ignored.</p>

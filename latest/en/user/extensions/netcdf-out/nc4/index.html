@@ -29870,18 +29870,14 @@
 <li>
 <p>Download the latest required dependencies (SZIP, ZLIB, HDF5) from the <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/">NetCDF-4 libraries section</a>.</p>
 <p>For example</p>
-<div class="highlight"><pre><span></span><code>```bash
-wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/hdf5-1.8.13.tar.gz
-wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/zlib-1.2.8.tar.gz
-```
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>wget<span class="w"> </span>ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/hdf5-1.8.13.tar.gz
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>wget<span class="w"> </span>ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/zlib-1.2.8.tar.gz
 </code></pre></div>
 </li>
 <li>
 <p>Download the latest NetCDF-C source code from <a href="https://github.com/Unidata/netcdf-c/releases/">here</a>.</p>
 <p>For example</p>
-<div class="highlight"><pre><span></span><code>```bash
-wget https://github.com/Unidata/netcdf-c/archive/v4.3.3.1.tar.gz
-```
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>wget<span class="w"> </span>https://github.com/Unidata/netcdf-c/archive/v4.3.3.1.tar.gz
 </code></pre></div>
 </li>
 <li>
@@ -29889,20 +29885,16 @@ wget https://github.com/Unidata/netcdf-c/archive/v4.3.3.1.tar.gz
 <ol>
 <li>
 <p>ZLIB</p>
-<div class="highlight"><pre><span></span><code>```bash
-./configure --prefix=/work/libs/nc4libs
-
-make check install
-```
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./configure<span class="w"> </span>--prefix<span class="o">=</span>/work/libs/nc4libs
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>make<span class="w"> </span>check<span class="w"> </span>install
 </code></pre></div>
 </li>
 <li>
 <p>HDF5</p>
-<div class="highlight"><pre><span></span><code>```bash
-./configure --with-zlib=/work/libs/nc4libs --prefix=/work/libs/nc4libs --enable-threadsafe --with-pthread=/DIR/TO/PTHREAD
-
-make check install
-```
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>./configure<span class="w"> </span>--with-zlib<span class="o">=</span>/work/libs/nc4libs<span class="w"> </span>--prefix<span class="o">=</span>/work/libs/nc4libs<span class="w"> </span>--enable-threadsafe<span class="w"> </span>--with-pthread<span class="o">=</span>/DIR/TO/PTHREAD
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>make<span class="w"> </span>check<span class="w"> </span>install
 </code></pre></div>
 </li>
 </ol>

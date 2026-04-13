@@ -30889,13 +30889,13 @@
 <p>If you want to let the user rotate the map (for a given layout), you have to set the "rotate" field to "true" in the corresponding "mainPage" section.</p>
 <h3 id="output-filename">Output filename<a class="headerlink" href="#output-filename" title="Permanent link">&para;</a></h3>
 <p>If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client. It will be the name of the file that the client downloads. If the 'outputFilename' parameter is defined in a layout then that value will override the default name. In both cases the <code>.pdf</code> suffic is optional; if not present the server will append <code>.pdf</code> to the name.</p>
-<p>In all cases the <code>json</code> request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has \${date}, \${time} or \${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method. If a pattern is provided it will be passed to SimpleDataFormat for processing. A few examples follow:</p>
+<p>In all cases the <code>json</code> request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has ${date}, ${time} or ${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method. If a pattern is provided it will be passed to SimpleDataFormat for processing. A few examples follow:</p>
 <ul>
-<li>outputFilename: "host-\${yyyyMMdd}.pdf" # results in host-20111213.pdf</li>
-<li>outputFilename: "host-\${date}" # results in host-Dec_13_2011.pdf (actual output depends on local of server)</li>
-<li>outputFilename: "host-\${dateTime}" # results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)</li>
-<li>outputFilename: "host-\${time}.pdf" # results in host-1:11:14_PM.pdf (actual output depends on local of server)</li>
-<li>outputFilename: "host-\${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)</li>
+<li>outputFilename: "host-${yyyyMMdd}.pdf" # results in host-20111213.pdf</li>
+<li>outputFilename: "host-${date}" # results in host-Dec_13_2011.pdf (actual output depends on local of server)</li>
+<li>outputFilename: "host-${dateTime}" # results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)</li>
+<li>outputFilename: "host-${time}.pdf" # results in host-1:11:14_PM.pdf (actual output depends on local of server)</li>
+<li>outputFilename: "host-${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)</li>
 </ul>
 <p>"disableScaleLocking" allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.</p>
 <h3 id="broken-images">Broken images<a class="headerlink" href="#broken-images" title="Permanent link">&para;</a></h3>
@@ -31064,17 +31064,17 @@
 <p>In addition to that, an explicit <code>extraPage</code> block can be used in <strong><code>config.yaml</code></strong> to add a custom page between other pages. The <code>renderOn</code> property specify the exact position for rendering (<code>beforeMainPage</code>, <code>beforeLastPage</code> or <code>afterLastPage</code>).</p>
 <h2 id="block-definition">Block definition<a class="headerlink" href="#block-definition" title="Permanent link">&para;</a></h2>
 <p>The next sub-sections document the possible types of blocks.</p>
-<p>In general, text values or URLs can contain values taken from the <strong>spec</strong> structure coming with the client's request. A syntax similar to shell is used: <code>\${variableName}</code>. If the current page is a <strong>titlePage</strong>, only the root values are taken. If it's a <strong>mainPage</strong>, the service will first look in the current <strong>page</strong> section then in the root values. Here is how to use this functionality:</p>
+<p>In general, text values or URLs can contain values taken from the <strong>spec</strong> structure coming with the client's request. A syntax similar to shell is used: <code>${variableName}</code>. If the current page is a <strong>titlePage</strong>, only the root values are taken. If it's a <strong>mainPage</strong>, the service will first look in the current <strong>page</strong> section then in the root values. Here is how to use this functionality:</p>
 <div class="highlight"><pre><span></span><code>text: &#39;The value of mapTitle is: ${mapTitle}&#39;
 </code></pre></div>
 <p>Some virtual variables can be used:</p>
 <ul>
-<li>\${pageNum}: The current page number.</li>
-<li>\${pageTot}: The total number of pages. Can be used only in text blocks.</li>
-<li>\${now}: The current date and time as defined by the machine's locale.</li>
-<li>\${now FORMAT}: The current date and time as defined by the FORMAT string. The syntax is here: <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html">http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html</a>.</li>
-<li>\${configDir}: The absolute path to the directory of the configuration file.</li>
-<li>\${format PRINTF VAR}: Format the value of VAR using the provided <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.md#syntax">PRINTF format</a> (for example: %,d).</li>
+<li>${pageNum}: The current page number.</li>
+<li>${pageTot}: The total number of pages. Can be used only in text blocks.</li>
+<li>${now}: The current date and time as defined by the machine's locale.</li>
+<li>${now FORMAT}: The current date and time as defined by the FORMAT string. The syntax is here: <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html">http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html</a>.</li>
+<li>${configDir}: The absolute path to the directory of the configuration file.</li>
+<li>${format PRINTF VAR}: Format the value of VAR using the provided <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.md#syntax">PRINTF format</a> (for example: %,d).</li>
 </ul>
 <p>All the blocks can have a condition attribute that takes a spec attribute name. If the attribute name exists and is not equal to "false" or "0", the block is drawn. Otherwise, it is ignored. An exclamation mark may precede the condition to invert it, exclamation mark is part of yaml syntax, than the expression should be in quotes.</p>
 <p>Example: show text block only if in the spec the attribute name "showText" is given, is not equal to "false" and not equal to "0":</p>
@@ -31117,7 +31117,7 @@
 <a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://trac.mapfish.org/trac/mapfish/chrome/site/img/mapfish.png</span>
 </code></pre></div>
 <p>Supported formats are PNG, GIF, Jpeg, Jpeg2000, BMP, WMF (vector), SVG and TIFF.</p>
-<p>The original aspect ratio will be respected. The url can contain "\${}" variables.</p>
+<p>The original aspect ratio will be respected. The url can contain "${}" variables.</p>
 <h3 id="simple-colored-box-icons">Simple colored box icons<a class="headerlink" href="#simple-colored-box-icons" title="Permanent link">&para;</a></h3>
 <p>This enhancement adds the feature of drawing a simple colored box, instead of an icon into a legend item.</p>
 <p>To draw a colored box, include a color: #hexvalue property in the printing spec, instead of an icon: url property.</p>

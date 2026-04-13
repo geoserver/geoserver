@@ -326,6 +326,11 @@ body {
   padding: 0.5rem 0;
 }
 
+/* keep vertical alignment in the meddle for table cell content */
+td, th {
+  vertical-align: middle;
+}
+
 #map {
   flex: 1;
   min-height: 0;

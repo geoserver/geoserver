@@ -15,7 +15,7 @@
   <properties>
 
     <confluent-version>8.2.0</confluent-version>
-    <kafka-version>3.9.1</kafka-version>
+    <kafka-version>3.9.2</kafka-version>
   </properties>
 
   <dependencies>

@@ -2013,7 +2013,9 @@ label.gs-switch-label {
 .wicket-aa-container ul li:hover {
   background-color: var(--gs-secondary-bg);
 }
-
+.wicket-aa-container ul li.selected {
+  background-color: var(--gs-secondary-bg);
+}
 @media (max-width: 768px) {
   .gs-header-hamburger {
     display: flex;

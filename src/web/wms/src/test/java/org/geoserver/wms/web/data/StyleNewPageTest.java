@@ -15,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -49,6 +51,9 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     private String tinyPngHex =
             "89504E470D0A1A0A0000000D49484452000000010000000108000000003A7E01050000000A49444154789C6360000000020001737501F80000000049454E44AE426082";
     private byte[] tinyPng = HexFormat.of().parseHex(tinyPngHex);
+
+    // this is a linux: ELF header (not an image header)
+    private byte[] nonImage = {0x7F, 0x45, 0x4C, 0x46}; // <DEL>, E, L, F
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -496,6 +501,43 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         assertEquals("image/png", matcher.group(2));
 
         dd.getStyles().get("GeoServer_75.png").delete();
+    }
+
+    /**
+     * uploads a non-image filetype - this should not add it to the catalog and it should return an error (feedback).
+     *
+     * @throws Exception something went wrong (usually disk or setup issue)
+     */
+    @Test
+    public void testInsertImageInvalid() throws Exception {
+        // create some fake images
+        GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+
+        // since we don't have code mirror available in the test environment, we are kind of limited
+        // we'll make the tool bar visible to test the dialog anyway
+        tester.getComponentFromLastRenderedPage("styleForm:styleEditor:editorContainer:toolbar", false)
+                .setVisible(true);
+
+        // test uploading
+        tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
+
+        // make a temp file (for file upload) that isn't an image (has an ELF header, not a PNG header)
+        Path tempFile = Files.createTempFile("image-", "png");
+        FileUtils.writeByteArrayToFile(tempFile.toFile(), nonImage);
+
+        org.apache.wicket.util.file.File file = new org.apache.wicket.util.file.File(tempFile.toFile());
+
+        formTester.setFile("userPanel:upload", file, "image/png");
+        formTester.submit("submit");
+        String response = tester.getLastResponseAsString();
+
+        // not written to disk (catalog)
+        assertFalse(Resources.exists(dd.getStyles().get("bad.png")));
+        // no mention of the file in the response
+        assertThat(response, not(containsString("bad.png")));
+        // response has error (will be in the feedback)
+        assertThat(response, containsString("Unsupported IMAGE media type"));
     }
 
     @Test

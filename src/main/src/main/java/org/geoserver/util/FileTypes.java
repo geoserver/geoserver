@@ -57,6 +57,20 @@ public class FileTypes {
             MediaType.image("gif"));
 
     /**
+     * given an input stream, if it doesn't support mark/reset, wrap it in a BufferedInputStream which does.
+     *
+     * @param inputStream
+     * @return
+     */
+    public static InputStream wrapIfNotMarkReset(InputStream inputStream) {
+        if (inputStream.markSupported()) {
+            return inputStream;
+        }
+
+        return new BufferedInputStream(inputStream);
+    }
+
+    /**
      * Checks that the media type of the stream is a simple image (i.e. png, jpeg, svg+xml) and can be read.
      *
      * <p>stream should support mark/reset. If not, it will be wrapped in BufferedInputStream.
@@ -67,12 +81,7 @@ public class FileTypes {
      */
     public static void assertSimpleImage(InputStream stream, boolean validateImage) throws Exception {
         // does this support mark/rest (required by tika)
-        try {
-            stream.mark(10);
-            stream.reset();
-        } catch (IOException e) {
-            stream = new BufferedInputStream(stream); // wrap
-        }
+        stream = wrapIfNotMarkReset(stream);
 
         MediaType detectedMediaType = tika.getDetector().detect(stream, new Metadata());
         if (!SIMPLE_IMAGE_MIME_TYPES.contains(detectedMediaType)) {

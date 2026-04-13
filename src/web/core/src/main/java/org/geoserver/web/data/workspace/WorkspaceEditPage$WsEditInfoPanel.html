@@ -15,15 +15,13 @@
               <input wicket:id="name" id="name" type="text"/>
             </div>
             <div class="gs-form-group">
-              <div class="gs-form-group-label">
-                <label for="uri">
-                  <wicket:message key="namespaceURI">Namespace URI</wicket:message>
-                </label>
-                <div class="instruct">
-                  <wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message>
-                </div>
+              <label for="uri">
+                <wicket:message key="namespaceURI">Namespace URI</wicket:message>
+              </label>
+              <input wicket:id="uri" id="uri" type="text" class="w-lg" />
+              <div class="gs-instruction">
+                <wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message>
               </div>
-              <input wicket:id="uri" id="uri" type="text"/>
             </div>
             <div class="choiceItem">
               <input wicket:id="default" id="default" type="checkbox"/>

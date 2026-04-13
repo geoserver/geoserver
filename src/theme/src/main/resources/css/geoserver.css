@@ -2251,45 +2251,6 @@ div.value-wide {
   font-size: 0.8125rem;
   color: var(--gs-secondary-color);
 }
-.gs-form-group-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  position: relative;
-}
-.gs-form-group-label:has(.instruct)::after {
-  content: "";
-  width: 1.125rem;
-  height: 1.125rem;
-  background-image: url(../img/icons/silk/information.png);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  cursor: help;
-}
-.gs-form-group-label .instruct {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 10;
-  display: none;
-  max-width: 15rem;
-  width: max-content;
-  padding: 0.5rem;
-  background-color: var(--gs-body-bg);
-  border: 1px solid var(--gs-border-color);
-  border-radius: var(--gs-border-radius);
-  box-shadow: var(--gs-box-shadow-sm);
-  font-size: 1rem;
-  font-style: italic;
-}
-.gs-form-group-label:hover .instruct,
-.gs-form-group-label:focus-within .instruct {
-  display: block;
-}
-.instruct {
-  display: none;
-}
 .gs-instruction {
   display: inline-flex;
   align-items: center;
@@ -2298,7 +2259,6 @@ div.value-wide {
   margin-top: 0.25rem;
   font-size: 0;
   line-height: 1;
-  color: var(--gs-secondary-color);
   cursor: help;
 }
 .gs-instruction::before {
@@ -2341,7 +2301,6 @@ div.value-wide {
     cursor: default;
     line-height: 1.2;
   }
-
   /* Responsive table */
   /* Mobile table header */
   .table-header form {

@@ -609,7 +609,7 @@ protected String getLogConfiguration() {
 
 The GeoServerBaseTestSupport method `setUpLogging()` is marked with `@BeforeClass` to configure logging.
 
-This method uses isQuietTests() to check system property `quietTests`, and changes ``org.geoserver``, ``org.vfny.geoserver`` and ``org.geotools`` logging level to SEVERE to further suppress logging information.
+This method uses isQuietTests() to check system property `quietTests`, and changes `org.geoserver`, `org.vfny.geoserver` and `org.geotools` logging level to SEVERE to further suppress logging information.
 
 - logs to standard out only
 - org.geotools: severe

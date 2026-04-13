@@ -13,7 +13,7 @@ This plugin allows adding a GWC MBTiles Layer to GeoServer's cached Tile Layers 
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download ``gwc-mbtiles`` zip archive.
+    Follow the **Community Modules** link and download `gwc-mbtiles` zip archive.
 
     - {{ snapshot }} example: [gwc-mbtiles](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-gwc-mbtiles-plugin.zip)
 
@@ -27,9 +27,9 @@ This plugin allows adding a GWC MBTiles Layer to GeoServer's cached Tile Layers 
 
 The configuration of a new MBTilesLayer can be done by editing the geowebcache configuration file located in **`<data_dir>/gwc/geowebcache.xml`**
 
-Locate the ``layers`` section of the config or add it if missing.
+Locate the `layers` section of the config or add it if missing.
 
-Then define a new ``mbTilesLayer`` node for each new MBTilesLayer you want to add. A GWC configuration containing a configured MBTiles Layer would look like this:
+Then define a new `mbTilesLayer` node for each new MBTilesLayer you want to add. A GWC configuration containing a configured MBTiles Layer would look like this:
 
 ```xml
 <gwcConfiguration>
@@ -52,7 +52,7 @@ Then define a new ``mbTilesLayer`` node for each new MBTilesLayer you want to ad
 
 A few note on the above configuration elements of an mbtilesLayer definition:
 
-- ``tilesPath`` (mandatory) is the path to the MBTiles file containing the tiles.
-- ``tileSize`` is the size of the tiles stored on the MBTiles file. When not set, it will be defaulted to 256.
-- ``name`` (optional) represents the name to be assigned to the layer. If not specified, the name field of the metadata table stored in the MBTiles file will be used. Make sure to define it in case the MBTiles metadata is missing it.
-- ``metaInformation`` with ``title`` and ``description`` are optional tags. They will be exposed in the capabilities document when available.
+- `tilesPath` (mandatory) is the path to the MBTiles file containing the tiles.
+- `tileSize` is the size of the tiles stored on the MBTiles file. When not set, it will be defaulted to 256.
+- `name` (optional) represents the name to be assigned to the layer. If not specified, the name field of the metadata table stored in the MBTiles file will be used. Make sure to define it in case the MBTiles metadata is missing it.
+- `metaInformation` with `title` and `description` are optional tags. They will be exposed in the capabilities document when available.

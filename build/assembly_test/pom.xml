@@ -15,7 +15,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.jupiter.version>5.10.1</junit.jupiter.version>
-    <assertj.version>3.24.2</assertj.version>
+    <assertj.version>3.27.7</assertj.version>
   </properties>
 
   <dependencies>

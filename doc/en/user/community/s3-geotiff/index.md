@@ -12,7 +12,7 @@ Support for GeoTiffs hosted on Amazon S3 or on other Amazon S3 compatible servic
 
 ### Configuration
 
-Almost all configuration is currently done via system properties. For caching configuration, please see the class ``org.geotools.s3.cache.CacheConfig``.
+Almost all configuration is currently done via system properties. For caching configuration, please see the class `org.geotools.s3.cache.CacheConfig`.
 
 ### Usage
 
@@ -27,7 +27,7 @@ s3://landsat-pds/L8/001/002/LC80010022016230LGN00/LC80010022016230LGN00_B1.TIF?u
 
 ### Credentials
 
-Unless ``S3_USE_ANON`` is set to true the [default AWS client credential chain](<http://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.md#using-the-default-credential-provider-chain>) is used.
+Unless `S3_USE_ANON` is set to true the [default AWS client credential chain](<http://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.md#using-the-default-credential-provider-chain>) is used.
 
 ## GeoTiffs hosted on other Amazon S3 compatible services
 
@@ -35,11 +35,11 @@ Access geotiffs on S3 servers not hosted on Amazon, e.g. <https://www.minio.io/>
 
 ### Configuration
 
-The S3 endpoints are configured in the s3.properties file. The following properties are needed for each endpoint. The prefix ``alias`` can be any value you choose in order to configure multiple endpoints.
+The S3 endpoints are configured in the s3.properties file. The following properties are needed for each endpoint. The prefix `alias` can be any value you choose in order to configure multiple endpoints.
 
-- ``alias.s3.endpoint``=http://your-s3-server/
-- ``alias.s3.user``=your-user-name
-- ``alias.s3.password``=your-password
+- `alias.s3.endpoint`=http://your-s3-server/
+- `alias.s3.user`=your-user-name
+- `alias.s3.password`=your-password
 
 ### Usage
 

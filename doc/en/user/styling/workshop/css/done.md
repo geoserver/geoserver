@@ -280,7 +280,7 @@ Answer for [Explore Dynamic Symbolization](#css-point-q2):
 
 1.  SLD Mark and ExternalGraphic provide an opportunity for dynamic symbolization.
 
-    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``\${ }`` as shown:
+    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with `\${ }` as shown:
 
     ``` yaml
     - point:
@@ -386,9 +386,9 @@ Answer for [Challenge Intervals](#css-raster-q2):
 
 1.  The color-map **type** property dictates how the values are used to generate a resulting color.
 
-    - ``ramp`` is used for quantitative data, providing a smooth interpolation between the provided color values.
-    - ``intervals`` provides categorization for quantitative data, assigning each range of values a solid color.
-    - ``values`` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
+    - `ramp` is used for quantitative data, providing a smooth interpolation between the provided color values.
+    - `intervals` provides categorization for quantitative data, assigning each range of values a solid color.
+    - `values` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
 
 2.  **Challenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
 

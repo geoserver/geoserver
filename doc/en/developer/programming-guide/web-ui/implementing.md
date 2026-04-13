@@ -160,7 +160,7 @@ At this point, the `hello_web` module should look like the following:
           </dependency>
         ```
     
-        You will need to run ``mvn eclipse:eclipse`` after editing **`web-app/pom.xml`** and then you can refresh the **`gs-web-app`** project in eclipse so it notices the new jar.
+        You will need to run `mvn eclipse:eclipse` after editing **`web-app/pom.xml`** and then you can refresh the **`gs-web-app`** project in eclipse so it notices the new jar.
 
 3.  Start or restart GeoServer
 

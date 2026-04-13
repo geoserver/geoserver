@@ -40,7 +40,7 @@ This results in running multiple GeoServer nodes behind a common proxy or load b
     - Using a shared file system to allow nodes to share a common data directory.
     - Using version control or a layer of a docker image to share a data directory.
 
-    To support these workflows teams often direct ``geoserver/web`` requests to a single node, and use the REST API to restart other nodes when a configuration change is ready.
+    To support these workflows teams often direct `geoserver/web` requests to a single node, and use the REST API to restart other nodes when a configuration change is ready.
 
 The limitation of these approach is the startup time associated with restarting nodes. Several community modules exist to address this limitation:
 

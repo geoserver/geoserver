@@ -1,12 +1,12 @@
 # Axis ordering
 
-The definition of a spatial reference system includes an indication of the axis order used to interpret the coordinates. There are a number of projected spatial reference systems defined in ``north/east`` order in the formal `EPSG` definition, but are interpreted as being in `east/north` order by earlier versions of the `WFS` protocol.
+The definition of a spatial reference system includes an indication of the axis order used to interpret the coordinates. There are a number of projected spatial reference systems defined in `north/east` order in the formal `EPSG` definition, but are interpreted as being in `east/north` order by earlier versions of the `WFS` protocol.
 
 - `WFS 1.0.0`: Provides geographic coordinates in `east/north` and may not be trusted to respect the EPSG definition axis order.
 - `WFS 1.1.0`: Respects the axis order defined by the EPSG definition.
 - `WFS 2.0.0`: Respects the axis order defined by the EPSG definition.
 
-Forcing content into `east/north` order was intended to be easier for developers where computer displays are defined with an ``x/y`` order. However this decision has introduced no end of confusion, and was corrected in later versions of `WFS`.
+Forcing content into `east/north` order was intended to be easier for developers where computer displays are defined with an `x/y` order. However this decision has introduced no end of confusion, and was corrected in later versions of `WFS`.
 
 !!! note
     Some spatial reference systems, for example polar stereographic, do not have an `east` or `west` as they have a pole in the middle of the axis.
@@ -24,9 +24,9 @@ These differences may cause difficulties when clients switch between different `
 
 To compare the spatial reference system definition for `EPSG:4326`:
 
-1.  Navigate **Demos --> SRS List** page and search for ``4326``.
+1.  Navigate **Demos --> SRS List** page and search for `4326`.
 
-2.  Compare the formal ``EPSG`` definition of `WGS84`:
+2.  Compare the formal `EPSG` definition of `WGS84`:
 
     ![](img/wgs84-epsg-description.png)
 
@@ -43,9 +43,9 @@ The same approach can be used to check the definition of any spatial reference s
 !!! note
     The formal `EPSG` definition provides the axis-order used to interpret coordinate values. GeoServer uses an internal representation that does not always respect the `EPSG` provided axis order.
     
-    In the example above `EPSG:4326` is defined with a ``north/east`` axis order, while the internal representation has `east/north` order.
+    In the example above `EPSG:4326` is defined with a `north/east` axis order, while the internal representation has `east/north` order.
     
-    The startup option `-Dorg.geotools.referencing.forceXY=true` is used to configure GeoServer to prefer an internal representation in ``east/north`` axis order. We recommend the default value of `true` to match a wide range of clients that make this assumption.
+    The startup option `-Dorg.geotools.referencing.forceXY=true` is used to configure GeoServer to prefer an internal representation in `east/north` axis order. We recommend the default value of `true` to match a wide range of clients that make this assumption.
 
 ## Layer Axis Order
 
@@ -67,7 +67,7 @@ To review how this layer has been published:
 
 2.  Locate **Native SRS** and click on the **GCS_WGS_1984** link to show how GeoServer interpreted the **`PRJ`** file above.
 
-    The **`PRJ`** did not provide an axis-order and GeoSever has filled in an assumption. This describing the data in ``x/y`` order which matches our data and we could use it unmodified.
+    The **`PRJ`** did not provide an axis-order and GeoSever has filled in an assumption. This describing the data in `x/y` order which matches our data and we could use it unmodified.
 
     ![](img/native_srs.png)
 
@@ -75,7 +75,7 @@ To review how this layer has been published:
 
 3.  Locate **Declared SRS** and click on **EPSG:WGS 84\...** link to see the definition used to publish this content.
 
-    This is the internal definition of `EPSG:4326` as shown in the SRSList above, which also describes the data in ``x/y`` order matching our data. This definition provides slightly more readable names along with additional `AUTHORITY` information that may be helpful to client applications.
+    This is the internal definition of `EPSG:4326` as shown in the SRSList above, which also describes the data in `x/y` order matching our data. This definition provides slightly more readable names along with additional `AUTHORITY` information that may be helpful to client applications.
 
     ![](img/declared_srs.png)
 
@@ -103,7 +103,7 @@ To review how this layer has been published:
 </FeatureType> 
 ```
 
-WFS 1.0 describes the latitude / longitude bounds with the understanding that you will associate ``minx`` and ``maxx`` with longitude, and also ``miny`` and ``maxy`` with latitude.
+WFS 1.0 describes the latitude / longitude bounds with the understanding that you will associate `minx` and `maxx` with longitude, and also `miny` and `maxy` with latitude.
 
 WFS 1.0 *GetFeature* request defaults to GML2 output, and the default `EPSG:4326` spatial reference system used to publish the layer:
 
@@ -281,7 +281,7 @@ WFS 1.1 *GetFeature* request defaults to GML3 output, and the default `urn:x-ogc
   ```
 
 !!! note
-    The ``srsName`` and ``posList`` coordinate order are consistent.
+    The `srsName` and `posList` coordinate order are consistent.
     
       This approach can be used to force x/y order.
 
@@ -335,7 +335,7 @@ WFS 1.1 *GetFeature* request defaults to GML3 output, and the default `urn:x-ogc
   ```
 
 !!! note
-    The ``srsName`` and ``posList`` coordinate order are consistent.
+    The `srsName` and `posList` coordinate order are consistent.
     
       This approach can be used to force x/y order.
 
@@ -374,7 +374,7 @@ WFS 1.1 *GetFeature* request defaults to GML3 output, and the default `urn:x-ogc
   ```
 
 !!! note
-    The ``srsName`` and ``posList`` coordinate order are consistent.
+    The `srsName` and `posList` coordinate order are consistent.
     
       This approach can be used to force x/y order.
 
@@ -395,7 +395,7 @@ WFS 1.1 *GetFeature* request defaults to GML3 output, and the default `urn:x-ogc
   ```
 
 !!! note
-    The ``srsName`` and ``posList`` coordinate order are consistent.
+    The `srsName` and `posList` coordinate order are consistent.
     
       This approach can be used to force x/y order.
 
@@ -549,7 +549,7 @@ WFS 2.0 *GetFeature* request defaults to GML3.2 output, and the default `urn:ogc
   ```
 
 !!! note
-    The ``srsName`` and ``posList`` coordinate order are consistent.
+    The `srsName` and `posList` coordinate order are consistent.
     
       This approach can be used to force x/y order.
 
@@ -598,7 +598,7 @@ WFS 2.0 *GetFeature* request defaults to GML3.2 output, and the default `urn:ogc
   ```
 
 !!! warning
-    This combination is inconsistent between ``srsName`` and ``posList`` coordinate order and may confuse applications expecting a valid GML3 document.
+    This combination is inconsistent between `srsName` and `posList` coordinate order and may confuse applications expecting a valid GML3 document.
     
     This approach can be used to force x/y order.
 
@@ -645,7 +645,7 @@ WFS 2.0 *GetFeature* request defaults to GML3.2 output, and the default `urn:ogc
   ```
 
 !!! warning
-    This combination is inconsistent between ``srsName`` and ``posList`` coordinate order and may confuse applications expecting a valid GML3 document.
+    This combination is inconsistent between `srsName` and `posList` coordinate order and may confuse applications expecting a valid GML3 document.
 
     This approach can be used to force x/y order.
 

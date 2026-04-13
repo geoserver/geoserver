@@ -3,7 +3,7 @@
 The REST API allows you to set and retrieve information about the server itself.
 
 !!! note
-    Read the ``API reference for /about/manifests <manifests.yaml>__``.
+    Read the `API reference for /about/manifests <manifests.yaml>__`.
 
 ## Retrieving component versions
 

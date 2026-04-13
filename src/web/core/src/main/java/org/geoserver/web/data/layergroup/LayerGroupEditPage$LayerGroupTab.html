@@ -32,23 +32,25 @@
               <label for="workspace">
                 <wicket:message key="workspace">Workspace</wicket:message>
               </label>
-              <select wicket:id="workspace"/>
+              <select wicket:id="workspace" class="w-md" />
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <label>
                 <wicket:message key="bounds">Bounds</wicket:message>
               </label>
-              <div wicket:id="bounds" class="selfclear"/>
-              <div class="button-group">
-                <button wicket:id="generateBounds" type="submit"><wicket:message key="generateBounds"/></button>
-                <button wicket:id="generateBoundsFromCRS" type="submit"><wicket:message key="generateBoundsFromSRS"/></button>
+              <div>
+                <div wicket:id="bounds" class="selfclear"/>
+                <div class="button-group">
+                  <button wicket:id="generateBounds" type="submit"><wicket:message key="generateBounds"/></button>
+                  <button wicket:id="generateBoundsFromCRS" type="submit"><wicket:message key="generateBoundsFromSRS"/></button>
+                </div>
               </div>
             </div>
             <div class="gs-form-group">
               <label for="mode">
                 <wicket:message key="mode">Mode</wicket:message>
               </label>
-              <select wicket:id="mode"/>
+              <select wicket:id="mode" class="w-md" />
             </div>
             <div class="gs-form">
               <div class="choiceItem">

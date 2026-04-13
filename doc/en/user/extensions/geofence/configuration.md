@@ -60,7 +60,7 @@ Collected data about the cache can be retrieved here. Per cache (rules, admin ru
   You can notice here the information that allow the GeoFence probe inside GeoServer to communicate with the GeoFence engine:
 
   - the URL that the probe shall use to communicate with GeoFence;
-  - the name (default is ``default-gs``) this instance will use to identify itself to GeoFence. This instance name should be equal to the one we set into GeoFence.
+  - the name (default is `default-gs`) this instance will use to identify itself to GeoFence. This instance name should be equal to the one we set into GeoFence.
 
 - Testing connection to GeoFence.
 
@@ -76,7 +76,7 @@ Collected data about the cache can be retrieved here. Per cache (rules, admin ru
 
 ![](images/basic_005.png)
 
-- Now that we added GeoFence as authentication provider, we'll be able to log into GeoServer using the credentials we added in GeoFence (user `admin` and user ``tiger``). Try and log in using user `tiger`.
+- Now that we added GeoFence as authentication provider, we'll be able to log into GeoServer using the credentials we added in GeoFence (user `admin` and user `tiger`). Try and log in using user `tiger`.
 
 ## Testing authorization
 

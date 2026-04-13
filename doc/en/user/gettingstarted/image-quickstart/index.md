@@ -21,7 +21,7 @@ First let's gather the data that we'll be publishing.
     - **`SR_50M.tif`**
     - **`SR_50M.VERSION.txt`**
 
-    This forms a world (the ``tfw`` file) plus image (the **`tif`** file).
+    This forms a world (the `tfw` file) plus image (the **`tif`** file).
 
 3.  Move these files into your GeoServer Data Directory **`data/ne`** folder.
 
@@ -38,9 +38,9 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 4.  Click the **Add new workspace** button to display the **New Workspace** page.
 5.  You will be prompted to enter a workspace **Name** and **Namespace URI**.
 
-    | Name:         | ``tutorial``                                 |
+    | Name:         | `tutorial`                                 |
     |---------------|--------------------------------------------------------|
-    | Namespace URI | ``http://localhost:8080/geoserver/tutorial`` |
+    | Namespace URI | `http://localhost:8080/geoserver/tutorial` |
 
 
     !!! note
@@ -74,8 +74,8 @@ Once the workspace is created, we are ready to add a new store. The store tells 
 
     | workspace        | `tutorial`                                           |
     |------------------|------------------------------------------------------|
-    | Data Source Name | ``ShadedRelief``                           |
-    | Description      | ``Grayscale shaded relief of land areas.`` |
+    | Data Source Name | `ShadedRelief`                           |
+    | Description      | `Grayscale shaded relief of land areas.` |
 
 
     > This information is internal to GeoServer and is not used as part of the web service protocols. We recommend keeping the **Data Source Name** simple as it will be used to form folders in the data directory (so keep any operating system restrictions on character use in mind).
@@ -88,7 +88,7 @@ Once the workspace is created, we are ready to add a new store. The store tells 
 2.  Under **Connection Parameters**, browse to the location **URL** of the image, in our example **`file:data/ne/SR_50M.tif`**.
 3.  The **Connection Parameters** for our geopackage are:
 
-    | database | ``file:data/ne/SR_50M.tif`` |
+    | database | `file:data/ne/SR_50M.tif` |
     |----------|---------------------------------------|
 
 
@@ -107,10 +107,10 @@ Now that we have located the image, we can publish this information as a layer.
     - **Bounding Boxes** - establishes where the dataset is located in the world
 4.  Locate **Basic Resource Info** and define the layer:
 
-    | Name     | ``shaded``                                 |
+    | Name     | `shaded`                                 |
     |----------|------------------------------------------------------|
-    | Title    | ``Shaded Relief``                          |
-    | Abstract | ``Grayscale shaded relief of land areas.`` |
+    | Title    | `Shaded Relief`                          |
+    | Abstract | `Grayscale shaded relief of land areas.` |
 
 
     > The naming of a layer is important, and while GeoServer does not offer restrictions many of the individual protocols will only work with very simple names.
@@ -124,9 +124,9 @@ Now that we have located the image, we can publish this information as a layer.
     !!! note
         In this case select `Force declared` to prefer the GeoServer internal EPSG database definition of WGS84 over the **`prj`** file provided alongside the same image.
 
-    | Native SRS    | ``EPSG:4326`` |
+    | Native SRS    | `EPSG:4326` |
     |---------------|-------------------------|
-    | Declaired SRS | ``EPSG:4326`` |
+    | Declaired SRS | `EPSG:4326` |
     | SRS Handling  | `Force declared`        |
 
 
@@ -164,7 +164,7 @@ In order to verify that the `tutorial:shaded` layer is published correctly, we c
 1.  Navigate to the **Data > Layer Preview** page and find the `tutorial:shaded` layer.
 
     !!! note
-        Use the **Search** field with ``tutorial`` as shown to limit the number of layers to page through.
+        Use the **Search** field with `tutorial` as shown to limit the number of layers to page through.
 
 2.  Click the **OpenLayers** link in the **Common Formats** column.
 

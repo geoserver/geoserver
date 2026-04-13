@@ -31,12 +31,12 @@ Reference:
 This exercise makes use of the `ne:states_provinces_shp` layer.
 
 1.  Navigate to **Styles**.
-2.  Create a new style ``polygon_example``.
+2.  Create a new style `polygon_example`.
 
-    | Name:      | ``polygon_example`` |
+    | Name:      | `polygon_example` |
     |------------|-------------------------------|
-    | Workspace: | ``No workspace``    |
-    | Format:    | ``MBStyle``         |
+    | Workspace: | `No workspace`    |
+    | Format:    | `MBStyle`         |
 
 
     ![image](../style/img/polygon_02_create.png)
@@ -178,7 +178,7 @@ The **fill-pattern** property can be used to provide a pattern.
 
 The fill pattern is defined by repeating an image defined in a sprite-sheet.
 
-1.  Update ``polygon_example`` with the following sprite as a repeating fill pattern:
+1.  Update `polygon_example` with the following sprite as a repeating fill pattern:
 
     ```json hl_lines="4 11"
     {
@@ -636,8 +636,8 @@ A thematic map (rather than focusing on representing the shape of the world) use
 
 2.  For our `ne:states_provinces_shp` dataset, a **mapcolor9** attribute has been provided for this purpose. Theming by **mapcolor9** results in a map where neighbouring countries are visually distinct.
 
-    | > Qualitative 9-class Set3 |         |         |
-    |----------------------------|---------|---------|
+    | Qualitative 9-class Set3     |         |         |
+    |------------------------------|---------|---------|
     | #8dd3c7                    | #fb8072 | #b3de69 |
     | #ffffb3                    | #80b1d3 | #fccde5 |
     | #bebada                    | #fdb462 | #d9d9d9 |

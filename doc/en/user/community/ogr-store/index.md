@@ -1,6 +1,6 @@
 # OGR datastore
 
-The OGR datastore module allows to use the ``GDAL/OGR <https://gdal.org/>`` native library to access a wide variety of vector spatial formats and publish them in GeoServer.
+The OGR datastore module allows to use the `GDAL/OGR <https://gdal.org/>` native library to access a wide variety of vector spatial formats and publish them in GeoServer.
 
 This library is recommended to use when a particular data source does not have a GeoServer pure Java datastore fulfilling the same needs, in particular, compared to built in sources, it has the following limitations:
 

@@ -523,7 +523,7 @@ Transformations between VerticalCRSs can be supported through Vertical Grid Offs
 
 Custom Coordinate Operations are defined in **`user_projections/epsg_operations.properties`** file within the data directory (create it if it doesn't exist).
 
-Each line in **`epsg_operations.properties`** will describe a coordinate operation consisting of a ``source CRS``, a ``target CRS``, and a math transform with its parameter values. Use the following syntax:
+Each line in **`epsg_operations.properties`** will describe a coordinate operation consisting of a `source CRS`, a `target CRS`, and a math transform with its parameter values. Use the following syntax:
 
 ```xml
 <source crs code>,<target crs code>=<WKT math transform>

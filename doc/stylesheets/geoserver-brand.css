@@ -1,0 +1,31 @@
+/*
+ * GeoServer Brand Tokens
+ *
+ * Single source of truth for brand colours shared across:
+ *   - MkDocs documentation theme (extra.css)
+ *   - Swagger API reference page  (doc/en/api/index.html)
+ *
+ * Values are derived from the main web application CSS:
+ *   src/theme/src/main/resources/css/geoserver.css
+ *
+ * NOTE: Keep these in sync when the app palette changes.
+ */
+
+:root {
+  /* Primary brand colour (teal-blue) */
+  --gs-brand-primary:        #0076a1;
+  --gs-brand-primary-dark:   #005a7b;
+  --gs-brand-primary-light:  #4ba0c4;
+
+  /* Accent / info colour (cyan) */
+  --gs-brand-accent:         #00abda;
+
+  /* Signature horizontal gradient (green → cyan) */
+  --gs-brand-gradient:       linear-gradient(to right, #cbe4a1 0%, #00abda 100%);
+
+  /* Link colours */
+  --gs-brand-link:           #0076a1;
+  --gs-brand-link-hover:     #005a7b;
+  --gs-brand-link-dark:      #4ba0c4;
+  --gs-brand-link-dark-hover:#79bad6;
+}

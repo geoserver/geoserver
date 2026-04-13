@@ -6,7 +6,7 @@ When using Apache HTTPD as a proxy frontend for GeoServer, it is possible to sha
 
 This requires enabling Session for the GeoServer location in Apache HTTPD and adding a custom Request Header with the session content, so that the GeoServer security system can receive user credentials and use them to authenticate the user with its internal filters.
 
-To properly parse the received credentials we need to use the ``Credentials From Request Headers`` Authentication Filter.
+To properly parse the received credentials we need to use the `Credentials From Request Headers` Authentication Filter.
 
 Please note that the header containing the password is not sent back and forth to the user browser, but only from Apache HTTPD to GeoServer, so the password is not sent in clear through the public network.
 
@@ -110,7 +110,7 @@ This can be done with an HTTPD configuration that looks like the following:
 </Location>
 ```
 
-This configuration adds a new ``X-Credentials`` Request Header to each GeoServer request. The request header will contain the HTTPD Session information in a special format.
+This configuration adds a new `X-Credentials` Request Header to each GeoServer request. The request header will contain the HTTPD Session information in a special format.
 
 An example of the Session content is the following:
 

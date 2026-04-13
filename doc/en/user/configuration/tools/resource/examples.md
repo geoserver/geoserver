@@ -40,7 +40,7 @@ To create a **`controlflow.properties`** file:
 
 2.  Click **New resource** button to open **Edit a Resource** dialog.
 
-    - **Resource**: ``controlflow.properties``
+    - **Resource**: `controlflow.properties`
 
     - **Content**: file contents
 

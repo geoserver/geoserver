@@ -1,6 +1,6 @@
 # VSI Virtual File System Support
 
-Support for GDAL's virtual file systems, accessible via a ``/vsi``-prefixed path.
+Support for GDAL's virtual file systems, accessible via a `/vsi`-prefixed path.
 
 ## Configuration
 

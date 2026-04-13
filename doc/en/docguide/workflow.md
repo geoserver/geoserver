@@ -11,7 +11,7 @@ GeoServer documentation aims to mirror the development process of the software i
 
 ### Software
 
-You must use the version control software ``git`` to retrieve files.
+You must use the version control software `git` to retrieve files.
 
 - <https://windows.github.com>
 - <https://mac.github.com>

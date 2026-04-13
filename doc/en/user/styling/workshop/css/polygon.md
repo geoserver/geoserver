@@ -18,7 +18,7 @@ Review of polygon symbology:
 
 - SLD uses a **PolygonSymbolizer** to describe how the shape of a polygon is drawn. The primary characteristic documented is the **Fill** used to shade the polygon interior. The use of a **Stroke** to describe the polygon boundary is optional.
 
-- Labeling of a polygon is anchored to the centroid of the polygon. GeoServer provides a vendor option to allow labels to line wrap to remain within the polygon boundaries.
+- labelling of a polygon is anchored to the centroid of the polygon. GeoServer provides a vendor option to allow labels to line wrap to remain within the polygon boundaries.
 
 For our Polygon exercises we will try and limit our CSS documents to a single rule, in order to showcase the properties used for rendering.
 
@@ -31,12 +31,13 @@ Reference:
 This exercise makes use of the `ne:states_provinces_shp` layer.
 
 1.  Navigate to **Styles**.
-2.  Create a new style ``polygon_example``.
+2.  Create a new style `polygon_example`.
 
-    | Name:      | ``polygon_example`` |
-    |------------|-------------------------------|
-    | Workspace: | ``No workspace``    |
-    | Format:    | ``CSS``             |
+    |            |                   |
+    |------------|-------------------|
+    | Name:      | `polygon_example` |
+    | Workspace: | `No workspace`    |
+    | Format:    | `CSS`             |
 
 
     ![image](../style/img/polygon_02_create.png)
@@ -141,7 +142,7 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 
     Use of **symbol** to access a predefined shape. SLD provides several well-known shapes (circle, square, triangle, arrow, cross, star, and x). GeoServer provides additional shapes specifically for use as fill patterns.
 
-    Update ``polygon_example`` with the following built-in symbol as a repeating fill pattern:
+    Update `polygon_example` with the following built-in symbol as a repeating fill pattern:
 
     ```css hl_lines="2"
     * {
@@ -247,8 +248,9 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 
 12. The well-known symbols are more suited for marking individual points. Now that we understand how a pattern can be controlled it is time to look at the patterns GeoServer provides.
 
-    | shape://horizline | horizontal hatching                      |
+    |                   |                                          |
     |-------------------|------------------------------------------|
+    | shape://horizline | horizontal hatching                      |
     | shape://vertline  | vertical hatching                        |
     | shape://backslash | right hatching pattern                   |
     | shape://slash     | left hatching pattern                    |
@@ -327,7 +329,7 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 
 ## Label
 
-Labeling polygons follows the same approach used for LineStrings.
+Labelling polygons follows the same approach used for LineStrings.
 
 ![image](../style/img/PolygonLabel_CSS.svg)
 
@@ -379,7 +381,7 @@ The key properties **fill** and **label** are used to enable Polygon label gener
     }
     ```
 
-6.  The labeling position remains at the polygon centroid. We adjust alignment by controlling which part of the label we are "snapping" into position.
+6.  The labelling position remains at the polygon centroid. We adjust alignment by controlling which part of the label we are "snapping" into position.
 
     ![image](../style/img/polygon_label_1.png)
 
@@ -436,7 +438,7 @@ When working with labels a map can become busy very quickly, and difficult to re
 
     Many of these parameters focus on controlling conflict resolution (when labels would otherwise overlap).
 
-2.  Two common properties for controlling labeling are:
+2.  Two common properties for controlling labelling are:
 
     **label-max-displacement** indicates the maximum distance GeoServer should displace a label during conflict resolution.
 
@@ -589,7 +591,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
 
 5.  This CSS makes use of cascading to avoid repeating the **stroke** and **stroke-width** information multiple times.
 
-    As an example the ``mapcolor9=2`` rule, combined with the ``*`` rule results in the following collection of properties:
+    As an example the `mapcolor9=2` rule, combined with the `*` rule results in the following collection of properties:
 
     ``` css
     [mapcolor9=2] {
@@ -755,7 +757,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
 ### Challenge Goodness of Fit {: #css.polygon.q3 }
 
-1.  A subject we touched on during labeling was the conflict resolution GeoServer performs to ensure labels do not overlap.
+1.  A subject we touched on during labelling was the conflict resolution GeoServer performs to ensure labels do not overlap.
 
 2.  In addition to the vendor parameter for max displacement you can experiment with different values for "goodness of fit". These settings control how far GeoServer is willing to move a label to avoid conflict, and under what terms it simply gives up:
 

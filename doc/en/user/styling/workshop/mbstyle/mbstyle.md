@@ -20,15 +20,15 @@ All MBStyles consist of a JSON document. There are three types of structures in 
 
 1.  Object, a collection of key-value pairs. All JSON documents are JSON objects.
 2.  Array, a collection of values.
-3.  Value, the value in a key-value pair, or an entry in an array. Values can be objects, arrays, strings, numbers, ``true``, ``false``, or ``null``.
+3.  Value, the value in a key-value pair, or an entry in an array. Values can be objects, arrays, strings, numbers, `true`, `false`, or `null`.
 
 | Object | A collection of key-value pairs, enclosed by curly braces and delimited by commas. Keys are surrounded by quotes and separated from values by a colon. |
 |----|----|
 | Array | A collection values, enclosed by square brackets and delimited by commas. |
 | String | Text value. Must be surrounded by quotes. |
 | Number | Numerical value. Must not be surrounded by quotes. |
-| Boolean | ``true`` or ``false``. |
-| Null | ``null``. Represents an undefined or unset value. |
+| Boolean | `true` or `false`. |
+| Null | `null`. Represents an undefined or unset value. |
 
 ### MBStyle Specification
 
@@ -40,11 +40,11 @@ Root level properties of a Mapbox style specify the map's layers, tile sources a
 
 The following root-level properties are required for all MBStyles. Additional root-level properties which are supported but not required can be found in the spec.
 
-| ``version`` | The version of the Mapbox Style specification to use. Must be set to ``8``. |
+| `version` | The version of the Mapbox Style specification to use. Must be set to `8`. |
 |----|----|
-| ``name`` | The name of the style. |
-| ``sources`` | An object defining the source data. Not used by GeoServer. |
-| ``layers`` | An array of layer style objects |
+| `name` | The name of the style. |
+| `sources` | An object defining the source data. Not used by GeoServer. |
+| `layers` | An array of layer style objects |
 
 For example: :
 
@@ -149,7 +149,7 @@ Here is the same example as [MBStyle](../files/airports0.json):
 }
 ```
 
-We use a point symbolizer to indicate we want this content drawn as a **Point** (line 16 in the SLD, line 8 in the MBStyle). The point symbolizer declares an external graphic, which contains the URL ``airports.svg`` indicating the image that should be drawn (line 20 in the SLD, line 10 in the MBStyle).
+We use a point symbolizer to indicate we want this content drawn as a **Point** (line 16 in the SLD, line 8 in the MBStyle). The point symbolizer declares an external graphic, which contains the URL `airports.svg` indicating the image that should be drawn (line 20 in the SLD, line 10 in the MBStyle).
 
 !!! note
     Rather than refer to many different icons separately, MBStyles use a single sprite-sheet containing all the necessary icons for the style. This is defined by the `sprite` property at the top-level of the style.
@@ -161,10 +161,10 @@ To confirm everything works, let's reproduce the airports style above.
 1.  Navigate to the **Styles** page.
 2.  Each time we edit a style, the contents of the associated SLD file are replaced. Rather than disrupt any of our existing styles we will create a new style. Click **Add a new style** and choose the following:
 
-    | Name:      | ``airports0`` |
+    | Name:      | `airports0` |
     |------------|-------------------------|
     | Workspace: | (leave empty)           |
-    | Format:    | ``MBStyle``   |
+    | Format:    | `MBStyle`   |
 
 
 1.  Replace the initial MBStyle definition with our airport MBStyle example and click **Apply**:
@@ -177,7 +177,7 @@ To confirm everything works, let's reproduce the airports style above.
     {%endraw%}
     ```
 
-2.  Click the **Layer Preview** tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select ``ne:airports`` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
+2.  Click the **Layer Preview** tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select `ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
 
     ![](../style/img/css_02_choose_data.png)
 

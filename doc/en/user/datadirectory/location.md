@@ -38,7 +38,7 @@ By default GeoServer includes an example data directory allowing you to try out 
     |---------------------|----------------------------------|
     | Windows (Installer) | **`%ProgramData%\GeoServer`** |
 
-- Docker: The Docker image maintains a data directory in ``/opt/geoserver_data``.
+- Docker: The Docker image maintains a data directory in `/opt/geoserver_data`.
 
   This location should be mapped to an absolute path in your host as described in [Using your own Data Directory](../installation/docker.md#installation_docker_data).
 

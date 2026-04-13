@@ -3,27 +3,23 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-RootLayerEntryPanel">
-        <div class="gs-unordered-list-class">
-          <div class="gs-list-item-class">
+        <div class="gs-form">
+          <div class="gs-form-group">
             <label>
               <wicket:message key="rootLayer">Root Layer</wicket:message>
             </label>
+            <div class="gs-input-group">
+              <input wicket:id="rootLayer" id="rootLayer" type="text"/>
+              <a class="button" wicket:id="add">
+                <wicket:message key="setRootLayer">Set Root Layer...</wicket:message>
+              </a>
+            </div>
           </div>
-          <div class="gs-list-item-class">
-            <a class="add-link" wicket:id="add">
-              <wicket:message key="setRootLayer">Set Root Layer...</wicket:message>
-            </a>
-          </div>
-          <div class="gs-list-item-class">
-            <input wicket:id="rootLayer" id="rootLayer" type="text"/>
-          </div>
-          <div class="gs-list-item-class">
+          <div class="gs-form-group">
             <label for="rootLayerStyle">
               <wicket:message key="rootLayerStyle">Root Layer Style</wicket:message>
             </label>
-          </div>
-          <div class="gs-list-item-class">
-            <select wicket:id="rootLayerStyle"/>
+            <select wicket:id="rootLayerStyle" class="w-md"/>
           </div>
         </div>
         <div wicket:id="popup"/>

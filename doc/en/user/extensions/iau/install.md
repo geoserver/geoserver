@@ -28,7 +28,7 @@ To verify that the extension was installed successfully:
 
 1.  On the left menu, get into **Demos** and then **SRS List**
 
-2.  Go into the table filter text field, and type ``IAU``, then press enter
+2.  Go into the table filter text field, and type `IAU`, then press enter
 
 3.  A number of IAU codes should appear in the table
 

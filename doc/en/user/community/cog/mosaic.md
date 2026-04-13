@@ -80,7 +80,7 @@ On the next steps we assume:
 - An existing GeoServer instance is running on port 8080 of localhost.
 - A workspace named "test" exists on that GeoServer.
 - REST credentials are user=admin password=geoserver.
-- A default aws region is defined on JAVA System Property, using the flag ``-Diio.https.aws.region=us-west-2``.
+- A default aws region is defined on JAVA System Property, using the flag `-Diio.https.aws.region=us-west-2`.
 
 Make sure to update the incoming URLs accordingly, based on your actual installation.
 

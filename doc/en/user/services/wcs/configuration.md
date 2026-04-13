@@ -52,4 +52,4 @@ Use this setting to limit the default list of supported SRS (projections) for th
 
 *Limited SRS list*
 
-To limit the service to only the required projections use the **Limited SRS List** text box to list the desired EPSG codes separated by commas, e.g. ``4326,27700`` .
+To limit the service to only the required projections use the **Limited SRS List** text box to list the desired EPSG codes separated by commas, e.g. `4326,27700` .

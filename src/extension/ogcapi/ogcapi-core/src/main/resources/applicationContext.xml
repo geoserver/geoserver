@@ -23,6 +23,8 @@
 
   <bean id="apiClasspathPublisherMapping"
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <!-- see OWSHandlerMapping.DEFAULT_ORDER -->
+    <property name="order" value="-50"/>
     <property name="alwaysUseFullPath" value="true"/>
     <property name="mappings">
       <props>
@@ -43,9 +45,6 @@
   <bean id="apiURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
     <constructor-arg ref="catalog"/>
     <property name="alwaysUseFullPath" value="true"/>
-    <property name="useTrailingSlashMatch" value="true"/>
-    <property name="order" value="0"/>
-
     <property name="mappings">
       <props>
         <prop key="/ogc">apiDispatcher</prop>

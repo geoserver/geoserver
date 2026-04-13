@@ -77,16 +77,24 @@
                     <span wicket:id="warningSkips"/>
                   </div>
                   <div class="gs-list-item-class">
-                    <label>
-                      <wicket:message key="parameterFilters">ParameterFilters:</wicket:message>
-                    </label>
-                    <span wicket:id="parameterFilters"/>
+                    <fieldset>
+                      <legend>
+                        <span>
+                          <wicket:message key="parameterFilters">ParameterFilters:</wicket:message>
+                        </span>
+                      </legend>
+                      <div>
+                        <div wicket:id="parameterFilters"></div>
+                      </div>
+                    </fieldset>
                   </div>
                   <div class="gs-list-item-class">
-                    <label>
-                      <wicket:message key="cachedGridsets">Cached Grid Sets:</wicket:message>
-                    </label>
-                    <span wicket:id="cachedGridsets"/>
+                    <fieldset>
+                      <legend>
+                        <wicket:message key="cachedGridsets">Cached Grid Sets:</wicket:message>
+                      </legend>
+                      <div wicket:id="cachedGridsets"/>
+                    </fieldset>
                   </div>
                 </div>
               </div>

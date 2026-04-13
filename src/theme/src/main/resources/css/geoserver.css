@@ -1377,8 +1377,23 @@ Style editor
 
 /* Palette theme */
 .palette-theme-default {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0.5rem;
 }
+
+.palette-theme-default .palette-choices,
+.palette-theme-default .palette-selected {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-theme-default .palette-choices > div,
+.palette-theme-default .palette-selected > div {
+  flex: 1 1 auto;
+}
+
 .palette-theme-default .palette-header {
   display: block;
   text-align: center;
@@ -1400,6 +1415,8 @@ Style editor
 .palette-theme-default .palette-selected select {
   width: 100%;
   min-width: 100%;
+  min-height: 8em;
+  height: 100%;
   box-sizing: border-box;
   border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);
   border-radius: var(--gs-border-radius);
@@ -2295,6 +2312,24 @@ div.value-wide {
   gap: 0.5rem;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.gs-content-header .gs-content-header-title {
+  border-bottom: 2px solid transparent;
+  border-image: var(--gs-brand-gradient) 1;
+}
+div:has(> div > .gs-content-header)
+  + div:has(> div > .gs-content-header)
+  .gs-content-header > .gs-content-header-title {
+  font-size: 1.125rem;
+  border-bottom: 0;
+  margin-top: 1rem;
+  font-weight: 400;
+}
+div:has(> div > .gs-content-header)
+  + div:has(> div > .gs-content-header)
+  .gs-content-header > p {
+  font-size: 0.875rem;
 }
 @media (max-width: 768px) {
   .gs-form {

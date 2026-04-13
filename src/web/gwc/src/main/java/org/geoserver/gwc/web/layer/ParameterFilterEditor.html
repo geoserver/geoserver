@@ -4,21 +4,21 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-ParameterFilterEditor">
-        <div>
+        <div class="gs-form">
           <div wicket:id="container">
             <div wicket:id="table">
-              <form wicket:id="filtersForm">
-                <fieldset wicket:id="parameterFilters">
-                  <legend>
-                    <label wicket:id="key">Key</label>
-                  </legend>
+              <form wicket:id="filtersForm" class="gs-form">
+                <div wicket:id="parameterFilters">
+                  <div>
+                    <h4 wicket:id="key">Key</h4>
+                  </div>
                   <div class="gwc-remove-link">
                     <a href="#" wicket:id="removeLink">
                       <span wicket:id="removeIcon"/>
                     </a>
                   </div>
                   <div wicket:id="subform">Filter Specific Details</div>
-                </fieldset>
+                </div>
               </form>
             </div>
           </div>

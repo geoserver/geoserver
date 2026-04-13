@@ -25,6 +25,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.DataStoreInfo;
@@ -56,20 +57,21 @@ import org.geotools.api.filter.Filter;
  * layers and to add new ones
  */
 public class LayerPage extends GeoServerSecuredPage {
+
+    private String targetWorkspaceStr = null;
+    private String targetLayerStr = null;
+
     LayerProvider provider = new LayerProvider() {
         @Override
-        protected Filter getFilter() {
-            Filter baseFilter = super.getFilter();
-            StringValue wsParam = getPageParameters().get("workspace");
-            StringValue layerParam = getPageParameters().get("layer");
-
-            if (!layerParam.isEmpty()) {
+        protected Filter getContextFilter() {
+            if (targetLayerStr != null) {
                 String targetLayer;
-                if (!wsParam.isEmpty()) {
-                    targetLayer = wsParam.toString() + ":" + layerParam.toString();
+                if (targetWorkspaceStr != null) {
+                    targetLayer = targetWorkspaceStr + ":" + targetLayerStr;
                 } else {
-                    targetLayer = layerParam.toString();
+                    targetLayer = targetLayerStr;
                 }
+
                 LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
                 if (gi != null) {
                     LayerGroupHelper helper = new LayerGroupHelper(gi);
@@ -77,26 +79,36 @@ public class LayerPage extends GeoServerSecuredPage {
                     for (LayerInfo li : helper.allLayers()) {
                         ids.add(li.getId());
                     }
-                    return Predicates.and(baseFilter, Predicates.in("id", ids));
+                    return ids.isEmpty() ? Filter.EXCLUDE : Predicates.in("id", ids);
                 }
+
                 LayerInfo li = getCatalog().getLayerByName(targetLayer);
                 if (li != null) {
-                    return Predicates.and(baseFilter, Predicates.equal("id", li.getId()));
+                    return Predicates.equal("id", li.getId());
                 }
+                return Filter.EXCLUDE;
             }
-            if (!wsParam.isEmpty()) {
-                String targetWs = wsParam.toString();
-                Filter workspaceFilter = Predicates.equal("resource.store.workspace.name", targetWs);
-                return Predicates.and(baseFilter, workspaceFilter);
+
+            if (targetWorkspaceStr != null) {
+                return Predicates.equal("resource.store.workspace.name", targetWorkspaceStr);
             }
-            return baseFilter;
+            return null;
         }
     };
     GeoServerTablePanel<LayerInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
 
-    public LayerPage() {
+    public LayerPage(PageParameters parameters) {
+        StringValue wsParam = parameters.get("workspace");
+        StringValue layerParam = parameters.get("layer");
+
+        if (!wsParam.isEmpty()) {
+            this.targetWorkspaceStr = wsParam.toString();
+        }
+        if (!layerParam.isEmpty()) {
+            this.targetLayerStr = layerParam.toString();
+        }
         final CatalogIconFactory icons = CatalogIconFactory.get();
         table = new GeoServerTablePanel<>("table", provider, true) {
 
@@ -146,6 +158,10 @@ public class LayerPage extends GeoServerSecuredPage {
         // the confirm dialog
         add(dialog = new GeoServerDialog("dialog"));
         setHeaderPanel(headerPanel());
+    }
+
+    public LayerPage() {
+        this(new PageParameters());
     }
 
     private Component titleLink(String id, IModel<LayerInfo> itemModel) {

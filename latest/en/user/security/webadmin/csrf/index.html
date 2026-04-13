@@ -29755,22 +29755,24 @@
 <p>To allow-list your proxy with the CSRF filter, you can use the <code>GEOSERVER_CSRF_WHITELIST</code> property. This property is a comma-separated list of domains, of the form <code>&lt;domainname&gt;.&lt;TLD&gt;</code>, and can contain a subdomains. Alternatively, you can disable the CSRF filter by setting the <code>GEOSERVER_CSRF_DISABLED</code> property to <code>true</code>.</p>
 <p>Each of these properties is set through one of the standard means:</p>
 <ul>
-<li><code>web.xml</code> :</li>
-</ul>
+<li>
+<p><code>web.xml</code> :</p>
 <p><code>xml
-&lt;context-param&gt;
-  &lt;param-name&gt;GEOSERVER_CSRF_WHITELIST&lt;/param-name&gt;
-  &lt;param-value&gt;example.org&lt;/param-value&gt;
-&lt;/context-param&gt;</code></p>
-<ul>
-<li>System property :</li>
-</ul>
+  &lt;context-param&gt;
+&lt;param-name&gt;GEOSERVER_CSRF_WHITELIST&lt;/param-name&gt;
+&lt;param-value&gt;example.org&lt;/param-value&gt;
+  &lt;/context-param&gt;</code></p>
+</li>
+<li>
+<p>System property :</p>
 <p><code>-DGEOSERVER_CSRF_WHITELIST=example.org</code></p>
-<ul>
-<li>Environment variable :</li>
-</ul>
+</li>
+<li>
+<p>Environment variable :</p>
 <p><code>bash
-export GEOSERVER_CSRF_WHITELIST=example.org</code></p>
+  export GEOSERVER_CSRF_WHITELIST=example.org</code></p>
+</li>
+</ul>
 
 
 

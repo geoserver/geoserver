@@ -29751,22 +29751,24 @@
 <p>The property <code>GEOSERVER_FILEBROWSER_HIDEFS</code> can be used to disable this functionality. When set to <code>true</code> only the GeoServer data directory will be exposed through the file browser.</p>
 <p>The property is set through one of the standard means:</p>
 <ul>
-<li><code>web.xml</code> :</li>
-</ul>
+<li>
+<p><code>web.xml</code> :</p>
 <p><code>xml
-&lt;context-param&gt;
-  &lt;param-name&gt;GEOSERVER_FILEBROWSER_HIDEFS&lt;/param-name&gt;
-  &lt;param-value&gt;true&lt;/param-value&gt;
-&lt;/context-param&gt;</code></p>
-<ul>
-<li>System property :</li>
-</ul>
+  &lt;context-param&gt;
+&lt;param-name&gt;GEOSERVER_FILEBROWSER_HIDEFS&lt;/param-name&gt;
+&lt;param-value&gt;true&lt;/param-value&gt;
+  &lt;/context-param&gt;</code></p>
+</li>
+<li>
+<p>System property :</p>
 <p><code>-DGEOSERVER_FILEBROWSER_HIDEFS=true</code></p>
-<ul>
-<li>Environment variable :</li>
-</ul>
+</li>
+<li>
+<p>Environment variable :</p>
 <p><code>bash
-export GEOSERVER_FILEBROWSER_HIDEFS=true</code></p>
+  export GEOSERVER_FILEBROWSER_HIDEFS=true</code></p>
+</li>
+</ul>
 
 
 

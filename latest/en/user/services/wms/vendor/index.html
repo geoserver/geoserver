@@ -30525,24 +30525,24 @@
 <p>See <a href="../../../styling/sld/extensions/substitution/">Variable substitution in SLD</a> for more information.</p>
 <h3 id="featureid">featureid<a class="headerlink" href="#featureid" title="Permanent link">&para;</a></h3>
 <p>The <code>featureid</code> parameter filters by feature ID, a unique value given to all features. Multiple features can be selected by separating the featureids by comma, as in this example:</p>
-<p><code>`properties
-featureid=states.1,states.45</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="na">featureid</span><span class="o">=</span><span class="s">states.1,states.45  </span>
+</code></pre></div>
 <h3 id="filter">filter<a class="headerlink" href="#filter" title="Permanent link">&para;</a></h3>
 <p>The WMS specification allows only limited filtering of data. GeoServer enhances the WMS filter capability to match that provided by WFS. The <code>filter</code> parameter can specify a list of OGC XML filters. The list is enclosed in parentheses: <strong>( )</strong>. When used in a GET request, the XML tag brackets must be URL-encoded.</p>
 <p>If more than one layer is specified in the <code>layers</code> parameter then a separate filter can be specified for each layer.</p>
 <p>An example of an OGC filter encoded in a GET request is:</p>
-<p><code>properties
-filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="na">filter</span><span class="o">=</span><span class="s">%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E</span>
+</code></pre></div>
 <p>An example of an OGC filter encoding standard 2.0 in a GET request is:</p>
-<p><code>properties
-filter=%3Cfes%3AFilter%20xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22%20xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%20xmlns%3Awfs%3D%22http%3A%2F%2Fwww.opengis.net%2Fwfs%22%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%20xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3APropertyIsLike%20wildCard%3D%22*%22%20singleChar%3D%22.%22%20escapeChar%3D%22!%22%3E%3Cfes%3AValueReference%3ENAME%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E*United*%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsLike%3E%3C%2Ffes%3AFilter%3E</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="na">filter</span><span class="o">=</span><span class="s">%3Cfes%3AFilter%20xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22%20xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%20xmlns%3Awfs%3D%22http%3A%2F%2Fwww.opengis.net%2Fwfs%22%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%20xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3APropertyIsLike%20wildCard%3D%22*%22%20singleChar%3D%22.%22%20escapeChar%3D%22!%22%3E%3Cfes%3AValueReference%3ENAME%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E*United*%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsLike%3E%3C%2Ffes%3AFilter%3E  </span>
+</code></pre></div>
 <p>An example of an OGC filter encoding standard 2.0 :</p>
-<p><code>xml
-&lt;fes:Filter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wfs="http://www.opengis.net/wfs" xmlns="http://www.opengis.net/fes/2.0" xmlns:fes="http://www.opengis.net/fes/2.0"&gt;&lt;fes:PropertyIsLike wildCard="*" singleChar="." escapeChar="!"&gt;&lt;fes:ValueReference&gt;NAME&lt;/fes:ValueReference&gt;&lt;fes:Literal&gt;*United*&lt;/fes:Literal&gt;&lt;/fes:PropertyIsLike&gt;&lt;/fes:Filter&gt;</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nt">&lt;fes:Filter</span><span class="w"> </span><span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="w"> </span><span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml/3.2&quot;</span><span class="w"> </span><span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/fes/2.0&quot;</span><span class="w"> </span><span class="na">xmlns:fes=</span><span class="s">&quot;http://www.opengis.net/fes/2.0&quot;</span><span class="nt">&gt;&lt;fes:PropertyIsLike</span><span class="w"> </span><span class="na">wildCard=</span><span class="s">&quot;*&quot;</span><span class="w"> </span><span class="na">singleChar=</span><span class="s">&quot;.&quot;</span><span class="w"> </span><span class="na">escapeChar=</span><span class="s">&quot;!&quot;</span><span class="nt">&gt;&lt;fes:ValueReference&gt;</span>NAME<span class="nt">&lt;/fes:ValueReference&gt;&lt;fes:Literal&gt;</span>*United*<span class="nt">&lt;/fes:Literal&gt;&lt;/fes:PropertyIsLike&gt;&lt;/fes:Filter&gt;</span>
+</code></pre></div>
 <h3 id="format_options">format_options<a class="headerlink" href="#format_options" title="Permanent link">&para;</a></h3>
 <p>The <code>format_options</code> is a container for parameters that are format-specific. The syntax is:</p>
-<p><code>properties
-format_options=param1:value1;param2:value2;...</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="na">format_options</span><span class="o">=</span><span class="s">param1:value1;param2:value2;...</span>
+</code></pre></div>
 <p>The supported format options are:</p>
 <ul>
 <li><code>antialias</code> (values = <code>on</code>, <code>off</code>, <code>text</code>): controls the use of antialiased rendering in raster output.</li>
@@ -30568,16 +30568,16 @@ format_options=param1:value1;param2:value2;...</code></p>
 <p>Note that not all layers support paging. For a layer to be queried in this way, the underlying feature source must support paging. This is usually the case for databases (such as PostGIS).</p>
 <h3 id="palette">palette<a class="headerlink" href="#palette" title="Permanent link">&para;</a></h3>
 <p>It is sometimes advisable (for speed and bandwidth reasons) to downsample the bit depth of returned maps. The way to do this is to create an image with a limited color palette, and save it in the <code>palettes</code> directory inside your GeoServer Data Directory. It is then possible to specify the <code>palette</code> parameter of the form:</p>
-<p><code>properties
-palette=&lt;image&gt;</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="na">palette</span><span class="o">=</span><span class="s">&lt;image&gt;</span>
+</code></pre></div>
 <p>where <code>&lt;image&gt;</code> is the filename of the palette image (without the extension). To force a web-safe palette, use the syntax <code>palette=safe</code>. For more information see the tutorial on <a href="../../../tutorials/palettedimage/palettedimage/">Paletted Images</a></p>
 <h3 id="propertyname">propertyName<a class="headerlink" href="#propertyname" title="Permanent link">&para;</a></h3>
 <p>The <code>propertyName</code> parameter specifies which properties are included in the response of the <code>GetFeatureInfo</code> operation. The syntax is the same as in the WFS <code>GetFeature</code> operation. For a request for a single layer the syntax is:</p>
-<p><code>properties
-propertyName=name1,...,nameN</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="na">propertyName</span><span class="o">=</span><span class="s">name1,...,nameN</span>
+</code></pre></div>
 <p>For multiple layers the syntax is:</p>
-<p><code>properties
-propertyName=(nameLayer11,...,nameLayer1N)...(name1LayerN,...,nameNLayerN)</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="na">propertyName</span><span class="o">=</span><span class="s">(nameLayer11,...,nameLayer1N)...(name1LayerN,...,nameNLayerN)</span>
+</code></pre></div>
 <p>The nature of the properties depends on the layer type:</p>
 <ul>
 <li>For vector layers the names specify the feature attributes.</li>
@@ -30587,13 +30587,13 @@ propertyName=(nameLayer11,...,nameLayer1N)...(name1LayerN,...,nameNLayerN)</code
 <h3 id="tiled">tiled<a class="headerlink" href="#tiled" title="Permanent link">&para;</a></h3>
 <p>Meta-tiling prevents issues with duplicated labels when using a tiled client such as OpenLayers. When meta-tiling is used, images are rendered and then split into smaller tiles (by default in a 3x3 pattern) before being served. In order for meta-tiling to work, the tile size <em>must</em> be set to 256x256 pixels, and the <code>tiled</code> and <code>tilesorigin</code> parameters must be specified.</p>
 <p>The <code>tiled</code> parameter controls whether meta-tiling is used. The syntax is:</p>
-<p><code>properties
-tiled=[true|false]</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="na">tiled</span><span class="o">=</span><span class="s">[true|false]</span>
+</code></pre></div>
 <p>To invoke meta-tiling use <code>tiled=true</code>.</p>
 <h3 id="tilesorigin">tilesorigin<a class="headerlink" href="#tilesorigin" title="Permanent link">&para;</a></h3>
 <p>The <code>tilesorigin</code> parameter is also required for meta-tiling. The syntax is:</p>
-<p><code>properties
-tilesorigin=x,y</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="na">tilesorigin</span><span class="o">=</span><span class="s">x,y</span>
+</code></pre></div>
 <p>where <code>x</code> and <code>y</code> are the coordinates of the lower left corner (the "origin") of the tile grid system.</p>
 <h4 id="openlayers-example">OpenLayers example<a class="headerlink" href="#openlayers-example" title="Permanent link">&para;</a></h4>
 <p>In OpenLayers, a good way to specify the <code>tilesorigin</code> is to reference the map extents directly.</p>
@@ -30602,28 +30602,28 @@ tilesorigin=x,y</code></p>
 <p>If the map extents are modified dynamically, the <code>tilesorigin</code> of each meta-tiled layer must be updated accordingly.</p>
 </div>
 <p>The following code shows how to specify the meta-tiling parameters:</p>
-<p>```javascript
-var options = {
-    ...
-    maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
-    ...
-};
-map = new OpenLayers.Map('map', options);</p>
-<p>tiled = new OpenLayers.Layer.WMS(
-    "Layer name", "http://localhost:8080/geoserver/wms",
-    {
-        srs: 'EPSG:4326',
-        width: 391,
-        styles: '',
-        height: 550,
-        layers: 'layerName',
-        format: 'image/png',
-        tiled: true,
-        tilesorigin: map.maxExtent.left + ',' + map.maxExtent.bottom
-    },
-    {buffer: 0} 
-);
-```</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kd">var</span><span class="w"> </span><span class="nx">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">    </span><span class="p">...</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">    </span><span class="nx">maxExtent</span><span class="o">:</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Bounds</span><span class="p">(</span><span class="o">-</span><span class="mf">180</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">90</span><span class="p">,</span><span class="w"> </span><span class="mf">180</span><span class="p">,</span><span class="w"> </span><span class="mf">90</span><span class="p">),</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">    </span><span class="p">...</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="p">};</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="nx">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenLayers</span><span class="p">.</span><span class="nb">Map</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="p">);</span>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="nx">tiled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">WMS</span><span class="p">(</span>
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="w">    </span><span class="s2">&quot;Layer name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/geoserver/wms&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="w">        </span><span class="nx">srs</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;EPSG:4326&#39;</span><span class="p">,</span>
+<a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="w">        </span><span class="nx">width</span><span class="o">:</span><span class="w"> </span><span class="mf">391</span><span class="p">,</span>
+<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="w">        </span><span class="nx">styles</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+<a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="w">        </span><span class="nx">height</span><span class="o">:</span><span class="w"> </span><span class="mf">550</span><span class="p">,</span>
+<a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="w">        </span><span class="nx">layers</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;layerName&#39;</span><span class="p">,</span>
+<a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a><span class="w">        </span><span class="nx">format</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;image/png&#39;</span><span class="p">,</span>
+<a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a><span class="w">        </span><span class="nx">tiled</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a><span class="w">        </span><span class="nx">tilesorigin</span><span class="o">:</span><span class="w"> </span><span class="nx">map</span><span class="p">.</span><span class="nx">maxExtent</span><span class="p">.</span><span class="nx">left</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;,&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">map</span><span class="p">.</span><span class="nx">maxExtent</span><span class="p">.</span><span class="nx">bottom</span>
+<a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a><span class="w">    </span><span class="p">{</span><span class="nx">buffer</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">}</span><span class="w"> </span>
+<a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a><span class="p">);</span>
+</code></pre></div>
 <h3 id="scalemethod">scaleMethod<a class="headerlink" href="#scalemethod" title="Permanent link">&para;</a></h3>
 <p>The <code>scaleMethod</code> parameter controls how the scale denominator is computed by GeoServer The two possible values are:</p>
 <ul>
@@ -30638,8 +30638,8 @@ map = new OpenLayers.Map('map', options);</p>
 <h3 id="wms_vendor_parameter_interpolations">interpolations<a class="headerlink" href="#wms_vendor_parameter_interpolations" title="Permanent link">&para;</a></h3>
 <p>The <code>interpolations</code> parameter allows choosing a specific resampling (interpolation) method. It can be used in the <code>GetMap</code> operation.</p>
 <p>If more than one layer is specified in the <code>layers</code> parameter, then a separate interpolation method can be specified for each layer, separated by commas. The syntax is:</p>
-<p><code>properties
-interpolations=method1,method2,...</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="na">interpolations</span><span class="o">=</span><span class="s">method1,method2,... </span>
+</code></pre></div>
 <p>method<n> values can be one of the following:</p>
 <ul>
 <li><strong>nearest neighbor</strong></li>
@@ -30651,9 +30651,9 @@ interpolations=method1,method2,...</code></p>
 <h3 id="clip">clip<a class="headerlink" href="#clip" title="Permanent link">&para;</a></h3>
 <p>The <code>clip</code> parameter can be used to clip WMS response using a Polygon/Multipolygon mask represented by a valid WKT String.</p>
 <p>Here are two examples, the first one using WKT, the second using EWKT:</p>
-<p><code>properties
-clip=POLYGON((-14.50804652396198 55.579454354599356,34.53492222603802 55.579454354599356,34.53492222603802 32.400173313532584,-14.50804652396198 32.400173313532584,-14.50804652396198 55.579454354599356))
-clip=srid=900913;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="na">clip</span><span class="o">=</span><span class="s">POLYGON((-14.50804652396198 55.579454354599356,34.53492222603802 55.579454354599356,34.53492222603802 32.400173313532584,-14.50804652396198 32.400173313532584,-14.50804652396198 55.579454354599356))</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="na">clip</span><span class="o">=</span><span class="s">srid=900913;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))</span>
+</code></pre></div>
 <p>When the WKT syntax is used, the default SRS matches the GetMap SRS/CRS parameter.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

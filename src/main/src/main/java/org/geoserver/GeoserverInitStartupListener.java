@@ -365,6 +365,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                                     String product = (String) products.next();
                                     try {
                                         opRegistry.unregisterFactory(mode, red.getName(), product, factory);
+                                        unregistered = true;
                                         LOGGER.fine("Unregistering ImageN factory " + factory.getClass());
                                     } catch (Throwable t) {
                                         // may fail due to the factory not being registered against

@@ -150,7 +150,7 @@ In GeoServer this link is implemented as a pseudo-operation called `GetExecution
 
 The `executionId` identifies the running request, and can be used in the `Dismiss` vendor operation in order to cancel the execution of the process:
 
-> [http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb](http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb)
+[http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb](http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb)
 
 Upon receipt GeoServer will do its best to stop the running process, and subsequent calls to `Dismiss` or `GetExecutionStatus` will report that the executionId is not known anymore. Internally, GeoServer will stop any process that attempts to report progress, and poison input and outputs to break the execution of the process, but the execution of processes that already got their inputs, and are not reporting their progress back, will continue until their natural end.
 

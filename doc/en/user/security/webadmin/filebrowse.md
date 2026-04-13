@@ -8,21 +8,21 @@ The property is set through one of the standard means:
 
 - `web.xml` :
 
-  ```xml
-<context-param>
-  <param-name>GEOSERVER_FILEBROWSER_HIDEFS</param-name>
-  <param-value>true</param-value>
-</context-param>
-  ```
+    ```xml
+  <context-param>
+    <param-name>GEOSERVER_FILEBROWSER_HIDEFS</param-name>
+    <param-value>true</param-value>
+  </context-param>
+    ```
 
 - System property :
 
-  ```
--DGEOSERVER_FILEBROWSER_HIDEFS=true
-  ```
+    ```
+  -DGEOSERVER_FILEBROWSER_HIDEFS=true
+    ```
 
 - Environment variable :
 
-  ```bash
-export GEOSERVER_FILEBROWSER_HIDEFS=true
-  ```
+    ```bash
+  export GEOSERVER_FILEBROWSER_HIDEFS=true
+    ```

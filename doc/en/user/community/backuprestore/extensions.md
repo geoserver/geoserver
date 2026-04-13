@@ -10,25 +10,27 @@ What we want to achieve is to allow the GeoServer Backup & Restore module to *in
 
 The GeoServer Backup & Restore module actually provides an extension point on reading / writing allowing GeoServer to handle additional resources related to a particular `ResourceInfo`.
 
-> The interfaces :
->
->     public interface CatalogAdditionalResourcesWriter<T> {
->
->         public boolean canHandle(Object item);
->
->         public void writeAdditionalResources(Backup backupFacade, Resource base, T item)
->                 throws IOException;
->
->     }
->
->     public interface CatalogAdditionalResourcesReader<T> {
->
->         public boolean canHandle(Object item);
->
->         public void readAdditionalResources(Backup backupFacade, Resource base, T item)
->                 throws IOException;
->
->     }
+The interfaces :
+```java
+
+    public interface CatalogAdditionalResourcesWriter<T> {
+
+        public boolean canHandle(Object item);
+
+        public void writeAdditionalResources(Backup backupFacade, Resource base, T item)
+                throws IOException;
+
+    }
+
+    public interface CatalogAdditionalResourcesReader<T> {
+
+        public boolean canHandle(Object item);
+
+        public void readAdditionalResources(Backup backupFacade, Resource base, T item)
+                throws IOException;
+
+    }
+```
 
 Is invoked by the `CatalogFileWriter` (when doing a Backup) and the `CatalogItemWriter` (when doing a Restore) after a successful write of the resource configuration on the, respectively, target backup folder and in-memory catalog.
 

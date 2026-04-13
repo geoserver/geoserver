@@ -64,9 +64,9 @@ The Eclipse M2 builder does recognize this plugin, build once on the command lin
 
 #\. Press **Finish** to start import.
 
-> During import use `Resolve Later`, exclude lifecycle mapping.
->
-> ![](img/m2_plugin_connectors.png)
+During import use `Resolve Later`, exclude lifecycle mapping.
+
+![](img/m2_plugin_connectors.png)
 
 ## Run GeoServer from Eclipse
 

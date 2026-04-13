@@ -8,9 +8,11 @@ In case the user wants to parametrize this, he must create a `.template` datasto
 
 As an instance:
 
-> host=${mosaic1.jdbc.host}
->     port=${mosaic1.jdbc.port}
->     ...
+```
+host=${mosaic1.jdbc.host}
+    port=${mosaic1.jdbc.port}
+    ...
+```
 
 The backup and restore extension will save on the archive both the original `.properties` and the `.template`
 

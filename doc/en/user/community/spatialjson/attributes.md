@@ -1,5 +1,3 @@
-> 
-
 # Opt. 2: Removing Redundant Attribute Values
 
 ## Shared String Table

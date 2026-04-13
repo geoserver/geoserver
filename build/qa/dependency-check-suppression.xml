@@ -121,6 +121,21 @@
         <packageUrl regex="true">^pkg:maven/org\.geowebcache/gwc-sqlite@.*$</packageUrl>
         <cpe>cpe:/a:sqlite:sqlite</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[file name: jep-4.2.0.jar. Not used in GeoServer, confused with JEP]]></notes>
+        <packageUrl regex="true">^pkg:maven/black\.ninia/jep@.*$</packageUrl>
+        <cpe>cpe:/a:python:black</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: hazelcast-spring-session-4.0.0.jar - Used but confused with Hazelcast 4.x]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.hazelcast\.spring/hazelcast-spring-session@.*$</packageUrl>
+        <cpe>cpe:/a:hazelcast:hazelcast</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: opentelemetry-gcp-resources-1.37.0-alpha.jar -- confused with the Go implementation]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.opentelemetry\.contrib/opentelemetry-gcp-resources@.*$</packageUrl>
+        <cpe>cpe:/a:opentelemetry:opentelemetry</cpe>
+    </suppress>
     <!-- Ignoring CVEs already fixed, that get reported anyways due to SNAPSHOT dependencies processing -->
     <suppress>
         <notes><![CDATA[file name: print-lib-2.5-SNAPSHOT.jar vulnerabilities reported for 3.x, but 2.x is a different codebase]]></notes>

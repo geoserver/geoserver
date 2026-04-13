@@ -1,5 +1,3 @@
-> 
-
 # Opt. 1: Removing Redundant Schema Information
 
 In traditional GeoJSON, every feature in a (simple feature) feature collection has its own schema information. That is, every feature contains all its (not necessarily short) attribute names. Except the geometry name, these names are used as the keys in the `"properties"` map:

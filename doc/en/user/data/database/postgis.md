@@ -171,12 +171,11 @@ GeoServer is able to translate the `jsonPointer` function to a query using Postg
 
 Having a json column storing jsonvalues like the following,
 
-> 
->
-> { "name": "city name",
-> :   "description": "the city description", "districts": [ { "name":"district1", "population": 2000 }, { "name":"district2", "population": 5000 } ] "population":{ "average_age": 35, "toal": 50000 }
->
-> }
+```json
+{ "name": "city name",
+   "description": "the city description", "districts": [ { "name":"district1", "population": 2000 }, { "name":"district2", "population": 5000 } ] "population":{ "average_age": 35, "toal": 50000 }
+}
+```
 
 and assuming an attribute name as `city`, valid jsonPointer functions would be:
 

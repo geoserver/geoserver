@@ -43,8 +43,8 @@ public class GeoServerBasicAuthenticationFilterTest {
 
     @Test
     public void testMultiThreadGetCacheKey() throws Exception {
-        ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
         List<Future<Boolean>> list = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
         for (int i = 0; i < 600; i++) {
             Callable<Boolean> worker = new AuthenticationCallable(authenticationFilter);
             Future<Boolean> submit = executor.submit(worker);

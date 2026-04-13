@@ -85,7 +85,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
             }
             if (!wsParam.isEmpty()) {
                 String targetWs = wsParam.toString();
-                Filter workspaceFilter = Predicates.equal("resource.store.workspace.name", targetWs);
+                Filter workspaceFilter = Predicates.equal("name", targetWs);
                 return Predicates.and(baseFilter, workspaceFilter);
             }
             return baseFilter;

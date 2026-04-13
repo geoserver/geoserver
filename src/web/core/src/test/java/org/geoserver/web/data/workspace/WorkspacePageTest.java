@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -57,6 +58,19 @@ public class WorkspacePageTest extends GeoServerWicketTestSupport {
         // should show both columns
         assertTrue(provider.getProperties().contains(WorkspaceProvider.CREATED_TIMESTAMP));
         assertTrue(provider.getProperties().contains(WorkspaceProvider.MODIFIED_TIMESTAMP));
+    }
+
+    @Test
+    public void testWorkspaceParameterFiltersToSingleWorkspace() {
+        tester.startPage(WorkspacePage.class, new PageParameters().add("workspace", "cite"));
+
+        tester.assertRenderedPage(WorkspacePage.class);
+        tester.assertNoErrorMessage();
+
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(1, dv.size());
+        WorkspaceInfo ws = (WorkspaceInfo) dv.getDataProvider().iterator(0, 1).next();
+        assertEquals("cite", ws.getName());
     }
 
     @Test

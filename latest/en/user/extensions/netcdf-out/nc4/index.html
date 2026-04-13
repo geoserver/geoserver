@@ -29869,33 +29869,36 @@
 <ol>
 <li>
 <p>Download the latest required dependencies (SZIP, ZLIB, HDF5) from the <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/">NetCDF-4 libraries section</a>.</p>
-<p>As an instance:</p>
-<p>:   ``` bash
-    wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/hdf5-1.8.13.tar.gz
-    wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/zlib-1.2.8.tar.gz
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>2.  Download the latest NetCDF-C source code from [here](https://github.com/Unidata/netcdf-c/releases/).
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>As an instance:
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>:   ``` bash
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>wget https://github.com/Unidata/netcdf-c/archive/v4.3.3.1.tar.gz
-</code></pre></div></p>
+<p>For example</p>
+<div class="highlight"><pre><span></span><code>```bash
+wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/hdf5-1.8.13.tar.gz
+wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/zlib-1.2.8.tar.gz
+```
+</code></pre></div>
 </li>
 <li>
-<p>Build and install the required dependencies (The following instructions assume that you will install all NetCDF4 C libs on <code>/work/libs/nc4libs</code>, as an instance).</p>
+<p>Download the latest NetCDF-C source code from <a href="https://github.com/Unidata/netcdf-c/releases/">here</a>.</p>
+<p>For example</p>
+<div class="highlight"><pre><span></span><code>```bash
+wget https://github.com/Unidata/netcdf-c/archive/v4.3.3.1.tar.gz
+```
+</code></pre></div>
+</li>
+<li>
+<p>Build and install the required dependencies (the following instructions assume that you will install all NetCDF4 C libs on <code>/work/libs/nc4libs</code>, for example).</p>
 <ol>
 <li>
 <p>ZLIB</p>
-<p>:   ``` bash
-    ./configure --prefix=/work/libs/nc4libs</p>
-<div class="highlight"><pre><span></span><code>make check install
+<div class="highlight"><pre><span></span><code>```bash
+./configure --prefix=/work/libs/nc4libs
+
+make check install
 ```
-
-2.  
-
-HDF5
-
-:   ``` bash
+</code></pre></div>
+</li>
+<li>
+<p>HDF5</p>
+<div class="highlight"><pre><span></span><code>```bash
 ./configure --with-zlib=/work/libs/nc4libs --prefix=/work/libs/nc4libs --enable-threadsafe --with-pthread=/DIR/TO/PTHREAD
 
 make check install
@@ -29906,9 +29909,9 @@ make check install
 </li>
 <li>
 <p>Build the NetCDF C Library.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">CPPFLAGS</span><span class="o">=</span>-I/work/libs/nc4libs/include<span class="w"> </span><span class="nv">LDFLAGS</span><span class="o">=</span>-L/work/libs/nc4libs/lib<span class="w"> </span>./configure<span class="w"> </span>--prefix<span class="o">=</span>/work/libs/nc4libs
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>make<span class="w"> </span>check<span class="w"> </span>install
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">CPPFLAGS</span><span class="o">=</span>-I/work/libs/nc4libs/include<span class="w"> </span><span class="nv">LDFLAGS</span><span class="o">=</span>-L/work/libs/nc4libs/lib<span class="w"> </span>./configure<span class="w"> </span>--prefix<span class="o">=</span>/work/libs/nc4libs
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>make<span class="w"> </span>check<span class="w"> </span>install
 </code></pre></div>
 </li>
 <li>

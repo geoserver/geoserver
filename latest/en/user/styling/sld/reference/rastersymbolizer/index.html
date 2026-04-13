@@ -30190,100 +30190,99 @@
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#FF0000&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;${env(&#39;high&#39;,1000)}&quot;</span><span class="w"> </span><span class="na">label=</span><span class="s">&quot;High&quot;</span><span class="w"> </span><span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
 </code></pre></div>
 <p>In this example quantity values are not fixed, but can be specified by the client using the ENV request parameter:</p>
-<blockquote>
-<p><a href="http://localhost:8080/geoserver/wms?REQUEST=GetMap&amp;VERSION=1.0.0&amp;">http://localhost:8080/geoserver/wms?REQUEST=GetMap&amp;VERSION=1.0.0&amp;</a>...&amp;ENV=low:10;medium:100;high:500</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>http://localhost:8080/geoserver/wms?REQUEST=GetMap&amp;VERSION=1.0.0&amp;...&amp;ENV=low:10;medium:100;high:500
+</code></pre></div>
 <p>For a complete reference of CQL capabilities, see <a href="../../../../filter/ecql_reference/">here</a></p>
 <h3 id="channelselection">ChannelSelection<a class="headerlink" href="#channelselection" title="Permanent link">&para;</a></h3>
 <p>The <code>&lt;ChannelSelection&gt;</code> element specifies how dataset bands are mapped to image color channels. Named dataset bands may be mapped to red, green and blue channels, or a single named band may be mapped to a grayscale channel.</p>
 <p>The following example maps source channels 1, 2 and 3 to the red, green, and blue color channels.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">&lt;ChannelSelection&gt;</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">     </span><span class="nt">&lt;RedChannel&gt;</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">          </span><span class="nt">&lt;SourceChannelName&gt;</span>1<span class="nt">&lt;/SourceChannelName&gt;</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">     </span><span class="nt">&lt;/RedChannel&gt;</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">     </span><span class="nt">&lt;GreenChannel&gt;</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">          </span><span class="nt">&lt;SourceChannelName&gt;</span>2<span class="nt">&lt;/SourceChannelName&gt;</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">     </span><span class="nt">&lt;/GreenChannel&gt;</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">     </span><span class="nt">&lt;BlueChannel&gt;</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">          </span><span class="nt">&lt;SourceChannelName&gt;</span>3<span class="nt">&lt;/SourceChannelName&gt;</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">     </span><span class="nt">&lt;/BlueChannel&gt;</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="nt">&lt;/ChannelSelection&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">&lt;ChannelSelection&gt;</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">     </span><span class="nt">&lt;RedChannel&gt;</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">          </span><span class="nt">&lt;SourceChannelName&gt;</span>1<span class="nt">&lt;/SourceChannelName&gt;</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">     </span><span class="nt">&lt;/RedChannel&gt;</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">     </span><span class="nt">&lt;GreenChannel&gt;</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">          </span><span class="nt">&lt;SourceChannelName&gt;</span>2<span class="nt">&lt;/SourceChannelName&gt;</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">     </span><span class="nt">&lt;/GreenChannel&gt;</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">     </span><span class="nt">&lt;BlueChannel&gt;</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">          </span><span class="nt">&lt;SourceChannelName&gt;</span>3<span class="nt">&lt;/SourceChannelName&gt;</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">     </span><span class="nt">&lt;/BlueChannel&gt;</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="nt">&lt;/ChannelSelection&gt;</span>
 </code></pre></div>
 <p><img alt="" src="../img/channelselection.png" /></p>
 <p>The next example shows selecting a single band of an RGB image as a grayscale channel, and re-colorizing it via a ColorMap:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">       </span><span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">       </span><span class="nt">&lt;ChannelSelection&gt;</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">           </span><span class="nt">&lt;GrayChannel&gt;</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">              </span><span class="nt">&lt;SourceChannelName&gt;</span>1<span class="nt">&lt;/SourceChannelName&gt;</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">           </span><span class="nt">&lt;/GrayChannel&gt;</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">       </span><span class="nt">&lt;/ChannelSelection&gt;</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">       </span><span class="nt">&lt;ColorMap</span><span class="w"> </span><span class="na">extended=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">           </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#0000ff&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;3189.0&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">           </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#009933&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;6000.0&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">           </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff9900&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;9000.0&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">           </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff0000&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;14265.0&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">       </span><span class="nt">&lt;/ColorMap&gt;</span>
-<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="nt">&lt;/RasterSymbolizer&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">       </span><span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">       </span><span class="nt">&lt;ChannelSelection&gt;</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">           </span><span class="nt">&lt;GrayChannel&gt;</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">              </span><span class="nt">&lt;SourceChannelName&gt;</span>1<span class="nt">&lt;/SourceChannelName&gt;</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">           </span><span class="nt">&lt;/GrayChannel&gt;</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">       </span><span class="nt">&lt;/ChannelSelection&gt;</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">       </span><span class="nt">&lt;ColorMap</span><span class="w"> </span><span class="na">extended=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">           </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#0000ff&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;3189.0&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">           </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#009933&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;6000.0&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">           </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff9900&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;9000.0&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">           </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff0000&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;14265.0&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">       </span><span class="nt">&lt;/ColorMap&gt;</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="nt">&lt;/RasterSymbolizer&gt;</span>
 </code></pre></div>
 <p><img alt="" src="../img/channelselection2.png" /></p>
 <h4 id="channelselection-expressions">ChannelSelection Expressions<a class="headerlink" href="#channelselection-expressions" title="Permanent link">&para;</a></h4>
 <p>Since the previous approach supports Strings only and therefore is static and not suitable when dealing with multispectral imagery that has more than four bands and hyperspectral imagery (hyperspectral sensors have typically hundreds of bands), a dynamical approach is needed.</p>
 <p>By replacing Strings with Expressions in <code>&lt;SourceChannelName&gt;</code>, context free functions like <code>env</code> can be used to indicate which bands are to be used in a particular rendering session.</p>
 <p>The following example shows how to set the Red, Green and Blue channels and to map them into the desired bands. Here below, the <code>env</code> function will set, by default in the WMS request, the RedChannel on the second band, the GreenChannel on the fifth band and the BlueChannel on the seventh band.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nt">&lt;ChannelSelection&gt;</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">   </span><span class="nt">&lt;RedChannel&gt;</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">   </span><span class="nt">&lt;SourceChannelName&gt;</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>B1<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>1<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
-<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">   </span><span class="nt">&lt;/SourceChannelName&gt;</span>
-<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">   </span><span class="nt">&lt;/RedChannel&gt;</span>
-<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">   </span><span class="nt">&lt;GreenChannel&gt;</span>
-<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">   </span><span class="nt">&lt;SourceChannelName&gt;</span>
-<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>B2<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>2<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
-<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">   </span><span class="nt">&lt;/SourceChannelName&gt;</span>
-<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">   </span><span class="nt">&lt;/GreenChannel&gt;</span>
-<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="w">   </span><span class="nt">&lt;BlueChannel&gt;</span>
-<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="w">   </span><span class="nt">&lt;SourceChannelName&gt;</span>
-<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>B3<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>3<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
-<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="w">   </span><span class="nt">&lt;/SourceChannelName&gt;</span>
-<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a><span class="w">   </span><span class="nt">&lt;/BlueChannel&gt;</span>
-<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="nt">&lt;/ChannelSelection&gt;</span>
-<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nt">&lt;ChannelSelection&gt;</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">   </span><span class="nt">&lt;RedChannel&gt;</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">   </span><span class="nt">&lt;SourceChannelName&gt;</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>B1<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>1<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">   </span><span class="nt">&lt;/SourceChannelName&gt;</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">   </span><span class="nt">&lt;/RedChannel&gt;</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">   </span><span class="nt">&lt;GreenChannel&gt;</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">   </span><span class="nt">&lt;SourceChannelName&gt;</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>B2<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>2<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">   </span><span class="nt">&lt;/SourceChannelName&gt;</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="w">   </span><span class="nt">&lt;/GreenChannel&gt;</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="w">   </span><span class="nt">&lt;BlueChannel&gt;</span>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="w">   </span><span class="nt">&lt;SourceChannelName&gt;</span>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>B3<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">         </span><span class="nt">&lt;ogc:Literal&gt;</span>3<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
+<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="w">   </span><span class="nt">&lt;/SourceChannelName&gt;</span>
+<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="w">   </span><span class="nt">&lt;/BlueChannel&gt;</span>
+<a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="nt">&lt;/ChannelSelection&gt;</span>
+<a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
 </code></pre></div>
 <p><img alt="" src="../img/channelsexpression1.png" /></p>
 <p>The style Schema supports also the SLD 1.1 and CSS. As a CSS examples:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>*<span class="w"> </span>{<span class="w"> </span>raster-channels:<span class="w"> </span>[env(&#39;B1&#39;,&#39;1&#39;)]<span class="w"> </span>&#39;2&#39;<span class="w"> </span>&#39;3&#39;;<span class="w"> </span>}
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>*<span class="w"> </span>{<span class="w"> </span>raster-channels:<span class="w"> </span>@B1(1)<span class="w">  </span>&#39;2&#39;<span class="w"> </span>&#39;3&#39;;}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>*<span class="w"> </span>{<span class="w"> </span>raster-channels:<span class="w"> </span>[env(&#39;B1&#39;,&#39;1&#39;)]<span class="w"> </span>&#39;2&#39;<span class="w"> </span>&#39;3&#39;;<span class="w"> </span>}
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>*<span class="w"> </span>{<span class="w"> </span>raster-channels:<span class="w"> </span>@B1(1)<span class="w">  </span>&#39;2&#39;<span class="w"> </span>&#39;3&#39;;}
 </code></pre></div>
 <p>One can specify the <code>env</code> request parameters in the WMS request to switch the bands and render the raster layer using the desired bands, for example the 4, 2, 3 as the following:</p>
 <div class="highlight"><pre><span></span><code>http://localhost:8083/geosolutions/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=geosolutions:raster_multichannel&amp;styles=&amp;bbox=-180.0,-90.5,180.0,90.5&amp;width=768&amp;height=386&amp;srs=EPSG:4326&amp;format=application/openlayers&amp;env=B1:4;B2:2;B3:3
 </code></pre></div>
 <p><img alt="" src="../img/channelsexpression2.png" /></p>
 <p>Now let us suppose that we want to work on a single band and to exclude all the remaining bands in order to render a monochromatic raster. As an SLD example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/se:Opacity&gt;</span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="nt">&lt;ChannelSelection&gt;</span>
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="nt">&lt;GrayChannel&gt;</span>
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">      </span><span class="nt">&lt;SourceChannelName&gt;</span>
-<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">           </span><span class="nt">&lt;Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">             </span><span class="nt">&lt;ogc:Literal&gt;</span>B1<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">             </span><span class="nt">&lt;ogc:Literal&gt;</span>7<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">          </span><span class="nt">&lt;/ogc:Function&gt;</span>
-<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">      </span><span class="nt">&lt;/SourceChannelName&gt;</span>
-<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">    </span><span class="nt">&lt;/GrayChannel&gt;</span>
-<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">  </span><span class="nt">&lt;/ChannelSelection&gt;</span>
-<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="nt">&lt;/RasterSymbolizer&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/se:Opacity&gt;</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">&lt;ChannelSelection&gt;</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="nt">&lt;GrayChannel&gt;</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">      </span><span class="nt">&lt;SourceChannelName&gt;</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">           </span><span class="nt">&lt;Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">             </span><span class="nt">&lt;ogc:Literal&gt;</span>B1<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">             </span><span class="nt">&lt;ogc:Literal&gt;</span>7<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">          </span><span class="nt">&lt;/ogc:Function&gt;</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">      </span><span class="nt">&lt;/SourceChannelName&gt;</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">    </span><span class="nt">&lt;/GrayChannel&gt;</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">  </span><span class="nt">&lt;/ChannelSelection&gt;</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="nt">&lt;/RasterSymbolizer&gt;</span>
 </code></pre></div>
 <p><img alt="" src="../img/channelsexpression3.png" /></p>
 <p>The Schema above will render the channel "7" by default. As before, you can choose to render any channel of the raster by calling the <code>env</code> function in your WMS request and setting the desired band. By adding to the request &amp;env=B1:3 for example:</p>
@@ -30291,25 +30290,25 @@
 </code></pre></div>
 <p><img alt="" src="../img/channelsexpression4.png" /></p>
 <p>Finally, you can add a ColorMap on the selected channel as the following:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w"> </span><span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w"> </span><span class="nt">&lt;ChannelSelection&gt;</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">   </span><span class="nt">&lt;GrayChannel&gt;</span>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">     </span><span class="nt">&lt;SourceChannelName&gt;</span>
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">          </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">            </span><span class="nt">&lt;ogc:Literal&gt;</span>B1<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">            </span><span class="nt">&lt;ogc:Literal&gt;</span>7<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">         </span><span class="nt">&lt;/ogc:Function&gt;</span>
-<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">     </span><span class="nt">&lt;/SourceChannelName&gt;</span>
-<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">   </span><span class="nt">&lt;/GrayChannel&gt;</span>
-<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w"> </span><span class="nt">&lt;/ChannelSelection&gt;</span>
-<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w"> </span><span class="nt">&lt;ColorMap&gt;</span>
-<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">     </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#0000ff&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;50.0&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">     </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#009933&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;100.0&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">     </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff9900&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;150.0&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">     </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff0000&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;200.0&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="w"> </span><span class="nt">&lt;/ColorMap&gt;</span>
-<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="nt">&lt;/RasterSymbolizer&gt;</span><span class="w">    </span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">&lt;RasterSymbolizer&gt;</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w"> </span><span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w"> </span><span class="nt">&lt;ChannelSelection&gt;</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">   </span><span class="nt">&lt;GrayChannel&gt;</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">     </span><span class="nt">&lt;SourceChannelName&gt;</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">          </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">            </span><span class="nt">&lt;ogc:Literal&gt;</span>B1<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">            </span><span class="nt">&lt;ogc:Literal&gt;</span>7<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">         </span><span class="nt">&lt;/ogc:Function&gt;</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">     </span><span class="nt">&lt;/SourceChannelName&gt;</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">   </span><span class="nt">&lt;/GrayChannel&gt;</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w"> </span><span class="nt">&lt;/ChannelSelection&gt;</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w"> </span><span class="nt">&lt;ColorMap&gt;</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">     </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#0000ff&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;50.0&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">     </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#009933&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;100.0&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="w">     </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff9900&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;150.0&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">     </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff0000&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;200.0&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="w"> </span><span class="nt">&lt;/ColorMap&gt;</span>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="nt">&lt;/RasterSymbolizer&gt;</span><span class="w">    </span>
 </code></pre></div>
 <p><img alt="" src="../img/channelsexpression5.png" /></p>
 <h3 id="contrastenhancement">ContrastEnhancement<a class="headerlink" href="#contrastenhancement" title="Permanent link">&para;</a></h3>
@@ -30324,18 +30323,18 @@
 <p><code>&lt;Histogram&gt;</code> is similar to Normalize, but the algorithm used attempts to produce an image with an equal number of pixels at all brightness levels.</p>
 <p><code>&lt;GammaValue&gt;</code> is a scaling factor that adjusts the brightness of the image. A value less than one (1) darkens the image, and a value greater than one (1) brightens it. The default is 1 (no change).</p>
 <p>These examples turn on Normalize and Histogram, respectively:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">      </span><span class="nt">&lt;Normalize/&gt;</span>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span>
-</code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">      </span><span class="nt">&lt;Histogram/&gt;</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">      </span><span class="nt">&lt;Normalize/&gt;</span>
 <a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span>
 </code></pre></div>
-<p>This example increases the brightness of the image by a factor of two.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">      </span><span class="nt">&lt;GammaValue&gt;</span>2<span class="nt">&lt;/GammaValue&gt;</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">      </span><span class="nt">&lt;Histogram/&gt;</span>
 <a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span>
+</code></pre></div>
+<p>This example increases the brightness of the image by a factor of two.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">      </span><span class="nt">&lt;GammaValue&gt;</span>2<span class="nt">&lt;/GammaValue&gt;</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span>
 </code></pre></div>
 <p>It is also possible to customize Normalize Contrast Enhancement element for the RasterSymbolizer. 3 new VendorOptions are supported:</p>
 <ul>
@@ -30354,56 +30353,56 @@
 <p>The target data type for the stretch algorithm is <strong>always</strong> byte (this might change in the future). This means that if the MAX_VALUE for the Clip oriented algorithms is greater than 255 an implicit clamp will apply anyway to clamp to 255.</p>
 </div>
 <p>Here below some examples</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="nt">&lt;Normalize&gt;</span>
-<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>StretchToMinimumMaximum<span class="nt">&lt;/VendorOption&gt;</span>
-<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;minValue&quot;</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
-<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;maxValue&quot;</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
-<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">  </span><span class="nt">&lt;/Normalize&gt;</span>
-<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span>
-</code></pre></div>
-<p>This example will apply a Normalized ContrastEnhancement by linearly stretch from pixel values [50, 100] to [0, 255]</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
 <a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="nt">&lt;Normalize&gt;</span>
-<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>ClipToMinimumMaximum<span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>StretchToMinimumMaximum<span class="nt">&lt;/VendorOption&gt;</span>
 <a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;minValue&quot;</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
 <a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;maxValue&quot;</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
 <a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">  </span><span class="nt">&lt;/Normalize&gt;</span>
 <a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span>
 </code></pre></div>
+<p>This example will apply a Normalized ContrastEnhancement by linearly stretch from pixel values [50, 100] to [0, 255]</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
 <a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span><span class="nt">&lt;Normalize&gt;</span>
 <a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>ClipToMinimumMaximum<span class="nt">&lt;/VendorOption&gt;</span>
 <a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;minValue&quot;</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
 <a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;maxValue&quot;</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
 <a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="nt">&lt;/Normalize&gt;</span>
-<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span><span class="w">   </span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">  </span><span class="nt">&lt;Normalize&gt;</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>ClipToMinimumMaximum<span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;minValue&quot;</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">   </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;maxValue&quot;</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">  </span><span class="nt">&lt;/Normalize&gt;</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span><span class="w">   </span>
 </code></pre></div>
 <p>Here below a more complex example that shows the possibility to control the values from a client using env functions. This is extremely interesting for interactive applications.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>...
-<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
-<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">   </span><span class="nt">&lt;Normalize&gt;</span>
-<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">    </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>algorithm<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>StretchToMinimumMaximum<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span><span class="w">                                       </span>
-<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">    </span><span class="nt">&lt;/VendorOption&gt;</span>
-<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="w">    </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&#39;minValue&#39;</span><span class="nt">&gt;</span>
-<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>minValue<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>10<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
-<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="w">    </span><span class="nt">&lt;/VendorOption&gt;</span>
-<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="w">    </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&#39;maxValue&#39;</span><span class="nt">&gt;</span>
-<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>maxValue<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>1200<span class="nt">&lt;/ogc:Literal&gt;</span>
-<a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span><span class="w">                                       </span>
-<a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="w">    </span><span class="nt">&lt;/VendorOption&gt;</span>
-<a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a><span class="w">   </span><span class="nt">&lt;/Normalize&gt;</span>
-<a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span>
-<a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a>...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>...
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nt">&lt;ContrastEnhancement&gt;</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">   </span><span class="nt">&lt;Normalize&gt;</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">    </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>algorithm<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>StretchToMinimumMaximum<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span><span class="w">                                       </span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">    </span><span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="w">    </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&#39;minValue&#39;</span><span class="nt">&gt;</span>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>minValue<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>10<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="w">    </span><span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a><span class="w">    </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&#39;maxValue&#39;</span><span class="nt">&gt;</span>
+<a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>maxValue<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a><span class="w">       </span><span class="nt">&lt;ogc:Literal&gt;</span>1200<span class="nt">&lt;/ogc:Literal&gt;</span>
+<a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span><span class="w">                                       </span>
+<a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a><span class="w">    </span><span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a><span class="w">   </span><span class="nt">&lt;/Normalize&gt;</span>
+<a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a><span class="nt">&lt;/ContrastEnhancement&gt;</span>
+<a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a>...
 </code></pre></div>
 <h3 id="shadedrelief">ShadedRelief<a class="headerlink" href="#shadedrelief" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
@@ -30416,10 +30415,10 @@
 <li>ReliefFactor</li>
 </ul>
 <p>BrightnessOnly, which takes no parameters, applies shading in WHAT WAY? ReliefFactor sets the amount of exaggeration of the shading (for example, to make hills appear higher). According to the OGC SLD specification, a value of around 55 gives "reasonable results" for Earth-based datasets:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nt">&lt;ShadedRelief&gt;</span>
-<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">      </span><span class="nt">&lt;BrightnessOnly</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">      </span><span class="nt">&lt;ReliefFactor&gt;</span>55<span class="nt">&lt;/ReliefFactor&gt;</span>
-<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="nt">&lt;/ShadedRelief&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nt">&lt;ShadedRelief&gt;</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">      </span><span class="nt">&lt;BrightnessOnly</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">      </span><span class="nt">&lt;ReliefFactor&gt;</span>55<span class="nt">&lt;/ReliefFactor&gt;</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="nt">&lt;/ShadedRelief&gt;</span>
 </code></pre></div>
 <p>The above example turns on Relief shading in WHAT WAY?</p>
 <h3 id="overlapbehavior">OverlapBehavior<a class="headerlink" href="#overlapbehavior" title="Permanent link">&para;</a></h3>
@@ -30435,9 +30434,9 @@
 <li>EARLIEST_ON_TOP</li>
 </ul>
 <p><strong>AVERAGE</strong> takes each overlapping point and displays their average value. <strong>RANDOM</strong> determines which image gets displayed according to chance (which can sometimes result in a crisper image). <strong>LATEST_ON_TOP</strong> and <strong>EARLIEST_ON_TOP</strong> sets the determining factor to be the internal timestamp on each image in the dataset. None of these elements have any parameters, and are all called in the same way:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nt">&lt;OverlapBehavior&gt;</span>
-<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">      </span><span class="nt">&lt;AVERAGE</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="nt">&lt;/OverlapBehavior&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nt">&lt;OverlapBehavior&gt;</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">      </span><span class="nt">&lt;AVERAGE</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="nt">&lt;/OverlapBehavior&gt;</span>
 </code></pre></div>
 <p>The above sets the OverlapBehavior to AVERAGE.</p>
 <h3 id="imageoutline">ImageOutline<a class="headerlink" href="#imageoutline" title="Permanent link">&para;</a></h3>
@@ -30446,13 +30445,13 @@
 <p>Support for this element has not been implemented yet.</p>
 </div>
 <p>Given the situation mentioned previously of the image composite, it is possible to style each image so as to have an outline. One can even set a fill color and opacity of each image; a reason to do this would be to "gray-out" an image. To use ImageOutline, you would define a <LineSymbolizer> or <PolygonSymbolizer> inside of the element:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nt">&lt;ImageOutline&gt;</span>
-<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">      </span><span class="nt">&lt;LineSymbolizer&gt;</span>
-<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="w">         </span><span class="nt">&lt;Stroke&gt;</span>
-<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">               </span><span class="nt">&lt;CssParameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#0000ff<span class="nt">&lt;/CssParameter&gt;</span>
-<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="w">         </span><span class="nt">&lt;/Stroke&gt;</span>
-<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">      </span><span class="nt">&lt;/LineSymbolizer&gt;</span>
-<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="nt">&lt;/ImageOutline&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nt">&lt;ImageOutline&gt;</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">      </span><span class="nt">&lt;LineSymbolizer&gt;</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">         </span><span class="nt">&lt;Stroke&gt;</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">               </span><span class="nt">&lt;CssParameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#0000ff<span class="nt">&lt;/CssParameter&gt;</span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">         </span><span class="nt">&lt;/Stroke&gt;</span>
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w">      </span><span class="nt">&lt;/LineSymbolizer&gt;</span>
+<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="nt">&lt;/ImageOutline&gt;</span>
 </code></pre></div>
 <p>The above would create a border line (colored blue with a one pixel default thickness) around each image in the dataset.</p>
 

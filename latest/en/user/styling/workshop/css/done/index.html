@@ -30449,17 +30449,15 @@
 <li>
 <p><strong>Challenge:</strong> Use this approach to rewrite the <em>Dynamic Styling</em> example.</p>
 <p>Example available here <a href="../../files/point_example2.css">point_example.css</a></p>
-<blockquote>
-<p>[@scale &lt; 4000000]{</p>
-<p>:   </p>
-<div class="highlight"><pre><span></span><code>mark: symbol(
-
-:   &quot;\${if_then_else(equalTo(FEATURECLA,&#39;Admin-0 capital&#39;),&#39;star&#39;,&#39;circle&#39;)}&quot;
-
-); mark-size: [13-SCALERANK]; label: [NAME]; label-offset: 0 [13-SCALERANK];
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">[</span><span class="p">@</span><span class="k">scale</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nt">4000000</span><span class="o">]</span><span class="p">{</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="nt">mark</span><span class="o">:</span><span class="w"> </span><span class="nt">symbol</span><span class="o">(</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">       </span><span class="s2">&quot;\${if_then_else(equalTo(FEATURECLA,&#39;Admin-0 capital&#39;),&#39;star&#39;,&#39;circle&#39;)}&quot;</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="o">);</span><span class="w"> </span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="nt">mark-size</span><span class="o">:</span><span class="w"> </span><span class="o">[</span><span class="nt">13-SCALERANK</span><span class="o">];</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="nt">label</span><span class="o">:</span><span class="w"> </span><span class="o">[</span><span class="nt">NAME</span><span class="o">];</span><span class="w"> </span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="nt">label-offset</span><span class="o">:</span><span class="w"> </span><span class="nt">0</span><span class="w"> </span><span class="o">[</span><span class="nt">13-SCALERANK</span><span class="o">];</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="p">}</span>
 </code></pre></div>
-<p>}</p>
-</blockquote>
 </li>
 </ol>
 <h3 id="css.point.a3">Layer Group<a class="headerlink" href="#css.point.a3" title="Permanent link">&para;</a></h3>
@@ -30481,29 +30479,29 @@
 <p>Here is an example with labels for inspiration:</p>
 <p><img alt="image" src="../../style/img/point_challenge_1.png" /></p>
 <p>This should be an opportunity to revisit label halo settings from <a href="../polygon/">Polygon</a>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">   </span><span class="n">mark-size</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="o">+</span><span class="p">((</span><span class="mi">10</span><span class="o">-</span><span class="n">SCALERANK</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="p">)];</span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">   </span><span class="n">font-fill</span><span class="p">:</span><span class="w"> </span><span class="kc">black</span><span class="p">;</span>
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">   </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Arial&quot;</span><span class="p">;</span>
-<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">   </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
-<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
-<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">   </span><span class="n">label-anchor</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">   </span><span class="n">label-offset</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">[</span><span class="mi">-12</span><span class="o">+</span><span class="n">SCALERANK</span><span class="p">];</span>
-<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
-<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">   </span><span class="n">halo-radius</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
-<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">   </span><span class="n">halo-color</span><span class="p">:</span><span class="w"> </span><span class="kc">lightgray</span><span class="p">;</span>
-<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">   </span><span class="n">halo-opacity</span><span class="p">:</span><span class="mf">0.7</span><span class="p">;</span>
-<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>
-<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">   </span><span class="n">mark-label-obstacle</span><span class="p">:</span><span class="w"> </span><span class="n">true</span><span class="p">;</span>
-<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">   </span><span class="n">label-max-displacement</span><span class="p">:</span><span class="w"> </span><span class="mi">90</span><span class="p">;</span>
-<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">   </span><span class="n">label-priority</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">LABELRANK</span><span class="p">];</span>
-<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="p">}</span>
-<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="p">:</span><span class="nd">symbol</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">  </span><span class="k">fill</span><span class="p">:</span><span class="w"> </span><span class="kc">black</span><span class="p">;</span>
-<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">  </span><span class="k">stroke</span><span class="p">:</span><span class="w"> </span><span class="kc">white</span><span class="p">;</span>
-<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">  </span><span class="k">stroke-opacity</span><span class="p">:</span><span class="mf">0.75</span><span class="p">;</span>
-<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">   </span><span class="n">mark-size</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="o">+</span><span class="p">((</span><span class="mi">10</span><span class="o">-</span><span class="n">SCALERANK</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="p">)];</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">   </span><span class="n">font-fill</span><span class="p">:</span><span class="w"> </span><span class="kc">black</span><span class="p">;</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">   </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Arial&quot;</span><span class="p">;</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">   </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">   </span><span class="n">label-anchor</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">   </span><span class="n">label-offset</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">[</span><span class="mi">-12</span><span class="o">+</span><span class="n">SCALERANK</span><span class="p">];</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">   </span><span class="n">halo-radius</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">   </span><span class="n">halo-color</span><span class="p">:</span><span class="w"> </span><span class="kc">lightgray</span><span class="p">;</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">   </span><span class="n">halo-opacity</span><span class="p">:</span><span class="mf">0.7</span><span class="p">;</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">   </span><span class="n">mark-label-obstacle</span><span class="p">:</span><span class="w"> </span><span class="n">true</span><span class="p">;</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">   </span><span class="n">label-max-displacement</span><span class="p">:</span><span class="w"> </span><span class="mi">90</span><span class="p">;</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">   </span><span class="n">label-priority</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">LABELRANK</span><span class="p">];</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="p">}</span>
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="p">:</span><span class="nd">symbol</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="w">  </span><span class="k">fill</span><span class="p">:</span><span class="w"> </span><span class="kc">black</span><span class="p">;</span>
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">  </span><span class="k">stroke</span><span class="p">:</span><span class="w"> </span><span class="kc">white</span><span class="p">;</span>
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a><span class="w">  </span><span class="k">stroke-opacity</span><span class="p">:</span><span class="mf">0.75</span><span class="p">;</span>
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a><span class="p">}</span>
 </code></pre></div>
 <p>Using a lightgray halo, 0.7 opacity and radius 2 fades out the complexity immediately surrounding the label text improving legibility.</p>
 </li>
@@ -30516,10 +30514,10 @@
 </li>
 <li>
 <p>Make use of a simple contrast enhancement with <code>usgs:dem</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="n">raster-channels</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="n">raster-contrast-enhancement</span><span class="p">:</span><span class="w"> </span><span class="n">normalize</span><span class="p">;</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span><span class="n">raster-channels</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="n">raster-contrast-enhancement</span><span class="p">:</span><span class="w"> </span><span class="n">normalize</span><span class="p">;</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="p">}</span>
 </code></pre></div>
 </li>
 <li>
@@ -30546,21 +30544,21 @@
 <p>By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.</p>
 <p><img alt="image" src="../../style/img/raster_interval.png" /></p>
 <p>Here is style for you to cut and paste:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="n">raster-channels</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">  </span><span class="n">raster-color-map</span><span class="p">:</span>
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#014636</span><span class="p">,</span><span class="w">   </span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#014636</span><span class="p">,</span><span class="w">   </span><span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#016c59</span><span class="p">,</span><span class="w"> </span><span class="mi">500</span><span class="p">)</span>
-<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#02818a</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
-<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#3690c0</span><span class="p">,</span><span class="mi">1500</span><span class="p">)</span>
-<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#67a9cf</span><span class="p">,</span><span class="mi">2000</span><span class="p">)</span>
-<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#a6bddb</span><span class="p">,</span><span class="mi">2500</span><span class="p">)</span>
-<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#d0d1e6</span><span class="p">,</span><span class="mi">3000</span><span class="p">)</span>
-<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#ece2f0</span><span class="p">,</span><span class="mi">3500</span><span class="p">)</span>
-<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#fff7fb</span><span class="p">,</span><span class="mi">4000</span><span class="p">);</span>
-<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">  </span><span class="n">raster-color-map-type</span><span class="p">:</span><span class="w"> </span><span class="n">intervals</span><span class="p">;</span>
-<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="n">raster-channels</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="n">raster-color-map</span><span class="p">:</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#014636</span><span class="p">,</span><span class="w">   </span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#014636</span><span class="p">,</span><span class="w">   </span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#016c59</span><span class="p">,</span><span class="w"> </span><span class="mi">500</span><span class="p">)</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#02818a</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#3690c0</span><span class="p">,</span><span class="mi">1500</span><span class="p">)</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#67a9cf</span><span class="p">,</span><span class="mi">2000</span><span class="p">)</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#a6bddb</span><span class="p">,</span><span class="mi">2500</span><span class="p">)</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#d0d1e6</span><span class="p">,</span><span class="mi">3000</span><span class="p">)</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#ece2f0</span><span class="p">,</span><span class="mi">3500</span><span class="p">)</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">     </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#fff7fb</span><span class="p">,</span><span class="mi">4000</span><span class="p">);</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">  </span><span class="n">raster-color-map-type</span><span class="p">:</span><span class="w"> </span><span class="n">intervals</span><span class="p">;</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="p">}</span>
 </code></pre></div>
 </li>
 </ol>
@@ -30574,12 +30572,12 @@
 <p><strong>Challenge:</strong> Use what you have learned to present the <code>usgs:dem</code> clearly.</p>
 <p><img alt="image" src="../../style/img/raster_grayscale.png" /></p>
 <p>The original was a dark mess. Consider making use of mid-tones (or adopting a sequential palette from color brewer) in order to fix this. In the following example the ocean has been left dark, allowing the mountains stand out more.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="n">raster-channels</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span>
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="n">raster-color-map</span><span class="p">:</span><span class="w"> </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#000000</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">                    </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#444444</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">                    </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#FFFFFF</span><span class="p">,</span><span class="w"> </span><span class="mi">3000</span><span class="p">);</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span><span class="n">raster-channels</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">  </span><span class="n">raster-color-map</span><span class="p">:</span><span class="w"> </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#000000</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">                    </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#444444</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">                    </span><span class="nf">color-map-entry</span><span class="p">(</span><span class="mh">#FFFFFF</span><span class="p">,</span><span class="w"> </span><span class="mi">3000</span><span class="p">);</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="p">}</span>
 </code></pre></div>
 </li>
 </ol>

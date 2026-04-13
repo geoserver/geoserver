@@ -30091,9 +30091,8 @@
 <h3 id="connecting-to-database-through-ldap">Connecting to database through LDAP<a class="headerlink" href="#connecting-to-database-through-ldap" title="Permanent link">&para;</a></h3>
 <p>For instance if you want to establish a connection with the jdbc thin driver through LDAP, you can use following connect string for the input field <code>database</code> <code>ldap://[host]:[Port]/[db],cn=OracleContext,dc=[oracle_ldap_context]</code>.</p>
 <p>If you are using referrals, enable it by placing a jndi.properties file in geoserver's CLASSPATH, which is in geoserver/WEB-INF/classes. This property file contains:</p>
-<blockquote>
-<p>java.naming.referral=follow</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>java.naming.referral=follow
+</code></pre></div>
 <h3 id="oracle_loose_bbox">Using loose bounding box<a class="headerlink" href="#oracle_loose_bbox" title="Permanent link">&para;</a></h3>
 <p>When the <code>Loose bbox</code> option is set, only the bounding box of database geometries is used in spatial queries. This results in a significant performance gain. The downside is that some geometries may be reported as intersecting a BBOX when they actually do not.</p>
 <p>If the primary use of the database is through the <a href="../../../services/wms/">Web Map Service (WMS)</a> this flag can be set safely, since querying more geometries does not have any visible effect. However, if using the <a href="../../../services/wfs/">Web Feature Service (WFS)</a> and making use of BBOX filtering capabilities, this flag should not be set.</p>

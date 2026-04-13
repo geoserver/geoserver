@@ -120,7 +120,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
 2.  Here is an example:
 
-    ``[ yaml
+    ```yaml
     define: &common
       stroke-opacity: 0.25
 
@@ -400,27 +400,28 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``\${ }`` as shown:
 
-    > ``` yaml
-    > - point:
-    >     symbols:
-    >     - mark:
-    >         shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
-    > ```
+    ```yaml
+    - point:
+        symbols:
+        - mark:
+            shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
+    ```
 
     2.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
     Example available here [point_example.css](../files/point_example2.ysld) :
 
-    > 
-    >
-    > define: &point
-    > :   size: \${10-(SCALERANK/2)} symbols:
-    >
-    >     - mark:
-    >
-    >     :   shape: \${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')} stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
-    >
-    >     x-labelObstacle: true
+    ```css
+    define: &point
+       size: ${10-(SCALERANK/2)} 
+       symbols:
+       - mark:
+               shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')} 
+               stroke-color: 'black' 
+               stroke-width: 1 
+               fill-color: 'gray'
+       x-labelObstacle: true
+    ```
 
     ### Layer Group {: #ysld.point.a3 }
 

@@ -661,6 +661,7 @@ Using the stations use case as an example, our data will be stored in a relation
 
 Our mapping file will look like this:
 
+```xml
 <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
       <namespaces>
         <Namespace>
@@ -756,6 +757,7 @@ Our mapping file will look like this:
         </FeatureTypeMapping>
       </typeMappings>
 </as:AppSchemaDataAccess>
+```
 
 To be able to use an external Apache Solr index, we need at least to:
 

@@ -215,7 +215,7 @@ mvn sortpom:sort
 
 Verification checks if (ignoring whitespace changes) is the current **`pom.xml`** in the correct order:
 
-> mvn sortpom:verify
+`mvn sortpom:verify`
 
 Property `pom.fmt.action` is used to choose `sort` or `verify` (defaults to `sort`):
 

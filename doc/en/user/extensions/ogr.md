@@ -135,15 +135,15 @@ The file showcases all possible usage of the configuration elements:
 
 - `ogr2ogrLocation` can be just ogr2ogr if the command is in the path, otherwise it should be the full path to the executable. For example, on a Windows box with FWTools installed it might be:
 
-  ```xml
-<ogr2ogrLocation>c:\Programmi\FWTools2.2.8\bin\ogr2ogr.exe</ogr2ogrLocation>
-  ```
+      ```xml
+      <ogr2ogrLocation>c:\Programmi\FWTools2.2.8\bin\ogr2ogr.exe</ogr2ogrLocation>
+      ```
 
 - `gdalData` must point to the GDAL data directory. For example, on a Windows box with FWTools installed it might be:
 
-  ```xml
-<gdalData>c:\Programmi\FWTools2.2.8\data</gdalData>
-  ```
+      ```xml
+      <gdalData>c:\Programmi\FWTools2.2.8\data</gdalData>
+      ```
 
 - `Format` defines a single format, which is defined by the following tags:
 

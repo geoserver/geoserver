@@ -29,15 +29,13 @@
                 <select wicket:id="workspace"/>
               </div>
               <div class="gs-form-group">
-                <div class="gs-form-group-label">
-                  <label for="format">
-                    <wicket:message key="format">Format</wicket:message>
-                  </label>
-                  <div wicket:id="formatReadOnly" class="instruct">
-                    <wicket:message key="formatReadOnly"/>
-                  </div>
+                <label for="format">
+                  <wicket:message key="format">Format</wicket:message>
+                </label>
+                <select wicket:id="format" class="w-md" />
+                <div wicket:id="formatReadOnly" class="gs-instruction">
+                  <wicket:message key="formatReadOnly"/>
                 </div>
-                <select wicket:id="format"/>
               </div>
             </div>
           </fieldset>

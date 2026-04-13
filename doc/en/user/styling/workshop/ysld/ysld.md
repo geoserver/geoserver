@@ -46,18 +46,13 @@ There are three types of objects in a YSLD document:
 
 For example, a symbolizer block is a list, so every entry requires its own dash:
 
-> > - symbolizer:
-> >   - 
-> >
-> >     polygon:
-> >
-> >     :   \...
-> >
-> >   - 
-> >
-> >     text:
-> >
-> >     :   \...
+```yml
+- symbolizer:
+  - polygon:
+    ...
+  - text:
+    ...
+```
 
 The `polygon:` and `text:` objects (the individual symbolizers themselves) are mappings, and as such, the contents do not require dashes, only indents:
 
@@ -81,7 +76,7 @@ feature-styles:
             shape: circle
             fill-color: 'gray'
 ```
->
+
 ```yaml
 point:
   symbols:

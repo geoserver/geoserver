@@ -22,7 +22,7 @@ By default GeoServer includes an example data directory allowing you to try out 
     | Linux    | **`/usr/share/geoserver/data_dir`**          |
     | Windows  | **`C:\Program Files\GeoServer\data_dir`** |
 
-    > The windows **`Program Files`** location above is not ideal due to restrictions placed on this location.
+    The windows **`Program Files`** location above is not ideal due to restrictions placed on this location.
 
 - Web archive: If GeoServer is running as a **web archive** inside of your application server, the data directory is by default located at **`<web application root>/data`**`.
 

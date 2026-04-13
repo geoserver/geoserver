@@ -23,8 +23,7 @@
   <bean id="ogrDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="ogrDataStorePanel"/>
     <property name="factoryClass" value="org.geotools.data.ogr.jni.JniOGRDataStoreFactory"/>
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
-    <property name="icon" value="img/icons/geosilk/database_vector.png"/>
+    <property name="icon" value="gs-icon-database-vector"/>
     <property name="componentClass" value="org.geoserver.ogr.OGRDataStorePanel"/>
   </bean>
 

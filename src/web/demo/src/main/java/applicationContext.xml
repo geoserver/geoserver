@@ -20,7 +20,7 @@
   <bean id="layerListDemo" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="layerListDemo"/>
     <property name="titleKey" value="MapPreviewPage.title"/>
-    <property name="icon" value="../img/icons/geosilk/map.png"/>
+    <property name="icon" value="gs-icon-map"/>
     <property name="category" ref="geoserverCategory"/>
     <property name="order" value="5"/>
     <property name="descriptionKey" value="MapPreviewPage.description"/>
@@ -86,6 +86,6 @@
     <property name="targetLevel" value="WORKSPACE" />
     <property name="category" ref="breadcrumbCatWorkspace" />
     <property name="order" value="20" />
-    <property name="icon" value="../img/icons/geosilk/map.png"/>
+    <property name="icon" value="gs-icon-map"/>
   </bean>
 </beans>

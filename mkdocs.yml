@@ -1021,7 +1021,7 @@ nav:
     - Quickfix: en/docguide/quickfix.md
     - Contributing: en/docguide/contributing.md
     - Workflow: en/docguide/workflow.md
-    - Installing mkdocs: en/docguide/install.md
+    - Installing MkDocs: en/docguide/install.md
     - Markdown Syntax: en/docguide/markdown.md
     - Style Guidelines: en/docguide/style.md
     - Writing a Tutorial: en/docguide/tutorial.md

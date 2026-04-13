@@ -29,52 +29,52 @@ curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
   -d @import.json \
   "http://localhost:8080/geoserver/rest/imports"
 ```
->
-> The importer will locate the files to be imported, and automatically prepare the tasks, returning the following response:
->
-> > ``` json
-> > {
-> >   "import": {
-> >     "id": 9,
-> >     "href": "http://localhost:8080/geoserver/rest/imports/9",
-> >     "state": "PENDING",
-> >     "archive": false,
-> >     "targetWorkspace": {
-> >       "workspace": {
-> >         "name": "tasmania"
-> >       }
-> >     },
-> >     "data": {
-> >       "type": "directory",
-> >       "format": "Shapefile",
-> >       "location": "C:\\data\\tasmania",
-> >       "href": "http://localhost:8080/geoserver/rest/imports/9/data"
-> >     },
-> >     "tasks": [
-> >       {
-> >         "id": 0,
-> >         "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/0",
-> >         "state": "READY"
-> >       },
-> >       {
-> >         "id": 1,
-> >         "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/1",
-> >         "state": "READY"
-> >       },
-> >       {
-> >         "id": 2,
-> >         "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/2",
-> >         "state": "READY"
-> >       },
-> >       {
-> >         "id": 3,
-> >         "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/3",
-> >         "state": "READY"
-> >       }
-> >     ]
-> >   }
-> > }
-> > ```
+
+The importer will locate the files to be imported, and automatically prepare the tasks, returning the following response:
+
+``` json
+{
+  "import": {
+    "id": 9,
+    "href": "http://localhost:8080/geoserver/rest/imports/9",
+    "state": "PENDING",
+    "archive": false,
+    "targetWorkspace": {
+      "workspace": {
+        "name": "tasmania"
+      }
+    },
+    "data": {
+      "type": "directory",
+      "format": "Shapefile",
+      "location": "C:\\data\\tasmania",
+      "href": "http://localhost:8080/geoserver/rest/imports/9/data"
+    },
+    "tasks": [
+      {
+        "id": 0,
+        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/0",
+        "state": "READY"
+      },
+      {
+        "id": 1,
+        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/1",
+        "state": "READY"
+      },
+      {
+        "id": 2,
+        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/2",
+        "state": "READY"
+      },
+      {
+        "id": 3,
+        "href": "http://localhost:8080/geoserver/rest/imports/9/tasks/3",
+        "state": "READY"
+      }
+    ]
+  }
+}
+```
 
 3.  After checking every task is ready, the import can be initiated by executing a POST on the import resource:
 
@@ -954,7 +954,7 @@ A data supplier is periodically providing new time based imagery that we need to
 
 First, we are going to create a import with an indication of where the granule is located, and the target store:
 
-> curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
+`curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"`
 
 Where import.json is:
 

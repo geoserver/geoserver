@@ -22,19 +22,19 @@ render_macros: true
 
 ## Verifying Installation
 
-1\. On the first startup after installation, GeoServer creates a print module configuration file in **`{GEOSERVER_DATA_DIR}/printing/config.yaml`**.
+1. On the first startup after installation, GeoServer creates a print module configuration file in **`{GEOSERVER_DATA_DIR}/printing/config.yaml`**.
 
-> You may override where the **`config.yaml`** file is located through an application property `GEOSERVER_PRINT_CONFIG_DIR`.
+   You may override where the **`config.yaml`** file is located through an application property `GEOSERVER_PRINT_CONFIG_DIR`.
 
-2\. The name of the file **`config.yaml`** cannot be changed; it is possible to specify the folder when this is located.
+2. The name of the file **`config.yaml`** cannot be changed; it is possible to specify the folder when this is located.
 
-> Example: `-DGEOSERVER_PRINT_CONFIG_DIR=/tmp/ext_printing`
->
-> allows the module searching the configuration file into the external folder **`/tmp/ext_printing/config.yaml`**
+   Example: `-DGEOSERVER_PRINT_CONFIG_DIR=/tmp/ext_printing`
+   
+   allows the module searching the configuration file into the external folder **`/tmp/ext_printing/config.yaml`**
 
-3\. Checking for **`config.yaml`** file's existence is a quick way to verify the module is installed properly.
+3. Checking for **`config.yaml`** file's existence is a quick way to verify the module is installed properly.
 
-> It is safe to edit this file; in fact to control the print module settings you need to open this configuration file in a text editor.
+   It is safe to edit this file; in fact to control the print module settings you need to open this configuration file in a text editor.
 
 4.  When the module is installed and configured properly, then you will also be able to retrieve a list of configured printing parameters from <http://localhost:8080/geoserver/pdf/info.json> . This service must be working properly for JavaScript clients to use the printing service.
 

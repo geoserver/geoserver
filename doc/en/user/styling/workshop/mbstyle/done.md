@@ -404,13 +404,11 @@ Answer for [Explore Dynamic Symbolization](#mbstyle-point-q2):
 
     Example available here [point_example.json](../files/point_example2.json) :
 
-    > 
-    >
-    > {
-    >
-    > :   "id": "point_example", "type": "symbol", "source-layer": "ne:populated_places", "layout": { "icon-image": { "type": "categorical", "property": "FEATURECLA", "default": "grey_circle", "stops": [ ["Admin-0 capital", "star"] ] }, "icon-size": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, 2.5], [10, 1] ] }, }
-    >
-    > }
+    ```css
+    {
+    "id": "point_example", "type": "symbol", "source-layer": "ne:populated_places", "layout": { "icon-image": { "type": "categorical", "property": "FEATURECLA", "default": "grey_circle", "stops": [ ["Admin-0 capital", "star"] ] }, "icon-size": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, 2.5], [10, 1] ] }, }
+    }
+    ```
 
 ### Raster Opacity {: #mbstyle.raster.a4 }
 

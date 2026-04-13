@@ -204,6 +204,135 @@
         }
         initializeUserInitials();
 
+        function initializeWicketAutocompleteKeyboardNavigation() {
+            var activeContainer = null;
+            var activeIndex = -1;
+
+            function isVisible(element) {
+                return !!(element && (element.offsetWidth || element.offsetHeight || element.getClientRects().length));
+            }
+
+            function getItems(container) {
+                if (!container) return [];
+                return Array.from(container.querySelectorAll('ul li'));
+            }
+
+            function ensureItemId(item, container, index) {
+                if (!item.id) {
+                    var containerId = container.id || 'wicket-aa';
+                    item.id = containerId + '-opt-' + index;
+                }
+                return item.id;
+            }
+
+            function clearActiveState(input) {
+                if (activeContainer) activeContainer.querySelectorAll('ul li').forEach(function (item) { item.classList.remove('selected'); });
+                if (input) {
+                    input.removeAttribute('aria-activedescendant');
+                }
+                activeContainer = null;
+                activeIndex = -1;
+            }
+
+            function setActiveItem(container, input, nextIndex) {
+                var items = getItems(container);
+                if (!items.length) {
+                    clearActiveState(input);
+                    return;
+                }
+
+                items.forEach(function (item) { item.classList.remove('selected'); });
+
+                activeContainer = container;
+                activeIndex = Math.max(0, Math.min(nextIndex, items.length - 1));
+
+                var activeItem = items[activeIndex];
+                activeItem.classList.add('selected');
+                input.setAttribute('aria-activedescendant', ensureItemId(activeItem, container, activeIndex));
+                activeItem.scrollIntoView({ block: 'nearest' });
+            }
+
+            function resolveContainerForInput(input) {
+                var controlsId = input.getAttribute('aria-controls');
+                if (controlsId) {
+                    var controlledContainer = document.getElementById(controlsId);
+                    if (isVisible(controlledContainer)) return controlledContainer;
+                }
+
+                var visibleContainers = Array.from(document.querySelectorAll('.wicket-aa-container')).filter(isVisible);
+                if (!visibleContainers.length) return null;
+
+                var inputRect = input.getBoundingClientRect();
+                var bestContainer = visibleContainers[0];
+                var bestScore = Number.POSITIVE_INFINITY;
+                visibleContainers.forEach(function (container) {
+                    var rect = container.getBoundingClientRect();
+                    var verticalGap = Math.abs(rect.top - inputRect.bottom);
+                    var horizontalGap = Math.abs(rect.left - inputRect.left);
+                    var score = verticalGap + horizontalGap;
+                    if (score < bestScore) {
+                        bestScore = score;
+                        bestContainer = container;
+                    }
+                });
+                return bestContainer;
+            }
+
+            document.addEventListener('keydown', function (event) {
+                var input = event.target;
+                if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement)) return;
+                if (input.closest('.custom-search-wrapper')) return;
+                if (!['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) return;
+
+                var container = resolveContainerForInput(input);
+                if (!container) return;
+                var items = getItems(container);
+                if (!items.length) return;
+
+                if (container !== activeContainer) {
+                    activeContainer = container;
+                    activeIndex = -1;
+                }
+
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    var nextDown = activeIndex < items.length - 1 ? activeIndex + 1 : 0;
+                    setActiveItem(container, input, nextDown);
+                    return;
+                }
+
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    var nextUp = activeIndex > 0 ? activeIndex - 1 : items.length - 1;
+                    setActiveItem(container, input, nextUp);
+                    return;
+                }
+
+                if (event.key === 'Enter' && activeIndex >= 0) {
+                    event.preventDefault();
+                    items[activeIndex].click();
+                    clearActiveState(input);
+                    return;
+                }
+
+                if (event.key === 'Escape') {
+                    clearActiveState(input);
+                }
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!event.target.closest('.wicket-aa-container')) {
+                    var activeElement = document.activeElement;
+                    if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) {
+                        clearActiveState(activeElement);
+                    } else {
+                        clearActiveState(null);
+                    }
+                }
+            });
+        }
+        initializeWicketAutocompleteKeyboardNavigation();
+
         function applyResponsiveTableCards() {
             var tables = document.querySelectorAll('table');
             if (tables.length === 0) return;

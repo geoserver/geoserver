@@ -19,16 +19,13 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -36,6 +33,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.web.wicket.GsIcon;
 import org.geotools.api.filter.Filter;
 
 public class SearchInputPanel extends Panel {
@@ -97,17 +95,17 @@ public class SearchInputPanel extends Panel {
             protected void populateItem(ListItem<SearchResult> item) {
                 SearchResult result = item.getModelObject();
 
-                String iconPath;
+                String iconClass;
                 if ("workspace".equals(result.type)) {
-                    iconPath = "img/icons/silk/folder.png";
+                    iconClass = "gs-icon-folder";
                 } else if ("layer".equals(result.type)) {
-                    iconPath = "img/icons/silk/picture_empty.png";
+                    iconClass = "gs-icon-picture-empty";
                 } else if ("layerGroup".equals(result.type)) {
-                    iconPath = "img/icons/silk/layers.png";
+                    iconClass = "gs-icon-layers";
                 } else {
-                    iconPath = "img/icons/silk/help.png";
+                    iconClass = "gs-icon-help";
                 }
-                item.add(new Image("itemIcon", new PackageResourceReference(GeoServerBasePage.class, iconPath)));
+                item.add(new GsIcon("itemIcon", iconClass));
 
                 Label itemLabel = new Label("itemLabel", highlightLabel(result.label, currentQuery));
                 itemLabel.setEscapeModelStrings(false);
@@ -161,23 +159,6 @@ public class SearchInputPanel extends Panel {
                     return;
                 }
 
-                String workspaceIconUrl = RequestCycle.get()
-                        .urlFor(
-                                new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/folder.png"),
-                                null)
-                        .toString();
-                String layerIconUrl = RequestCycle.get()
-                        .urlFor(
-                                new PackageResourceReference(
-                                        GeoServerBasePage.class, "img/icons/silk/picture_empty.png"),
-                                null)
-                        .toString();
-                String layerGroupIconUrl = RequestCycle.get()
-                        .urlFor(
-                                new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/layers.png"),
-                                null)
-                        .toString();
-
                 StringBuilder htmlSnippet = new StringBuilder();
                 for (SearchResult result : nextBatch) {
                     String highlightedText = highlightLabel(result.label, currentQuery);
@@ -187,15 +168,15 @@ public class SearchInputPanel extends Panel {
                     String safeLayer = Strings.escapeMarkup(layer).toString().replace("\"", "&quot;");
                     String type = result.type == null ? "" : result.type;
                     String safeType = Strings.escapeMarkup(type).toString().replace("\"", "&quot;");
-                    String iconUrl;
+                    String iconClass;
                     if ("workspace".equals(type)) {
-                        iconUrl = workspaceIconUrl;
+                        iconClass = "gs-icon-folder";
                     } else if ("layer".equals(type)) {
-                        iconUrl = layerIconUrl;
+                        iconClass = "gs-icon-picture-empty";
                     } else if ("layerGroup".equals(type)) {
-                        iconUrl = layerGroupIconUrl;
+                        iconClass = "gs-icon-layers";
                     } else {
-                        iconUrl = workspaceIconUrl;
+                        iconClass = "gs-icon-help";
                     }
                     htmlSnippet
                             .append("<li class=\"search-result-item\" role=\"option\" tabindex=\"-1\"")
@@ -209,9 +190,9 @@ public class SearchInputPanel extends Panel {
                             .append(safeLayer)
                             .append("\"")
                             .append(">")
-                            .append("<img class=\"item-icon\" src=\"")
-                            .append(iconUrl)
-                            .append("\" alt=\"\" />")
+                            .append("<i class=\"gs-icon ")
+                            .append(iconClass)
+                            .append("\"></i>")
                             .append("<span class=\"item-label\">")
                             .append(highlightedText)
                             .append("</span></li>");

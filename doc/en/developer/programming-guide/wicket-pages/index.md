@@ -131,20 +131,20 @@ Often in HTML, you will need to include assets such as CSS files, JavaScript lib
 
 A brief listing of UI design guidelines for Wicket pages in GeoServer follows.
 
-> 
->
-> Forms
-> :   In forms, group each field as a `<div>` with a label and a form field, try to avoid using lists for the layout, as they are only intended for listing items. For radio buttons and checkboxes, the label should come after the field; for all others the label should precede the field. For example:
->
+
+
+### Forms
+In forms, group each field as a `<div>` with a label and a form field, try to avoid using lists for the layout, as they are only intended for listing items. For radio buttons and checkboxes, the label should come after the field; for all others the label should precede the field. For example:
+
     ``` html
     <div>
       <label for="foo"><wicket:message key="foo"> Foo </wicket:message></label>
       <input wicket:id="foo" type="text"></input>
     </div>
     ```
->
->     Similar fields can be grouped within a `<fieldset>`, the title of this group can be added with a `<legend>`
->
+
+    Similar fields can be grouped within a `<fieldset>`, the title of this group can be added with a `<legend>`
+
     ``` html
     <fieldset>
        <legend>
@@ -155,23 +155,23 @@ A brief listing of UI design guidelines for Wicket pages in GeoServer follows.
        ...
     </fieldset>
     ```
->
-> Spacing
-> :   Spacing elements in GeoServer is done with the Bootstrap Utilities (<https://getbootstrap.com/docs/5.2/utilities/spacing/>). For both `padding` and `margin` a special notation is used as described in the Bootstrap documentation.
->
->     For example extra padding at the top of a `form` can be achieved as follows:
->
+
+### Spacing
+Spacing elements in GeoServer is done with the Bootstrap Utilities (<https://getbootstrap.com/docs/5.2/utilities/spacing/>). For both `padding` and `margin` a special notation is used as described in the Bootstrap documentation.
+
+    For example extra padding at the top of a `form` can be achieved as follows:
+
     ``` html
     <form wicket:id="form" class="pt-3">
         ...
     </form>
     ```
->
-> Sizing
-> :   As with Spacing, for Sizing Bootstrap Utilities are used (<https://getbootstrap.com/docs/5.2/utilities/sizing/>). Besides the available Bootstrap classes, GeoServer styling needs more classes, however in most cases these extra classes are not needed.
->
->     The extra GeoServer sizing classes are:
->
+
+### Sizing
+As with Spacing, for Sizing Bootstrap Utilities are used (<https://getbootstrap.com/docs/5.2/utilities/sizing/>). Besides the available Bootstrap classes, GeoServer styling needs more classes, however in most cases these extra classes are not needed.
+
+    The extra GeoServer sizing classes are:
+
     ``` css
     /* widths */
     .w-10-em {
@@ -225,22 +225,23 @@ A brief listing of UI design guidelines for Wicket pages in GeoServer follows.
       height: 100em !important;
     }
     ```
->
-> The suffix in the class name corresponds with the sizing unit used.
->
-> Bootstrap uses mostly `em` and `rem` as sizing units, and the `3` suffix (like `.px-3`) is roughly the same as 15px. When extra spacing is needed it is advised to use this.
->
-> Some other sizing used to set the width of an element and its pixel equivalent:
->
-> | **Class** | **Size in em** | **Size in pixels** (approximately) |
-> |-----------|----------------|------------------------------------|
-> | `*-5-em`  | 5em            | 100px                              |
-> | `*-20-em` | 20em           | 325px                              |
-> | `*-25-em` | 25em           | 400px                              |
-> | `*-30-em` | 30em           | 600px                              |
->
-> Avoid requiring special knowledge from the user.
-> :   For example, where a list of values is required, provide a widget that allows manipulating the list one element at a time rather than expecting a comma-separated list of values.
->
-> Custom Components
-> :   We recommend creating a reusable Wicket component for any complex values that might need to be edited by users, such as a bounding box or a list of free strings. By extracting this into a component, it is much simpler to provide consistent, rich editing for users.
+
+The suffix in the class name corresponds with the sizing unit used.
+
+Bootstrap uses mostly `em` and `rem` as sizing units, and the `3` suffix (like `.px-3`) is roughly the same as 15px. When extra spacing is needed it is advised to use this.
+
+Some other sizing used to set the width of an element and its pixel equivalent:
+
+| **Class** | **Size in em** | **Size in pixels** (approximately) |
+|-----------|----------------|------------------------------------|
+| `*-5-em`  | 5em            | 100px                              |
+| `*-20-em` | 20em           | 325px                              |
+| `*-25-em` | 25em           | 400px                              |
+| `*-30-em` | 30em           | 600px                              |
+
+Avoid requiring special knowledge from the user.
+
+For example, where a list of values is required, provide a widget that allows manipulating the list one element at a time rather than expecting a comma-separated list of values.
+
+### Custom Components
+We recommend creating a reusable Wicket component for any complex values that might need to be edited by users, such as a bounding box or a list of free strings. By extracting this into a component, it is much simpler to provide consistent, rich editing for users.

@@ -9,15 +9,12 @@ import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.metadata.data.dto.AttributeConfiguration;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
@@ -25,7 +22,7 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.web.wicket.GsIcon;
 
 // TODO WICKET8 - Verify this page works OK
 public class AttributePositionPanel extends Panel {
@@ -77,8 +74,7 @@ public class AttributePositionPanel extends Panel {
                 }
             }
         };
-        upLink.add(new Image("upImage", new ContextRelativeResourceReference("img/icons/silk/arrow_up.png"))
-                .add(new AttributeModifier("alt", new ParamResourceModel("up", this))));
+        upLink.add(new GsIcon("upImage", "gs-icon-arrow-up"));
         add(upLink);
 
         AjaxSubmitLink downLink = new AjaxSubmitLink("down") {
@@ -105,8 +101,7 @@ public class AttributePositionPanel extends Panel {
                 }
             }
         };
-        downLink.add(new Image("downImage", new ContextRelativeResourceReference("img/icons/silk/arrow_down.png"))
-                .add(new AttributeModifier("alt", new ParamResourceModel("down", this))));
+        downLink.add(new GsIcon("downImage", "gs-icon-arrow-down"));
         add(downLink);
     }
 

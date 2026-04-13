@@ -13,13 +13,11 @@
           </label>
         </div>
         <div class="gs-form-group">
-          <div class="gs-form-group-label">
-            <label for="passwordEncryption">
-              <wicket:message key="passwordEncryption"/>
-            </label>
-            <span class="instruct" wicket:id="strongEncryptionMsg"/>
-          </div>
+          <label for="passwordEncryption">
+            <wicket:message key="passwordEncryption"/>
+          </label>
           <select class="w-md" id="passwordEncryption" wicket:id="configPasswordEncrypterName"/>
+          <span class="gs-instruction" wicket:id="strongEncryptionMsg"/>
         </div>
       </div>
     </wicket:panel>

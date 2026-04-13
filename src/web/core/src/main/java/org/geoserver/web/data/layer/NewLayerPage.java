@@ -21,7 +21,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -148,7 +147,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     final Resource resource = itemModel.getObject();
                     final CatalogIconFactory icons = CatalogIconFactory.get();
                     if (resource.isPublished()) {
-                        ResourceReference icon = icons.getEnabledIcon();
+                        String icon = icons.getEnabledIcon();
                         Fragment f = new Fragment(id, "iconFragment", selectLayers);
                         f.add(icons.getIcon("layerIcon", icon));
                         return f;
@@ -378,8 +377,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
     void updateSpecialFunctionPanels(StoreInfo store) {
         // at the moment just assume every store can create types
         try {
-            createTypeContainer.setVisible(store instanceof DataStoreInfo dsi
-                    && ((DataStoreInfo) store).getDataStore(null) instanceof DataStore);
+            createTypeContainer.setVisible(
+                    store instanceof DataStoreInfo dsi && dsi.getDataStore(null) instanceof DataStore);
         } catch (IOException e) {
             LOGGER.log(Level.FINEST, e.getMessage());
         }

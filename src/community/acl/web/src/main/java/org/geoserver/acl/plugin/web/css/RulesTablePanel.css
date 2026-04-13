@@ -33,12 +33,3 @@ td span div:hover span{
   background-color: white;
   display: inline-block;
 }
-
-.cog-link{
-  background-color: transparent;
-  background-attachment: scroll;
-  background-position: left center;
-  background-repeat: no-repeat;
-  padding: 2px 0 2px 20px;
-  background-image: url(../org.geoserver.web.GeoServerBasePage/img/icons/silk/cog.png);
-}

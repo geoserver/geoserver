@@ -23,7 +23,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIService;
@@ -144,9 +143,8 @@ class LinkInfoEditor extends FormComponentPanel<List<LinkInfo>> {
                 return f;
             } else if (property == REMOVE) {
                 final LinkInfo entry = itemModel.getObject();
-                ContextRelativeResourceReference icon =
-                        new ContextRelativeResourceReference("img/icons/silk/delete.png");
-                ImageAjaxLink<Object> link = new ImageAjaxLink<>(id, icon) {
+
+                ImageAjaxLink<Object> link = new ImageAjaxLink<>(id, "gs-icon-delete") {
 
                     @Override
                     protected void onClick(AjaxRequestTarget target) {

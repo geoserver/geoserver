@@ -28,7 +28,6 @@ public interface VTIterator extends Closeable {
      *     been sorted already)
      * @return A {@link VTIterator} wrapping the provided {@link FeatureIterator}
      */
-    @SuppressWarnings("PMD.CloseResource") // SimpleFeatureIterator iterator
     static VTIterator getIterator(FeatureIterator<?> delegate, boolean coalesce) {
         VTIterator result;
         if (delegate instanceof SimpleFeatureIterator iterator) {

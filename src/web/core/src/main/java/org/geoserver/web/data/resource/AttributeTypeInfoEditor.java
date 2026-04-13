@@ -30,7 +30,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -203,9 +202,7 @@ class AttributeTypeInfoEditor extends Panel {
                     }
                 });
             } else if (property == EDIT) {
-                ContextRelativeResourceReference icon =
-                        new ContextRelativeResourceReference("img/icons/silk/pencil.png");
-                return new ImageAjaxLink<>(id, icon) {
+                return new ImageAjaxLink<>(id, "gs-icon-pencil") {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         openEditAttributeDialog(target, itemModel);
@@ -213,9 +210,7 @@ class AttributeTypeInfoEditor extends Panel {
                 };
             } else if (property == REMOVE) {
                 final AttributeTypeInfo entry = itemModel.getObject();
-                ContextRelativeResourceReference icon =
-                        new ContextRelativeResourceReference("img/icons/silk/delete.png");
-                return new ImageAjaxLink<>(id, icon) {
+                return new ImageAjaxLink<>(id, "gs-icon-delete") {
 
                     @Override
                     protected void onClick(AjaxRequestTarget target) {

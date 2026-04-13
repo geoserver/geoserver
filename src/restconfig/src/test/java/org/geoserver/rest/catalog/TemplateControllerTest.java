@@ -85,25 +85,29 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
     private List<String> getAllPaths() {
         List<String> paths = new ArrayList<>();
 
+        // global templates
         paths.add(ROOT_PATH + "/templates/aTemplate.ftl");
         paths.add(ROOT_PATH + "/templates/anotherTemplate.ftl");
 
-        paths.add(ROOT_PATH + "/workspaces/topp/templates/aTemplate.ftl");
-        paths.add(ROOT_PATH + "/workspaces/topp/templates/anotherTemplate.ftl");
+        // workspace templates (cite workspace exists from default test data)
+        paths.add(ROOT_PATH + "/workspaces/cite/templates/aTemplate.ftl");
+        paths.add(ROOT_PATH + "/workspaces/cite/templates/anotherTemplate.ftl");
 
-        paths.add(ROOT_PATH + "/workspaces/topp/datastores/states_shapefile/templates/aTemplate.ftl");
-        paths.add(ROOT_PATH + "/workspaces/topp/datastores/states_shapefile/templates/anotherTemplate.ftl");
+        // datastore templates (cite datastore exists in cite workspace)
+        paths.add(ROOT_PATH + "/workspaces/cite/datastores/cite/templates/aTemplate.ftl");
+        paths.add(ROOT_PATH + "/workspaces/cite/datastores/cite/templates/anotherTemplate.ftl");
 
-        paths.add(
-                ROOT_PATH + "/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/aTemplate.ftl");
-        paths.add(ROOT_PATH
-                + "/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/anotherTemplate.ftl");
+        // feature type templates (Buildings exists in cite datastore)
+        paths.add(ROOT_PATH + "/workspaces/cite/datastores/cite/featuretypes/Buildings/templates/aTemplate.ftl");
+        paths.add(ROOT_PATH + "/workspaces/cite/datastores/cite/featuretypes/Buildings/templates/anotherTemplate.ftl");
 
+        // coveragestore templates (DEM exists in wcs workspace from setUpDefaultRasterLayers)
         paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/templates/aTemplate.ftl");
         paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/templates/anotherTemplate.ftl");
 
-        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/aTemplate.ftl");
-        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/anotherTemplate.ftl");
+        // coverage templates
+        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/DEM/templates/aTemplate.ftl");
+        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/DEM/templates/anotherTemplate.ftl");
 
         return paths;
     }
@@ -174,6 +178,97 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         assertEquals(barContent, getAsString(barTemplate).trim());
     }
 
+    // -- Non-existent workspace --
+
+    @Test
+    public void testPutNonExistentWorkspace() throws Exception {
+        String path = ROOT_PATH + "/workspaces/nonexistent/templates/test.ftl";
+        assertEquals(404, putAsServletResponse(path, "content", "text/plain").getStatus());
+    }
+
+    @Test
+    public void testGetNonExistentWorkspace() throws Exception {
+        assertNotFound(ROOT_PATH + "/workspaces/nonexistent/templates/test.ftl");
+    }
+
+    @Test
+    public void testDeleteNonExistentWorkspace() throws Exception {
+        assertEquals(
+                404,
+                deleteAsServletResponse(ROOT_PATH + "/workspaces/nonexistent/templates/test.ftl")
+                        .getStatus());
+    }
+
+    @Test
+    public void testListNonExistentWorkspace() throws Exception {
+        assertNotFound(ROOT_PATH + "/workspaces/nonexistent/templates");
+    }
+
+    // -- Non-existent datastore --
+
+    @Test
+    public void testPutNonExistentDatastore() throws Exception {
+        String path = ROOT_PATH + "/workspaces/cite/datastores/nonexistent/templates/test.ftl";
+        assertEquals(404, putAsServletResponse(path, "content", "text/plain").getStatus());
+    }
+
+    @Test
+    public void testGetNonExistentDatastore() throws Exception {
+        assertNotFound(ROOT_PATH + "/workspaces/cite/datastores/nonexistent/templates/test.ftl");
+    }
+
+    @Test
+    public void testDeleteNonExistentDatastore() throws Exception {
+        assertEquals(
+                404,
+                deleteAsServletResponse(ROOT_PATH + "/workspaces/cite/datastores/nonexistent/templates/test.ftl")
+                        .getStatus());
+    }
+
+    @Test
+    public void testListNonExistentDatastore() throws Exception {
+        assertNotFound(ROOT_PATH + "/workspaces/cite/datastores/nonexistent/templates");
+    }
+
+    // -- Non-existent coveragestore --
+
+    @Test
+    public void testPutNonExistentCoveragestore() throws Exception {
+        String path = ROOT_PATH + "/workspaces/wcs/coveragestores/nonexistent/templates/test.ftl";
+        assertEquals(404, putAsServletResponse(path, "content", "text/plain").getStatus());
+    }
+
+    @Test
+    public void testListNonExistentCoveragestore() throws Exception {
+        assertNotFound(ROOT_PATH + "/workspaces/wcs/coveragestores/nonexistent/templates");
+    }
+
+    // -- Non-existent feature type --
+
+    @Test
+    public void testPutNonExistentFeatureType() throws Exception {
+        String path = ROOT_PATH + "/workspaces/cite/datastores/cite/featuretypes/nonexistent/templates/test.ftl";
+        assertEquals(404, putAsServletResponse(path, "content", "text/plain").getStatus());
+    }
+
+    @Test
+    public void testListNonExistentFeatureType() throws Exception {
+        assertNotFound(ROOT_PATH + "/workspaces/cite/datastores/cite/featuretypes/nonexistent/templates");
+    }
+
+    // -- Non-existent coverage --
+
+    @Test
+    public void testPutNonExistentCoverage() throws Exception {
+        String path = ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/nonexistent/templates/test.ftl";
+        assertEquals(404, putAsServletResponse(path, "content", "text/plain").getStatus());
+    }
+
+    @Test
+    public void testListNonExistentCoverage() throws Exception {
+        assertNotFound(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/nonexistent/templates");
+    }
+
     @Test
     public void testAllPathsSequentiallyForJson() throws Exception {
         Random random = new Random();
@@ -188,24 +283,21 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         paths.add(ROOT_PATH + "/templates/aTemplate_json.ftl");
         paths.add(ROOT_PATH + "/templates/anotherTemplate_json.ftl");
 
-        paths.add(ROOT_PATH + "/workspaces/topp/templates/aTemplate_json.ftl");
-        paths.add(ROOT_PATH + "/workspaces/topp/templates/anotherTemplate_json.ftl");
+        paths.add(ROOT_PATH + "/workspaces/cite/templates/aTemplate_json.ftl");
+        paths.add(ROOT_PATH + "/workspaces/cite/templates/anotherTemplate_json.ftl");
 
-        paths.add(ROOT_PATH + "/workspaces/topp/datastores/states_shapefile/templates/aTemplate_json.ftl");
-        paths.add(ROOT_PATH + "/workspaces/topp/datastores/states_shapefile/templates/anotherTemplate_json.ftl");
+        paths.add(ROOT_PATH + "/workspaces/cite/datastores/cite/templates/aTemplate_json.ftl");
+        paths.add(ROOT_PATH + "/workspaces/cite/datastores/cite/templates/anotherTemplate_json.ftl");
 
+        paths.add(ROOT_PATH + "/workspaces/cite/datastores/cite/featuretypes/Buildings/templates/aTemplate_json.ftl");
         paths.add(ROOT_PATH
-                + "/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/aTemplate_json.ftl");
-        paths.add(
-                ROOT_PATH
-                        + "/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/anotherTemplate_json.ftl");
+                + "/workspaces/cite/datastores/cite/featuretypes/Buildings/templates/anotherTemplate_json.ftl");
 
         paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/templates/aTemplate_json.ftl");
         paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/templates/anotherTemplate_json.ftl");
 
-        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/aTemplate_json.ftl");
-        paths.add(ROOT_PATH
-                + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/anotherTemplate_json.ftl");
+        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/DEM/templates/aTemplate_json.ftl");
+        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/DEM/templates/anotherTemplate_json.ftl");
 
         return paths;
     }

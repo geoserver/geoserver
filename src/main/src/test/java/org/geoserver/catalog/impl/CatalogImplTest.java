@@ -3631,10 +3631,10 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
     public void testConcurrentCatalogModification() throws Exception {
         Logger logger = Logging.getLogger(CatalogImpl.class);
         final int tasks = 8;
-        ExecutorService executor = Executors.newFixedThreadPool(tasks / 2);
         Level previousLevel = logger.getLevel();
         // clear previous listeners
         new ArrayList<>(catalog.getListeners()).forEach(l -> catalog.removeListener(l));
+        ExecutorService executor = Executors.newFixedThreadPool(tasks / 2);
         try {
             // disable logging for this test, it will stay a while in case of failure otherwise
             logger.setLevel(Level.OFF);

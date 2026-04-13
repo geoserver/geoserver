@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.1.1 (8761) - http://www.bohemiancoding.com/sketch -->
+    <title>raster_file</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="75.0336734%" y1="21.4285714%" x2="50%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#E6E6E6" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="raster_file" sketch:type="MSArtboardGroup">
+            <g sketch:type="MSLayerGroup" transform="translate(0.000000, 1.000000)">
+                <path d="M0.423693564,0.119140625 L0.423693564,14.2250977 L12.2950901,14.2250977 L12.2950901,2.56754557 L10.6326256,0.119140625 L0.423693564,0.119140625 Z" id="Path-67-copy" stroke="#FFFFFF" fill="url(#linearGradient-1)" sketch:type="MSShapeGroup"></path>
+                <path d="M0.423693564,0.119140625 L0.423693564,14.2250977 L12.2950901,14.2250977 L12.2950901,2.56754557 L10.6326256,0.119140625 L0.423693564,0.119140625 Z" id="Path-67" stroke="#4D5055" sketch:type="MSShapeGroup"></path>
+                <g id="reaster_icon" transform="translate(5.000000, 6.000000)" sketch:type="MSShapeGroup">
+                    <rect id="Rectangle-49" stroke="#5D74BC" fill="#D8D8D8" x="0" y="0" width="10" height="8"></rect>
+                    <rect id="Rectangle-48" fill="#5D74BC" x="0" y="0" width="2.5" height="2"></rect>
+                    <rect id="Rectangle-48-copy" fill="#5D74BC" x="2.5" y="2" width="2.5" height="2"></rect>
+                    <rect id="Rectangle-48-copy-2" fill="#5D74BC" x="0" y="4" width="2.5" height="2"></rect>
+                    <rect id="Rectangle-48-copy-3" fill="#5D74BC" x="2.5" y="6" width="2.5" height="2"></rect>
+                    <rect id="Rectangle-48-copy" fill="#5D74BC" x="5" y="0" width="2.5" height="2"></rect>
+                    <rect id="Rectangle-48-copy-2" fill="#5D74BC" x="7.5" y="2" width="2.5" height="2"></rect>
+                    <rect id="Rectangle-48-copy-3" fill="#5D74BC" x="5" y="4" width="2.5" height="2"></rect>
+                    <rect id="Rectangle-48-copy-4" fill="#5D74BC" x="7.5" y="6" width="2.5" height="2"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

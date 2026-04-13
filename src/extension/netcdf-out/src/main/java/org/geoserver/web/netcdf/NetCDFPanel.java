@@ -26,8 +26,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.GeoServerApplication;
@@ -35,7 +33,7 @@ import org.geoserver.web.netcdf.NetCDFSettingsContainer.ExtraVariable;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.VariableAttribute;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
@@ -67,10 +65,9 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
     protected final TextField<Integer> compressionLevel;
 
-    public static final ResourceReference ADD_ICON = new ContextRelativeResourceReference("img/icons/silk/add.png");
+    public static final String ADD_ICON = "gs-icon-add";
 
-    public static final ResourceReference DELETE_ICON =
-            new ContextRelativeResourceReference("img/icons/silk/delete.png");
+    public static final String DELETE_ICON = "gs-icon-delete";
 
     protected final DropDownChoice<DataPacking> dataPacking;
 
@@ -159,7 +156,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                     }
                 }
             };
-            addLink.add(new Icon("addGlobalAttributeIcon", ADD_ICON));
+            addLink.add(new GsIcon("addGlobalAttributeIcon", ADD_ICON));
             container.add(addLink);
         }
 
@@ -178,7 +175,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         newKey.setOutputMarkupId(true);
         container.add(newKey);
         GeoServerAjaxFormLink addVariableLink = new AddVariableLink(newKey, newValue);
-        addVariableLink.add(new Icon("addVariableAttributeIcon", ADD_ICON));
+        addVariableLink.add(new GsIcon("addVariableAttributeIcon", ADD_ICON));
         container.add(addVariableLink);
 
         /////////////////////////////
@@ -199,7 +196,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         newDimensions.setOutputMarkupId(true);
         container.add(newDimensions);
         GeoServerAjaxFormLink addExtraVariableLink = new AddExtraVariableLink(newSource, newOutput, newDimensions);
-        addExtraVariableLink.add(new Icon("addExtraVariableIcon", ADD_ICON));
+        addExtraVariableLink.add(new GsIcon("addExtraVariableIcon", ADD_ICON));
         container.add(addExtraVariableLink);
 
         ///////////////////////////

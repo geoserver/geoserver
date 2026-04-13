@@ -4,82 +4,96 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-ParamsExtractorRulePage_ComplexRulePanel">
-        <fieldset>
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class pt-3">
-              <label for="match">
-                <wicket:message key="match"></wicket:message>
-              </label>
+        <div class="gs-form">
+          <div class="gs-form-group">
+            <label for="match">
+              <wicket:message key="match"></wicket:message>
+            </label>
+            <div>
               <input id="match" wicket:id="match" type="text" />
               <span class="text-xs">
                 <wicket:message key="matchDescription"></wicket:message>
               </span>
             </div>
-            <div class="gs-list-item-class pt-3">
-              <label for="activation">
-                <wicket:message key="activation"></wicket:message>
-              </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="activation">
+              <wicket:message key="activation"></wicket:message>
+            </label>
+            <div>
               <input id="activation" wicket:id="activation" type="text" />
               <span class="text-xs">
                 <wicket:message key="activationDescription"></wicket:message>
               </span>
             </div>
-            <div class="gs-list-item-class pt-3">
-              <label for="parameter">
-                <wicket:message key="parameter"></wicket:message>
-              </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="parameter">
+              <wicket:message key="parameter"></wicket:message>
+            </label>
+            <div>
               <input id="parameter" wicket:id="parameter" type="text" />
               <span class="text-xs">
                 <wicket:message key="parameterDescription"></wicket:message>
               </span>
             </div>
-            <div class="gs-list-item-class pt-3">
-              <label for="transform">
-                <wicket:message key="transform"></wicket:message>
-              </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="transform">
+              <wicket:message key="transform"></wicket:message>
+            </label>
+            <div>
               <input id="transform" wicket:id="transform" type="text" />
               <span class="text-xs">
                 <wicket:message key="transformComplexDescription"></wicket:message>
               </span>
             </div>
-            <div class="gs-list-item-class pt-3">
-              <label for="remove">
-                <wicket:message key="remove"></wicket:message>
-              </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="remove">
+              <wicket:message key="remove"></wicket:message>
+            </label>
+            <div>
               <input id="remove" wicket:id="remove" type="number" class="number" />
               <span class="text-xs">
                 <wicket:message key="removeDescription"></wicket:message>
               </span>
             </div>
-            <div class="gs-list-item-class pt-3">
-              <label for="combine">
-                <wicket:message key="combine"></wicket:message>
-              </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="combine">
+              <wicket:message key="combine"></wicket:message>
+            </label>
+            <div>
               <input id="combine" wicket:id="combine" type="text" />
               <span class="text-xs">
                 <wicket:message key="combineDescription"></wicket:message>
               </span>
             </div>
-            <div class="gs-list-item-class pt-3">
-              <label for="repeat">
-                <wicket:message key="repeat"></wicket:message>
-              </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="repeat">
+              <wicket:message key="repeat"></wicket:message>
+            </label>
+            <div class="gs-inline-group">
               <input id="repeat" wicket:id="repeat" type="checkbox" class="boolean" />
               <span class="text-xs">
                 <wicket:message key="repeatDescription"></wicket:message>
               </span>
             </div>
-            <div class="gs-list-item-class pt-3">
-              <label for="echo">
-                <wicket:message key="echo"></wicket:message>
-              </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="echo">
+              <wicket:message key="echo"></wicket:message>
+            </label>
+            <div class="gs-inline-group">
               <input id="combine" wicket:id="echo" type="checkbox" class="boolean" />
               <span class="text-xs">
                 <wicket:message key="echoDescription"></wicket:message>
               </span>
             </div>
           </div>
-        </fieldset>
+        </div>
       </div>
     </wicket:panel>
   </body>

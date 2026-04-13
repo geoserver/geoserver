@@ -312,7 +312,7 @@ SPI=org.geotools.data.oracle.OracleNGDataStoreFactory
 
 The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using the directory name as the table name. In case a specific table name needs to be used, add an **`indexer.properties`** specifying the `TypeName` property, e.g.:
 
-> TypeName=myMosaicTypeName
+`TypeName=myMosaicTypeName`
 
 In case the index "table" already exists instead, then a **`indexer.properties`** file will be required, with the following contents:
 

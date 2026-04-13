@@ -107,7 +107,7 @@
     <property name="descriptionKey" value="GeoServerHomePage.description" />
     <property name="componentClass" value="org.geoserver.web.GeoServerHomePage" />
     <property name="category" ref="geoserverCategory" />
-    <property name="icon" value="/img/logo-icon.svg" />
+    <property name="icon" value="gs-icon-geoserver" />
     <property name="order" value="5" />
   </bean>
   <bean id="statusMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -116,7 +116,7 @@
     <property name="descriptionKey" value="StatusPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.StatusPage" />
     <property name="category" ref="serverCategory" />
-    <property name="icon" value="../img/icons/silk/server_error.png" />
+    <property name="icon" value="gs-icon-server-error" />
     <property name="order" value="10" />
   </bean>
   <bean id="logsPage" class="org.geoserver.web.MenuPageInfo">
@@ -125,7 +125,7 @@
     <property name="descriptionKey" value="LogPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.LogPage" />
     <property name="category" ref="serverCategory" />
-    <property name="icon" value="../img/icons/silk/page_white_text.png" />
+    <property name="icon" value="gs-icon-page-white-text" />
     <property name="order" value="15" />
   </bean>
   <bean id="contactMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -134,7 +134,7 @@
     <property name="descriptionKey" value="ContactPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.ContactPage" />
     <property name="category" ref="serverCategory" />
-    <property name="icon" value="../img/icons/silk/vcard.png" />
+    <property name="icon" value="gs-icon-vcard" />
     <property name="order" value="5" />
   </bean>
   <bean id="aboutMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -143,7 +143,7 @@
     <property name="descriptionKey" value="AboutGeoServerPage.description" />
     <property name="componentClass" value="org.geoserver.web.AboutGeoServerPage" />
     <property name="category" ref="geoserverCategory" />
-    <property name="icon" value="/img/icons/silk/help.png" />
+    <property name="icon" value="gs-icon-help" />
     <property name="order" value="25" />
   </bean>
   <bean id="globalSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -152,7 +152,7 @@
     <property name="descriptionKey" value="GlobalSettingsPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.GlobalSettingsPage" />
     <property name="category" ref="serverCategory" />
-    <property name="icon" value="../img/icons/silk/server.png" />
+    <property name="icon" value="gs-icon-server" />
     <property name="order" value="30" />
   </bean>
   <bean id="JAIMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -161,7 +161,7 @@
     <property name="descriptionKey" value="JAIPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.JAIPage" />
     <property name="category" ref="serverCategory" />
-    <property name="icon" value="../img/icons/silk/cog_photo.png" />
+    <property name="icon" value="gs-icon-cog-photo" />
     <property name="order" value="40" />
   </bean>
   <bean id="coverageAccessMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -170,7 +170,7 @@
     <property name="descriptionKey" value="CoverageAccessPage.description" />
     <property name="componentClass" value="org.geoserver.web.admin.CoverageAccessPage" />
     <property name="category" ref="serverCategory" />
-    <property name="icon" value="../img/icons/silk/cog_photo.png" />
+    <property name="icon" value="gs-icon-cog-photo" />
     <property name="order" value="45" />
   </bean>
 
@@ -184,7 +184,7 @@
     <property name="componentClass"
       value="org.geoserver.web.data.workspace.WorkspacePage" />
     <property name="category" ref="dataCategory" />
-    <property name="icon" value="../../img/icons/silk/folder.png" />
+    <property name="icon" value="gs-icon-folder" />
     <property name="order" value="10" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>
@@ -194,7 +194,7 @@
     <property name="descriptionKey" value="StorePage.description" />
     <property name="componentClass" value="org.geoserver.web.data.store.StorePage" />
     <property name="category" ref="dataCategory" />
-    <property name="icon" value="../../img/icons/silk/database.png" />
+    <property name="icon" value="gs-icon-database" />
     <property name="order" value="15" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
     <property name="contextParams" value="all" />
@@ -205,7 +205,7 @@
     <property name="descriptionKey" value="LayerPage.description" />
     <property name="componentClass" value="org.geoserver.web.data.layer.LayerPage" />
     <property name="category" ref="dataCategory" />
-    <property name="icon" value="../../img/icons/silk/picture_empty.png" />
+    <property name="icon" value="gs-icon-picture-empty" />
     <property name="order" value="20" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
     <property name="contextParams" value="workspace,group" />
@@ -217,7 +217,7 @@
     <property name="componentClass"
       value="org.geoserver.web.data.layergroup.LayerGroupPage" />
     <property name="category" ref="dataCategory" />
-    <property name="icon" value="../../img/icons/silk/layers.png" />
+    <property name="icon" value="gs-icon-layers" />
     <property name="order" value="25" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
     <property name="contextParams" value="workspace,group" />
@@ -230,7 +230,7 @@
     <property name="descriptionKey" value="demo.description" />
     <property name="componentClass" value="org.geoserver.web.DemoPage" />
     <property name="category" ref="geoserverCategory" />
-    <property name="icon" value="img/icons/silk/picture_empty.png" />
+    <property name="icon" value="gs-icon-picture-empty" />
     <property name="order" value="10" />
     <property name="authorizer">
       <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
@@ -246,7 +246,7 @@
     <property name="descriptionKey" value="tools.description" />
     <property name="componentClass" value="org.geoserver.web.ToolPage" />
     <property name="category" ref="utilitiesCategory" />
-    <property name="icon" value="img/icons/silk/wrench.png" />
+    <property name="icon" value="gs-icon-wrench" />
     <property name="order" value="15" />
     <property name="authorizer">
       <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
@@ -404,8 +404,7 @@
       as per StoreExtensionPoints requirements -->
     <property name="id" value="defaultVector" />
     <property name="factoryClass" value="" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/database_vector.png" />
+    <property name="icon" value="gs-icon-database-vector" />
     <property name="componentClass"
       value="org.geoserver.web.data.store.DefaultDataStoreEditPanel" />
   </bean>
@@ -415,8 +414,7 @@
       as per StoreExtensionPoints requirements -->
     <property name="id" value="defaultRaster" />
     <property name="factoryClass" value="" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
+    <property name="icon" value="gs-icon-page-white-raster" />
     <property name="componentClass"
       value="org.geoserver.web.data.store.DefaultCoverageStoreEditPanel" />
   </bean>
@@ -424,8 +422,7 @@
   <bean id="geotiffStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="geotiffRaster" />
     <property name="factoryClass" value="org.geotools.gce.geotiff.GeoTiffFormat" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
+    <property name="icon" value="gs-icon-page-white-raster" />
     <property name="componentClass"
       value="org.geoserver.web.data.store.raster.GeoTIFFRasterEditPanel" />
   </bean>
@@ -433,8 +430,7 @@
   <bean id="imageMosaicStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="imagemosaicRaster" />
     <property name="factoryClass" value="org.geotools.gce.imagemosaic.ImageMosaicFormat" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
+    <property name="icon" value="gs-icon-page-white-raster" />
     <property name="componentClass"
       value="org.geoserver.web.data.store.raster.DirectoryRasterEditPanel" />
   </bean>
@@ -442,8 +438,7 @@
   <bean id="geopkgStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="geopackageRaster" />
     <property name="factoryClass" value="org.geotools.geopkg.mosaic.GeoPackageFormat" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
+    <property name="icon" value="gs-icon-page-white-raster" />
     <property name="componentClass"
       value="org.geoserver.web.data.store.raster.FileRasterEditPanel" />
   </bean>
@@ -452,16 +447,14 @@
     <property name="id" value="postgis" />
     <property name="factoryClass"
       value="org.geotools.data.postgis.PostgisNGDataStoreFactory" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/database_vector.png" />
+    <property name="icon" value="gs-icon-database-vector" />
   </bean>
 
   <bean id="shapefileDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="shapefile" />
     <property name="factoryClass"
       value="org.geotools.data.shapefile.ShapefileDataStoreFactory" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_vector.png" />
+    <property name="icon" value="gs-icon-page-white-vector" />
     <property name="componentClass"
       value="org.geoserver.web.data.store.shape.ShapefileStoreEditPanel" />
   </bean>
@@ -470,8 +463,7 @@
     <property name="id" value="shapefile-directory" />
     <property name="factoryClass"
       value="org.geotools.data.shapefile.ShapefileDirectoryFactory" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_vector.png" />
+    <property name="icon" value="gs-icon-page-white-vector" />
     <property name="componentClass"
       value="org.geoserver.web.data.store.shape.ShapefileDirectoryEditPanel" />
   </bean>
@@ -480,15 +472,13 @@
     <property name="id" value="property" />
     <property name="factoryClass"
       value="org.geotools.data.property.PropertyDataStoreFactory" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_vector.png" />
+    <property name="icon" value="gs-icon-page-white-vector" />
   </bean>
 
   <bean id="wfsDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="wfs" />
     <property name="factoryClass" value="org.geotools.data.wfs.WFSDataStoreFactory" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/server_vector.png" />
+    <property name="icon" value="gs-icon-server-vector" />
   </bean>
 
   <bean id="ServiceInfoCapabilitiesProvider" class="org.geoserver.web.ServiceInfoCapabilitiesProvider">
@@ -501,8 +491,7 @@
     plug in is not on the classpath -->
   <!-- <bean id="oracleDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo"> 
     <property name="id" value="oracle"/> <property name="factoryClass" value="org.geotools.data.oracle.OracleNGDataStoreFactory"/> 
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/> 
-    <property name="icon" value="img/icons/geosilk/database_oracle.png"/> </bean> 
+    <property name="icon" value="gs-icon-database-oracle"/> </bean> 
    -->
 
   <bean id="ndLayerEditTabPanelInfo" class="org.geoserver.web.publish.LayerEditTabPanelInfo">
@@ -537,7 +526,7 @@
 		<property name="descriptionKey" value="GeoServerBasePage.description" />
 		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
 		<property name="name" value="form" />
-		<property name="icon" value="img/icons/silk/door-in.png" />
+		<property name="icon" value="gs-icon-door-in" />
 		<property name="filterClass" value="org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter" />
 		<property name="include" value="include_login_form.html" />
 		<property name="loginPath" value="j_spring_security_check" />
@@ -579,7 +568,7 @@
     <property name="category" ref="breadcrumbCatWorkspace" />
     <property name="order" value="10" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-    <property name="icon" value="../../img/icons/silk/wrench.png"/>
+    <property name="icon" value="gs-icon-wrench"/>
   </bean>
 
   <bean id="breadcrumbItemWsWelcome" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
@@ -589,7 +578,7 @@
     <property name="targetLevel" value="WORKSPACE" />
     <property name="category" ref="breadcrumbCatWorkspace" />
     <property name="order" value="1" />
-    <property name="icon" value="img/icons/silk/folder.png" />
+    <property name="icon" value="gs-icon-folder" />
   </bean>
 
   <bean id="breadcrumbItemWsStores" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
@@ -600,7 +589,7 @@
     <property name="category" ref="breadcrumbCatData" />
     <property name="order" value="10" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-    <property name="icon" value="../../img/icons/silk/database.png"/>
+    <property name="icon" value="gs-icon-database"/>
   </bean>
 
   <bean id="breadcrumbItemWsLayers" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
@@ -611,7 +600,7 @@
     <property name="category" ref="breadcrumbCatData" />
     <property name="order" value="20" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-    <property name="icon" value="../../img/icons/silk/picture_empty.png"/>
+    <property name="icon" value="gs-icon-picture-empty"/>
   </bean>
 
   <bean id="breadcrumbItemWsLayerGroups" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
@@ -622,7 +611,7 @@
     <property name="category" ref="breadcrumbCatData" />
     <property name="order" value="30" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-    <property name="icon" value="../../img/icons/silk/layers.png"/>
+    <property name="icon" value="gs-icon-layers"/>
   </bean>
 
   <bean id="breadcrumbCatLayerMenu" class="org.geoserver.web.Category">
@@ -642,7 +631,7 @@
     <property name="targetLevel" value="LAYER" />
     <property name="category" ref="breadcrumbCatLayerMenu" />
     <property name="order" value="10" />
-    <property name="icon" value="../../img/icons/silk/wrench.png"/>
+    <property name="icon" value="gs-icon-wrench"/>
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>
 
@@ -653,7 +642,7 @@
     <property name="targetLevel" value="LAYER" />
     <property name="category" ref="breadcrumbCatLayerMenu" />
     <property name="order" value="1" />
-    <property name="icon" value="img/icons/silk/picture_empty.png" />
+    <property name="icon" value="gs-icon-picture-empty" />
   </bean>
 
   <bean id="breadcrumbItemLayerStores" class="org.geoserver.web.BreadcrumbContextMenuItemInfo">
@@ -664,7 +653,7 @@
     <property name="category" ref="breadcrumbCatLayerData" />
     <property name="order" value="10" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-    <property name="icon" value="../../img/icons/silk/database.png"/>
+    <property name="icon" value="gs-icon-database"/>
   </bean>
 
   <bean id="breadcrumbCatLayerGroupMenu" class="org.geoserver.web.Category">
@@ -679,7 +668,7 @@
     <property name="targetLevel" value="LAYER_GROUP" />
     <property name="category" ref="breadcrumbCatLayerGroupMenu" />
     <property name="order" value="10" />
-    <property name="icon" value="../../img/icons/silk/wrench.png"/>
+    <property name="icon" value="gs-icon-wrench"/>
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>
 
@@ -690,7 +679,7 @@
     <property name="targetLevel" value="LAYER_GROUP" />
     <property name="category" ref="breadcrumbCatLayerGroupMenu" />
     <property name="order" value="1" />
-    <property name="icon" value="img/icons/silk/layers.png" />
+    <property name="icon" value="gs-icon-layers" />
   </bean>
 
   <bean id="sidebarNewWorkspace" class="org.geoserver.web.SidebarNewMenuItemInfo">
@@ -698,7 +687,6 @@
     <property name="titleKey" value="addWorkspaces" />
     <property name="componentClass" value="org.geoserver.web.data.workspace.WorkspaceNewPage" />
     <property name="order" value="10" />
-    <property name="icon" value="../../img/icons/silk/add_workspace.png" />
   </bean>
 
   <bean id="sidebarNewStore" class="org.geoserver.web.SidebarNewMenuItemInfo">
@@ -706,7 +694,6 @@
     <property name="titleKey" value="addStores" />
     <property name="componentClass" value="org.geoserver.web.data.store.NewDataPage" />
     <property name="order" value="20" />
-    <property name="icon" value="../../img/icons/silk/add_store.png" />
     <property name="contextParams" value="workspace" />
   </bean>
 
@@ -716,7 +703,6 @@
     <property name="titleKey" value="addLayers" />
     <property name="componentClass" value="org.geoserver.web.data.layer.NewLayerPage" />
     <property name="order" value="30" />
-    <property name="icon" value="../../img/icons/silk/add_layer.png" />
     <property name="contextParams" value="workspace" />
   </bean>
 
@@ -725,7 +711,6 @@
     <property name="titleKey" value="addGroups" />
     <property name="componentClass" value="org.geoserver.web.data.layergroup.LayerGroupEditPage" />
     <property name="order" value="40" />
-    <property name="icon" value="../../img/icons/silk/add_layergroup.png" />
     <property name="contextParams" value="workspace" />
   </bean>
 

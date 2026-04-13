@@ -8,7 +8,7 @@ Another example can be the need to have different connection pool configuration 
 
 To enable env parametrization the following flag needs to be set via system variable to GeoServer's environment:
 
-> -DALLOW_ENV_PARAMETRIZATION=true
+`-DALLOW_ENV_PARAMETRIZATION=true`
 
 A `properties` file holding the parametrized settings needs to be created. It can be provided by naming it `geoserver-environment.properties` and by placing it in the root directory of the GeoServer's DATA_DIR.
 
@@ -31,22 +31,26 @@ GeoServer is also able to use a `properties` file outside the GeoServer's DATA_D
 
 Once a strategy to load the `ENV_PROPERTIES` has been defined and set, it is possible to edit GeoServer's configuration files of the source machine that needs to be parametrized. For example, let's parameterize the URL of a store (this can also be done via GeoServer admin UI):
 
-> `vim coveragestore.xml` :
->
->     ...
->      <enabled>true</enabled>
->       <workspace>
->         <id>WorkspaceInfoImpl--134aa31e:1564c12ef68:-7ffe</id>
->       </workspace>
->       <__default>false</__default>
->       <url>${store_url}</url>
->     </coverageStore>
+`vim coveragestore.xml` :
+
+```xml
+    ...
+     <enabled>true</enabled>
+      <workspace>
+        <id>WorkspaceInfoImpl--134aa31e:1564c12ef68:-7ffe</id>
+      </workspace>
+      <__default>false</__default>
+      <url>${store_url}</url>
+    </coverageStore>
+```
 
 A definition for the variable **store_url** needs to be added in
 
-> `geoserver-environment.properties` :
->
->     store_url = file:///var/geoserver/store/teststore
+`geoserver-environment.properties` :
+
+```
+    store_url = file:///var/geoserver/store/teststore
+```
 
 Once GeoServer has been restarted, it is possible to see that the URL in "Connection Parameters" settings now refers the variable **store_url** whose value is defined in the `geoserver-environment.properties` file.
 

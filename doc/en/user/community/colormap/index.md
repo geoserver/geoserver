@@ -163,9 +163,9 @@ or
 
 In these cases a RAMP will be used with the indicated colors.
 
-> The resulting image may look like this:
->
-> ![](images/bgr.png)
+The resulting image may look like this:
+
+![](images/bgr.png)
 
 ## DynamicColorMap Requirements
 

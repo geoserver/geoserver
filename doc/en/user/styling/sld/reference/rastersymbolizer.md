@@ -145,7 +145,9 @@ CQL expressions are useful to make the color map dynamic, using values taken fro
 
 In this example quantity values are not fixed, but can be specified by the client using the ENV request parameter:
 
-> <http://localhost:8080/geoserver/wms?REQUEST=GetMap&VERSION=1.0.0&>\...&ENV=low:10;medium:100;high:500
+```
+http://localhost:8080/geoserver/wms?REQUEST=GetMap&VERSION=1.0.0&...&ENV=low:10;medium:100;high:500
+```
 
 For a complete reference of CQL capabilities, see [here](../../../filter/ecql_reference.md)
 

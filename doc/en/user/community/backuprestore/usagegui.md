@@ -68,20 +68,20 @@ The steps are almost the same of the backup. Just select the `.zip` archive full
 
 ### DRY-RUN RESTORE
 
-> `Dry Run` option allows a user to **test** a `.zip` archive before actually performing a full restore.
->
-> ![](images/usagegui006.png)
->
+`Dry Run` option allows a user to **test** a `.zip` archive before actually performing a full restore.
+
+![](images/usagegui006.png)
+
 !!! note
     Please notice that the dry run should always being executed when trying to restore a new configuration.
->
-> A **failing** restore dry-run will appear like this
->
-> ![](images/usagegui007.png)
->
-> If some exception occurs, it will be listed on the execution summary page. The original cause can be inspected by rising up the errors details level and refreshing
->
-> ![](images/usagegui008.png)
+
+A **failing** restore dry-run will appear like this
+
+![](images/usagegui007.png)
+
+If some exception occurs, it will be listed on the execution summary page. The original cause can be inspected by rising up the errors details level and refreshing
+
+![](images/usagegui008.png)
 
 ## Saving/restoring only specific workspaces
 

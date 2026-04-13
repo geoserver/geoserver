@@ -27,7 +27,6 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -39,7 +38,6 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -47,6 +45,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.web.spring.security.GeoServerSession;
+import org.geoserver.web.wicket.GsIcon;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.sort.SortBy;
@@ -192,8 +191,7 @@ public class NavigationTreePanel extends Panel {
         globalSectionBody.setOutputMarkupId(true);
         globalSectionContainer.add(globalSectionBody);
 
-        globalSectionContainer.add(new Image(
-                "globalIcon", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/server.png")));
+        globalSectionContainer.add(new GsIcon("globalIcon", "gs-icon-server"));
 
         AjaxLink<Void> globalSectionSelect = new AjaxLink<>("globalSectionSelect") {
             @Override
@@ -775,7 +773,7 @@ public class NavigationTreePanel extends Panel {
     }
 
     private static WebComponent workspaceIcon(String id) {
-        return new Image(id, new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/folder.png"));
+        return new GsIcon(id, "gs-icon-folder");
     }
 
     private enum ChildType {
@@ -803,12 +801,12 @@ public class NavigationTreePanel extends Panel {
     }
 
     private static WebComponent childIcon(String id, ChildType type) {
-        String path =
+        String cssClass =
                 switch (type) {
-                    case LAYER -> "img/icons/silk/picture_empty.png";
-                    case LAYER_GROUP -> "img/icons/silk/layers.png";
+                    case LAYER -> "gs-icon-picture-empty";
+                    case LAYER_GROUP -> "gs-icon-layers";
                 };
-        return new Image(id, new PackageResourceReference(GeoServerBasePage.class, path));
+        return new GsIcon(id, cssClass);
     }
 
     private List<WorkspaceChild> getWorkspaceChildrenPage(String workspaceName, int offset, int limit) {

@@ -108,7 +108,9 @@ User defined NetCDF Coordinate Reference Systems with their custom EPSG need to 
 
 A sample entry in that property file could look like this:
 
-> 971835=PROJCS["albers_conical_equal_area", GEOGCS["unknown", DATUM["unknown", SPHEROID["unknown", 6378137.0, 298.2572221010042]], PRIMEM["Greenwich", 0.0], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH]], PROJECTION["Albers_Conic_Equal_Area"], PARAMETER["central_meridian", -126.0], PARAMETER["latitude_of_origin", 45.0], PARAMETER["standard_parallel_1", 50.0], PARAMETER["false_easting", 1000000.0], PARAMETER["false_northing", 0.0], PARAMETER["standard_parallel_2", 58.5], UNIT["m", 1.0], AXIS["Easting", EAST], AXIS["Northing", NORTH], AUTHORITY["EPSG","971835"]]
+```
+971835=PROJCS["albers_conical_equal_area", GEOGCS["unknown", DATUM["unknown", SPHEROID["unknown", 6378137.0, 298.2572221010042]], PRIMEM["Greenwich", 0.0], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH]], PROJECTION["Albers_Conic_Equal_Area"], PARAMETER["central_meridian", -126.0], PARAMETER["latitude_of_origin", 45.0], PARAMETER["standard_parallel_1", 50.0], PARAMETER["false_easting", 1000000.0], PARAMETER["false_northing", 0.0], PARAMETER["standard_parallel_2", 58.5], UNIT["m", 1.0], AXIS["Easting", EAST], AXIS["Northing", NORTH], AUTHORITY["EPSG","971835"]]
+```
 
 !!! note
     Note the "unknown" names for GEOGCS, DATUM and SPHEROID elements. This is how the underlying NetCDF machinery will name custom elements.
@@ -217,7 +219,7 @@ To permit access to NetCDF files in read-only directories, specify an alternate 
 
 All the sidecar hidden directories will end up being located at the top level of the NETCDF_DATA_DIR. In case you're managing a large number of NetCDF files, it's best to spread them out in subdirectories, so that the number of files in each directory is kept low. For that to happen, configure also the following:
 
-> -DNETCDF_DATA_DIR_TREE=true
+`-DNETCDF_DATA_DIR_TREE=true`
 
 Set up this way, the contents of the NetCDF data directory will mimick the absolute position of the NetCDF files, e.g.:
 
@@ -227,7 +229,7 @@ Set up this way, the contents of the NetCDF data directory will mimick the absol
 
 If the extra directory structure is not needed, then the `NETCDF_ROOT` property can be configured, to indicate where the tree of NetCDF files starts, e.g.:
 
-> -DNETCDF_ROOT=/opt/data
+`-DNETCDF_ROOT=/opt/data`
 
 In this case, the support files will be created in `/opt/netcdf_dd/meteo/2024/01/02/.file_<digest>`
 
@@ -253,7 +255,6 @@ nanograms=ng
 degree=deg
 percentage=%
 celsius=°C
-````
 ```
 
 The replacement file is called `netcdf-unit-replacements.properties`, if not provided the following contents are assumed:

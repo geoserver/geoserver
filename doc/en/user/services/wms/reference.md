@@ -313,7 +313,7 @@ GeoServer supports a number of output formats for the `DescribeLayer` response. 
 
 An example request in XML (default) format on a layer is: :
 
-> <http://localhost:8080/geoserver/topp/wms?service=WMS> &version=1.1.1 &request=DescribeLayer &layers=topp:coverage
+`<http://localhost:8080/geoserver/topp/wms?service=WMS> &version=1.1.1 &request=DescribeLayer &layers=topp:coverage`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

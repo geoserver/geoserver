@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -37,20 +36,16 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.DynamicImageResource;
-import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.request.resource.caching.IStaticCacheableResource;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
-import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.GetMapOutputFormat;
@@ -106,7 +101,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                 boolean wfsVisible = layer.hasServiceSupport("WFS");
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);
-                    f.add(new CachingImage("layerIcon", layer.getIcon()));
+                    f.add(new GsIcon("layerIcon", layer.getIcon()));
                     return f;
                 } else if (property == NAME) {
                     return new Label(id, property.getModel(itemModel));
@@ -309,35 +304,6 @@ public class MapPreviewPage extends GeoServerBasePage {
             String t1 = translateFormat(prefix, f1);
             String t2 = translateFormat(prefix, f2);
             return t1.compareTo(t2);
-        }
-    }
-
-    private static class DelayedImageResource extends DynamicImageResource {
-        private final IModel<PreviewLayer> itemModel;
-
-        public DelayedImageResource(IModel<PreviewLayer> itemModel) {
-            super("image/png");
-            this.itemModel = itemModel;
-        }
-
-        @Override
-        protected byte[] getImageData(Attributes attributes) {
-            PreviewLayer layer = itemModel.getObject();
-            try {
-                ResourceReference imageReference = layer.getIcon();
-                IResource image = imageReference.getResource();
-
-                if (image instanceof IStaticCacheableResource) {
-                    IStaticCacheableResource staticImage = (IStaticCacheableResource) image;
-
-                    return IOUtils.toByteArray(staticImage.getResourceStream().getInputStream());
-                } else {
-                    throw new RuntimeException("Image "
-                            + imageReference.getClass().getSimpleName() + " is not a static cacheable resource");
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }

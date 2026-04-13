@@ -78,7 +78,7 @@ Once the workspace is created, we are ready to add a new store. The store tells 
     | Description      | `Grayscale shaded relief of land areas.` |
 
 
-    > This information is internal to GeoServer and is not used as part of the web service protocols. We recommend keeping the **Data Source Name** simple as it will be used to form folders in the data directory (so keep any operating system restrictions on character use in mind).
+    This information is internal to GeoServer and is not used as part of the web service protocols. We recommend keeping the **Data Source Name** simple as it will be used to form folders in the data directory (so keep any operating system restrictions on character use in mind).
 
     ![](images/layer_basic.png)
 
@@ -113,7 +113,7 @@ Now that we have located the image, we can publish this information as a layer.
     | Abstract | `Grayscale shaded relief of land areas.` |
 
 
-    > The naming of a layer is important, and while GeoServer does not offer restrictions many of the individual protocols will only work with very simple names.
+    The naming of a layer is important, and while GeoServer does not offer restrictions many of the individual protocols will only work with very simple names.
 
     ![](images/layer_basic.png)
 

@@ -87,7 +87,7 @@ The following examples use the `sf:bugsites`, `sf:roads` and `sf:restricted` dem
 
 The CQL cross-layer filter on the `bugsites` layer is
 
-> `INTERSECTS(the_geom, querySingle('restricted', 'the_geom','cat = 3'))`.
+`INTERSECTS(the_geom, querySingle('restricted', 'the_geom','cat = 3'))`.
 
 The WMS request is:
 
@@ -101,7 +101,7 @@ The result is:
 
 The CQL cross-layer filter on the `bugsites` layer is
 
-> `DWITHIN(the_geom, collectGeometries(queryCollection('sf:roads','the_geom','INCLUDE')), 200, meters)`.
+`DWITHIN(the_geom, collectGeometries(queryCollection('sf:roads','the_geom','INCLUDE')), 200, meters)`.
 
 The WMS request is:
 

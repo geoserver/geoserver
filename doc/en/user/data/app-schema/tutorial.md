@@ -6,7 +6,7 @@ This tutorial demonstrates how to configure two complex feature types using the 
 
 This example uses [Geoscience Markup Language (GeoSciML) 2.0](http://geosciml.org/doc/geosciml/2.0/documentation/html/), a GML 3.1 application schema:
 
-> *"GeoSciML is an application schema that specifies a set of feature-types and supporting structures for information used in the solid-earth geosciences."*
+*"GeoSciML is an application schema that specifies a set of feature-types and supporting structures for information used in the solid-earth geosciences."*
 
 The tutorial defines two feature types:
 

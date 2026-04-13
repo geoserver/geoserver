@@ -1,5 +1,3 @@
-> 
-
 # Advanced Configuration
 
 ## Import from Geonetwork

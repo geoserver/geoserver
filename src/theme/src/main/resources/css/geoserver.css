@@ -326,6 +326,11 @@ body {
   padding: 0.5rem 0;
 }
 
+/* keep vertical alignment in the meddle for table cell content */
+td, th {
+  vertical-align: middle;
+}
+
 #map {
   flex: 1;
   min-height: 0;
@@ -1018,58 +1023,46 @@ Welcome / Overview
   width: 100% !important;
 }
 
-/* Special links */
-.add-link,
+/* Deprecated: Special links */
+/* These links are kept because used in some specific situation */
+/* In general we should use gs-icon in combination with button style */
 .remove-link,
 .warning-link,
 .refresh-link,
 .info-link,
-.help-link,
-.edit-link,
-.reset-link,
-.gwc-clear {
+.help-link {
   background-color: transparent;
   background-attachment: scroll;
   background-position: left center;
   background-repeat: no-repeat;
   padding: 2px 0 2px 20px;
+  background-size: 1rem;
 }
 
-.add-link {
-  background-image: url(../img/icons/silk/add.png);
-}
 .remove-link {
-  background-image: url(../img/icons/silk/delete.png);
+  background-image: url(../svg/icons/silk-icon-scalable/delete.svg);
 }
 .warning-link {
-  background-image: url(../img/icons/silk/error.png);
+  background-image: url(../svg/icons/silk-icon-scalable/error.svg);
 }
 .refresh-link {
   background-image: url(../img/icons/silk/arrow_refresh.png);
 }
 .info-link {
-  background-image: url(../img/icons/silk/information.png);
+  background-image: url(../svg/icons/silk-icon-scalable/information.svg);
 }
 .help-link {
-  background-image: url(../img/icons/silk/help.png);
-}
-.edit-link {
-  background-image: url(../img/icons/silk/pencil.png);
-}
-.reset-link {
-  background-image: url(../img/icons/silk/bin.png);
-}
-.gwc-clear {
-  background-image: url(../img/icons/clear_cache.png);
+  background-image: url(../svg/icons/silk-icon-scalable/help.svg);
 }
 
 /* Search in table */
 .search,
 input.search {
-  background-image: url(../img/icons/silk/magnifier.png);
+  background-image: url(../svg/icons/silk-icon-scalable/magnifier.svg);
   background-repeat: no-repeat;
   background-position: 0.5rem center;
   padding-left: 2rem;
+  background-size: 1.25rem;
 }
 
 /*-----------------------
@@ -1701,6 +1694,7 @@ form a.collapsed {
   cursor: pointer;
   border-radius: var(--gs-border-radius);
   min-height: 2.25em;
+  gap: 0.25rem;
 }
 .gs-dropdown-header:hover {
   background: var(--gs-tertiary-bg);
@@ -2013,7 +2007,9 @@ label.gs-switch-label {
 .wicket-aa-container ul li:hover {
   background-color: var(--gs-secondary-bg);
 }
-
+.wicket-aa-container ul li.selected {
+  background-color: var(--gs-secondary-bg);
+}
 @media (max-width: 768px) {
   .gs-header-hamburger {
     display: flex;
@@ -2251,44 +2247,29 @@ div.value-wide {
   font-size: 0.8125rem;
   color: var(--gs-secondary-color);
 }
-.gs-form-group-label {
+.gs-instruction {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  position: relative;
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  font-size: 0;
+  line-height: 1;
+  cursor: help;
 }
-.gs-form-group-label:has(.instruct)::after {
+.gs-instruction::before {
   content: "";
-  width: 1rem;
-  height: 1rem;
+  width: 2rem;
+  height: 1.5rem;
+  flex: 0 0 1.125rem;
   background-image: url(../img/icons/silk/information.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  cursor: help;
 }
-.gs-form-group-label .instruct {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 10;
-  display: none;
-  max-width: 15rem;
-  width: max-content;
-  padding: 0.5rem;
-  background-color: var(--gs-body-bg);
-  border: 1px solid var(--gs-border-color);
-  border-radius: var(--gs-border-radius);
-  box-shadow: var(--gs-box-shadow-sm);
-  font-size: 0.75rem;
+.gs-instruction:hover {
+  font-size: 1rem;
   font-style: italic;
-}
-.gs-form-group-label:hover .instruct,
-.gs-form-group-label:focus-within .instruct {
-  display: block;
-}
-.instruct {
-  display: none;
 }
 .gs-inline-group {
   display: flex;
@@ -2310,7 +2291,12 @@ div.value-wide {
   .gs-form-group > *:last-child {
     width: -webkit-fill-available;
   }
-
+  .gs-instruction {
+    font-size: 0.75rem;
+    font-style: italic;
+    cursor: default;
+    line-height: 1.2;
+  }
   /* Responsive table */
   /* Mobile table header */
   .table-header form {
@@ -2393,4 +2379,107 @@ div.value-wide {
   position: sticky;
   bottom: 0;
   z-index: 10;
+}
+
+.gs-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  vertical-align: middle;
+}
+
+.gs-icon-accept { background-image: url('../svg/icons/silk-icon-scalable/accept.svg'); }
+.gs-icon-add { background-image: url('../svg/icons/silk-icon-scalable/add.svg'); }
+.gs-icon-arrow-down { background-image: url('../img/icons/silk/arrow_down.png'); }
+.gs-icon-arrow-inwards { background-image: url('../img/icons/silk/arrow_inwards.png'); }
+.gs-icon-arrow-out { background-image: url('../img/icons/silk/arrow_out.png'); }
+.gs-icon-arrow-redo { background-image: url('../img/icons/silk/arrow_redo.png'); }
+.gs-icon-arrow-refresh { background-image: url('../img/icons/silk/arrow_refresh.png'); }
+.gs-icon-arrow-undo { background-image: url('../img/icons/silk/arrow_undo.png'); }
+.gs-icon-arrow-up { background-image: url('../img/icons/silk/arrow_up.png'); }
+.gs-icon-bin { background-image: url('../svg/icons/silk-icon-scalable/bin.svg'); }
+.gs-icon-bullet-arrow-down { background-image: url('../img/icons/silk/bullet_arrow_down.png'); }
+.gs-icon-bullet-arrow-right { background-image: url('../img/icons/silk/bullet_arrow_right.png'); }
+.gs-icon-point { background-image: url('../svg/icons/silk/bullet_blue.svg'); }
+.gs-icon-bullet-blue { background-image: url('../svg/icons/silk/bullet_blue.svg'); }
+.gs-icon-bullet-go { background-image: url('../img/icons/silk/bullet_go.png'); }
+.gs-icon-cog { background-image: url('../svg/icons/silk-icon-scalable/cog.svg'); }
+.gs-icon-cog-photo { background-image: url('../img/icons/silk/cog_photo.png'); }
+.gs-icon-database { background-image: url('../svg/icons/silk-icon-scalable/database.svg'); }
+.gs-icon-database-key { background-image: url('../img/icons/silk/database_key.png'); }
+.gs-icon-delete { background-image: url('../svg/icons/silk-icon-scalable/delete.svg'); }
+.gs-icon-disk { background-image: url('../svg/icons/silk-icon-scalable/disk.svg'); }
+.gs-icon-door-in { background-image: url('../img/icons/silk/door-in.png'); }
+.gs-icon-door-out { background-image: url('../img/icons/silk/door-out.png'); }
+.gs-icon-error { background-image: url('../svg/icons/silk-icon-scalable/error.svg'); }
+.gs-icon-find { background-image: url('../img/icons/silk/find.png'); }
+.gs-icon-find-next { background-image: url('../img/icons/silk/find_next.png'); }
+.gs-icon-folder { background-image: url('../svg/icons/silk/folder.svg'); }
+.gs-icon-geoserver { background-image: url('../img/logo-icon.svg'); }
+.gs-icon-group { background-image: url('../img/icons/silk/group.png'); }
+.gs-icon-help { background-image: url('../svg/icons/silk-icon-scalable/help.svg'); }
+.gs-icon-information { background-image: url('../svg/icons/silk-icon-scalable/information.svg'); }
+.gs-icon-layers { background-image: url('../svg/icons/silk/layers.svg'); }
+.gs-icon-line { background-image: url('../svg/icons/silk/line_blue.svg'); }
+.gs-icon-line-blue { background-image: url('../svg/icons/silk/line_blue.svg'); }
+.gs-icon-lock { background-image: url('../svg/icons/silk-icon-scalable/lock.svg'); }
+.gs-icon-magnifier { background-image: url('../svg/icons/silk-icon-scalable/magnifier.svg'); }
+.gs-icon-page-white-text { background-image: url('../svg/icons/silk-icon-scalable/page_white_text.svg'); }
+.gs-icon-palette { background-image: url('../img/icons/silk/palette.png'); }
+.gs-icon-pencil { background-image: url('../svg/icons/silk-icon-scalable/pencil.svg'); }
+.gs-icon-pencil-add { background-image: url('../img/icons/silk/pencil_add.png'); }
+.gs-icon-photo { background-image: url('../img/icons/silk/photo.png'); }
+.gs-icon-picture-empty { background-image: url('../svg/icons/silk/picture_empty.svg'); }
+.gs-icon-server { background-image: url('../svg/icons/silk-icon-scalable/server.svg'); }
+.gs-icon-server-chart { background-image: url('../img/icons/silk/server_chart.png'); }
+.gs-icon-server-error { background-image: url('../img/icons/silk/server_error.png'); }
+.gs-icon-polygon { background-image: url('../svg/icons/silk/shape_square_blue.svg'); }
+.gs-icon-shape-square-blue { background-image: url('../svg/icons/silk/shape_square_blue.svg'); }
+.gs-icon-shape-square-key { background-image: url('../img/icons/silk/shape_square_key.png'); }
+.gs-icon-shield { background-image: url('../svg/icons/silk-icon-scalable/shield.svg'); }
+.gs-icon-text-align-right { background-image: url('../img/icons/silk/text_align_right.png'); }
+.gs-icon-text-replace { background-image: url('../img/icons/silk/text_replace.png'); }
+.gs-icon-tick { background-image: url('../svg/icons/silk-icon-scalable/tick.svg'); }
+.gs-icon-vcard { background-image: url('../img/icons/silk/vcard.png'); }
+.gs-icon-wrench { background-image: url('../svg/icons/silk-icon-scalable/wrench.svg'); }
+.gs-icon-xhtml-go { background-image: url('../img/icons/silk/xhtml_go.png'); }
+/* geosilk */
+.gs-icon-database-oracle { background-image: url('../img/icons/geosilk/database_oracle.png'); }
+.gs-icon-database-picture { background-image: url('../img/icons/geosilk/database_picture.png'); }
+.gs-icon-database-raster { background-image: url('../img/icons/geosilk/database_raster.png'); }
+.gs-icon-database-vector { background-image: url('../img/icons/geosilk/database_vector.png'); }
+.gs-icon-map { background-image: url('../img/icons/geosilk/map.png'); }
+.gs-icon-page-white-map { background-image: url('../img/icons/geosilk/page_white_map.png'); }
+.gs-icon-page-white-palette { background-image: url('../img/icons/geosilk/page_white_palette.png'); }
+.gs-icon-page-white-picture { background-image: url('../img/icons/geosilk/page_white_picture.png'); }
+.gs-icon-page-white-raster { background-image: url('../svg/icons/geosilk/page_white_raster.svg'); }
+.gs-icon-page-white-vector { background-image: url('../img/icons/geosilk/page_white_vector.png'); }
+.gs-icon-postgis { background-image: url('../img/icons/geosilk/postgis.png'); }
+.gs-icon-raster { background-image: url('../svg/icons/geosilk/raster.svg'); }
+.gs-icon-raster-add { background-image: url('../img/icons/geosilk/raster_add.png'); }
+.gs-icon-raster-delete { background-image: url('../img/icons/geosilk/raster_delete.png'); }
+.gs-icon-ruler { background-image: url('../img/icons/geosilk/ruler.png'); }
+.gs-icon-server-map { background-image: url('../img/icons/geosilk/server_map.png'); }
+.gs-icon-server-vector { background-image: url('../img/icons/geosilk/server_vector.png'); }
+.gs-icon-vector { background-image: url('../img/icons/geosilk/vector.png'); }
+.gs-icon-vector-add { background-image: url('../img/icons/geosilk/vector_add.png'); }
+.gs-icon-vector-delete { background-image: url('../img/icons/geosilk/vector_delete.png'); }
+/* icons */
+.gs-icon-blank { background-image: url('../img/icons/blank.png'); }
+.gs-icon-chart-bar { background-image: url('../img/icons/chart_bar.png'); }
+.gs-icon-chart-curve { background-image: url('../img/icons/chart_curve.png'); }
+.gs-icon-chart-line { background-image: url('../img/icons/chart_line.png'); }
+.gs-icon-chart-pie { background-image: url('../img/icons/chart_pie.png'); }
+.gs-icon-clear-cache { background-image: url('../img/icons/clear_cache.png'); }
+.gs-icon-report { background-image: url('../img/icons/report.png'); }
+.gs-icon-table { background-image: url('../img/icons/table.png'); }
+
+button:has(.gs-icon),
+.button:has(.gs-icon) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }

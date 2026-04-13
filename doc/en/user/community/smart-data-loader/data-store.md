@@ -70,9 +70,9 @@ Assuming a PostGIS datastore named meteos-simple under the st workspace, by open
 
 After having selected the root entity as meteo-stations, a schema, which will be used to generate the XSD and mappings file, will appear. Each attribute/entity can be unchecked to avoid it being included in the generated mappings.
 
-..figure:: images/store-relations.png
+![](images/store-relations.png)
 
-> Smart Data Loader configuration page - entities' tree
+Smart Data Loader configuration page - entities' tree
 
 After pressing the save button, the files will be generated automatically in the store data-dir directory under `app-schema-mappings` directory.
 

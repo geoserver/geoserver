@@ -31,6 +31,7 @@
               <prop key="/css/**">classpathPublisher</prop>
               <prop key="/js/**">classpathPublisher</prop>
               <prop key="/img/**">classpathPublisher</prop>
+              <prop key="/svg/**">classpathPublisher</prop>
               <prop key="/ui-components.html">classpathPublisher</prop>
           </props>
       </property>

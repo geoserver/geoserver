@@ -6,21 +6,21 @@ Keyhole Markup Langauge (KML), when created and output by GeoServer, is styled u
 
 ### Contents
 
-> [SLD Generation from CSS](#kml-styling-basic)
->
-> [Creating SLD by hand](#kml-styling-sld-hand)
->
-> [SLD Structure](#kml-styling-sld-structure)
->
-> [Points](#kml-styling-points)
->
-> [Lines](#kml-styling-lines)
->
-> [Polygons](#kml-styling-polygons)
->
-> [Text Labels](#kml-styling-text-labels)
->
-> [Descriptions](#kml-styling-descriptions)
+[SLD Generation from CSS](#kml-styling-basic)
+
+[Creating SLD by hand](#kml-styling-sld-hand)
+
+[SLD Structure](#kml-styling-sld-structure)
+
+[Points](#kml-styling-points)
+
+[Lines](#kml-styling-lines)
+
+[Polygons](#kml-styling-polygons)
+
+[Text Labels](#kml-styling-text-labels)
+
+[Descriptions](#kml-styling-descriptions)
 
 ## SLD Generation from CSS {: #kml-styling-basic }
 

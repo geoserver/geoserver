@@ -45,7 +45,7 @@ The S3 endpoints are configured in the s3.properties file. The following propert
 
 Using the above configuration in the s3.properties file, the files on the S3 service can be accessed with the following URL style configuration in geoserver:
 
-> alias://bucketname/filename.tiff
+`alias://bucketname/filename.tiff`
 
 - `alias`: The prefix you choose for the configuration of the endpoint
 - `bucketname`: The path to the folder where the geotiffs are stored

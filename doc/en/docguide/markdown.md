@@ -606,11 +606,11 @@ Fenced block are used to represent code examples:
 === "Markdown"
     
     
-    `````md
+    ````md
     ```bash
     mvn clean install -DskipTests
     ```
-    `````
+    ````
 
 === "Preview"
 
@@ -672,7 +672,3 @@ Example of comment markers from `ResourcesTest.java`:
     --8<-- "src/platform/src/test/java/org/geoserver/platform/resource/ResourcesTest.java:example"
     ```
 
-
-### Show Source
-
-All pages have a "Show Source" link in the right-hand table of contents.

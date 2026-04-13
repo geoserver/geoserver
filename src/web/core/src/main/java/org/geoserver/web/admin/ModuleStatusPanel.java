@@ -21,7 +21,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.ModuleStatusImpl;
@@ -113,7 +112,7 @@ public class ModuleStatusPanel extends Panel {
     }
 
     final Fragment getIcons(String id, boolean status) {
-        ResourceReference iconReference = status ? icons.getEnabledIcon() : icons.getDisabledIcon();
+        String iconReference = status ? icons.getEnabledIcon() : icons.getDisabledIcon();
         Fragment f = new Fragment(id, "iconFragment", this);
         f.add(icons.getIcon("statusIcon", iconReference));
         return f;

@@ -33,7 +33,7 @@ import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.geotools.api.filter.Filter;
 
@@ -109,11 +109,11 @@ public class WorkspacePage extends GeoServerSecuredPage {
                             return workspaceLink(id, itemModel);
                         } else if (property == DEFAULT) {
                             if (getCatalog().getDefaultWorkspace().equals(itemModel.getObject()))
-                                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                                return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
                             else return new Label(id, "");
                         } else if (property == ISOLATED) {
                             if (itemModel.getObject().isIsolated())
-                                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                                return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
                             else return new Label(id, "");
                         } else if (property == WorkspaceProvider.MODIFIED_TIMESTAMP) {
                             return new DateTimeLabel(id, WorkspaceProvider.MODIFIED_TIMESTAMP.getModel(itemModel));

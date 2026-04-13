@@ -165,20 +165,20 @@ For example:
 - Getting a time series as PNG: <http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z&QUERY_LAYERS=watertemp&STYLES&LAYERS=watertemp&INFO_FORMAT=image%2Fpng&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40.81420898437501%2C5.943603515625%2C43.03344726562501>
 - Getting a time series as JPG: <http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z&QUERY_LAYERS=watertemp&STYLES&LAYERS=watertemp&INFO_FORMAT=image%2Fjpg&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40.81420898437501%2C5.943603515625%2C43.03344726562501>
 
-The INFO_FORMAT accepts the following values: ``image/png``, ``image/jpg`` and ``text/csv``
+The INFO_FORMAT accepts the following values: `image/png`, `image/jpg` and `text/csv`
 
 The TIME parameter accepts a time range as defined for other operations in the WMS standard (see Annex D of the 06-042 Web Map Server Implementation Specification). Examples:
 
-- ``TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z``
-- ``TIME=2008-10-31T00:00:00.000Z/2008-10-31T00:00:00.000Z``
+- `TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z`
+- `TIME=2008-10-31T00:00:00.000Z/2008-10-31T00:00:00.000Z`
 
 Since GeoServer 2.17, TIME parameter also supports 2 additional syntax even if not expressly supported by ncWMS specification:
 
 1.  A List of Times:
-    - Example: ``TIME=2014-01,2015-01,2016-01,2017-01,2018-01``
-    - Example: ``TIME=2017-01-01T00:00:00Z,2017-02-01T00:00:00Z,2017-01-03T00:00:00Z``
+    - Example: `TIME=2014-01,2015-01,2016-01,2017-01,2018-01`
+    - Example: `TIME=2017-01-01T00:00:00Z,2017-02-01T00:00:00Z,2017-01-03T00:00:00Z`
 2.  A periodic time within a range:
-    - Example: ``TIME=2015-01/2019-01/P1Y``
+    - Example: `TIME=2015-01/2019-01/P1Y`
 
     !!! note
         - Shortened time specifications in a list are parsed as time ranges by GeoServer. Therefore, a Time like 2014-01 will represent the whole month of January 2014, so a time range: 2014-01-01T00:00:00/2014-01-31T23:59:59.

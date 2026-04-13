@@ -155,7 +155,7 @@ The spatial data identifiers section is mandatory, but cannot be filled by defau
 
 ## Internationalization support
 
-GeoServer offers the ability to configure GetCapabilities response in multiple languages. Content in different languages can be requested by using the request parameter ``Language``, e.g. ``Language=eng``. At the time of writing, the following services support the parameter: WFS 2.0, WMS 1.1 and 1.3, WCS 2.0.
+GeoServer offers the ability to configure GetCapabilities response in multiple languages. Content in different languages can be requested by using the request parameter `Language`, e.g. `Language=eng`. At the time of writing, the following services support the parameter: WFS 2.0, WMS 1.1 and 1.3, WCS 2.0.
 
 At the time of writing the [INSPIRE Schemas](https://inspire.ec.europa.eu/schemas/common/1.0/common.xsd) only allow 23 choices for **DefaultLanguage**. The GeoServer INSPIRE extension allows some other languages to be chosen. If you choose one of these your capabilities document won't be Schema valid but, as discussed in [issue 7388](https://osgeo-org.atlassian.net/browse/GEOS-7388), the INSPIRE Schemas seem to be at fault.
 

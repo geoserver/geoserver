@@ -65,7 +65,7 @@ Selection of an appropriate color palette is difficult, with a tension between w
 
     In this scenario, we are going to communicate a vaccination schedule, county by county. Care should be taken to ensure each county appears equally important, and we should stay clear of red for anyone squeamish about needles. We need to ensure readers can quickly locate their county and look at the appropriate calendar entry.
 
-3.  The first step is determining how many attribute values you are looking to communicate. Set **Number of data classes** to ``5``.
+3.  The first step is determining how many attribute values you are looking to communicate. Set **Number of data classes** to `5`.
 
     ![](img/color_02_classes.png)
 
@@ -87,7 +87,7 @@ Selection of an appropriate color palette is difficult, with a tension between w
 
     The nature of our data is qualitative (each attribute value is attached an equal importance, and there is no implied order that wish to communicate with color).
 
-5.  Set **Nature of your data** to ``Qualitative``. This change drastically reduces the number of color schemes listed.
+5.  Set **Nature of your data** to `Qualitative`. This change drastically reduces the number of color schemes listed.
 
     ![](img/color_03_qualitative.png)
 
@@ -128,7 +128,7 @@ Selection of an appropriate color palette is difficult, with a tension between w
 
     *Finished with context*
 
-12. Using our current "pastel" design, set the **Number of data classes** to ``9``. At values larger than this, the distinctions between colors becomes so subtle that readers will have trouble clearly distinguishing the content.
+12. Using our current "pastel" design, set the **Number of data classes** to `9`. At values larger than this, the distinctions between colors becomes so subtle that readers will have trouble clearly distinguishing the content.
 
 13. Make a note of these colors (we will be using them in the exercise on styling next).
 

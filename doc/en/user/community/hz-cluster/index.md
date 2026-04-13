@@ -2,13 +2,13 @@
 
 # Overview
 
-The **Hazelcast Clustering Community Module** for **GeoServer** enables clustering capabilities to support clustering GeoServer in conjunction with ``jdbcconfig`` and ``jdbcdstore``. This module primarily focuses on JDBC modules cache invalidation, ensuring that when data changes on one instance, caches on other instances are appropriately invalidated or refreshed.
+The **Hazelcast Clustering Community Module** for **GeoServer** enables clustering capabilities to support clustering GeoServer in conjunction with `jdbcconfig` and `jdbcdstore`. This module primarily focuses on JDBC modules cache invalidation, ensuring that when data changes on one instance, caches on other instances are appropriately invalidated or refreshed.
 
 The module also offers some support for **Wicket session clustering**.
 
 # Simple clustering cache invalidation setup
 
-The module can be simply dropped in GeoServer own ``WEB-INF/lib`` directory, and it will automatically configure itself to use the default Hazelcast configuration, using multicast. This is suitable for most users who want to enable clustering without extensive customization.
+The module can be simply dropped in GeoServer own `WEB-INF/lib` directory, and it will automatically configure itself to use the default Hazelcast configuration, using multicast. This is suitable for most users who want to enable clustering without extensive customization.
 
 If multicast is not available, then one can customize the `hazelcast.xml` file found in the `GEOSERVER_DATA_DIR/cluster` directory, disabling multicast and enabling TCP/IP or AWS instead. Here are sample contents for the file, for reference:
 
@@ -58,7 +58,7 @@ https://docs.hazelcast.com/hazelcast/5.3/configuration/configuring-declaratively
 </hazelcast>
 ```
 
-In the same directory a ``cluster.properties`` file can be found, that can be used to tune the event notification mechanism. The default settings are sufficient for small catalogs, for larger ones it is recommended to set the ``sync_method`` to ``event``, which will avoid a full data directory reload. One might also want to have a shorter ``sync_delay`` (can be set to zero).
+In the same directory a `cluster.properties` file can be found, that can be used to tune the event notification mechanism. The default settings are sufficient for small catalogs, for larger ones it is recommended to set the `sync_method` to `event`, which will avoid a full data directory reload. One might also want to have a shorter `sync_delay` (can be set to zero).
 
 ```properties
 #

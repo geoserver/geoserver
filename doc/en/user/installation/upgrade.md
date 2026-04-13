@@ -90,11 +90,11 @@ If it has been a while since you have upgraded GeoServer be cautious when upgrad
     
     3.  Perform the upgrade in one go, checking the guidance on this page for any work to perform.
     
-        The application property ``ENTITY_RESOLUTION_UNRESTRICTED`` is noted, if you are affected by a change in XML Parsing. This should only affect Application Schema that made use of the **Unrestricted XML External Entity Resolution** setting.
+        The application property `ENTITY_RESOLUTION_UNRESTRICTED` is noted, if you are affected by a change in XML Parsing. This should only affect Application Schema that made use of the **Unrestricted XML External Entity Resolution** setting.
     
-        The application property ``GEOSERVER_DATA_DIR_LOADER_ENABLED`` is noted as an option if any deadlock occurs during startup due to an improvement in startup performance.
+        The application property `GEOSERVER_DATA_DIR_LOADER_ENABLED` is noted as an option if any deadlock occurs during startup due to an improvement in startup performance.
     
-        A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions noted to double check ``proxy_base_url`` is correct (as the GeoServer user interface will now detect and block a misconfigured system). The application property ``org.geoserver.web.csp.strict=false`` is available to temporarily disable this safety measure if you are locked out.
+        A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions noted to double check `proxy_base_url` is correct (as the GeoServer user interface will now detect and block a misconfigured system). The application property `org.geoserver.web.csp.strict=false` is available to temporarily disable this safety measure if you are locked out.
     
         Installation of Java 11 is required.
     
@@ -121,15 +121,15 @@ If it has been a while since you have upgraded GeoServer be cautious when upgrad
     
         - Updating from GeoServer 2.26.0 to GeoServer 2.26.4
     
-          The application property ``ENTITY_RESOLUTION_UNRESTRICTED`` is noted, if you are affected by a change in XML Parsing. This should only affect Application Schema that made use of the **Unrestricted XML External Entity Resolution** setting.
+          The application property `ENTITY_RESOLUTION_UNRESTRICTED` is noted, if you are affected by a change in XML Parsing. This should only affect Application Schema that made use of the **Unrestricted XML External Entity Resolution** setting.
     
           *Review the logs during startup, and test to ensure the application is working as expected.*
     
         - Updating from GeoSerer 2.26.4 to GeoServer 2.27.3.
     
-          The application property ``GEOSERVER_DATA_DIR_LOADER_ENABLED`` is noted as an option if any deadlock occurs during startup due to an improvement in startup performance.
+          The application property `GEOSERVER_DATA_DIR_LOADER_ENABLED` is noted as an option if any deadlock occurs during startup due to an improvement in startup performance.
     
-          A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions noted to double check ``proxy_base_url`` is correct (as the GeoServer user interface will now detect and block a misconfigured system). The application property ``org.geoserver.web.csp.strict=false`` is available to temporarily disable this safety measure if you are locked out.
+          A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions noted to double check `proxy_base_url` is correct (as the GeoServer user interface will now detect and block a misconfigured system). The application property `org.geoserver.web.csp.strict=false` is available to temporarily disable this safety measure if you are locked out.
     
           *Review the logs during startup, and test to ensure the application is working as expected.*
     
@@ -296,7 +296,7 @@ Potential Considerations:
 
 Configuration:
 
-- No additional configuration is required for standard setups. However, if you encounter any issues, you can disable the optimized loader by setting the ``GEOSERVER_DATA_DIR_LOADER_ENABLED=false`` environment variable or system property.
+- No additional configuration is required for standard setups. However, if you encounter any issues, you can disable the optimized loader by setting the `GEOSERVER_DATA_DIR_LOADER_ENABLED=false` environment variable or system property.
 
 For additional information see [Data directory loader](../datadirectory/setting.md#datadir-loader) documentation.
 
@@ -399,7 +399,7 @@ The external entity allow list is an important setting from a security standpoin
     In general only application schema extension users need to update this setting.
 
 !!! note
-    To restore the previous behaviour use system property `ENTITY_RESOLUTION_ALLOWLIST=*` to allow external entity resolution from any ``http`` or ``https`` location.
+    To restore the previous behaviour use system property `ENTITY_RESOLUTION_ALLOWLIST=*` to allow external entity resolution from any `http` or `https` location.
 
 For more information, including how to add additional allowed locations see [External Entities Resolution](../production/config.md#production_config_external_entities).
 

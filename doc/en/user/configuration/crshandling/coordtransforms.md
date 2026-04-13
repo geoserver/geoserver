@@ -1,6 +1,6 @@
 # Coordinate Operations
 
-Coordinate operations are used to convert coordinates from a ``source CRS`` to a ``target CRS``.
+Coordinate operations are used to convert coordinates from a `source CRS` to a `target CRS`.
 
 If source and target CRSs are referred to a different datum, a datum transform has to be applied. Datum transforms are not exact, they are determined empirically. For the same pair of CRS, there can be many datum transforms and versions, each one with its own domain of validity and an associated transform error. Given a CRS pair, GeoServer will automatically pick the most accurate datum transform from the EPSG database, unless a custom operation is declared.
 
@@ -265,7 +265,7 @@ The list of Grid Shift transforms declared in EPSG version 11.0.31 is:
 
 Custom Coordinate Operations are defined in **`epsg_operations.properties`** file. This file has to be placed into the **`user_projections`** directory, inside your data directory (create it if it doesn't exist).
 
-Each line in **`epsg_operations.properties`** will describe a coordinate operation consisting of a ``source CRS``, a ``target CRS``, and a math transform with its parameter values. Use the following syntax:
+Each line in **`epsg_operations.properties`** will describe a coordinate operation consisting of a `source CRS`, a `target CRS`, and a math transform with its parameter values. Use the following syntax:
 
 ```xml
 <source crs code>,<target crs code>=<WKT math transform>

@@ -29,7 +29,7 @@ Here is an example that generates a delegate shapefile from a directory of shape
 1. ogrtindex  -write_absolute_path -tileindex "params" delegate_raw.shp *.shp 
 1. ogr2ogr delegate.shp delegate_raw.shp -dialect SQLite -sql "SELECT Geometry,'file://'||SUBSTR(params,1,LENGTH(params)-2) AS params from delegate_raw"  
 
-The `delegate.shp` shapefile can then be published as a store in GeoServer (no need to publish the layer), and then the mosaic store can be created, referencing to it:  For example, let's say one downloads the [TIGER shapefile](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) for the ``PLACE`` theme, providing a shapefile with urban areas for each of the US states.
+The `delegate.shp` shapefile can then be published as a store in GeoServer (no need to publish the layer), and then the mosaic store can be created, referencing to it:  For example, let's say one downloads the [TIGER shapefile](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) for the `PLACE` theme, providing a shapefile with urban areas for each of the US states.
 
 ![](images/places-files.png)
 

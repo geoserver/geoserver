@@ -37,7 +37,7 @@ Here is an example that allows one to extract all the vertices of a geometry, an
 
 [View the full "Vertices" SLD](artifacts/vertices.sld)
 
-Applied to the sample ``tasmania_roads`` layer this will result in:
+Applied to the sample `tasmania_roads` layer this will result in:
 
 ![](images/vertices.png)
 
@@ -45,7 +45,7 @@ Applied to the sample ``tasmania_roads`` layer this will result in:
 
 ### Start and end point
 
-The ``startPoint`` and ``endPoint`` functions can be used to extract the start and end point of a line.
+The `startPoint` and `endPoint` functions can be used to extract the start and end point of a line.
 
 ```xml
 <PointSymbolizer>
@@ -85,7 +85,7 @@ The ``startPoint`` and ``endPoint`` functions can be used to extract the start a
 
 [View the full "StartEnd" SLD](artifacts/startend.sld)
 
-Applied to the sample ``tasmania_roads`` layer this will result in:
+Applied to the sample `tasmania_roads` layer this will result in:
 
 ![](images/startend.png)
 
@@ -93,7 +93,7 @@ Applied to the sample ``tasmania_roads`` layer this will result in:
 
 ### Drop shadow
 
-The ``offset`` function can be used to create drop shadow effects below polygons. Notice that the offset values reflect the fact that the data used in the example is in a geographic coordinate system.
+The `offset` function can be used to create drop shadow effects below polygons. Notice that the offset values reflect the fact that the data used in the example is in a geographic coordinate system.
 
 ```xml
 <PolygonSymbolizer>
@@ -112,7 +112,7 @@ The ``offset`` function can be used to create drop shadow effects below polygons
 
 [View the full "Shadow" SLD](artifacts/shadow.sld)
 
-Applied to the sample ``tasmania_roads`` layer this will result in:
+Applied to the sample `tasmania_roads` layer this will result in:
 
 ![](images/shadow.png)
 

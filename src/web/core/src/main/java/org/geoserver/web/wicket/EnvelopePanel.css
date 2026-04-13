@@ -96,6 +96,12 @@ Your css selectors should look like this to avoid modifying styles outside the p
     margin-left: auto;
 }
 
+.gs-panel-EnvelopePanel .gs-crs-container {
+    margin-top: 0.375rem; 
+    margin-left: -178px;
+    width: calc(100% + 178px);
+}
+
 @media (max-width: 1024px) {
     .gs-panel-EnvelopePanel .dataentry {
         grid-template-columns: auto auto;
@@ -105,5 +111,10 @@ Your css selectors should look like this to avoid modifying styles outside the p
 @media (max-width: 768px) {
     .gs-panel-EnvelopePanel .dataentry {
         grid-template-columns: auto;
+    }
+
+    .gs-panel-EnvelopePanel .gs-crs-container {
+        margin-left: 0;
+        width: 100%;
     }
 }

@@ -19,7 +19,7 @@ To translate the GeoServer UI to another language, copy and rename each of these
 Once created, each line in the files represents a string that will need to be translated. When finished, you will need to commit these files or submit a JIRA issue with attached patch. See the section on [Source Code](source.md) for more information on how to commit.
 
 !!! warning
-    property files must always be encoded in ISO-8859 (or something equivalent like us-ascii or latin1). If you need a whole unicode file, the extension of the file must be ``utf8.properties``.
+    property files must always be encoded in ISO-8859 (or something equivalent like us-ascii or latin1). If you need a whole unicode file, the extension of the file must be `utf8.properties`.
 
 ### Translating in WebLate
 
@@ -43,7 +43,7 @@ Built from the following source files:
 
 > /doc/en/user/
 
-To create a User Manual in a different language, first create a directory called **`/doc/[LANG]/`**, where [LANG] is the language code as defined in [RFC 3066](http://www.ietf.org/rfc/rfc3066.txt). The you can copy the contents of **`/doc/en/user/`** to **`/doc/[LANG]/user`** and edit accordingly, or generate a new Sphinx project in **`/doc/[LANG]/user`**. (See the ``Sphinx Quickstart <http://sphinx.pocoo.org/tutorial.html>`` for more information about creating a new project.)
+To create a User Manual in a different language, first create a directory called **`/doc/[LANG]/`**, where [LANG] is the language code as defined in [RFC 3066](http://www.ietf.org/rfc/rfc3066.txt). The you can copy the contents of **`/doc/en/user/`** to **`/doc/[LANG]/user`** and edit accordingly, or generate a new Sphinx project in **`/doc/[LANG]/user`**. (See the `Sphinx Quickstart <http://sphinx.pocoo.org/tutorial.html>` for more information about creating a new project.)
 
 The GeoServer Sphinx theme exists at **`/doc/en/user/themes`**, so that can be copied (and modified if desired) to **`/doc/[LANG]/user/themes`**.
 

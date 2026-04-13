@@ -164,9 +164,9 @@ If you want to let the user rotate the map (for a given layout), you have to set
 
 ### Output filename
 
-If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client. It will be the name of the file that the client downloads. If the 'outputFilename' parameter is defined in a layout then that value will override the default name. In both cases the ``.pdf`` suffic is optional; if not present the server will append ``.pdf`` to the name.
+If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client. It will be the name of the file that the client downloads. If the 'outputFilename' parameter is defined in a layout then that value will override the default name. In both cases the `.pdf` suffic is optional; if not present the server will append `.pdf` to the name.
 
-In all cases the ``json`` request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has \${date}, \${time} or \${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method. If a pattern is provided it will be passed to SimpleDataFormat for processing. A few examples follow:
+In all cases the `json` request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has \${date}, \${time} or \${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method. If a pattern is provided it will be passed to SimpleDataFormat for processing. A few examples follow:
 
 - outputFilename: "host-\${yyyyMMdd}.pdf" \# results in host-20111213.pdf
 - outputFilename: "host-\${date}" \# results in host-Dec_13_2011.pdf (actual output depends on local of server)
@@ -357,9 +357,9 @@ The complete list can be found in <http://api.itextpdf.com/itext/com/itextpdf/te
 
 New flag params to skip rendering of particular pages have been implemented:
 
-- ``includeTitlePage``
-- ``includeLastPage``
-- ``includeExtraPage``
+- `includeTitlePage`
+- `includeLastPage`
+- `includeExtraPage`
 
 They are all defaulted to true.
 
@@ -367,15 +367,15 @@ They are all defaulted to true.
 
 Additional Pages are supported in many different places. They can be rendered due to legends overflowing on multiple pages, or by the dynamic images functionality.
 
-Where additional pages can be generated, the generating block will be spread among all the created pages (for example, the legend block will put legends on different pages, if configured to do so). If you want to put additional blocks on additional page, you can specify the ``renderOnExtraPage`` flag on the desired blocks. Only first level blocks are considered.
+Where additional pages can be generated, the generating block will be spread among all the created pages (for example, the legend block will put legends on different pages, if configured to do so). If you want to put additional blocks on additional page, you can specify the `renderOnExtraPage` flag on the desired blocks. Only first level blocks are considered.
 
-In addition to that, an explicit ``extraPage`` block can be used in **`config.yaml`** to add a custom page between other pages. The ``renderOn`` property specify the exact position for rendering (``beforeMainPage``, ``beforeLastPage`` or ``afterLastPage``).
+In addition to that, an explicit `extraPage` block can be used in **`config.yaml`** to add a custom page between other pages. The `renderOn` property specify the exact position for rendering (`beforeMainPage`, `beforeLastPage` or `afterLastPage`).
 
 ## Block definition
 
 The next sub-sections document the possible types of blocks.
 
-In general, text values or URLs can contain values taken from the **spec** structure coming with the client's request. A syntax similar to shell is used: ``\${variableName}``. If the current page is a **titlePage**, only the root values are taken. If it's a **mainPage**, the service will first look in the current **page** section then in the root values. Here is how to use this functionality:
+In general, text values or URLs can contain values taken from the **spec** structure coming with the client's request. A syntax similar to shell is used: `\${variableName}`. If the current page is a **titlePage**, only the root values are taken. If it's a **mainPage**, the service will first look in the current **page** section then in the root values. Here is how to use this functionality:
 
     text: 'The value of mapTitle is: ${mapTitle}'
 
@@ -427,7 +427,7 @@ The "font" must refer to a standard PDF font or a [declared font](#fonts-definit
 
 ### HTML In Text Blocks
 
-The new configuration property ``asHTML`` (to be used in **`config.yaml`** text blocks) allows to automatically render the included text as HTML (when true), instead of simple text. HTML tags are interpreted and styled.
+The new configuration property `asHTML` (to be used in **`config.yaml`** text blocks) allows to automatically render the included text as HTML (when true), instead of simple text. HTML tags are interpreted and styled.
 
 ## Image block
 
@@ -518,7 +518,7 @@ Each item will be in its own column.
 
 If the **absoluteX**, **absoluteY** and **width** are given, the columns block will be floating on top of the page at the specified position.
 
-The **widths** attribute can be used to change the width of the columns (by default, they have the same width). It must contain one integer for each column. The width of a given column is ``tableWidth*columnWeight/sum(columnWeight)``.
+The **widths** attribute can be used to change the width of the columns (by default, they have the same width). It must contain one integer for each column. The width of a given column is `tableWidth*columnWeight/sum(columnWeight)`.
 
 Every block type is allowed except for **map** if the column has an absolute position.
 
@@ -586,14 +586,14 @@ Allowed only within a **mainPage**.
   ?         preferredIntervalFractions: 0.0
 ```
 
-The scalebar, will adapt its width up to ``maxSize`` (includes the labels) in order to have a multiple of 1, 2 or 5 values at each graduation. For example:
+The scalebar, will adapt its width up to `maxSize` (includes the labels) in order to have a multiple of 1, 2 or 5 values at each graduation. For example:
 
 - 0, 1, 2, \...
 - 0, 2, 4, \...
 - 0, 5, 10, \...
 - 0, 10, 20, \...
 
-The ``barSize`` is the thickness of the bar or the height of the tick marks on the line. The ``lineWith`` is for the thickness of the lines (or bar border).
+The `barSize` is the thickness of the bar or the height of the tick marks on the line. The `lineWith` is for the thickness of the lines (or bar border).
 
 Units can be any of:
 
@@ -603,7 +603,7 @@ Units can be any of:
 
 If the value is too big or too small, the module will switch to one of the unit in parenthesis (the same unit is used for every intervals). If this behaviour is not desired, the lockUnits parameter will force the declared unit (or map unit if no unit is declared) to be used for the scalebar.
 
-The number of ``intervals`` can be set to anything >=2. Labels are drawn only at main intervals. If there is no space to display a label at a certain interval, this label won't be displayed. If ``subIntervals`` are enabled, their number will depend on the length of an interval.
+The number of `intervals` can be set to anything >=2. Labels are drawn only at main intervals. If there is no space to display a label at a certain interval, this label won't be displayed. If `subIntervals` are enabled, their number will depend on the length of an interval.
 
 The type can be:
 
@@ -615,17 +615,17 @@ The type can be:
 
 The bar and/or text orientation can be set to "up", "down", "left" or "right".
 
-The ``align`` attribute is for placing the whole scalebar withing the surrounding column or page. The ``vertAlign`` attribute is used only when placed in a column.
+The `align` attribute is for placing the whole scalebar withing the surrounding column or page. The `vertAlign` attribute is used only when placed in a column.
 
 Labels are always centered on the graduation, at a distance specified by labelDistance.
 
 ### Custom intervals in ScalebarBlock
 
-With this improvement we added two new configuration parameters to ``!scalebar`` blocks that allow to customize the scalebar preferred bar lengths.
+With this improvement we added two new configuration parameters to `!scalebar` blocks that allow to customize the scalebar preferred bar lengths.
 
-Now this set can be customized using the ``preferredIntervals`` property. This property is an array with the new (integer) allowed lengths. By default these were chosen in the ``1``,`2`,`5`,`10` set.
+Now this set can be customized using the `preferredIntervals` property. This property is an array with the new (integer) allowed lengths. By default these were chosen in the `1`,`2`,`5`,`10` set.
 
-Another property, ``preferredIntervalFractions``, can be specified to also use fractional intervals. By default only ``0.0`` is used, and thus only integer lengths are allowed.
+Another property, `preferredIntervalFractions`, can be specified to also use fractional intervals. By default only `0.0` is used, and thus only integer lengths are allowed.
 
 Example:
 
@@ -708,13 +708,13 @@ The print widgets are able to fill the spec for you based on a dictionary of **E
 
 Attribute blocks now support grouping, by a specific attribute. Rows should be sorted by that attribute for grouping to work (no automatic sort is accomplished by the printing library).
 
-To identify the grouping attribute, use the ``groupBy`` property.
+To identify the grouping attribute, use the `groupBy` property.
 
-Each group can be prefixed by a title, using the ``groupTitle`` property. You can specify any block in the ``groupTitle`` property, to render any kind of content as a title.
+Each group can be prefixed by a title, using the `groupTitle` property. You can specify any block in the `groupTitle` property, to render any kind of content as a title.
 
-You can also skip table header using the ``includeHeader`` flag (true by default).
+You can also skip table header using the `includeHeader` flag (true by default).
 
-Finally you can force a page break before any new group, using the ``groupOnNewPage`` flag.
+Finally you can force a page break before any new group, using the `groupOnNewPage` flag.
 
 ## Legends block
 
@@ -808,9 +808,9 @@ Both properties or only one of them can be specified. When only one property is 
 
 ### Multipage legends
 
-By default a LegendsBlock must be contained in a single page. To allow it to span on several pages the ``overflow`` option can be used, setting it to true.
+By default a LegendsBlock must be contained in a single page. To allow it to span on several pages the `overflow` option can be used, setting it to true.
 
-When this option is used you also need to define ``maxColumns``, to fix the max number of columns on each page and ``maxHeight``, to fix the maximum height of each column.
+When this option is used you also need to define `maxColumns`, to fix the max number of columns on each page and `maxHeight`, to fix the maximum height of each column.
 
 The LegendsBlock will be rendered on as many pages as needed to get all the items rendered with the given constraints.
 
@@ -827,13 +827,13 @@ To get this behaviour is necessary to:
 
 ### Reorder legends block in columns
 
-When the option ``reorderColumns`` inside legends block it set to ``true`` and more than one column is necessary for the legends block, a new algorithm computes the best distribution of the legend items inside the columns. Currently a first fit with items sorted in height descending order is used. This is not sub-optimal, but it's fast.
+When the option `reorderColumns` inside legends block it set to `true` and more than one column is necessary for the legends block, a new algorithm computes the best distribution of the legend items inside the columns. Currently a first fit with items sorted in height descending order is used. This is not sub-optimal, but it's fast.
 
-When a legend item is rendered to another column, by default name and legend icon could finish on different columns. To fix it, please enable the ``dontBreakItems`` option.
+When a legend item is rendered to another column, by default name and legend icon could finish on different columns. To fix it, please enable the `dontBreakItems` option.
 
 ### Don't break legend items
 
-Set the flag ``dontBreakItems`` to ``true`` on legends block if you want to render legend and names as one table to forbid the break between different columns
+Set the flag `dontBreakItems` to `true` on legends block if you want to render legend and names as one table to forbid the break between different columns
 
 ## Table configuration
 

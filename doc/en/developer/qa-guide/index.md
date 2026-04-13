@@ -40,7 +40,7 @@ In order to activate the ***PMD*** checks, use the `-Ppmd` profile:
 mvn verify -Ppmd
 ```
 
-Or run ``pmd:check`` (requires use of `initialize` to locate ``geoserverBaseDir/build/qa/pmd-ruleset.xml``):
+Or run `pmd:check` (requires use of `initialize` to locate `geoserverBaseDir/build/qa/pmd-ruleset.xml`):
 
 ```bash
 mvn initialize pmd:check -Ppmd

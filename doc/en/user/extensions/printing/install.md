@@ -24,11 +24,11 @@ render_macros: true
 
 1\. On the first startup after installation, GeoServer creates a print module configuration file in **`{GEOSERVER_DATA_DIR}/printing/config.yaml`**.
 
-> You may override where the **`config.yaml`** file is located through an application property ``GEOSERVER_PRINT_CONFIG_DIR``.
+> You may override where the **`config.yaml`** file is located through an application property `GEOSERVER_PRINT_CONFIG_DIR`.
 
 2\. The name of the file **`config.yaml`** cannot be changed; it is possible to specify the folder when this is located.
 
-> Example: ``-DGEOSERVER_PRINT_CONFIG_DIR=/tmp/ext_printing``
+> Example: `-DGEOSERVER_PRINT_CONFIG_DIR=/tmp/ext_printing`
 >
 > allows the module searching the configuration file into the external folder **`/tmp/ext_printing/config.yaml`**
 

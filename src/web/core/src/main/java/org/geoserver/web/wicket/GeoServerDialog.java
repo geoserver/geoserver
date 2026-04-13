@@ -90,7 +90,8 @@ public class GeoServerDialog extends Panel {
     @SafeVarargs
     public final void showInfo(
             AjaxRequestTarget target, final IModel<String> heading, final IModel<String>... messages) {
-        window.setContent(new InfoPage(window.getContentId(), heading, messages));
+        window.setTitle(heading);
+        window.setContent(new InfoPage(window.getContentId(), messages));
         window.show(target);
     }
 
@@ -197,9 +198,8 @@ public class GeoServerDialog extends Panel {
         }
 
         @SafeVarargs
-        public InfoPage(String id, IModel<String> title, IModel<String>... messages) {
+        public InfoPage(String id, IModel<String>... messages) {
             super(id);
-            add(new Label("title", title));
             add(new ListView<>("messages", Arrays.asList(messages)) {
                 @Override
                 protected void populateItem(ListItem<IModel<String>> item) {

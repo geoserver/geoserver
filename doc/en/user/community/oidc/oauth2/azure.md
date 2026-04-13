@@ -29,7 +29,7 @@ We will use Microsoft Entra (Microsoft Azure) for login and either the Azure/Ent
 
     ![](../img/azure_create_app5.png)
 
-7.  Press "Manifest" (left column), and change ``"groupMembershipClaims":null,`` to ``"groupMembershipClaims": "ApplicationGroup",`` and press "Save". This puts the roles in the ID Token.
+7.  Press "Manifest" (left column), and change `"groupMembershipClaims":null,` to `"groupMembershipClaims": "ApplicationGroup",` and press "Save". This puts the roles in the ID Token.
 
     ![](../img/azure_create_app6.png)
 

@@ -13,11 +13,11 @@ To install the GeoServer Task Manager extension:
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download ``taskmanager-core`` zip archive.
+    Follow the **Community Modules** link and download `taskmanager-core` zip archive.
 
     - {{ snapshot }} example: [taskmanager-core](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-taskmanager-core-plugin.zip)
 
-    For [S3 support](#s3-file-service), also install the ``taskmanager-s3`` zip archive:
+    For [S3 support](#s3-file-service), also install the `taskmanager-s3` zip archive:
 
     - {{ snapshot }} example: [taskmanager-s3](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-taskmanager-s3-plugin.zip)
 
@@ -232,7 +232,7 @@ Unless anonymous is set to true, the [default AWS client credential chain](https
 
 #### Prepare script
 
-The task manager GUI allows immediate upload of files to file services for local publication. It may be handy to perform some preprocessing tasks on the uploaded data before publication (such as GDAL commands). You may do this by creating a file in the taskmanager configuration directory named ``prepare.sh``. If the user ticks the prepare checkbox in the upload dialog, this script will be run with the uploaded file as its first parameter.
+The task manager GUI allows immediate upload of files to file services for local publication. It may be handy to perform some preprocessing tasks on the uploaded data before publication (such as GDAL commands). You may do this by creating a file in the taskmanager configuration directory named `prepare.sh`. If the user ticks the prepare checkbox in the upload dialog, this script will be run with the uploaded file as its first parameter.
 
 ## Security
 

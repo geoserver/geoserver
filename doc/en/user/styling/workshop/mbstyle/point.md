@@ -24,10 +24,10 @@ This exercise makes use of the `ne:populated_places` layer.
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``point_example`` |
+    | Name:      | `point_example` |
     |------------|-----------------------------|
-    | Workspace: | ``No workspace``  |
-    | Format:    | ``MBStyle``       |
+    | Workspace: | `No workspace`  |
+    | Format:    | `MBStyle`       |
 
 
 1.  Replace the initial MBStyle definition with the following and click **apply**:
@@ -681,7 +681,7 @@ The **symbol** layer with the **label** property are used to label Point Locatio
     The `ne:populated_places` layer provides several attributes specifically to make styling easier:
 
     - **SCALERANK**: we have already used this attribute to control the level of detail displayed
-    - **FEATURECLA**: used to indicate different types of cities. We will check for ``Admin-0 capital`` cities.
+    - **FEATURECLA**: used to indicate different types of cities. We will check for `Admin-0 capital` cities.
 
     The first thing we will do is calculate the point **size** using a quick expression:
 

@@ -250,7 +250,7 @@ This example shows how to create a complex line style which alternates a dashed 
 - `stroke-graphic` places symbols along a line
 - combining the two allows control of symbol spacing
 
-This also shows the usage of a ``dash offset``, which controls where rendering starts in the dash array. For example, with a dash array of `5 10` and a dash offset of `7` the renderer starts drawing the pattern 7 pixels from the beginning. It skips the 5 pixels pen-down section and 2 pixels of the pen-up section, then draws the remaining 8 pixels of pen-up, then 5 down, 10 up, and so on.
+This also shows the usage of a `dash offset`, which controls where rendering starts in the dash array. For example, with a dash array of `5 10` and a dash offset of `7` the renderer starts drawing the pattern 7 pixels from the beginning. It skips the 5 pixels pen-down section and 2 pixels of the pen-up section, then draws the remaining 8 pixels of pen-up, then 5 down, 10 up, and so on.
 
 The example shows how to use these features to create two synchronized sequences of dash arrays, one drawing line segments and the other symbols.
 

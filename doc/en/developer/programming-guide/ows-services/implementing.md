@@ -233,7 +233,7 @@ hello/
         </dependency>
       ```
       >
-      > After editing **`webapps/pom.xml`** we need run ``mvn eclipse:eclipse``, and then from ***Eclipse*** right click on web-app project and **Refresh** for the IDE to notice the change.
+      > After editing **`webapps/pom.xml`** we need run `mvn eclipse:eclipse`, and then from ***Eclipse*** right click on web-app project and **Refresh** for the IDE to notice the change.
 
     - If and IDE like IntellJ, Eclipse M2 Maven plugin or NetBeans refresh the project so it picks up the changes to **`pom.xml`**
 

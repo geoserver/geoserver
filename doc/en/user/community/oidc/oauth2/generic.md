@@ -12,9 +12,9 @@ In order to configure GeoServer, you will need the following:
 
 - Your IDP's Client ID
 - Your IDP's Client Secret
-- Your IDP's ``openid-configuration`` endpoint. This should be at ``<idp base URL>/.well-known/openid-configuration``
+- Your IDP's `openid-configuration` endpoint. This should be at `<idp base URL>/.well-known/openid-configuration`
 
-If you want roles from your IDP, then you'll also have to configure the roles to be either in the ID Token, the ``userinfo`` endpoint, or in the JWT Access Token.
+If you want roles from your IDP, then you'll also have to configure the roles to be either in the ID Token, the `userinfo` endpoint, or in the JWT Access Token.
 
 Take a look at the other configuration guides ([Google](google.md), [GitHub](github.md), [Keycloak](keycloak.md), [MS Azure and Entra](azure.md)) - these should, indirectly, help you configure your IDP Server.
 

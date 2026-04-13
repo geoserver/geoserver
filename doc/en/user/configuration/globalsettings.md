@@ -242,8 +242,8 @@ This configuration defines how user e-mail addresses are displayed in the GeoSer
 There are several options:
 
 - **HIDDEN**: The user's e-mail address is not shown.
-- **DOMAIN_ONLY**: Default mode. Only the domain part (for example, ``example.com``) is displayed.
-- **MASKED**: The local part (before the ``@``) is masked with ``*``, leaving only the first character visible. The domain part is fully visible.
+- **DOMAIN_ONLY**: Default mode. Only the domain part (for example, `example.com`) is displayed.
+- **MASKED**: The local part (before the `@`) is masked with `*`, leaving only the first character visible. The domain part is fully visible.
 - **FULL**: The complete e-mail address is displayed.
 
 #### Reveal Email at Click {: #config_globalsettings_web_admin_interface_reveal_email_at_click }
@@ -280,7 +280,7 @@ This parameter can be used to mute exception logging when doing REST operations 
 
 #### REST PathMapper Root directory path {: #config_globalsettings_rest_root_dir }
 
-This parameter is used by the RESTful API as the ``Root Directory`` for the newly uploaded files, following the structure:
+This parameter is used by the RESTful API as the `Root Directory` for the newly uploaded files, following the structure:
 
     ${rootDirectory}/workspace/store[/<file>]
 

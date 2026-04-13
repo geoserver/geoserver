@@ -1047,9 +1047,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         } catch (InvalidKeyException e) {
             strongEncryptionAvaialble = false;
             LOGGER.warning(
-                    """
-                    Strong cryptography is NOT available
-                    Download and installation the of unlimted length policy files is recommended""");
+                    "Strong cryptography is NOT available. Downloading and installing of the unlimited strength policy files is recommended");
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Strong cryptography is NOT available, unexpected error", ex);
             strongEncryptionAvaialble = false; // should not happen
@@ -1359,12 +1357,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 GeoServerUser.ADMIN_USERNAME, GeoServerUser.DEFAULT_ADMIN_PASSWD);
 
         try {
-            token = providerMgr.authenticate(token);
+            Authentication result = BruteForceListener.withThrottlingDisabled(() -> providerMgr.authenticate(token));
+            return result.isAuthenticated();
         } catch (Exception e) {
-            // ok
+            // authentication failed
+            return false;
         }
-
-        return token.isAuthenticated();
     }
 
     /** Lists all available filter configurations. */

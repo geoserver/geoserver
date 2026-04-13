@@ -6,7 +6,7 @@ Open Web Services (WCS, WFS, WMS, and WPS) use common metadata definitions to de
 
 *WMS Service Metadata*
 
-These elements are described in the following table. Though these field types are the same regardless of service, their values are not shared. As such, parameter definitions below refer to the respective service. For example, **enable** on the WFS Service page, enables ``WFS`` service requests and has no effect on ``WCS`` or ``WMS`` requests.
+These elements are described in the following table. Though these field types are the same regardless of service, their values are not shared. As such, parameter definitions below refer to the respective service. For example, **enable** on the WFS Service page, enables `WFS` service requests and has no effect on `WCS` or `WMS` requests.
 
 | Field | Description |
 |----|----|

@@ -25,7 +25,7 @@ In order to calculate the total length, we will need the following built in WPS 
 
 The sequence in which these processes are executed is important. The first thing we want to do is intersect the road network with the restricted areas. This gives us the feature collection with all the roads that we are interested in. Then we collect those geometries into a single GeometryCollection so that the length can be calculated with the built in JTS algorithm.
 
-``gs:IntersectionFeatureCollection`` --> ``gs:CollectGeometries`` --> ``JTS:length``
+`gs:IntersectionFeatureCollection` --> `gs:CollectGeometries` --> `JTS:length`
 
 The sequence of processes determines how the WPS request is built, by embedding the first process into the second, the second into the third, etc. A process produces some output which will become the input of the next process, resulting in a processing pipeline that can solve complex spatial analysis with a single HTTP request. The advantage of using GeoServer's layers is that data is not being shipped back and forth between processes, resulting in very good performance.
 

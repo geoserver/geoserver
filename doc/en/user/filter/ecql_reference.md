@@ -44,11 +44,11 @@ Temporal predicates specify the relationship of a time-valued expression to a ti
 
 | **Syntax** | **Description** |
 |----|----|
-| ``ecql_expr`` `BEFORE` [Time](#ecql_literal)_ | Tests whether a time value is before a point in time |
+| `ecql_expr` `BEFORE` [Time](#ecql_literal)_ | Tests whether a time value is before a point in time |
 | [Expression](#ecql_expr) `BEFORE OR DURING` [Time Period](#ecql_period) | Tests whether a time value is before or during a time period |
 | [Expression](#ecql_expr) `DURING` [Time Period](#ecql_period) | Tests whether a time value is during a time period |
 | [Expression](#ecql_expr) `DURING OR AFTER` [Time Period](#ecql_period) | Tests whether a time value is during or after a time period |
-| ``ecql_expr`` `AFTER` [Time](#ecql_literal)_ | Tests whether a time value is after a point in time |
+| `ecql_expr` `AFTER` [Time](#ecql_literal)_ | Tests whether a time value is after a point in time |
 
 ### Spatial Predicate {: #ecql_spat }
 
@@ -79,15 +79,15 @@ An expression specifies a attribute, literal, or computed value. The type of the
 | [Literal](#ecql_literal) | Literal value |
 | [Expression](#ecql_expr) `+` \| `-` \| `*` \| `/` [Expression](#ecql_expr) | Arithmetic operations |
 | *function* `(` [ [Expression](#ecql_expr) { `,` [Expression](#ecql_expr) } ] `)` | Value computed by evaluation of a [filter function](function_reference.md) with zero or more arguments. |
-| `(` \| `[` [Expression](#ecql_expr) `]` \| `)` | Bracketing with `(` or ```` controls evaluation order |
+| `(` \| `[` [Expression](#ecql_expr) `]` \| `)` | Bracketing with `(` or `)` controls evaluation order |
 
 ## Attribute {%raw%}{#ecql_attr}{%endraw%}
 
 An attribute name denotes the value of a feature attribute.
 
-- Simple attribute names are sequences of letters and numbers, e.g. [States123``
-- Attribute names quoted with double-quotes may be any sequence of characters, e.g. ``"States!@#"``
-- [Note](https://gis.stackexchange.com/a/475826/68995): ``id`` is one of a few [reserved keywords](https://github.com/geotools/geotools/blob/2058be01323c3dea23d6df4d84b623be7f0b4102/modules/library/cql/src/main/jjtree/ECQLGrammar.jjt#L180) in ECQL and thus an attribute (or database column) named ``id`` must be quoted, e.g. ``"id"``
+- Simple attribute names are sequences of letters and numbers, e.g. `States123`
+- Attribute names quoted with double-quotes may be any sequence of characters, e.g. `"States!@#"`
+- [Note](https://gis.stackexchange.com/a/475826/68995): `id` is one of a few [reserved keywords](https://github.com/geotools/geotools/blob/2058be01323c3dea23d6df4d84b623be7f0b4102/modules/library/cql/src/main/jjtree/ECQLGrammar.jjt#L180) in ECQL and thus an attribute (or database column) named `id` must be quoted, e.g. `"id"`
 
 ## Literal {%raw%}{#ecql_literal}{%endraw%}
 

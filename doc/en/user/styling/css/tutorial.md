@@ -310,7 +310,7 @@ Click the **Apply** button at the bottom of the form to save your changes.
 
 ![](images/tutorial_noborder.png)
 
-*CSS style applied to the ``states`` layer*
+*CSS style applied to the `states` layer*
 
 You will see that the borders are missing! In the GeoServer CSS module, each type of symbolizer has a "key" property which controls whether it is applied. Without these "key" properties, subordinate properties are ignored. These "key" properties are:
 

@@ -10,7 +10,7 @@ A reStructuredText document is written in plain text. Without the need for compl
 |------------|-----------------------------------|-------------|
 | Italics    | `*italics*` (single asterisk)     | *italics*   |
 | Bold       | `**bold**` (double asterisk)      | **bold**    |
-| Monospace  | ``monospace`` (double back quote) | `monospace` |
+| Monospace  | `monospace` (double back quote) | `monospace` |
 
 ## Lists
 

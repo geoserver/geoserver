@@ -44,11 +44,32 @@ public class WorkspacePage extends GeoServerSecuredPage {
 
     private String targetWorkspaceStr = null;
     private String targetLayerStr = null;
+    private String targetGroupStr = null;
 
     WorkspaceProvider provider = new WorkspaceProvider() {
 
         @Override
         protected Filter getContextFilter() {
+
+            if (targetGroupStr != null) {
+                String targetGroup =
+                        (targetWorkspaceStr != null) ? targetWorkspaceStr + ":" + targetGroupStr : targetGroupStr;
+                LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetGroup);
+                if (gi != null) {
+                    LayerGroupHelper helper = new LayerGroupHelper(gi);
+                    List<String> ids = new ArrayList<>();
+                    for (LayerInfo li : helper.allLayers()) {
+                        if (li.getResource() != null
+                                && li.getResource().getStore() != null
+                                && li.getResource().getStore().getWorkspace() != null) {
+                            ids.add(li.getResource().getStore().getWorkspace().getId());
+                        }
+                    }
+                    return ids.isEmpty() ? Filter.EXCLUDE : Predicates.in("id", ids);
+                }
+                return Filter.EXCLUDE;
+            }
+
             if (targetLayerStr != null) {
                 String targetLayer =
                         (targetWorkspaceStr != null) ? targetWorkspaceStr + ":" + targetLayerStr : targetLayerStr;
@@ -95,12 +116,16 @@ public class WorkspacePage extends GeoServerSecuredPage {
 
         StringValue wsParam = parameters.get("workspace");
         StringValue layerParam = parameters.get("layer");
+        StringValue groupParam = parameters.get("group");
 
         if (!wsParam.isEmpty()) {
             this.targetWorkspaceStr = wsParam.toString();
         }
         if (!layerParam.isEmpty()) {
             this.targetLayerStr = layerParam.toString();
+        }
+        if (!groupParam.isEmpty()) {
+            this.targetGroupStr = groupParam.toString();
         }
         // the middle table
         add(

@@ -103,6 +103,10 @@ public class StorePage extends GeoServerSecuredPage {
         if (!wsParam.isEmpty()) {
             this.targetWorkspaceStr = wsParam.toString();
         }
+        StringValue layerParam = parameters.get("layer");
+        if (!layerParam.isEmpty()) {
+            this.targetLayerStr = layerParam.toString();
+        }
         // the table, and wire up selection change
         table = new StorePanel("table", provider, true) {
             @Override

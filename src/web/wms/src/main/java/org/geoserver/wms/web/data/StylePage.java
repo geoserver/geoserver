@@ -42,6 +42,7 @@ public class StylePage extends GeoServerSecuredPage {
 
     private String targetWorkspaceStr = null;
     private String targetLayerStr = null;
+    private String targetGroupStr = null;
 
     GeoServerTablePanel<StyleInfo> table;
 
@@ -52,11 +53,36 @@ public class StylePage extends GeoServerSecuredPage {
     StyleProvider provider = new StyleProvider() {
         @Override
         protected Filter getContextFilter() {
+            if (targetGroupStr != null && !targetGroupStr.isEmpty()) {
+                Set<String> styleIds = new LinkedHashSet<>();
+                String qualifiedGroupName = (targetWorkspaceStr != null && !targetWorkspaceStr.isEmpty())
+                        ? targetWorkspaceStr + ":" + targetGroupStr
+                        : targetGroupStr;
+                LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(qualifiedGroupName);
+                if (layerGroup != null) {
+                    for (LayerInfo li : layerGroup.layers()) {
+                        if (li == null) continue;
+                        collectStyleIds(styleIds, li.getDefaultStyle());
+                        if (li.getStyles() != null) {
+                            for (StyleInfo s : li.getStyles()) {
+                                collectStyleIds(styleIds, s);
+                            }
+                        }
+                    }
+                }
+                if (styleIds.isEmpty()) {
+                    return Filter.EXCLUDE;
+                }
+                return Predicates.in("id", new ArrayList<>(styleIds));
+            }
             // If a layer is specified, resolve it to styles and filter by those.
             if (targetLayerStr != null && !targetLayerStr.isEmpty()) {
                 Set<String> styleIds = new LinkedHashSet<>();
 
-                LayerInfo layer = getCatalog().getLayerByName(targetLayerStr);
+                String qualifiedLayerName = (targetWorkspaceStr != null && !targetWorkspaceStr.isEmpty())
+                        ? targetWorkspaceStr + ":" + targetLayerStr
+                        : targetLayerStr;
+                LayerInfo layer = getCatalog().getLayerByName(qualifiedLayerName);
                 if (layer != null) {
                     collectStyleIds(styleIds, layer.getDefaultStyle());
                     if (layer.getStyles() != null) {
@@ -65,7 +91,8 @@ public class StylePage extends GeoServerSecuredPage {
                         }
                     }
                 } else {
-                    LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(targetLayerStr);
+                    // fallback to layer group
+                    LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(qualifiedLayerName);
                     if (layerGroup != null) {
                         for (LayerInfo li : layerGroup.layers()) {
                             if (li == null) continue;
@@ -111,11 +138,15 @@ public class StylePage extends GeoServerSecuredPage {
     public StylePage(PageParameters parameters) {
         StringValue wsParam = parameters.get("workspace");
         StringValue layerParam = parameters.get("layer");
+        StringValue groupParam = parameters.get("group");
         if (!wsParam.isEmpty()) {
             this.targetWorkspaceStr = wsParam.toString();
         }
         if (!layerParam.isEmpty()) {
             this.targetLayerStr = layerParam.toString();
+        }
+        if (!groupParam.isEmpty()) {
+            this.targetGroupStr = groupParam.toString();
         }
 
         add(

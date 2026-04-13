@@ -60,16 +60,20 @@ public class LayerPage extends GeoServerSecuredPage {
 
     private String targetWorkspaceStr = null;
     private String targetLayerStr = null;
+    private String targetGroupStr = null;
 
     LayerProvider provider = new LayerProvider() {
         @Override
         protected Filter getContextFilter() {
-            if (targetLayerStr != null) {
+
+            String targetLayerOrGroup = targetGroupStr != null ? targetGroupStr : targetLayerStr;
+
+            if (targetLayerOrGroup != null) {
                 String targetLayer;
                 if (targetWorkspaceStr != null) {
-                    targetLayer = targetWorkspaceStr + ":" + targetLayerStr;
+                    targetLayer = targetWorkspaceStr + ":" + targetLayerOrGroup;
                 } else {
-                    targetLayer = targetLayerStr;
+                    targetLayer = targetLayerOrGroup;
                 }
 
                 LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
@@ -102,12 +106,16 @@ public class LayerPage extends GeoServerSecuredPage {
     public LayerPage(PageParameters parameters) {
         StringValue wsParam = parameters.get("workspace");
         StringValue layerParam = parameters.get("layer");
+        StringValue groupParam = parameters.get("group");
 
         if (!wsParam.isEmpty()) {
             this.targetWorkspaceStr = wsParam.toString();
         }
         if (!layerParam.isEmpty()) {
             this.targetLayerStr = layerParam.toString();
+        }
+        if (!groupParam.isEmpty()) {
+            this.targetGroupStr = groupParam.toString();
         }
         final CatalogIconFactory icons = CatalogIconFactory.get();
         table = new GeoServerTablePanel<>("table", provider, true) {

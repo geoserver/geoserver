@@ -344,8 +344,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         Set<String> expectedIds = layerStyleIds(layer);
 
         tester.startPage(
-                StylePage.class,
-                new PageParameters().add("workspace", "cite").add("layer", "BasicPolygons"));
+                StylePage.class, new PageParameters().add("workspace", "cite").add("layer", "BasicPolygons"));
         tester.assertRenderedPage(StylePage.class);
         tester.assertNoErrorMessage();
 

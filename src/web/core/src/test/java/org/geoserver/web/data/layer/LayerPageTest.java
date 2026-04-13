@@ -205,8 +205,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         // ?workspace=cite&layer=Buildings → scoped lookup as "cite:Buildings"
         login();
         tester.startPage(
-                LayerPage.class,
-                new PageParameters().add("workspace", "cite").add("layer", "Buildings"));
+                LayerPage.class, new PageParameters().add("workspace", "cite").add("layer", "Buildings"));
         tester.assertRenderedPage(LayerPage.class);
         tester.assertNoErrorMessage();
 

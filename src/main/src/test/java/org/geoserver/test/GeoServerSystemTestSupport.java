@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
@@ -124,6 +125,8 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
+import org.geoserver.security.workspaceadmin.WorkspaceAdminRESTAccessRuleDAO;
+import org.geoserver.security.workspaceadmin.WorkspaceAdminRestAccessRule;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.data.DataUtilities;
@@ -142,6 +145,7 @@ import org.kordamp.json.JSONException;
 import org.kordamp.json.JSONSerializer;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -871,6 +875,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         dao.storeRules();
     }
 
+    /**
+     * @param priority the rule priority (lower values are evaluated first)
+     * @param antPattern the Ant-style URL pattern this rule applies to
+     * @param methods the set of HTTP methods allowed by this rule
+     */
+    protected void addWorkspaceAdminAccessRule(int priority, String antPattern, Set<HttpMethod> methods) {
+        WorkspaceAdminRESTAccessRuleDAO dao = GeoServerExtensions.bean(WorkspaceAdminRESTAccessRuleDAO.class);
+        WorkspaceAdminRestAccessRule rule = new WorkspaceAdminRestAccessRule(priority, antPattern, methods);
+        dao.addRule(rule);
+    }
     /**
      * Clears the authentication context.
      *

@@ -522,22 +522,29 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
         FormTester formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
 
-        // make a temp file (for file upload) that isn't an image (has an ELF header, not a PNG header)
-        Path tempFile = Files.createTempFile("image-", "png");
-        FileUtils.writeByteArrayToFile(tempFile.toFile(), nonImage);
+        Path tempFile = null;
+        try {
+            // make a temp file (for file upload) that isn't an image (has an ELF header, not a PNG header)
+            tempFile = Files.createTempFile("image-", "png");
+            FileUtils.writeByteArrayToFile(tempFile.toFile(), nonImage);
 
-        org.apache.wicket.util.file.File file = new org.apache.wicket.util.file.File(tempFile.toFile());
+            org.apache.wicket.util.file.File file = new org.apache.wicket.util.file.File(tempFile.toFile());
 
-        formTester.setFile("userPanel:upload", file, "image/png");
-        formTester.submit("submit");
-        String response = tester.getLastResponseAsString();
+            formTester.setFile("userPanel:upload", file, "image/png");
+            formTester.submit("submit");
+            String response = tester.getLastResponseAsString();
 
-        // not written to disk (catalog)
-        assertFalse(Resources.exists(dd.getStyles().get("bad.png")));
-        // no mention of the file in the response
-        assertThat(response, not(containsString("bad.png")));
-        // response has error (will be in the feedback)
-        assertThat(response, containsString("Unsupported IMAGE media type"));
+            // not written to disk (catalog)
+            assertFalse(Resources.exists(dd.getStyles().get("bad.png")));
+            // no mention of the file in the response
+            assertThat(response, not(containsString("bad.png")));
+            // response has error (will be in the feedback)
+            assertThat(response, containsString("Unsupported IMAGE media type"));
+        } finally {
+            if (tempFile != null) {
+                Files.delete(tempFile);
+            }
+        }
     }
 
     @Test

@@ -30079,13 +30079,14 @@
 <p>When service output is saved as a file, the vendor-option <code>filename</code> is used to provide the file name used.</p>
 <h2 id="xml-request-validation">XML request validation<a class="headerlink" href="#xml-request-validation" title="Permanent link">&para;</a></h2>
 <p>GeoServer is less strict than the WFS specification when it comes to the validity of an XML request. To force incoming XML requests to be valid, use the following parameter:</p>
-<p><code>strict=[true|false]</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>strict=[true|false]
+</code></pre></div>
 <p>The default option for this parameter is <code>false</code>.</p>
 <p>For example, the following request is invalid:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;wfs:GetFeature</span><span class="w"> </span><span class="na">service=</span><span class="s">&quot;WFS&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w"> </span><span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&lt;Query</span><span class="w"> </span><span class="na">typeName=</span><span class="s">&quot;topp:states&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nt">&lt;/wfs:GetFeature&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;wfs:GetFeature</span><span class="w"> </span><span class="na">service=</span><span class="s">&quot;WFS&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w"> </span><span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&lt;Query</span><span class="w"> </span><span class="na">typeName=</span><span class="s">&quot;topp:states&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nt">&lt;/wfs:GetFeature&gt;</span>
 </code></pre></div>
 <p>The request is invalid for two reasons:</p>
 <ul>
@@ -30093,11 +30094,11 @@
 <li>The namespace prefix has not been mapped to a namespace URI.</li>
 </ul>
 <p>That said, the request would still be processed by default. Executing the above command with the <code>strict=true</code> parameter, however, would result in an error. The correct syntax should be:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;wfs:GetFeature</span><span class="w"> </span><span class="na">service=</span><span class="s">&quot;WFS&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w"> </span><span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span><span class="w"> </span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w"> </span><span class="na">xmlns:topp=</span><span class="s">&quot;http://www.openplans.org/topp&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&lt;wfs:Query</span><span class="w"> </span><span class="na">typeName=</span><span class="s">&quot;topp:states&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nt">&lt;/wfs:GetFeature&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;wfs:GetFeature</span><span class="w"> </span><span class="na">service=</span><span class="s">&quot;WFS&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w"> </span><span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span><span class="w"> </span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w"> </span><span class="na">xmlns:topp=</span><span class="s">&quot;http://www.openplans.org/topp&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">&lt;wfs:Query</span><span class="w"> </span><span class="na">typeName=</span><span class="s">&quot;topp:states&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nt">&lt;/wfs:GetFeature&gt;</span>
 </code></pre></div>
 <h3 id="getcapabilities-request">GetCapabilities Request<a class="headerlink" href="#getcapabilities-request" title="Permanent link">&para;</a></h3>
 <h2 id="namespace-filter">Namespace filter<a class="headerlink" href="#namespace-filter" title="Permanent link">&para;</a></h2>
@@ -30107,7 +30108,8 @@
 <p>This parameter only affects GetCapabilities requests.</p>
 </div>
 <p>To apply this filter, add the following code to your request:</p>
-<p><code>namespace=&lt;namespace&gt;</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>namespace=&lt;namespace&gt;
+</code></pre></div>
 <p>Although providing an invalid namespace will not result in any errors, the GetCapabilities document returned will not contain any layer information.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -30122,12 +30124,15 @@
 <p>In WFS <a href="../reference/#wfs_getfeature">GetFeature</a> GET requests, the <code>cql_filter</code> parameter can be used to specify a filter in ECQL (Extended Common Query Language) format. ECQL provides a more compact and readable syntax compared to OGC XML filters.</p>
 <p>For full details see the <a href="../../../filter/ecql_reference/">ECQL Reference</a> and <a href="../../../tutorials/cql/cql_tutorial/">CQL and ECQL</a> tutorial.</p>
 <p>The following example illustrates a GET request OGC filter:</p>
-<p><code>filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E
+</code></pre></div>
 <p>Using ECQL, the identical filter would be defined as follows:</p>
-<p><code>cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))
+</code></pre></div>
 <h2 id="format-options">Format options<a class="headerlink" href="#format-options" title="Permanent link">&para;</a></h2>
 <p>The <code>format_options</code> parameter is a container for other parameters that are format-specific. The syntax is:</p>
-<p><code>format_options=param1:value1;param2:value2;...</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>format_options=param1:value1;param2:value2;...
+</code></pre></div>
 <p>The supported format option is:</p>
 <ul>
 <li><code>callback</code> (default is <code>parseResponse</code>) - specifies the callback function name for the JSONP response format</li>
@@ -30137,9 +30142,8 @@
 </ul>
 <h2 id="reprojection">Reprojection<a class="headerlink" href="#reprojection" title="Permanent link">&para;</a></h2>
 <p>As WFS 1.1.0 and 2.0.0 both support data reprojection, GeoServer can store the data in one projection and return GML in another projection. While not part of the specification, GeoServer supports this using WFS 1.0.0 as well. When submitting a WFS <a href="../reference/#wfs_getfeature">GetFeature</a> GET request, you can add this parameter to specify the reprojection SRS as follows:</p>
-<p>``
-srsName=<srsName>
-```</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>srsName=&lt;srsName&gt;
+</code></pre></div>
 <p>The code for the projection is represented by <code>&lt;srsName&gt;</code>, for example <code>EPSG:4326</code>. For POST requests, you can add the same code to the <code>Query</code> element.</p>
 
 

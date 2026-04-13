@@ -30423,9 +30423,7 @@
 <h3 id="format">format<a class="headerlink" href="#format" title="Permanent link">&para;</a></h3>
 <p>The <code>format</code> parameter can be used to request capabilities documents in a certain format. If the requested format is not supported the default format will be used. Refer to the GetCapabilities response for the list of supported formats, which differs according to the WMS version.</p>
 <p>An example request:</p>
-<blockquote>
-<p><a href="http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities&amp;format=text/xml">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities&amp;format=text/xml</a></p>
-</blockquote>
+<p><code>&lt;http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities&amp;format=text/xml&gt;</code></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">&lt;WMT_MS_Capabilities</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.1.1&quot;</span><span class="w"> </span><span class="na">updateSequence=</span><span class="s">&quot;247&quot;</span><span class="nt">&gt;</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">   </span><span class="nt">&lt;Capability&gt;</span>
@@ -30441,8 +30439,8 @@
 </div>
 <h3 id="namespace">namespace<a class="headerlink" href="#namespace" title="Permanent link">&para;</a></h3>
 <p>The <code>namespace</code> parameter causes WMS <a href="../reference/">GetCapabilities</a> responses to be filtered to only contain layers in a particular namespace. The syntax is:</p>
-<p><code>properties
-namespace=&lt;namespace&gt;</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="na">namespace</span><span class="o">=</span><span class="s">&lt;namespace&gt;</span>
+</code></pre></div>
 <p>where <code>&lt;namespace&gt;</code> is the namespace prefix.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -30457,28 +30455,25 @@ namespace=&lt;namespace&gt;</code></p>
 <p>Using this parameter it is possible to exclude the default root when the resulting document has a single top element (e.g. a single group with nested children). To do that, use the <strong>false</strong> value.</p>
 <p>The parameter can also be used to override what is defined at the WMS or layer / group level. For example if the service is configure to exclude the Root element, we can force it with <strong>rootLayer=true</strong>.</p>
 <p>An example request:</p>
-<blockquote>
-<p><a href="http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities&amp;rootLayer=false">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities&amp;rootLayer=false</a></p>
-</blockquote>
+<p><code>&lt;http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities&amp;rootLayer=false&gt;</code></p>
 <p>An example with XML POST:</p>
-<p>`` xml</p>
-<?xml version="1.0" encoding="UTF-8"?>
-<p><ogc:GetCapabilities xmlns:ogc="http://www.opengis.net/ows"
-            xmlns:gml="http://www.opengis.net/gml"
-   version="1.1.1" service="WMS" rootLayer="false">
-</ogc:GetCapabilities>
-``</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">&lt;ogc:GetCapabilities</span><span class="w"> </span><span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ows&quot;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">            </span><span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">   </span><span class="na">version=</span><span class="s">&quot;1.1.1&quot;</span><span class="w"> </span><span class="na">service=</span><span class="s">&quot;WMS&quot;</span><span class="w"> </span><span class="na">rootLayer=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nt">&lt;/ogc:GetCapabilities&gt;</span>
+</code></pre></div>
 <h2 id="getmap-request">GetMap Request<a class="headerlink" href="#getmap-request" title="Permanent link">&para;</a></h2>
 <h3 id="angle">angle<a class="headerlink" href="#angle" title="Permanent link">&para;</a></h3>
 <p>The <code>angle</code> parameter rotates the output map clockwise around its center. The syntax is:</p>
-<p><code>properties
-angle=&lt;x&gt;</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="na">angle</span><span class="o">=</span><span class="s">&lt;x&gt;</span>
+</code></pre></div>
 <p>where <code>&lt;x&gt;</code> is the number of degrees to rotate by.</p>
 <p>Map rotation is supported in all raster formats, PDF, and SVG when using the Batik producer (which is the default).</p>
 <h3 id="buffer">buffer<a class="headerlink" href="#buffer" title="Permanent link">&para;</a></h3>
 <p>The <code>buffer</code> parameter specifies the number of additional border pixels that are used in the <code>GetMap</code> and <code>GetFeatureInfo</code> operations. The syntax is:</p>
-<p><code>properties
-buffer=&lt;bufferwidth&gt;</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="na">buffer</span><span class="o">=</span><span class="s">&lt;bufferwidth&gt;</span>
+</code></pre></div>
 <p>where <code>&lt;bufferwidth&gt;</code> is the width of the buffer in pixels.</p>
 <p>In the <a href="../reference/#wms_getmap">GetMap</a> operation, buffering includes features that lie outside the request bounding box, but whose styling is thick enough to be visible inside the map area.</p>
 <p>In the <a href="../reference/#wms_getfeatureinfo">GetFeatureInfo</a> operation, buffering creates a "search radius" around the location of the request. Feature info is returned for features intersecting the search area. This is useful when working with an OpenLayers map (such as those generated by the <a href="../../../data/webadmin/layerpreview/">Layer Preview</a> page) since it relaxes the need to click precisely on a point for the appropriate feature info to be returned.</p>
@@ -30496,11 +30491,11 @@ buffer=&lt;bufferwidth&gt;</code></p>
 <h3 id="cql_filter">cql_filter<a class="headerlink" href="#cql_filter" title="Permanent link">&para;</a></h3>
 <p>The <code>cql_filter</code> parameter is similar to the standard <code>filter</code> parameter, but the filter is expressed using ECQL (Extended Common Query Language). ECQL provides a more compact and readable syntax compared to OGC XML filters. For full details see the <a href="../../../filter/ecql_reference/">ECQL Reference</a> and <a href="../../../tutorials/cql/cql_tutorial/">CQL and ECQL</a> tutorial.</p>
 <p>If more than one layer is specified in the <code>layers</code> parameter, then a separate filter can be specified for each layer, separated by semicolons. The syntax is:</p>
-<p><code>properties
-cql_filter=filter1;filter2...</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="na">cql_filter</span><span class="o">=</span><span class="s">filter1;filter2...</span>
+</code></pre></div>
 <p>An example of a simple CQL filter is:</p>
-<p><code>properties
-cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="na">cql_filter</span><span class="o">=</span><span class="s">INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))</span>
+</code></pre></div>
 <h3 id="sortby">sortBy<a class="headerlink" href="#sortby" title="Permanent link">&para;</a></h3>
 <p>The <code>sortBy</code> parameter allows to control the order of features/rasters displayed in the map, using the same syntax as WFS 1.0, that is:</p>
 <ul>
@@ -30525,12 +30520,12 @@ cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))</code></p>
 </ul>
 <h3 id="env">env<a class="headerlink" href="#env" title="Permanent link">&para;</a></h3>
 <p>The <code>env</code> parameter defines the set of substitution values that can be used in SLD variable substitution. The syntax is:</p>
-<p><code>properties
-env=param1:value1;param2:value2;...</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="na">env</span><span class="o">=</span><span class="s">param1:value1;param2:value2;...</span>
+</code></pre></div>
 <p>See <a href="../../../styling/sld/extensions/substitution/">Variable substitution in SLD</a> for more information.</p>
 <h3 id="featureid">featureid<a class="headerlink" href="#featureid" title="Permanent link">&para;</a></h3>
 <p>The <code>featureid</code> parameter filters by feature ID, a unique value given to all features. Multiple features can be selected by separating the featureids by comma, as in this example:</p>
-<p><code>properties
+<p><code>`properties
 featureid=states.1,states.45</code></p>
 <h3 id="filter">filter<a class="headerlink" href="#filter" title="Permanent link">&para;</a></h3>
 <p>The WMS specification allows only limited filtering of data. GeoServer enhances the WMS filter capability to match that provided by WFS. The <code>filter</code> parameter can specify a list of OGC XML filters. The list is enclosed in parentheses: <strong>( )</strong>. When used in a GET request, the XML tag brackets must be URL-encoded.</p>
@@ -30607,7 +30602,7 @@ tilesorigin=x,y</code></p>
 <p>If the map extents are modified dynamically, the <code>tilesorigin</code> of each meta-tiled layer must be updated accordingly.</p>
 </div>
 <p>The following code shows how to specify the meta-tiling parameters:</p>
-<p>`` javascript
+<p>```javascript
 var options = {
     ...
     maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
@@ -30628,7 +30623,7 @@ map = new OpenLayers.Map('map', options);</p>
     },
     {buffer: 0} 
 );
-``</p>
+```</p>
 <h3 id="scalemethod">scaleMethod<a class="headerlink" href="#scalemethod" title="Permanent link">&para;</a></h3>
 <p>The <code>scaleMethod</code> parameter controls how the scale denominator is computed by GeoServer The two possible values are:</p>
 <ul>

@@ -30439,7 +30439,7 @@
 <ol>
 <li>
 <p>SLD Mark and ExternalGraphic provide an opportunity for dynamic symbolization.</p>
-<p>This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with <code>\${ }</code> as shown:</p>
+<p>This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with <code>${ }</code> as shown:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">point</span><span class="p">:</span>
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="nt">symbols</span><span class="p">:</span>
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mark</span><span class="p">:</span>
@@ -30451,7 +30451,7 @@
 <p>Example available here <a href="../../files/point_example2.css">point_example.css</a></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">[</span><span class="p">@</span><span class="k">scale</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nt">4000000</span><span class="o">]</span><span class="p">{</span>
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="nt">mark</span><span class="o">:</span><span class="w"> </span><span class="nt">symbol</span><span class="o">(</span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">       </span><span class="s2">&quot;\${if_then_else(equalTo(FEATURECLA,&#39;Admin-0 capital&#39;),&#39;star&#39;,&#39;circle&#39;)}&quot;</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">       </span><span class="s2">&quot;${if_then_else(equalTo(FEATURECLA,&#39;Admin-0 capital&#39;),&#39;star&#39;,&#39;circle&#39;)}&quot;</span>
 <a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="o">);</span><span class="w"> </span>
 <a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="nt">mark-size</span><span class="o">:</span><span class="w"> </span><span class="o">[</span><span class="nt">13-SCALERANK</span><span class="o">];</span>
 <a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="nt">label</span><span class="o">:</span><span class="w"> </span><span class="o">[</span><span class="nt">NAME</span><span class="o">];</span><span class="w"> </span>
@@ -30467,7 +30467,7 @@
 <p>Use a <strong>Layer Group</strong> to explore how symbology works together to form a map.</p>
 <ul>
 <li>ne:NE1</li>
-<li>ne:states_provincces_shp</li>
+<li>ne:states_provinces_shp</li>
 <li>ne:populated_places</li>
 </ul>
 </li>

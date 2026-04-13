@@ -30142,12 +30142,12 @@
 <tr>
 <td>SPI</td>
 <td>Required</td>
-<td>The DataStoreFactory used to connect to the index store:<br>- PostGIS: <code>org.geotools.data.postgis.PostgisNGDataStoreFactory</code><br>- Oracle: <code>org.geotools.data.oracle.OracleNGDataStoreFactory</code><br>- H2: <code>org.geotools.data.h2.H2DataStoreFactory</code><br>- SQLServer: <code>org.geotools.data.sqlserver.SQLServerDataStoreFactory</code><br><a href="../../../../tutorials/tomcat-jndi/tomcat-jndi/">JNDI</a> can also be used with any of these stores. If JNDI is used, the DataStoreFactory name will differ from the above.</td>
+<td>The DataStoreFactory used to connect to the index store:<ul><li>PostGIS: <code>org.geotools.data.postgis.PostgisNGDataStoreFactory</code></li><li>Oracle: <code>org.geotools.data.oracle.OracleNGDataStoreFactory</code></li><li>H2: <code>org.geotools.data.h2.H2DataStoreFactory</code></li><li>SQLServer: <code>org.geotools.data.sqlserver.SQLServerDataStoreFactory</code></li></ul><a href="../../../../tutorials/tomcat-jndi/tomcat-jndi/">JNDI</a> can also be used with any of these stores. If JNDI is used, the DataStoreFactory name will differ from the above.</td>
 </tr>
 <tr>
 <td>Connection parameters</td>
 <td>Required</td>
-<td>The connection parameters used by the specified SPI. The list of these connection parameters can be found in the GeoTools documentation on the relevant store:<br>- <a href="https://docs.geotools.org/latest/userguide/library/jdbc/postgis.md">PostGIS</a><br>- <a href="https://docs.geotools.org/latest/userguide/library/jdbc/oracle.md">Oracle</a><br>- <a href="https://docs.geotools.org/latest/userguide/library/jdbc/h2.md">H2</a><br>- <a href="https://docs.geotools.org/latest/userguide/library/jdbc/sqlserver.md">SQLServer</a><br>If JNDI is used, the connection parameters will include <code>jndiReferenceName</code> instead of <code>host</code>, <code>port</code>, etc. Note that for any connection parameters that include a space (such as <code>loose bbox</code>), the space must be escaped by preceding it with a backslash (<code>loose\ bbox</code>).</td>
+<td>The connection parameters used by the specified SPI. The list of these connection parameters can be found in the GeoTools documentation on the relevant store:<ul><li><a href="https://docs.geotools.org/latest/userguide/library/jdbc/postgis.md">PostGIS</a></li><li><a href="https://docs.geotools.org/latest/userguide/library/jdbc/oracle.md">Oracle</a></li><li><a href="https://docs.geotools.org/latest/userguide/library/jdbc/h2.md">H2</a></li><li><a href="https://docs.geotools.org/latest/userguide/library/jdbc/sqlserver.md">SQLServer</a></li></ul>If JNDI is used, the connection parameters will include <code>jndiReferenceName</code> instead of <code>host</code>, <code>port</code>, etc. Note that for any connection parameters that include a space (such as <code>loose bbox</code>), the space must be escaped by preceding it with a backslash (<code>loose\ bbox</code>).</td>
 </tr>
 </tbody>
 </table>
@@ -30485,7 +30485,7 @@
 </tr>
 <tr>
 <td>MergeBehavior</td>
-<td>The method used to handle overlapping granules during the mosaic operation. Can be:<br>&gt; - <code>FLAT</code> (default), only the topmost granule is visible in the case of an overlap)<br>&gt; - <code>STACK</code>, a band-stacking merge is applied to the overlapping granules, each granule becomes a different output band in the result.<br>&gt; - <code>MIN</code>, the overlapping granules are merged by taking the minimum value amongst the overlapping pixels. The granules do not need to overlap exactly.<br>&gt; - <code>MAX</code>, the overlapping granules are merged by taking the maximum value amongst the overlapping pixels. The granules do not need to overlap exactly.</td>
+<td>The method used to handle overlapping granules during the mosaic operation. Can be:<ul><li><code>FLAT</code> (default), only the topmost granule is visible in the case of an overlap</li><li><code>STACK</code>, a band-stacking merge is applied to the overlapping granules, each granule becomes a different output band in the result.</li><li><code>MIN</code>, the overlapping granules are merged by taking the minimum value amongst the overlapping pixels. The granules do not need to overlap exactly.</li><li><code>MAX</code>, the overlapping granules are merged by taking the maximum value amongst the overlapping pixels. The granules do not need to overlap exactly.</li></ul></td>
 </tr>
 <tr>
 <td>OutputTransparentColor</td>

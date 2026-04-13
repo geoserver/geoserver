@@ -2259,8 +2259,8 @@ div.value-wide {
 }
 .gs-form-group-label:has(.instruct)::after {
   content: "";
-  width: 1rem;
-  height: 1rem;
+  width: 1.125rem;
+  height: 1.125rem;
   background-image: url(../img/icons/silk/information.png);
   background-repeat: no-repeat;
   background-position: center;
@@ -2280,7 +2280,7 @@ div.value-wide {
   border: 1px solid var(--gs-border-color);
   border-radius: var(--gs-border-radius);
   box-shadow: var(--gs-box-shadow-sm);
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-style: italic;
 }
 .gs-form-group-label:hover .instruct,
@@ -2289,6 +2289,31 @@ div.value-wide {
 }
 .instruct {
   display: none;
+}
+.gs-instruction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  font-size: 0;
+  line-height: 1;
+  color: var(--gs-secondary-color);
+  cursor: help;
+}
+.gs-instruction::before {
+  content: "";
+  width: 2rem;
+  height: 1.5rem;
+  flex: 0 0 1.125rem;
+  background-image: url(../img/icons/silk/information.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.gs-instruction:hover {
+  font-size: 1rem;
+  font-style: italic;
 }
 .gs-inline-group {
   display: flex;
@@ -2309,6 +2334,12 @@ div.value-wide {
   }
   .gs-form-group > *:last-child {
     width: -webkit-fill-available;
+  }
+  .gs-instruction {
+    font-size: 0.75rem;
+    font-style: italic;
+    cursor: default;
+    line-height: 1.2;
   }
 
   /* Responsive table */

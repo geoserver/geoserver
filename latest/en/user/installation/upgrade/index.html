@@ -2654,7 +2654,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -20278,7 +20278,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -20334,7 +20334,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25748,7 +25748,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25776,7 +25776,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30873,10 +30873,9 @@ If the NETCDF_DATA_DIR JAVA_OPT is configured, these hidden folders are grouped 
 <h3 id="freemarker-template-method-access-geoserver-227-and-newer">FreeMarker Template Method Access (GeoServer 2.27 and newer)<a class="headerlink" href="#freemarker-template-method-access-geoserver-227-and-newer" title="Permanent link">&para;</a></h3>
 <p>As of GeoServer 2.27, FreeMarker templates are now restricted from accessing methods related to certain sensitive classes to mitigate the impact of malicious templates. Most templates that can be modified by administrators will also be limited to only accessing getter methods. For more information about this, see <a href="../../tutorials/GetFeatureInfo/html/#tutorials_getfeatureinfo_html_access">Accessing Instance Methods</a>.</p>
 <p>The following is an example of the exception message seen when processing a template that previously worked but is blocked by the new restrictions:</p>
-<blockquote>
-<p>Caused by: freemarker.core.InvalidReferenceException: The following has evaluated to null or missing:
-    ==&gt; features[0].type.catalog  [in template "content_en_US.ftl" at line 1, column 3]</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Caused by: freemarker.core.InvalidReferenceException: The following has evaluated to null or missing:
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    ==&gt; features[0].type.catalog  [in template &quot;content_en_US.ftl&quot; at line 1, column 3]
+</code></pre></div>
 <h3 id="content-security-policy-geoserver-227-and-newer">Content Security Policy (GeoServer 2.27 and newer)<a class="headerlink" href="#content-security-policy-geoserver-227-and-newer" title="Permanent link">&para;</a></h3>
 <p>The Content-Security-Policy HTTP response header are now enabled by default in order to mitigate cross-site scripting and clickjacking attacks. The default header value asks the browser to <strong>block</strong> the use of inline JavaScript in all HTML output except in cases where it is required (e.g., OpenLayers maps).</p>
 <p>It is anticipated that future work may further restrict the default policy in the interests of safety.</p>
@@ -31038,21 +31037,21 @@ If the NETCDF_DATA_DIR JAVA_OPT is configured, these hidden folders are grouped 
 <p>In some cases valid requests may be blocked if the names of GeoServer resources (e.g., workspaces) contain certain special characters and are included in URL paths. See the <a href="../../production/config/#production_config_spring_firewall">Spring Security Firewall</a> page for instructions to disable the strict firewall and revert to the DefaultHttpFirewall used by earlier versions.</p>
 <h3 id="wcs-arcgrid-output-format-removal-geoserver-224-and-newer">WCS ArcGRID output format removal (GeoServer 2.24 and newer)<a class="headerlink" href="#wcs-arcgrid-output-format-removal-geoserver-224-and-newer" title="Permanent link">&para;</a></h3>
 <p>The ArcGRID output format for WCS has been removed in GeoServer 2.24.0. If you have been using this format, you will need to switch to another text based format, such as GML coverage, or can get back the ArcGRID format by installing the <a href="../../community/gdal/">WCS GDAL</a> community module and use a configuration like the following (please adapt to your system):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;ToolConfiguration&gt;</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&lt;executable&gt;</span>gdal_translate<span class="nt">&lt;/executable&gt;</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&lt;environment&gt;</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="nt">&lt;variable</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;GDAL_DATA&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;/usr/local/share/gdal&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="nt">&lt;/environment&gt;</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="nt">&lt;formats&gt;</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="nt">&lt;Format&gt;</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">      </span><span class="nt">&lt;toolFormat&gt;</span>AAIGrid<span class="nt">&lt;/toolFormat&gt;</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">      </span><span class="nt">&lt;geoserverFormat&gt;</span>ArcGrid<span class="nt">&lt;/geoserverFormat&gt;</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">      </span><span class="nt">&lt;fileExtension&gt;</span>.asc<span class="nt">&lt;/fileExtension&gt;</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">      </span><span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">      </span><span class="nt">&lt;mimeType&gt;</span>application/arcgrid<span class="nt">&lt;/mimeType&gt;</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="nt">&lt;/Format&gt;</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">  </span><span class="nt">&lt;/formats&gt;</span>
-<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="nt">&lt;/ToolConfiguration&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;ToolConfiguration&gt;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&lt;executable&gt;</span>gdal_translate<span class="nt">&lt;/executable&gt;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">&lt;environment&gt;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">&lt;variable</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;GDAL_DATA&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;/usr/local/share/gdal&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="nt">&lt;/environment&gt;</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="nt">&lt;formats&gt;</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="nt">&lt;Format&gt;</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">      </span><span class="nt">&lt;toolFormat&gt;</span>AAIGrid<span class="nt">&lt;/toolFormat&gt;</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">      </span><span class="nt">&lt;geoserverFormat&gt;</span>ArcGrid<span class="nt">&lt;/geoserverFormat&gt;</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">      </span><span class="nt">&lt;fileExtension&gt;</span>.asc<span class="nt">&lt;/fileExtension&gt;</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">      </span><span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">      </span><span class="nt">&lt;mimeType&gt;</span>application/arcgrid<span class="nt">&lt;/mimeType&gt;</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="nt">&lt;/Format&gt;</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">  </span><span class="nt">&lt;/formats&gt;</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="nt">&lt;/ToolConfiguration&gt;</span>
 </code></pre></div>
 <h3 id="disk-quota-hsql-db-usage-geoserver-224-and-newer">Disk Quota HSQL DB usage (GeoServer 2.24 and newer)<a class="headerlink" href="#disk-quota-hsql-db-usage-geoserver-224-and-newer" title="Permanent link">&para;</a></h3>
 <p>As of GeoServer 2.24, H2 DB support will be replaced with HSQL DB for Tile Caching / Disk Quota store.</p>
@@ -31079,8 +31078,8 @@ If the NETCDF_DATA_DIR JAVA_OPT is configured, these hidden folders are grouped 
 </li>
 <li>
 <p>The built-in logging profiles are upgraded with <strong><code>xml</code></strong> files:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>DEFAULT_LOGGING.xml
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>DEFAULT_LOGGING.properties.bak
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>DEFAULT_LOGGING.xml
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>DEFAULT_LOGGING.properties.bak
 </code></pre></div>
 </li>
 <li>
@@ -31102,26 +31101,26 @@ If the NETCDF_DATA_DIR JAVA_OPT is configured, these hidden folders are grouped 
 <h3 id="jts-type-bindings-geoserver-214-and-newer">JTS Type Bindings (GeoServer 2.14 and newer)<a class="headerlink" href="#jts-type-bindings-geoserver-214-and-newer" title="Permanent link">&para;</a></h3>
 <p>As of GeoServer 2.14, the output produced by <a href="../../rest/">REST</a> featuretype and structured coverage requests using a different package name (<code>org.locationtech</code> instead of <code>com.vividsolutions</code>) for geometry type bindings, due to the upgrade to JTS (Java Topology Suite) 1.16.0. For example:</p>
 <p>Before:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>...
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nt">&lt;attribute&gt;</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>geom<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">      </span><span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">      </span><span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">      </span><span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">      </span><span class="nt">&lt;binding&gt;</span>com.vividsolutions.jts.geom.Point<span class="nt">&lt;/binding&gt;</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nt">&lt;/attribute&gt;</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>...
-</code></pre></div>
-<p>After:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>...
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nt">&lt;attribute&gt;</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>geom<span class="nt">&lt;/name&gt;</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">      </span><span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">      </span><span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
 <a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">      </span><span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">      </span><span class="nt">&lt;binding&gt;</span>org.locationtech.jts.geom.Point<span class="nt">&lt;/binding&gt;</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">      </span><span class="nt">&lt;binding&gt;</span>com.vividsolutions.jts.geom.Point<span class="nt">&lt;/binding&gt;</span>
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="nt">&lt;/attribute&gt;</span>
 <a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>...
+</code></pre></div>
+<p>After:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>...
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nt">&lt;attribute&gt;</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>geom<span class="nt">&lt;/name&gt;</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">      </span><span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">      </span><span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">      </span><span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">      </span><span class="nt">&lt;binding&gt;</span>org.locationtech.jts.geom.Point<span class="nt">&lt;/binding&gt;</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="nt">&lt;/attribute&gt;</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>...
 </code></pre></div>
 <p>Any REST clients which rely on this binding information should be updated to support the new names.</p>
 <h3 id="geojson-encoding-geoserver-26-and-newer">GeoJSON encoding (GeoServer 2.6 and newer)<a class="headerlink" href="#geojson-encoding-geoserver-26-and-newer" title="Permanent link">&para;</a></h3>

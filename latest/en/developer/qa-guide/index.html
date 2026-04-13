@@ -2168,7 +2168,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19792,7 +19792,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19848,7 +19848,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25262,7 +25262,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25290,7 +25290,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30131,7 +30131,7 @@
 <a id="__codelineno-3-77" name="__codelineno-3-77" href="#__codelineno-3-77"></a><span class="w">    </span><span class="nt">&lt;properties&gt;</span>
 <a id="__codelineno-3-78" name="__codelineno-3-78" href="#__codelineno-3-78"></a><span class="w">        </span><span class="cm">&lt;!-- When calling the store to close, PMD wants the full prefix before the call to --&gt;</span>
 <a id="__codelineno-3-79" name="__codelineno-3-79" href="#__codelineno-3-79"></a><span class="w">        </span><span class="cm">&lt;!-- the method to match, so let&#39;s try to use common var names for store ...       --&gt;</span>
-<a id="__codelineno-3-80" name="__codelineno-3-80" href="#__codelineno-3-80"></a><span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;closeTargets&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt,closeFinally,JDBCUtils.close,closeFileSystem&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-3-80" name="__codelineno-3-80" href="#__codelineno-3-80"></a><span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;closeTargets&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt,closeFinally,JDBCUtils.close,closeFileSystem,shutdown,shutdownNow&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-3-81" name="__codelineno-3-81" href="#__codelineno-3-81"></a><span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;allowedResourceTypes&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;java.io.ByteArrayOutputStream,java.io.ByteArrayInputStream,java.io.StringWriter,java.io.CharArrayWriter,java.util.stream.Stream,java.util.stream.IntStream,java.util.stream.LongStream,java.util.stream.DoubleStream,java.io.StringReader,org.apache.commons.vfs2.FileSystemManager&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
 <a id="__codelineno-3-82" name="__codelineno-3-82" href="#__codelineno-3-82"></a><span class="w">    </span><span class="nt">&lt;/properties&gt;</span>
 <a id="__codelineno-3-83" name="__codelineno-3-83" href="#__codelineno-3-83"></a><span class="w">  </span><span class="nt">&lt;/rule&gt;</span>
@@ -30542,9 +30542,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>mvn<span class="w"> </span>sortpom:sort
 </code></pre></div>
 <p>Verification checks if (ignoring whitespace changes) is the current <strong><code>pom.xml</code></strong> in the correct order:</p>
-<blockquote>
-<p>mvn sortpom:verify</p>
-</blockquote>
+<p><code>mvn sortpom:verify</code></p>
 <p>Property <code>pom.fmt.action</code> is used to choose <code>sort</code> or <code>verify</code> (defaults to <code>sort</code>):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>mvn<span class="w"> </span>verify<span class="w"> </span>-Dqa<span class="w"> </span>-Dpom.fmt.action<span class="o">=</span>verify
 </code></pre></div>

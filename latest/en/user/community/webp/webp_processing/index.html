@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19797,7 +19797,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19853,7 +19853,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25269,7 +25269,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25297,7 +25297,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -29863,7 +29863,6 @@
 <p>Detailed information about this image format can be obtained from <a href="https://developers.google.com/speed/webp">Googles WebP Website</a> and the <a href="https://groups.google.com/a/webmproject.org/g/webp-discuss">WebP Discussion Group</a>.</p>
 <p>A simpler representative representation can be found at <a href="https://web.dev/learn/images/webp">Learn Images! WebP</a>.</p>
 <h2 id="results-based-on-the-standard-libraries-and-the-imageio-webp-extension">Results based on the standard libraries and the ImageIO WebP extension<a class="headerlink" href="#results-based-on-the-standard-libraries-and-the-imageio-webp-extension" title="Permanent link">&para;</a></h2>
-<blockquote>
 <table>
 <thead>
 <tr>
@@ -29906,9 +29905,7 @@
 </tr>
 </tbody>
 </table>
-</blockquote>
 <p><strong>Table 1</strong>: Comparison of the processing time for different tile sizes and image formats. For the ImageIO images, the average of 1000 .write functions was calculated. With <a href="https://storage.googleapis.com/downloads.webmproject.org/releases/webp/index.md">LibWebP</a>, the average of the encoding duration was calculated for 10 passes. For WebP processing, the default settings were used (lossy, q=75) and Version 1.0.0. <a href="http://localhost:8080/geoserver/tiger/wms?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetMap&amp;FORMAT=image%2Fpng&amp;TRANSPARENT=true&amp;LAYERS=tiger%3Apoly_landmarks%2Ctiger%3Atiger_roads&amp;TILED=true&amp;CRS=EPSG%3A4326&amp;STYLES=&amp;WIDTH=256&amp;HEIGHT=256&amp;BBOX=40.72317044999999%2C-74.01748242500003%2C40.80211814999999%2C-73.93853472500001">GeoServerRequest</a> for image (256*256).</p>
-<blockquote>
 <table>
 <thead>
 <tr>
@@ -29957,7 +29954,6 @@
 </tr>
 </tbody>
 </table>
-</blockquote>
 <p><strong>Table 2</strong>: Comparison of the size in KB for different tile sizes and image formats (see table above).</p>
 <p>It is obvious that WebP can never match the performance of PNG images due to its encoding time.</p>
 <p>However, this does not explain the much worse results of the ImageIO WebP extension. Unfortunately, the original repository is not available any more, and the main fork <a href="https://github.com/sejda-pdf/webp-imageio">webp_imageio</a> is outdated and unmaintained. The GeoServer plugin is based on the fork from <a href="https://github.com/gotson/webp-imageio">GOTSON</a>. A hopeful new pure Java implementation is <a href="https://github.com/haraldk/TwelveMonkeys">TwelveMonkeysImageIO WebP</a>, but so far only supports read access. <a href="https://sksamuel.github.io/scrimage/webp/">Scrimage Webp</a> produced mostly faster results, but does not fit in GeoServer's ImageIO ecosystem. Google itself provides for Android <a href="https://developers.google.com/speed/webp/faq#how_do_i_use_the_libwebp_java_bindings_in_my_android_project">libwebp Java bindings</a>.</p>
@@ -30061,7 +30057,6 @@
 </tbody>
 </table>
 <p><strong>Table 3</strong>: Comparison of the lossy/lossless mode and compression factor (q) for LibWebP encoding time and file size. Input image, see below. The average of the encoding duration was calculated for 10 passes.</p>
-<blockquote>
 <table>
 <thead>
 <tr>
@@ -30152,7 +30147,6 @@
 </tr>
 </tbody>
 </table>
-</blockquote>
 <p><strong>Table 4</strong>: Comparison of the lossy/lossless mode and compression factor (q) for ImageIO WebP extension .write time and file size. Input image, see below. The average of 1000 .write functions was calculated.</p>
 <p><img alt="" src="../images/lossy_lossless.png" /></p>
 <p><strong>Figure 1</strong>: Input image for comparison in table 3 and 4 (PNG 256 * 256 px, 73 kb).</p>
@@ -30199,7 +30193,6 @@
 </ul>
 <p>This also applies to the JPEG format in a weakened way.</p>
 <h2 id="browser-rendering-energy-impact-for-different-image-formats">Browser rendering energy impact for different image formats<a class="headerlink" href="#browser-rendering-energy-impact-for-different-image-formats" title="Permanent link">&para;</a></h2>
-<blockquote>
 <table>
 <thead>
 <tr>
@@ -30226,7 +30219,6 @@
 </tr>
 </tbody>
 </table>
-</blockquote>
 <p><strong>Table 5</strong>: Comparison of the rendering energy consumption for different image formats in Firefox. Average of 1000 WMS GetMap requests.</p>
 <p>Firefox "Energy Impact" (about:processes page) shows the processing power being used by the CPU.</p>
 <p>Despite the different file sizes of the image formats, no really significant differences can be seen. Of course, more complex coding also requires more complex decoding.</p>

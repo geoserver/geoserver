@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19859,7 +19859,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19915,7 +19915,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25329,7 +25329,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25357,7 +25357,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -29835,19 +29835,19 @@
 </li>
 </ol>
 <h2 id="verifying-installation">Verifying Installation<a class="headerlink" href="#verifying-installation" title="Permanent link">&para;</a></h2>
-<p>1. On the first startup after installation, GeoServer creates a print module configuration file in <strong><code>{GEOSERVER_DATA_DIR}/printing/config.yaml</code></strong>.</p>
-<blockquote>
+<ol>
+<li>On the first startup after installation, GeoServer creates a print module configuration file in <strong><code>{GEOSERVER_DATA_DIR}/printing/config.yaml</code></strong>.</li>
+</ol>
 <p>You may override where the <strong><code>config.yaml</code></strong> file is located through an application property <code>GEOSERVER_PRINT_CONFIG_DIR</code>.</p>
-</blockquote>
-<p>2. The name of the file <strong><code>config.yaml</code></strong> cannot be changed; it is possible to specify the folder when this is located.</p>
-<blockquote>
+<ol>
+<li>The name of the file <strong><code>config.yaml</code></strong> cannot be changed; it is possible to specify the folder when this is located.</li>
+</ol>
 <p>Example: <code>-DGEOSERVER_PRINT_CONFIG_DIR=/tmp/ext_printing</code></p>
 <p>allows the module searching the configuration file into the external folder <strong><code>/tmp/ext_printing/config.yaml</code></strong></p>
-</blockquote>
-<p>3. Checking for <strong><code>config.yaml</code></strong> file's existence is a quick way to verify the module is installed properly.</p>
-<blockquote>
+<ol>
+<li>Checking for <strong><code>config.yaml</code></strong> file's existence is a quick way to verify the module is installed properly.</li>
+</ol>
 <p>It is safe to edit this file; in fact to control the print module settings you need to open this configuration file in a text editor.</p>
-</blockquote>
 <ol>
 <li>
 <p>When the module is installed and configured properly, then you will also be able to retrieve a list of configured printing parameters from <a href="http://localhost:8080/geoserver/pdf/info.json">http://localhost:8080/geoserver/pdf/info.json</a> . This service must be working properly for JavaScript clients to use the printing service.</p>

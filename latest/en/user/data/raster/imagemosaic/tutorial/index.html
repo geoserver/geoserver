@@ -2179,7 +2179,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19972,7 +19972,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -20028,7 +20028,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25442,7 +25442,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25470,7 +25470,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30391,9 +30391,7 @@
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="na">SPI</span><span class="o">=</span><span class="s">org.geotools.data.oracle.OracleNGDataStoreFactory</span>
 </code></pre></div>
 <p>The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using the directory name as the table name. In case a specific table name needs to be used, add an <strong><code>indexer.properties</code></strong> specifying the <code>TypeName</code> property, e.g.:</p>
-<blockquote>
-<p>TypeName=myMosaicTypeName</p>
-</blockquote>
+<p><code>TypeName=myMosaicTypeName</code></p>
 <p>In case the index "table" already exists instead, then a <strong><code>indexer.properties</code></strong> file will be required, with the following contents:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="na">UseExistingSchema</span><span class="o">=</span><span class="s">true</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="na">TypeName</span><span class="o">=</span><span class="s">nameOfTheFeatureTypeContainingTheIndex</span>
@@ -30437,7 +30435,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Configuration">
+          <a href="../configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ImageMosaic configuration">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30447,7 +30445,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Configuration
+                ImageMosaic configuration
               </div>
             </div>
           </a>

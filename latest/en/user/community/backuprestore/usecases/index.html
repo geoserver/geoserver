@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19797,7 +19797,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19853,7 +19853,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25373,7 +25373,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25401,7 +25401,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -29906,11 +29906,10 @@
 <p>When using a DataBase as backend storage for the mosaic index, a <code>datastore.properties</code> file is present on the mosaic folder containing the connection parameters.</p>
 <p>In case the user wants to parametrize this, he must create a <code>.template</code> datastore properties file containing all the properties of the original one but using placemarks as parametric values.</p>
 <p>As an instance:</p>
-<blockquote>
-<p>host=${mosaic1.jdbc.host}
-    port=${mosaic1.jdbc.port}
-    ...</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>host=${mosaic1.jdbc.host}
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    port=${mosaic1.jdbc.port}
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    ...
+</code></pre></div>
 <p>The backup and restore extension will save on the archive both the original <code>.properties</code> and the <code>.template</code></p>
 <p>When restoring, the extension will overwrite the <code>.properties</code> by using the <code>.template</code> and substituting the placemarks with the correct environment property values.</p>
 <p>When using a shapefile as backend for the index the shapefile itself will be created once again by the mosaic when performing the first harvest operation.</p>

@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19986,7 +19986,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -20042,7 +20042,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25456,7 +25456,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25484,7 +25484,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30224,9 +30224,7 @@
 <div class="highlight"><pre><span></span><code>http://host:port/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb
 </code></pre></div>
 <p>The <code>executionId</code> identifies the running request, and can be used in the <code>Dismiss</code> vendor operation in order to cancel the execution of the process:</p>
-<blockquote>
 <p><a href="http://host:port/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=Dismiss&amp;executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb">http://host:port/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=Dismiss&amp;executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb</a></p>
-</blockquote>
 <p>Upon receipt GeoServer will do its best to stop the running process, and subsequent calls to <code>Dismiss</code> or <code>GetExecutionStatus</code> will report that the executionId is not known anymore. Internally, GeoServer will stop any process that attempts to report progress, and poison input and outputs to break the execution of the process, but the execution of processes that already got their inputs, and are not reporting their progress back, will continue until their natural end.</p>
 <p>For example, let's consider the "geo:Buffer" process, possibly working against a very large input GML geometry, to be fetched from another host. The process itself does a single call to a JTS function, which cannot report progress. Here are three possible scenarios, depending on when the Dismiss operation is invoked:</p>
 <ul>

@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19797,7 +19797,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19853,7 +19853,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25340,7 +25340,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25368,7 +25368,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -29841,27 +29841,25 @@
 <p>What we want to achieve is to allow the GeoServer Backup &amp; Restore module to <em>inject</em> environment properties on indexers allowing the ImageMosaic to be automatically ported among different environments.</p>
 <h2 id="technical-details">Technical Details<a class="headerlink" href="#technical-details" title="Permanent link">&para;</a></h2>
 <p>The GeoServer Backup &amp; Restore module actually provides an extension point on reading / writing allowing GeoServer to handle additional resources related to a particular <code>ResourceInfo</code>.</p>
-<blockquote>
-<p>The interfaces :</p>
-<div class="highlight"><pre><span></span><code>public interface CatalogAdditionalResourcesWriter&lt;T&gt; {
-
-    public boolean canHandle(Object item);
-
-    public void writeAdditionalResources(Backup backupFacade, Resource base, T item)
-            throws IOException;
-
-}
-
-public interface CatalogAdditionalResourcesReader&lt;T&gt; {
-
-    public boolean canHandle(Object item);
-
-    public void readAdditionalResources(Backup backupFacade, Resource base, T item)
-            throws IOException;
-
-}
-</code></pre></div>
-</blockquote>
+<p>The interfaces :
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">CatalogAdditionalResourcesWriter</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">canHandle</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">item</span><span class="p">);</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">writeAdditionalResources</span><span class="p">(</span><span class="n">Backup</span><span class="w"> </span><span class="n">backupFacade</span><span class="p">,</span><span class="w"> </span><span class="n">Resource</span><span class="w"> </span><span class="n">base</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">item</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">                </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="p">;</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">CatalogAdditionalResourcesReader</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">canHandle</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">item</span><span class="p">);</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">readAdditionalResources</span><span class="p">(</span><span class="n">Backup</span><span class="w"> </span><span class="n">backupFacade</span><span class="p">,</span><span class="w"> </span><span class="n">Resource</span><span class="w"> </span><span class="n">base</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">item</span><span class="p">)</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">                </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="p">;</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">    </span><span class="p">}</span>
+</code></pre></div></p>
 <p>Is invoked by the <code>CatalogFileWriter</code> (when doing a Backup) and the <code>CatalogItemWriter</code> (when doing a Restore) after a successful write of the resource configuration on the, respectively, target backup folder and in-memory catalog.</p>
 <p>The idea is the following one <em>allowing the CatalogItemWriter to</em>:</p>
 <ol>

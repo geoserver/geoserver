@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19954,7 +19954,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -20010,7 +20010,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25424,7 +25424,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25452,7 +25452,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30035,9 +30035,7 @@
 <h3 id="cql_filter">cql_filter<a class="headerlink" href="#cql_filter" title="Permanent link">&para;</a></h3>
 <p>The <code>cql_filter</code> parameter is similar to same named WMS parameter, and allows expressing a filter using ECQL (Extended Common Query Language). The filter is sent down into readers exposing a <code>Filter</code> read parameter.</p>
 <p>For example, assume a image mosaic has a tile index with a <code>cloudCover</code> percentage attribute, then it's possible to mosaic only granules with a cloud cover less than 10% using:</p>
-<blockquote>
-<p>cql_filter=cloudCover &lt; 10</p>
-</blockquote>
+<p><code>cql_filter=cloudCover &lt; 10</code></p>
 <p>For full details see the <a href="../../../filter/ecql_reference/">ECQL Reference</a> and <a href="../../../tutorials/cql/cql_tutorial/">CQL and ECQL</a> tutorial.</p>
 <h3 id="sortby">sortBy<a class="headerlink" href="#sortby" title="Permanent link">&para;</a></h3>
 <p>The <code>sortBy</code> parameter allows to control the order of granules being mosaicked, using the same syntax as WFS 1.0, that is:</p>

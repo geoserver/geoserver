@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19797,7 +19797,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19853,7 +19853,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25366,7 +25366,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25394,7 +25394,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -29934,9 +29934,7 @@ set GDAL_DATA=C:\path\to\release-1900-x64-gdal-2-4-0-mapserver-7-2-1\bin\gdal-da
 <p><img alt="" src="images/store_config.png" /></p>
 <p><em>The OGR datasore configuration page</em></p>
 <p>The <strong>DatasourceName</strong> can be a reference to a file, a directory, or a set of connection parameters to a server. For example, to connect to a PostGIS database the connection parameters could be:</p>
-<blockquote>
 <p><code>PG:user=theUser password=thePassword dbname=theDatabase</code></p>
-</blockquote>
 <p>Notice how, unlike documented in the OGR page, single quotes are not needed (and actually harmful) around the user/password/dbname section. The <strong>Browse</strong> button can be used to quickly peek files or directories from the file system.</p>
 <p>The <strong>Driver</strong> parameter is optional, OGR should be able to recognize the appropriate driver automatically, but it's useful to force a specific choice when multiple competing drivers are available for the same data source (e.g., OpenFileGDB vs FileGDB).</p>
 <p>The pooling parameters, similar to those found in a database, merit an explanation. OGR exposes access to data through DataSource objects, which are not thread safe, so only one request at a time can use them. At the same time, they can be expensive to create and hold onto useful state, like in memory data caches, spatial indexes and the like. As such, they have been stored in a pool much like relational database connections.</p>

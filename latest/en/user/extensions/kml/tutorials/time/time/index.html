@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19933,7 +19933,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19989,7 +19989,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25403,7 +25403,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25431,7 +25431,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30112,10 +30112,8 @@
 <p class="admonition-title">Warning</p>
 <p><strong>Setting the Timezone</strong></p>
 <p>Be aware that the KML output for <strong>date time</strong> formats will reflect the timezone of the java virtual machine, which can be set using the user.timezone parameter in the startup script. For example, the following command starts GeoServer using the Coordinated Universal Time (UTC) timezone.</p>
-<blockquote>
 <p><code>exec "$_RUNJAVA" -DGEOSERVER_DATA_DIR="$GEOSERVER_DATA_DIR"</code>
-:   <code>-Djava.awt.headless=true -DSTOP.PORT=8079</code> <code>-Duser.timezone=UTC</code> <code>-DSTOP.KEY=geoserver -jar start.jar</code></p>
-</blockquote>
+<code>-Djava.awt.headless=true -DSTOP.PORT=8079</code> <code>-Duser.timezone=UTC</code> <code>-DSTOP.KEY=geoserver -jar start.jar</code></p>
 <p>If the timezone is not set, it will default to the timezone of the operating system.</p>
 </div>
 <h3 id="specifying-a-date-range">Specifying a Date Range<a class="headerlink" href="#specifying-a-date-range" title="Permanent link">&para;</a></h3>

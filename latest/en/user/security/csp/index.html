@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -20012,7 +20012,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -20068,7 +20068,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25482,7 +25482,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25510,7 +25510,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30125,20 +30125,18 @@
 <p>The <strong>Content Security Policy</strong> page controls how GeoServer prepares the Content-Security-Policy (CSP) HTTP response headers, used to mitigate cross-site scripting and clickjacking attacks.</p>
 <h2 id="default-configuration">Default Configuration<a class="headerlink" href="#default-configuration" title="Permanent link">&para;</a></h2>
 <p>The default CSP configuration is intended to support many GeoServer use cases and allow users to securely run GeoServer without having to modify the configuration. It may be updated in future releases to fix bugs, support new features or enhance security.</p>
-<blockquote>
 <p>The default header value for most GeoServer requests will be:</p>
-<div class="highlight"><pre><span></span><code>base-uri &#39;self&#39;;
-default-src &#39;none&#39;;
-child-src &#39;self&#39;;
-connect-src &#39;self&#39;;
-font-src &#39;self&#39;;
-img-src &#39;self&#39; data:;
-style-src &#39;self&#39; &#39;unsafe-inline&#39;;
-script-src &#39;self&#39;;
-form-action &#39;self&#39;;
-frame-ancestors &#39;self&#39;;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&gt;     base-uri &#39;self&#39;;
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>&gt;     default-src &#39;none&#39;;
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>&gt;     child-src &#39;self&#39;;
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>&gt;     connect-src &#39;self&#39;;
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>&gt;     font-src &#39;self&#39;;
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>&gt;     img-src &#39;self&#39; data:;
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>&gt;     style-src &#39;self&#39; &#39;unsafe-inline&#39;;
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>&gt;     script-src &#39;self&#39;;
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>&gt;     form-action &#39;self&#39;;
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>&gt;     frame-ancestors &#39;self&#39;;
 </code></pre></div>
-</blockquote>
 <p>The <code>'unsafe-inline'</code> and <code>'unsafe-eval'</code> sources will be added to the <code>script-src</code> directive only for specific requests that may require unsafe JavaScript.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30159,53 +30157,47 @@ frame-ancestors &#39;self&#39;;
 <p>Use the <strong>Report violations without enforcement</strong> checkbox to switch the header name from <code>Content-Security-Policy</code> to <code>Content-Security-Policy-Report-Only</code>. This will tell the browser to report CSP violations without enforcing their effects to allow administrators and developers to experiment with different policies. This setting will apply to the CSP set by Wicket or any other modules setting their own CSP unless <strong>Allow modules to override header</strong> is set to <code>true</code>.</p>
 <p>Use the <strong>Allow modules to override header</strong> checkbox to allow Wicket web pages and other modules to completely overwrite the header that is set by this configuration. By default, when the CSP header is set by another component, GeoServer will attempt to append any non-fetch directives from the old header value that are not already in the new value. This is primarily intended to add the <code>form-action</code> and <code>frame-ancestors</code> directives to Wicket's CSP header.</p>
 <p>Use the <strong>Inject proxy base URL into header</strong> checkbox to inject the proxy base URL into the <code>form-action</code> directive and all fetch directives that normally allow <code>'self'</code>. This is only necessary for certain use cases where web browsers are able to access a GeoServer host directly rather than through the proxy and the HTML response contains absolute URLs to the proxy base URL. This does not guarantee that other browser restrictions will not prevent the page from functioning.</p>
-<blockquote>
 <p>Enabling this with a proxy base URL set to <code>https://geoserver.org</code> would change the header value at the top of this page to:</p>
-<div class="highlight"><pre><span></span><code>base-uri &#39;self&#39;;
-default-src &#39;none&#39;;
-child-src &#39;self&#39; https://geoserver.org;
-connect-src &#39;self&#39; https://geoserver.org;
-font-src &#39;self https://geoserver.org&#39;;
-img-src &#39;self&#39; https://geoserver.org data:;
-style-src &#39;self&#39; https://geoserver.org &#39;unsafe-inline&#39;;
-script-src &#39;self&#39; https://geoserver.org;
-form-action &#39;self&#39; https://geoserver.org;
-frame-ancestors &#39;self&#39;;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&gt;     base-uri &#39;self&#39;;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>&gt;     default-src &#39;none&#39;;
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>&gt;     child-src &#39;self&#39; https://geoserver.org;
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>&gt;     connect-src &#39;self&#39; https://geoserver.org;
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>&gt;     font-src &#39;self https://geoserver.org&#39;;
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>&gt;     img-src &#39;self&#39; https://geoserver.org data:;
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>&gt;     style-src &#39;self&#39; https://geoserver.org &#39;unsafe-inline&#39;;
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>&gt;     script-src &#39;self&#39; https://geoserver.org;
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>&gt;     form-action &#39;self&#39; https://geoserver.org;
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>&gt;     frame-ancestors &#39;self&#39;;
 </code></pre></div>
-</blockquote>
 <p>Use the <strong>Allowed sources for remote web resources</strong> text field to add sources to the <code>font-src</code>, <code>img-src</code>, <code>style-src</code>, and <code>script-src</code> directives for static web files (if not disabled by system property) and for WMS GetFeatureInfo HTML output (if enabled by system property). This is intended to make it easier to allow loading these resources from a CDN or any other remote host. Only trusted hosts should be added here to prevent cross-site scripting attacks.</p>
-<blockquote>
 <p>Setting this to <code>'self' https://geoserver.org</code> would set the following header value for an HTML file in the static files directory:</p>
-<div class="highlight"><pre><span></span><code>base-uri &#39;self&#39;;
-default-src &#39;none&#39;;
-child-src &#39;self&#39;; connect-src &#39;self&#39;;
-font-src &#39;self&#39; https://geoserver.org;
-img-src &#39;self&#39; https://geoserver.org data:;
-style-src &#39;self&#39; https://geoserver.org &#39;unsafe-inline&#39;;
-script-src &#39;self&#39; https://geoserver.org;
-form-action &#39;self&#39;;
-frame-ancestors &#39;self&#39;;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&gt;     base-uri &#39;self&#39;;
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>&gt;     default-src &#39;none&#39;;
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>&gt;     child-src &#39;self&#39;; connect-src &#39;self&#39;;
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>&gt;     font-src &#39;self&#39; https://geoserver.org;
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>&gt;     img-src &#39;self&#39; https://geoserver.org data:;
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>&gt;     style-src &#39;self&#39; https://geoserver.org &#39;unsafe-inline&#39;;
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>&gt;     script-src &#39;self&#39; https://geoserver.org;
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>&gt;     form-action &#39;self&#39;;
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>&gt;     frame-ancestors &#39;self&#39;;
 </code></pre></div>
-</blockquote>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code>geoserver.csp.remoteResources</code> system property will override this field if it has been set.</p>
 </div>
 <p>Use the <strong>Allowed form-action directives sources</strong> text field to control the sources of the <code>form-action</code> directive. This is intended to make it easier for administrators to allow specific remote hosts to submit forms to. This can be useful for cases where form submissions may redirect the browser to a URL that does not exactly match the submitting page and can also help where GeoServer authentication is handled by an external service. Only trusted hosts should be added here to prevent cross-site scripting attacks from submitting sensitive data to an attacker-controlled site.</p>
-<blockquote>
 <p>Setting this to <code>'self' https://geoserver.org</code> would change the header value at the top of this page to:</p>
-<div class="highlight"><pre><span></span><code>base-uri &#39;self&#39;;
-default-src &#39;none&#39;;
-child-src &#39;self&#39;;
-connect-src &#39;self&#39;;
-font-src &#39;self&#39;;
-img-src &#39;self&#39; data:;
-style-src &#39;self&#39; &#39;unsafe-inline&#39;;
-script-src &#39;self&#39;;
-form-action &#39;self&#39; https://geoserver.org;
-frame-ancestors &#39;self&#39;;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt;     base-uri &#39;self&#39;;
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>&gt;     default-src &#39;none&#39;;
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>&gt;     child-src &#39;self&#39;;
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>&gt;     connect-src &#39;self&#39;;
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>&gt;     font-src &#39;self&#39;;
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>&gt;     img-src &#39;self&#39; data:;
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>&gt;     style-src &#39;self&#39; &#39;unsafe-inline&#39;;
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>&gt;     script-src &#39;self&#39;;
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>&gt;     form-action &#39;self&#39; https://geoserver.org;
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>&gt;     frame-ancestors &#39;self&#39;;
 </code></pre></div>
-</blockquote>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code>geoserver.csp.formAction</code> system property will override this field if it has been set.</p>
@@ -30215,20 +30207,18 @@ frame-ancestors &#39;self&#39;;
 <p>The web interface will block setting this field to a value containing <code>'none'</code> in order to prevent an administrator from accidentally triggering a denial-of-service. If an administrator wants to disable all form submissions, the full CSP header value can be configured in a rule or the configuration file can be uploaded through the REST Resources API or modified manually in the data directory.</p>
 </div>
 <p>Use the <strong>Allowed frame-ancestors directive sources</strong> text field to control the sources of the <code>frame-ancestors</code> directive. This is intended to make it easier for administrators to allow specific remote hosts to load GeoServer content in frames. Only trusted hosts should be added here to prevent clickjacking attacks.</p>
-<blockquote>
 <p>Setting this to <code>'self' https://geoserver.org</code> would change the header value at the top of this page to:</p>
-<div class="highlight"><pre><span></span><code>base-uri &#39;self&#39;;
-default-src &#39;none&#39;;
-child-src &#39;self&#39;;
-connect-src &#39;self&#39;;
-font-src &#39;self&#39;;
-img-src &#39;self&#39; data:;
-style-src &#39;self&#39; &#39;unsafe-inline&#39;;
-script-src &#39;self&#39;;
-form-action &#39;self&#39;;
-frame-ancestors &#39;self&#39; https://geoserver.org;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&gt;     base-uri &#39;self&#39;;
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>&gt;     default-src &#39;none&#39;;
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>&gt;     child-src &#39;self&#39;;
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>&gt;     connect-src &#39;self&#39;;
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>&gt;     font-src &#39;self&#39;;
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>&gt;     img-src &#39;self&#39; data:;
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>&gt;     style-src &#39;self&#39; &#39;unsafe-inline&#39;;
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>&gt;     script-src &#39;self&#39;;
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>&gt;     form-action &#39;self&#39;;
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>&gt;     frame-ancestors &#39;self&#39; https://geoserver.org;
 </code></pre></div>
-</blockquote>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code>geoserver.csp.frameAncestors</code> system property will override this field if it has been set.</p>

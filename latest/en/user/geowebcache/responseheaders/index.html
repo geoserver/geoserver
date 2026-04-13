@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19913,7 +19913,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19969,7 +19969,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25383,7 +25383,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25411,7 +25411,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -29990,7 +29990,8 @@
 <p>A query for a specific tile returns the <code>Last-Modified</code> response header:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="go">curl -v &quot;http://localhost:8080/geoserver/gwc/service/wms?LAYERS=img%20states&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=application%2Fvnd.ogc.se_inimage&amp;SRS=EPSG%3A4326&amp;BBOX=-135,45,-90,90&amp;WIDTH=256&amp;HEIGHT=256&quot; &gt;/dev/null</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>&gt; Host: localhost:8080
+<div class="highlight"><pre><span></span><code>```
+&gt; Host: localhost:8080
 &gt; Accept: */*
 &gt;
 &lt; HTTP/1.1 200 OK
@@ -29998,11 +29999,13 @@
 &lt; Last-Modified: Wed, 25 Jul 2012 00:42:00 GMT
 &lt; Content-Type: image/png
 &lt; Content-Length: 31192
+```
 </code></pre></div>
 <p>This request has the <code>If-Modified-Since</code> header set to one second after what was returned by <code>Last-Modified</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="go">curl --header &quot;If-Modified-Since: Wed, 25 Jul 2012 00:42:01 GMT&quot; -v &quot;http://localhost:8080/geoserver/gwc/service/wms?LAYERS=img%20states&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=application%2Fvnd.ogc.se_inimage&amp;SRS=EPSG%3A4326&amp;BBOX=-135,45,-90,90&amp;WIDTH=256&amp;HEIGHT=256&quot; &gt;/dev/null</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="go">curl --header &quot;If-Modified-Since: Wed, 25 Jul 2012 00:42:01 GMT&quot; -v &quot;http://localhost:8080/geoserver/gwc/service/wms?LAYERS=img%20states&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=application%2Fvnd.ogc.se_inimage&amp;SRS=EPSG%3A4326&amp;BBOX=-135,45,-90,90&amp;WIDTH=256&amp;HEIGHT=256&quot; &gt;/dev/null</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>&gt; Host: localhost:8080
+<div class="highlight"><pre><span></span><code>```
+&gt; Host: localhost:8080
 &gt; Accept: */*
 &gt; If-Modified-Since: Wed, 25 Jul 2012 00:42:01 GMT
 &gt; 
@@ -30010,13 +30013,15 @@
 &lt; Last-Modified: Wed, 25 Jul 2012 00:42:00 GMT
 &lt; Content-Type: image/png
 &lt; Content-Length: 31192
+```
 </code></pre></div>
 <p>The response code is <code>304</code>. As the file hasn't been modified since the time specified in the request, no content is actually transferred. The client is informed that its copy of the tile is up to date.</p>
 <p>However, if you were to set the <code>If-Modified-Since</code> header to <em>before</em> the time stored in <code>Last-Modified</code>, you will instead receive a <code>200</code> status code and the tile will be downloaded.</p>
 <p>This example sets the <code>If-Modified-Since</code> header to one second before what was returned by <code>Last-Modified</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="go">curl --header &quot;If-Modified-Since: Wed, 25 Jul 2012 00:41:59 GMT&quot; -v &quot;http://localhost:8080/geoserver/gwc/service/wms?LAYERS=img%20states&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=application%2Fvnd.ogc.se_inimage&amp;SRS=EPSG%3A4326&amp;BBOX=-135,45,-90,90&amp;WIDTH=256&amp;HEIGHT=256&quot; &gt;/dev/null</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="go">curl --header &quot;If-Modified-Since: Wed, 25 Jul 2012 00:41:59 GMT&quot; -v &quot;http://localhost:8080/geoserver/gwc/service/wms?LAYERS=img%20states&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=application%2Fvnd.ogc.se_inimage&amp;SRS=EPSG%3A4326&amp;BBOX=-135,45,-90,90&amp;WIDTH=256&amp;HEIGHT=256&quot; &gt;/dev/null</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>&gt; Host: localhost:8080
+<div class="highlight"><pre><span></span><code>```
+&gt; Host: localhost:8080
 &gt; Accept: */*
 &gt; If-Modified-Since: Wed, 25 Jul 2012 00:41:59 GMT
 &gt; 
@@ -30025,6 +30030,7 @@
 &lt; Last-Modified: Wed, 25 Jul 2012 00:42:00 GMT
 &lt; Content-Type: image/png
 &lt; Content-Length: 31192
+```
 </code></pre></div>
 
 

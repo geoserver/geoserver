@@ -2168,7 +2168,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19792,7 +19792,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19848,7 +19848,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25262,7 +25262,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25290,7 +25290,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30260,9 +30260,7 @@ mvn jetty:run
 </code></pre></div>
 <p>The above command builds the web module against the release configuration that is shipped with GeoServer. The <code>configId</code> is the name of the configuration directory to include, and the <code>configDirectory</code> is the parent directory of the configuration directory to include.</p>
 <p>This can also be used when running the local jetty application server:</p>
-<blockquote>
-<p>mvn jetty:run -DconfigId=release -DconfigDirectory=../../../data/release</p>
-</blockquote>
+<p><code>mvn jetty:run -DconfigId=release -DconfigDirectory=../../../data/release</code></p>
 <p>You may also use an absolute path, if you have a custom data directory you would like to use.</p>
 <h2 id="dependency-management">Dependency Management<a class="headerlink" href="#dependency-management" title="Permanent link">&para;</a></h2>
 <p>GeoServer uses Maven's Bill of Materials (BOM) pattern to centrally manage dependency versions for GeoTools, Spring Framework, and Spring Security. This ensures consistent versions across all modules and simplifies dependency declarations.</p>

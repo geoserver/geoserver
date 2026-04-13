@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -20018,7 +20018,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -20074,7 +20074,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25488,7 +25488,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25516,7 +25516,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30269,9 +30269,8 @@
 <p><em>Grid Mapping and related custom EPSG definition</em></p>
 <p>User defined NetCDF Coordinate Reference Systems with their custom EPSG need to be provided in <strong><code>user_projections\netcdf.projections.properties</code></strong> file inside your data directory (you have to create that file if missing).</p>
 <p>A sample entry in that property file could look like this:</p>
-<blockquote>
-<p>971835=PROJCS["albers_conical_equal_area", GEOGCS["unknown", DATUM["unknown", SPHEROID["unknown", 6378137.0, 298.2572221010042]], PRIMEM["Greenwich", 0.0], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH]], PROJECTION["Albers_Conic_Equal_Area"], PARAMETER["central_meridian", -126.0], PARAMETER["latitude_of_origin", 45.0], PARAMETER["standard_parallel_1", 50.0], PARAMETER["false_easting", 1000000.0], PARAMETER["false_northing", 0.0], PARAMETER["standard_parallel_2", 58.5], UNIT["m", 1.0], AXIS["Easting", EAST], AXIS["Northing", NORTH], AUTHORITY["EPSG","971835"]]</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>971835=PROJCS[&quot;albers_conical_equal_area&quot;, GEOGCS[&quot;unknown&quot;, DATUM[&quot;unknown&quot;, SPHEROID[&quot;unknown&quot;, 6378137.0, 298.2572221010042]], PRIMEM[&quot;Greenwich&quot;, 0.0], UNIT[&quot;degree&quot;, 0.017453292519943295], AXIS[&quot;Geodetic longitude&quot;, EAST], AXIS[&quot;Geodetic latitude&quot;, NORTH]], PROJECTION[&quot;Albers_Conic_Equal_Area&quot;], PARAMETER[&quot;central_meridian&quot;, -126.0], PARAMETER[&quot;latitude_of_origin&quot;, 45.0], PARAMETER[&quot;standard_parallel_1&quot;, 50.0], PARAMETER[&quot;false_easting&quot;, 1000000.0], PARAMETER[&quot;false_northing&quot;, 0.0], PARAMETER[&quot;standard_parallel_2&quot;, 58.5], UNIT[&quot;m&quot;, 1.0], AXIS[&quot;Easting&quot;, EAST], AXIS[&quot;Northing&quot;, NORTH], AUTHORITY[&quot;EPSG&quot;,&quot;971835&quot;]]
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Note the "unknown" names for GEOGCS, DATUM and SPHEROID elements. This is how the underlying NetCDF machinery will name custom elements.</p>
@@ -30376,9 +30375,7 @@
 <div class="highlight"><pre><span></span><code>-DNETCDF_DATA_DIR=/path/to/writeable/index/file/directory
 </code></pre></div>
 <p>All the sidecar hidden directories will end up being located at the top level of the NETCDF_DATA_DIR. In case you're managing a large number of NetCDF files, it's best to spread them out in subdirectories, so that the number of files in each directory is kept low. For that to happen, configure also the following:</p>
-<blockquote>
-<p>-DNETCDF_DATA_DIR_TREE=true</p>
-</blockquote>
+<p><code>-DNETCDF_DATA_DIR_TREE=true</code></p>
 <p>Set up this way, the contents of the NetCDF data directory will mimick the absolute position of the NetCDF files, e.g.:</p>
 <ul>
 <li>A source file is in <code>/opt/data/meteo/2024/01/02/file.nc</code></li>
@@ -30386,9 +30383,7 @@
 <li>The support files will be created in <code>/opt/netcdf_dd/opt/data/meteo/2024/01/02/.file_&lt;digest&gt;</code></li>
 </ul>
 <p>If the extra directory structure is not needed, then the <code>NETCDF_ROOT</code> property can be configured, to indicate where the tree of NetCDF files starts, e.g.:</p>
-<blockquote>
-<p>-DNETCDF_ROOT=/opt/data</p>
-</blockquote>
+<p><code>-DNETCDF_ROOT=/opt/data</code></p>
 <p>In this case, the support files will be created in <code>/opt/netcdf_dd/meteo/2024/01/02/.file_&lt;digest&gt;</code></p>
 <h2 id="supporting-custom-netcdf-units">Supporting Custom NetCDF Units<a class="headerlink" href="#supporting-custom-netcdf-units" title="Permanent link">&para;</a></h2>
 <p>The NetCDF format expresses units using a syntax that is not always understood by our unit parser, and often, uses unit names using unrecognized symbols or that simply unknown to it. The system already comes with some smarts, but in case a unit is not recognized, it's possible to act on the configuration and extend it.</p>
@@ -30398,24 +30393,24 @@
 <li>A (text) "replacement" is used when the unit is a derived one, needing a full expression, or the syntax of the unit is simply unrecognized</li>
 </ul>
 <p>The alias file is called <code>netcdf-unit-aliases.properties</code>, if not provided these contents are assumed:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a># Aliases for unit names that can in turn be used to build more complex units
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Meter=m
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>meter=m
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Metre=m
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>microgram=µg
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>microgrammes=µg
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>nanograms=ng
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>degree=deg
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>percentage=%
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>celsius=°C
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>````
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a># Aliases for unit names that can in turn be used to build more complex units
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Meter=m
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>meter=m
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>Metre=m
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>microgram=µg
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>microgrammes=µg
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>nanograms=ng
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>degree=deg
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>percentage=%
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>celsius=°C
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>````
 </code></pre></div>
 <p>The replacement file is called <code>netcdf-unit-replacements.properties</code>, if not provided the following contents are assumed:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">microgrammes</span><span class="se">\ </span><span class="na">per</span><span class="se">\ </span><span class="na">cubic</span><span class="se">\ </span><span class="na">meter</span><span class="o">=</span><span class="s">µg*m^-3</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">DU</span><span class="o">=</span><span class="s">µmol*m^-2*446.2</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">m2</span><span class="o">=</span><span class="s">m^2</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="na">m3</span><span class="o">=</span><span class="s">m^3</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="na">s2</span><span class="o">=</span><span class="s">s^2</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">microgrammes</span><span class="se">\ </span><span class="na">per</span><span class="se">\ </span><span class="na">cubic</span><span class="se">\ </span><span class="na">meter</span><span class="o">=</span><span class="s">µg*m^-3</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">DU</span><span class="o">=</span><span class="s">µmol*m^-2*446.2</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="na">m2</span><span class="o">=</span><span class="s">m^2</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="na">m3</span><span class="o">=</span><span class="s">m^3</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="na">s2</span><span class="o">=</span><span class="s">s^2</span>
 </code></pre></div>
 <p>Both files express the NetCDF unit as the key, and the standard symbol or replacement text as the value.</p>
 <p>It is possible to place the files in three different locations:</p>
@@ -30470,45 +30465,45 @@
 <p>On older GeoServer version the command might fail complaining it cannot find <code>org.jaxen.NamespaceContext</code>. If that's the case, download <a href="https://repo1.maven.org/maven2/jaxen/jaxen/1.1.6/jaxen-1.1.6.jar">Jaxen 1.1.6</a>, add it into the GeoServer <code>WEB-INF/lib</code> directory, and try again.</p>
 </div>
 <p>This will generate the files and it's going to be good enough if each NetCDF contains the same coverages. The <code>indexer.xml</code> file might look as follows:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;Indexer&gt;</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&lt;domains&gt;</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;time&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">      </span><span class="nt">&lt;attributes&gt;&lt;attribute&gt;</span>time<span class="nt">&lt;/attribute&gt;&lt;/attributes&gt;</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nt">&lt;/domain&gt;</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">  </span><span class="nt">&lt;/domains&gt;</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="nt">&lt;coverages&gt;</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="nt">&lt;coverage&gt;</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>dbz<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">      </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;dbz&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">        </span><span class="nt">&lt;attributes&gt;</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">          </span>the_geom:Polygon,imageindex:Integer,location:String,time:java.util.Date
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">        </span><span class="nt">&lt;/attributes&gt;</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">      </span><span class="nt">&lt;/schema&gt;</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">      </span><span class="nt">&lt;domains&gt;</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">        </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;time&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">      </span><span class="nt">&lt;/domains&gt;</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span><span class="nt">&lt;/coverage&gt;</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">  </span><span class="nt">&lt;/coverages&gt;</span>
-<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">  </span><span class="nt">&lt;parameters&gt;</span>
-<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AuxiliaryFile&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;/path/to/the/mosaic/_auxiliary.xml&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AbsolutePath&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">  </span><span class="nt">&lt;/parameters&gt;</span>
-<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="nt">&lt;/Indexer&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;Indexer&gt;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&lt;domains&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;time&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="nt">&lt;attributes&gt;&lt;attribute&gt;</span>time<span class="nt">&lt;/attribute&gt;&lt;/attributes&gt;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">&lt;/domain&gt;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="nt">&lt;/domains&gt;</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="nt">&lt;coverages&gt;</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="nt">&lt;coverage&gt;</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>dbz<span class="nt">&lt;/name&gt;</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">      </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;dbz&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">        </span><span class="nt">&lt;attributes&gt;</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">          </span>the_geom:Polygon,imageindex:Integer,location:String,time:java.util.Date
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">        </span><span class="nt">&lt;/attributes&gt;</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">      </span><span class="nt">&lt;/schema&gt;</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">      </span><span class="nt">&lt;domains&gt;</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">        </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;time&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">      </span><span class="nt">&lt;/domains&gt;</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span><span class="nt">&lt;/coverage&gt;</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">  </span><span class="nt">&lt;/coverages&gt;</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">  </span><span class="nt">&lt;parameters&gt;</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AuxiliaryFile&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;/path/to/the/mosaic/_auxiliary.xml&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AbsolutePath&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">  </span><span class="nt">&lt;/parameters&gt;</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="nt">&lt;/Indexer&gt;</span>
 </code></pre></div>
 <p>While the <code>_auxiliary.xml</code> file might look like:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;Indexer&gt;</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&lt;coverages&gt;</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&lt;coverage&gt;</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;dbz&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="nt">&lt;attributes&gt;</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">          </span>the_geom:Polygon,imageindex:Integer,time:java.util.Date
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="nt">&lt;/attributes&gt;</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">      </span><span class="nt">&lt;/schema&gt;</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">      </span><span class="nt">&lt;origName&gt;</span>dbz<span class="nt">&lt;/origName&gt;</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>dbz<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="nt">&lt;/coverage&gt;</span>
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span><span class="nt">&lt;/coverages&gt;</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="nt">&lt;/Indexer&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;Indexer&gt;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&lt;coverages&gt;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&lt;coverage&gt;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">      </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;dbz&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">        </span><span class="nt">&lt;attributes&gt;</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">          </span>the_geom:Polygon,imageindex:Integer,time:java.util.Date
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="nt">&lt;/attributes&gt;</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">      </span><span class="nt">&lt;/schema&gt;</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">      </span><span class="nt">&lt;origName&gt;</span>dbz<span class="nt">&lt;/origName&gt;</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>dbz<span class="nt">&lt;/name&gt;</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span><span class="nt">&lt;/coverage&gt;</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">  </span><span class="nt">&lt;/coverages&gt;</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="nt">&lt;/Indexer&gt;</span>
 </code></pre></div>
 <p>If instead there are different NetCDF files containing different coverages in the same mosaic, you'll have to:</p>
 <ul>
@@ -30516,19 +30511,19 @@
 <li>Manually merge them into a unified <code>indexer.xml</code> and <code>_auxiliary.xml</code> that will be placed in the mosaic directory.</li>
 </ul>
 <p>NetCDF files contain usually time dimensions, as a result, it's not possible to rely on Shapefile based indexes, but use a relational database instead. So, add a <code>datastore.properties</code> file into the mosaic directory, pointing to a database of choice. Here is an example file, suitable to connect to a PostGIS enabled database, with a schema dedicated to contain the mosaic indexes (make sure it already exists in the database, GeoServer won't create it):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="na">SPI</span><span class="o">=</span><span class="s">org.geotools.data.postgis.PostgisNGDataStoreFactory</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="na">host</span><span class="o">=</span><span class="s">localhost</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="na">port</span><span class="o">=</span><span class="s">5432</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="na">database</span><span class="o">=</span><span class="s">netcdf</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="na">schema</span><span class="o">=</span><span class="s">mosaic_indexes</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="na">user</span><span class="o">=</span><span class="s">user</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="na">passwd</span><span class="o">=</span><span class="s">pwd</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="na">Loose</span><span class="se">\ </span><span class="na">bbox</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="na">Estimated</span><span class="se">\ </span><span class="na">extends</span><span class="o">=</span><span class="s">false</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="na">validate</span><span class="se">\ </span><span class="na">connections</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="na">Connection</span><span class="se">\ </span><span class="na">timeout</span><span class="o">=</span><span class="s">10</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="na">preparedStatements</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="na">max</span><span class="se">\ </span><span class="na">connections</span><span class="o">=</span><span class="s">20</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="na">SPI</span><span class="o">=</span><span class="s">org.geotools.data.postgis.PostgisNGDataStoreFactory</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="na">host</span><span class="o">=</span><span class="s">localhost</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="na">port</span><span class="o">=</span><span class="s">5432</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="na">database</span><span class="o">=</span><span class="s">netcdf</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="na">schema</span><span class="o">=</span><span class="s">mosaic_indexes</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="na">user</span><span class="o">=</span><span class="s">user</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="na">passwd</span><span class="o">=</span><span class="s">pwd</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="na">Loose</span><span class="se">\ </span><span class="na">bbox</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="na">Estimated</span><span class="se">\ </span><span class="na">extends</span><span class="o">=</span><span class="s">false</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="na">validate</span><span class="se">\ </span><span class="na">connections</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="na">Connection</span><span class="se">\ </span><span class="na">timeout</span><span class="o">=</span><span class="s">10</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="na">preparedStatements</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="na">max</span><span class="se">\ </span><span class="na">connections</span><span class="o">=</span><span class="s">20</span>
 </code></pre></div>
 <p>With this in place, it's possible to create stores and layers in GeoServer:</p>
 <ul>

@@ -2168,7 +2168,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19792,7 +19792,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19848,7 +19848,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25262,7 +25262,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25290,7 +25290,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -28504,6 +28504,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="UI Design Guidelines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spacing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spacing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sizing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -29894,6 +29944,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="UI Design Guidelines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spacing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spacing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sizing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -30046,9 +30146,8 @@
 <p>Often in HTML, you will need to include assets such as CSS files, JavaScript libraries, or images to include in your page. Wicket allows you to specify URLs to these relative to your Java source file, using relative paths enclosed in <code>&lt;wicket:link&gt;</code> tags. Wicket will rewrite these links at runtime to use the correct path. However, such resources are not inherited from parent classes, so if you need to include a resource in multiple packages you will need to extract the functionality that uses it to a new class that can be shared between the two. See the <code>XMLEditor</code> component in the core module of GeoServer's UI for an example of a component that does this.</p>
 <h2 id="ui-design-guidelines">UI Design Guidelines<a class="headerlink" href="#ui-design-guidelines" title="Permanent link">&para;</a></h2>
 <p>A brief listing of UI design guidelines for Wicket pages in GeoServer follows.</p>
-<blockquote>
-<p>Forms
-:   In forms, group each field as a <code>&lt;div&gt;</code> with a label and a form field, try to avoid using lists for the layout, as they are only intended for listing items. For radio buttons and checkboxes, the label should come after the field; for all others the label should precede the field. For example:</p>
+<h3 id="forms">Forms<a class="headerlink" href="#forms" title="Permanent link">&para;</a></h3>
+<p>In forms, group each field as a <code>&lt;div&gt;</code> with a label and a form field, try to avoid using lists for the layout, as they are only intended for listing items. For radio buttons and checkboxes, the label should come after the field; for all others the label should precede the field. For example:</p>
 <div class="highlight"><pre><span></span><code>``` html
 &lt;div&gt;
   &lt;label for=&quot;foo&quot;&gt;&lt;wicket:message key=&quot;foo&quot;&gt; Foo &lt;/wicket:message&gt;&lt;/label&gt;
@@ -30069,8 +30168,8 @@ Similar fields can be grouped within a `&lt;fieldset&gt;`, the title of this gro
 &lt;/fieldset&gt;
 ```
 </code></pre></div>
-<p>Spacing
-:   Spacing elements in GeoServer is done with the Bootstrap Utilities (<a href="https://getbootstrap.com/docs/5.2/utilities/spacing/">https://getbootstrap.com/docs/5.2/utilities/spacing/</a>). For both <code>padding</code> and <code>margin</code> a special notation is used as described in the Bootstrap documentation.</p>
+<h3 id="spacing">Spacing<a class="headerlink" href="#spacing" title="Permanent link">&para;</a></h3>
+<p>Spacing elements in GeoServer is done with the Bootstrap Utilities (<a href="https://getbootstrap.com/docs/5.2/utilities/spacing/">https://getbootstrap.com/docs/5.2/utilities/spacing/</a>). For both <code>padding</code> and <code>margin</code> a special notation is used as described in the Bootstrap documentation.</p>
 <div class="highlight"><pre><span></span><code>For example extra padding at the top of a `form` can be achieved as follows:
 
 ``` html
@@ -30079,8 +30178,8 @@ Similar fields can be grouped within a `&lt;fieldset&gt;`, the title of this gro
 &lt;/form&gt;
 ```
 </code></pre></div>
-<p>Sizing
-:   As with Spacing, for Sizing Bootstrap Utilities are used (<a href="https://getbootstrap.com/docs/5.2/utilities/sizing/">https://getbootstrap.com/docs/5.2/utilities/sizing/</a>). Besides the available Bootstrap classes, GeoServer styling needs more classes, however in most cases these extra classes are not needed.</p>
+<h3 id="sizing">Sizing<a class="headerlink" href="#sizing" title="Permanent link">&para;</a></h3>
+<p>As with Spacing, for Sizing Bootstrap Utilities are used (<a href="https://getbootstrap.com/docs/5.2/utilities/sizing/">https://getbootstrap.com/docs/5.2/utilities/sizing/</a>). Besides the available Bootstrap classes, GeoServer styling needs more classes, however in most cases these extra classes are not needed.</p>
 <div class="highlight"><pre><span></span><code>The extra GeoServer sizing classes are:
 
 ``` css
@@ -30171,11 +30270,10 @@ Similar fields can be grouped within a `&lt;fieldset&gt;`, the title of this gro
 </tr>
 </tbody>
 </table>
-<p>Avoid requiring special knowledge from the user.
-:   For example, where a list of values is required, provide a widget that allows manipulating the list one element at a time rather than expecting a comma-separated list of values.</p>
-<p>Custom Components
-:   We recommend creating a reusable Wicket component for any complex values that might need to be edited by users, such as a bounding box or a list of free strings. By extracting this into a component, it is much simpler to provide consistent, rich editing for users.</p>
-</blockquote>
+<p>Avoid requiring special knowledge from the user.</p>
+<p>For example, where a list of values is required, provide a widget that allows manipulating the list one element at a time rather than expecting a comma-separated list of values.</p>
+<h3 id="custom-components">Custom Components<a class="headerlink" href="#custom-components" title="Permanent link">&para;</a></h3>
+<p>We recommend creating a reusable Wicket component for any complex values that might need to be edited by users, such as a bounding box or a list of free strings. By extracting this into a component, it is much simpler to provide consistent, rich editing for users.</p>
 
 
 

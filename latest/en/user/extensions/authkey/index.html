@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -20013,7 +20013,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -20069,7 +20069,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25483,7 +25483,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25511,7 +25511,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30158,9 +30158,7 @@
 <p>Key providers are responsible for mapping the authentication keys to a user. The authentication key itself is a Universally Unique Identifier (UUID). A key provider needs a user/group service and it is responsible for synchronizing the authentication keys with the users contained in this service.</p>
 <h3 id="key-provider-using-user-properties">Key provider using user properties<a class="headerlink" href="#key-provider-using-user-properties" title="Permanent link">&para;</a></h3>
 <p>This key provider uses a user property <code>UUID</code> to map the authentication key to the user. User properties are stored in the user/group service. Synchronizing is simple since the logic has to search for users not having the property <code>UUID</code> and add it. The property value is a generated UUID.</p>
-<blockquote>
-<p>UUID=b52d2068-0a9b-45d7-aacc-144d16322018</p>
-</blockquote>
+<p><code>UUID=b52d2068-0a9b-45d7-aacc-144d16322018</code></p>
 <p>If the user/group service is read only, the property has to be added from outside, no synchronizing is possible.</p>
 <h3 id="key-provider-using-a-property-file">Key provider using a property file<a class="headerlink" href="#key-provider-using-a-property-file" title="Permanent link">&para;</a></h3>
 <p>This key provider uses a property file named <code>authkeys.properties</code>. The default user/group service is named <code>default</code>. The <code>authkeys.properties</code> for this service would be located at</p>
@@ -30253,9 +30251,7 @@ ef18d7e7-963b-470f-9230-c7f9de166888=topp
 <p class="admonition-title">Note</p>
 <p>This is the only real mandatory value to provide. The others are optional and will allow you to customize the User Group Service behavior (see below)</p>
 </div>
-<blockquote>
 <p><img alt="" src="images/004_user_group_service.png" /></p>
-</blockquote>
 <p>Once the new <code>GeoServer UserGroup Service</code> has been configured, it can be easily linked to the <code>Key Provider Web Service Mapper</code>.</p>
 <ol>
 <li>From <code>Authentication</code> &gt; <code>Authentication Filters</code>, select - or add new - <code>AuthKEY</code> using <code>Web Service</code> as key mapper</li>
@@ -30278,10 +30274,8 @@ ROLE_EXTERNAL_ROLE_X
 <p>Of course the role names are known only at runtime; nevertheless it is possible to <strong>statically</strong> specify associated <code>GeoServer User Groups</code> to be mapped later to other internal <code>GeoServer User Roles</code>.</p>
 <p>What does this mean? A <code>GeoServer User Group</code> can be defined on the GeoServer Catalog and can be mapped by the active <code>Role Services</code> to one or more specific <code>GeoServer User Roles</code>.</p>
 <p>This mainly depends on the <code>GeoServer Role Service</code> you use. By default, the internal <code>GeoServer Role Service</code> can map Roles and Groups through static configuration stored on the GeoServer Data Dir. This is possible by editing <code>GeoServer User Group</code> details from the <code>Users, Groups, and Roles</code> panel</p>
-<blockquote>
 <p><img alt="" src="images/006_user_group_service.png" /></p>
 <p><img alt="" src="images/007_user_group_service.png" /></p>
-</blockquote>
 <p>Now, this custom <code>UserGroup Service</code> maps dynamically <code>GeoServer User Role</code> to <code>GeoServer User Group</code> as follows:</p>
 <div class="highlight"><pre><span></span><code>ROLE_MY_USER_ROLE1              &lt;&gt; GROUP_MY_USER_ROLE1
 ROLE_ANOTHER_CUSTOM_USER_ROLE   &lt;&gt; GROUP_ANOTHER_CUSTOM_USER_ROLE
@@ -30292,18 +30286,14 @@ ROLE_EXTERNAL_ROLE_X            &lt;&gt; GROUP_EXTERNAL_ROLE_X
 <p>Once this is correctly configured, it will be possible to edit and assign <code>GeoServer User Roles</code> to the Groups by using the standard way</p>
 <p><img alt="" src="images/009_user_group_service.png" /></p>
 </li>
-</ol>
-<p>2. <em>Role Service to use</em></p>
-<blockquote>
+<li>
+<p><em>Role Service to use</em></p>
 <p>By default, if no <code>Role Service</code> specified, the <code>UserGroup Service</code> will use the <code>GeoServer Active Role Service</code> to resolve <code>GeoServer User Roles</code> from <code>GeoServer User Groups</code> - as specified above -</p>
-<blockquote>
 <p><img alt="" src="images/010_user_group_service.png" /></p>
-</blockquote>
 <p>It is possible to define a <code>Custom Role Service</code> to use instead, to resole <code>GeoServer User Roles</code>; this is possible simply by selecting the <code>Role Service</code> to use from the <code>Role Service to use</code> option</p>
-<blockquote>
 <p><img alt="" src="images/011_user_group_service.png" /></p>
-</blockquote>
-</blockquote>
+</li>
+</ol>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <p>Configuration can be done using the administrator GUI. There is a new type of authentication filter named <strong>authkey</strong> offering the following options.</p>
 <ol>

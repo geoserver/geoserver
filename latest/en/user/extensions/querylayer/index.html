@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19912,7 +19912,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19968,7 +19968,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25382,7 +25382,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25410,7 +25410,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30015,9 +30015,7 @@
 <li><strong>Display only the bug sites overlapping the restricted area whose category is 3</strong>:</li>
 </ul>
 <p>The CQL cross-layer filter on the <code>bugsites</code> layer is</p>
-<blockquote>
 <p><code>INTERSECTS(the_geom, querySingle('restricted', 'the_geom','cat = 3'))</code>.</p>
-</blockquote>
 <p>The WMS request is:</p>
 <div class="highlight"><pre><span></span><code>http://localhost:8080/geoserver/wms?LAYERS=sf%3Aroads%2Csf%3Arestricted%2Csf%3Abugsites&amp;STYLES=&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;EXCEPTIONS=application%2Fvnd.ogc.se_inimage&amp;SRS=EPSG%3A26713&amp;CQL_FILTER=INCLUDE%3BINCLUDE%3BINTERSECTS(the_geom%2C%20querySingle(%27restricted%27%2C%20%27the_geom%27%2C%27cat%20%3D%203%27))&amp;BBOX=589081.6705629,4914128.1213261,609174.02430924,4928177.0717971&amp;WIDTH=512&amp;HEIGHT=358
 </code></pre></div>
@@ -30027,9 +30025,7 @@
 <li><strong>Display all bug sites within 200 meters of any road</strong>:</li>
 </ul>
 <p>The CQL cross-layer filter on the <code>bugsites</code> layer is</p>
-<blockquote>
 <p><code>DWITHIN(the_geom, collectGeometries(queryCollection('sf:roads','the_geom','INCLUDE')), 200, meters)</code>.</p>
-</blockquote>
 <p>The WMS request is:</p>
 <div class="highlight"><pre><span></span><code>http://localhost:8080/geoserver/wms?LAYERS=sf%3Aroads%2Csf%3Arestricted%2Csf%3Abugsites&amp;STYLES=&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;EXCEPTIONS=application%2Fvnd.ogc.se_inimage&amp;SRS=EPSG%3A26713&amp;CQL_FILTER=INCLUDE%3BINCLUDE%3BDWITHIN(the_geom%2C%20collectGeometries(queryCollection(%27sf%3Aroads%27%2C%27the_geom%27%2C%27INCLUDE%27))%2C%20200%2C%20meters)&amp;BBOX=589042.42768447,4914010.3926913,609134.78143081,4928059.3431623&amp;WIDTH=512&amp;HEIGHT=358
 </code></pre></div>

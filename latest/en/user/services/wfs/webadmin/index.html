@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -20019,7 +20019,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -20075,7 +20075,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25489,7 +25489,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25517,7 +25517,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30245,13 +30245,9 @@ zzzz- Time zone full name (e.g., &#39;Pacific Standard Time&#39;)
 <h3 id="configure-xml-entity-expansion-limit-on-wfs-xml-readers">Configure XML Entity Expansion limit on WFS XML readers<a class="headerlink" href="#configure-xml-entity-expansion-limit-on-wfs-xml-readers" title="Permanent link">&para;</a></h3>
 <p>By default, the WFS XML reader sets Entity Expansion limit to <code>100</code>, but it can be configured via the <code>org.geoserver.wfs.xml.entityExpansionLimit</code> system property, or using the <strong><code>web.xml</code></strong> init parameter, or by Environment variable.</p>
 <p>For example, using the command line the limit can be adjusted using a parameter:</p>
-<blockquote>
-<p>-Dorg.geoserver.wfs.xml.entityExpansionLimit=50</p>
-</blockquote>
+<p><code>-Dorg.geoserver.wfs.xml.entityExpansionLimit=50</code></p>
 <p>Or in Tomcat properties file (<code>{TOMCAT_HOME}/conf/catalina.properties</code>) adding the line:</p>
-<blockquote>
-<p>org.geoserver.wfs.xml.entityExpansionLimit=50</p>
-</blockquote>
+<p><code>org.geoserver.wfs.xml.entityExpansionLimit=50</code></p>
 <h2 id="conformance">Conformance<a class="headerlink" href="#conformance" title="Permanent link">&para;</a></h2>
 <p><img alt="" src="../img/services_WFS_conformance.png" /></p>
 <p><em>WFS configuration options - Conformance section</em></p>

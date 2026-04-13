@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19797,7 +19797,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19853,7 +19853,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25371,7 +25371,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25399,7 +25399,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -29927,31 +29927,30 @@
 </ul>
 <h2 id="configuration-file">Configuration file<a class="headerlink" href="#configuration-file" title="Permanent link">&para;</a></h2>
 <p>The configuration file will be parsed by XStream framework to instantiate the right classes. An example of notifier.xml have the follow content:</p>
-<blockquote>
-<p><notificationConfiguration>
-    <queueSize>1000</queueSize>
-      <notificator>
-        <messageFilter>type='Catalog'</messageFilter>
-        <queueSize>1000</queueSize>
-        <processorThreads>1</processorThreads>  <br />
-        <genericProcessor>
-          <geonodeEncoder />
-          <fanoutSender>
-            <username>guest</username>
-            <password>guest</password>
-            <host>localhost</host>
-            <port>4432</port>
-            <virtualHost></virtualHost>
-            <exchangeName>testExchange</exchangeName>
-            <routingKey>testRouting</routingKey>
-          </fanoutSender>
-        </genericProcessor>
-      </notificator>
-      <notificator>
-      ...
-      </notificator>
-    </notificationConfiguration></p>
-</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;notificationConfiguration&gt;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nt">&lt;queueSize&gt;</span>1000<span class="nt">&lt;/queueSize&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">      </span><span class="nt">&lt;notificator&gt;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span><span class="nt">&lt;messageFilter&gt;</span>type=&#39;Catalog&#39;<span class="nt">&lt;/messageFilter&gt;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="nt">&lt;queueSize&gt;</span>1000<span class="nt">&lt;/queueSize&gt;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="nt">&lt;processorThreads&gt;</span>1<span class="nt">&lt;/processorThreads&gt;</span><span class="w">    </span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">        </span><span class="nt">&lt;genericProcessor&gt;</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">          </span><span class="nt">&lt;geonodeEncoder</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">          </span><span class="nt">&lt;fanoutSender&gt;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">            </span><span class="nt">&lt;username&gt;</span>guest<span class="nt">&lt;/username&gt;</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">            </span><span class="nt">&lt;password&gt;</span>guest<span class="nt">&lt;/password&gt;</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">            </span><span class="nt">&lt;host&gt;</span>localhost<span class="nt">&lt;/host&gt;</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">            </span><span class="nt">&lt;port&gt;</span>4432<span class="nt">&lt;/port&gt;</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">            </span><span class="nt">&lt;virtualHost&gt;&lt;/virtualHost&gt;</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">            </span><span class="nt">&lt;exchangeName&gt;</span>testExchange<span class="nt">&lt;/exchangeName&gt;</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">            </span><span class="nt">&lt;routingKey&gt;</span>testRouting<span class="nt">&lt;/routingKey&gt;</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">          </span><span class="nt">&lt;/fanoutSender&gt;</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">        </span><span class="nt">&lt;/genericProcessor&gt;</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">      </span><span class="nt">&lt;/notificator&gt;</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">      </span><span class="nt">&lt;notificator&gt;</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">      </span>...
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">      </span><span class="nt">&lt;/notificator&gt;</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="nt">&lt;/notificationConfiguration&gt;</span>
+</code></pre></div>
 <p><strong>notificationConfiguration</strong> -&gt; <strong>queueSize</strong> = the size of queue that store all the notification messages.</p>
 <p><strong>notificationConfiguration</strong> -&gt; <strong>notificator</strong> = is possible to have one or more notificator.</p>
 <p><strong>notificationConfiguration</strong> -&gt; <strong>notificator</strong> -&gt; <strong>messageFilter</strong> = the is a CQL filter, only notification message that satisfy this filter, will be processed by this notificator. Possible values are:</p>

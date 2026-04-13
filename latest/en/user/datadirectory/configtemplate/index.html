@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19809,7 +19809,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19865,7 +19865,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25279,7 +25279,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25307,7 +25307,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -29749,9 +29749,7 @@
 <p>For example, there might be the need to move the latest changes made from a GeoServer instance running on machine <strong>A</strong> to another instance running on machine <strong>B</strong>, but there are some differences in the way the two environments are set up (e.g. the password used to connect to the database is different). In such scenario if a simple backup of the catalog from instance <strong>A</strong> is created and restored on instance <strong>B</strong>, the stores configured on the database will not be accessible and the corresponding layers will not work properly.</p>
 <p>Another example can be the need to have different connection pool configuration for two different GeoServer instances, with respect to the max number of connections available in the pool.</p>
 <p>To enable env parametrization the following flag needs to be set via system variable to GeoServer's environment:</p>
-<blockquote>
-<p>-DALLOW_ENV_PARAMETRIZATION=true</p>
-</blockquote>
+<p><code>-DALLOW_ENV_PARAMETRIZATION=true</code></p>
 <p>A <code>properties</code> file holding the parametrized settings needs to be created. It can be provided by naming it <code>geoserver-environment.properties</code> and by placing it in the root directory of the GeoServer's DATA_DIR.</p>
 <p>GeoServer is also able to use a <code>properties</code> file outside the GeoServer's DATA_DIR. In this case the path to the <code>properties</code> file must be defined in one of the following ways:</p>
 <ul>
@@ -29769,24 +29767,20 @@
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nt">&lt;/web-app&gt;</span>
 </code></pre></div>
 <p>Once a strategy to load the <code>ENV_PROPERTIES</code> has been defined and set, it is possible to edit GeoServer's configuration files of the source machine that needs to be parametrized. For example, let's parameterize the URL of a store (this can also be done via GeoServer admin UI):</p>
-<blockquote>
 <p><code>vim coveragestore.xml</code> :</p>
-<div class="highlight"><pre><span></span><code>...
- &lt;enabled&gt;true&lt;/enabled&gt;
-  &lt;workspace&gt;
-    &lt;id&gt;WorkspaceInfoImpl--134aa31e:1564c12ef68:-7ffe&lt;/id&gt;
-  &lt;/workspace&gt;
-  &lt;__default&gt;false&lt;/__default&gt;
-  &lt;url&gt;${store_url}&lt;/url&gt;
-&lt;/coverageStore&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="w">    </span>...
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">     </span><span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">      </span><span class="nt">&lt;workspace&gt;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="nt">&lt;id&gt;</span>WorkspaceInfoImpl--134aa31e:1564c12ef68:-7ffe<span class="nt">&lt;/id&gt;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&lt;/workspace&gt;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="nt">&lt;__default&gt;</span>false<span class="nt">&lt;/__default&gt;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="nt">&lt;url&gt;</span>${store_url}<span class="nt">&lt;/url&gt;</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">&lt;/coverageStore&gt;</span>
 </code></pre></div>
-</blockquote>
 <p>A definition for the variable <strong>store_url</strong> needs to be added in</p>
-<blockquote>
 <p><code>geoserver-environment.properties</code> :</p>
-<div class="highlight"><pre><span></span><code>store_url = file:///var/geoserver/store/teststore
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>    store_url = file:///var/geoserver/store/teststore
 </code></pre></div>
-</blockquote>
 <p>Once GeoServer has been restarted, it is possible to see that the URL in "Connection Parameters" settings now refers the variable <strong>store_url</strong> whose value is defined in the <code>geoserver-environment.properties</code> file.</p>
 <p><img alt="" src="../img/configtemplate001.png" /></p>
 <p>Another common use case is parameterizing connection details for a vector datastore. Hostname, credentials and connection pool parameters for the databases tend to change between environments. Once the variables are set in the <code>geoserver-environment.properties</code> file, the Datastore can be configured as follows:</p>

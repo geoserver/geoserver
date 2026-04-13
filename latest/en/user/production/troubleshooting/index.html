@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -20047,7 +20047,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -20103,7 +20103,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25517,7 +25517,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25545,7 +25545,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -30301,25 +30301,30 @@ Caused by: java.io.IOException: Access is denied
 <p>All tools work against a live Java Virtual Machine, the one running GeoServer in particular. In order for them to work properly you'll have to run them with a user that has enough privileges to connect to the JVM process, in particular super user or the same user that's running the JVM usually have the required right.</p>
 <h3 id="jps">jps<a class="headerlink" href="#jps" title="Permanent link">&para;</a></h3>
 <p><a href="http://java.sun.com/javase/6/docs/technotes/tools/share/jps.md">jps</a> is a tool listing all the Java processing running. It can be used to retrieve the <code>pid</code> (process id) of the virtual machine that is running GeoServer. For example:</p>
-<div class="highlight"><pre><span></span><code>&gt; jps -mlv
+<div class="highlight"><pre><span></span><code>```
+jps -mlv
 
 16235 org.apache.catalina.startup.Bootstrap start -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.util.logging.config.file=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18/conf/logging.properties -Djava.endorsed.dirs=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18/endorsed -Dcatalina.base=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18 -Dcatalina.home=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18 -Djava.io.tmpdir=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18/temp
 11521  -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -Djava.library.path=/usr/lib/jni -Dosgi.requiredJavaVersion=1.5 -XX:MaxPermSize=256m -Xms64m -Xmx1024m -XX:CMSClassUnloadingEnabled -XX:CMSPermGenSweepingEnabled -XX:+UseParNewGC
 16287 sun.tools.jps.Jps -mlv -Dapplication.home=/usr/lib/jvm/java-6-sun-1.6.0.16 -Xms8m
+```
 </code></pre></div>
 <p>The output shows the <code>pid</code>, the main class name if available, and the parameters passed to the JVM at startup. In this example <code>16235</code> is Tomcat hosting GeoServer, <code>11521</code> is an Eclipse instance, and <code>16287</code> is <code>jps</code> itself. In the common case you'll have only few JVM and the one running GeoServer can be identified by the parameters passed to it.</p>
 <h3 id="jstack">jstack<a class="headerlink" href="#jstack" title="Permanent link">&para;</a></h3>
 <p><a href="http://java.sun.com/javase/6/docs/technotes/tools/share/jstack.md">jstack</a> is a tool for extracting the current stack trace for each thread running in the virtual machine. It can be used to identify scalability issues and to gather what the program is actually doing.</p>
 <p>It usually requires detailed understanding of the inner workings of GeoServer to properly interpret the jstack output.</p>
 <p>An example of usage:</p>
-<div class="highlight"><pre><span></span><code>&gt; jstack -F -l 16235 &gt; /tmp/tomcat-stack.txt
+<div class="highlight"><pre><span></span><code>```
+jstack -F -l 16235 &gt; /tmp/tomcat-stack.txt
 Attaching to process ID 16235, please wait...
 Debugger attached successfully.
 Server compiler detected.
 JVM version is 14.2-b01
+```
 </code></pre></div>
 <p>And the file contents might look like:</p>
-<div class="highlight"><pre><span></span><code>Deadlock Detection:
+<div class="highlight"><pre><span></span><code>```
+Deadlock Detection:
 
 No deadlocks found.
 
@@ -30355,11 +30360,13 @@ Locked ownable synchronizers:
     - None
 
 ...
+```
 </code></pre></div>
 <h3 id="jmap">jmap<a class="headerlink" href="#jmap" title="Permanent link">&para;</a></h3>
 <p><a href="http://java.sun.com/javase/6/docs/technotes/tools/share/jmap.md">jmap</a> is a tool to gather information about the Java virtual machine. It can be used in a few interesting ways.</p>
 <p>By running it without arguments (other than the process id of the JVM) it will print out a <strong>dump of the native libraries used by the JVM</strong>. This can come in handy when one wants to double check GeoServer is actually using a certain version of a native library (e.g., GDAL):</p>
-<div class="highlight"><pre><span></span><code>&gt; jmap 17251
+<div class="highlight"><pre><span></span><code>```
+jmap 17251
 
 Attaching to process ID 17251, please wait...
 Debugger attached successfully.
@@ -30394,92 +30401,95 @@ JVM version is 14.2-b01
 0xb7f32000  113K  /lib/tls/i686/cmov/libpthread-2.9.so
 0xb7f51000  55K   /usr/lib/jvm/java-6-sun-1.6.0.16/jre/lib/i386/libverify.so
 0xb7f60000  114K  /lib/ld-2.9.so
+```
 </code></pre></div>
 <p>It's also possible to get a <strong>quick summary of the JVM heap status</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&gt; jmap -heap 17251
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Attaching to process ID 17251, please wait...
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Debugger attached successfully.
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Server compiler detected.
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>JVM version is 14.2-b01
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>using thread-local object allocation.
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>Parallel GC with 2 thread(s)
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>Heap Configuration:
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>   MinHeapFreeRatio = 40
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>   MaxHeapFreeRatio = 70
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>   MaxHeapSize      = 778043392 (742.0MB)
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>   NewSize          = 1048576 (1.0MB)
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>   MaxNewSize       = 4294901760 (4095.9375MB)
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>   OldSize          = 4194304 (4.0MB)
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>   NewRatio         = 8
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>   SurvivorRatio    = 8
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>   PermSize         = 16777216 (16.0MB)
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>   MaxPermSize      = 67108864 (64.0MB)
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>Heap Usage:
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>PS Young Generation
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>Eden Space:
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>   capacity = 42401792 (40.4375MB)
-<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>   used     = 14401328 (13.734176635742188MB)
-<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>   free     = 28000464 (26.703323364257812MB)
-<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>   33.96396076845054% used
-<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>From Space:
-<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>   capacity = 4718592 (4.5MB)
-<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>   used     = 2340640 (2.232208251953125MB)
-<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>   free     = 2377952 (2.267791748046875MB)
-<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>   49.60462782118056% used
-<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>To Space:
-<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>   capacity = 4587520 (4.375MB)
-<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>   used     = 0 (0.0MB)
-<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>   free     = 4587520 (4.375MB)
-<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>   0.0% used
-<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>PS Old Generation
-<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>   capacity = 43188224 (41.1875MB)
-<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>   used     = 27294848 (26.0303955078125MB)
-<a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>   free     = 15893376 (15.1571044921875MB)
-<a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>   63.19974630121396% used
-<a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>PS Perm Generation
-<a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a>   capacity = 38404096 (36.625MB)
-<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a>   used     = 38378640 (36.60072326660156MB)
-<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a>   free     = 25456 (0.0242767333984375MB)
-<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a>   99.93371540369027% used
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>jmap -heap 17251
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>Attaching to process ID 17251, please wait...
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>Debugger attached successfully.
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Server compiler detected.
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>JVM version is 14.2-b01
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>using thread-local object allocation.
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>Parallel GC with 2 thread(s)
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>Heap Configuration:
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>   MinHeapFreeRatio = 40
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>   MaxHeapFreeRatio = 70
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>   MaxHeapSize      = 778043392 (742.0MB)
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>   NewSize          = 1048576 (1.0MB)
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>   MaxNewSize       = 4294901760 (4095.9375MB)
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>   OldSize          = 4194304 (4.0MB)
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>   NewRatio         = 8
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>   SurvivorRatio    = 8
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>   PermSize         = 16777216 (16.0MB)
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>   MaxPermSize      = 67108864 (64.0MB)
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>Heap Usage:
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>PS Young Generation
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>Eden Space:
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>   capacity = 42401792 (40.4375MB)
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>   used     = 14401328 (13.734176635742188MB)
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>   free     = 28000464 (26.703323364257812MB)
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>   33.96396076845054% used
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>From Space:
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a>   capacity = 4718592 (4.5MB)
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a>   used     = 2340640 (2.232208251953125MB)
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a>   free     = 2377952 (2.267791748046875MB)
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a>   49.60462782118056% used
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a>To Space:
+<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a>   capacity = 4587520 (4.375MB)
+<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a>   used     = 0 (0.0MB)
+<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a>   free     = 4587520 (4.375MB)
+<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a>   0.0% used
+<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a>PS Old Generation
+<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a>   capacity = 43188224 (41.1875MB)
+<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a>   used     = 27294848 (26.0303955078125MB)
+<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a>   free     = 15893376 (15.1571044921875MB)
+<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a>   63.19974630121396% used
+<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a>PS Perm Generation
+<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a>   capacity = 38404096 (36.625MB)
+<a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a>   used     = 38378640 (36.60072326660156MB)
+<a id="__codelineno-5-48" name="__codelineno-5-48" href="#__codelineno-5-48"></a>   free     = 25456 (0.0242767333984375MB)
+<a id="__codelineno-5-49" name="__codelineno-5-49" href="#__codelineno-5-49"></a>   99.93371540369027% used
 </code></pre></div>
 <p>In the result it can be seen that the JVM is allowed to use up to 742MB of memory, and that at the moment the JVM is using 130MB (rough sum of the capacities of each heap section). In case of a persistent memory leak the JVM will end up using whatever is allowed to and each section of the heap will be almost 100% used.</p>
 <p>To see <strong>how the memory is actually being used in a succinct way</strong> the following command can be used (on Windows, replace <code>head -25</code> with <code>more</code>):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="err">&gt; jmap -histo:live 17251 | head -25</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="err"> num     #instances         #bytes  class name</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="err">----------------------------------------------</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="err">   1:         81668       10083280  &lt;constMethodKlass&gt;</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="err">   2:         81668        6539632  &lt;methodKlass&gt;</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="err">   3:         79795        5904728  [C</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="err">   4:        123511        5272448  &lt;symbolKlass&gt;</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="err">   5:          7974        4538688  &lt;constantPoolKlass&gt;</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="err">   6:         98726        3949040  org.hsqldb.DiskNode</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="err">   7:          7974        3612808  &lt;instanceKlassKlass&gt;</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="err">   8:          9676        2517160  [B</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="err">   9:          6235        2465488  &lt;constantPoolCacheKlass&gt;</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="err">  10:         10054        2303368  [I</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="err">  11:         83121        1994904  java.lang.String</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="err">  12:         27794        1754360  [Ljava.lang.Object;</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="err">  13:          9227         868000  [Ljava.util.HashMap$Entry;</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="err">  14:          8492         815232  java.lang.Class</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="err">  15:         10645         710208  [S</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="err">  16:         14420         576800  org.hsqldb.CachedRow</span>
-<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="err">  17:          1927         574480  &lt;methodDataKlass&gt;</span>
-<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="err">  18:          8937         571968  org.apache.xerces.dom.ElementNSImpl</span>
-<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="err">  19:         12898         561776  [[I</span>
-<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="err">  20:         23122         554928  java.util.HashMap$Entry</span>
-<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="err">  21:         16910         541120  org.apache.xerces.dom.TextImpl</span>
-<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="err">  22:          9898         395920  org.apache.xerces.dom.AttrNSImpl</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="err">jmap -histo:live 17251 | head -25</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="err"> num     #instances         #bytes  class name</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="err">----------------------------------------------</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="err">   1:         81668       10083280  &lt;constMethodKlass&gt;</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="err">   2:         81668        6539632  &lt;methodKlass&gt;</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="err">   3:         79795        5904728  [C</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="err">   4:        123511        5272448  &lt;symbolKlass&gt;</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="err">   5:          7974        4538688  &lt;constantPoolKlass&gt;</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="err">   6:         98726        3949040  org.hsqldb.DiskNode</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="err">   7:          7974        3612808  &lt;instanceKlassKlass&gt;</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="err">   8:          9676        2517160  [B</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="err">   9:          6235        2465488  &lt;constantPoolCacheKlass&gt;</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="err">  10:         10054        2303368  [I</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="err">  11:         83121        1994904  java.lang.String</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="err">  12:         27794        1754360  [Ljava.lang.Object;</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="err">  13:          9227         868000  [Ljava.util.HashMap$Entry;</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="err">  14:          8492         815232  java.lang.Class</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="err">  15:         10645         710208  [S</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="err">  16:         14420         576800  org.hsqldb.CachedRow</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="err">  17:          1927         574480  &lt;methodDataKlass&gt;</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="err">  18:          8937         571968  org.apache.xerces.dom.ElementNSImpl</span>
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="err">  19:         12898         561776  [[I</span>
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="err">  20:         23122         554928  java.util.HashMap$Entry</span>
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="err">  21:         16910         541120  org.apache.xerces.dom.TextImpl</span>
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="err">  22:          9898         395920  org.apache.xerces.dom.AttrNSImpl</span>
 </code></pre></div>
 <p>By the dump we can see most of the memory is used by the GeoServer code itself (first 5 items) followed by the HSQL cache holding a few rows of the EPSG database. In case of a memory leak a few object types will hold the vast majority of the live heap. Mind, to look for a leak the dump should be gathered with the server almost idle. If, for example, the server is under a load of GetMap requests the main memory usage will be the byte[] holding the images while they are rendered, but that is not a leak, it's legitimate and temporary usage.</p>
 <p>In case of memory leaks a developer will probably ask for a <strong>full heap dump</strong> to analyze with a high end profiling tool. Such a dump can be generated with the following command:</p>
-<div class="highlight"><pre><span></span><code>&gt; jmap -dump:live,file=/tmp/dump.hprof 17251
+<div class="highlight"><pre><span></span><code>```
+jmap -dump:live,file=/tmp/dump.hprof 17251
 Dumping heap to /tmp/dump.hprof ...
 Heap dump file created
+```
 </code></pre></div>
 <p>The dump files are generally as big as the memory used so it's advisable to compress the resulting file before sending it to a developer.</p>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>

@@ -2173,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    ImageMosaic configuration
   
 
     
@@ -19881,7 +19881,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
+    Getting Started
   
 
     
@@ -19937,7 +19937,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced
+    Advanced Configuration
   
 
     
@@ -25351,7 +25351,7 @@
   <span class="md-ellipsis">
     
   
-    Schema
+    Opt. 1: Removing Redundant Schema Information
   
 
     
@@ -25379,7 +25379,7 @@
   <span class="md-ellipsis">
     
   
-    Attributes
+    Opt. 2: Removing Redundant Attribute Values
   
 
     
@@ -29868,9 +29868,7 @@ audit.roll_limit=20
 </code></pre></div>
 <p>The <code>audit.enable</code> is used to turn on the logger (it is off by default). The <code>audit.path</code> is the directory where the log files will be created. The <code>audit.roll_limit</code> is the number of requests logged into a file before rolling happens. The files are also automatically rolled at the beginning of each day.</p>
 <p>In clustered installations with a shared data directory the audit path will need to be different for each node. In this case it's possible to specify the audit path by using a JVM system variable, add the following to the JVM startup options and it will override whatever is specified in <code>monitor.properties</code>:</p>
-<blockquote>
-<p>-DGEOSERVER_AUDIT_PATH=/path/to/the/logs/directory</p>
-</blockquote>
+<p><code>-DGEOSERVER_AUDIT_PATH=/path/to/the/logs/directory</code></p>
 <h2 id="log-files">Log Files<a class="headerlink" href="#log-files" title="Permanent link">&para;</a></h2>
 <p>The log directory will contain a number of log files following the <code>geoserver_audit_yyyymmdd_nn.log</code> pattern. The <code>nn</code> is increased at each roll of the file. The contents of the log directory will look like:</p>
 <div class="highlight"><pre><span></span><code>geoserver_audit_20110811_2.log

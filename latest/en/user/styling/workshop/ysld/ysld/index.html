@@ -30380,10 +30380,17 @@
 </li>
 <li>
 <p>Replace the initial YSLD definition with our airport YSLD example and click <strong>Apply</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p p-Indicator">{</span><span class="err">%</span><span class="w"> </span>
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="nv">include &quot;../files/airports0.ysld&quot;</span>
-<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="nv">%</span><span class="p p-Indicator">}</span>
-</code></pre></div>
+<p><code>yaml
+name: airports
+title: Airports
+scale: [min, max]
+symbolizers:
+- point:
+size: 16
+symbols:
+- external:
+    url: airport.svg
+    format: image/svg</code></p>
 </li>
 <li>
 <p>Click the <strong>Layer Preview</strong> tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select <code>ne:airports</code> from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.</p>

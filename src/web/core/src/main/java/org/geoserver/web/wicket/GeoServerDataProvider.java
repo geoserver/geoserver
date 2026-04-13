@@ -91,7 +91,17 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         this.matchers = null;
     }
 
-    /** Returns the context filter, or {@code null} if none has been overridden */
+    /**
+     * Returns the context filter, or {@code null} if none has been overridden.
+     * <p>
+     * The filter is referred to as "context" because it is used to contextualize 
+     * the data provider based on specific content. It primarily stores filtering criteria 
+     * originating from URL query parameters, such as {@code workspace}, 
+     * {@code layer}, and {@code group}, scoping the view to that specific context.
+     * </p>
+     *
+     * @return the active context filter, or {@code null} if no filter is applied
+     */
     protected Filter getContextFilter() {
         return null;
     }

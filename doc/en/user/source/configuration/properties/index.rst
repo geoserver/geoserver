@@ -253,6 +253,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GS_FILETYPES_UNRESTRICTED
+
+       If true, do not validate uploaded file type, default false
+     -
+     -
+     - x
    * - ows10.exception.xml.responsetype
        
        :doc:`/production/config`

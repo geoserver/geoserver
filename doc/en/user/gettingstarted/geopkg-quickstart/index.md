@@ -196,14 +196,14 @@ Now that we have connected to the GeoPackage, we can publish the layer.
 
 In order to verify that the `tutorial:countries` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Data > Layer Preview** page and find the `tutorial:countries` layer.
+1.  Navigate to the **Data > Browse Layers** page and find the `tutorial:countries` layer.
 
     !!! note
         Use the **Search** field with `tutorial` as shown to limit the number of layers to page through.
 
     ![](images/preview.png)
 
-    *Layer Preview*
+    *Browse Layers*
 
 2.  Click the **OpenLayers** link in the **Common Formats** column.
 

@@ -16,7 +16,7 @@ This output module allows GeoServer to output imagery and terrain in formats und
 
 ## Checking if the extension is enabled
 
-Once the extension is installed, the provided mime-types should appear in the layer preview dropbox as shown:
+Once the extension is installed, the provided mime-types should appear in the Browse Layers dropbox as shown:
 
 ![](images/bil_dds.jpg)
 

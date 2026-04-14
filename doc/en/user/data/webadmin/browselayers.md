@@ -1,10 +1,10 @@
-# Layer Preview
+# Browse Layers
 
 This page provides layer views in various output formats. A layer must be enabled to be previewed.
 
 ![](img/preview_list.png)
 
-*Layer Preview Page*
+*Browse Layers Page*
 
 Each layer row consists of a type, name, title, and available formats for viewing.
 
@@ -23,11 +23,11 @@ Name refers to the Workspace and Layer Name of a layer, while Title refers to th
 
 ![](img/preview_row.png)
 
-*Single Layer preview row*
+*Single Browse Layers row*
 
 ## Output Formats
 
-The Layer Preview page supports a variety of output formats for further use or data sharing. You can preview all three layer types in the common OpenLayers and KML formats. Similarly, using the "All formats" menu you can preview all layer types in seven additional output formats---AtomPub, GIF, GeoRss, JPEG, KML (compressed), PDF, PNG, SVG, and TIFF. Only Vector layers provide the WFS output previews, including the common GML as well as the CSV, GML3, GeoJSON and shapefile formats. The table below provides a brief description of all supported output formats, organized by output type (image, text, or data).
+The Browse Layers page supports a variety of output formats for further use or data sharing. You can preview all three layer types in the common OpenLayers and KML formats. Similarly, using the "All formats" menu you can preview all layer types in seven additional output formats---AtomPub, GIF, GeoRss, JPEG, KML (compressed), PDF, PNG, SVG, and TIFF. Only Vector layers provide the WFS output previews, including the common GML as well as the CSV, GML3, GeoJSON and shapefile formats. The table below provides a brief description of all supported output formats, organized by output type (image, text, or data).
 
 ### Image Outputs
 

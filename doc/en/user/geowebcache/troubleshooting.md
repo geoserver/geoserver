@@ -14,7 +14,7 @@ Direct integration allows WMS requests served through GeoServer to be cached as 
 
 Sometimes requests that should go to GeoWebCache will instead be passed through to GeoServer, resulting in no tiles saved. That said, it is possible to determine why a request was not handled by GeoWebCache when intended. This is done by using the command-line utility [cURL](http://curl.haxx.se) and inspecting the response headers.
 
-First, obtain a sample request. This can easily be done by going to the Layer Preview for a given layer, setting the **Tiled** parameter to **Tiled**, then right-clicking on an area of the map and copy the full path to the image location. If done correctly, the result will be a GET request that looks something like this:
+First, obtain a sample request. This can easily be done by going to the Browse Layers for a given layer, setting the **Tiled** parameter to **Tiled**, then right-clicking on an area of the map and copy the full path to the image location. If done correctly, the result will be a GET request that looks something like this:
 
     http://localhost:8090/geoserver/nurc/wms?LAYERS=nurc%3AArc_Sample&STYLES=&FORMAT=image%2Fjpeg&TILED=true&TILESORIGIN=-180%2C-90&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=-45,-45,0,0&WIDTH=256&HEIGHT=256
 

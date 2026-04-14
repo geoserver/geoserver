@@ -78,7 +78,7 @@ The beginning sections---Basic Resource Info, Keywords and Metadata link---are a
 
 - **Enabled**---A layer that is not enabled won't be available to any kind of request, it will just show up in the configuration (and in REST config)
 
-- **Advertised**---A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the layer preview.
+- **Advertised**---A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the Browse Layers page.
 
 - **Title**---Human-readable description to briefly identify the layer to clients (required)
 
@@ -291,7 +291,7 @@ Sets the WMS specific publishing parameters.
 
 - **Queryable**---Controls whether the layer is queryable via WMS `GetFeatureInfo` requests.
 - **Default style**---Style that will be used when the client does not specify a named style in GetMap requests.
-- **Additional styles**---Other styles that can be associated with this layer. Some clients (and the GeoServer Layer Preview) will present those as styling alternatives for that layer to the user.
+- **Additional styles**---Other styles that can be associated with this layer. Some clients (and the GeoServer Browse Layers page) will present those as styling alternatives for that layer to the user.
 - **Default rendering buffer**---Default value of the `buffer` GetMap/GetFeatureInfo vendor parameter. See the [WMS vendor parameters](../../services/wms/vendor.md) for more details.
 - **Default WMS path**---Location of the layer in the WMS capabilities layer tree. Useful for building non-opaque layer groups
 - **Default Interpolation Method**---Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see [Raster Rendering Options](../../services/wms/webadmin.md#services_webadmin_wms_raster_options) for details). Can be overridden by the [interpolations vendor parameter](../../services/wms/vendor.md#wms_vendor_parameter_interpolations).

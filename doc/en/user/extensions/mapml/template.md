@@ -11,7 +11,7 @@ MapML supports the following template types:
 | `mapml-feature-head.ftl` | Used to insert `map-style` elements into a MapML feature document.                                   |
 | `mapml-feature.ftl`      | Used to rewrite MapML features, with ability to change attributes, styles, geometries, and add links |
 
-## GetMap MapML HTML Preview/Layer Preview Head Stylesheet Templating
+## GetMap MapML HTML Preview/Browse Layers Head Stylesheet Templating
 
 The preview is returned when the format includes `subtype=mapml`. The preview is an HTML document that includes a `head` section with a link to the stylesheet. The default preview viewer is a simple viewer that includes a link to the default stylesheet. A template can be created to insert links to whole stylesheet or actual stylesheet elements. We can do this by creating a file called `mapml-preview-head.ftl` in the GeoServer data directory in the directory for the layer that we wish to append links to. For example we could create this file under `workspaces/topp/states_shapefile/states`. To add stylesheet links and stylesheet elements, we enter the following text inside this new file:
 

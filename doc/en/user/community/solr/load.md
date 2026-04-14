@@ -52,7 +52,7 @@ At this point it's possible to configure a layer showing only the roads in the G
 
 *Setting up the roads layer*
 
-After setting the bounding box and the proper style, the layer preview will show the roads stored in SOLR:
+After setting the bounding box and the proper style, the Browse Layers page will show the roads stored in SOLR:
 
 ![](images/solr_roads_preview.png)
 

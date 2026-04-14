@@ -56,7 +56,7 @@ This section manages the Authentication Filters (adding, removing, and editing).
 
 ### Anonymous access
 
-By default, GeoServer will allow anonymous access to the [Web administration interface](../../webadmin/index.md). Without authentication, users will still be able to view the [Layer Preview](../../data/webadmin/layerpreview.md), capabilities documents, and basic GeoServer details. Anonymous access can by removing the **anonymous** authentication filter. If removed, anonymous users navigating to the GeoServer page will get an HTTP 401 status code, which typically results in a browser-based request for credentials.
+By default, GeoServer will allow anonymous access to the [Web administration interface](../../webadmin/index.md). Without authentication, users will still be able to view the [Browse Layers](../../data/webadmin/browselayers.md), capabilities documents, and basic GeoServer details. Anonymous access can by removing the **anonymous** authentication filter. If removed, anonymous users navigating to the GeoServer page will get an HTTP 401 status code, which typically results in a browser-based request for credentials.
 
 ### Credentials from Headers filter
 

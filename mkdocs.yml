@@ -149,7 +149,7 @@ nav:
       - en/user/data/index.md
       - Data settings:
         - en/user/data/webadmin/index.md
-        - en/user/data/webadmin/layerpreview.md
+        - en/user/data/webadmin/browselayers.md
         - en/user/data/webadmin/workspaces.md
         - en/user/data/webadmin/stores.md
         - en/user/data/webadmin/layers.md

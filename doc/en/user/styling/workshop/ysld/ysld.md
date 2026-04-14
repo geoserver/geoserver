@@ -301,11 +301,7 @@ To confirm everything works, let's reproduce the airports style above.
 1.  Replace the initial YSLD definition with our airport YSLD example and click **Apply**:
 
     ```yaml
-    {%raw%}
-    {% 
-      include "../files/airports0.ysld"
-    %}
-    {%endraw%}
+    --8<-- "doc/en/user/styling/workshop/files/airports0.ysld"
     ```
 
 2.  Click the **Layer Preview** tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select `ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.

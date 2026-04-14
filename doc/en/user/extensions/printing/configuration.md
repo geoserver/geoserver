@@ -166,13 +166,13 @@ If you want to let the user rotate the map (for a given layout), you have to set
 
 If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client. It will be the name of the file that the client downloads. If the 'outputFilename' parameter is defined in a layout then that value will override the default name. In both cases the `.pdf` suffic is optional; if not present the server will append `.pdf` to the name.
 
-In all cases the `json` request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has \${date}, \${time} or \${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method. If a pattern is provided it will be passed to SimpleDataFormat for processing. A few examples follow:
+In all cases the `json` request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has ${date}, ${time} or ${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method. If a pattern is provided it will be passed to SimpleDataFormat for processing. A few examples follow:
 
-- outputFilename: "host-\${yyyyMMdd}.pdf" \# results in host-20111213.pdf
-- outputFilename: "host-\${date}" \# results in host-Dec_13_2011.pdf (actual output depends on local of server)
-- outputFilename: "host-\${dateTime}" \# results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)
-- outputFilename: "host-\${time}.pdf" \# results in host-1:11:14_PM.pdf (actual output depends on local of server)
-- outputFilename: "host-\${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)
+- outputFilename: "host-${yyyyMMdd}.pdf" \# results in host-20111213.pdf
+- outputFilename: "host-${date}" \# results in host-Dec_13_2011.pdf (actual output depends on local of server)
+- outputFilename: "host-${dateTime}" \# results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)
+- outputFilename: "host-${time}.pdf" \# results in host-1:11:14_PM.pdf (actual output depends on local of server)
+- outputFilename: "host-${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)
 
 "disableScaleLocking" allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.
 
@@ -375,18 +375,18 @@ In addition to that, an explicit `extraPage` block can be used in **`config.yaml
 
 The next sub-sections document the possible types of blocks.
 
-In general, text values or URLs can contain values taken from the **spec** structure coming with the client's request. A syntax similar to shell is used: `\${variableName}`. If the current page is a **titlePage**, only the root values are taken. If it's a **mainPage**, the service will first look in the current **page** section then in the root values. Here is how to use this functionality:
+In general, text values or URLs can contain values taken from the **spec** structure coming with the client's request. A syntax similar to shell is used: `${variableName}`. If the current page is a **titlePage**, only the root values are taken. If it's a **mainPage**, the service will first look in the current **page** section then in the root values. Here is how to use this functionality:
 
     text: 'The value of mapTitle is: ${mapTitle}'
 
 Some virtual variables can be used:
 
-- \${pageNum}: The current page number.
-- \${pageTot}: The total number of pages. Can be used only in text blocks.
-- \${now}: The current date and time as defined by the machine's locale.
-- \${now FORMAT}: The current date and time as defined by the FORMAT string. The syntax is here: <http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html>.
-- \${configDir}: The absolute path to the directory of the configuration file.
-- \${format PRINTF VAR}: Format the value of VAR using the provided [PRINTF format](http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.md#syntax) (for example: %,d).
+- ${pageNum}: The current page number.
+- ${pageTot}: The total number of pages. Can be used only in text blocks.
+- ${now}: The current date and time as defined by the machine's locale.
+- ${now FORMAT}: The current date and time as defined by the FORMAT string. The syntax is here: <http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html>.
+- ${configDir}: The absolute path to the directory of the configuration file.
+- ${format PRINTF VAR}: Format the value of VAR using the provided [PRINTF format](http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.md#syntax) (for example: %,d).
 
 All the blocks can have a condition attribute that takes a spec attribute name. If the attribute name exists and is not equal to "false" or "0", the block is drawn. Otherwise, it is ignored. An exclamation mark may precede the condition to invert it, exclamation mark is part of yaml syntax, than the expression should be in quotes.
 
@@ -443,7 +443,7 @@ The new configuration property `asHTML` (to be used in **`config.yaml`** text bl
 
 Supported formats are PNG, GIF, Jpeg, Jpeg2000, BMP, WMF (vector), SVG and TIFF.
 
-The original aspect ratio will be respected. The url can contain "\${}" variables.
+The original aspect ratio will be respected. The url can contain "${}" variables.
 
 ### Simple colored box icons
 

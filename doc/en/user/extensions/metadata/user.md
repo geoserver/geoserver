@@ -24,13 +24,13 @@ To link a layer with template navigate to **Layers --> Choose the layer --> Meta
 
 The values from the template will added to the metadata of the layer. How this is done depents on the type of the field.
 
-The field is not a list
+* The field is not a list
 
-:   When the field is not a list the value will be replaced with the value from the template and the field will be read only. This will only happen for fields that are not empty in the template.
+    When the field is not a list the value will be replaced with the value from the template and the field will be read only. This will only happen for fields that are not empty in the template.
 
-The Field is a list
+* The field is a list
 
-:   For Fields that are a list the values from the template will be added as read only fields. The duplicate values in list will be removed if there are any.
+    For fields that are a list the values from the template will be added as read only fields. The duplicate values in list will be removed if there are any.
 
 When multiple templates are linked with a layer the priority of the template will determine which values are added. If a field is present in both templates the value of the template with the highest priority will be picked. The priority is determined by the [template order](#template-order)
 

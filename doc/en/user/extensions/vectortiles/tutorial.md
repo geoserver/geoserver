@@ -71,7 +71,13 @@ For example, with a 4x4 metatile:
 - Data is queried **once** instead of 16 times
 - Geometry processing and encoding are shared
 
-This approach is particularly beneficial for complex vector datasets or slow data sources (e.g. expensive database views), especially when seeding tiles. Advantages of Vector Tile Metatiling \^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^ Reduced Database Load \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~ Without metatiling, GeoServer typically performs
+This approach is particularly beneficial for complex vector datasets or slow data sources (e.g. expensive database views), especially when seeding tiles. 
+
+### Advantages of Vector Tile Metatiling 
+
+#### Reduced Database Load 
+
+Without metatiling, GeoServer typically performs
 
 - one database query per vector tile
 - repeated spatial filtering and geometry decoding

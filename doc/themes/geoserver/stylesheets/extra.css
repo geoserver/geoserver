@@ -513,3 +513,49 @@
   border: none;
   box-shadow: none;
 }
+
+
+/*
+ * Code formatting — brand-tinted backgrounds
+ *
+ * Makes inline `code` and fenced code blocks stand out against the
+ * page background using tints derived from the GeoServer brand palette.
+ */
+
+/* --- Inline code --- */
+.md-typeset code {
+  background-color: rgba(0, 118, 161, 0.08);   /* gs-brand-primary @ 8 % */
+  border: 1px solid rgba(0, 118, 161, 0.18);
+  border-radius: 0.2rem;
+  padding: 0.05em 0.35em;
+  color: inherit;
+}
+
+/* Dark mode inline code */
+[data-md-color-scheme="slate"] .md-typeset code {
+  background-color: rgba(75, 160, 196, 0.14);   /* gs-brand-primary-light @ 14 % */
+  border-color: rgba(75, 160, 196, 0.28);
+}
+
+/* --- Fenced / indented code blocks --- */
+.md-typeset pre > code {
+  background-color: rgba(0, 118, 161, 0.06);
+  border: 1px solid rgba(0, 118, 161, 0.14);
+  border-radius: 0.3rem;
+  padding: 0.8em 1em;
+}
+
+[data-md-color-scheme="slate"] .md-typeset pre > code {
+  background-color: rgba(75, 160, 196, 0.10);
+  border-color: rgba(75, 160, 196, 0.22);
+}
+
+/* Ensure the highlight wrapper also picks up the border-radius */
+.md-typeset .highlight > pre {
+  border-radius: 0.3rem;
+}
+
+/* Remove double-border: inline code inside a link already has link colour */
+.md-typeset a code {
+  border-color: transparent;
+}

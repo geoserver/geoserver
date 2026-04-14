@@ -2,10 +2,12 @@
 <html xmlns:wicket="http://wicket.apache.org/">
   <body>
     <wicket:panel>
-      <div class="gs-panel-NumberParamPanel">
-        <label wicket:id="paramName">bar</label>
-        <div wicket:id="border">
-          <input wicket:id="paramValue" type="number" step="1" pattern="[0-9]*"/>
+      <div class="gs-panel-NumberParamPanel gs-form">
+        <div class="gs-form-group">
+          <label wicket:id="paramName">bar</label>
+          <div wicket:id="border">
+            <input wicket:id="paramValue" type="number" step="1" pattern="[0-9]*"/>
+          </div>
         </div>
       </div>
     </wicket:panel>

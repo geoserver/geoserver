@@ -60,7 +60,7 @@ Use `` `item` `` monospace for user supplied input, or item in a list or tree:
     Select `Basemap` layer.
 
 
-Use `` `text` `` monspace for user supplied text input:
+Use `` `text` `` monospace for user supplied text input:
 
 === "Markdown"
 
@@ -85,7 +85,7 @@ Use `++key++` for keyboard keys.
 
     Press ++control+f++ to find on page.
     
-Use definition list to document data entry. The field names use strong as they name a user interface element. Field values to input uses monspace as user input to type in.
+Use definition list to document data entry. The field names use strong as they name a user interface element. Field values to input uses monospace as user input to type in.
 
 === "Markdown"
 
@@ -98,7 +98,7 @@ Use definition list to document data entry. The field names use strong as they n
         **Password**
         :   `geoserver`
     
-        **Remeber me**
+        **Remember me**
         :   Unchecked
     
         Press **Login**.
@@ -114,7 +114,7 @@ Use definition list to document data entry. The field names use strong as they n
         **Password**
         :   `geoserver`
     
-        **Remeber me**
+        **Remember me**
         :   Unchecked
     
         Press **Login**.
@@ -356,7 +356,7 @@ Tables are constructed with Leading / tailing `|`, and headers separated by `---
     | Square | Four sides of equal length, 90 degree angles |
     | Rectangle | Four sides, 90 degree angles |
 
-Column alignment using `:`
+Columns can be Left, Center or Right aligned using `:` in the `---` second row.
 
 === "Markdown"
     
@@ -629,20 +629,20 @@ Use snippet `--8<--` include content from another file:
 
 To include a number of lines into an `xml` code-block:
 
-* `xml` is sensitive to dashes, so `-8<-` is used here
+* `xml` is sensitive to dashes, so the single-dash variant `-8<-` is used instead
 
 === "Markdown"
     
     ````Markdown
     ```xml
-    ;--8<-- "build/qa/pmd-ruleset.xml:23:25"
+    ;-8<- "build/qa/pmd-ruleset.xml:23:25"
     ```
     ````
 
 === "Preview"
 
     ```xml
-    --8<-- "build/qa/pmd-ruleset.xml:23:25"
+    -8<- "build/qa/pmd-ruleset.xml:23:25"
     ```
 
 To include named section:

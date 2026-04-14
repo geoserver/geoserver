@@ -83,9 +83,9 @@ In order to test the authentication settings configured in the previous section 
     curl -v  -G "http://localhost:8080/geoserver/wfs?request=getcapabilities"
     ```
 
-```html
 The result should be a 403 response signaling that access is denied. The output should look something like the following:
 
+```html
     * About to connect() to localhost port 8080 (#0)
     *   Trying ::1... connected
     > GET /geoserver/wfs?request=getcapabilities HTTP/1.1

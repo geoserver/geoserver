@@ -12,8 +12,7 @@
     <property name="id" value="vector-mosaic" />
     <property name="factoryClass"
               value="org.geotools.vectormosaic.VectorMosaicStoreFactory" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_vector.png" />
+    <property name="icon" value="gs-icon-page-white-vector" />
     <property name="componentClass"
               value="org.geoserver.web.data.store.mosaic.VectorMosaicDataStoreEditPanel" />
   </bean>

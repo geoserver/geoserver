@@ -101,7 +101,7 @@ To make a GSIP:
 
 One of the duties of the [GeoServer Project Steering Committee](psc.md) is to vote on GSIPs. The voting process works as follows:
 
-{% include "en/developer/policies/gsip_voting.md" %}
+--8<-- "doc/en/developer/policies/gsip_voting.md"
 
 ## GSIP FAQ
 

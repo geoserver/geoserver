@@ -46,7 +46,7 @@ Key providers are responsible for mapping the authentication keys to a user. The
 
 This key provider uses a user property `UUID` to map the authentication key to the user. User properties are stored in the user/group service. Synchronizing is simple since the logic has to search for users not having the property `UUID` and add it. The property value is a generated UUID.
 
-> UUID=b52d2068-0a9b-45d7-aacc-144d16322018
+`UUID=b52d2068-0a9b-45d7-aacc-144d16322018`
 
 If the user/group service is read only, the property has to be added from outside, no synchronizing is possible.
 
@@ -118,7 +118,7 @@ First thing to do is to:
 
 !!! note
     This is the only real mandatory value to provide. The others are optional and will allow you to customize the User Group Service behavior (see below)
->
+
 ![](images/004_user_group_service.png)
 
 Once the new `GeoServer UserGroup Service` has been configured, it can be easily linked to the `Key Provider Web Service Mapper`.
@@ -151,9 +151,9 @@ Once the new `GeoServer UserGroup Service` has been configured, it can be easily
 
     This mainly depends on the `GeoServer Role Service` you use. By default, the internal `GeoServer Role Service` can map Roles and Groups through static configuration stored on the GeoServer Data Dir. This is possible by editing `GeoServer User Group` details from the `Users, Groups, and Roles` panel
 
-    > ![](images/006_user_group_service.png)
-    >
-    > ![](images/007_user_group_service.png)
+    ![](images/006_user_group_service.png)
+
+    ![](images/007_user_group_service.png)
 
     Now, this custom `UserGroup Service` maps dynamically `GeoServer User Role` to `GeoServer User Group` as follows:
 
@@ -169,15 +169,15 @@ Once the new `GeoServer UserGroup Service` has been configured, it can be easily
 
     ![](images/009_user_group_service.png)
 
-2\. *Role Service to use*
+2. *Role Service to use*
 
-> By default, if no `Role Service` specified, the `UserGroup Service` will use the `GeoServer Active Role Service` to resolve `GeoServer User Roles` from `GeoServer User Groups` - as specified above -
->
-> > ![](images/010_user_group_service.png)
->
-> It is possible to define a `Custom Role Service` to use instead, to resole `GeoServer User Roles`; this is possible simply by selecting the `Role Service` to use from the `Role Service to use` option
->
-> > ![](images/011_user_group_service.png)
+    By default, if no `Role Service` specified, the `UserGroup Service` will use the `GeoServer Active Role Service` to resolve `GeoServer User Roles` from `GeoServer User Groups` - as specified above -
+
+    ![](images/010_user_group_service.png)
+
+    It is possible to define a `Custom Role Service` to use instead, to resole `GeoServer User Roles`; this is possible simply by selecting the `Role Service` to use from the `Role Service to use` option
+
+    ![](images/011_user_group_service.png)
 
 ## Configuration
 

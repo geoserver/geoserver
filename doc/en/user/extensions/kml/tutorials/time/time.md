@@ -121,10 +121,9 @@ The set of **date time** formats which GeoServer can be understand is formed by 
     
     Be aware that the KML output for **date time** formats will reflect the timezone of the java virtual machine, which can be set using the user.timezone parameter in the startup script. For example, the following command starts GeoServer using the Coordinated Universal Time (UTC) timezone.
     
-    > 
-    >
-    > `exec "$_RUNJAVA" -DGEOSERVER_DATA_DIR="$GEOSERVER_DATA_DIR"`
-    > :   `-Djava.awt.headless=true -DSTOP.PORT=8079` `-Duser.timezone=UTC` `-DSTOP.KEY=geoserver -jar start.jar`
+
+    `exec "$_RUNJAVA" -DGEOSERVER_DATA_DIR="$GEOSERVER_DATA_DIR"`
+    `-Djava.awt.headless=true -DSTOP.PORT=8079` `-Duser.timezone=UTC` `-DSTOP.KEY=geoserver -jar start.jar`
     
     If the timezone is not set, it will default to the timezone of the operating system.
 

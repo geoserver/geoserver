@@ -64,9 +64,9 @@ This tutorial uses the [curl](http://curl.haxx.se/) utility to issue HTTP reques
     curl -v -H "X-Credentials: private-user=admin&private-pw=wrong" "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.1&request=GetCapabilities"
     ```
 
-```html
 The result should be a 403 response signaling that access is denied. The output should look something like the following:
 
+```html
     * About to connect() to localhost port 8080 (#0)
     *   Trying ::1... connected
     > GET /geoserver/wfs?request=getcapabilities HTTP/1.1

@@ -120,7 +120,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
 2.  Here is an example:
 
-    ``[ yaml
+    ```yaml
     define: &common
       stroke-opacity: 0.25
 

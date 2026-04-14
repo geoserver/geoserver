@@ -45,11 +45,7 @@ To create a **`controlflow.properties`** file:
     - **Content**: file contents
 
       ```properties
-      {%raw%}
-      {% 
-        include "extensions/controlflow/controlflow.properties"
-      %}
-      {%endraw%}
+      --8<-- "doc/en/user/extensions/controlflow/controlflow.properties"
       ```
 
 3.  Press **OK** to create the resource.

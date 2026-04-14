@@ -280,7 +280,7 @@ Answer for [Explore Dynamic Symbolization](#css-point-q2):
 
 1.  SLD Mark and ExternalGraphic provide an opportunity for dynamic symbolization.
 
-    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with `\${ }` as shown:
+    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with `${ }` as shown:
 
     ```yaml
     - point:
@@ -296,7 +296,7 @@ Answer for [Explore Dynamic Symbolization](#css-point-q2):
     ```css
     [@scale < 4000000]{
         mark: symbol(
-           "\${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+           "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
         ); 
         mark-size: [13-SCALERANK];
         label: [NAME]; 
@@ -311,7 +311,7 @@ Answer for [Challenge Layer Group](#css-point-q3):
 1.  Use a **Layer Group** to explore how symbology works together to form a map.
 
     - ne:NE1
-    - ne:states_provincces_shp
+    - ne:states_provinces_shp
     - ne:populated_places
 
 2.  This background is relatively busy and care must be taken to ensure both symbols and labels are clearly visible.

@@ -202,10 +202,10 @@ The data directory loader provides several advantages:
 
 The data directory loader can be configured with the following environment variables or system properties:
 
-- `GEOSERVER_DATA_DIR_LOADER_ENABLED`: Controls whether the data directory loader optimizations are used.
+- `GEOSERVER_DATA_DIR_LOADER_ENABLED`: Controls whether the data directory loader optimizations are used:
 
-  - `true`: Default setting, used to enable data directory optimizations.
-      - `false`: Used to disable the optimizations and fall back to the traditional loader used prior to GeoServer 2.27 release.
+    - `true`: Default setting, used to enable data directory optimizations.
+    - `false`: Used to disable the optimizations and fall back to the traditional loader used prior to GeoServer 2.27 release.
 
 - `GEOSERVER_DATA_DIR_LOADER_THREADS`: Controls the number of threads used for loading and parsing
 

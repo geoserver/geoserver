@@ -46,18 +46,13 @@ There are three types of objects in a YSLD document:
 
 For example, a symbolizer block is a list, so every entry requires its own dash:
 
-> > - symbolizer:
-> >   - 
-> >
-> >     polygon:
-> >
-> >     :   \...
-> >
-> >   - 
-> >
-> >     text:
-> >
-> >     :   \...
+```yml
+- symbolizer:
+  - polygon:
+    ...
+  - text:
+    ...
+```
 
 The `polygon:` and `text:` objects (the individual symbolizers themselves) are mappings, and as such, the contents do not require dashes, only indents:
 
@@ -81,7 +76,7 @@ feature-styles:
             shape: circle
             fill-color: 'gray'
 ```
->
+
 ```yaml
 point:
   symbols:
@@ -306,11 +301,7 @@ To confirm everything works, let's reproduce the airports style above.
 1.  Replace the initial YSLD definition with our airport YSLD example and click **Apply**:
 
     ```yaml
-    {%raw%}
-    {% 
-      include "../files/airports0.ysld"
-    %}
-    {%endraw%}
+    --8<-- "doc/en/user/styling/workshop/files/airports0.ysld"
     ```
 
 2.  Click the **Layer Preview** tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select `ne:airports` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.

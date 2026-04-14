@@ -37,11 +37,11 @@ If you are using [Eclipse](http://www.eclipse.org/), you can install the [Eclips
 
 The GeoServer User Manual contains a wealth of information from the novice to the experienced GeoServer user. It is written using the [Sphinx Documentation Generator](https://www.sphinx-doc.org/). The stable branch version of the User Manual exists as the following URL:
 
-> <http://docs.geoserver.org/stable/en/user/>
+`<http://docs.geoserver.org/stable/en/user/>`
 
 Built from the following source files:
 
-> /doc/en/user/
+`/doc/en/user/`
 
 To create a User Manual in a different language, first create a directory called **`/doc/[LANG]/`**, where [LANG] is the language code as defined in [RFC 3066](http://www.ietf.org/rfc/rfc3066.txt). The you can copy the contents of **`/doc/en/user/`** to **`/doc/[LANG]/user`** and edit accordingly, or generate a new Sphinx project in **`/doc/[LANG]/user`**. (See the `Sphinx Quickstart <http://sphinx.pocoo.org/tutorial.html>` for more information about creating a new project.)
 

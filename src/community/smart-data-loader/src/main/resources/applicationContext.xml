@@ -19,8 +19,7 @@ application directory.
 	    <property name="id" value="smart-appschema" />
 	    <property name="factoryClass"
 	      value="org.geoserver.smartdataloader.data.SmartDataLoaderDataAccessFactory" />
-	    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-	    <property name="icon" value="img/icons/geosilk/page_white_vector.png" />
+	    <property name="icon" value="gs-icon-page-white-vector" />
 	    <property name="componentClass"
 	      value="org.geoserver.smartdataloader.data.store.panel.SmartDataLoaderStoreEditPanel" />
 	</bean>         

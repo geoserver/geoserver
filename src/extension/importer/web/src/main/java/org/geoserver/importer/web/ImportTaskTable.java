@@ -40,15 +40,11 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
-import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.web.ImportPage.DataIconModel;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.demo.PreviewLayer;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.GSModalWindow;
@@ -57,7 +53,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SRSToCRSModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
@@ -204,34 +200,15 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         }
     }
 
-    static class StatusIconModel extends StatusModel<ResourceReference> {
+    static class StatusIconModel extends StatusModel<String> {
 
         StatusIconModel(IModel model) {
             super(model);
         }
 
         @Override
-        public ResourceReference getObject() {
-            ImportTask.State state = (ImportTask.State) chained.getObject();
-            switch (state) {
-                case READY:
-                    return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/bullet_go.png");
-                case RUNNING:
-                    return new PackageResourceReference(ImportTaskTable.class, "indicator.gif");
-                case COMPLETE:
-                    return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/accept.png");
-                case NO_BOUNDS:
-                case NO_CRS:
-                case NO_FORMAT:
-                case BAD_FORMAT:
-                    return new ContextRelativeResourceReference("img/icons/silk/error.png");
-                case ERROR:
-                    return new ContextRelativeResourceReference("img/icons/silk/delete.png");
-                case CANCELED:
-                case PENDING:
-                default:
-                    return null;
-            }
+        public String getObject() {
+            return null;
         }
 
         public String getCssClass() {
@@ -438,7 +415,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                             });
                         }
                     }.add(new Label("name", new PropertyModel<>(model, "layer.name")))
-                            .add(new Icon(
+                            .add(new GsIcon(
                                     "icon", new DataIconModel(model.getObject().getData()))));
         }
     }

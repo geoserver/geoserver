@@ -135,11 +135,13 @@ All tools work against a live Java Virtual Machine, the one running GeoServer in
 
 [jps](http://java.sun.com/javase/6/docs/technotes/tools/share/jps.md) is a tool listing all the Java processing running. It can be used to retrieve the `pid` (process id) of the virtual machine that is running GeoServer. For example:
 
-    > jps -mlv
+    ```
+    jps -mlv
 
     16235 org.apache.catalina.startup.Bootstrap start -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.util.logging.config.file=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18/conf/logging.properties -Djava.endorsed.dirs=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18/endorsed -Dcatalina.base=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18 -Dcatalina.home=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18 -Djava.io.tmpdir=/home/aaime/devel/webcontainers/apache-tomcat-6.0.18/temp
     11521  -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -Djava.library.path=/usr/lib/jni -Dosgi.requiredJavaVersion=1.5 -XX:MaxPermSize=256m -Xms64m -Xmx1024m -XX:CMSClassUnloadingEnabled -XX:CMSPermGenSweepingEnabled -XX:+UseParNewGC
     16287 sun.tools.jps.Jps -mlv -Dapplication.home=/usr/lib/jvm/java-6-sun-1.6.0.16 -Xms8m
+    ```
 
 The output shows the `pid`, the main class name if available, and the parameters passed to the JVM at startup. In this example `16235` is Tomcat hosting GeoServer, `11521` is an Eclipse instance, and `16287` is `jps` itself. In the common case you'll have only few JVM and the one running GeoServer can be identified by the parameters passed to it.
 
@@ -151,14 +153,17 @@ It usually requires detailed understanding of the inner workings of GeoServer to
 
 An example of usage:
 
-    > jstack -F -l 16235 > /tmp/tomcat-stack.txt
+    ```
+    jstack -F -l 16235 > /tmp/tomcat-stack.txt
     Attaching to process ID 16235, please wait...
     Debugger attached successfully.
     Server compiler detected.
     JVM version is 14.2-b01
+    ```
 
 And the file contents might look like:
 
+    ```
     Deadlock Detection:
 
     No deadlocks found.
@@ -195,6 +200,7 @@ And the file contents might look like:
         - None
 
     ...
+    ```
 
 ### jmap
 
@@ -202,7 +208,8 @@ And the file contents might look like:
 
 By running it without arguments (other than the process id of the JVM) it will print out a **dump of the native libraries used by the JVM**. This can come in handy when one wants to double check GeoServer is actually using a certain version of a native library (e.g., GDAL):
 
-    > jmap 17251
+    ```
+    jmap 17251
 
     Attaching to process ID 17251, please wait...
     Debugger attached successfully.
@@ -237,11 +244,12 @@ By running it without arguments (other than the process id of the JVM) it will p
     0xb7f32000  113K  /lib/tls/i686/cmov/libpthread-2.9.so
     0xb7f51000  55K   /usr/lib/jvm/java-6-sun-1.6.0.16/jre/lib/i386/libverify.so
     0xb7f60000  114K  /lib/ld-2.9.so
+    ```
 
 It's also possible to get a **quick summary of the JVM heap status**:
 
 ```
-> jmap -heap 17251
+jmap -heap 17251
 
 Attaching to process ID 17251, please wait...
 Debugger attached successfully.
@@ -297,7 +305,7 @@ In the result it can be seen that the JVM is allowed to use up to 742MB of memor
 To see **how the memory is actually being used in a succinct way** the following command can be used (on Windows, replace `head -25` with `more`):
 
 ```http
-> jmap -histo:live 17251 | head -25
+jmap -histo:live 17251 | head -25
 
  num     #instances         #bytes  class name
 ----------------------------------------------
@@ -329,9 +337,11 @@ By the dump we can see most of the memory is used by the GeoServer code itself (
 
 In case of memory leaks a developer will probably ask for a **full heap dump** to analyze with a high end profiling tool. Such a dump can be generated with the following command:
 
-    > jmap -dump:live,file=/tmp/dump.hprof 17251
+    ```
+    jmap -dump:live,file=/tmp/dump.hprof 17251
     Dumping heap to /tmp/dump.hprof ...
     Heap dump file created
+    ```
 
 The dump files are generally as big as the memory used so it's advisable to compress the resulting file before sending it to a developer.
 

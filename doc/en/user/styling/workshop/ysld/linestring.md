@@ -342,7 +342,7 @@ This section explores the use of rules with filters and scale restrictions.
 
 1.  Replace the `line_example` YSLD definition with:
 
-    ``[ yaml
+    ```yaml
     rules:
     - filter: ${scalerank]( 4}
       symbolizers:

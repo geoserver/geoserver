@@ -77,11 +77,11 @@ The LDAP tree consists of:
 
 1.  Navigate to the GeoServer home page and log out of the admin account.
 
-#\. Login as the user "bob" with the password "secret".
+2.  Login as the user "bob" with the password "secret".
 
 ![](images/ldap6.jpg)
 
-Logging in as bob doesn't yield any administrative functionality because the bobaccount has not been mapped to the administrator role. In the next section GeoServer will be configured to map groups from the LDAP database to roles.
+Logging in as bob doesn't yield any administrative functionality because the bob account has not been mapped to the administrator role. In the next section GeoServer will be configured to map groups from the LDAP database to roles.
 
 ## Map LDAP groups to GeoServer roles
 

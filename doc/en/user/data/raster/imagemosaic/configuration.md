@@ -1,5 +1,3 @@
-> 
-
 # ImageMosaic configuration
 
 ## Granules
@@ -204,33 +202,33 @@ The above is a property file containing a regex used to extract Date and Time re
 
 In case of custom format datetimes in filename, an additional *format* element should be added after the regex, preceded by a comma, defining the custom representation.
 
-> Example: `Temperature_2017111319.tif`
->
-> an hourly Temperature file with datetime = November, 13 2017 at 7:00 PM (the last 2 digits = 19)
->
-> In that case, the **`elevationregex.properties`** file should be like this:
->
->     regex=.*([0-9]{10}).*,format=yyyyMMddHH
+Example: `Temperature_2017111319.tif`
+
+an hourly Temperature file with datetime = November, 13 2017 at 7:00 PM (the last 2 digits = 19)
+
+In that case, the **`elevationregex.properties`** file should be like this:
+
+    regex=.*([0-9]{10}).*,format=yyyyMMddHH
 
 In case of reduced precision of temporal information, where there is the need to get the higher time included in that reduced value, an additional *,useHighTime=true* element should be added.
 
-> Example: `Temperature_2017111319.tif`
->
-> an hourly Temperature file with datetime = November, 13 2017 at 19h 00m 00s 000ms You want to get the max time included in that reduced precision, which is November, 13 2017 at 19h 59m 59s 999ms
->
-> In that case, the **`elevationregex.properties`** file should be like this:
->
->     regex=.*([0-9]{10}).*,format=yyyyMMddHH,useHighTime=true
+Example: `Temperature_2017111319.tif`
+
+an hourly Temperature file with datetime = November, 13 2017 at 19h 00m 00s 000ms You want to get the max time included in that reduced precision, which is November, 13 2017 at 19h 59m 59s 999ms
+
+In that case, the **`elevationregex.properties`** file should be like this:
+
+    regex=.*([0-9]{10}).*,format=yyyyMMddHH,useHighTime=true
 
 In case the temporal information is spread along the whole file path, an additional `*,fullPath=true*` element should be added.
 
-> Example: `/data/20120202/Temperature.T1800.tif`
->
-> an hourly Temperature tif file with Year,Month and Day specified in the parent folder (20120202) and time value embedded in the name (Temperature.T1800.tif)
->
-> In that case, the **`elevationregex.properties`** file should be like this:
->
->     regex=(?:\/)(\\d{8})(?:\/)(?:Temperature.)(T\\d{4})(?:.tif),fullPath=true
+Example: `/data/20120202/Temperature.T1800.tif`
+
+an hourly Temperature tif file with Year,Month and Day specified in the parent folder (20120202) and time value embedded in the name (Temperature.T1800.tif)
+
+In that case, the **`elevationregex.properties`** file should be like this:
+
+    regex=(?:\/)(\\d{8})(?:\/)(?:Temperature.)(T\\d{4})(?:.tif),fullPath=true
 
 **`elevationregex.properties`**:
 

@@ -89,7 +89,9 @@ Note that in order to ensure that the default layer style is properly available 
 
 Together these two attributes allow the administrator to define the contents of the `<link rel=license>` element in the MapML header. Here is an example of the resulting XML:
 
-> <link href="https://creativecommons.org/licenses/by/4.0/" rel="license" title="Attribution 4.0 International (CC BY 4.0)"/>
+```xml
+<link href="https://creativecommons.org/licenses/by/4.0/" rel="license" title="Attribution 4.0 International (CC BY 4.0)"/>
+```
 
 ### License Title
 

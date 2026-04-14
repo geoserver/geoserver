@@ -116,7 +116,7 @@ Here is the complete WPS request in XML format:
 
 You can save this XML request in a file called wps-chaining.xml and execute the request using cURL like this:
 
-> curl -u admin:geoserver -H 'Content-type: xml' -XPOST -d@'wps-chaining.xml' <http://localhost:8080/geoserver/wps>
+`curl -u admin:geoserver -H 'Content-type: xml' -XPOST -d@'wps-chaining.xml' <http://localhost:8080/geoserver/wps>`
 
 The response is just a number, the total length of the roads that intersect the restricted areas, and should be around *25076.285* meters (the length process returns map units)
 

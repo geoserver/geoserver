@@ -13,21 +13,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.data.DataAccessFactory;
@@ -88,10 +84,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 link.add(new Label("resourcelabel", dataStoreFactoryName));
                 item.add(link);
                 item.add(new Label("resourceDescription", description));
-                Image icon = new Image("storeIcon", icons.getStoreIcon(factory.getClass()));
-                // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", new Model<>("")));
-                item.add(icon);
+                item.add(icons.getStoreIconComponent("storeIcon", factory.getClass()));
             }
         };
 
@@ -120,10 +113,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 link.add(new Label("resourcelabel", coverageFactoryName));
                 item.add(link);
                 item.add(new Label("resourceDescription", description));
-                Image icon = new Image("storeIcon", icons.getStoreIcon(format.getClass()));
-                // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", new Model<>("")));
-                item.add(icon);
+                item.add(icons.getStoreIconComponent("storeIcon", format.getClass()));
             }
         };
 
@@ -149,9 +139,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 item.add(new Label(
                         "resourceDescription",
                         new ParamResourceModel("other." + store.key + ".description", NewDataPage.this)));
-                Image icon = new Image("storeIcon", store.icon);
-                // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", new Model<>("")));
+                GsIcon icon = new GsIcon("storeIcon", store.icon);
                 item.add(icon);
             }
         };
@@ -202,8 +190,7 @@ public class NewDataPage extends GeoServerSecuredPage {
 
     private List<OtherStoreDescription> getOtherStores() {
         List<OtherStoreDescription> stores = new ArrayList<>();
-        PackageResourceReference wmsIcon =
-                new PackageResourceReference(GeoServerApplication.class, "img/icons/geosilk/server_map.png");
+        String wmsIcon = "gs-icon-server-map";
         stores.add(new OtherStoreDescription(
                 "wms", wmsIcon, (Function<String, GeoServerSecuredPage> & Serializable) ws -> new WMSStoreNewPage(ws)));
         stores.add(new OtherStoreDescription("wmts", wmsIcon, (Function<String, GeoServerSecuredPage> & Serializable)
@@ -221,12 +208,11 @@ public class NewDataPage extends GeoServerSecuredPage {
     static class OtherStoreDescription implements Serializable {
         String key;
 
-        PackageResourceReference icon;
+        String icon;
 
         Function<String, GeoServerSecuredPage> pageFactory;
 
-        public OtherStoreDescription(
-                String key, PackageResourceReference icon, Function<String, GeoServerSecuredPage> pageFactory) {
+        public OtherStoreDescription(String key, String icon, Function<String, GeoServerSecuredPage> pageFactory) {
             super();
             this.key = key;
             this.icon = icon;

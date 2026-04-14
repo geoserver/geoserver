@@ -250,8 +250,10 @@ As of GeoServer 2.27, FreeMarker templates are now restricted from accessing met
 
 The following is an example of the exception message seen when processing a template that previously worked but is blocked by the new restrictions:
 
-> Caused by: freemarker.core.InvalidReferenceException: The following has evaluated to null or missing:
->     ==> features[0].type.catalog  [in template "content_en_US.ftl" at line 1, column 3]
+```
+Caused by: freemarker.core.InvalidReferenceException: The following has evaluated to null or missing:
+    ==> features[0].type.catalog  [in template "content_en_US.ftl" at line 1, column 3]
+```
 
 ### Content Security Policy (GeoServer 2.27 and newer)
 
@@ -334,11 +336,11 @@ Due to the above compatibility issues, **some** layers based on underlying GRIB 
 
 1. Remove any auxiliary/cache file associated with the underlying GRIB file (assuming the file is named gribfile.grib2):
 
-- gribfile.ncx3
-- gribfile.ncx4
-- gribfile.gbx9
-- .gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured [NETCDF_DATA_DIR](../extensions/netcdf/netcdf.md#netcdf-files-in-read-only-directories) (if defined).
-- The screenshot below represents an actual example of a tpcprblty.2019100912.incremental.grib2 file with related auxiliary/cache files
+    - gribfile.ncx3
+    - gribfile.ncx4
+    - gribfile.gbx9
+    - .gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured [NETCDF_DATA_DIR](../extensions/netcdf/netcdf.md#netcdf-files-in-read-only-directories) (if defined).
+    The screenshot below represents an actual example of a tpcprblty.2019100912.incremental.grib2 file with related auxiliary/cache files
 
     ![](images/grib_auxiliary_files.png)
 

@@ -31,9 +31,9 @@ This results in running multiple GeoServer nodes behind a common proxy or load b
 3.  Optional: Use [Overriding the log location setup in the GeoServer configuration](../configuration/logging.md#logging_location) settings to direct logs from individual nodes to different files.
 4.  While most web services are stateless, some functionality like importer or WPS may require the use of an extension to share state between nodes.
 
-    WPS clustering has extensions for Hazelcast and JDBC (shared database).
+    * WPS clustering has extensions for Hazelcast and JDBC (shared database).
 
-    Importer provides an extension to establish a Berkley shared database.
+    * Importer provides an extension to establish a Berkley shared database.
 
 5.  The challenge to operating a cluster is the management of changes to the data directory configuration to ensure all the nodes are operating with the same configuration and produce the same results.
 

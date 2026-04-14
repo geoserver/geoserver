@@ -15,7 +15,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.Predicates;
@@ -84,7 +83,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                             // disabled
                             // resource/store
                             boolean enabled = layerGroupInfo.isEnabled();
-                            ResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
+                            String icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
                             Fragment f = new Fragment(id, "iconFragment", LayerGroupPage.this);
                             f.add(icons.getIcon("layerIcon", icon));
                             return f;

@@ -146,7 +146,7 @@ The above command builds the web module against the release configuration that i
 
 This can also be used when running the local jetty application server:
 
-> mvn jetty:run -DconfigId=release -DconfigDirectory=../../../data/release
+`mvn jetty:run -DconfigId=release -DconfigDirectory=../../../data/release`
 
 You may also use an absolute path, if you have a custom data directory you would like to use.
 

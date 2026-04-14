@@ -4,7 +4,11 @@ render_macros: true
 
 # WPS Download
 
-WPS Download plugin provides some useful features for easily downloading: * Raster or Vector layer as zip files * Large maps as images * Time based animation The module also provides facilities to control the output file size.
+WPS Download plugin provides some useful features for easily downloading: 
+
+* Raster or Vector layer as zip files 
+* Large maps as images 
+* Time based animation The module also provides facilities to control the output file size.
 
 ## Installing the WPS Download extension
 

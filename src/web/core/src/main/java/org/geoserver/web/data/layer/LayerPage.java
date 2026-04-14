@@ -25,7 +25,6 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupHelper;
@@ -116,7 +115,7 @@ public class LayerPage extends GeoServerSecuredPage {
                     // ask for enabled() instead of isEnabled() to account for disabled
                     // resource/store
                     boolean enabled = layerInfo.enabled();
-                    ResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
+                    String icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
                     f.add(icons.getIcon("layerIcon", icon));
                     return f;

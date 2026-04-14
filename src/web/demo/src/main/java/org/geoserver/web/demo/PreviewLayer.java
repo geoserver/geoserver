@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -96,12 +95,12 @@ public class PreviewLayer {
         return null;
     }
 
-    public ResourceReference getIcon() {
+    public String getIcon() {
         if (layerInfo != null) return CatalogIconFactory.get().getSpecificLayerIcon(layerInfo);
         else return CatalogIconFactory.GROUP_ICON;
     }
 
-    public ResourceReference getTypeSpecificIcon() {
+    public String getTypeSpecificIcon() {
         if (layerInfo != null) return CatalogIconFactory.get().getSpecificLayerIcon(layerInfo);
         else return CatalogIconFactory.GROUP_ICON;
     }

@@ -75,6 +75,47 @@
       border: 1px solid var(--gs-border-color);
       display: inline-block;
     }
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .icon-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.625rem 0.25rem;
+      border: 1px solid var(--gs-border-color);
+      border-radius: var(--gs-border-radius);
+      font-size: 0.6875rem;
+      color: var(--gs-secondary-color);
+      text-align: center;
+      word-break: break-all;
+      cursor: default;
+    }
+    .icon-tile .gs-icon {
+      font-size: 2rem;
+    }
+    .icon-tile:hover {
+      background: var(--gs-tertiary-bg);
+    }
+    .icon-filter {
+      margin: 0.75rem 0;
+      max-width: 20rem;
+    }
+    .icon-badge {
+      font-size: 0.5rem;
+      line-height: 1;
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.2rem;
+      background: color-mix(in srgb, var(--gs-success, #16a34a) 15%, transparent);
+      color: var(--gs-success, #16a34a);
+      border: 1px solid color-mix(in srgb, var(--gs-success, #16a34a) 40%, transparent);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
   </style>
 </head>
 <body>
@@ -364,13 +405,13 @@ border-color: var(--gs-border-color);</pre>
   ───────────────────────────────────────────── -->
   <section class="showcase-section">
     <h2 class="showcase-section-title">7. Form Layout (<code>.gs-form</code> / <code>.gs-form-group</code>)</h2>
-    <div class="gs-form" style="max-width:600px;">
+    <div class="gs-form" style="max-width:800px;">
       <div class="gs-form-group">
         <label class="gs-form-group-label">
           Title
-          <span class="instruct">The display title for this resource.</span>
         </label>
-        <input type="text" placeholder="Layer title" />
+        <input type="text" placeholder="Layer title" class="w-md" />
+        <span class="gs-instruction">The display title for this resource.</span>
       </div>
       <div class="gs-form-group">
         <label class="gs-form-group-label">Abstract</label>
@@ -388,9 +429,9 @@ border-color: var(--gs-border-color);</pre>
   &lt;div class="gs-form-group"&gt;
     &lt;label class="gs-form-group-label"&gt;
       Title
-      &lt;span class="instruct"&gt;Tooltip hint.&lt;/span&gt;
-    &lt;/label&gt;
-    &lt;input type="text" placeholder="…" /&gt;
+      &lt;/label&gt;
+    &lt;input type="text" placeholder="…" class="w-md" /&gt;
+    &lt;span class="gs-instruction"&gt;Tooltip hint.&lt;/span&gt;
   &lt;/div&gt;
   &lt;div class="gs-form-group"&gt;
     &lt;label class="gs-form-group-label"&gt;Abstract&lt;/label&gt;
@@ -456,19 +497,19 @@ border-color: var(--gs-border-color);</pre>
           <td>roads</td>
           <td>Vector</td>
           <td><input type="checkbox" checked /></td>
-          <td><a href="#" class="edit-link">Edit</a></td>
+          <td><a href="#" class="button"><i class="gs-icon gs-icon-pencil"></i> Edit</a></td>
         </tr>
         <tr>
           <td>dem</td>
           <td>Raster</td>
           <td><input type="checkbox" /></td>
-          <td><a href="#" class="edit-link">Edit</a></td>
+          <td><a href="#" class="button"><i class="gs-icon gs-icon-pencil"></i> Edit</a></td>
         </tr>
         <tr>
           <td>basemap</td>
           <td>WMS</td>
           <td><input type="checkbox" checked /></td>
-          <td><a href="#" class="edit-link">Edit</a></td>
+          <td><a href="#" class="button"><i class="gs-icon gs-icon-pencil"></i> Edit</a></td>
         </tr>
       </tbody>
     </table>
@@ -477,8 +518,14 @@ border-color: var(--gs-border-color);</pre>
     &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
-    &lt;tr&gt;&lt;td&gt;roads&lt;/td&gt;&lt;td&gt;Vector&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td&gt;dem&lt;/td&gt;&lt;td&gt;Raster&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;roads&lt;/td&gt;&lt;td&gt;Vector&lt;/td&gt;
+      &lt;td&gt;&lt;a href="#" class="button"&gt;&lt;i class="gs-icon gs-icon-pencil"&gt;&lt;/i&gt; Edit&lt;/a&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;dem&lt;/td&gt;&lt;td&gt;Raster&lt;/td&gt;
+      &lt;td&gt;&lt;a href="#" class="button"&gt;&lt;i class="gs-icon gs-icon-pencil"&gt;&lt;/i&gt; Edit&lt;/a&gt;&lt;/td&gt;
+    &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;!-- Odd rows get --gs-table-striped-bg automatically --&gt;</pre>
@@ -566,7 +613,43 @@ border-color: var(--gs-border-color);</pre>
   </section>
 
   <!-- ─────────────────────────────────────────────
-       14. UTILITY CLASSES
+       14. ICONS
+  ───────────────────────────────────────────── -->
+  <section class="showcase-section">
+    <h2 class="showcase-section-title">14. Icons (<code>.gs-icon</code>)</h2>
+    <p>All <code>.gs-icon-*</code> classes parsed live from <code>geoserver.css</code>.
+       Use as <code>&lt;i class="gs-icon gs-icon-{name}"&gt;&lt;/i&gt;</code>.</p>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="showcase-label" style="min-width:9rem;margin:0;">Standalone</span>
+        <i class="gs-icon gs-icon-accept"></i>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="showcase-label" style="min-width:9rem;margin:0;">Inside button</span>
+        <button class="button"><i class="gs-icon gs-icon-accept"></i> Accept</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="showcase-label" style="min-width:9rem;margin:0;">Primary + icon</span>
+        <button class="button primary"><i class="gs-icon gs-icon-add"></i> Add</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="showcase-label" style="min-width:9rem;margin:0;">Danger + icon</span>
+        <button class="button danger"><i class="gs-icon gs-icon-delete"></i> Delete</button>
+      </div>
+    </div>
+    <pre class="code-snippet">&lt;!-- Standalone icon --&gt;
+&lt;i class="gs-icon gs-icon-accept"&gt;&lt;/i&gt;
+
+&lt;!-- Icon inside a button --&gt;
+&lt;button class="button"&gt;&lt;i class="gs-icon gs-icon-accept"&gt;&lt;/i&gt; Accept&lt;/button&gt;
+&lt;button class="button primary"&gt;&lt;i class="gs-icon gs-icon-add"&gt;&lt;/i&gt; Add&lt;/button&gt;
+&lt;button class="button danger"&gt;&lt;i class="gs-icon gs-icon-delete"&gt;&lt;/i&gt; Delete&lt;/button&gt;</pre>
+    <input id="icon-filter" class="icon-filter" type="text" placeholder="Filter icons…" />
+    <div id="icon-grid" class="icon-grid"></div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       15. UTILITY CLASSES
   ───────────────────────────────────────────── -->
   <section class="showcase-section">
     <h2 class="showcase-section-title">14. Width &amp; Height Utilities</h2>

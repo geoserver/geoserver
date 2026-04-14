@@ -16,14 +16,14 @@
                     <wicket:message key="mapmlLicenseSection">License Info</wicket:message>
                   </span>
                 </legend>
-                <div class="gs-unordered-list-class">
-                  <div class="gs-list-item-class">
+                <div class="gs-form">
+                  <div class="gs-form-group">
                     <label for="licenseTitle">
                       <wicket:message key="mapmlLicenseTitle">License Title</wicket:message>
                     </label>
                     <input id="licenseTitle" wicket:id="licenseTitle" type="text"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="licenseLink">
                       <wicket:message key="mapmlLicenseLink">License Link</wicket:message>
                     </label>
@@ -39,8 +39,8 @@
                     <wicket:message key="mapmlTileSection">Tile Config</wicket:message>
                   </span>
                 </legend>
-                <div class="gs-unordered-list-class choiceList">
-                  <div class="gs-list-item-class">
+                <div class="gs-form">
+                  <div class="choiceItem">
                     <input id="useTiles" wicket:id="useTiles" type="checkbox"/>
                     <label for="useTiles">
                       <wicket:message key="mapmlUseTiles">Use Tiles</wicket:message>
@@ -58,8 +58,8 @@
                       <wicket:message key="mapmlClientRequestsSection">Client Requests</wicket:message>
                     </span>
                   </legend>
-                  <div class="gs-unordered-list-class choiceList">
-                    <div class="gs-list-item-class">
+                  <div class="gs-form">
+                    <div class="choiceItem">
                       <input id="useRemote" wicket:id="useRemote" type="checkbox"/>
                       <label for="useRemote">
                         <wicket:message key="mapmlUseRemote">Remote</wicket:message>
@@ -76,8 +76,8 @@
                     <wicket:message key="mapmlVectorSection">Vector Config</wicket:message>
                   </span>
                 </legend>
-                <div class="gs-unordered-list-class choiceList">
-                  <div class="gs-list-item-class">
+                <div class="gs-form">
+                  <div class="choiceItem">
                     <input id="useFeatures" wicket:id="useFeatures" type="checkbox"/>
                     <label for="useFeatures">
                       <wicket:message key="mapmlUseFeatures">Use Features</wicket:message>
@@ -93,8 +93,8 @@
                     <wicket:message key="mapmlMultiExtentSection">Sub-layer Config</wicket:message>
                   </span>
                 </legend>
-                <div class="gs-unordered-list-class choiceList">
-                  <div class="gs-list-item-class">
+                <div class="gs-form">
+                  <div class="choiceItem">
                     <input id="multiextent" wicket:id="useMultiExtents" type="checkbox"/>
                     <label for="multiextent">
                       <wicket:message key="mapmlUseMultiExtents">Expose sub-layers in layer control</wicket:message>
@@ -110,12 +110,12 @@
                     <wicket:message key="mapmlDimensionSection">Dimension Config</wicket:message>
                   </span>
                 </legend>
-                <div class="gs-unordered-list-class">
-                  <div class="gs-list-item-class">
+                <div class="gs-form">
+                  <div class="gs-form-group">
                     <label for="dimension">
                       <wicket:message key="mapmlDimension">Dimension</wicket:message>
                     </label>
-                    <select id="dimension" wicket:id="dimension"/>
+                    <select id="dimension" wicket:id="dimension" class="w-md" />
                   </div>
                 </div>
               </fieldset>
@@ -127,18 +127,18 @@
                     <wicket:message key="mapmlFeatureCaptionSection">Map text and attributes to &lt;featurecaption&gt;</wicket:message>
                   </span>
                 </legend>
-                <div class="gs-unordered-list-class">
+                <div class="gs-form">
                   <!--                            <div class="gs-list-item-class">
                                                         <label for="featurecaptionattributes"><wicket:message key="mapmlFeatureCaption">Available Attributes</wicket:message></label>
                                                         <select id="featurecaptionattributes" wicket:id="featurecaptionattributes"></select>
                                                     </div>-->
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="featurecaptionattributes">
                       <wicket:message key="mapmlFeatureCaption">Available Attributes</wicket:message>
                     </label>
                     <select id="featurecaptionattributes" class="select w-md" wicket:id="featurecaptionattributes" multiple="multiple"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="featureCaptionTemplate">
                       <wicket:message key="mapmlFeatureCaptionTemplate">Feature Caption Template String (enter
                                     text including ${attribute-name} placeholders for attribute names
@@ -158,8 +158,8 @@
                     <wicket:message key="mapmlDefaultMimeSection">Default Mimetype</wicket:message>
                   </span>
                 </legend>
-                <div class="gs-unordered-list-class">
-                  <div class="gs-list-item-class">
+                <div class="gs-form">
+                  <div class="gs-form-group">
                     <label for="mime">
                       <wicket:message key="mapmlDefaultMime">Mime</wicket:message>
                     </label>

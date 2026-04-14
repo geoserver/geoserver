@@ -16,6 +16,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.AttributeModifier;
@@ -26,6 +28,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.TagTester;
 import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.Catalog;
@@ -254,6 +257,71 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         } finally {
             ft.setName("Lines");
             catalog.save(ft);
+        }
+    }
+
+    @Test
+    public void testWorkspaceParameterFiltersToWorkspaceLayers() {
+        // ?workspace=cite → only cite-prefixed layers and cite-scoped groups
+        tester.startPage(MapPreviewPage.class, new PageParameters().add("workspace", "cite"));
+        tester.assertRenderedPage(MapPreviewPage.class);
+        tester.assertNoErrorMessage();
+
+        @SuppressWarnings("unchecked")
+        DataView<PreviewLayer> dv =
+                (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+        long count = provider.size();
+        assertTrue("workspace filter should yield at least one result", count > 0);
+
+        Iterator<PreviewLayer> it = provider.iterator(0, count);
+        while (it.hasNext()) {
+            PreviewLayer item = it.next();
+            String name = item.getName();
+            assertTrue("all items should be in the cite workspace, but got: " + name, name.startsWith("cite:"));
+        }
+    }
+
+    @Test
+    public void testWorkspaceParameterIncludesScopedGroupExcludesGlobalGroup() throws Exception {
+        // ?workspace=cite → cite-scoped group included; global group excluded
+        Catalog cat = getCatalog();
+
+        LayerGroupInfo scopedGroup = cat.getFactory().createLayerGroup();
+        scopedGroup.setName("citeGroup");
+        scopedGroup.setWorkspace(cat.getWorkspaceByName("cite"));
+        scopedGroup.getLayers().add(cat.getLayerByName(getLayerId(MockData.BUILDINGS)));
+        new CatalogBuilder(cat).calculateLayerGroupBounds(scopedGroup);
+        cat.add(scopedGroup);
+
+        LayerGroupInfo globalGroup = cat.getFactory().createLayerGroup();
+        globalGroup.setName("globalGroup");
+        globalGroup.getLayers().add(cat.getLayerByName(getLayerId(MockData.BUILDINGS)));
+        new CatalogBuilder(cat).calculateLayerGroupBounds(globalGroup);
+        cat.add(globalGroup);
+
+        try {
+            tester.startPage(MapPreviewPage.class, new PageParameters().add("workspace", "cite"));
+            tester.assertRenderedPage(MapPreviewPage.class);
+            tester.assertNoErrorMessage();
+
+            @SuppressWarnings("unchecked")
+            DataView<PreviewLayer> dv =
+                    (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+            long count = provider.size();
+
+            List<String> names = new ArrayList<>();
+            Iterator<PreviewLayer> it = provider.iterator(0, count);
+            while (it.hasNext()) {
+                names.add(it.next().getName());
+            }
+
+            assertTrue("cite-scoped group should appear in cite workspace filter", names.contains("cite:citeGroup"));
+            assertFalse("global group should be excluded by workspace filter", names.contains("globalGroup"));
+        } finally {
+            cat.remove(cat.getLayerGroupByName("cite:citeGroup"));
+            cat.remove(cat.getLayerGroupByName("globalGroup"));
         }
     }
 

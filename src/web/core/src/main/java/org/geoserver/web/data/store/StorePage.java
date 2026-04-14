@@ -8,7 +8,6 @@ package org.geoserver.web.data.store;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -35,65 +34,61 @@ import org.geotools.api.filter.Filter;
  */
 @SuppressWarnings("serial")
 public class StorePage extends GeoServerSecuredPage {
+
+    private String targetWorkspaceStr = null;
+    private String targetLayerStr = null;
+
     StoreProvider provider = new StoreProvider() {
         @Override
-        protected Filter getFilter() {
-            Filter baseFilter = Objects.requireNonNull(super.getFilter());
-            StringValue wsParam = getPageParameters().get("workspace");
-            StringValue layerParam = getPageParameters().get("layer");
-
-            // Optional workspace constraint (works because StoreProvider exposes workspace.name)
-            Filter workspaceFilter = Predicates.acceptAll();
-            String targetWs = wsParam != null ? wsParam.toOptionalString() : null;
-            if (targetWs != null && !targetWs.isEmpty()) {
-                workspaceFilter = Predicates.equal("workspace.name", targetWs);
-            }
-
+        protected Filter getContextFilter() {
             // Optional layer constraint: Stores which back the given LayerInfo/LayerGroupInfo.
-            if (layerParam == null || layerParam.isNull() || layerParam.isEmpty()) {
-                return Predicates.and(baseFilter, Objects.requireNonNull(workspaceFilter));
-            }
+            if (targetLayerStr != null && !targetLayerStr.isEmpty()) {
+                Set<String> layerStoreIds = new LinkedHashSet<>();
 
-            String targetLayer = layerParam.toOptionalString();
-            if (targetLayer == null || targetLayer.isEmpty()) {
-                return Predicates.and(baseFilter, Objects.requireNonNull(workspaceFilter));
-            }
-
-            Set<String> layerStoreIds = new LinkedHashSet<>();
-
-            // First try a named layer, then a layer group (the UI parameter is called "layer" in both cases).
-            LayerInfo layer = getCatalog().getLayerByName(targetLayer);
-            if (layer != null) {
-                if (layer.getResource() != null) {
-                    StoreInfo store = layer.getResource().getStore();
-                    if (store != null && store.getId() != null) {
-                        layerStoreIds.add(store.getId());
+                // First try a named layer, then a layer group (the UI parameter is called "layer" in both cases).
+                LayerInfo layer = getCatalog().getLayerByName(targetLayerStr);
+                if (layer != null) {
+                    if (layer.getResource() != null) {
+                        StoreInfo store = layer.getResource().getStore();
+                        if (store != null && store.getId() != null) {
+                            layerStoreIds.add(store.getId());
+                        }
                     }
-                }
-            } else {
-                LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(targetLayer);
-                if (layerGroup != null) {
-                    LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
-                    for (LayerInfo li : helper.allLayers()) {
-                        if (li.getResource() != null && li.getResource().getStore() != null) {
-                            StoreInfo store = li.getResource().getStore();
-                            if (store.getId() != null) {
-                                layerStoreIds.add(store.getId());
+                } else {
+                    LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(targetLayerStr);
+                    if (layerGroup != null) {
+                        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+                        for (LayerInfo li : helper.allLayers()) {
+                            if (li.getResource() != null && li.getResource().getStore() != null) {
+                                StoreInfo store = li.getResource().getStore();
+                                if (store.getId() != null) {
+                                    layerStoreIds.add(store.getId());
+                                }
                             }
                         }
                     }
                 }
+
+                if (layerStoreIds.isEmpty()) {
+                    // No stores back the layer/group: yield an empty result set.
+                    return Filter.EXCLUDE;
+                }
+
+                // Filter StoreInfo by the ids of the backing stores.
+                List<String> storeIdList = new ArrayList<>(layerStoreIds);
+                Filter layerStoreFilter = Predicates.in("id", storeIdList);
+                if (targetWorkspaceStr != null && !targetWorkspaceStr.isEmpty()) {
+                    return Predicates.and(Predicates.equal("workspace.name", targetWorkspaceStr), layerStoreFilter);
+                }
+                return layerStoreFilter;
             }
 
-            if (layerStoreIds.isEmpty()) {
-                // No stores back the layer/group: yield an empty result set.
-                return Predicates.acceptNone();
+            // Optional workspace constraint only.
+            if (targetWorkspaceStr != null && !targetWorkspaceStr.isEmpty()) {
+                return Predicates.equal("workspace.name", targetWorkspaceStr);
             }
 
-            // Filter StoreInfo by the ids of the backing stores.
-            List<String> storeIdList = new ArrayList<>(layerStoreIds);
-            Filter layerStoreFilter = Predicates.in("id", storeIdList);
-            return Predicates.and(baseFilter, workspaceFilter, layerStoreFilter);
+            return null;
         }
     };
 
@@ -103,7 +98,15 @@ public class StorePage extends GeoServerSecuredPage {
 
     GeoServerDialog dialog;
 
-    public StorePage() {
+    public StorePage(PageParameters parameters) {
+        StringValue wsParam = parameters.get("workspace");
+        if (!wsParam.isEmpty()) {
+            this.targetWorkspaceStr = wsParam.toString();
+        }
+        StringValue layerParam = parameters.get("layer");
+        if (!layerParam.isEmpty()) {
+            this.targetLayerStr = layerParam.toString();
+        }
         // the table, and wire up selection change
         table = new StorePanel("table", provider, true) {
             @Override
@@ -118,6 +121,10 @@ public class StorePage extends GeoServerSecuredPage {
         // the confirm dialog
         add(dialog = new GeoServerDialog("dialog"));
         setHeaderPanel(headerPanel());
+    }
+
+    public StorePage() {
+        this(new PageParameters());
     }
 
     protected Component headerPanel() {

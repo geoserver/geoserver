@@ -40,6 +40,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.string.StringValue;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.web.GWCIconFactory;
@@ -73,13 +74,13 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     private static final PackageResourceReference JS_FILE =
             new PackageResourceReference(CachedLayersPage.class, "CachedLayersPage.js");
 
+    private String targetWorkspaceStr = null;
+
     private CachedLayerProvider provider = new CachedLayerProvider() {
         @Override
         protected List<TileLayer> getItems() {
             List<TileLayer> base = super.getItems();
-            PageParameters params = getPageParameters();
-            String workspace = params.get("workspace").toOptionalString();
-            if (workspace == null || workspace.isEmpty()) {
+            if (targetWorkspaceStr == null || targetWorkspaceStr.isEmpty()) {
                 return base;
             }
             List<TileLayer> filtered = new ArrayList<>();
@@ -88,7 +89,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 int idx = name.indexOf(':');
                 if (idx > 0) {
                     String wsPrefix = name.substring(0, idx);
-                    if (workspace.equals(wsPrefix)) {
+                    if (targetWorkspaceStr.equals(wsPrefix)) {
                         filtered.add(layer);
                     }
                 }
@@ -103,8 +104,11 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
     private CachedLayerSelectionRemovalLink removal;
 
-    public CachedLayersPage() {
-
+    public CachedLayersPage(PageParameters parameters) {
+        StringValue wsParam = parameters.get("workspace");
+        if (!wsParam.isEmpty()) {
+            this.targetWorkspaceStr = wsParam.toString();
+        }
         table = new GeoServerTablePanel<>("table", provider, true) {
             @Serial
             private static final long serialVersionUID = 1L;
@@ -171,6 +175,10 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             String warningMsg = new ResourceModel("GWC.ImageIOFileCachingThresholdUnsetWarning").getObject();
             super.warn(warningMsg);
         }
+    }
+
+    public CachedLayersPage() {
+        this(new PageParameters());
     }
 
     @Override

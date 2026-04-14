@@ -36,25 +36,30 @@ public class LayerGroupPage extends GeoServerSecuredPage {
     @Serial
     private static final long serialVersionUID = 5039809655908312633L;
 
+    private String targetWorkspaceStr = null;
+
     GeoServerTablePanel<LayerGroupInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
 
-    public LayerGroupPage() {
-        final CatalogIconFactory icons = CatalogIconFactory.get();
-        LayerGroupProvider provider = new LayerGroupProvider() {
-            @Override
-            protected Filter getFilter() {
-                Filter baseFilter = super.getFilter();
-                StringValue wsParam = getPageParameters().get("workspace");
-                if (wsParam.isNull() || wsParam.isEmpty()) {
-                    return baseFilter;
-                }
-                String targetWs = wsParam.toString();
-                Filter workspaceFilter = Predicates.equal("workspace.name", targetWs);
-                return Predicates.and(baseFilter, workspaceFilter);
+    LayerGroupProvider provider = new LayerGroupProvider() {
+        @Override
+        protected Filter getContextFilter() {
+            if (targetWorkspaceStr != null) {
+                return Predicates.equal("workspace.name", targetWorkspaceStr);
             }
-        };
+            return null;
+        }
+    };
+
+    public LayerGroupPage(PageParameters parameters) {
+        final CatalogIconFactory icons = CatalogIconFactory.get();
+
+        StringValue wsParam = parameters.get("workspace");
+        if (!wsParam.isEmpty()) {
+            this.targetWorkspaceStr = wsParam.toString();
+        }
+
         add(
                 table = new GeoServerTablePanel<>("table", provider, true) {
 
@@ -123,6 +128,10 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         // the confirm dialog
         add(dialog = new GeoServerDialog("dialog"));
         setHeaderPanel(headerPanel());
+    }
+
+    public LayerGroupPage() {
+        this(new PageParameters());
     }
 
     protected Component headerPanel() {

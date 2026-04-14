@@ -67,7 +67,7 @@ GeoServer provides a built-in configuration interface to enable CORS. This is th
 2.  Navigate to **Settings --> Global**.
 3.  Locate the **CORS Settings** section.
 
-![](images/cors_settings.png)
+    ![](images/cors_settings.png)
 
 4.  Check the **Enabled** box.
 5.  Configure the following options as needed:
@@ -88,7 +88,7 @@ While the UI method above is recommended, administrators using Tomcat may still 
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 
     ```xml
-    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml"
+    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml:141:159"
     ```
 
     Note that in some cases you may have to replace the asterisk (*) param-value for cors.allowed.methods with an explicit list: Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization
@@ -96,7 +96,7 @@ While the UI method above is recommended, administrators using Tomcat may still 
 2.  Uncomment the following `<filter-mapping>`:
 
     ```xml
-    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml"
+    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml:171:177"
     ```
 
 3.  Restart

@@ -144,10 +144,10 @@ The following illustration shows the configuration options for the LDAP authenti
 | Max depth for hierarchical groups search | Specifies the max group search depth level to use with Hierarchical LDAP groups search. Use `-1` for no limit. Only applicable when the *Enable Hierarchical groups search( parameter ischecked**.                                                                                                                                                                                                                                                                         |
 | Nested group search filter | Search pattern for locating parent LDAP groups a group belongs to. This may contain two placeholder values:<br>`{0}`, the full DN of the user, for example `cn=it,ou=groups,dc=acme,dc=com`<br>`{1}`, the `cn` portion of the full DN, for example `it`. Only applicable when the *Enable Hierarchical groups search( parameter ischecked**. |
 
-## Authentication chain
+## Provider chain
 
-This section selects the authentication chain. Currently, only one default authentication chain is available. For further information about the default chain, please refer to [Authentication chain](../auth/chain.md).
+This section selects the authentication provider chain. Currently, only one default provider chain is available. For further information about the default chain, please refer to [Authentication chain](../auth/chain.md).
 
 ![](images/auth_chain.png)
 
-*Selecting the authentication chain*
+*Selecting the provider chain*

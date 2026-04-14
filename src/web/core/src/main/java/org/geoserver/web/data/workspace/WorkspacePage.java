@@ -12,13 +12,13 @@ import static org.geoserver.web.data.workspace.WorkspaceProvider.NAME;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -42,21 +42,38 @@ public class WorkspacePage extends GeoServerSecuredPage {
     @Serial
     private static final long serialVersionUID = 3084639304127909774L;
 
+    private String targetWorkspaceStr = null;
+    private String targetLayerStr = null;
+    private String targetGroupStr = null;
+
     WorkspaceProvider provider = new WorkspaceProvider() {
 
         @Override
-        protected Filter getFilter() {
-            Filter baseFilter = Objects.requireNonNull(super.getFilter());
-            StringValue wsParam = getPageParameters().get("workspace");
-            StringValue layerParam = getPageParameters().get("layer");
+        protected Filter getContextFilter() {
 
-            if (!layerParam.isEmpty()) {
-                String targetLayer;
-                if (!wsParam.isEmpty()) {
-                    targetLayer = wsParam.toString() + ":" + layerParam.toString();
-                } else {
-                    targetLayer = layerParam.toString();
+            if (targetGroupStr != null) {
+                String targetGroup =
+                        (targetWorkspaceStr != null) ? targetWorkspaceStr + ":" + targetGroupStr : targetGroupStr;
+                LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetGroup);
+                if (gi != null) {
+                    LayerGroupHelper helper = new LayerGroupHelper(gi);
+                    List<String> ids = new ArrayList<>();
+                    for (LayerInfo li : helper.allLayers()) {
+                        if (li.getResource() != null
+                                && li.getResource().getStore() != null
+                                && li.getResource().getStore().getWorkspace() != null) {
+                            ids.add(li.getResource().getStore().getWorkspace().getId());
+                        }
+                    }
+                    return ids.isEmpty() ? Filter.EXCLUDE : Predicates.in("id", ids);
                 }
+                return Filter.EXCLUDE;
+            }
+
+            if (targetLayerStr != null) {
+                String targetLayer =
+                        (targetWorkspaceStr != null) ? targetWorkspaceStr + ":" + targetLayerStr : targetLayerStr;
+
                 LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
                 if (gi != null) {
                     LayerGroupHelper helper = new LayerGroupHelper(gi);
@@ -65,37 +82,51 @@ public class WorkspacePage extends GeoServerSecuredPage {
                         if (li.getResource() != null
                                 && li.getResource().getStore() != null
                                 && li.getResource().getStore().getWorkspace() != null) {
-                            String workspaceId =
-                                    li.getResource().getStore().getWorkspace().getId();
-                            ids.add(workspaceId);
+                            ids.add(li.getResource().getStore().getWorkspace().getId());
                         }
                     }
-                    return Predicates.and(baseFilter, Predicates.in("id", ids));
+                    return ids.isEmpty() ? Filter.EXCLUDE : Predicates.in("id", ids);
                 }
+
                 LayerInfo li = getCatalog().getLayerByName(targetLayer);
-                if (li != null) {
-                    if (li.getResource() != null
-                            && li.getResource().getStore() != null
-                            && li.getResource().getStore().getWorkspace() != null) {
-                        String workspaceId =
-                                li.getResource().getStore().getWorkspace().getId();
-                        return Predicates.and(baseFilter, Predicates.equal("id", workspaceId));
-                    }
+                if (li != null
+                        && li.getResource() != null
+                        && li.getResource().getStore() != null
+                        && li.getResource().getStore().getWorkspace() != null) {
+                    String workspaceId =
+                            li.getResource().getStore().getWorkspace().getId();
+                    return Predicates.equal("id", workspaceId);
                 }
+
+                return Filter.EXCLUDE;
             }
-            if (!wsParam.isEmpty()) {
-                String targetWs = wsParam.toString();
-                Filter workspaceFilter = Predicates.equal("resource.store.workspace.name", targetWs);
-                return Predicates.and(baseFilter, workspaceFilter);
+
+            if (targetWorkspaceStr != null) {
+                return Predicates.equal("name", targetWorkspaceStr);
             }
-            return baseFilter;
+
+            return null;
         }
     };
     GeoServerTablePanel<WorkspaceInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
 
-    public WorkspacePage() {
+    public WorkspacePage(PageParameters parameters) {
+
+        StringValue wsParam = parameters.get("workspace");
+        StringValue layerParam = parameters.get("layer");
+        StringValue groupParam = parameters.get("group");
+
+        if (!wsParam.isEmpty()) {
+            this.targetWorkspaceStr = wsParam.toString();
+        }
+        if (!layerParam.isEmpty()) {
+            this.targetLayerStr = layerParam.toString();
+        }
+        if (!groupParam.isEmpty()) {
+            this.targetGroupStr = groupParam.toString();
+        }
         // the middle table
         add(
                 table = new GeoServerTablePanel<>("table", provider, true) {
@@ -137,6 +168,10 @@ public class WorkspacePage extends GeoServerSecuredPage {
         // the confirm dialog
         add(dialog = new GeoServerDialog("dialog"));
         setHeaderPanel(headerPanel());
+    }
+
+    public WorkspacePage() {
+        this(new PageParameters());
     }
 
     protected Component headerPanel() {

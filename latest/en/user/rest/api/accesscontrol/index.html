@@ -30155,13 +30155,17 @@
 <p>The resource attribute specifies a rule. There are three different formats.</p>
 <ul>
 <li>For layers: <workspace>.<layer>.<access>. The asterisk is a wild card for <workspace> and <layer>. <access> is one of <strong>r</strong> (read), <strong>w</strong> (write) or <strong>a</strong> (administer).</li>
-<li>For services: <service>.<method>. The asterisk is a wild card wild card for <service> and <method>. Examples:</li>
+<li>For services: <service>.<method>. The asterisk is a wild card wild card for <service> and <method>. Examples:<ul>
 <li>wfs.GetFeature</li>
 <li>wfs.GetTransaction</li>
 <li>wfs.*</li>
-<li>For REST: <URL Ant pattern>;<comma separated list of HTTP methods>. Examples:</li>
+</ul>
+</li>
+<li>For REST: <URL Ant pattern>;<comma separated list of HTTP methods>. Examples:<ul>
 <li>/**;GET</li>
 <li>/**;POST,DELETE,PUT</li>
+</ul>
+</li>
 </ul>
 <p>The content of a rule element is a comma separated list of roles or the asterisk.</p>
 <h3 id="exceptions_1">Exceptions<a class="headerlink" href="#exceptions_1" title="Permanent link">&para;</a></h3>

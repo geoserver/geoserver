@@ -30028,18 +30028,19 @@
 </table>
 <h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
 <p>The model is very simple and is shared between the version and the resource requests to parse both requests.:</p>
-<p><about>
-      <resource name="{NAME}">
-        &lt;{KEY}&gt;{VALUE}&lt;/{KEY}&gt;
-        ...
-      </resource>
-      ...
-</about></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;about&gt;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">      </span><span class="nt">&lt;resource</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;{NAME}&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">        </span><span class="err">&lt;</span>{KEY}&gt;{VALUE}<span class="err">&lt;</span>/{KEY}&gt;
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span>...
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="nt">&lt;/resource&gt;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span>...
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nt">&lt;/about&gt;</span>
+</code></pre></div>
 <p>You can customize the results adding a properties file called <strong><code>manifest.properties</code></strong> into the root of the data directory. Below is the default implementation that is used when no custom properties file is present:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="na">resourceNameRegex</span><span class="o">=</span><span class="s">.+/(.*).(jar|war)</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="na">resourceAttributeExclusions</span><span class="o">=</span><span class="s">Import-Package,Export-Package,Class-Path,Require-Bundle</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="na">versionAttributeInclusions</span><span class="o">=</span><span class="s">Project-Version:Version,Build-Timestamp,Git-Revision,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="na">Specification-Version</span><span class="o">:</span><span class="s">Version,Implementation-Version:Git-Revision</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="na">resourceNameRegex</span><span class="o">=</span><span class="s">.+/(.*).(jar|war)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="na">resourceAttributeExclusions</span><span class="o">=</span><span class="s">Import-Package,Export-Package,Class-Path,Require-Bundle</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="na">versionAttributeInclusions</span><span class="o">=</span><span class="s">Project-Version:Version,Build-Timestamp,Git-Revision,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="na">Specification-Version</span><span class="o">:</span><span class="s">Version,Implementation-Version:Git-Revision</span>
 </code></pre></div>
 <p>where:</p>
 <ul>

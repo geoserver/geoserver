@@ -52,6 +52,7 @@ For more information see [Configuration Considerations](../../production/config.
 | GEOSERVER_FREEMARKER_ALLOW_LIST<br>[/tutorials/GetFeatureInfo/html](../../tutorials/GetFeatureInfo/html.md) | x               | x             | x            |
 | GEOSERVER_FREEMARKER_BLOCK_LIST<br>[/tutorials/GetFeatureInfo/html](../../tutorials/GetFeatureInfo/html.md) | x               | x             | x            |
 | GEOSERVER_FREEMARKER_API_EXPOSED<br>[/tutorials/GetFeatureInfo/html](../../tutorials/GetFeatureInfo/html.md), default false | x               | x             | x            |
+| GS_FILETYPES_UNRESTRICTED<br>If true, do not validate uploaded file type.<br> default false |                 |             | x            |
 | ows10.exception.xml.responsetype<br>[/production/config](../../production/config.md)  | x               |               |              |
 | ows11.exception.xml.responsetype<br>[/production/config](../../production/config.md)  | x               |               |              |
 | ENABLE_MAP_WRAPPING<br>Default if setting unavailable (true)                     | x               | x             | x            |

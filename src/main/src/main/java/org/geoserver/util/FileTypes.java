@@ -8,6 +8,9 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +42,7 @@ public class FileTypes {
      *
      * <p>Set this environment var to "true" to disable the REJECT_LIST_MIME_TYPES check.
      */
-    static final String ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST = "GS_DISABLE_FILETYPES_REJECT_LIST";
+    static final String ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST = "GS_FILETYPES_UNRESTRICTED";
 
     static final MediaType ZIP_MEDIA_TYPE = MediaType.parse("application/zip");
 
@@ -117,12 +120,7 @@ public class FileTypes {
         }
 
         // does this stream support mark/rest (required by tika)
-        try {
-            stream.mark(10);
-            stream.reset();
-        } catch (IOException e) {
-            stream = new BufferedInputStream(stream); // wrap
-        }
+        stream = wrapIfNotMarkReset(stream);
 
         MediaType detectedMediaType = tika.getDetector().detect(stream, new Metadata());
         if (REJECT_LIST_MIME_TYPES.contains(detectedMediaType.getBaseType())) {
@@ -156,12 +154,7 @@ public class FileTypes {
         }
 
         // does this stream support mark/rest (required by tika)
-        try {
-            stream.mark(10);
-            stream.reset();
-        } catch (IOException e) {
-            stream = new BufferedInputStream(stream); // wrap
-        }
+        stream = wrapIfNotMarkReset(stream);
 
         MediaType detectedMediaType = tika.getDetector().detect(stream, new Metadata());
         if (!detectedMediaType.getBaseType().equals(ZIP_MEDIA_TYPE)) {
@@ -249,6 +242,52 @@ public class FileTypes {
         String mainTagName = svgDoc.getDocumentElement().getTagName();
         if (!mainTagName.equals("svg")) {
             throw new Exception("SVG document should start with 'svg'");
+        }
+    }
+
+    /**
+     * Validate a file and (if ok) copy it to the output stream. If the file (or a file inside a zip file) is bad, then
+     * throw.
+     *
+     * <p>1. copy file to temp folder </br> 2. validate file(s) </br> 3. copy file to final destination </br>
+     *
+     * <p>NOTE: this doesn't handle a zip-inside-a-zip (will throw)
+     *
+     * @param inputStream file (from user)
+     * @param os final location for file
+     * @throws IOException problem with file (either file's type is in reject-list, it's a zip contains a file in the
+     *     reject-list, problem copying file, or it's a zip-inside-a-zip)
+     */
+    public static void validateFileAndCopy(InputStream inputStream, OutputStream os) throws IOException {
+        Path tempFile = null;
+        try {
+            // create temp file and write the user's file into it
+            tempFile = java.nio.file.Files.createTempFile("prefix-", ".tmp");
+            java.nio.file.Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            // validate the file uploaded (and recurse if its a zip)
+            try (InputStream tempFileInputStream = java.nio.file.Files.newInputStream(tempFile)) {
+                FileTypes.validateFileNotInRejectList(tempFileInputStream);
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+
+            // copy the user's original file to the final destination
+            try (InputStream tempFileInputStream = java.nio.file.Files.newInputStream(tempFile)) {
+                IOUtils.copy(tempFileInputStream, os);
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+
+        } finally {
+            // cleanup temp file
+            if (tempFile != null) {
+                try {
+                    java.nio.file.Files.deleteIfExists(tempFile);
+                } catch (IOException e) {
+                    LOGGER.log(Level.INFO, "error deleting temp file: " + e.getMessage(), e);
+                }
+            }
         }
     }
 }

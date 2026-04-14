@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>delete</title>
+    <defs>
+        <linearGradient x1="14.2857143%" y1="14.2857143%" x2="85.7142857%" y2="85.7142857%" id="linearGradient-1">
+            <stop stop-color="#E0696A" stop-opacity="0.95686275" offset="0%"></stop>
+            <stop stop-color="#C45034" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="10%" y1="10%" x2="90%" y2="90%" id="linearGradient-2">
+            <stop stop-color="#F0917F" offset="0%"></stop>
+            <stop stop-color="#E65A52" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="delete" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g transform="translate(4, 4)">
+            <circle id="path863" fill="url(#linearGradient-1)" cx="28" cy="28" r="28"></circle>
+            <circle id="path863-7" fill="#F9D3CC" cx="28" cy="28" r="24"></circle>
+            <circle id="path905" fill="url(#linearGradient-2)" cx="28" cy="28" r="20"></circle>
+            <polygon id="path1039" fill="#FFFFFF" points="16 24 16 32 40 32 40 24"></polygon>
+        </g>
+    </g>
+</svg>

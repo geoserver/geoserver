@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>page_white_text</title>
+    <defs>
+        <linearGradient x1="55.7794065%" y1="57.4907575%" x2="79.4794449%" y2="9.87519356%" id="linearGradient-1">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#E6E6E6" offset="80.6982%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="73.6111111%" x2="133.333333%" y2="48.6111111%" id="linearGradient-2">
+            <stop stop-color="#DDDDDD" offset="38.426%"></stop>
+            <stop stop-color="#A5A5A5" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="57.03125%" x2="100%" y2="42.96875%" id="linearGradient-3">
+            <stop stop-color="#DDDDDD" offset="38.426%"></stop>
+            <stop stop-color="#A5A5A5" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="60.15625%" x2="100%" y2="46.09375%" id="linearGradient-4">
+            <stop stop-color="#DDDDDD" offset="38.426%"></stop>
+            <stop stop-color="#A5A5A5" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="53.90625%" x2="100%" y2="39.84375%" id="linearGradient-5">
+            <stop stop-color="#DDDDDD" offset="38.426%"></stop>
+            <stop stop-color="#A5A5A5" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="50.78125%" x2="100%" y2="36.71875%" id="linearGradient-6">
+            <stop stop-color="#DDDDDD" offset="38.426%"></stop>
+            <stop stop-color="#A5A5A5" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="page_white_text" stroke="none" fill="none">
+        <image x="0" y="0" width="64" height="64" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAEKADAAQAAAABAAAAEAAAAAA0VXHyAAABcklEQVQ4EYWTsW7CQAyG79I8A11a1CVsGVApHVjyFLxXJZh4IaqyZWRLB0QWgiAJEBLX/7U+JYSoliz7fPd/dk45rX7ticMj+8PfuivEvBGxV7cHXk+nU1IURXm9Xume8z7NZrMPFr6wO7eAMcTH45HSNLW+3+9pt9vRdrs10M1mQ/P5vAXRTBuja57ndD6fTUR+OBwoSRKK49gAsiwjNFksFgJREMPfGPBZlqVaLpfqcrkY56mU+HQ6bUztuu47F77cetVxHDWZTEyJiBSAcIYrnkRVVWXyXq9nZQ2A1lqtVivTFSJMgiggAIIgsGIkDQAKo9EIwZpMAjFAWNetBQjD0HStdxYhIPKJAmkBfN+XPRvRFWLYvxOs12t7cRDJ6BAjHw6HSK21JvA8z2xKJ4lWcZO0AFEUmU7SHbEOGQwGDUQdgOvV/X6/caBjIY+J8CggrPimc8QOQb2MsxkXShTxG8Oe2fGcW68Mm3cMYjzt7x/kZjhv+CXezgAAAABJRU5ErkJggg=="></image>
+        <g id="Page-white-text">
+            <path d="M8,4 L43.3432,4 C44.404,4 45.4216,4.42144 46.1716,5.17156 L54.8284,15.82844 C55.5784,16.57856 56,17.596 56,18.65684 L56,60 L8,60 L8,4 Z" id="paper" fill="url(#linearGradient-1)" fill-rule="evenodd"></path>
+            <path d="M47.9998261,4.34315901 L48.081214,4.42454836 L48.1527275,4.51473726 L55.7924497,14.1495352 C57.2100935,15.6300028 58,17.602674 58,19.65684 L58,62 L6,62 L6,2 L42.3432,2 C44.4648395,2 46.4995526,2.84285884 47.9998261,4.34315901 Z" id="edge" stroke-opacity="0.66" stroke="#A8A8A8" stroke-width="4" stroke-linejoin="round"></path>
+            <path d="M40,6 L40,10 C40,14.6741057 43.6466836,20 48,20 L54,20 C53.9999105,20 54,20.0000895 54,20 L54,58 L10,58 L10,6.00000001 L40,6 C39.9999105,6 40,6.0000895 40,6 Z" id="highlight" stroke="#FFFFFF" stroke-width="4"></path>
+            <path d="M16,18 C16,16.89544 16.89544,16 18,16 L38,16 C39.10456,16 40,16.89544 40,18 C40,19.10456 39.10456,20 38,20 L18,20 C16.89544,20 16,19.10456 16,18 Z" id="text" fill="url(#linearGradient-2)" fill-rule="evenodd"></path>
+            <path d="M16,34 C16,32.89544 16.89544,32 18,32 L46,32 C47.1044,32 48,32.89544 48,34 C48,35.10456 47.1044,36 46,36 L18,36 C16.89544,36 16,35.10456 16,34 Z" id="text" fill="url(#linearGradient-3)" fill-rule="evenodd"></path>
+            <path d="M16,26 C16,24.89544 16.89544,24 18,24 L46,24 C47.1044,24 48,24.89544 48,26 C48,27.10456 47.1044,28 46,28 L18,28 C16.89544,28 16,27.10456 16,26 Z" id="text" fill="url(#linearGradient-4)" fill-rule="evenodd"></path>
+            <path d="M16,42 C16,40.8956 16.89544,40 18,40 L46,40 C47.1044,40 48,40.8956 48,42 C48,43.1044 47.1044,44 46,44 L18,44 C16.89544,44 16,43.1044 16,42 Z" id="text" fill="url(#linearGradient-5)" fill-rule="evenodd"></path>
+            <path d="M16,50 C16,48.8956 16.89544,48 18,48 L46,48 C47.1044,48 48,48.8956 48,50 C48,51.1044 47.1044,52 46,52 L18,52 C16.89544,52 16,51.1044 16,50 Z" id="text" fill="url(#linearGradient-6)" fill-rule="evenodd"></path>
+        </g>
+    </g>
+</svg>

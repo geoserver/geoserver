@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>help</title>
+    <defs>
+        <radialGradient cx="88.4615385%" cy="88.4615385%" fx="88.4615385%" fy="88.4615385%" r="108.785385%" id="radialGradient-1">
+            <stop stop-color="#6187B2" offset="33.147%"></stop>
+            <stop stop-color="#B7D2F2" stop-opacity="0.956863" offset="100%"></stop>
+        </radialGradient>
+        <linearGradient x1="88.4615385%" y1="88.4615385%" x2="11.5384615%" y2="11.5384615%" id="linearGradient-2">
+            <stop stop-color="#3F6FAB" stop-opacity="0.956863" offset="0%"></stop>
+            <stop stop-color="#B7D2F2" stop-opacity="0.956863" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Help" stroke="none" fill="none">
+        <circle id="sign" stroke="url(#linearGradient-2)" stroke-width="4" fill="url(#radialGradient-1)" fill-rule="evenodd" cx="32" cy="32" r="28"></circle>
+        <circle id="highlight" stroke-opacity="0.66" stroke="#FFFFFF" stroke-width="4" cx="32" cy="32" r="24"></circle>
+        <path d="M32.30592,17.76 C37.78592,17.76 40.586,20.84 40.586,24.24 C40.586,30.68 33.34592,30.04 33.34592,34.88 L33.34592,36.24 L28.58592,36.24 L28.58592,34.68 C28.58592,27.84 35.22592,28.4 35.22592,24.64 C35.22592,22.88 33.94592,21.84 31.86592,21.84 C30.06592,21.84 28.30592,22.68 26.78592,24.48 L23.46592,21.88 C25.70592,19.24 28.58592,17.76 32.30592,17.76 Z M31.02592,40.12 C32.86592,40.12 34.30592,41.56 34.30592,43.36 C34.30592,45.12 32.86592,46.6 31.02592,46.6 C29.22592,46.6 27.82592,45.12 27.82592,43.36 C27.82592,41.56 29.22592,40.12 31.02592,40.12 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+    </g>
+</svg>

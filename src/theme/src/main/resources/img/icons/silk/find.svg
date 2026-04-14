@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>find</title>
+    <defs>
+        <linearGradient x1="50%" y1="39.6185981%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#78828D" offset="0%"></stop>
+            <stop stop-color="#1A1A1B" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="104.212298%" y1="50%" x2="3.89840262%" y2="50%" id="linearGradient-2">
+            <stop stop-color="#959596" offset="0%"></stop>
+            <stop stop-color="#898B8C" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="30.2232375%" y1="14.1906738%" x2="69.713352%" y2="85.8947754%" id="linearGradient-3">
+            <stop stop-color="#AAB3BE" offset="0%"></stop>
+            <stop stop-color="#616A73" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="21.3341815%" y1="0.908406576%" x2="70.0688167%" y2="100%" id="linearGradient-4">
+            <stop stop-color="#8B97A5" offset="0%"></stop>
+            <stop stop-color="#0A0B0D" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="71.457141%" y1="17.1000163%" x2="28.4794485%" y2="82.9854329%" id="linearGradient-5">
+            <stop stop-color="#AAB3BE" offset="0%"></stop>
+            <stop stop-color="#616A73" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="79.9687825%" y1="0%" x2="20.0312175%" y2="100%" id="linearGradient-6">
+            <stop stop-color="#8F9AA7" offset="0%"></stop>
+            <stop stop-color="#40474D" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-7">
+            <stop stop-color="#7E8994" offset="0%"></stop>
+            <stop stop-color="#9FAAB7" offset="6.83441162%"></stop>
+            <stop stop-color="#A2ADB8" offset="26.4251709%"></stop>
+            <stop stop-color="#69737D" offset="31.1264038%"></stop>
+            <stop stop-color="#69747E" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="49.9992659%" y1="0%" x2="49.9992659%" y2="125.067139%" id="linearGradient-8">
+            <stop stop-color="#45474B" offset="0%"></stop>
+            <stop stop-color="#1B1C1E" offset="22.2780733%"></stop>
+            <stop stop-color="#101013" offset="69.5613055%"></stop>
+            <stop stop-color="#0C0D0E" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="50%" x2="100%" y2="50%" id="linearGradient-9">
+            <stop stop-color="#B4BEC7" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#B4BEC7" offset="21.7056274%"></stop>
+            <stop stop-color="#B1BCC6" offset="72.4812826%"></stop>
+            <stop stop-color="#B0BBC5" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-10">
+            <stop stop-color="#5A6671" offset="0%"></stop>
+            <stop stop-color="#7B8B9B" offset="42.6378038%"></stop>
+            <stop stop-color="#8B9BAD" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="find" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g transform="translate(4, 8)">
+            <rect id="Rectangle" stroke="url(#linearGradient-2)" stroke-width="2" fill="url(#linearGradient-1)" x="13" y="13" width="25" height="16"></rect>
+            <path d="M38,10 L44,10 C47.3954305,10 50,12.6045695 50,15 L50,29 L30,29 L30,2.00000003 L38,2.00000003 Z" id="Path" stroke="url(#linearGradient-4)" stroke-width="4" fill="url(#linearGradient-3)"></path>
+            <path d="M10,10 L16,10 C19.3954305,10 22,12.6045695 22,15 L22,29 L2.00000001,29 L2.00000001,2.00000003 L10,2.00000003 Z" id="Path" stroke="url(#linearGradient-6)" stroke-width="4" fill="url(#linearGradient-5)" transform="translate(12, 15.5) scale(-1, 1) translate(-12, -15.5)"></path>
+            <rect id="Rectangle" stroke="url(#linearGradient-8)" stroke-width="4" fill="url(#linearGradient-7)" x="2" y="26" width="20" height="20" rx="1"></rect>
+            <rect id="Rectangle" stroke="url(#linearGradient-8)" stroke-width="4" fill="url(#linearGradient-7)" x="30" y="26" width="20" height="20" rx="1"></rect>
+            <rect id="Rectangle" fill="url(#linearGradient-9)" x="6" y="28" width="6" height="16" rx="1"></rect>
+            <rect id="Rectangle" fill="url(#linearGradient-10)" x="16" y="12" width="20" height="9"></rect>
+        </g>
+    </g>
+</svg>

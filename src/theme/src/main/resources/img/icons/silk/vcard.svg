@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>vcard</title>
+    <defs>
+        <linearGradient x1="20%" y1="27.0408163%" x2="80%" y2="72.9591837%" id="linearGradient-1">
+            <stop stop-color="#FAFAFA" offset="0%"></stop>
+            <stop stop-color="#E9E9E9" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="20%" y1="27.0408163%" x2="80%" y2="72.9591837%" id="linearGradient-2">
+            <stop stop-color="#E6E6E6" stop-opacity="0.8" offset="0%"></stop>
+            <stop stop-color="#B0B0B0" stop-opacity="0.839216" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="50%" x2="100%" y2="50%" id="linearGradient-3">
+            <stop stop-color="#74B6EC" offset="0%"></stop>
+            <stop stop-color="#569DDB" offset="100%"></stop>
+        </linearGradient>
+        <rect id="path-4" x="0" y="0" width="24" height="24"></rect>
+        <linearGradient x1="90%" y1="68.75%" x2="3.793%" y2="42.8879375%" id="linearGradient-6">
+            <stop stop-color="#438DFF" offset="0%"></stop>
+            <stop stop-color="#5DACFE" offset="48.8845%"></stop>
+            <stop stop-color="#72D4FF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="100%" y1="49.9997949%" x2="0%" y2="49.9997949%" id="linearGradient-7">
+            <stop stop-color="#754112" offset="0%"></stop>
+            <stop stop-color="#9F5812" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Vcard" stroke="none" fill="none">
+        <path d="M62,20 L62,52 C62,54.2089695 60.2089695,56 58,56 L56.3332,56 C54.0527204,56 52.1834152,54.2378967 52.0168279,52 L47.983172,52 C47.8165886,54.2378932 45.9472818,56 43.6668,56 L20.33332,56 C18.0526643,56 16.1834026,54.2379441 16.0168271,52 L11.983173,52 C11.8165974,54.2379441 9.94733566,56 7.66668,56 L6,56 C3.79089454,56 2,54.2090015 2,52 L2,20 C2,15.5817105 5.5817105,12 10,12 L54,12 C58.4182048,12 62,15.5817458 62,20 Z" id="Card" stroke="url(#linearGradient-2)" stroke-width="4" fill="url(#linearGradient-1)" fill-rule="evenodd" stroke-linejoin="round"></path>
+        <path d="M58,20 L58,52 C58,51.9998305 57.9998305,52 58,52 L56.3332,52 C56.1493695,52 56,51.8506305 56,51.6668 C56,49.6414305 54.3585695,48 52.3332,48 L47.6668,48 C45.6414305,48 44,49.6414305 44,51.6668 C44,51.8506305 43.8506305,52 43.6668,52 L20.33332,52 C20.1493095,52 20,51.8506905 20,51.6668 C20,49.6415033 18.3584423,48 16.33332,48 L11.66668,48 C9.64155771,48 8,49.6415033 8,51.6668 C8,51.8506905 7.8506905,52 7.66668,52 L6,52 C6.0000855,52 6,51.9999145 6,52 L6,20 C6,17.7908495 7.7908495,16 10,16 L54,16 C56.2090781,16 58,17.7908971 58,20 Z" id="Card-highlight" stroke-opacity="0.5" stroke="#FFFFFF" stroke-width="4"></path>
+        <rect id="Rectangle" fill="url(#linearGradient-3)" fill-rule="evenodd" x="40" y="20" width="16" height="4" rx="0.5"></rect>
+        <path d="M40,30 C40,28.89544 40.8956,28 42,28 L54,28 C55.1044,28 56,28.89544 56,30 C56,31.10456 55.1044,32 54,32 L42,32 C40.8956,32 40,31.10456 40,30 Z" id="Path" fill="#B7B7B7" fill-rule="evenodd"></path>
+        <path d="M40,38 C40,36.89544 40.8956,36 42,36 L54,36 C55.1044,36 56,36.89544 56,38 C56,39.10456 55.1044,40 54,40 L42,40 C40.8956,40 40,39.10456 40,38 Z" id="Path" fill="#B7B7B7" fill-rule="evenodd"></path>
+        <g id="Clipped" stroke-width="1" fill-rule="evenodd" transform="translate(8, 20)">
+            <mask id="mask-5" fill="white">
+                <use xlink:href="#path-4"></use>
+            </mask>
+            <g id="Rectangle"></g>
+            <g id="Group" mask="url(#mask-5)">
+                <g transform="translate(-4, 0)">
+                    <rect id="Rectangle" stroke="none" fill="#8ECCFC" fill-rule="evenodd" x="4" y="0" width="24" height="24"></rect>
+                    <circle id="Oval" stroke="none" fill="#EAB378" fill-rule="evenodd" cx="4" cy="20" r="4"></circle>
+                    <circle id="Oval" stroke="none" fill="#EAB378" fill-rule="evenodd" cx="28" cy="20" r="4"></circle>
+                    <polygon id="Path" stroke="none" fill="url(#linearGradient-6)" fill-rule="evenodd" points="20.57144 24 11.2 24 10.28572 19.2 8 16.8 12.8 12 19.2 12 24 16.8 21.71428 19.2"></polygon>
+                    <path d="M19.9070555,11.2928691 L19.9070932,11.2929068 L24.7070932,16.0929068 C25.0909233,16.4767169 25.0984849,17.0966018 24.7241394,17.4896676 L22.8107404,19.4987466 L22.6245944,19.6942009 L22.5620753,19.9567729 L21.5442353,24.2315729 C21.4369699,24.6819956 21.0344064,25 20.57144,25 L11.2,25 C10.7198348,25 10.3074845,24.6588138 10.2176542,24.1872649 L9.41358003,19.9656956 L9.35847814,19.6763983 L9.15537514,19.4631419 L7.27585514,17.4896619 C6.90151509,17.0966018 6.90907669,16.4767169 7.29288836,16.0929252 L12.0929068,11.2929068 C12.280437,11.1053565 12.5347837,11 12.8,11 L19.2,11 C19.4652163,11 19.719563,11.1053565 19.9070555,11.2928691 Z" id="Path" stroke-opacity="0.972549" stroke="#2E5ABA" stroke-width="2" fill="none"></path>
+                    <circle id="Oval" stroke="#A87B4D" stroke-width="2" fill="#F6D0A8" fill-rule="evenodd" cx="16" cy="8" r="5"></circle>
+                    <path d="M8.19244,9.75204 C9.3048,8.36256 11.741,6 14,6 C15.5836,6 16.33924,6.87572 17.05276,7.70264 C17.69092,8.44228 18.29544,9.14284 19.42856,9.14284 C20.82372,9.14284 22.57604,8.37048 23.99532,7.72372 C23.84972,3.43336 20.3258,0 16,0 C11.58172,0 8,3.58172 8,8 C8,8.60184 8.06644,9.18816 8.19244,9.75204 Z" id="Path" stroke="none" fill="url(#linearGradient-7)" fill-rule="evenodd"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

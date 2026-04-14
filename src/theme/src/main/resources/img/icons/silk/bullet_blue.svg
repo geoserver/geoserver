@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>bullet_blue</title>
+    <defs>
+        <linearGradient x1="14.2857143%" y1="14.2857143%" x2="85.7142857%" y2="85.7142857%" id="linearGradient-1">
+            <stop stop-color="#0389D0" offset="0%"></stop>
+            <stop stop-color="#7DCAF0" offset="47.2369792%"></stop>
+            <stop stop-color="#0370A1" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="9.12475586%" x2="100%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#D4F0FC" offset="0%"></stop>
+            <stop stop-color="#86CEF3" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="10%" y1="10%" x2="90%" y2="90%" id="linearGradient-3">
+            <stop stop-color="#7EC8F8" offset="0%"></stop>
+            <stop stop-color="#66C1F4" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="bullet_blue" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g id="svg8" transform="translate(-8, 19)">
+            <circle id="outter" fill="url(#linearGradient-1)" cx="40" cy="13" r="12"></circle>
+            <circle id="inner" fill="url(#linearGradient-2)" cx="40" cy="13" r="8"></circle>
+            <circle id="bullet" fill="url(#linearGradient-3)" cx="40" cy="13" r="5"></circle>
+        </g>
+    </g>
+</svg>

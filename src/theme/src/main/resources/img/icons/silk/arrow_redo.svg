@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>arrow_redo</title>
+    <defs>
+        <linearGradient x1="77.2194028%" y1="26.4620219%" x2="18.5328428%" y2="76.5572343%" id="linearGradient-1">
+            <stop stop-color="#ABD8A2" offset="0%"></stop>
+            <stop stop-color="#7CBE76" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="100%" y1="20.9076726%" x2="-1.77635684e-13%" y2="88.815172%" id="linearGradient-2">
+            <stop stop-color="#73C768" offset="0%"></stop>
+            <stop stop-color="#205E1D" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="arrow_redo" stroke="none" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+        <path d="M5.86867007,26.4997559 C5.86867007,14.4997559 16.2441584,6.39477539 28.2441584,6.39477539 C40.2441584,6.39477539 50.2434082,14.4997559 50.2434082,26.4997559 C50.2434082,26.4997559 50.2434082,33.0703066 50.2434082,46.2114081 L58.348877,46.2114081 C51.1260644,53.2068035 46.9976464,57.0857097 45.963623,57.8481268 C44.9295997,58.6105439 43.7972755,58.6105439 42.5666504,57.8481268 L30.482666,46.2114081 L38.529541,46.2114081 C38.529541,33.0703066 38.529541,26.4997559 38.529541,26.4997559 C38.529541,21.4997559 33.2441584,18.1569824 28.2441584,18.1569824 C23.2441584,18.1569824 18.3354669,21.4997559 18.3354669,26.4997559 C18.3354669,26.4997559 18.3354669,35.6709798 18.3354669,54.0134277 L5.86867007,54.0134277 C5.86867007,35.6709798 5.86867007,26.4997559 5.86867007,26.4997559 Z" id="path1039" stroke="url(#linearGradient-2)" fill="url(#linearGradient-1)" transform="translate(32.1088, 32.4074) rotate(-90) translate(-32.1088, -32.4074)"></path>
+    </g>
+</svg>

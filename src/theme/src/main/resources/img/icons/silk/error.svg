@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>error</title>
+    <defs>
+        <linearGradient x1="28.5714286%" y1="21.0648148%" x2="92.8571429%" y2="90.5092593%" id="linearGradient-1">
+            <stop stop-color="#E9BB3A" stop-opacity="0.9896782" offset="0%"></stop>
+            <stop stop-color="#C16803" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="error" stroke="none" fill="none" fill-rule="evenodd">
+        <g>
+            <path d="M35.4299717,9.94201698 L59.4299717,49.942017 L63.0647615,56 L0.935238484,56 L4.5700283,49.942017 L28.5700283,9.94201698 L32,4.22539747 Z" id="outline" stroke="url(#linearGradient-1)" stroke-width="8" fill="#FFFFFF" stroke-linejoin="round"></path>
+            <polygon id="warning" fill="#F5D852" points="8 52 56 52 32 12"></polygon>
+            <polygon id="dot" fill="#C58711" points="29 43 29 49 35 49 35 43"></polygon>
+            <polygon id="bang" fill="#C58711" points="29 40 35 40 35 26 29 26"></polygon>
+        </g>
+    </g>
+</svg>

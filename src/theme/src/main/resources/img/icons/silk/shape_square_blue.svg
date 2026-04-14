@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>shape_square_blue</title>
+    <defs>
+        <linearGradient x1="4.54545455%" y1="4.54545455%" x2="95.4545455%" y2="95.4545455%" id="linearGradient-1">
+            <stop stop-color="#A6C4EC" offset="17.1509%"></stop>
+            <stop stop-color="#81A2DE" offset="83.841%"></stop>
+        </linearGradient>
+        <linearGradient x1="95.4545455%" y1="95.4545455%" x2="4.54545455%" y2="4.54545455%" id="linearGradient-2">
+            <stop stop-color="#5883D2" offset="0%"></stop>
+            <stop stop-color="#8CB3E6" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="shape_square_blue" stroke="none" fill="none" fill-rule="evenodd" stroke-width="4">
+        <g id="Shape-square">
+            <rect id="Rectangle" stroke="url(#linearGradient-2)" fill="url(#linearGradient-1)" x="10" y="10" width="44" height="44"></rect>
+            <circle id="vertext" stroke="#17A6F8" fill="#7EC7F8" cx="54" cy="53" r="5"></circle>
+            <circle id="vertext" stroke="#17A6F8" fill="#7EC7F8" cx="10" cy="54" r="5"></circle>
+            <circle id="vertext" stroke="#17A6F8" fill="#7EC7F8" cx="10" cy="10" r="5"></circle>
+            <circle id="vertext" stroke="#17A6F8" fill="#7EC7F8" cx="54" cy="10" r="5"></circle>
+        </g>
+    </g>
+</svg>

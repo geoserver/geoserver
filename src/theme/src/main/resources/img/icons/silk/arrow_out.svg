@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>arrow_out</title>
+    <defs>
+        <linearGradient x1="14.210773%" y1="13.0185354%" x2="229.803794%" y2="232.100881%" id="linearGradient-1">
+            <stop stop-color="#ABD8A2" offset="0%"></stop>
+            <stop stop-color="#7CBE76" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0.753214546%" y1="0%" x2="240.990035%" y2="255.646308%" id="linearGradient-2">
+            <stop stop-color="#73C768" offset="0%"></stop>
+            <stop stop-color="#205E1D" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="arrow_out" stroke="none" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+        <polygon id="arrow" stroke="url(#linearGradient-2)" fill="url(#linearGradient-1)" transform="translate(12.076, 12.0444) rotate(180) translate(-12.076, -12.0444)" points="10.0197754 1.95361328 18.184082 10.1005859 22.0905762 6.08837891 22.0905762 22.1352539 6.06298828 22.1352539 10.0197754 18.0578613 2.06152344 9.70556641"></polygon>
+        <polygon id="arrow" stroke="url(#linearGradient-2)" fill="url(#linearGradient-1)" transform="translate(52.076, 12.0444) scale(-1, 1) rotate(180) translate(-52.076, -12.0444)" points="50.0197754 1.95361328 58.184082 10.1005859 62.0905762 6.08837891 62.0905762 22.1352539 46.0629883 22.1352539 50.0197754 18.0578613 42.0615234 9.70556641"></polygon>
+        <polygon id="arrow" stroke="url(#linearGradient-2)" fill="url(#linearGradient-1)" transform="translate(12.076, 52.0444) rotate(90) translate(-12.076, -52.0444)" points="10.0197754 41.9536133 18.184082 50.1005859 22.0905762 46.0883789 22.0905762 62.1352539 6.06298828 62.1352539 10.0197754 58.0578613 2.06152344 49.7055664"></polygon>
+        <polygon id="arrow" stroke="url(#linearGradient-2)" fill="url(#linearGradient-1)" transform="translate(52.076, 52.0444) scale(-1, 1) rotate(90) translate(-52.076, -52.0444)" points="50.0197754 41.9536133 58.184082 50.1005859 62.0905762 46.0883789 62.0905762 62.1352539 46.0629883 62.1352539 50.0197754 58.0578613 42.0615234 49.7055664"></polygon>
+    </g>
+</svg>

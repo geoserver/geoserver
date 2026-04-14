@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>server_error</title>
+    <defs>
+        <linearGradient x1="46.875%" y1="8.33333333%" x2="53.125%" y2="87.5%" id="linearGradient-1">
+            <stop stop-color="#E1E1E1" offset="0%"></stop>
+            <stop stop-color="#D2D2D4" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#C9CACF" offset="0%"></stop>
+            <stop stop-color="#AEAFB7" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="linearGradient-3">
+            <stop stop-color="#A4C8A0" offset="0%"></stop>
+            <stop stop-color="#42A13B" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="28.5714286%" y1="21.0648148%" x2="92.8571429%" y2="90.5092593%" id="linearGradient-4">
+            <stop stop-color="#E9BB3A" stop-opacity="0.9896782" offset="0%"></stop>
+            <stop stop-color="#C16803" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="server_error" stroke="none" fill="none">
+        <g id="server" transform="translate(4, 4)">
+            <polygon id="Path" fill="url(#linearGradient-1)" fill-rule="evenodd" points="4 16 16 4 16 52 4 44"></polygon>
+            <rect id="Rectangle" fill="url(#linearGradient-2)" fill-rule="evenodd" x="16" y="8" width="20" height="40"></rect>
+            <rect id="Rectangle" fill-opacity="0.33" fill="#000000" fill-rule="evenodd" x="20" y="12" width="16" height="4" rx="0.5"></rect>
+            <rect id="Rectangle" fill-opacity="0.33" fill="#000000" fill-rule="evenodd" x="20" y="20" width="16" height="4" rx="0.5"></rect>
+            <circle id="Oval" fill="url(#linearGradient-3)" fill-rule="evenodd" cx="32" cy="32" r="4"></circle>
+            <path d="M38,50 L16.6055513,50 L6,42.9296324 L6,16.8284272 L16.8284272,6 L38,6 Z" id="highlight" stroke-opacity="0.8" stroke="#FFFFFF" stroke-width="4"></path>
+            <path d="M42,5 L42,51 C42,52.6568542 40.6568542,54 39,54 L16.3027756,54 C15.7105007,54 15.1314776,53.8246859 14.638675,53.4961509 L3.33589941,45.9609671 C2.50130341,45.4045698 2,44.4678758 2,43.4648162 L2,16.4142136 C2,15.6185641 2.31607052,14.8555024 2.87867966,14.2928932 L14.2928932,2.87867966 C14.8555024,2.31607052 15.6185641,2 16.4142136,2 L39,2 C40.6568542,2 42,3.34314575 42,5 Z" stroke="#979797" stroke-width="4"></path>
+        </g>
+        <g id="error" transform="translate(4, 4)" fill-rule="evenodd">
+            <path d="M39.7149859,24.9710085 L57.7149859,54.9710085 L59.5323808,58 L16.4676192,58 L18.2850141,54.9710085 L36.2850141,24.9710085 L38,22.1126987 Z" id="outline" stroke="url(#linearGradient-4)" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round"></path>
+            <polygon id="warning" fill="#F5D852" points="20 56 56 56 38 26"></polygon>
+            <polygon id="dot" fill="#C58711" points="36 48 36 52 40 52 40 48"></polygon>
+            <polygon id="bang" fill="#C58711" points="36 44 40 44 40 36 36 36"></polygon>
+        </g>
+    </g>
+</svg>

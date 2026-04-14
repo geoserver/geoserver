@@ -151,7 +151,7 @@ Since anonymous access is not allowed, any attempt to access the GeoServer web c
 
 ![](images/webCasLogout.png)
 
-A second option is to allow anonymous access in the web chain, allowing users to access the layer preview and other demo functionality without logging in:
+A second option is to allow anonymous access in the web chain, allowing users to access the Browse Layers page and other demo functionality without logging in:
 
 ![](images/webCasAnonymous.png)
 

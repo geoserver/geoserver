@@ -176,9 +176,9 @@ Download data from the following [link](rastermask.zip) and configure an ImageMo
 
 Zip file contains two images and their related **.msk** files. For this example the two masks are two simple squares.
 
-### Step 2: Watch the layer using LayerPreview
+### Step 2: Watch the layer using Browse Layers
 
-Go to **LayerPreview --> rastermask --> OpenLayers**. The result should be similar to the one below.
+Go to **Browse Layers --> rastermask --> OpenLayers**. The result should be similar to the one below.
 
 ![](img/footprint_none.png)
 
@@ -190,7 +190,7 @@ Change the **FootprintBehavior** parameter to *Transparent*. *Cut* value should 
 
 ### Step 4: Check the result
 
-Go to **LayerPreview --> rastermask --> OpenLayers**. The result should be changed now.
+Go to **Browse Layers --> rastermask --> OpenLayers**. The result should be changed now.
 
 ![](img/footprint_transparent.png)
 

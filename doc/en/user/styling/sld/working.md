@@ -68,7 +68,7 @@ Generally it is simpler and more performant to use styles from the server catalo
 
 ## Viewing
 
-Once a style has been associated with a layer, the resulting rendering of the layer data can be viewed by using the [Layer Preview](../../data/webadmin/layerpreview.md). The most convenient output format to use is the built-in OpenLayers viewer. Styles can be modified while the view is open, and their effect is visible as soon as the map view is panned or zoomed. Alternate styles can be viewed by specifying them in the `styles` WMS request parameter.
+Once a style has been associated with a layer, the resulting rendering of the layer data can be viewed by using the [Browse Layers](../../data/webadmin/browselayers.md). The most convenient output format to use is the built-in OpenLayers viewer. Styles can be modified while the view is open, and their effect is visible as soon as the map view is panned or zoomed. Alternate styles can be viewed by specifying them in the `styles` WMS request parameter.
 
 To view the effect of compositing multiple styled layers, several approaches are available:
 

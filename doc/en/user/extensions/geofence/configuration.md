@@ -103,6 +103,6 @@ Collected data about the cache can be retrieved here. Per cache (rules, admin ru
 
   ![](images/basic_009.png)
 
-- Login again in GeoServer as user tiger and you will see in **layer preview** all the layers in the `tiger` workspace:
+- Login again in GeoServer as user tiger and you will see in **Browse Layers** all the layers in the `tiger` workspace:
 
 ![](images/basic_010.png)

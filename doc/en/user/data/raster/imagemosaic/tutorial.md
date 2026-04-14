@@ -48,7 +48,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 
 5.  Click **Save**.
 
-6.  Use the **Layer Preview** to view the mosaic.
+6.  Use the **Browse Layers** to view the mosaic.
 
 !!! warning
     If the created layer appears to be all black, it may be that GeoServer has not found any acceptable granules in the provided index. It is also possible that the shapefile index is empty (no granules were found in the provided directory) or it might be that the granules' paths in the shapefile index are not correct, which could happen if an existing index (using absolute paths) is moved to another place. If the shapefile index paths are not correct, then the DBF file can be opened and fixed with an editor. Alternately, you can delete the index and let GeoServer recreate it from the root directory.

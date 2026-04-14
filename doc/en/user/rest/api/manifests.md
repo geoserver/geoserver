@@ -25,6 +25,7 @@ The available types are `core`, `extension`, or `community`. To filter modules b
 
 The model is very simple and is shared between the version and the resource requests to parse both requests.:
 
+```xml
 <about>
       <resource name="{NAME}">
         <{KEY}>{VALUE}</{KEY}>
@@ -32,6 +33,7 @@ The model is very simple and is shared between the version and the resource requ
       </resource>
       ...
 </about>
+```
 
 You can customize the results adding a properties file called **`manifest.properties`** into the root of the data directory. Below is the default implementation that is used when no custom properties file is present:
 

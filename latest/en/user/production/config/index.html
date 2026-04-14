@@ -12228,7 +12228,7 @@
   <a href="#disable-anonymous-access-to-the-browse-layers-page" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disable anonymous access to the browse layers page
+        Disable anonymous access to the Browse Layers page
       
     </span>
   </a>
@@ -30317,7 +30317,7 @@
   <a href="#disable-anonymous-access-to-the-browse-layers-page" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disable anonymous access to the browse layers page
+        Disable anonymous access to the Browse Layers page
       
     </span>
   </a>
@@ -30677,12 +30677,12 @@
 <li>Set the Java system property <code>geoserver.login.autocomplete</code> to off by adding <code>-Dgeoserver.login.autocomplete=off</code> to your container's JVM options</li>
 <li>If the browser has already cached the credentials, please consider clearing the cache or form data after setting the JVM option.</li>
 </ul>
-<h3 id="disable-anonymous-access-to-the-browse-layers-page">Disable anonymous access to the browse layers page<a class="headerlink" href="#disable-anonymous-access-to-the-browse-layers-page" title="Permanent link">&para;</a></h3>
-<p>In some circumstances, you might want to provide access to the browse layers page to authenticated users only. The solution is based on adding a new <strong>filter chain</strong> with a rule matching the path of the browse layers page to GeoServer's <a href="../../security/auth/chain/">Authentication chain</a>. Here are the steps to reproduce:</p>
+<h3 id="disable-anonymous-access-to-the-browse-layers-page">Disable anonymous access to the Browse Layers page<a class="headerlink" href="#disable-anonymous-access-to-the-browse-layers-page" title="Permanent link">&para;</a></h3>
+<p>In some circumstances, you might want to provide access to the Browse Layers page to authenticated users only. The solution is based on adding a new <strong>filter chain</strong> with a rule matching the path of the Browse Layers page to GeoServer's <a href="../../security/auth/chain/">Authentication chain</a>. Here are the steps to reproduce:</p>
 <ul>
 <li>Under <strong>Security</strong> -&gt; <strong>Authentication</strong> -&gt; <strong>Filter Chains</strong>, add a new HTML chain</li>
 <li>Set the new chain's name to <code>webLayerPreview</code> (or likewise)</li>
-<li>As Ant pattern, enter the path of the browse layers page, which is <strong><code>/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage</code></strong> (since it's an Ant pattern, the path could as well be written shorter with wildcards: <strong><code>/web/**/org.geoserver.web.demo.MapPreviewPage</code></strong>)</li>
+<li>As Ant pattern, enter the path of the Browse Layers page, which is <strong><code>/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage</code></strong> (since it's an Ant pattern, the path could as well be written shorter with wildcards: <strong><code>/web/**/org.geoserver.web.demo.MapPreviewPage</code></strong>)</li>
 <li>Check option <strong>Allow creation of an HTTP session for storing the authentication token</strong></li>
 <li>Under <strong>Chain filters</strong>, add filters <code>rememberme</code> and <code>form</code> (in that order) to the <strong>Selected</strong> list on the right side</li>
 <li>Close the dialog by clicking the <strong>Close</strong> button; the new HTML chain has been added to the list of chains as the last entry</li>
@@ -30690,7 +30690,7 @@
 <li>Use the <strong>Position</strong> arrows on the left side of the list to move the newly added chain upwards accordingly</li>
 <li>Save the changes you've made by clicking the <strong>Save</strong> button at the bottom of the page</li>
 </ul>
-<p>With that in place, unauthenticated users now just get forwarded to the login page when they click the browse layers menu item link.</p>
+<p>With that in place, unauthenticated users now just get forwarded to the login page when they click the Browse Layers menu item link.</p>
 <p>The above procedure could as well be applied to other pages of the web administration interface that one needs to remove anonymous access for. For example:</p>
 <ul>
 <li><strong>Demos</strong> -&gt; <strong>Demo requests</strong> (path: <strong><code>/web/wicket/bookmarkable/org.geoserver.web.demo.DemoRequestsPage</code></strong>)</li>
@@ -30698,7 +30698,7 @@
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Although disabling anonymous access to the browse layers page <strong>MAY</strong> prevent some unauthenticated users from accessing data with some simple clicks, this is <strong>NOT</strong> a security feature. In particular, since other more sophisticated users, having the ability to build OGC requests, <strong>MAY</strong> still access critical data through GeoServer's services, this is <strong>NOT</strong> a replacement for a well-designed security concept based on data-level or service-level security.</p>
+<p>Although disabling anonymous access to the Browse Layers page <strong>MAY</strong> prevent some unauthenticated users from accessing data with some simple clicks, this is <strong>NOT</strong> a security feature. In particular, since other more sophisticated users, having the ability to build OGC requests, <strong>MAY</strong> still access critical data through GeoServer's services, this is <strong>NOT</strong> a replacement for a well-designed security concept based on data-level or service-level security.</p>
 </div>
 <h3 id="x-frame-options-policy">X-Frame-Options Policy<a class="headerlink" href="#x-frame-options-policy" title="Permanent link">&para;</a></h3>
 <p>In order to prevent clickjacking attacks GeoServer defaults to setting the X-Frame-Options HTTP header to <code>SAMEORIGIN</code>. This prevents GeoServer from being embedded into an iFrame, which prevents certain kinds of security vulnerabilities. See the <a href="https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet">OWASP Clickjacking entry</a> for details.</p>

@@ -30442,7 +30442,7 @@
 <ul>
 <li>PointSymbolizer</li>
 </ul>
-<p>A point symbolizer will be represented as a series of elements containing metadata and an array of <code>graphics</code> symbols (see <a href="../../../styling/sld/reference/pointsymbolizer/#sld_reference_graphic">here</a>) , these can be well known <code>marks</code> or external graphics. The point symbolizer also provides an "URL" element which allows a client to make a request back to GeoServer to fetch a PNG image of the point symbol.</p>
+<p>A point symbolizer will be represented as a series of elements containing metadata and an array of <code>graphics</code> symbols (see <a href="../../../styling/sld/reference/pointsymbolizer/#graphic">here</a>) , these can be well known <code>marks</code> or external graphics. The point symbolizer also provides an "URL" element which allows a client to make a request back to GeoServer to fetch a PNG image of the point symbol.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span><span class="s2">&quot;Point&quot;</span><span class="o">:</span><span class="w">     </span><span class="p">{</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="s2">&quot;title&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;title&quot;</span><span class="p">,</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="s2">&quot;abstract&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;abstract&quot;</span><span class="p">,</span>
@@ -30464,7 +30464,7 @@
 <ul>
 <li>LineSymbolizer</li>
 </ul>
-<p>A line symbolizer is represented as a list of metadata elements and the <a href="#sld_reference_linesymbolizer_css">stroke
+<p>A line symbolizer is represented as a list of metadata elements and the <a href="../../../styling/sld/reference/linesymbolizer/#sld_reference_linesymbolizer_css">stroke
   parameters</a>, it is possible for there to be a <a href="../../../styling/sld/reference/linesymbolizer/#sld_reference_linesymbolizer_graphicstroke">graphic-stroke</a> element too.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span><span class="s2">&quot;Line&quot;</span><span class="o">:</span><span class="w">     </span><span class="p">{</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="s2">&quot;stroke&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;#AA3333&quot;</span><span class="p">,</span>
@@ -30496,8 +30496,8 @@
 <ul>
 <li>PolygonSymbolizer</li>
 </ul>
-<p>A polygon symbolizer contains <a href="#sld_reference_linesymbolizer_css">stroke
-  parameters</a> and <a href="#sld_reference_fill">fill 
+<p>A polygon symbolizer contains <a href="../../../styling/sld/reference/linesymbolizer/#sld_reference_linesymbolizer_css">stroke
+  parameters</a> and <a href="../../../styling/sld/reference/polygonsymbolizer/#fill">fill 
   parameters</a>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span><span class="s2">&quot;Polygon&quot;</span><span class="o">:</span><span class="w">       </span><span class="p">{</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="s2">&quot;stroke&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;#000000&quot;</span><span class="p">,</span>

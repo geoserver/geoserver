@@ -29919,7 +29919,7 @@
 <ol>
 <li><a href="#oasis-catalog">OASIS Catalog</a></li>
 <li><a href="#classpath">Classpath</a></li>
-<li><a href="#cache">Cache</a></li>
+<li><a href="#app-schema-cache">Cache</a></li>
 </ol>
 <p>Every attempt to load a schema works down this list, so imports can be resolved from sources other than that used for the originating document. For example, an application schema in the cache that references a schema found in the catalog will use the version in the catalog, rather than caching it. This allows users to supply unpublished or modified schemas sourced from, for example, the catalog, at the cost of interoperability (how do WFS clients get them?).</p>
 <h2 id="oasis-catalog">OASIS Catalog<a class="headerlink" href="#oasis-catalog" title="Permanent link">&para;</a></h2>
@@ -29927,7 +29927,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;catalog&gt;</span>../../../schemas/catalog.xml<span class="nt">&lt;/catalog&gt;</span>
 </code></pre></div>
 <p>Earlier versions of the app-schema plugin required all schemas to be present in the catalog. This is no longer the case. Because the catalog is searched first, existing catalog-based deployments will continue to work as before.</p>
-<p>To migrate an existing GeoServer app-schema deployment that uses an OASIS Catalog to instead use cached downloads (see <a href="#cache">Cache</a> below), remove all <code>catalog</code> elements from your mapping files and restart GeoServer.</p>
+<p>To migrate an existing GeoServer app-schema deployment that uses an OASIS Catalog to instead use cached downloads (see <a href="#app-schema-cache">Cache</a> below), remove all <code>catalog</code> elements from your mapping files and restart GeoServer.</p>
 <h2 id="classpath">Classpath<a class="headerlink" href="#classpath" title="Permanent link">&para;</a></h2>
 <p>Java applications such as GeoServer can load resources from the Java classpath. GeoServer app-schema uses a simple mapping from an http or https URL to a classpath resource location. For example, an application schema published at <code>http://schemas.example.org/exampleml/exml.xsd</code> would be found on the classpath if it was stored either:</p>
 <ul>

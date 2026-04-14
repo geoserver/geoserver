@@ -30609,7 +30609,7 @@
 <p><img alt="" src="../img/lp_2.png" /></p>
 <p><em>PerpendicularOffset = 10</em></p>
 <h2 id="composing-labels-from-multiple-attributes">Composing labels from multiple attributes<a class="headerlink" href="#composing-labels-from-multiple-attributes" title="Permanent link">&para;</a></h2>
-<p>The <code>&lt;Label&gt;</code> element in <code>&lt;TextSymbolizer&gt;</code> allows mixed content. This means its content can be a mixture of plain text and <a href="../pointsymbolizer/#sld_reference_parameter_expressions">Filter Expressions</a>. The mix gets interepreted as a concatenation. You can leverage this to create complex labels out of multiple attributes.</p>
+<p>The <code>&lt;Label&gt;</code> element in <code>&lt;TextSymbolizer&gt;</code> allows mixed content. This means its content can be a mixture of plain text and <a href="../pointsymbolizer/#using-expressions-in-parameter-values">Filter Expressions</a>. The mix gets interepreted as a concatenation. You can leverage this to create complex labels out of multiple attributes.</p>
 <p>For example, if you want both a state name and its abbreviation to appear in a label, you can do the following:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;Label&gt;</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_NAME<span class="nt">&lt;/ogc:PropertyName&gt;</span><span class="w"> </span>(<span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_ABBR<span class="nt">&lt;/ogc:PropertyName&gt;</span>)
@@ -30627,7 +30627,7 @@
 <p>GeoServer provides a number of label styling options as extensions to the SLD specification. Using these options gives more control over how the map looks, since the SLD standard isn't expressive enough to provide all the options one might want.</p>
 <p>These options are specified as subelements of <code>&lt;TextSymbolizer&gt;</code>.</p>
 <h3 id="labeling_priority">Priority Labeling<a class="headerlink" href="#labeling_priority" title="Permanent link">&para;</a></h3>
-<p>The optional <code>&lt;Priority&gt;</code> element allows specifying label priority. This controls how conflicts (overlaps) between labels are resolved during rendering. The element content may be an <a href="../pointsymbolizer/#sld_reference_parameter_expressions">expression</a> to retrieve or calculate a relative priority value for each feature in a layer. Alternatively, the content may be a constant value, to set the priority of a layer's labels relative to other layers on a rendered map.</p>
+<p>The optional <code>&lt;Priority&gt;</code> element allows specifying label priority. This controls how conflicts (overlaps) between labels are resolved during rendering. The element content may be an <a href="../pointsymbolizer/#using-expressions-in-parameter-values">expression</a> to retrieve or calculate a relative priority value for each feature in a layer. Alternatively, the content may be a constant value, to set the priority of a layer's labels relative to other layers on a rendered map.</p>
 <p>The default priority for labels is 1000.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

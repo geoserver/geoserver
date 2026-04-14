@@ -30123,7 +30123,7 @@
 <li>Encoding the same referenced property object as links when it appears in multiple containing features</li>
 <li>Eliminating the need for large denormalized data store views of top level features and their related features. Denormalized views would still be needed for special cases, such as many-to-many relationships, but won't be as large.</li>
 </ul>
-<p>For non-application schema configurations, please refer to <a href="#app-schema-data-access-integration">app-schema.data-access-integration</a>.</p>
+<p>For non-application schema configurations, please refer to <a href="../data-access-integration/">Data Access Integration</a>.</p>
 <h2 id="mapping-steps">Mapping steps<a class="headerlink" href="#mapping-steps" title="Permanent link">&para;</a></h2>
 <h3 id="create-a-mapping-file-for-every-complex-type">Create a mapping file for every complex type<a class="headerlink" href="#create-a-mapping-file-for-every-complex-type" title="Permanent link">&para;</a></h3>
 <p>We need one mapping file per complex type that is going to be nested, including non features, e.g. gsml:CompositionPart.</p>
@@ -30556,7 +30556,7 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>Don't forget to add <em>XLink</em> in your mapping file namespaces section, or you could end up with a StackOverflowException as the <em>xlink:href</em> client property won't be recognized and the mappings would chain endlessly. * <a href="#app-schema-resolve">app-schema.resolve</a> may be used to force app-schema to do full feature chaining up to a certain level, even if an xlink reference is specified.</li>
+<li>Don't forget to add <em>XLink</em> in your mapping file namespaces section, or you could end up with a StackOverflowException as the <em>xlink:href</em> client property won't be recognized and the mappings would chain endlessly. * <a href="../wfs-2.0-support/#resolving">Resolve</a> may be used to force app-schema to do full feature chaining up to a certain level, even if an xlink reference is specified.</li>
 </ul>
 </div>
 

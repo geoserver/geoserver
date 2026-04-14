@@ -30060,7 +30060,7 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="#getcapabilities">GetCapabilities</a></td>
+<td><a href="#wms_getcap">GetCapabilities</a></td>
 <td>Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers</td>
 </tr>
 <tr>
@@ -30068,11 +30068,11 @@
 <td>Retrieves a map image for a specified area and content</td>
 </tr>
 <tr>
-<td><a href="#getfeatureinfo">GetFeatureInfo</a></td>
+<td><a href="#wms_getfeatureinfo">GetFeatureInfo</a></td>
 <td>Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map</td>
 </tr>
 <tr>
-<td><a href="#describelayer">DescribeLayer</a></td>
+<td><a href="#wms_describelayer">DescribeLayer</a></td>
 <td>Indicates the WFS or WCS to retrieve additional information about the layer.</td>
 </tr>
 <tr>
@@ -30696,7 +30696,7 @@
 <tr>
 <td>PARTIALMAP</td>
 <td><code>EXCEPTIONS=application/vnd.gs.wms_partial</code></td>
-<td>This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the <a href="../configuration/#wms_configuration_limits">WMS Configuration Limits</a> to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the <code>timeout</code> <a href="../vendor/">vendor parameter</a>.</td>
+<td>This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the <a href="../configuration/#request-limits">WMS Configuration Limits</a> to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the <code>timeout</code> <a href="../vendor/">vendor parameter</a>.</td>
 </tr>
 <tr>
 <td>JSON</td>

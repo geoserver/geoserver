@@ -3,24 +3,24 @@
   <head/>
   <body>
     <wicket:panel>
-      <div class="gs-panel-IntegerParameterFilterSubform">
-        <div class="py-1 me-3 align-top d-inline-block">
+      <div class="gs-panel-IntegerParameterFilterSubform gs-form">
+        <div class="gs-form-group">
           <label>
             <wicket:message key="defaultValue">Default Value</wicket:message>
           </label>
-          <input type="text" wicket:id="defaultValue"/>
+          <input type="text" wicket:id="defaultValue" class="w-md"/>
         </div>
-        <div class="py-1 me-3 align-top d-inline-block">
+        <div class="gs-form-group">
           <label>
             <wicket:message key="allowedValues">Allowed Values</wicket:message>
           </label>
           <textarea wicket:id="values" rows="5" cols="20"/>
         </div>
-        <div class="py-1 align-top d-inline-block">
+        <div class="gs-form-group">
           <label>
             <wicket:message key="threshold">Threshold</wicket:message>
           </label>
-          <input wicket:id="threshold" type="text"/>
+          <input wicket:id="threshold" type="text" class="w-md"/>
         </div>
       </div>
     </wicket:panel>

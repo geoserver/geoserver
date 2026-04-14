@@ -38,12 +38,12 @@ In this case we did not specify any options in the backup configuration so defau
 
 Available options are:
 
-1.  `BK_BEST_EFFORT`: Skip any failing resources and proceed with the backup procedure. Default: ``false``.
-2.  `BK_PARAM_PASSWORDS`: Whether outgoing store passwords should be parameterized in the backup. With this option set all store passwords will be replaced with a token that looks like ``\${workspaceName:storeName.passwd.encryptedValue}``. See also `BK_PASSWORD_TOKENS` for the Restore command.
-3.  `BK_SKIP_SECURITY`: This will exclude security settings from the backup. Default: ``true``.
-4.  `BK_SKIP_SETTINGS`: This will attempt to exclude global settings from the backup, as well as security settings. Default: ``true``.
-5.  `BK_SKIP_GWC`: This option will avoid backup / restore the GWC catalog and folders. Default: ``false``.
-6.  `BK_CLEANUP_TEMP`: This will attempt to delete temporary folder at the end of the execution. Default: ``true``.
+1.  `BK_BEST_EFFORT`: Skip any failing resources and proceed with the backup procedure. Default: `false`.
+2.  `BK_PARAM_PASSWORDS`: Whether outgoing store passwords should be parameterized in the backup. With this option set all store passwords will be replaced with a token that looks like `\${workspaceName:storeName.passwd.encryptedValue}`. See also `BK_PASSWORD_TOKENS` for the Restore command.
+3.  `BK_SKIP_SECURITY`: This will exclude security settings from the backup. Default: `true`.
+4.  `BK_SKIP_SETTINGS`: This will attempt to exclude global settings from the backup, as well as security settings. Default: `true`.
+5.  `BK_SKIP_GWC`: This option will avoid backup / restore the GWC catalog and folders. Default: `false`.
+6.  `BK_CLEANUP_TEMP`: This will attempt to delete temporary folder at the end of the execution. Default: `true`.
 7.  `exclude.file.path`: A `;` separated list of paths relative to the `GEOSERVER_DATA_DIR` (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`. WARNING: `security` and `workspaces` are treated differently. This option should be used only for custom external resources located under the `GEOSERVER_DATA_DIR`.
 
 Also an optional `Filter` can be passed to restrict the scope of the restore operation to a list of workspaces.
@@ -129,7 +129,7 @@ curl -u "admin:geoserver" -i -X GET  "http://mygeoserver/geoserver/rest/br/backu
 Status of the operation can be queried making an HTTP GET request to the location listed in the response.
 
 ```text
-``http://mygeoserver/geoserver/rest/br/backup/$ID.{json/xml}``
+http://mygeoserver/geoserver/rest/br/backup/$ID.{json/xml}
 ```
 
 Replace `$ID` with the **ID** of the backup operation you'd like to inspect.
@@ -182,9 +182,9 @@ In this case we did not specify any options in the restore configuration so defa
 
 Available Options are:
 
-1.  `BK_DRY_RUN`: Only test the archive do not persist the restored configuration. Default: ``false``.
+1.  `BK_DRY_RUN`: Only test the archive do not persist the restored configuration. Default: `false`.
 
-2.  `BK_BEST_EFFORT`: Skip any failing resources and proceed with the restore procedure. Default: ``false``.
+2.  `BK_BEST_EFFORT`: Skip any failing resources and proceed with the restore procedure. Default: `false`.
 
 3.  `BK_PASSWORD_TOKENS`: A comma separated list of equal sign separated key/values to be replaced in data store passwords in an incoming backup. For example:
 
@@ -192,15 +192,15 @@ Available Options are:
     BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValye}=foo,${workspace:store2.passwd.encryptedValue}=bar
     ```
 
-4.  `BK_SKIP_SECURITY`: This will exclude security settings from the restore. Default: ``true``.
+4.  `BK_SKIP_SECURITY`: This will exclude security settings from the restore. Default: `true`.
 
-5.  `BK_SKIP_SETTINGS`: This will attempt to exclude global settings from the backup, as well as security settings. Default: ``true``.
+5.  `BK_SKIP_SETTINGS`: This will attempt to exclude global settings from the backup, as well as security settings. Default: `true`.
 
-6.  `BK_PURGE_RESOURCES`: If 'false' this parameter will avoid deleting incoming resources where possible. In particular, existing workspaces will not be deleted during the restore. Default: ``true``.
+6.  `BK_PURGE_RESOURCES`: If 'false' this parameter will avoid deleting incoming resources where possible. In particular, existing workspaces will not be deleted during the restore. Default: `true`.
 
-7.  `BK_SKIP_GWC`: This option will avoid backup / restore the GWC catalog and folders. Default: ``false``.
+7.  `BK_SKIP_GWC`: This option will avoid backup / restore the GWC catalog and folders. Default: `false`.
 
-8.  `BK_CLEANUP_TEMP`: This will attempt to delete temporary folder at the end of the execution. Default: ``true``.
+8.  `BK_CLEANUP_TEMP`: This will attempt to delete temporary folder at the end of the execution. Default: `true`.
 
 9.  `exclude.file.path`: A `;` separated list of paths relative to the `GEOSERVER_DATA_DIR` (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`. WARNING: `security` and `workspaces` are treated differently. This option should be used only for custom external resources located under the `GEOSERVER_DATA_DIR`.
 

@@ -1,4 +1,4 @@
-name: Docs javadocs GitHub CI
+name: Javadocs GitHub CI
 
 on:
   pull_request:

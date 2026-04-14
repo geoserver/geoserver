@@ -114,4 +114,4 @@ The `recalculate` parameter specifies whether to recalculate any bounding boxes 
 
 The `filename` parameter specifies the target file name for a file that needs to harvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work.
 
-- `` filename=`NCOM_wattemp_000_20081102T0000000_12.tiff` Set the uploaded file name to ``NCOM_wattemp_000_20081102T0000000_12.tiff``
+- `` filename=`NCOM_wattemp_000_20081102T0000000_12.tiff` Set the uploaded file name to `NCOM_wattemp_000_20081102T0000000_12.tiff`

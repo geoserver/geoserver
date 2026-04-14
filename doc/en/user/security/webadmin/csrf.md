@@ -11,21 +11,21 @@ Each of these properties is set through one of the standard means:
 
 - `web.xml` :
 
-  ```xml
-<context-param>
-  <param-name>GEOSERVER_CSRF_WHITELIST</param-name>
-  <param-value>example.org</param-value>
-</context-param>
-  ```
+      ```xml
+      <context-param>
+        <param-name>GEOSERVER_CSRF_WHITELIST</param-name>
+        <param-value>example.org</param-value>
+      </context-param>
+      ```
 
 - System property :
 
-  ```
--DGEOSERVER_CSRF_WHITELIST=example.org
-  ```
+    ```
+    -DGEOSERVER_CSRF_WHITELIST=example.org
+    ```
 
 - Environment variable :
 
-  ```bash
-export GEOSERVER_CSRF_WHITELIST=example.org
-  ```
+    ```bash
+    export GEOSERVER_CSRF_WHITELIST=example.org
+    ```

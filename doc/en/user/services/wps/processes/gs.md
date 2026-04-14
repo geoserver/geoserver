@@ -6,7 +6,7 @@ As with the "geo" processes, the names and definitions of these processes are su
 
 ## Aggregation process
 
-The aggregation process is used to perform common aggregation functions (sum, average, count) on vector data. The available outputs formats for this process are ``text/xml`` and ``application/json``.
+The aggregation process is used to perform common aggregation functions (sum, average, count) on vector data. The available outputs formats for this process are `text/xml` and `application/json`.
 
 The process parameters are described in the table bellow:
 
@@ -18,7 +18,7 @@ The process parameters are described in the table bellow:
 | `singlePass` | If TRUE computes all aggregation values in a single pass. This will defeat DBMS-specific optimizations. If a group by attribute is provided this parameter will be ignored. | yes | no |
 | `groupByAttributes` | Group by attribute. | no | yes |
 
-Follow some examples of the invocation of this process using GeoServer shipped ``topp:states`` layer.
+Follow some examples of the invocation of this process using GeoServer shipped `topp:states` layer.
 
 The examples can be tested with CURL:
 
@@ -26,7 +26,7 @@ The examples can be tested with CURL:
 curl -u admin:geoserver -H 'Content-type: xml' -XPOST -d@'wps-request.xml' http://localhost:8080/geoserver/wps
 ```
 
-where ``wps-request.xml`` is the file that contains the request.
+where `wps-request.xml` is the file that contains the request.
 
 ### Aggregate Example
 
@@ -51,7 +51,7 @@ The result:
 }
 ```
 
-The value of ``AggregationResults`` attribute should be read in a tabular way. The group by attributes come first in the order they appear in ``GroupByAttributes`` attribute. After comes the result of the aggregation functions in the order they appear in the ``AggregationFunctions`` attribute. In this case there is no group by attributes so the result only contains a row with the aggregation functions results. This is very similar to the result of an SQL query.
+The value of `AggregationResults` attribute should be read in a tabular way. The group by attributes come first in the order they appear in `GroupByAttributes` attribute. After comes the result of the aggregation functions in the order they appear in the `AggregationFunctions` attribute. In this case there is no group by attributes so the result only contains a row with the aggregation functions results. This is very similar to the result of an SQL query.
 
 This result should be interpreted like this:
 
@@ -59,7 +59,7 @@ This result should be interpreted like this:
 |----------|---------|-------------------|-----------|-----------|
 | 29760021 | 453588  | 5038397.020408163 | 246881454 | 49        |
 
-To obtain the result in the XML format the request ``wps:ResponseForm`` element needs to be changed to:
+To obtain the result in the XML format the request `wps:ResponseForm` element needs to be changed to:
 
 ```xml
 <wps:ResponseForm>
@@ -113,7 +113,7 @@ The result:
 }
 ```
 
-Since there is a group by attribute the result contains a row for each different value of the group by attribute. Very similar to the result of an SQL query. If there is more that one group by attribute (which is not the case) their values will be in the order they appear in the ``GroupByAttributes`` attribute.
+Since there is a group by attribute the result contains a row for each different value of the group by attribute. Very similar to the result of an SQL query. If there is more that one group by attribute (which is not the case) their values will be in the order they appear in the `GroupByAttributes` attribute.
 
 This result should be interpreted like this:
 

@@ -43,16 +43,16 @@ https://www.osgeo.org.  Current email is info@osgeo.org and address is OSGeo, 14
 
 The full GPL license is available in this directory in the file [GPL.md](GPL.md)
 
-## Additional Libraries and Code used
+## Additional Assets, Libraries and Code used
 
-GeoServer uses several additional libraries and pieces of code.  We are 
-including the appropriate notices in this file.  We'd like to thank all
-the creators of the libraries we rely on, GeoServer would certainly not
+GeoServer uses several additional files, icons, libraries and pieces of code. 
+We are  including the appropriate notices in this file.  We'd like to thank all
+the creators of the content we rely on, GeoServer would certainly not
 be possible without them.  There are also several LGPL libraries that do
-not require us to cite them, but we'd like to thank GeoTools - 
-https://geotools.org, JTS - https://locationtech.github.io/jts/
- WKB4J https://wkb4j.sourceforge.net, OpenPDF - https://github.com/LibrePDF/OpenPDF,
-and J. David Eisenberg's PNG encoder https://www.catcode.com/pngencoder/
+not require us to cite them, but we'd like to thank [GeoTools](https://geotools.org),
+[JTS](https://locationtech.github.io/jts/), [WKB4J(https://wkb4j.sourceforge.net),
+[OpenPDF](https://github.com/LibrePDF/OpenPDF),
+and J. David Eisenberg's [PNG encoder](https://www.catcode.com/pngencoder/).
 
 ### NeuQuant Neural-Net Quantization Algorithm
 
@@ -408,3 +408,33 @@ The following license applies to this software (taken from https://roeschter.de/
 
     Disclaimer: 
     This software is supplied AS IS with no claim of fitness for purpose.
+    
+### Creative Commons Attribution ShareAlike International
+
+GeoServer includes documentation and design assets with creative commons license.
+
+[Creative Commons Attribution 4.0 International](CreativeCommonsByAttribution.md):
+
+* [GeoServer Documentation](https://docs.geoserver.org/)  
+  Documentation covering application use, development, and community.
+  
+* [GeoSilk SVG](https://github.com/geoserver/geoserver/tree/main/src/theme/src/main/resources/img/icons/geosilk)  
+  GeoSilk icon set created for GeoServer 3.
+
+[Creative Commons Attribution 3.0 License](https://creativecommons.org/licenses/by/3.0/):
+
+* [GeoSilk icon set by Rolando Peñate](https://github.com/planetfederal/geosilk)  
+  Derived from the Silk icon set by Mark James, the Silk Companion set by Damien Guard, and the uDig icons
+  made by Jody Garnett of Refractions Research.
+  These icons are used directly, or used as a basis for our SVG GeoSilk icon set.
+   
+The GeoServer documentation is provided using CC-BY-A
+* [silk-icon-scalable](https://github.com/frhun/silk-icon-scalable/tree/master)  
+  The classic famfamfam silk icon set remade and extended in SVG.
+  Used directly, or been remixed and extended as a basis for our SVG iteration of the GeoSilk icon set.
+
+[Creative Commons Attribution 2.5 License](https://creativecommons.org/licenses/by/2.5/):
+
+* [famfamfam-silk](https://github.com/legacy-icons/famfamfam-silk)  
+  The Silk icon pack, by Mark James, as previously available on famfamfam website.
+  Used directly, or been remixed and extended as a basis for our SVG iteration of the GeoSilk icon set.

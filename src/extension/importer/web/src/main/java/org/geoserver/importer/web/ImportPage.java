@@ -35,7 +35,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.importer.BasicImportFilter;
 import org.geoserver.importer.Database;
@@ -50,7 +49,7 @@ import org.geoserver.importer.job.Task;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 
 public class ImportPage extends GeoServerSecuredPage {
 
@@ -273,7 +272,7 @@ public class ImportPage extends GeoServerSecuredPage {
         });
         add(selectPanel);
 
-        add(new Icon("icon", new DataIconModel(imp.getData())));
+        add(new GsIcon("icon", new DataIconModel(imp.getData())));
         add(new Label("title", new DataTitleModel(imp))
                 .add(new AttributeModifier("title", new DataTitleModel(imp, false))));
 
@@ -318,7 +317,7 @@ public class ImportPage extends GeoServerSecuredPage {
         return null;
     }
 
-    static class DataIconModel extends LoadableDetachableModel<PackageResourceReference> {
+    static class DataIconModel extends LoadableDetachableModel<String> {
 
         ImportData data;
 
@@ -327,7 +326,7 @@ public class ImportPage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected PackageResourceReference load() {
+        protected String load() {
             DataIcon icon = null;
             if (data instanceof FileData df) {
                 if (data instanceof Directory) {

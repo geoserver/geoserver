@@ -40,16 +40,12 @@ To create a **`controlflow.properties`** file:
 
 2.  Click **New resource** button to open **Edit a Resource** dialog.
 
-    - **Resource**: ``controlflow.properties``
+    - **Resource**: `controlflow.properties`
 
     - **Content**: file contents
 
       ```properties
-      {%raw%}
-      {% 
-        include "extensions/controlflow/controlflow.properties"
-      %}
-      {%endraw%}
+      --8<-- "doc/en/user/extensions/controlflow/controlflow.properties"
       ```
 
 3.  Press **OK** to create the resource.

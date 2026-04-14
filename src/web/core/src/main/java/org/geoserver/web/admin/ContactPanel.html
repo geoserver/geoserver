@@ -4,17 +4,14 @@
     <wicket:panel>
       <div class="gs-panel-ContactPanel">
         <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="welcome">Welcome</wicket:message>
+            </span>
+          </legend>
           <div class="gs-unordered-list-class">
-            <legend>
-              <span>
-                <wicket:message key="contactOrganization">Organization</wicket:message>
-              </span>
-            </legend>
             <div class="gs-list-item-class">
-              <div wicket:id="contactOrganization"/>
-            </div>
-            <div class="gs-list-item-class">
-              <div wicket:id="onlineResource"/>
+              <div wicket:id="title"/>
             </div>
             <div class="gs-form">
               <div class="gs-form-group">
@@ -24,10 +21,25 @@
                   <wicket:message key="i18nCheckBox">i18n</wicket:message>
                 </span>
                 <div class="gs-list-item-class">
-                  <textarea wicket:id="welcome" class="field" rows="10" cols="30"/>
+                  <textarea id="welcome" wicket:id="welcome" class="field" rows="10" cols="30"/>
                   <div wicket:id="internationalWelcome"/>
                 </div>
               </div>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="contactOrganization">Organization</wicket:message>
+            </span>
+          </legend>
+          <div class="gs-unordered-list-class">
+            <div class="gs-list-item-class">
+              <div wicket:id="contactOrganization"/>
+            </div>
+            <div class="gs-list-item-class">
+              <div wicket:id="onlineResource"/>
             </div>
           </div>
         </fieldset>

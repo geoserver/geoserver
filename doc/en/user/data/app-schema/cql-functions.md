@@ -62,10 +62,10 @@ Categorize(COLUMN_NAME, default_value, threshold 1, value 1, threshold 2, value 
 
 - **preceding/succeeding**:
 
-  - optional, succeeding is used by default if not specified.
-      - not case sensitive.
-      - preceding: value is within threshold if COLUMN_NAME value > threshold
-      - succeeding: value is within threshold if COLUMN_NAME value >= threshold
+    - optional, succeeding is used by default if not specified.
+    - not case sensitive.
+    - preceding: value is within threshold if COLUMN_NAME value > threshold
+    - succeeding: value is within threshold if COLUMN_NAME value >= threshold
 
 **Example**:
 

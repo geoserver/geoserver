@@ -10,7 +10,7 @@ Graphic symbology is supported via the SLD `<Graphic>` element. This element can
 
 `<Graphic>` contains either a `<Mark>` or an `<ExternalGraphic>` element. **Marks** are pure vector symbols whose geometry is predefined but with stroke and fill defined in the SLD itself. **External Graphics** are external files (such as PNG images or SVG graphics) that contain the shape and color information defining how to render a symbol.
 
-In standard SLD the `<Mark>` and `<ExternalGraphic>` names are fixed strings. GeoServer extends this by providing ``dynamic symbolizers``, which allow computing symbol names on a per-feature basis by embedding CQL expressions in them.
+In standard SLD the `<Mark>` and `<ExternalGraphic>` names are fixed strings. GeoServer extends this by providing `dynamic symbolizers`, which allow computing symbol names on a per-feature basis by embedding CQL expressions in them.
 
 ## Marks
 
@@ -236,33 +236,33 @@ SVG Parameters are represented in a file like: [poi_peak.svg](https://github.com
 </svg>
 ```
 
-The 'param'-constructs mean that you can define the parameters: ``fill``, ``fill-opacity``, ``outline``, ``outline-opacity`` and ``outline-width`` as part of an SVG URL reference, where a reference to this image with red fill would be: `poi_peak.svg?fill=#FF0000`.
+The 'param'-constructs mean that you can define the parameters: `fill`, `fill-opacity`, `outline`, `outline-opacity` and `outline-width` as part of an SVG URL reference, where a reference to this image with red fill would be: `poi_peak.svg?fill=#FF0000`.
 
 Note: When editng **`SVG`** files (e.g. in Inkscape) save using 'simple svg' format.
 
 Default behaviour:
 
-- OnlineResource ``href`` URI without any parameters.
+- OnlineResource `href` URI without any parameters.
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg" xlink:type="simple"/>
   ```
 
-- Displays **`poi_peak.svg`** with the default black ``fill``.
+- Displays **`poi_peak.svg`** with the default black `fill`.
 
   ![](images/peak_black.png)
 
   *SVG image with default black fill*
 
-Using ``#ff000`` red parameter:
+Using `#ff000` red parameter:
 
-- OnlineResource ``href`` URI with parameter:
+- OnlineResource `href` URI with parameter:
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg?fill=#ff0000" xlink:type="simple"/>
   ```
 
-- Displays **`poi_peak.svg`** with supplied red ``fill``.
+- Displays **`poi_peak.svg`** with supplied red `fill`.
 
   ![](images/peak_redfill.png)
 
@@ -270,7 +270,7 @@ Using ``#ff000`` red parameter:
 
 To define several parameters, the query-parameters should be url-encoded.
 
-- A green peak with 25% opacity: ``?fill=#00ff00&opacity=0.25``, requires encoding both the '#' ( `%23` ) and the '&' ( `&amp;` ) signs:
+- A green peak with 25% opacity: `?fill=#00ff00&opacity=0.25`, requires encoding both the '#' ( `%23` ) and the '&' ( `&amp;` ) signs:
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg?fill=%2300ff00&amp;opacity=0.25" xlink:type="simple"/>
@@ -290,7 +290,7 @@ Parameters names are defined by the SVG file:
   stroke="param(outline)"
   ```
 
-- OnlineResource ``href`` URI referencing parameters ``fill``, ``outline`` and `outline-width`:
+- OnlineResource `href` URI referencing parameters `fill`, `outline` and `outline-width`:
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg?fill=%23ffffff&amp;outline=%23ff0000&amp;outline-width=5" xlink:type="simple"/>
@@ -304,13 +304,13 @@ Parameters names are defined by the SVG file:
 
 The use of SVG parameters can be combinded with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.
 
-- OnlineResource ``href`` URI referencing SVG Parameter with dynamic CQL expression:
+- OnlineResource `href` URI referencing SVG Parameter with dynamic CQL expression:
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg?fill=${COLOR}" xlink:type="simple"/>
   ```
 
-- Display depends on the feature attribute ``COLOR``.
+- Display depends on the feature attribute `COLOR`.
 
 ### Bulk WKT Shapes
 

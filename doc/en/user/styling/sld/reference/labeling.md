@@ -156,7 +156,7 @@ Examples:
 
 ## Composing labels from multiple attributes
 
-The `<Label>` element in ``<TextSymbolizer>`` allows mixed content. This means its content can be a mixture of plain text and [Filter Expressions](pointsymbolizer.md#sld_reference_parameter_expressions). The mix gets interepreted as a concatenation. You can leverage this to create complex labels out of multiple attributes.
+The `<Label>` element in `<TextSymbolizer>` allows mixed content. This means its content can be a mixture of plain text and [Filter Expressions](pointsymbolizer.md#sld_reference_parameter_expressions). The mix gets interepreted as a concatenation. You can leverage this to create complex labels out of multiple attributes.
 
 For example, if you want both a state name and its abbreviation to appear in a label, you can do the following:
 

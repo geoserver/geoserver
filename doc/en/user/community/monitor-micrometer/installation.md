@@ -20,7 +20,7 @@ render_macros: true
 
 3.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download ``monitor-micrometer`` zip archive.
+    Follow the **Community Modules** link and download `monitor-micrometer` zip archive.
 
     - {{ snapshot }} example: [monitor-micrometer](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-monitor-micrometer-plugin.zip)
 

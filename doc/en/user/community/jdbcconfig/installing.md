@@ -11,7 +11,7 @@ To install the JDBCConfig module:
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download ``jdbcconfig`` zip archive.
+    Follow the **Community Modules** link and download `jdbcconfig` zip archive.
 
     - {{ snapshot }} example: [jdbcconfig](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-jdbcconfig-plugin.zip)
 

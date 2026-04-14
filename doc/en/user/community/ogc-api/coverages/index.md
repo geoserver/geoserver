@@ -31,7 +31,7 @@ Missing functionality at the time of writing, and known issues:
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download ``ogcapi-coverages`` zip archive.
+    Follow the **Community Modules** link and download `ogcapi-coverages` zip archive.
 
     - {{ snapshot }} example: [ogcapi-coverages](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-coverages-plugin.zip)
 

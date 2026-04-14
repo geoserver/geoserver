@@ -48,7 +48,7 @@ Since most GeoServer releases require official GeoTools and GeoWebCache releases
 ## Release in Jira
 
 1.  Navigate to the [GeoServer project page](https://osgeo-org.atlassian.net/projects/GEOS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&status=released-unreleased) in Jira.
-2.  Add a new version for the next version to be released after the current release. For example, if you are releasing GeoServer 2.11.5, create version 2.11.6. Enter the current date as the Start Date and use the date from the [release schedule](https://github.com/geoserver/geoserver/wiki/Release-Schedule) for the Release Date. For the final scheduled (archive) release of a series (typically 2.xx.6), do still create the next version (e.g. 2.xx.7) with a Description of ``End of life, may not be released ever``.
+2.  Add a new version for the next version to be released after the current release. For example, if you are releasing GeoServer 2.11.5, create version 2.11.6. Enter the current date as the Start Date and use the date from the [release schedule](https://github.com/geoserver/geoserver/wiki/Release-Schedule) for the Release Date. For the final scheduled (archive) release of a series (typically 2.xx.6), do still create the next version (e.g. 2.xx.7) with a Description of `End of life, may not be released ever`.
 3.  Click in the Actions column for the version you are releasing and select Release. Update the Release Date to the current date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2 above.
 4.  Check all the issues in this release for any that do not have a component and rectify (before running the `announcement.py` utility below.)
 
@@ -112,9 +112,9 @@ The [GeoServer website](https://geoserver.org/) is managed as a [GitHub Pages re
 
         A file system sandbox is used to limit access for GeoServer Administrators and Workspace Administrators to specified file folders.
 
-        * A system sandbox is established using ``GEOSERVER_FILESYSTEM_SANDBOX`` application property, and applies to the entire application, limiting GeoServer administrators to the ``<sandbox>`` folder, and individual workspace administrators into isolated ``<sandbox>/<workspace>`` folders.
+        * A system sandbox is established using `GEOSERVER_FILESYSTEM_SANDBOX` application property, and applies to the entire application, limiting GeoServer administrators to the `<sandbox>` folder, and individual workspace administrators into isolated `<sandbox>/<workspace>` folders.
 
-        * A regular sandbox can be configured from the **Security > Data** screen, and is used to limit individual workspace administrators into ``<sandbox>/<workspace>`` folders to avoid accessing each other's files.
+        * A regular sandbox can be configured from the **Security > Data** screen, and is used to limit individual workspace administrators into `<sandbox>/<workspace>` folders to avoid accessing each other's files.
 
           ![](/img/posts/2.26/filesystem-sandbox.png)
 
@@ -255,7 +255,7 @@ Manually update hardcoded versions in configuration files:
 
 ## Build the Release
 
-Run the ``geoserver-release`` job in Jenkins:
+Run the `geoserver-release` job in Jenkins:
 
 - [geoserver-release-jdk11](https://build.geoserver.org/view/release/job/geoserver-release-jdk11/)
 - [geoserver-release-jdk17](https://build.geoserver.org/view/release/job/geoserver-release-jdk17/)
@@ -264,31 +264,31 @@ The job takes the following parameters:
 
 ### BRANCH
 
-> The branch to release from, "2.29.x", "2.28.x", etc... This must be a stable branch. Releases are not performed from the main development branch.
+The branch to release from, "2.29.x", "2.28.x", etc... This must be a stable branch. Releases are not performed from the main development branch.
 
 ### REV
 
-> The Git revision number to release from, e.g. "24ae10fe662c....". If left blank, the latest revision (i.e. HEAD) on the `BRANCH` being released is used.
+The Git revision number to release from, e.g. "24ae10fe662c....". If left blank, the latest revision (i.e. HEAD) on the `BRANCH` being released is used.
 
 ### VERSION
 
-> The version/name of the release to build, "2.29.4", "2.28.2", etc...
+The version/name of the release to build, "2.29.4", "2.28.2", etc...
 
 ### GT_VERSION
 
-> The GeoTools version to include in the release. This may be specified as a version number such as "34.0" or "33.4". Alternatively, the version may be specified as a Git branch/revision pair in the form `<branch>@<revision>`. For example "main@36ba65jg53.....". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.
+The GeoTools version to include in the release. This may be specified as a version number such as "34.0" or "33.4". Alternatively, the version may be specified as a Git branch/revision pair in the form `<branch>@<revision>`. For example "main@36ba65jg53.....". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.
 
 ### GWC_VERSION
 
-> The GeoWebCache version to include in the release. This may be specified as a version number such as "1.29.0". Alternatively, the version may be specified as a Git revision of the form `<branch>@<revision>` such as "master@1b3243jb...". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again, this version must be a version number corresponding to an official GeoTools release.
+The GeoWebCache version to include in the release. This may be specified as a version number such as "1.29.0". Alternatively, the version may be specified as a Git revision of the form `<branch>@<revision>` such as "master@1b3243jb...". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again, this version must be a version number corresponding to an official GeoTools release.
 
 ### GIT_USER
 
-> The Git username to use for the release.
+The Git username to use for the release.
 
 ### GIT_EMAIL
 
-> The Git email to use for the release.
+The Git email to use for the release.
 
 This job will checkout the specified branch/revision and build the GeoServer release artifacts against the GeoTools/GeoWebCache versions specified. When successfully complete all release artifacts will be listed under artifacts in the job summary.
 
@@ -302,7 +302,7 @@ It is important to test the artifacts using the minimum supported version of Jav
 
 ## Publish the Release
 
-Run the ``geoserver-release-publish`` in Jenkins:
+Run the `geoserver-release-publish` in Jenkins:
 
 - [geoserver-release-publish-jdk11](https://build.geoserver.org/view/release/job/geoserver-release-publish-jdk11/)
 - [geoserver-release-publish-jdk17](https://build.geoserver.org/view/release/job/geoserver-release-publish-jdk17/)
@@ -311,11 +311,11 @@ The job takes the following parameters:
 
 ### VERSION
 
-> The version being released. The same value specified for `VERSION` when running the `geoserver-release` job.
+The version being released. The same value specified for `VERSION` when running the `geoserver-release` job.
 
 ### BRANCH
 
-> The branch being released from. The same value specified for `BRANCH` when running the `geoserver-release` job.
+The branch being released from. The same value specified for `BRANCH` when running the `geoserver-release` job.
 
 This job will rsync all the artifacts located at:
 
@@ -341,11 +341,11 @@ Publish Jira markdown release notes to GitHub tag:
 
 3.  Generate release notes as markdown:
 
-    - Select format ``Markdown``
+    - Select format `Markdown`
     - Layout: Issue key with link
     - Issue types: All
 
-    Change the heading to ``Release notes``, and apply the change with **Done**.
+    Change the heading to `Release notes`, and apply the change with **Done**.
 
     Use **Copy to clipboard** to obtain the markdown, similar to the following:
 
@@ -381,7 +381,7 @@ Publish Jira markdown release notes to GitHub tag:
 
     Locate the new tag from the list, and use **\... \--\> Create release**
 
-    - Release title: ``GeoServer 2.29.0``
+    - Release title: `GeoServer 2.29.0`
     - Write: Paste the markdown from Jira release notes editor
     - Set as the latest release: only tick this for stable releases, leave unticked for maintenance and support releases
 

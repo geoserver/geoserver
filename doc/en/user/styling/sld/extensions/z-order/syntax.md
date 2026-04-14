@@ -162,7 +162,7 @@ If the WMS request asks for `&layers=roads,rails`, then the expanded `FeatureTyp
 
 As a result, the `road1,road2,rails1` will form a single group, and this will result in the rails be merged with the roads when z-ordering.
 
-If instead the WMS request asks for ``&layers=rails,roads````, then the expanded ````FeatureTypeStyle``\` list will be:
+If instead the WMS request asks for `&layers=rails,roads`, then the expanded `FeatureTypeStyle` list will be:
 
 | FeatureTypeStyle id | SortByGroup id |
 |---------------------|----------------|

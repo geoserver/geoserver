@@ -67,7 +67,9 @@ For instance if you want to establish a connection with the jdbc thin driver thr
 
 If you are using referrals, enable it by placing a jndi.properties file in geoserver's CLASSPATH, which is in geoserver/WEB-INF/classes. This property file contains:
 
-> java.naming.referral=follow
+```
+java.naming.referral=follow
+```
 
 ### Using loose bounding box {: #oracle_loose_bbox }
 

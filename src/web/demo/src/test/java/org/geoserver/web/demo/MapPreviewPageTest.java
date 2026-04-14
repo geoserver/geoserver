@@ -6,10 +6,8 @@
 package org.geoserver.web.demo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.matchesRegex;
 import static org.hamcrest.Matchers.not;
@@ -208,13 +206,11 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                     exists = true;
                     path = c.getPageRelativePath();
 
-                    // check visible links
+                    // check visible links listed
                     ExternalLink olLink = (ExternalLink)
                             c.get("itemProperties:3:component:commonFormat:0").getDefaultModelObject();
                     ExternalLink gmlLink = (ExternalLink)
                             c.get("itemProperties:3:component:commonFormat:1").getDefaultModelObject();
-                    ExternalLink kmlLink = (ExternalLink)
-                            c.get("itemProperties:3:component:commonFormat:2").getDefaultModelObject();
 
                     assertEquals(
                             "http://localhost/context/cite/wms?service=WMS&amp;version=1.1.0&amp;"
@@ -228,9 +224,6 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                             containsString("http://localhost/context/cite/ows?service=WFS&amp;version=1"
                                     + ".0.0&amp;request=GetFeature&amp;"
                                     + "typeName=cite%3ALakes%20%2B%20a%20plus"));
-                    assertEquals(
-                            "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus",
-                            kmlLink.getDefaultModelObjectAsString());
 
                     // check formats
                     RepeatingView wmsFormats = (RepeatingView) c.get("itemProperties:4:component:menu:wms:wmsFormats");
@@ -318,15 +311,19 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testCachingImages() throws Exception {
-        // test that the "?antiCache=###" query string is not appended to the img src
+        // test that icons are rendered as CSS icon elements (gs-icon-*), not img tags
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
         tester.clickLink("table:navigatorBottom:navigator:next", true);
-        List<TagTester> images = TagTester.createTags(
-                tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("img"), false);
-        assertThat(images, not(empty()));
-        images.stream()
-                .map(image -> image.getAttribute("src"))
-                .forEach(src -> assertThat(src, allOf(containsString("/img/icons/"), endsWith(".png"))));
+        List<TagTester> icons = TagTester.createTags(
+                tester.getLastResponseAsString(),
+                tag -> tag.getName().equalsIgnoreCase("i")
+                        && tag.getAttribute("class") != null
+                        && tag.getAttribute("class").toString().contains("gs-icon"),
+                false);
+        assertThat(icons, not(empty()));
+        icons.stream()
+                .map(icon -> icon.getAttribute("class"))
+                .forEach(cls -> assertThat(cls, containsString("gs-icon")));
     }
 }

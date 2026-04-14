@@ -69,7 +69,9 @@ Once the parameters have been defined, the **Attributes** **Refresh** link is cl
 
 The SQL view parameters are specified by adding the `viewparams` parameter to the WMS `GetMap` or the WFS `GetFeature` request. The `viewparams` argument is a list of `key:value` pairs, separated by semicolons:
 
-> `viewparams=p1:v1;p2:v2;...`
+```
+viewparams=p1:v1;p2:v2;...
+```
 
 If the values contain semicolons or commas these must be escaped with a backslash (e.g. `\,` and `\;`).
 
@@ -85,7 +87,9 @@ To display all states having between 2 and 5 million inhabitants the view parame
 
 Parameters can be provided for multiple layers by separating each parameter map with a comma:
 
-> `&viewparams=l1p1:v1;l1p2:v2,l2p1:v1;l2p2:v2,...`
+```
+&viewparams=l1p1:v1;l1p2:v2,l2p1:v1;l2p2:v2,...
+```
 
 The number of parameter maps must match the number of layers (featuretypes) included in the request.
 
@@ -93,11 +97,15 @@ The number of parameter maps must match the number of layers (featuretypes) incl
 
 Aside the default SQL view parameters format, an XML format is available by using the request parameter/value:
 
-> `&viewParamsFormat=XML`
+```
+&viewParamsFormat=XML
+```
 
 XML alternative format example:
 
-> `&viewParams=<VP><PS><P n="m1">8302,802,8505</P><P n="m2">22,44</P></PS><PS/><PS><P n="csvInput">acv,rrp;1,0;0,7;22,1</P></PS></VP>`
+```
+&viewParams=<VP><PS><P n="m1">8302,802,8505</P><P n="m2">22,44</P></PS><PS/><PS><P n="csvInput">acv,rrp;1,0;0,7;22,1</P></PS></VP>
+```
 
 `viewParamsFormat` new optional parameter definition:
 

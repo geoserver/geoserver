@@ -88,9 +88,9 @@ The contents of the `collections.json` file will be exposed both in `collections
 
 Here is an example of collection HTML rendering and its associated Cesium view:
 
-> ![](img/collection.png)
->
-> ![](img/newYork.png)
+![](img/collection.png)
+
+![](img/newYork.png)
 
 !!! note
     The Cesium viewer needs a Cesium access token to use the terrain layer. By default it's missing, which may result rendering "flying buildings" in mountain areas. See templates customization below on how to add your token.

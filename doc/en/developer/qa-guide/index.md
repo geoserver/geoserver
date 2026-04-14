@@ -40,7 +40,7 @@ In order to activate the ***PMD*** checks, use the `-Ppmd` profile:
 mvn verify -Ppmd
 ```
 
-Or run ``pmd:check`` (requires use of `initialize` to locate ``geoserverBaseDir/build/qa/pmd-ruleset.xml``):
+Or run `pmd:check` (requires use of `initialize` to locate `geoserverBaseDir/build/qa/pmd-ruleset.xml`):
 
 ```bash
 mvn initialize pmd:check -Ppmd
@@ -215,7 +215,7 @@ mvn sortpom:sort
 
 Verification checks if (ignoring whitespace changes) is the current **`pom.xml`** in the correct order:
 
-> mvn sortpom:verify
+`mvn sortpom:verify`
 
 Property `pom.fmt.action` is used to choose `sort` or `verify` (defaults to `sort`):
 

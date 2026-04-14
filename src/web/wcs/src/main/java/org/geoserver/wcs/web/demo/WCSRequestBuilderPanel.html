@@ -2,28 +2,28 @@
 <html xmlns:wicket="http://wicket.apache.org/">
   <body>
     <wicket:panel>
-      <div class="gs-panel-WCSRequestBuilderPanel">
+      <div class="gs-panel-WCSRequestBuilderPanel gs-form">
         <div class="gs-form">
           <div class="gs-form-group">
             <label for="version">
               <wicket:message key="version">wcs_version</wicket:message>
             </label>
-            <select wicket:id="version"/>
+            <select wicket:id="version" class="w-md"/>
           </div>
           <div class="gs-form-group">
             <label for="name"><wicket:message key="name">coverage</wicket:message></label>
-            <select wicket:id="coverage"/>
+            <select wicket:id="coverage" class="w-md"/>
           </div>
           <a href="#" wicket:id="describeCoverage"><wicket:message key="describe">describe</wicket:message></a>
         </div>
-        <div class="gs-unordered-list-class" wicket:id="details">
-          <div class="gs-list-item-class">
+        <div class="gs-form" wicket:id="details">
+          <div class="gs-form-group">
             <label for="envelope">
               <wicket:message key="envelope">bounds</wicket:message>
             </label>
             <div wicket:id="envelope"/>
           </div>
-          <div class="gs-form-group" wicket:id="sourceGridContainer">
+          <div class="gs-list-item-class" wicket:id="sourceGridContainer">
             <label for="grid">
               <wicket:message key="grid">grid</wicket:message>
             </label>
@@ -62,7 +62,7 @@
             <label for="format">
               <wicket:message key="format">output_format</wicket:message>
             </label>
-            <select wicket:id="format"/>
+            <select wicket:id="format" class="w-md"/>
           </div>
         </div>
         <div wicket:id="feedback"/>

@@ -21,7 +21,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 
 /**
  * A panel with two arrows, up and down, supposed to reorder items in a container (a table)
@@ -86,62 +85,58 @@ public class UpDownPanel<T> extends Panel {
         };
         add(this.debouncedMoveBehavior);
 
-        upLink =
-                new ImageAjaxLink<Void>(
-                        "up", new ContextRelativeResourceReference("/img/icons/silk/arrow_up.png", false)) {
-                    @Serial
-                    private static final long serialVersionUID = 2377129539852597050L;
+        upLink = new ImageAjaxLink<Void>("up", "gs-icon-arrow-up") {
+            @Serial
+            private static final long serialVersionUID = 2377129539852597050L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        moveBy(-1, target, items);
-                    }
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                moveBy(-1, target, items);
+            }
 
-                    @Override
-                    protected IAjaxCallListener getAjaxCallListener() {
-                        return buildDebounceListener("up");
-                    }
+            @Override
+            protected IAjaxCallListener getAjaxCallListener() {
+                return buildDebounceListener("up");
+            }
 
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        tag.put("title", upTitle.getString());
-                        if (items.indexOf(entry) == 0) {
-                            tag.put("class", "visibility-hidden");
-                        } else {
-                            tag.put("class", "visibility-visible");
-                        }
-                    }
-                };
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                tag.put("title", upTitle.getString());
+                if (items.indexOf(entry) == 0) {
+                    tag.put("class", "visibility-hidden");
+                } else {
+                    tag.put("class", "visibility-visible");
+                }
+            }
+        };
         upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("up", upLink)));
         upLink.setOutputMarkupId(true);
         add(upLink);
 
-        downLink =
-                new ImageAjaxLink<Void>(
-                        "down", new ContextRelativeResourceReference("/img/icons/silk/arrow_down.png", false)) {
-                    @Serial
-                    private static final long serialVersionUID = -1770135905138092575L;
+        downLink = new ImageAjaxLink<Void>("down", "gs-icon-arrow-down") {
+            @Serial
+            private static final long serialVersionUID = -1770135905138092575L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        moveBy(1, target, items);
-                    }
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                moveBy(1, target, items);
+            }
 
-                    @Override
-                    protected IAjaxCallListener getAjaxCallListener() {
-                        return buildDebounceListener("down");
-                    }
+            @Override
+            protected IAjaxCallListener getAjaxCallListener() {
+                return buildDebounceListener("down");
+            }
 
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        tag.put("title", downTitle.getString());
-                        if (items.indexOf(entry) == items.size() - 1) {
-                            tag.put("class", "visibility-hidden");
-                        } else {
-                            tag.put("class", "visibility-visible");
-                        }
-                    }
-                };
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                tag.put("title", downTitle.getString());
+                if (items.indexOf(entry) == items.size() - 1) {
+                    tag.put("class", "visibility-hidden");
+                } else {
+                    tag.put("class", "visibility-visible");
+                }
+            }
+        };
         downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("down", downLink)));
         downLink.setOutputMarkupId(true);
         add(downLink);

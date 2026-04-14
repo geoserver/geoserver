@@ -98,10 +98,10 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
 
-        tester.assertLabel("form:panel:fileTable:fileTable:fileContent:files:1:nameLink:name", "child/");
+        tester.assertLabel("form:panel:fileTable:fileContent:fileTable:files:1:nameLink:name", "child/");
         assertEquals(
                 1,
-                ((DataView) tester.getComponentFromLastRenderedPage("form:panel:fileTable:fileTable:fileContent:files"))
+                ((DataView) tester.getComponentFromLastRenderedPage("form:panel:fileTable:fileContent:fileTable:files"))
                         .size());
     }
 

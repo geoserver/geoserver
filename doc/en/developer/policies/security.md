@@ -114,7 +114,7 @@ This represents a balance between transparency and participation that does not o
 
 2.  Preparing report:
 
-    - Package: Always report ``org.geoserver.web:gs-web-app`` as ``geoserver.war`` as a useful way to document that the ``geoserver.war`` includes other jars
+    - Package: Always report `org.geoserver.web:gs-web-app` as `geoserver.war` as a useful way to document that the `geoserver.war` includes other jars
     - Affected versions: It is difficult to communicate version ranges, due to limitations in CVE advisory processing, requiring multiple lines.
 
     ![](img/cve-version-range.png)
@@ -218,7 +218,7 @@ When a national agency or similar has already reported a vulnerability publicly,
     
         A request to mark [CVE-2023-35042](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-35042) as duplicate that had been fixed in all supported versions came out as:
     
-        > [DISPUTED] GeoServer 2, in some configurations, allows remote attackers to execute arbitrary code via java.lang.Runtime.getRuntime().exec in wps:LiteralData within a wps:Execute request, as exploited in the wild in June 2023. NOTE: the vendor states that they are unable to reproduce this in any version.
+        [DISPUTED] GeoServer 2, in some configurations, allows remote attackers to execute arbitrary code via java.lang.Runtime.getRuntime().exec in wps:LiteralData within a wps:Execute request, as exploited in the wild in June 2023. NOTE: the vendor states that they are unable to reproduce this in any version.
     
         This is the opposite of controlling the message, it now appears as if the issue being disputed - rather than accepted as already solved please update etc\...
 

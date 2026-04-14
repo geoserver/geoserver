@@ -4,7 +4,7 @@ This guide is designed to get developers up and running as quick as possible. Fo
 
 [M2Eclipse](https://www.eclipse.org/m2e/) provides tight integration for Apache Maven into the Eclipse IDE.
 
-{% include "en/developer/quickstart/checkout.md" %}
+--8<-- "doc/en/developer/quickstart/checkout.md"
 
 ## Eclipse Maven builder
 
@@ -57,16 +57,16 @@ The Eclipse M2 builder does recognize this plugin, build once on the command lin
 
 3.  Open **Advanced** options:
 
-    - Profiles: ``release``
+    - Profiles: `release`
     - Name template: `[groupId].[artifactId]`
 
     ![](img/m2_import.png)
 
 #\. Press **Finish** to start import.
 
-> During import use `Resolve Later`, exclude lifecycle mapping.
->
-> ![](img/m2_plugin_connectors.png)
+During import use `Resolve Later`, exclude lifecycle mapping.
+
+![](img/m2_plugin_connectors.png)
 
 ## Run GeoServer from Eclipse
 

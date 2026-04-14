@@ -1,6 +1,6 @@
 # Vector Mosaic Datastore configuration
 
-When the extension has been installed, ``Vector Mosaic Data Store`` will be an option in the ``Vector Data Sources`` list when creating a new data store.
+When the extension has been installed, `Vector Mosaic Data Store` will be an option in the `Vector Data Sources` list when creating a new data store.
 
 ![](images/vector-mosaic-vector-create.png)
 

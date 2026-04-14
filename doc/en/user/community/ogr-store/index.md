@@ -1,6 +1,6 @@
 # OGR datastore
 
-The OGR datastore module allows to use the ``GDAL/OGR <https://gdal.org/>`` native library to access a wide variety of vector spatial formats and publish them in GeoServer.
+The OGR datastore module allows to use the `GDAL/OGR <https://gdal.org/>` native library to access a wide variety of vector spatial formats and publish them in GeoServer.
 
 This library is recommended to use when a particular data source does not have a GeoServer pure Java datastore fulfilling the same needs, in particular, compared to built in sources, it has the following limitations:
 
@@ -63,7 +63,7 @@ Creating a new store requires configuration of only the **DatasourceName** field
 
 The **DatasourceName** can be a reference to a file, a directory, or a set of connection parameters to a server. For example, to connect to a PostGIS database the connection parameters could be:
 
-> `PG:user=theUser password=thePassword dbname=theDatabase`
+`PG:user=theUser password=thePassword dbname=theDatabase`
 
 Notice how, unlike documented in the OGR page, single quotes are not needed (and actually harmful) around the user/password/dbname section. The **Browse** button can be used to quickly peek files or directories from the file system.
 

@@ -30,7 +30,7 @@ import org.geoserver.gwc.web.gridset.GridSetListTablePanel;
 import org.geoserver.gwc.web.gridset.GridSetTableProvider;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geowebcache.grid.GridSet;
@@ -197,7 +197,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                 target.add(availableGridSets);
             }
         };
-        addGridsubsetLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
+        addGridsubsetLink.add(new GsIcon("addIcon", GWCIconFactory.ADD_ICON));
         add(addGridsubsetLink);
     }
 

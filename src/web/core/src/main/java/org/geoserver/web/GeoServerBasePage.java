@@ -41,6 +41,7 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.LambdaModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -62,6 +63,7 @@ import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.util.LocalizationsFinder;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.LoggedInUserLabel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
@@ -139,13 +141,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         add(new ExternalLink("faviconLink", faviconUrl, null));
 
         // page title
-        add(new Label("pageTitle", new LoadableDetachableModel<String>() {
-
-            @Override
-            protected String load() {
-                return getPageTitle();
-            }
-        }));
+        add(new Label("pageTitle", LambdaModel.of(this::getPageTitle)));
 
         // login / logout stuff
         GeoServerSecurityManager securityManager = getGeoServerApplication().getSecurityManager();
@@ -192,20 +188,11 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                     }
                 };
 
-                Image image;
-                if (info.getIcon() != null) {
-                    image = new Image(
-                            "link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
-                } else {
-                    image = new Image(
-                            "link.icon",
-                            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/door-in.png"));
-                }
+                WebComponent image = resolveLoginIcon(info);
 
                 loginForm.add(image);
                 if (info.getTitleKey() != null && !info.getTitleKey().isEmpty()) {
                     loginForm.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
-                    image.add(AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
                 } else {
                     loginForm.add(new Label("link.label", ""));
                 }
@@ -256,20 +243,11 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                     }
                 };
 
-                Image image;
-                if (info.getIcon() != null) {
-                    image = new Image(
-                            "link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
-                } else {
-                    image = new Image(
-                            "link.icon",
-                            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/door-in.png"));
-                }
+                WebComponent image = resolveLoginIcon(info);
 
                 loginForm.add(image);
                 if (info.getTitleKey() != null && !info.getTitleKey().isEmpty()) {
                     loginForm.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
-                    image.add(AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
                 } else {
                     loginForm.add(new Label("link.label", ""));
                 }
@@ -302,12 +280,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         };
         add(logoutForm);
 
-        Image image = new Image(
-                "link.icon", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/door-out.png"));
+        WebComponent image = new GsIcon("link.icon", "gs-icon-door-out");
 
         logoutForm.add(image);
         logoutForm.add(new Label("link.label", new StringResourceModel("logout", null, null)));
-        image.add(AttributeModifier.replace("alt", new ParamResourceModel("logout", null)));
         logoutForm.setVisible(!anonymous);
 
         // home page link
@@ -373,13 +349,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         add(new WebMarkupContainer(HEADER_PANEL));
 
         // allow the subclasses to initialize before getTitle/getDescription are called
-        add(new Label("gbpTitle", new LoadableDetachableModel<String>() {
-
-            @Override
-            protected String load() {
-                return getTitle();
-            }
-        }));
+        add(new Label("gbpTitle", LambdaModel.of(this::getTitle)));
         Label gbpDescription = new Label("gbpDescription", new LoadableDetachableModel<String>() {
 
             @Override
@@ -408,6 +378,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // sidebar
         boolean legacyHome = (this instanceof GeoServerHomePage) && GeoServerHomePage.isLegacyHomepageSelectorEnabled();
         NavigationTreePanel sidebar = new NavigationTreePanel("sidebar");
+        sidebar.setOutputMarkupId(true);
         sidebar.setVisible(!legacyHome);
         add(sidebar);
         BreadcrumbNavigationPanel breadcrumb = new BreadcrumbNavigationPanel("breadcrumbPanel");
@@ -538,21 +509,57 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             ctxIndicator.setVisible(false);
         }
         link.add(ctxIndicator);
-        WebComponent image;
-        if (info.getIcon() != null) {
-            if (info.getIcon().startsWith("/")) {
-                String contextPath = info.getIcon().substring(1);
-                image = new ContextImage("link.icon", contextPath);
-            } else {
-                image = new Image("link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
-            }
-        } else {
-            image = new Image(
-                    "link.icon", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
-        }
+        WebComponent image = getComponentIcon(info);
         image.add(AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
         link.add(image);
         item.add(link);
+    }
+
+    private WebComponent getComponentIcon(MenuPageInfo info) {
+        return resolveIcon("link.icon", info.getIcon(), info.getComponentClass(), "gs-icon-wrench");
+    }
+
+    private WebComponent resolveLoginIcon(LoginFormInfo info) {
+        return resolveIcon("link.icon", info.getIcon(), info.getComponentClass(), "gs-icon-door-in");
+    }
+
+    /**
+     * Resolves an icon value to a WebComponent. Supports three formats:
+     *
+     * <ul>
+     *   <li>{@code gs-icon-*} CSS class → {@link GsIcon}
+     *   <li>{@code /path} context-relative path → {@link ContextImage}
+     *   <li>bare filename → {@link Image} loaded from {@code componentClass} package resources
+     * </ul>
+     *
+     * Falls back to {@code defaultCssClass} when {@code iconValue} is null or empty.
+     */
+    private WebComponent resolveIcon(
+            String wicketId, String iconValue, Class<?> componentClass, String defaultCssClass) {
+        if (iconValue != null && !iconValue.isEmpty()) {
+            if (iconValue.startsWith("gs-icon")) {
+                return new GsIcon(wicketId, iconValue);
+            }
+
+            if (iconValue.startsWith("/")) {
+                return new ContextImage(wicketId, iconValue.substring(1)) {
+                    @Override
+                    protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+                        tag.setName("img");
+                        super.onComponentTag(tag);
+                    }
+                };
+            }
+
+            return new Image(wicketId, new PackageResourceReference(componentClass, iconValue)) {
+                @Override
+                protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+                    tag.setName("img");
+                    super.onComponentTag(tag);
+                }
+            };
+        }
+        return new GsIcon(wicketId, defaultCssClass);
     }
 
     private String getResourcePath(String path) {
@@ -620,6 +627,11 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         return NODE_INFO;
     }
 
+    /**
+     * Get title displayed at the top of the page in {@code page-header} h1.
+     *
+     * @return title displayed at the top of the page.
+     */
     protected String getTitle() {
         return new ParamResourceModel("title", this).getString();
     }
@@ -628,7 +640,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         return new ParamResourceModel("description", this).getString();
     }
 
-    /** Gets the page title from the PageName.title resource, falling back on "GeoServer" if not found */
+    /**
+     * Gets the page title as included in page header, from the PageName.title resource, falling back on "GeoServer" if
+     * not found
+     */
     String getPageTitle() {
         try {
             return "GeoServer: " + getTitle();

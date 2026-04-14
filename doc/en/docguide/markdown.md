@@ -60,7 +60,7 @@ Use `` `item` `` monospace for user supplied input, or item in a list or tree:
     Select `Basemap` layer.
 
 
-Use `` `text` `` monspace for user supplied text input:
+Use `` `text` `` monospace for user supplied text input:
 
 === "Markdown"
 
@@ -85,7 +85,7 @@ Use `++key++` for keyboard keys.
 
     Press ++control+f++ to find on page.
     
-Use definition list to document data entry. The field names use strong as they name a user interface element. Field values to input uses monspace as user input to type in.
+Use definition list to document data entry. The field names use strong as they name a user interface element. Field values to input uses monospace as user input to type in.
 
 === "Markdown"
 
@@ -98,7 +98,7 @@ Use definition list to document data entry. The field names use strong as they n
         **Password**
         :   `geoserver`
     
-        **Remeber me**
+        **Remember me**
         :   Unchecked
     
         Press **Login**.
@@ -114,7 +114,7 @@ Use definition list to document data entry. The field names use strong as they n
         **Password**
         :   `geoserver`
     
-        **Remeber me**
+        **Remember me**
         :   Unchecked
     
         Press **Login**.
@@ -338,7 +338,7 @@ To return to top level, use 0 indentation again. For example:
 Documentation uses pipe-tables only "List-packed" tables
 as they are supported by both ***mkdocs*** and ***pandoc***.
 
-Tables are constructed with Leading / tailing `|`, and headers seperated by `---`.
+Tables are constructed with Leading / tailing `|`, and headers separated by `---`.
 
 === "Markdown"
     
@@ -356,7 +356,7 @@ Tables are constructed with Leading / tailing `|`, and headers seperated by `---
     | Square | Four sides of equal length, 90 degree angles |
     | Rectangle | Four sides, 90 degree angles |
 
-Column alignment using `:`
+Columns can be Left, Center or Right aligned using `:` in the `---` second row.
 
 === "Markdown"
     
@@ -606,11 +606,11 @@ Fenced block are used to represent code examples:
 === "Markdown"
     
     
-    `````md
+    ````md
     ```bash
     mvn clean install -DskipTests
     ```
-    `````
+    ````
 
 === "Preview"
 
@@ -629,20 +629,20 @@ Use snippet `--8<--` include content from another file:
 
 To include a number of lines into an `xml` code-block:
 
-* `xml` is sensitive to dashes, so `-8<-` is used here
+* `xml` is sensitive to dashes, so the single-dash variant `-8<-` is used instead
 
 === "Markdown"
     
     ````Markdown
     ```xml
-    ;--8<-- "build/qa/pmd-ruleset.xml:23:25"
+    ;-8<- "build/qa/pmd-ruleset.xml:23:25"
     ```
     ````
 
 === "Preview"
 
     ```xml
-    --8<-- "build/qa/pmd-ruleset.xml:23:25"
+    -8<- "build/qa/pmd-ruleset.xml:23:25"
     ```
 
 To include named section:
@@ -672,7 +672,3 @@ Example of comment markers from `ResourcesTest.java`:
     --8<-- "src/platform/src/test/java/org/geoserver/platform/resource/ResourcesTest.java:example"
     ```
 
-
-### Show Source
-
-All pages have a "Show Source" link in the right-hand table of contents.

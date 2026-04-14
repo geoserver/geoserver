@@ -16,11 +16,11 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.ows.URLMangler.URLType;
@@ -73,6 +73,11 @@ public class PreviewLayer {
         this.groupInfo = groupInfo;
     }
 
+    public PreviewLayer(PublishedInfo info) {
+        this.groupInfo = info instanceof LayerGroupInfo ? (LayerGroupInfo) info : null;
+        this.layerInfo = info instanceof LayerInfo ? (LayerInfo) info : null;
+    }
+
     public String getName() {
         if (layerInfo != null) {
             return layerInfo.getResource().prefixedName();
@@ -90,12 +95,12 @@ public class PreviewLayer {
         return null;
     }
 
-    public ResourceReference getIcon() {
+    public String getIcon() {
         if (layerInfo != null) return CatalogIconFactory.get().getSpecificLayerIcon(layerInfo);
         else return CatalogIconFactory.GROUP_ICON;
     }
 
-    public ResourceReference getTypeSpecificIcon() {
+    public String getTypeSpecificIcon() {
         if (layerInfo != null) return CatalogIconFactory.get().getSpecificLayerIcon(layerInfo);
         else return CatalogIconFactory.GROUP_ICON;
     }

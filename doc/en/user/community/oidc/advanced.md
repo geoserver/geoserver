@@ -33,18 +33,18 @@ If you are still having issues, you might need to attach a Java debugger to GeoS
 
 2.  User logs into the IDP (if this is problematic, consult your IDP's administrator)
 
-3.  The user is then redirected back to GeoServer (the Redirect URI) with an attached ``?code=\...``. GeoServer will make a web request to the IDP to hand this "code" in for the Access/ID Token.
+3.  The user is then redirected back to GeoServer (the Redirect URI) with an attached `?code=\...`. GeoServer will make a web request to the IDP to hand this "code" in for the Access/ID Token.
 
     - You should see this request in the Browser Network Logs (see your Browsers DevTools)
-    - In the debugger, you can put a breakpoint in ``GeoServerOauth2AccessTokenResponseClient#getTokenResponse()`` to see this exchange
+    - In the debugger, you can put a breakpoint in `GeoServerOauth2AccessTokenResponseClient#getTokenResponse()` to see this exchange
 
 4.  View the ID Token, Access Token, and userinfo. Use [JWT.io](https://jwt.io) to decode your JWT tokens.
 
-    - The easiest way to see this is in ``GeoServerOAuth2RoleResolver#convert()`` (``pParam``)
+    - The easiest way to see this is in `GeoServerOAuth2RoleResolver#convert()` (`pParam`)
 
 5.  Ensure that the roles are being correctly accessed
 
-    - The easiest way to see this is in ``GeoServerOAuth2RoleResolver#convert()``
+    - The easiest way to see this is in `GeoServerOAuth2RoleResolver#convert()`
 
 ## Logging OAuth2 Activity
 
@@ -148,13 +148,13 @@ Optional: It is no longer required to use `Check Token Endpoint URL` - if you le
 
 ## Enforce Token Validation
 
-``True`` by default.
+`True` by default.
 
 Check this option to enforce the validation of the token signature.
 
-Per the ``RFC 7517`` or this doc from ``auth0``, the parameters does not include neither ``public_key_use`` (but use nor ``key_id`` (but ``kid``)
+Per the `RFC 7517` or this doc from `auth0`, the parameters does not include neither `public_key_use` (but use nor `key_id` (but `kid`)
 
-The RFC specifies that kid is optional (``RFC 7517: JSON Web Key (JWK)``) Use of this member is ``OPTIONAL``.
+The RFC specifies that kid is optional (`RFC 7517: JSON Web Key (JWK)`) Use of this member is `OPTIONAL`.
 
 Reference:
 

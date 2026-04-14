@@ -26,11 +26,11 @@ The REST API can be used to convert any of your existing CSS or SLD styles to YS
 
     - <view-source:http://localhost:8080/geoserver/rest/styles/states.sld>
 
-4.  Change the URL with ``?pretty=true`` for human readable XML.
+4.  Change the URL with `?pretty=true` for human readable XML.
 
     - <view-source:http://localhost:8080/geoserver/rest/styles/states.sld?pretty=true>
 
-5.  Change the URL with ``yaml`` to convert to YSLD.
+5.  Change the URL with `yaml` to convert to YSLD.
 
     - <view-source:http://localhost:8080/geoserver/rest/styles/states.yaml>
 
@@ -120,7 +120,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
 2.  Here is an example:
 
-    ``[ yaml
+    ```yaml
     define: &common
       stroke-opacity: 0.25
 
@@ -400,27 +400,28 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``\${ }`` as shown:
 
-    > ``` yaml
-    > - point:
-    >     symbols:
-    >     - mark:
-    >         shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
-    > ```
+    ```yaml
+    - point:
+        symbols:
+        - mark:
+            shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
+    ```
 
     2.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
     Example available here [point_example.css](../files/point_example2.ysld) :
 
-    > 
-    >
-    > define: &point
-    > :   size: \${10-(SCALERANK/2)} symbols:
-    >
-    >     - mark:
-    >
-    >     :   shape: \${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')} stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
-    >
-    >     x-labelObstacle: true
+    ```css
+    define: &point
+       size: ${10-(SCALERANK/2)} 
+       symbols:
+       - mark:
+               shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')} 
+               stroke-color: 'black' 
+               stroke-width: 1 
+               fill-color: 'gray'
+       x-labelObstacle: true
+    ```
 
     ### Layer Group {: #ysld.point.a3 }
 
@@ -501,9 +502,9 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     1.  The color-map **type** property dictates how the values are used to generate a resulting color.
 
-    - ``ramp`` is used for quantitative data, providing a smooth interpolation between the provided color values.
-    - ``intervals`` provides categorization for quantitative data, assigning each range of values a solid color.
-    - ``values`` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
+    - `ramp` is used for quantitative data, providing a smooth interpolation between the provided color values.
+    - `intervals` provides categorization for quantitative data, assigning each range of values a solid color.
+    - `values` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
 
     2.  **Challenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
 

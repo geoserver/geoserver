@@ -17,7 +17,9 @@
         <include>gt-cql2-*.jar</include>
          <include>gt-cql2-*.jar</include>
         <include>swagger-core-*.jar</include>
+        <include>jackson-core-*.jar</include>
         <include>jackson-dataformat-*.jar</include>
+        <include>jackson-databind-*.jar</include>
         <include>jackson-module-jaxb*.jar</include>
         <include>swagger-models-*.jar</include>
         <include>snakeyaml-*.jar</include>

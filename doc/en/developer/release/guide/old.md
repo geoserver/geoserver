@@ -52,31 +52,31 @@ Run the [geoserver-release](http://hudson.opengeo.org/hudson/job/geoserver-relea
 
 ### BRANCH
 
-> The branch to release from, "2.2.x", "2.1.x", etc\... This must be a stable branch. Releases are not performed from the main development branch.
+The branch to release from, "2.2.x", "2.1.x", etc\... This must be a stable branch. Releases are not performed from the main development branch.
 
 ### REV
 
-> The Git revision number to release from. eg, "24ae10fe662c\....". If left blank the latest revision (ie HEAD) on the `BRANCH` being released is used.
+The Git revision number to release from. eg, "24ae10fe662c\....". If left blank the latest revision (ie HEAD) on the `BRANCH` being released is used.
 
 ### VERSION
 
-> The version/name of the release to build, "2.1.4", "2.2", etc\...
+The version/name of the release to build, "2.1.4", "2.2", etc\...
 
 ### GT_VERSION
 
-> The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form `<branch>@<revision>`. For example "main@36ba65jg53\.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
+The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form `<branch>@<revision>`. For example "main@36ba65jg53\.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
 
 ### GWC_VERSION
 
-> The GeoWebCache version to include in the release. This may be specified as a version number such as "1.3-RC3". Alternatively the version may be specified as a Git revision of the form `<branch>@<revision>` such as "master@1b3243jb\...". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
+The GeoWebCache version to include in the release. This may be specified as a version number such as "1.3-RC3". Alternatively the version may be specified as a Git revision of the form `<branch>@<revision>` such as "master@1b3243jb\...". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
 
 ### GIT_USER
 
-> The Git username to use for the release.
+The Git username to use for the release.
 
 ### GIT_EMAIL
 
-> The Git email to use for the release.
+The Git email to use for the release.
 
 This job will checkout the specified branch/revision and build the GeoServer release artifacts against the GeoTools/GeoWebCache versions specified. When successfully complete all release artifacts will be uploaded to the following location:
 
@@ -94,19 +94,19 @@ Run the [geoserver-release-jira](http://hudson.opengeo.org/hudson/job/geoserver-
 
 ### VERSION
 
-> The version to release, same as in the previous section. This version must match a version in JIRA.
+The version to release, same as in the previous section. This version must match a version in JIRA.
 
 ### NEXT_VERSION
 
-> The next version in the series. All unresolved issues currently fils against `VERSION` will be transitioned to this version.
+The next version in the series. All unresolved issues currently fils against `VERSION` will be transitioned to this version.
 
 ### JIRA_USER
 
-> A JIRA user name that has release privileges. This user will be used to perform the release in JIRA, via the SOAP api.
+A JIRA user name that has release privileges. This user will be used to perform the release in JIRA, via the SOAP api.
 
 ### JIRA_PASSWD
 
-> The password for the `JIRA_USER`.
+The password for the `JIRA_USER`.
 
 This job will perform the tasks in JIRA to release `VERSION`. Navigate to [JIRA](https://osgeo-org.atlassian.net/projects/GEOS) and verify that the version has actually been released.
 
@@ -116,11 +116,11 @@ Run the [geoserver-release-publish](https://build.geoserver.org/view/release/job
 
 ### VERSION
 
-> The version being released. The same value s specified for `VERSION` when running the `geoserver-release` job.
+The version being released. The same value s specified for `VERSION` when running the `geoserver-release` job.
 
 ### BRANCH
 
-> The branch being released from. The same value specified for `BRANCH` when running the `geoserver-release` job.
+The branch being released from. The same value specified for `BRANCH` when running the `geoserver-release` job.
 
 This job will rsync all the artifacts located at:
 

@@ -18,14 +18,13 @@ import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.security.csp.CSPPolicy;
 import org.geoserver.security.csp.CSPRule;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.ReorderableTablePanel;
@@ -116,15 +115,14 @@ public class CSPRulePanel extends Panel {
             if (property == NAME) {
                 return editLink(id, itemModel, property.getModel(itemModel));
             } else if (property == DESCRIPTION) {
-                return new Icon(
-                                id,
-                                new ContextRelativeResourceReference("img/icons/silk/information.png"),
-                                Model.of((String) property.getModel(itemModel).getObject()))
+                return new GsIcon(id, "gs-icon-information")
+                        .add(new AttributeModifier("title", Model.of((String)
+                                property.getModel(itemModel).getObject())))
                         .setOutputMarkupId(true);
             } else if (property == REMOVE) {
                 return removeLink(id, itemModel.getObject());
             } else if (Boolean.TRUE.equals(property.getModel(itemModel).getObject())) {
-                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
             } else if (Boolean.FALSE.equals(property.getModel(itemModel).getObject())) {
                 return new Label(id, "");
             }
@@ -146,17 +144,16 @@ public class CSPRulePanel extends Panel {
         }
 
         private Component removeLink(String id, CSPRule rule) {
-            ImageAjaxLink<Void> link =
-                    new ImageAjaxLink<>(id, new ContextRelativeResourceReference("img/icons/silk/delete.png")) {
-                        @Serial
-                        private static final long serialVersionUID = -3140594684451087223L;
+            ImageAjaxLink<Void> link = new ImageAjaxLink<>(id, "gs-icon-delete") {
+                @Serial
+                private static final long serialVersionUID = -3140594684451087223L;
 
-                        @Override
-                        protected void onClick(AjaxRequestTarget target) {
-                            CSPRulePanel.this.policy.getRules().remove(rule);
-                            target.add(CSPRulePanel.this.tablePanel);
-                        }
-                    };
+                @Override
+                protected void onClick(AjaxRequestTarget target) {
+                    CSPRulePanel.this.policy.getRules().remove(rule);
+                    target.add(CSPRulePanel.this.tablePanel);
+                }
+            };
             link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("th.remove", CSPRulePanel.this)));
             return link;
         }

@@ -4,11 +4,11 @@
 
 The source code for this plugin resides on the [geoserver-acl](https://github.com/geoserver/geoserver-acl/tree/main/src/plugin) project code base, where it's [tested](https://github.com/geoserver/geoserver-acl/actions/workflows/build-plugin.yaml) against the stable, development, and maintenance versions of GeoServer.
 
-This community module hence only runs a [Testcontainers](https://testcontainers.com/) based integration test suite, using the [geoservercloud/geoserver-acl](https://hub.docker.com/r/geoservercloud/geoserver-acl/tags) Docker image for the dependency version defined in this project's ``pom.xml``.
+This community module hence only runs a [Testcontainers](https://testcontainers.com/) based integration test suite, using the [geoservercloud/geoserver-acl](https://hub.docker.com/r/geoservercloud/geoserver-acl/tags) Docker image for the dependency version defined in this project's `pom.xml`.
 
 ## Installation
 
-The plugin ``.zip`` file is to be installed as usual, un-zipping it inside the GeoServer ``WEB-INF/lib`` folder.
+The plugin `.zip` file is to be installed as usual, un-zipping it inside the GeoServer `WEB-INF/lib` folder.
 
 The GeoServer ACL service is distributed as a Docker image in dockerhub: [geoservercloud/geoserver-acl](https://hub.docker.com/r/geoservercloud/geoserver-acl/tags)
 
@@ -32,7 +32,7 @@ If you choose to use Java System properties, add the following ones to the GeoSe
 
 ### Disabling the plugin
 
-The ``geoserver.acl.client.enabled`` config property defaults to ``true`` so it's not required for the plugin to run. In order to completely disable the plugin, set it to `false`:
+The `geoserver.acl.client.enabled` config property defaults to `true` so it's not required for the plugin to run. In order to completely disable the plugin, set it to `false`:
 
 ```shell
 -Dgeoserver.acl.client.enabled=false
@@ -57,9 +57,9 @@ And so on.
 
 ### Setting the plugin's authorization cache expiration time
 
-The GeoServer ACL API plugin implements a local cache for authorization requests/responses, that has a default ``30`` seconds expiration time.
+The GeoServer ACL API plugin implements a local cache for authorization requests/responses, that has a default `30` seconds expiration time.
 
-The cache "expiration time", or "time to live", can be changed through the ``Dgeoserver.acl.client.cache.ttl`` configuration property, which accepts a ``java.time.Duration`` string. For example:
+The cache "expiration time", or "time to live", can be changed through the `Dgeoserver.acl.client.cache.ttl` configuration property, which accepts a `java.time.Duration` string. For example:
 
 ```shell
 -Dgeoserver.acl.client.cache.ttl=PT5S
@@ -71,7 +71,7 @@ or
 export GEOSERVER_ACL_CLIENT_CACHE_TTL=PT5S
 ```
 
-will set the cache TTL to ``5`` seconds.
+will set the cache TTL to `5` seconds.
 
 Examples:
 
@@ -87,15 +87,15 @@ This is **important** because the cache TTL will impact the latency for GeoServe
 
 If you're implementing a workflow where you're managing ACL rules directly through the ACL service API, you might want to set a shorter cache TTL.
 
-Alternatively, you can introduce a direct call to the GeoServer REST API to force clearing the cache using the ``/rest/reset`` endpoint. For example:
+Alternatively, you can introduce a direct call to the GeoServer REST API to force clearing the cache using the `/rest/reset` endpoint. For example:
 
 ```shell
 curl -u admin:geoserver -X POST "http://localhost:8080/geoserver/rest/reset"
 ```
 
-The web user interface can also be used to clear out the caches through the "Server Status" page, clicking the ``Resource Cache -> Clear`` button.
+The web user interface can also be used to clear out the caches through the "Server Status" page, clicking the `Resource Cache -> Clear` button.
 
-In either case, you'd see a message like the following in the GeoServer logs, provided the logging configuration enables the info level for the ``org.geoserver.acl.authorization.cache`` topic:
+In either case, you'd see a message like the following in the GeoServer logs, provided the logging configuration enables the info level for the `org.geoserver.acl.authorization.cache` topic:
 
 ```text
 INFO   [org.geoserver.acl.authorization.cache] - evicted 56 cached ACL authorizations

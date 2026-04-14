@@ -17,6 +17,7 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -31,6 +32,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.spring.security.GeoServerSession;
+import org.geoserver.web.wicket.GsIcon;
 import org.springframework.security.core.Authentication;
 
 public class BreadcrumbNavigationPanel extends Panel {
@@ -140,21 +142,20 @@ public class BreadcrumbNavigationPanel extends Panel {
 
                 boolean hasMenuItems = !menuData.isEmpty();
 
-                PackageResourceReference iconRef;
+                String iconClass;
                 switch (bc.getLevel()) {
                     case "WORKSPACE":
-                        iconRef = new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/folder.png");
+                        iconClass = "gs-icon-folder";
                         break;
                     case "LAYER_GROUP":
-                        iconRef = new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/layers.png");
+                        iconClass = "gs-icon-layers";
                         break;
                     case "LAYER":
-                        iconRef = new PackageResourceReference(
-                                GeoServerBasePage.class, "img/icons/silk/picture_empty.png");
+                        iconClass = "gs-icon-picture-empty";
                         break;
                     case "GLOBAL":
                     default:
-                        iconRef = new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/server.png");
+                        iconClass = "gs-icon-server";
                         break;
                 }
 
@@ -166,14 +167,14 @@ public class BreadcrumbNavigationPanel extends Panel {
                         (bc.getPageClass() != null) ? bc.getPageClass() : GeoServerHomePage.class;
                 BookmarkablePageLink<Void> link =
                         new BookmarkablePageLink<>("link", targetPageClass, bc.getParameters());
-                link.add(new Image("linkIcon", iconRef));
+                link.add(new GsIcon("linkIcon", iconClass));
                 link.add(new Label("label", bc.getLabel()));
                 normalLinkContainer.add(link);
 
                 WebMarkupContainer plainLabelContainer = new WebMarkupContainer("plainLabelContainer");
                 plainLabelContainer.setVisible(isLast && !hasMenuItems);
                 item.add(plainLabelContainer);
-                plainLabelContainer.add(new Image("plainIcon", iconRef));
+                plainLabelContainer.add(new GsIcon("plainIcon", iconClass));
                 plainLabelContainer.add(new Label("plainLabel", bc.getLabel()));
 
                 WebMarkupContainer contextMenuContainer = new WebMarkupContainer("contextMenuContainer");
@@ -181,7 +182,7 @@ public class BreadcrumbNavigationPanel extends Panel {
                 contextMenuContainer.setVisible(isLast && hasMenuItems);
                 item.add(contextMenuContainer);
 
-                contextMenuContainer.add(new Image("menuIcon", iconRef));
+                contextMenuContainer.add(new GsIcon("menuIcon", iconClass));
                 contextMenuContainer.add(new Label("currentLabel", bc.getLabel()));
 
                 final String bcLevel = bc.getLevel();
@@ -243,13 +244,15 @@ public class BreadcrumbNavigationPanel extends Panel {
 
         org.apache.wicket.Component iconComponent;
 
-        if (ctxMenu.getIcon() != null && !ctxMenu.getIcon().isEmpty()) {
-            if (ctxMenu.getIcon().startsWith("/")) {
-                String contextPath = ctxMenu.getIcon().substring(1);
-                iconComponent = new org.apache.wicket.markup.html.image.ContextImage("menuItemIcon", contextPath);
+        String iconValue = ctxMenu.getIcon();
+        if (iconValue != null && !iconValue.isEmpty()) {
+            if (iconValue.startsWith("gs-icon")) {
+                iconComponent = new GsIcon("menuItemIcon", iconValue);
+            } else if (iconValue.startsWith("/")) {
+                iconComponent = new ContextImage("menuItemIcon", iconValue.substring(1));
             } else {
-                iconComponent = new Image(
-                        "menuItemIcon", new PackageResourceReference(ctxMenu.getComponentClass(), ctxMenu.getIcon()));
+                iconComponent =
+                        new Image("menuItemIcon", new PackageResourceReference(ctxMenu.getComponentClass(), iconValue));
             }
         } else {
             iconComponent = new WebMarkupContainer("menuItemIcon");

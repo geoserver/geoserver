@@ -93,7 +93,7 @@ GeoServer includes support for WFS-T (transactions) which lets users modify your
 
 If you don't want your database modified, you can turn off transactions in the [WFS settings](../services/wfs/webadmin.md). Set the **Service Level** to `Basic`. For extra security, we recommend any database access use datastore credentials providing read-only permissions. This will eliminate the possibility of a SQL injection (though GeoServer is generally not vulnerable to that sort of attack).
 
-If you would like some users to be able to modify data, set the service level **Service Level** to `Transactional` (or `Complete`) and use [Service Security](../security/service.md) to limit access to the ``WFS.Transaction`` operation.
+If you would like some users to be able to modify data, set the service level **Service Level** to `Transactional` (or `Complete`) and use [Service Security](../security/service.md) to limit access to the `WFS.Transaction` operation.
 
 If you would like some users to be able to modify some but not all of your data, set the **Service Level** to `Transactional` (or `Complete`), and use [Layer security](../security/layer.md) to limit write access to specific layers. Data security can be used to allow write access based on workspace, datastore, or layer security.
 
@@ -158,8 +158,8 @@ Module status information is available describing the operational environment.
 
 2.  To show environment variables and Java system properties on the status page and REST API, start GeoServer with these environment variables set to `true`:
 
-    - ``GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED``
-    - ``GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED``
+    - `GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED`
+    - `GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED`
 
 3.  In a production system, these should be set to `false` (or leave them undefined).
 
@@ -336,29 +336,29 @@ If necessary, this functionality can be disabled by setting the `ENTITY_RESOLUTI
 
 GeoServer provides a number of facilities to control external entity resolution:
 
-- By default ``http`` and ``https`` entity resolution is restricted to the following default:
+- By default `http` and `https` entity resolution is restricted to the following default:
 
       www.w3.org|schemas.opengis.net|www.opengis.net|inspire.ec.europa.eu/schemas
 
   The default list includes the common w3c, ogc, and inspire schema locations required for OGC Web Service operation.
 
-  Access is provided to the proxy base url from global settings. Access to local ``file`` references is restricted.
+  Access is provided to the proxy base url from global settings. Access to local `file` references is restricted.
 
-- To allow additional external entity ``http`` and ``https`` locations use a comma or bar separated list:
+- To allow additional external entity `http` and `https` locations use a comma or bar separated list:
 
   ```
 -DENTITY_RESOLUTION_ALLOWLIST=server1|server2|server3/schemas
   ```
 
-  These locations are in addition to the default w3c, ogc, and inspire schema locations above. Access is provided to the proxy base url from global settings. Access to local ``file`` references remains restricted.
+  These locations are in addition to the default w3c, ogc, and inspire schema locations above. Access is provided to the proxy base url from global settings. Access to local `file` references remains restricted.
 
-- To allow all ``http`` and ``https`` entity resolution use ``*`` wildcard:
+- To allow all `http` and `https` entity resolution use `*` wildcard:
 
   ```
 -DENTITY_RESOLUTION_ALLOWLIST=*
   ```
 
-  Access to local ``file`` references remains restricted.
+  Access to local `file` references remains restricted.
 
 - To turn off all restrictions (allowing `http`, `https`, and `file` references) use the application property `-DENTITY_RESOLUTION_UNRESTRICTED=true`. Doing this is a **security risk**.
 
@@ -370,15 +370,15 @@ GeoServer defaults to using Spring Security's StrictHttpFirewall to help improve
 
 ### Static Web Files {: #production_config_static_files }
 
-GeoServer by default allows administrators to serve static files by simply placing them in the `www``` subdirectory of the GeoServer data directory. If this feature is not being used to serve HTML/JavaScript files or is not being used at all, the ````GEOSERVER_DISABLE_STATIC_WEB_FILES``\` property can be set to true to mitigate potential stored XSS issues with that directory.
+GeoServer by default allows administrators to serve static files by simply placing them in the `www` subdirectory of the GeoServer data directory. If this feature is not being used to serve HTML/JavaScript files or is not being used at all, the `GEOSERVER_DISABLE_STATIC_WEB_FILES` property can be set to true to mitigate potential stored XSS issues with that directory.
 
 See the [Serving Static Files](../tutorials/staticfiles.md) page for more details.
 
 ## Session Management
 
-GeoServer defaults to managing user sessions using cookies with the `HttpOnly` flag set to prevent attackers from using cross-site scripting (XSS) attacks to steal a user's session token. You can configure the session behavior by modifying the **\`web.xml\`** file of your GeoServer instance.
+GeoServer defaults to managing user sessions using cookies with the `HttpOnly` flag set to prevent attackers from using cross-site scripting (XSS) attacks to steal a user's session token. You can configure the session behavior by modifying the **`web.xml`** file of your GeoServer instance.
 
-It is strongly recommended that production environments also set the `Secure` flag on session cookies. This can be enabled by uncommenting the following in the **\`web.xml\`** file if the web interface is only being accessed through HTTPS but the flag may need to be set by a proxy server if the web interface needs to support both HTTP and HTTPS.
+It is strongly recommended that production environments also set the `Secure` flag on session cookies. This can be enabled by uncommenting the following in the **`web.xml`** file if the web interface is only being accessed through HTTPS but the flag may need to be set by a proxy server if the web interface needs to support both HTTP and HTTPS.
 
 ```xml
 <secure>true</secure>

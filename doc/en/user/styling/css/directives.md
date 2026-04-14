@@ -28,8 +28,8 @@ For example:
 
 The autoRuleNames directive automatically assigns rule names to individual rules in thematic styles. This is useful for instance when creating legends in an application where it is possible to toggle visibility of individual symbols of a theme style. The workflow might look like so:
 
-1.  The application fetches the symbology of the theme layer as JSON ( ``GetLegendGraphic&FORMAT=application/json``) to determine which symbols are available
-2.  The application examines the JSON document and fetches the symbol for each rule by rule name (``GetLegendGraphic&rule=rulename``) and creates a legend displaying all symbols, including their title, with an accompanying radio button for toggling that particular symbol. Letting the client render the title instead of asking GeoServer to do it as part of a composite legend image can allow the legend to look nicer.
+1.  The application fetches the symbology of the theme layer as JSON ( `GetLegendGraphic&FORMAT=application/json`) to determine which symbols are available
+2.  The application examines the JSON document and fetches the symbol for each rule by rule name (`GetLegendGraphic&rule=rulename`) and creates a legend displaying all symbols, including their title, with an accompanying radio button for toggling that particular symbol. Letting the client render the title instead of asking GeoServer to do it as part of a composite legend image can allow the legend to look nicer.
 3.  When a symbol is toggled, the associated filter from the JSON response is applied to the layer source so that the layer is updated in the map.
 
 Here the name of the rule is not important, there just needs to be a rule name in addition to a title for each rule so that its symbology can be fetched, just like is possible when styling with SLD.
@@ -42,4 +42,4 @@ Here the name of the rule is not important, there just needs to be a rule name i
 | `styleName` | String | The generated SLD style name | No |
 | `styleTitle` | String | The generated SLD style title | No |
 | `styleAbstract` | String | The generated SLD style abstract/description | No |
-| `uniqueRuleNames` | Boolean | If set to ``'true'``, Instructs the translator to give each generated SLD rule a unique name, as a progressive number starting from zero | No |
+| `uniqueRuleNames` | Boolean | If set to `'true'`, Instructs the translator to give each generated SLD rule a unique name, as a progressive number starting from zero | No |

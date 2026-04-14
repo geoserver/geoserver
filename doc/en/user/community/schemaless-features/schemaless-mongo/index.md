@@ -115,7 +115,7 @@ Behind the scenes the module builds a complex feature schema on the fly automati
 
 To clarify this lets assume that we want to filter the stations features on a measurements value greater than 100. According to the above GeoJSON feature representation the whole filter will look like: `measurements.MeasurementsFeature.values.ValuesFeature.value > 100`.
 
-The property path needs to specify for each nested complex attribute the property name and the feature name. The former coincides with the original attribute name in the document, while the latter with that attribute name with the first letter upper cased and the ``Feature`` suffix.
+The property path needs to specify for each nested complex attribute the property name and the feature name. The former coincides with the original attribute name in the document, while the latter with that attribute name with the first letter upper cased and the `Feature` suffix.
 
 To avoid users needing to deal with this complexity, simplified property access support has been implemented. This allows referencing a property with a path that matches the GeoJSON output format or the document structure.
 

@@ -262,10 +262,10 @@ In Geologic Unit mapping file:
 
 #### Geologic Unit property file:
 
-| **id**   | **ABBREVIATAION:String** | **NAME:String**        | **TEXTDESCRIPTION:String**                                 |
+| **id**   | **ABBREVIATION:String** | **NAME:String**        | **TEXTDESCRIPTION:String**                                 |
 |----------|--------------------------|------------------------|------------------------------------------------------------|
-| gu.25699 | `-Py`<br>:               | Yaugher Volcanic Group | Olivine basalt, tuff, microgabbro, minor sedimentary rocks |
-| gu.25678 | `-Py`<br>:               | Yaugher Volcanic Group | Olivine basalt, tuff, microgabbro, minor sedimentary rocks |
+| gu.25699 | `-Py`             | Yaugher Volcanic Group | Olivine basalt, tuff, microgabbro, minor sedimentary rocks |
+| gu.25678 | `-Py`              | Yaugher Volcanic Group | Olivine basalt, tuff, microgabbro, minor sedimentary rocks |
 
 #### Composition Part property file:
 

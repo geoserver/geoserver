@@ -67,19 +67,19 @@ available on the website (or in local preview).
 
 #### Writing
 
-The ant ``build.xml`` can also be called directly:
+The ant `build.xml` can also be called directly:
 
 ```
 ant build
 ```
 
-This uses ``mkdocs build`` to generate documentation into ``../../target/index.html``.
+This uses `mkdocs build` to generate documentation into `../../target/index.html`.
 
 To view content while editing:
 ```
 ant site
 ```
 
-This uses ``mkdocs serve`` to serve docs locally.
+This uses `mkdocs serve` to serve docs locally.
 
 The `../version.py` mkdocs hook looks up the current project version, and most recent release, information in `src/pom.xml`. This information is made availabel to the macros plugin for use when writing.

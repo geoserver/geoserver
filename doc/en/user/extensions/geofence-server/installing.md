@@ -6,11 +6,11 @@ render_macros: true
 # Installing the GeoServer GeoFence Server extension
 
 !!! warning
-    the plugins ``geofence-server`` and ``geofence`` should **not** be both installed at the same time.
+    the plugins `geofence-server` and `geofence` should **not** be both installed at the same time.
     
     Please install either one according to your setup.
     
-    ``geofence-server`` will run the GeoFence engine internally, and you won't need an external GeoFence webapp.
+    `geofence-server` will run the GeoFence engine internally, and you won't need an external GeoFence webapp.
 
 ## Select the plugin you need
 
@@ -76,12 +76,12 @@ geofenceEntityManagerFactory.jpaPropertyMap[hibernate.validationQuery]=SELECT 1
 ```
 
 !!! note
-    The ``PostgisDialect`` is deprecated and should be replaced according to the PostgreSQL version used. Please use the proper dialect as reported in the [hibernate summary page](https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/spatial/dialect/postgis/package-summary.md)
+    The `PostgisDialect` is deprecated and should be replaced according to the PostgreSQL version used. Please use the proper dialect as reported in the [hibernate summary page](https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/spatial/dialect/postgis/package-summary.md)
 
 !!! note
     By default GeoFence will create the initial schema or update the DB schema by itself when needed. In case you want to manage the schema by yourself, you may want to use the SQL file located [here](https://github.com/geoserver/geofence/tree/main/doc/setup/sql)
     
-    Also, you need to set this property to ``validate`` (default value is ``update``).
+    Also, you need to set this property to `validate` (default value is `update`).
     
     ``` properties
     geofenceEntityManagerFactory.jpaPropertyMap[hibernate.hbm2ddl.auto]=validate

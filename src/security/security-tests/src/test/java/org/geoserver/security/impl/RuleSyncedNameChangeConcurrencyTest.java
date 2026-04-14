@@ -50,7 +50,6 @@ public class RuleSyncedNameChangeConcurrencyTest extends GeoServerSystemTestSupp
         resourceInfo2.setName(newLayerName2);
 
         ExecutorService es = Executors.newCachedThreadPool();
-
         es.execute(new Runnable() {
             @Override
             public void run() {

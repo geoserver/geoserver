@@ -6,8 +6,9 @@ The **Content Security Policy** page controls how GeoServer prepares the Content
 
 The default CSP configuration is intended to support many GeoServer use cases and allow users to securely run GeoServer without having to modify the configuration. It may be updated in future releases to fix bugs, support new features or enhance security.
 
-> The default header value for most GeoServer requests will be:
->
+The default header value for most GeoServer requests will be:
+
+```html
 >     base-uri 'self';
 >     default-src 'none';
 >     child-src 'self';
@@ -18,6 +19,7 @@ The default CSP configuration is intended to support many GeoServer use cases an
 >     script-src 'self';
 >     form-action 'self';
 >     frame-ancestors 'self';
+```
 
 The `'unsafe-inline'` and `'unsafe-eval'` sources will be added to the `script-src` directive only for specific requests that may require unsafe JavaScript.
 
@@ -41,16 +43,17 @@ Navigate to **Data > Content Security Policy** to manage and configure the CSP h
 
 *CSP Configuration*
 
-Use the **Enable Content-Security-Policy header** checkbox to enable/disable this feature. This setting will enable/disable the CSP set by Wicket or any other modules setting their own CSP unless **Allow modules to override header** is set to ``true``.
+Use the **Enable Content-Security-Policy header** checkbox to enable/disable this feature. This setting will enable/disable the CSP set by Wicket or any other modules setting their own CSP unless **Allow modules to override header** is set to `true`.
 
-Use the **Report violations without enforcement** checkbox to switch the header name from `Content-Security-Policy` to `Content-Security-Policy-Report-Only`. This will tell the browser to report CSP violations without enforcing their effects to allow administrators and developers to experiment with different policies. This setting will apply to the CSP set by Wicket or any other modules setting their own CSP unless **Allow modules to override header** is set to ``true``.
+Use the **Report violations without enforcement** checkbox to switch the header name from `Content-Security-Policy` to `Content-Security-Policy-Report-Only`. This will tell the browser to report CSP violations without enforcing their effects to allow administrators and developers to experiment with different policies. This setting will apply to the CSP set by Wicket or any other modules setting their own CSP unless **Allow modules to override header** is set to `true`.
 
 Use the **Allow modules to override header** checkbox to allow Wicket web pages and other modules to completely overwrite the header that is set by this configuration. By default, when the CSP header is set by another component, GeoServer will attempt to append any non-fetch directives from the old header value that are not already in the new value. This is primarily intended to add the `form-action` and `frame-ancestors` directives to Wicket's CSP header.
 
 Use the **Inject proxy base URL into header** checkbox to inject the proxy base URL into the `form-action` directive and all fetch directives that normally allow `'self'`. This is only necessary for certain use cases where web browsers are able to access a GeoServer host directly rather than through the proxy and the HTML response contains absolute URLs to the proxy base URL. This does not guarantee that other browser restrictions will not prevent the page from functioning.
 
-> Enabling this with a proxy base URL set to `https://geoserver.org` would change the header value at the top of this page to:
->
+Enabling this with a proxy base URL set to `https://geoserver.org` would change the header value at the top of this page to:
+
+```html
 >     base-uri 'self';
 >     default-src 'none';
 >     child-src 'self' https://geoserver.org;
@@ -61,11 +64,13 @@ Use the **Inject proxy base URL into header** checkbox to inject the proxy base 
 >     script-src 'self' https://geoserver.org;
 >     form-action 'self' https://geoserver.org;
 >     frame-ancestors 'self';
+```
 
 Use the **Allowed sources for remote web resources** text field to add sources to the `font-src`, `img-src`, `style-src`, and `script-src` directives for static web files (if not disabled by system property) and for WMS GetFeatureInfo HTML output (if enabled by system property). This is intended to make it easier to allow loading these resources from a CDN or any other remote host. Only trusted hosts should be added here to prevent cross-site scripting attacks.
 
-> Setting this to `'self' https://geoserver.org` would set the following header value for an HTML file in the static files directory:
->
+Setting this to `'self' https://geoserver.org` would set the following header value for an HTML file in the static files directory:
+
+```html
 >     base-uri 'self';
 >     default-src 'none';
 >     child-src 'self'; connect-src 'self';
@@ -75,14 +80,16 @@ Use the **Allowed sources for remote web resources** text field to add sources t
 >     script-src 'self' https://geoserver.org;
 >     form-action 'self';
 >     frame-ancestors 'self';
+```
 
 !!! note
     The `geoserver.csp.remoteResources` system property will override this field if it has been set.
 
 Use the **Allowed form-action directives sources** text field to control the sources of the `form-action` directive. This is intended to make it easier for administrators to allow specific remote hosts to submit forms to. This can be useful for cases where form submissions may redirect the browser to a URL that does not exactly match the submitting page and can also help where GeoServer authentication is handled by an external service. Only trusted hosts should be added here to prevent cross-site scripting attacks from submitting sensitive data to an attacker-controlled site.
 
-> Setting this to `'self' https://geoserver.org` would change the header value at the top of this page to:
->
+Setting this to `'self' https://geoserver.org` would change the header value at the top of this page to:
+
+```html
 >     base-uri 'self';
 >     default-src 'none';
 >     child-src 'self';
@@ -93,6 +100,7 @@ Use the **Allowed form-action directives sources** text field to control the sou
 >     script-src 'self';
 >     form-action 'self' https://geoserver.org;
 >     frame-ancestors 'self';
+```
 
 !!! note
     The `geoserver.csp.formAction` system property will override this field if it has been set.
@@ -102,8 +110,9 @@ Use the **Allowed form-action directives sources** text field to control the sou
 
 Use the **Allowed frame-ancestors directive sources** text field to control the sources of the `frame-ancestors` directive. This is intended to make it easier for administrators to allow specific remote hosts to load GeoServer content in frames. Only trusted hosts should be added here to prevent clickjacking attacks.
 
-> Setting this to `'self' https://geoserver.org` would change the header value at the top of this page to:
->
+Setting this to `'self' https://geoserver.org` would change the header value at the top of this page to:
+
+```html
 >     base-uri 'self';
 >     default-src 'none';
 >     child-src 'self';
@@ -114,6 +123,7 @@ Use the **Allowed frame-ancestors directive sources** text field to control the 
 >     script-src 'self';
 >     form-action 'self';
 >     frame-ancestors 'self' https://geoserver.org;
+```
 
 !!! note
     The `geoserver.csp.frameAncestors` system property will override this field if it has been set.
@@ -202,7 +212,7 @@ Leaving the directives blank will cause this rule to use the directives from the
 
 The **Test Content Security Policy** form allows a URL to be checked, reporting the CSP header value that would be set for a GET request to that URL. This form will test the current CSP configuration in the page to allow administrators to verify the changes before saving them to the configuration file.
 
-Enter the URL to test in the **Test URL** text field and press the **Test** button to perform the test. The **Content-Security-Policy header value** text field will contain the CSP for the test URL with the string ``NONE`` being shown if no header would be set.
+Enter the URL to test in the **Test URL** text field and press the **Test** button to perform the test. The **Content-Security-Policy header value** text field will contain the CSP for the test URL with the string `NONE` being shown if no header would be set.
 
 ![](images/csp-test.png)
 
@@ -250,7 +260,7 @@ For more information see [GetFeatureInfo Templates](../tutorials/GetFeatureInfo/
 
 ### Serving Static Files
 
-GeoServer allows serving static files from the ``GEOSERVER_DATA_DIR/www`` folder as an easy way to provide html, images or scripts alongside geospatial content.
+GeoServer allows serving static files from the `GEOSERVER_DATA_DIR/www` folder as an easy way to provide html, images or scripts alongside geospatial content.
 
 The [application property](../configuration/properties/index.md) `GEOSERVER_STATIC_WEB_FILES_SCRIPT` controls the `Content-Security-Policy` for the static files location.
 

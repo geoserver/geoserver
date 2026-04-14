@@ -31,12 +31,12 @@ Reference:
 This exercise makes use of the `ne:states_provinces_shp` layer.
 
 1.  Navigate to **Styles**.
-2.  Create a new style ``polygon_example``.
+2.  Create a new style `polygon_example`.
 
-    | Name:      | ``polygon_example`` |
+    | Name:      | `polygon_example` |
     |------------|-------------------------------|
-    | Workspace: | ``No workspace``    |
-    | Format:    | ``YSLD``            |
+    | Workspace: | `No workspace`    |
+    | Format:    | `YSLD`            |
 
 
 1.  Choose **polygon** from the `Generate a default style` dropdown and click **generate**.
@@ -143,7 +143,7 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 
     Use of **mark** to access a predefined shape. SLD provides several well-known shapes (circle, square, triangle, arrow, cross, star, and x). GeoServer provides additional shapes specifically for use as fill patterns.
 
-    Update ``polygon_example`` with the following built-in symbol as a repeating fill pattern:
+    Update `polygon_example` with the following built-in symbol as a repeating fill pattern:
 
     ```yaml hl_lines="3-9"
     symbolizers:
@@ -620,7 +620,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
 
 5.  This YSLD makes use of a **define** to avoid repeating the **stroke-color** and **stroke-width** information multiple times.
 
-    As an example the ``\${mapcolor9 = '2'}`` rule, combined with the ``define:`` results in the following collection of properties:
+    As an example the `\${mapcolor9 = '2'}` rule, combined with the `define:` results in the following collection of properties:
 
     ``` yaml
     - filter: ${mapcolor9 = '2'}

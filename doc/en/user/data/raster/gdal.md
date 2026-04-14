@@ -221,7 +221,7 @@ The next image depicts 2 layer previews for the same layer: the left one has no 
 
 As noted above, the footprint file should be placed in the same directory as the raster file. However in some cases this may not be possible. For example, the folder containing the raster data may be read only.
 
-As an alternative, footprint files can be located in a common directory, the **footprints data directory**. The subdirectories and file names under that directory must match the original raster path and file names. The footprints data directory is specified as a Java System Property or an Environment Variable, by setting the ``FOOTPRINTS_DATA_DIR`` property/variable to the directory to be used as base folder.
+As an alternative, footprint files can be located in a common directory, the **footprints data directory**. The subdirectories and file names under that directory must match the original raster path and file names. The footprints data directory is specified as a Java System Property or an Environment Variable, by setting the `FOOTPRINTS_DATA_DIR` property/variable to the directory to be used as base folder.
 
 #### Example
 

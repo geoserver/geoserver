@@ -91,12 +91,12 @@ Once the workspace is created we are ready to add a new store. The store tells G
 
     | Option                   | Value                              |
     |--------------------------|------------------------------------|
-    | **dbtype**               | ``postgis``              |
-    | **host**                 | ``localhost``            |
-    | **port**                 | ``5432``                 |
-    | **database**             | ``nyc``                  |
-    | **schema**               | ``public``               |
-    | **user**                 | ``postgres``             |
+    | **dbtype**               | `postgis`              |
+    | **host**                 | `localhost`            |
+    | **port**                 | `5432`                 |
+    | **database**             | `nyc`                  |
+    | **schema**               | `public`               |
+    | **user**                 | `postgres`             |
     | **passwd**               | (Password for the `postgres` user) |
     | **validate connections** | (Checked)                          |
 

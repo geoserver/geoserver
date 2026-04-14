@@ -20,8 +20,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.security.EOAccessLimitInfo;
@@ -250,8 +248,7 @@ public class OSEOSecurityPage extends AbstractSecurityPage {
                 String rolesLabel = String.join(", ", roles);
                 return new Label(id, rolesLabel);
             } else if ("edit".equals(property.getName())) {
-                ResourceReference icon = new ContextRelativeResourceReference("img/icons/silk/pencil.png");
-                return new ImageAjaxLink<>(id, icon) {
+                return new ImageAjaxLink<>(id, "gs-icon-pencil") {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         openEditDialog(target, itemModel);
@@ -259,8 +256,7 @@ public class OSEOSecurityPage extends AbstractSecurityPage {
                 };
             } else if ("remove".equals(property.getName())) {
                 final T entry = itemModel.getObject();
-                ResourceReference icon = new ContextRelativeResourceReference("img/icons/silk/delete.png");
-                return new ImageAjaxLink<>(id, icon) {
+                return new ImageAjaxLink<>(id, "gs-icon-delete") {
 
                     @Override
                     protected void onClick(AjaxRequestTarget target) {

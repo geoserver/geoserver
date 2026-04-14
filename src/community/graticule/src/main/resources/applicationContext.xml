@@ -11,8 +11,7 @@
   <bean id="graticuleStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="graticule-ds"/>
     <property name="factoryClass" value="org.geotools.data.graticule.GraticuleDataStoreFactory"/>
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
-    <property name="icon" value="img/icons/geosilk/ruler.png"/>
+    <property name="icon" value="gs-icon-ruler"/>
     <property name="componentClass" value="org.geoserver.web.data.store.graticule.GraticuleStoreEditPanel"/>
   </bean>
 

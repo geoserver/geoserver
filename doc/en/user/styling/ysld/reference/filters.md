@@ -197,7 +197,7 @@ feature-styles:
 
 ![](img/filters_bbox.png)
 
-*Detail of ``bbox`` filter*
+*Detail of `bbox` filter*
 
 ### Filter by arbitrary geometries
 
@@ -219,4 +219,4 @@ feature-styles:
 
 ![](img/filters_within.png)
 
-*Filter using ``within``*
+*Filter using `within`*

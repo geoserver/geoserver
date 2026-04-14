@@ -29,6 +29,7 @@
     <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
     <showCreatedTimeColumnsInAdminList>false</showCreatedTimeColumnsInAdminList>
     <showModifiedTimeColumnsInAdminList>false</showModifiedTimeColumnsInAdminList>
+    <showModifiedUserAdminList>false</showModifiedUserAdminList>
     <useHeadersProxyURL>false</useHeadersProxyURL>
   </settings>
   <jai>
@@ -39,36 +40,6 @@
     <memoryCapacity>0.5</memoryCapacity>
     <memoryThreshold>0.75</memoryThreshold>
     <imageIOCache>false</imageIOCache>
-    <pngAcceleration>true</pngAcceleration>
-    <jpegAcceleration>true</jpegAcceleration>
-    <allowNativeMosaic>false</allowNativeMosaic>
-    <allowNativeWarp>false</allowNativeWarp>
-    <jaiext>
-      <jaiExtOperations class="sorted-set">
-        <string>Affine</string>
-        <string>BandCombine</string>
-        <string>BandMerge</string>
-        <string>BandSelect</string>
-        <string>Binarize</string>
-        <string>Border</string>
-        <string>ColorConvert</string>
-        <string>Crop</string>
-        <string>ErrorDiffusion</string>
-        <string>Format</string>
-        <string>ImageFunction</string>
-        <string>Lookup</string>
-        <string>Mosaic</string>
-        <string>Null</string>
-        <string>OrderedDither</string>
-        <string>Rescale</string>
-        <string>Scale</string>
-        <string>Stats</string>
-        <string>Translate</string>
-        <string>Warp</string>
-        <string>algebric</string>
-        <string>operationConst</string>
-      </jaiExtOperations>
-    </jaiext>
   </jai>
   <coverageAccess>
     <maxPoolSize>10</maxPoolSize>
@@ -80,9 +51,15 @@
   <metadata>
     <entry key="logRequestsEnabled">false</entry>
   </metadata>
-  <updateSequence>294</updateSequence>
+  <updateSequence>310</updateSequence>
   <featureTypeCacheSize>0</featureTypeCacheSize>
   <globalServices>true</globalServices>
   <xmlPostRequestLogBufferSize>1024</xmlPostRequestLogBufferSize>
   <webUIMode>DEFAULT</webUIMode>
+  <userDetailsDisplaySettingsInfo>
+    <loggedInUserDisplayMode>USERNAME</loggedInUserDisplayMode>
+    <showProfileColumnsInUserList>false</showProfileColumnsInUserList>
+    <emailDisplayMode>DOMAIN_ONLY</emailDisplayMode>
+    <revealEmailAtClick>false</revealEmailAtClick>
+  </userDetailsDisplaySettingsInfo>
 </global>

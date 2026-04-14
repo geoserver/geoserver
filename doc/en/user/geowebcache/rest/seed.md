@@ -28,7 +28,7 @@ The following XML request initiates a seeding task:
 curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d '<seedRequest><name>nurc:Arc_Sample</name><srs><number>4326</number></srs><zoomStart>1</zoomStart><zoomStop>12</zoomStop><format>image/png</format><type>truncate</type><threadCount>2</threadCount></seedRequest>'  "http://localhost:8080/geoserver/gwc/rest/seed/nurc:Arc_Sample.xml"
 ```
 
-```
+```html
 * About to connect() to localhost port 8080 (#0)
 *   Trying 127.0.0.1... connected
 * Connected to localhost (127.0.0.1) port 8080 (#0)
@@ -94,7 +94,7 @@ The following XML request initiates a truncating task:
 curl -v -u admin:geoserver -XPOST -H "Content-type: application/json" -d "{'seedRequest':{'name':'topp:states','bounds':{'coords':{ 'double':['-124.0','22.0','66.0','72.0']}},'srs':{'number':4326},'zoomStart':1,'zoomStop':12,'format':'image\/png','type':'truncate','threadCount':4}}}"  "http://localhost:8080/geoserver/gwc/rest/seed/nurc:Arc_Sample.json"
 ```
 
-```
+```html
 * About to connect() to localhost port 8080 (#0)
 *   Trying 127.0.0.1... connected
 * Connected to localhost (127.0.0.1) port 8080 (#0)

@@ -4,12 +4,22 @@
  */
 package org.geoserver.rest.catalog;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import net.sf.json.JSONObject;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
@@ -19,6 +29,7 @@ import org.geotools.api.metadata.extent.GeographicBoundingBox;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -33,6 +44,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/crs")
 /** REST endpoint to list supported CoordinateReferenceSystems codes and get CRS definition by code */
 public class CRSController extends RestBaseController {
+
+    @Autowired
+    private GeoServerResourceLoader resourceLoader;
 
     static final int PAGE_LIMIT = Integer.getInteger("org.geoserver.rest.crs.page.limit", 200);
     private static final String WKT = "wkt";
@@ -54,6 +68,24 @@ public class CRSController extends RestBaseController {
 
         public String getHref() {
             return href;
+        }
+    }
+
+    private static final class ExtentEntry {
+        private final BBox bbox;
+        private final BBox bboxWGS84;
+
+        public ExtentEntry(BBox bbox, BBox bboxWGS84) {
+            this.bbox = bbox;
+            this.bboxWGS84 = bboxWGS84;
+        }
+
+        public BBox bbox() {
+            return bbox;
+        }
+
+        public BBox bboxWGS84() {
+            return bboxWGS84;
         }
     }
 
@@ -180,6 +212,8 @@ public class CRSController extends RestBaseController {
         }
     }
 
+    private volatile Map<String, ExtentEntry> loadedExtents;
+
     private static final Set<String> EXCLUDED_AUTHORITIES = Set.of(
             "http://www.opengis.net/gml",
             "http://www.opengis.net/def",
@@ -236,7 +270,22 @@ public class CRSController extends RestBaseController {
             //
         }
 
-        return new DefinitionResponse(identifier, WKT, name, buildNativeBBox(crs), buildGeoBBox(crs), crs.toWKT());
+        BBox bbox = buildNativeBBox(crs);
+        BBox bboxWGS84 = buildBboxWGS84(crs);
+
+        if (bbox == null || bboxWGS84 == null) {
+            ExtentEntry fallback = getFallbackExtent(identifier);
+            if (fallback != null) {
+                if (bbox == null) {
+                    bbox = fallback.bbox();
+                }
+                if (bboxWGS84 == null) {
+                    bboxWGS84 = fallback.bboxWGS84();
+                }
+            }
+        }
+
+        return new DefinitionResponse(identifier, WKT, name, bbox, bboxWGS84, crs.toWKT());
     }
 
     private BBox buildNativeBBox(CoordinateReferenceSystem crs) {
@@ -257,7 +306,7 @@ public class CRSController extends RestBaseController {
         }
     }
 
-    private BBox buildGeoBBox(CoordinateReferenceSystem crs) {
+    private BBox buildBboxWGS84(CoordinateReferenceSystem crs) {
         try {
             GeographicBoundingBox bbox = CRS.getGeographicBoundingBox(crs);
             if (bbox == null) {
@@ -272,6 +321,88 @@ public class CRSController extends RestBaseController {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private ExtentEntry getFallbackExtent(String identifier) {
+        int idx = identifier.indexOf(':');
+        if (idx == -1) {
+            return null;
+        }
+
+        String key = identifier.substring(0, idx) + "." + identifier.substring(idx + 1);
+        return getLoadedExtents().get(key);
+    }
+
+    private Map<String, ExtentEntry> getLoadedExtents() {
+        Map<String, ExtentEntry> local = loadedExtents;
+        if (local != null) {
+            return local;
+        }
+
+        synchronized (this) {
+            local = loadedExtents;
+            if (local != null) {
+                return local;
+            }
+
+            loadedExtents = local = loadExtentsFile();
+            return local;
+        }
+    }
+
+    private Map<String, ExtentEntry> loadExtentsFile() {
+        try {
+            File file = resourceLoader.find("user_projections/extents.properties");
+            if (!file.exists()) {
+                return Collections.emptyMap();
+            }
+
+            Properties properties = new Properties();
+            try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+                properties.load(reader);
+            }
+
+            Map<String, ExtentEntry> result = new ConcurrentHashMap<>();
+            for (String key : properties.stringPropertyNames()) {
+                String value = properties.getProperty(key);
+                ExtentEntry entry = parseExtentEntry(value);
+                if (entry != null) {
+                    result.put(key, entry);
+                }
+            }
+
+            return Collections.unmodifiableMap(result);
+        } catch (Exception e) {
+            return Collections.emptyMap();
+        }
+    }
+
+    private ExtentEntry parseExtentEntry(String json) {
+        try {
+            JSONObject obj = JSONObject.fromObject(json);
+
+            BBox bbox = null;
+            if (obj.has("bbox") && !obj.isNullObject()) {
+                bbox = parseBBox(obj.getJSONObject("bbox"));
+            }
+
+            BBox bboxWGS84 = null;
+            if (obj.has("bboxWGS84") && !obj.isNullObject()) {
+                bboxWGS84 = parseBBox(obj.getJSONObject("bboxWGS84"));
+            }
+
+            return new ExtentEntry(bbox, bboxWGS84);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private BBox parseBBox(JSONObject obj) {
+        return new BBox(
+                obj.containsKey("minX") ? obj.getDouble("minX") : null,
+                obj.containsKey("minY") ? obj.getDouble("minY") : null,
+                obj.containsKey("maxX") ? obj.getDouble("maxX") : null,
+                obj.containsKey("maxY") ? obj.getDouble("maxY") : null);
     }
 
     private CoordinateReferenceSystem decode(String identifier) {

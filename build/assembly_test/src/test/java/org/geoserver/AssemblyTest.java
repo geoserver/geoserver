@@ -393,10 +393,15 @@ public class AssemblyTest {
                 ProcessBuilder pb = new ProcessBuilder("./bin/startup.sh");
                 pb.directory(testWorkDir.toFile());
                 pb.environment().put("JETTY_OPTS", "-Djetty.http.port=" + httpPort);
-                pb.environment()
-                        .put(
-                                "JAVA_OPTS",
-                                TEST_JAVA_OPTS + " -DSTOP.PORT=" + stopPort + " -DSTOP.KEY=stopkey-" + httpPort);
+                StringBuilder javaOpts = new StringBuilder(TEST_JAVA_OPTS)
+                        .append(" -DSTOP.PORT=")
+                        .append(stopPort)
+                        .append(" -DSTOP.KEY=stopkey-")
+                        .append(httpPort);
+                tester.systemProperties()
+                        .forEach((k, v) ->
+                                javaOpts.append(" -D").append(k).append('=').append(v));
+                pb.environment().put("JAVA_OPTS", javaOpts.toString());
 
                 pb.redirectErrorStream(true);
                 File stdoutLogFile =

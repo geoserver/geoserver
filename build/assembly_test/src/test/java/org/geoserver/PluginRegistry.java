@@ -45,6 +45,7 @@ final class PluginRegistry {
 
         // custom testers
         TESTERS.put("wps-jdbc", new WPSJDBCTester());
+        TESTERS.put("acl", new GeoServerAclTester());
     }
 
     private PluginRegistry() {}

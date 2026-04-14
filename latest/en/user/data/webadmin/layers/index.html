@@ -1593,14 +1593,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../layerpreview/" class="md-nav__link">
+      <a href="../browselayers/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Layer Preview
+    Browse Layers
   
 
     
@@ -30404,7 +30404,7 @@
 <p><strong>Enabled</strong>---A layer that is not enabled won't be available to any kind of request, it will just show up in the configuration (and in REST config)</p>
 </li>
 <li>
-<p><strong>Advertised</strong>---A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the layer preview.</p>
+<p><strong>Advertised</strong>---A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the Browse Layers page.</p>
 </li>
 <li>
 <p><strong>Title</strong>---Human-readable description to briefly identify the layer to clients (required)</p>
@@ -30566,7 +30566,7 @@
 <ul>
 <li><strong>Queryable</strong>---Controls whether the layer is queryable via WMS <code>GetFeatureInfo</code> requests.</li>
 <li><strong>Default style</strong>---Style that will be used when the client does not specify a named style in GetMap requests.</li>
-<li><strong>Additional styles</strong>---Other styles that can be associated with this layer. Some clients (and the GeoServer Layer Preview) will present those as styling alternatives for that layer to the user.</li>
+<li><strong>Additional styles</strong>---Other styles that can be associated with this layer. Some clients (and the GeoServer Browse Layers page) will present those as styling alternatives for that layer to the user.</li>
 <li><strong>Default rendering buffer</strong>---Default value of the <code>buffer</code> GetMap/GetFeatureInfo vendor parameter. See the <a href="../../../services/wms/vendor/">WMS vendor parameters</a> for more details.</li>
 <li><strong>Default WMS path</strong>---Location of the layer in the WMS capabilities layer tree. Useful for building non-opaque layer groups</li>
 <li><strong>Default Interpolation Method</strong>---Allows to specify a default resampling (interpolation) method for this layer. The available options are <em>Nearest neighbor</em>, <em>Bilinear</em>, <em>Bicubic</em>, or <em>Use service default</em>, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see <a href="../../../services/wms/webadmin/#services_webadmin_wms_raster_options">Raster Rendering Options</a> for details). Can be overridden by the <a href="../../../services/wms/vendor/#wms_vendor_parameter_interpolations">interpolations vendor parameter</a>.</li>

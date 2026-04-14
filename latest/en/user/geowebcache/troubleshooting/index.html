@@ -1589,14 +1589,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../data/webadmin/layerpreview/" class="md-nav__link">
+      <a href="../../data/webadmin/browselayers/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Layer Preview
+    Browse Layers
   
 
     
@@ -29985,7 +29985,7 @@
 <h2 id="direct-wms-integration">Direct WMS integration<a class="headerlink" href="#direct-wms-integration" title="Permanent link">&para;</a></h2>
 <p>Direct integration allows WMS requests served through GeoServer to be cached as if they were received and processed by GeoWebCache. With Direct WMS Integration, a request may either be handled by the GeoServer WMS or GeoWebCache WMS.</p>
 <p>Sometimes requests that should go to GeoWebCache will instead be passed through to GeoServer, resulting in no tiles saved. That said, it is possible to determine why a request was not handled by GeoWebCache when intended. This is done by using the command-line utility <a href="http://curl.haxx.se">cURL</a> and inspecting the response headers.</p>
-<p>First, obtain a sample request. This can easily be done by going to the Layer Preview for a given layer, setting the <strong>Tiled</strong> parameter to <strong>Tiled</strong>, then right-clicking on an area of the map and copy the full path to the image location. If done correctly, the result will be a GET request that looks something like this:</p>
+<p>First, obtain a sample request. This can easily be done by going to the Browse Layers for a given layer, setting the <strong>Tiled</strong> parameter to <strong>Tiled</strong>, then right-clicking on an area of the map and copy the full path to the image location. If done correctly, the result will be a GET request that looks something like this:</p>
 <div class="highlight"><pre><span></span><code>http://localhost:8090/geoserver/nurc/wms?LAYERS=nurc%3AArc_Sample&amp;STYLES=&amp;FORMAT=image%2Fjpeg&amp;TILED=true&amp;TILESORIGIN=-180%2C-90&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;SRS=EPSG%3A4326&amp;BBOX=-45,-45,0,0&amp;WIDTH=256&amp;HEIGHT=256
 </code></pre></div>
 <p>You can then paste this URL into a curl request:</p>

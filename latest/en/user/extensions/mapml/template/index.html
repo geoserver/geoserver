@@ -1589,14 +1589,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../data/webadmin/layerpreview/" class="md-nav__link">
+      <a href="../../../data/webadmin/browselayers/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Layer Preview
+    Browse Layers
   
 
     
@@ -19552,10 +19552,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#getmap-mapml-html-previewlayer-preview-head-stylesheet-templating" class="md-nav__link">
+  <a href="#getmap-mapml-html-previewbrowse-layers-head-stylesheet-templating" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GetMap MapML HTML Preview/Layer Preview Head Stylesheet Templating
+        GetMap MapML HTML Preview/Browse Layers Head Stylesheet Templating
       
     </span>
   </a>
@@ -29800,10 +29800,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#getmap-mapml-html-previewlayer-preview-head-stylesheet-templating" class="md-nav__link">
+  <a href="#getmap-mapml-html-previewbrowse-layers-head-stylesheet-templating" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GetMap MapML HTML Preview/Layer Preview Head Stylesheet Templating
+        GetMap MapML HTML Preview/Browse Layers Head Stylesheet Templating
       
     </span>
   </a>
@@ -29886,7 +29886,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="getmap-mapml-html-previewlayer-preview-head-stylesheet-templating">GetMap MapML HTML Preview/Layer Preview Head Stylesheet Templating<a class="headerlink" href="#getmap-mapml-html-previewlayer-preview-head-stylesheet-templating" title="Permanent link">&para;</a></h2>
+<h2 id="getmap-mapml-html-previewbrowse-layers-head-stylesheet-templating">GetMap MapML HTML Preview/Browse Layers Head Stylesheet Templating<a class="headerlink" href="#getmap-mapml-html-previewbrowse-layers-head-stylesheet-templating" title="Permanent link">&para;</a></h2>
 <p>The preview is returned when the format includes <code>subtype=mapml</code>. The preview is an HTML document that includes a <code>head</code> section with a link to the stylesheet. The default preview viewer is a simple viewer that includes a link to the default stylesheet. A template can be created to insert links to whole stylesheet or actual stylesheet elements. We can do this by creating a file called <code>mapml-preview-head.ftl</code> in the GeoServer data directory in the directory for the layer that we wish to append links to. For example we could create this file under <code>workspaces/topp/states_shapefile/states</code>. To add stylesheet links and stylesheet elements, we enter the following text inside this new file:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cm">&lt;!-- Added from the template --&gt;</span>   
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;mystyle.css&quot;</span><span class="p">&gt;</span>

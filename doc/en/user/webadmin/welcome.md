@@ -34,7 +34,7 @@ If global web services are disabled the initial welcome page web services will n
 
 ## Workspace Web Services
 
-Use **workspace** select at the top of the welcome page to choose a workspace. The welcome page contact information and web services are updated to match the workspace selected.
+Use the **workspace** selector in the side panel on the left of the welcome page to choose a workspace. The welcome page contact information and web services are updated to match the workspace selected.
 
 ![](images/welcome-workspace.png)
 
@@ -44,13 +44,13 @@ The web service links provided may be used in your Desktop GIS or web mapping ap
 
 ## Layer Web Services
 
-Use the **layer** select at the top of the welcome page to choose a layer or layer group.
+Use the **layer** selector in the side panel on the left of the welcome page to choose a layer or layer group.
 
 ![](images/welcome-layer.png)
 
 *Welcome Workspace Web Services*
 
-The **workspace** select, along with the page contact information and web services are updated to match the layer selected.
+The **workspace** selector, along with the page contact information and web services, are updated to match the layer selected.
 
 ## Server Overview (Administrators)
 

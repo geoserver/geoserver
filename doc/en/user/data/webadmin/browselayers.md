@@ -46,7 +46,7 @@ All image outputs can be initiated from a WMS getMap request on either a raster,
 
 ![](img/preview_openlayers.png)
 
-*Sample Image Output-an OpenLayers preview of nurc:Pk50095*
+*Sample Image Output - an OpenLayers preview of nurc:mosaic*
 
 ### Text Outputs
 

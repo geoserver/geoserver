@@ -23,6 +23,7 @@
     </bean>
     <bean id="mapmlLayerGroupConfig" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
         <property name="id" value="mapmlLayerGroupConfig"/>
+        <property name="order" value="960" />
         <property name="componentClass" value="org.geoserver.mapml.MapMLLayerGroupConfigurationPanel"/>
     </bean>
     <!-- The constructor adds the MapML gridsets through the GWC GridSetBroker  depends-on="gwcFacade"-->

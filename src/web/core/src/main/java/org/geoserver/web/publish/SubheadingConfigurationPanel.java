@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.publish;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
+import java.io.Serial;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -12,10 +15,6 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerApplication;
-
-import java.io.Serial;
-
-import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 /** Adds a visual heading to publishing page. */
 public class SubheadingConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {

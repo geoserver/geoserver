@@ -15,3 +15,6 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+.gs-panel-PMTilesDataStoreEditPanel .gs-unordered-list-class:has(div[hidden]) {
+      display: none;
+}

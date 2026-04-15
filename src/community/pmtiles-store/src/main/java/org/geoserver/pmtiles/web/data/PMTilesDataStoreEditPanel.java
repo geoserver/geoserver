@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.event.Broadcast;
@@ -69,7 +68,7 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
         super(componentId, storeEditForm);
         // This method is meant to be used by components to control visibility of other components
         this.setVisibilityAllowed(true);
-        setOutputMarkupId(true);
+        this.setOutputMarkupId(true);
     }
 
     @Override
@@ -115,7 +114,7 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
         }
         this.visiblePanelsPerProviderId.put(paramName, panel);
         panel.setOutputMarkupId(true);
-        panel.setOutputMarkupPlaceholderTag(true);
+        panel.setOutputMarkupPlaceholderTag(true); // required to toggle visibility
         return panel;
     }
 
@@ -129,7 +128,6 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
 
     private void applyVisibility(RangeReaderChangedEvent providerChanged) {
         visiblePanelsPerProviderId.entrySet().forEach(e -> applyVisibility(e.getKey(), e.getValue(), providerChanged));
-        updateParametersContainerVisibility(providerChanged.target());
     }
 
     private void applyVisibility(String paramName, Panel paramPanel, RangeReaderChangedEvent event) {
@@ -157,20 +155,7 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
 
         paramPanel.setVisible(visible);
         if (event.target() != null) {
-            event.target().add(paramPanel);
-        }
-    }
-
-    private void updateParametersContainerVisibility(AjaxRequestTarget target) {
-        Component parameters = get("parameters");
-        boolean hasVisibleContent = visiblePanelsPerProviderId.entrySet().stream()
-                .filter(e -> !Set.of("namespace", "pmtiles", "io.tileverse.rangereader.provider")
-                        .contains(e.getKey()))
-                .anyMatch(e -> e.getValue().isVisible());
-        parameters.setVisible(hasVisibleContent);
-
-        if (target != null) {
-            target.add(this);
+            event.target().add(this);
         }
     }
 

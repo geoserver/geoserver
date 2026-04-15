@@ -561,7 +561,7 @@ This section explores the use of rules with filters and scale restrictions.
 
     !!! note
 
-        Answer [provided](#ysld.line.a2) at the end of the workbook.
+        Answer [provided](done.md#ysld.line.a2) at the end of the workbook.
 
     ### Challenge Label Shields {: #ysld.line.q3 }
 
@@ -573,4 +573,4 @@ This section explores the use of rules with filters and scale restrictions.
 
     !!! note
 
-        Answer [provided](#ysld.line.a3) at the end of the workbook.
+        Answer [provided](done.md#ysld.line.a3) at the end of the workbook.

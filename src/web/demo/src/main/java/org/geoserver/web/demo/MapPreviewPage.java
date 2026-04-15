@@ -36,6 +36,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.Predicates;
@@ -60,20 +61,17 @@ public class MapPreviewPage extends GeoServerBasePage {
     private static final PackageResourceReference JS_FILE =
             new PackageResourceReference(MapPreviewPage.class, "MapPreviewPage.js");
 
+    private String targetWorkspaceStr = null;
+
     PreviewLayerProvider provider = new PreviewLayerProvider() {
         @Override
-        protected Filter getFilter() {
-
-            Filter baseFilter = super.getFilter();
-            StringValue wsParam = getPageParameters().get("workspace");
-            if (wsParam.isNull() || wsParam.isEmpty()) {
-                return baseFilter;
+        protected Filter getContextFilter() {
+            if (targetWorkspaceStr == null || targetWorkspaceStr.isEmpty()) {
+                return null;
             }
-            String targetWs = wsParam.toString();
-            Filter layerWsFilter = Predicates.equal("resource.store.workspace.name", targetWs);
-            Filter groupWsFilter = Predicates.equal("workspace.name", targetWs);
-            Filter workspaceFilter = Predicates.or(layerWsFilter, groupWsFilter);
-            return Predicates.and(baseFilter, workspaceFilter);
+            Filter layerWsFilter = Predicates.equal("resource.store.workspace.name", targetWorkspaceStr);
+            Filter groupWsFilter = Predicates.equal("workspace.name", targetWorkspaceStr);
+            return Predicates.or(layerWsFilter, groupWsFilter);
         }
     };
 
@@ -82,10 +80,15 @@ public class MapPreviewPage extends GeoServerBasePage {
     private transient List<String> availableWMSFormats;
     // private transient List<String> availableWFSFormats;
 
-    public MapPreviewPage() {
+    public MapPreviewPage(PageParameters parameters) {
         // output formats for the drop downs
         final List<String> wmsOutputFormats = getAvailableWMSFormats();
         final List<String> wfsOutputFormats = getAvailableWFSFormats();
+
+        StringValue wsParam = parameters.get("workspace");
+        if (!wsParam.isEmpty()) {
+            this.targetWorkspaceStr = wsParam.toString();
+        }
 
         // build the table
         table = new GeoServerTablePanel<>("table", provider) {
@@ -133,6 +136,10 @@ public class MapPreviewPage extends GeoServerBasePage {
         add(table.setOutputMarkupId(true));
         int maxFeatures = getGeoServer().getService(WFSInfo.class).getMaxNumberOfFeaturesForPreview();
         add(new HiddenField<>("maxFeatures", Model.of(maxFeatures)).setOutputMarkupId(true));
+    }
+
+    public MapPreviewPage() {
+        this(new PageParameters());
     }
 
     @Override

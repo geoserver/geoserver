@@ -2,9 +2,9 @@
 
 GeoServer can be configured to serve layers as vector tiles to be used as sources for Mapbox styles rendered by client-side applications such as OpenLayers.
 
-1.  [production_container.enable_cors](#production_container-enable_cors) in GeoServer.
-2.  Install the [Vector Tiles](#vectortiles-install) extension.
-3.  Follow the [vectortiles.tutorial](#vectortiles-tutorial) to publish your layers in `application/vnd.mapbox-vector-tile` format (You only need to do the "Publish vector tiles in GeoWebCache" step).
+1.  [Enable CORS](../../production/container.md#production_container.enable_cors) in GeoServer.
+2.  Install the [Vector Tiles](../../extensions/vectortiles/install.md) extension.
+3.  Follow the [Vector tiles tutorial](../../extensions/vectortiles/tutorial.md) to publish your layers in `application/vnd.mapbox-vector-tile` format (You only need to do the "Publish vector tiles in GeoWebCache" step).
 
 Once these steps are complete, you will be able to use your GeoServer layers in any Mapbox-compatible client application that can access your GeoServer.
 

@@ -32,9 +32,9 @@ The **About & Status** section provides access to GeoServer diagnostic and confi
 
 The [Data management](../data/index.md) section contains configuration options for all the different data-related settings.
 
-- The [Layer Preview](../data/webadmin/layerpreview.md) page provides links to layer previews in different output formats, including the frequently used OpenLayers and KML formats. This page helps to visually verify and explore the configuration of a particular layer.
+- The [Browse Layers](../data/webadmin/browselayers.md) page provides links to layer previews in different output formats, including the frequently used OpenLayers and KML formats. This page helps to visually verify and explore the configuration of a particular layer.
 
-  **You do not need to be logged into GeoServer to access the Layer Preview.**
+  **You do not need to be logged into GeoServer to access Browse Layers.**
 
 - The [Workspaces](../data/webadmin/workspaces.md) page displays a list of workspaces, with the ability to add, edit, and delete. Also shows which workspace is the default for the server.
 

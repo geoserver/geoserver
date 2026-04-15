@@ -783,7 +783,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 4.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
     !!! note
-        Answer [provided](#ysld-point-a2) at the end of the workbook.
+        Answer [provided](done.md#ysld.point.a2) at the end of the workbook.
 
 1.  Challenge: Use the **Interpolate** function to smoothly change the mark **size** based on city population.
 
@@ -822,7 +822,7 @@ The **text** symbolizer with the **label** property are required to label Point 
     ![image](../style/img/point_challenge_1.png)
 
     !!! note
-        Answer [provided](#ysld-point-a3) at the end of the workbook.
+        Answer [provided](done.md#ysld.point.a3) at the end of the workbook.
 
 ### Explore True Type Fonts
 

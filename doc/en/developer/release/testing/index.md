@@ -61,7 +61,7 @@ Go to the sample request page, <http://localhost:8080/geoserver/web/?wicket:book
 
 6.  Change the `KML Regionating Attribute` to "SAMP_POP" and change the `KML Regionating Strategy` to "external-sorting":
 
-    ![](states_kml_config.png)
+    ![image](states_kml_config.png)
 
 7.  Submit and Apply changes
 

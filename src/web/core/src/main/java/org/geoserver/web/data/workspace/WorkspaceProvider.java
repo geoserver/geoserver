@@ -39,8 +39,8 @@ import org.geotools.api.filter.sort.SortBy;
  *     <ul>
  *       <li>{@link #size()}: in order to call {@link Catalog#count(Class, Filter)} with any filter criteria set on the
  *           page
- *       <li>{@link #fullSize()}: in order to call {@link Catalog#count(Class, Filter)} with
- *           {@link Predicates#acceptAll()}
+ *       <li>{@link #fullSize()}: in order to call {@link Catalog#count(Class, Filter)} with the context filter if set,
+ *           or {@link Predicates#acceptAll()} otherwise
  *       <li>{@link #iterator}: in order to ask the catalog for paged and sorted contents directly through
  *           {@link Catalog#list(Class, Filter, Integer, Integer, SortBy)}
  *       <li>{@link #getItems()} throws an unsupported operation exception, as given the above it should not be called
@@ -102,7 +102,10 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
 
     @Override
     public int fullSize() {
-        Filter filter = Predicates.acceptAll();
+        Filter filter = getContextFilter();
+        if (filter == null) {
+            filter = Predicates.acceptAll();
+        }
         int count = getCatalog().count(WorkspaceInfo.class, filter);
         return count;
     }

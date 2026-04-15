@@ -62,7 +62,7 @@ VectorMosaic: the commonParameters contains the specific collector configuration
 PropertyCollectors=TimestampFileNameExtractorSPI[regex=(\\d{4})/(\\d{2})/(\\d{2}),format=yyyyMMdd,fullPath=true](time)
 ```
 
-See ImageMosaic's [Propertycollectors](../../data/raster/imagemosaic/configuration.md#property-collectors) for further details on the available property collectors.
+See ImageMosaic's [Propertycollectors](../../data/raster/imagemosaic/configuration.md#imagemosaic_property_collectors) for further details on the available property collectors.
 
 ### Example usage: DGGS GeoParquet Ingestion
 

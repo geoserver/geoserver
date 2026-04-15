@@ -121,11 +121,11 @@ Now that the store is loaded, we can publish the layer.
 
 In order to verify that the `nyc_roads` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Layer Preview** screen and find the `nyc:nyc_roads` layer.
+1.  Navigate to the **Browse Layers** screen and find the `nyc:nyc_roads` layer.
 
     ![](layer_preview.png)
 
-    *Layer Preview*
+    *Browse Layers*
 
 2.  Click the **OpenLayers** link in the **Common Formats** column.
 

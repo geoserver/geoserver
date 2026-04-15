@@ -90,7 +90,7 @@ jobs:
       # Build only on pull_request (no deploy)
       - name: Build documentation (PR validation)
         if: github.event_name == 'pull_request'
-        run: mkdocs build 2>&1 | grep -vF "../../api?urls.primaryName="
+        run: mkdocs build 2>&1 | grep -vF -e "../../api?urls.primaryName=" -e "Doc file 'en/release/rest.md' contains a link"
 
       # Deploy custom 404 page to gh-pages root (GitHub Pages requires /404.html)
       - name: Deploy 404 page

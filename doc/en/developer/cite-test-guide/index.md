@@ -578,7 +578,7 @@ Run `make clean` to shut them down and clean up the `logs/` directory.
 
 #### Test a GeoServer instance external to the docker composition
 
-Since teamengine runs as a Docker container, in order to reach out to a GeoServer instance running on the host, it needs a Landing Page URL that points to the host network. In docker there's a special IP address for that purpose, `172.17.0.1`, as long as the container is running on the default docker bridge network. Check out the docker [docs](Networking with standalone containers) for more info.
+Since teamengine runs as a Docker container, in order to reach out to a GeoServer instance running on the host, it needs a Landing Page URL that points to the host network. In docker there's a special IP address for that purpose, `172.17.0.1`, as long as the container is running on the default docker bridge network. Check out the docker [docs](https://docs.docker.com/engine/network/#container-networks) for more info.
 
 !!! info "Attention"
     In the following examples, some `make` targets receive an `iut` parameter with the URL of the OGC Features API landing page to test, external to the `teamengine`'s container network. By default, for **Linux** systems, use the **172.17.0.1** IP address. However, if you're running the tests on **MacOS**, replace it with the **host.docker.internal** hostname instead. This difference exists because on Linux, Docker creates a bridge network where the host is accessible via `172.17.0.1`. On MacOS, Docker Desktop for Mac runs containers within a virtualization layer, which changes the networking model. As a result, `host.docker.internal` is used to enable containers to access the host.

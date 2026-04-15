@@ -14,8 +14,11 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.TagTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -208,5 +211,68 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         icons.stream()
                 .map(icon -> icon.getAttribute("class"))
                 .forEach(cls -> assertThat(cls, containsString("gs-icon")));
+    }
+
+    @Test
+    public void testWorkspaceFilter() {
+        PageParameters params = new PageParameters();
+        params.add("workspace", "cite");
+
+        tester.startPage(new CachedLayersPage(params));
+        tester.assertRenderedPage(CachedLayersPage.class);
+
+        // Cast to DataView instead of AbstractPageableView
+        tester.assertComponent("table:listContainer:items", DataView.class);
+        DataView<?> dataView = (DataView<?>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        // Ensure the table isn't empty
+        assertThat((int) dataView.getItemCount(), org.hamcrest.Matchers.greaterThan(0));
+
+        // Iterate through the actual layer models backing the table rows
+        Iterator<?> it = dataView.getDataProvider().iterator(0, dataView.getItemCount());
+        while (it.hasNext()) {
+            TileLayer layer = (TileLayer) it.next();
+            // Assert every single layer in the table belongs to the 'cite' workspace
+            assertThat(layer.getName(), org.hamcrest.Matchers.startsWith("cite:"));
+        }
+    }
+
+    @Test
+    public void testEmptyWorkspaceParameter() {
+        PageParameters params = new PageParameters();
+        params.add("workspace", ""); // Empty parameter
+
+        tester.startPage(new CachedLayersPage(params));
+        tester.assertRenderedPage(CachedLayersPage.class);
+
+        DataView<?> dataView = (DataView<?>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        boolean foundCgf = false;
+        boolean foundCite = false;
+
+        Iterator<?> it = dataView.getDataProvider().iterator(0, dataView.getItemCount());
+        while (it.hasNext()) {
+            TileLayer layer = (TileLayer) it.next();
+            if (layer.getName().startsWith("cgf:")) foundCgf = true;
+            if (layer.getName().startsWith("cite:")) foundCite = true;
+        }
+
+        // Assert that layers from multiple different workspaces are present in the table
+        assertThat("Should contain 'cgf:' layers", foundCgf, org.hamcrest.Matchers.is(true));
+        assertThat("Should contain 'cite:' layers", foundCite, org.hamcrest.Matchers.is(true));
+    }
+
+    @Test
+    public void testNonExistentWorkspaceFilter() {
+        PageParameters params = new PageParameters();
+        params.add("workspace", "nonexistent_ws");
+
+        tester.startPage(new CachedLayersPage(params));
+        tester.assertRenderedPage(CachedLayersPage.class);
+
+        DataView<?> dataView = (DataView<?>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        // Assert the data provider returned exactly 0 rows
+        assertEquals("Table should have 0 rows for a non-existent workspace", 0, dataView.getItemCount());
     }
 }

@@ -18,6 +18,7 @@ import javax.xml.namespace.QName;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
@@ -184,6 +185,101 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("table:filterForm:filter", null);
         table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
         assertEquals(2, table.getDataProvider().size());
+    }
+
+    @Test
+    public void testWorkspaceParameterFiltersLayers() {
+        login();
+        tester.startPage(LayerPage.class, new PageParameters().add("workspace", "cite"));
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(1, table.getDataProvider().size());
+        List<String> workspaces = getWorkspaces(table);
+        assertTrue(workspaces.stream().allMatch(ws -> ws.equals("cite")));
+    }
+
+    @Test
+    public void testWorkspaceAndLayerParameterFiltersScopedLayer() {
+        // ?workspace=cite&layer=Buildings → scoped lookup as "cite:Buildings"
+        login();
+        tester.startPage(
+                LayerPage.class, new PageParameters().add("workspace", "cite").add("layer", "Buildings"));
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(1, table.getDataProvider().size());
+        LayerInfo layer = (LayerInfo) table.getDataProvider().iterator(0, 1).next();
+        assertEquals("Buildings", layer.getName());
+        assertEquals("cite", layer.getResource().getStore().getWorkspace().getName());
+    }
+
+    @Test
+    public void testGroupParameterFiltersToGroupLayers() {
+        // ?group=testGroup — explicit group param returns all layers referenced by the group
+        LayerInfo citeLayer = getCatalog().getLayerByName("cite:Buildings");
+        LayerInfo gsLayer = getCatalog().getLayerByName("gs:Buildings");
+
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        group.setName("testGroup");
+        group.getLayers().add(citeLayer);
+        group.getLayers().add(gsLayer);
+        group.getStyles().add(null);
+        group.getStyles().add(null);
+        getCatalog().add(group);
+
+        try {
+            login();
+            tester.startPage(LayerPage.class, new PageParameters().add("group", "testGroup"));
+            tester.assertRenderedPage(LayerPage.class);
+            tester.assertNoErrorMessage();
+
+            GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+            assertEquals(2, table.getDataProvider().size());
+        } finally {
+            getCatalog().remove(getCatalog().getLayerGroupByName("testGroup"));
+        }
+    }
+
+    @Test
+    public void testLayerParamFallsBackToLayerGroup() {
+        // ?layer=testGroup — backwards-compat: the layer branch tries getLayerGroupByName first
+        LayerInfo citeLayer = getCatalog().getLayerByName("cite:Buildings");
+        LayerInfo gsLayer = getCatalog().getLayerByName("gs:Buildings");
+
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        group.setName("testGroup");
+        group.getLayers().add(citeLayer);
+        group.getLayers().add(gsLayer);
+        group.getStyles().add(null);
+        group.getStyles().add(null);
+        getCatalog().add(group);
+
+        try {
+            login();
+            tester.startPage(LayerPage.class, new PageParameters().add("layer", "testGroup"));
+            tester.assertRenderedPage(LayerPage.class);
+            tester.assertNoErrorMessage();
+
+            GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+            assertEquals(2, table.getDataProvider().size());
+        } finally {
+            getCatalog().remove(getCatalog().getLayerGroupByName("testGroup"));
+        }
+    }
+
+    @Test
+    public void testUnknownGroupParameterYieldsNoResults() {
+        // An explicit group param that doesn't match any group or layer → EXCLUDE
+        login();
+        tester.startPage(LayerPage.class, new PageParameters().add("group", "nonExistentGroup"));
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(0, table.getDataProvider().size());
     }
 
     private List<String> getWorkspaces(GeoServerTablePanel table) {

@@ -59,7 +59,7 @@ The **legend** decoration (`type="legend"`) overlays a graphic containing legend
 
 | Option Name | Meaning |
 |----|----|
-| `legend_options` | the list of legend_options used as in [GetLegendGraphic](./get_legend_graphic/index.md#controlling-legend-appearance-with-legend-options) |
+| `legend_options` | the list of legend_options used as in [GetLegendGraphic](./get_legend_graphic/index.md#get_legend_graphic_options) |
 | `opacity` | the legend opacity with a value between 0 and 1 |
 
 The **text** decoration (`type="text"`) overlays a parametric, single line text message on top of the map. The parameter values can be fed via the `env` request parameter, just like SLD environment parameters.

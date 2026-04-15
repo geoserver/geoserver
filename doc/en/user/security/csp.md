@@ -37,7 +37,7 @@ It is important that administrators do **NOT** modify **`csp_default.xml`**. In 
 
 ## Configuring CSP {: #security_csp_strict }
 
-Navigate to **Data > Content Security Policy** to manage and configure the CSP header.
+Navigate to **Security > Content Security Policy** to manage and configure the CSP header.
 
 ![](images/csp-config.png)
 

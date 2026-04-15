@@ -35,8 +35,15 @@ public class PublishedConfigurationPanel<T extends PublishedInfo> extends Panel 
         return (T) getDefaultModelObject();
     }
 
-    /** Allows subclasses to override in case they need to save any other state than the {@link PublishedInfo} itself */
+    /**
+     * Allows subclasses to override in case they need to save any other state than the {@link PublishedInfo} itself.
+     */
     public void save() {
         // do nothing by default
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " id: " + getId();
     }
 }

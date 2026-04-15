@@ -191,10 +191,10 @@ For the current list see GeoServer [build server](https://build.geoserver.org/ge
 | netcdf-ghrsst | notification | ogcapi-coverages |
 | ogcapi-dggs | ogcapi-images | ogcapi-maps |
 | ogcapi-styles | ogcapi-tiled-features | ogcapi-tiles |
-| ogr-datastore | opensearch-eo | proxy-base-ext |
-| s3-geotiff | sec-keycloak | sec-oauth2-geonode |
-| sec-oauth2-github | sec-oauth2-google | sec-oauth2-openid |
-| smart-data-loader | solr | spatialjson |
-| stac-datastore | taskmanager-core | taskmanager-s3 |
-| vector-mosaic | vsi | webp |
-| wfs-freemarker | wps-longitudinal-profile |  |
+| ogr-datastore | opensearch-eo | png-wind |
+| proxy-base-ext | s3-geotiff | sec-keycloak |
+| sec-oauth2-geonode | sec-oauth2-github | sec-oauth2-google |
+| sec-oauth2-openid | smart-data-loader | solr |
+| spatialjson | stac-datastore | taskmanager-core |
+| taskmanager-s3 | vector-mosaic | vsi |
+| webp | wfs-freemarker | wps-longitudinal-profile |

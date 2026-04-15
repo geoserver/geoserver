@@ -107,7 +107,7 @@ Using tiles to access the layer can increase the performance of your web map. Th
 
 ### Use Tiles
 
-If you check the "Use Tiles" checkbox and save it, the MapML format on the Layer Preview page will use tile-based references to the WMS server. Checking this checkbox sets the `FORMAT_OPTIONS=mapmlusetiles:true` parameter value in the Layer Preview URL, but you can set and use this value in WMS requests for the text/mapml format independently. The `mapmlusetiles`, `mapmlusefeatures` and `mapmlusemultiextents` FORMAT_OPTIONS parameters can be used together to control the type of requests and responses used in your web map client. For example, if your layer or layer group has a cached tile layer configured, GeoServer will generate tile references (e.g., `<map-link rel="tile" tref="\...request=GetTile\...">`) instead of WMS GetMap URLs (e.g., `<map-link rel="image" tref="\...request=GetMap\...">`); if in addition to having a cached tile layer for a layer or layer group you have also enabled caching of the `text/mapml` format, you can use `FORMAT_OPTIONS=mapmlusetiles:true;mapmlusefeatures:true` to obtain and use tiles in MapML format.
+If you check the "Use Tiles" checkbox and save it, the MapML format on the Browse Layers page will use tile-based references to the WMS server. Checking this checkbox sets the `FORMAT_OPTIONS=mapmlusetiles:true` parameter value in the Browse Layers URL, but you can set and use this value in WMS requests for the text/mapml format independently. The `mapmlusetiles`, `mapmlusefeatures` and `mapmlusemultiextents` FORMAT_OPTIONS parameters can be used together to control the type of requests and responses used in your web map client. For example, if your layer or layer group has a cached tile layer configured, GeoServer will generate tile references (e.g., `<map-link rel="tile" tref="\...request=GetTile\...">`) instead of WMS GetMap URLs (e.g., `<map-link rel="image" tref="\...request=GetMap\...">`); if in addition to having a cached tile layer for a layer or layer group you have also enabled caching of the `text/mapml` format, you can use `FORMAT_OPTIONS=mapmlusetiles:true;mapmlusefeatures:true` to obtain and use tiles in MapML format.
 
 ## Vector Settings
 
@@ -115,7 +115,7 @@ MapML supports the serving of vector feature representations of the data. This r
 
 ### Use Features
 
-If the "Use Features" checkbox is checked, the output MapML on the Layer Preview page will define a feature-based reference to the WMS server. When making WMS request add `mapmlusefeatures:true` to the FORMAT_OPTIONS parameter. Otherwise, an image-based reference will be used. Note that when applied to raster data map-tile elements will be generated for the requested coverage area. MapML `<map-extent>` element with a feature link:
+If the "Use Features" checkbox is checked, the output MapML on the Browse Layers page will define a feature-based reference to the WMS server. When making WMS request add `mapmlusefeatures:true` to the FORMAT_OPTIONS parameter. Otherwise, an image-based reference will be used. Note that when applied to raster data map-tile elements will be generated for the requested coverage area. MapML `<map-extent>` element with a feature link:
 
 ```html
 <map-extent units="WGS84" label="Manhattan (NY) points of interest" checked="checked">
@@ -138,7 +138,7 @@ When both "Use Tiles" and "Use Features" are set in the FORMAT_OPTIONS parameter
 
 *The sub-layer settings checkbox is shown*
 
-If the `Show <map-extent> in layer control` checkbox is checked (and the configuration is saved), the `mapmlusemultiextents:true` FORMAT_OPTIONS value will be used in the Layer Preview URL, and an individually accessible `<map-extent>` element will be generated for each requested layer. When composing a WMS request independently, include the `mapmlusemultiextents:true` parameter within FORMAT_OPTIONS if desired. The default value (false) is to represent the all layers in the LAYERS list as a single (hidden) `<map-extent>`.
+If the `Show <map-extent> in layer control` checkbox is checked (and the configuration is saved), the `mapmlusemultiextents:true` FORMAT_OPTIONS value will be used in the Browse Layers URL, and an individually accessible `<map-extent>` element will be generated for each requested layer. When composing a WMS request independently, include the `mapmlusemultiextents:true` parameter within FORMAT_OPTIONS if desired. The default value (false) is to represent the all layers in the LAYERS list as a single (hidden) `<map-extent>`.
 
 ![](images/mapml_wms_multi_extent.png)
 
@@ -208,7 +208,7 @@ Basic styling of vector features is supported by the MapML extension. The style 
 
 By default, each layer/style pair that is requested via the GetMap parameters is composed into a single `<map-extent>\...<map-link tref="\...">\...</map-extent>` structure as exemplified above.
 
-If the FORMAT_OPTION parameter of the WMS request is configured with `mapmlusemultiextents:true`, a request for multiple layers or layer groups in MapML format on the Layer Preview page will result in the serialization of a MapML document containing multiple `<map-extent>` elements. Each layer/style pair is represented by a `<map-extent>` element in the response. The `<map-extent>` elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <map-layer> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
+If the FORMAT_OPTION parameter of the WMS request is configured with `mapmlusemultiextents:true`, a request for multiple layers or layer groups in MapML format on the Browse Layers page will result in the serialization of a MapML document containing multiple `<map-extent>` elements. Each layer/style pair is represented by a `<map-extent>` element in the response. The `<map-extent>` elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <map-layer> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
 
 ![](images/mapml_wms_multi_extent.png)
 
@@ -279,11 +279,11 @@ Example:
 
 # MapML Visualization
 
-With the MapML Extension module installed, the GeoServer Layer Preview page is modified to add a WMS GetMap link to the MapML resources for each layer or layer group. The MapML link in the Layer Preview table is generated by the MapML extension to an HTML Web map page that is created on the fly which refers to the GeoServer resource:
+With the MapML Extension module installed, the GeoServer Browse Layers page is modified to add a WMS GetMap link to the MapML resources for each layer or layer group. The MapML link in the Browse Layers table is generated by the MapML extension to an HTML Web map page that is created on the fly which refers to the GeoServer resource:
 
 ![](images/mapml_preview_ui.png)
 
-You can add layers to the map as you like, by dragging the URL bar value generated by the Layer Preview WMS formats dropdown menu selection of "MapML" as shown below, and dropping it onto another layer's MapML preview:
+You can add layers to the map as you like, by dragging the URL bar value generated by the Browse Layers WMS formats dropdown menu selection of "MapML" as shown below, and dropping it onto another layer's MapML preview:
 
 ![](images/mapml_wms_format_dropdown.png)
 

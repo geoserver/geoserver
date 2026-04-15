@@ -16,11 +16,11 @@ All versions of WFS support these operations:
 
 | Operation | Description |
 |----|----|
-| [GetCapabilities](#getcapabilities) | Generates a metadata document describing a WFS service provided by server as well as valid WFS operations and parameters |
-| [DescribeFeatureType](#describefeaturetype) | Returns a description of feature types supported by a WFS service |
-| [GetFeature](#getfeature) | Returns a selection of features from a data source including geometry and attribute values |
+| [GetCapabilities](#wfs_getcap) | Generates a metadata document describing a WFS service provided by server as well as valid WFS operations and parameters |
+| [DescribeFeatureType](#wfs_dft) | Returns a description of feature types supported by a WFS service |
+| [GetFeature](#wfs_getfeature) | Returns a selection of features from a data source including geometry and attribute values |
 | [LockFeature](#lockfeature) | Prevents a feature from being edited through a persistent feature lock |
-| [Transaction](#transaction) | Edits existing feature types by creating, updating, and deleting |
+| [Transaction](#wfs_wfst) | Edits existing feature types by creating, updating, and deleting |
 
 The following operations are available in **version 2.0.0 only**:
 

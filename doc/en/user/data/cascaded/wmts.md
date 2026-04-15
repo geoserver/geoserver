@@ -36,7 +36,7 @@ When finished, click **Save**.
 
 ## Configuring external WMTS layers
 
-When properly loaded, all layers served by the external WMTS will be available to GeoServer. Before they can be served, however, they will need to be individually configured (published) as new layers. See the section on [Layers](../webadmin/layers.md) for how to add and edit new layers. Once published, these layers will show up in the [Layer Preview](../webadmin/layerpreview.md) and as part of the WMS capabilities document. If the WMTS layer has additional dimensions (e.g. time), related info will be reported on the WMS capabilities as well.
+When properly loaded, all layers served by the external WMTS will be available to GeoServer. Before they can be served, however, they will need to be individually configured (published) as new layers. See the section on [Layers](../webadmin/layers.md) for how to add and edit new layers. Once published, these layers will show up in the [Browse Layers](../webadmin/browselayers.md) and as part of the WMS capabilities document. If the WMTS layer has additional dimensions (e.g. time), related info will be reported on the WMS capabilities as well.
 
 ## Features
 

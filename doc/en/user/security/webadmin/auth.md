@@ -56,7 +56,7 @@ This section manages the Authentication Filters (adding, removing, and editing).
 
 ### Anonymous access
 
-By default, GeoServer will allow anonymous access to the [Web administration interface](../../webadmin/index.md). Without authentication, users will still be able to view the [Layer Preview](../../data/webadmin/layerpreview.md), capabilities documents, and basic GeoServer details. Anonymous access can by removing the **anonymous** authentication filter. If removed, anonymous users navigating to the GeoServer page will get an HTTP 401 status code, which typically results in a browser-based request for credentials.
+By default, GeoServer will allow anonymous access to the [Web administration interface](../../webadmin/index.md). Without authentication, users will still be able to view the [Browse Layers](../../data/webadmin/browselayers.md), capabilities documents, and basic GeoServer details. Anonymous access can by removing the **anonymous** authentication filter. If removed, anonymous users navigating to the GeoServer page will get an HTTP 401 status code, which typically results in a browser-based request for credentials.
 
 ### Credentials from Headers filter
 
@@ -144,10 +144,10 @@ The following illustration shows the configuration options for the LDAP authenti
 | Max depth for hierarchical groups search | Specifies the max group search depth level to use with Hierarchical LDAP groups search. Use `-1` for no limit. Only applicable when the *Enable Hierarchical groups search( parameter ischecked**.                                                                                                                                                                                                                                                                         |
 | Nested group search filter | Search pattern for locating parent LDAP groups a group belongs to. This may contain two placeholder values:<br>`{0}`, the full DN of the user, for example `cn=it,ou=groups,dc=acme,dc=com`<br>`{1}`, the `cn` portion of the full DN, for example `it`. Only applicable when the *Enable Hierarchical groups search( parameter ischecked**. |
 
-## Authentication chain
+## Provider chain
 
-This section selects the authentication chain. Currently, only one default authentication chain is available. For further information about the default chain, please refer to [Authentication chain](../auth/chain.md).
+This section selects the authentication provider chain. Currently, only one default provider chain is available. For further information about the default chain, please refer to [Authentication chain](../auth/chain.md).
 
 ![](images/auth_chain.png)
 
-*Selecting the authentication chain*
+*Selecting the provider chain*

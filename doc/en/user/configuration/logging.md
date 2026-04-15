@@ -62,13 +62,13 @@ There are however a few rules to follow:
     As an example `-%i` is used with DefaultRolloverStrategy to produce a maximum of `3` backup files.
 
     ```xml
-    --8<-- "src/main/src/main/resources/DEFAULT_LOGGING.xml"
+    --8<-- "src/main/src/main/resources/DEFAULT_LOGGING.xml:9:17"
     ```
 
   - a `Console` appender writing to the standard output should be called `stdout` and again GeoServer will enable/disable it according to the configuration set in the [global settings](globalsettings.md#config_globalsettings_log_stdout)
 
     ```xml
-    --8<-- "src/main/src/main/resources/DEFAULT_LOGGING.xml"
+    --8<-- "src/main/src/main/resources/DEFAULT_LOGGING.xml:6:8"
     ```
 - Loggers are used to collect messages from geoserver components, and individual libraries used.
   - GeoServer Logger names match up with the package names in the project javadocs overview (available for download).

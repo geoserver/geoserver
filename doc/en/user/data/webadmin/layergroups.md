@@ -33,7 +33,7 @@ To view or edit a layer group, click the layer group name. A layer group configu
 !!! note
     A layer group can contain layers with dissimilar bounds and projections. GeoServer automatically reprojects all layers to the projection of the layer group.
 
-The new **Enabled** checkbox, if disabled, will cause the layer group to just show up at configuration time (and in REST config), while the new **Advertised** checkbox, if unchecked, will make it to not be available in GetCapabilities request and in the layer preview. The behaviour of layer group regarding both checkboxes will not affect the behaviour of any of the layers being grouped, which will follow respectively that specified in the corresponding edit page.
+The new **Enabled** checkbox, if disabled, will cause the layer group to just show up at configuration time (and in REST config), while the new **Advertised** checkbox, if unchecked, will make it to not be available in GetCapabilities request and in the Browse Layers page. The behaviour of layer group regarding both checkboxes will not affect the behaviour of any of the layers being grouped, which will follow respectively that specified in the corresponding edit page.
 
 ![](img/data_layergroups_edit.png)
 
@@ -71,7 +71,7 @@ A style group can be added by clicking the **Add Style Group\...** button at the
 
 *Dialog for adding a style group to a layer group*
 
-You can view layer groups in the [Layer Preview](layerpreview.md) section of the web admin.
+You can view layer groups in the [Browse Layers](browselayers.md) section of the web admin.
 
 ![](img/data_layergroups_tasmania.png)
 

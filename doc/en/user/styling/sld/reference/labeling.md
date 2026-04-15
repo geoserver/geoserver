@@ -156,7 +156,7 @@ Examples:
 
 ## Composing labels from multiple attributes
 
-The `<Label>` element in `<TextSymbolizer>` allows mixed content. This means its content can be a mixture of plain text and [Filter Expressions](pointsymbolizer.md#sld_reference_parameter_expressions). The mix gets interepreted as a concatenation. You can leverage this to create complex labels out of multiple attributes.
+The `<Label>` element in `<TextSymbolizer>` allows mixed content. This means its content can be a mixture of plain text and [Filter Expressions](pointsymbolizer.md#using-expressions-in-parameter-values). The mix gets interepreted as a concatenation. You can leverage this to create complex labels out of multiple attributes.
 
 For example, if you want both a state name and its abbreviation to appear in a label, you can do the following:
 
@@ -187,7 +187,7 @@ These options are specified as subelements of `<TextSymbolizer>`.
 
 ### Priority Labeling {: #labeling_priority }
 
-The optional `<Priority>` element allows specifying label priority. This controls how conflicts (overlaps) between labels are resolved during rendering. The element content may be an [expression](pointsymbolizer.md#sld_reference_parameter_expressions) to retrieve or calculate a relative priority value for each feature in a layer. Alternatively, the content may be a constant value, to set the priority of a layer's labels relative to other layers on a rendered map.
+The optional `<Priority>` element allows specifying label priority. This controls how conflicts (overlaps) between labels are resolved during rendering. The element content may be an [expression](pointsymbolizer.md#using-expressions-in-parameter-values) to retrieve or calculate a relative priority value for each feature in a layer. Alternatively, the content may be a constant value, to set the priority of a layer's labels relative to other layers on a rendered map.
 
 The default priority for labels is 1000.
 

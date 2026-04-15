@@ -75,7 +75,7 @@ viewparams=p1:v1;p2:v2;...
 
 If the values contain semicolons or commas these must be escaped with a backslash (e.g. `\,` and `\;`).
 
-For example, the `popstates` SQL View layer can be displayed by invoking the [Layer Preview](../webadmin/layerpreview.md). Initially no parameter values are supplied, so the defaults are used and all the states are displayed.
+For example, the `popstates` SQL View layer can be displayed by invoking the [Browse Layers](../webadmin/browselayers.md). Initially no parameter values are supplied, so the defaults are used and all the states are displayed.
 
 To display all states having more than 20 million inhabitants the following parameter is added to the `GetMap` request: `&viewparams=low:20000000`
 

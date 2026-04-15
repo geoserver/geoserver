@@ -10,7 +10,7 @@ This page describes the use of "Feature Chaining" to compose complex features fr
 - Encoding the same referenced property object as links when it appears in multiple containing features
 - Eliminating the need for large denormalized data store views of top level features and their related features. Denormalized views would still be needed for special cases, such as many-to-many relationships, but won't be as large.
 
-For non-application schema configurations, please refer to [app-schema.data-access-integration](#app-schema-data-access-integration).
+For non-application schema configurations, please refer to [Data Access Integration](data-access-integration.md).
 
 ## Mapping steps
 
@@ -360,4 +360,4 @@ This would be the encoded result for gsml:GeologicUnit:
 ```
 
 !!! note
-    * Don't forget to add *XLink* in your mapping file namespaces section, or you could end up with a StackOverflowException as the *xlink:href* client property won't be recognized and the mappings would chain endlessly. * [app-schema.resolve](#app-schema-resolve) may be used to force app-schema to do full feature chaining up to a certain level, even if an xlink reference is specified.
+    * Don't forget to add *XLink* in your mapping file namespaces section, or you could end up with a StackOverflowException as the *xlink:href* client property won't be recognized and the mappings would chain endlessly. * [Resolve](wfs-2.0-support.md#resolving) may be used to force app-schema to do full feature chaining up to a certain level, even if an xlink reference is specified.

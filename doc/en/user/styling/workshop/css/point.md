@@ -572,7 +572,7 @@ The key properties **mark** and **label** are required to label Point locations.
 2.  **Challenge:** Try this yourself by rendering a polygon layer using a **mark** property.
 
     !!! note
-        Answer [discussed](#ysld-point-a1) at the end of the workbook.
+        Answer [discussed](done.md#css.point.a1) at the end of the workbook.
 
 ### Explore Dynamic Symbolization {: #css.point.q2 }
 
@@ -642,7 +642,7 @@ The key properties **mark** and **label** are required to label Point locations.
 4.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
     !!! note
-        Answer [provided](#ysld-point-a2) at the end of the workbook.
+        Answer [provided](done.md#css.point.a2) at the end of the workbook.
 
 1.  Challenge: Use the **Interpolate** function to smoothly change **mark-size** based on city population.
 
@@ -681,7 +681,7 @@ The key properties **mark** and **label** are required to label Point locations.
     ![image](../style/img/point_challenge_1.png)
 
     !!! note
-        Answer [provided](#ysld-point-a3) at the end of the workbook.
+        Answer [provided](done.md#css.point.a3) at the end of the workbook.
 
 ### Explore True Type Fonts
 

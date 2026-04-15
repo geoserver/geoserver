@@ -161,7 +161,7 @@ Now that we have located the image, we can publish this information as a layer.
 
 In order to verify that the `tutorial:shaded` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Data > Layer Preview** page and find the `tutorial:shaded` layer.
+1.  Navigate to the **Data > Browse Layers** page and find the `tutorial:shaded` layer.
 
     !!! note
         Use the **Search** field with `tutorial` as shown to limit the number of layers to page through.

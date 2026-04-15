@@ -23,10 +23,10 @@ WMS requests can perform the following operations:
 
 | **Operation** | **Description** |
 |----|----|
-| [GetCapabilities](#getcapabilities) | Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers |
+| [GetCapabilities](#wms_getcap) | Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers |
 | [GetMap](#wms_getmap) | Retrieves a map image for a specified area and content |
-| [GetFeatureInfo](#getfeatureinfo) | Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map |
-| [DescribeLayer](#describelayer) | Indicates the WFS or WCS to retrieve additional information about the layer. |
+| [GetFeatureInfo](#wms_getfeatureinfo) | Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map |
+| [DescribeLayer](#wms_describelayer) | Indicates the WFS or WCS to retrieve additional information about the layer. |
 | [GetLegendGraphic](get_legend_graphic/index.md) | Retrieves a generated legend for a map |
 
 ### GetCapabilities {: #wms_getcap }
@@ -375,6 +375,6 @@ Formats in which WMS can report exceptions. The supported values for exceptions 
 | XML | `EXCEPTIONS=application/vnd.ogc.se_xml` | XML output. (The default format) |
 | INIMAGE | `EXCEPTIONS=application/vnd.ogc.se_inimage` | Generates an image |
 | BLANK | `EXCEPTIONS=application/vnd.ogc.se_blank` | Generates a blank image |
-| PARTIALMAP | `EXCEPTIONS=application/vnd.gs.wms_partial` | This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the [WMS Configuration Limits](configuration.md#wms_configuration_limits) to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the `timeout` [vendor parameter](vendor.md). |
+| PARTIALMAP | `EXCEPTIONS=application/vnd.gs.wms_partial` | This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the [WMS Configuration Limits](configuration.md#request-limits) to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the `timeout` [vendor parameter](vendor.md). |
 | JSON | `EXCEPTIONS=application/json` | Simple JSON representation. |
 | JSONP | `EXCEPTIONS=text/javascript` | Return JSONP in the form: paddingOutput(\...jsonp\...). See [WMS vendor parameters](vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](global.md)). |

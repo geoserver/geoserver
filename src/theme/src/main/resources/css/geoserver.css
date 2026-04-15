@@ -353,11 +353,11 @@ td, th {
 .w-wide  { width: 95% !important; max-width: 95% !important; }
 .w-full  { width: 100% !important; max-width: 100% !important; }
 
-.h-sm    { height: 3.125rem !important; max-height: 3.125rem !important; }
-.h-md    { height: 6.25rem !important; max-height: 6.25rem !important; }
-.h-lg    { height: 25rem !important; max-height: 25rem !important; }
-.h-xl    { height: 100rem !important; max-height: 100rem !important; }
-.h-full  { height: 100% !important; max-height: 100% !important; }
+.h-sm    { height: 3.125rem !important; max-height: 3.125rem !important; resize: none; }
+.h-md    { height: 6.25rem !important; max-height: 6.25rem !important; resize: none; }
+.h-lg    { height: 25rem !important; max-height: 25rem !important; resize: none; }
+.h-xl    { height: 100rem !important; max-height: 100rem !important; resize: none; }
+.h-full  { height: 100% !important; max-height: 100% !important; resize: none; }
 
 .hidden {
   display: none;

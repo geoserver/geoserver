@@ -68,7 +68,6 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
         super(componentId, storeEditForm);
         // This method is meant to be used by components to control visibility of other components
         this.setVisibilityAllowed(true);
-        this.setOutputMarkupId(true);
     }
 
     @Override
@@ -155,7 +154,7 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
 
         paramPanel.setVisible(visible);
         if (event.target() != null) {
-            event.target().add(this);
+            event.target().add(paramPanel);
         }
     }
 

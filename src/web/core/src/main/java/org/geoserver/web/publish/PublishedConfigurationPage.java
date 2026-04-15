@@ -146,11 +146,11 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
 
         // sort the tabs based on order
         sortTabPanels(tabPanels);
-        for (PublishedEditTabPanelInfo ttabPanelInfo : tabPanels) {
-            if (ttabPanelInfo.supports(getPublishedInfo())) {
+        for (PublishedEditTabPanelInfo panelInfo : tabPanels) {
+            if (panelInfo.supports(getPublishedInfo())) {
 
                 @SuppressWarnings("unchecked")
-                PublishedEditTabPanelInfo<T> tabPanelInfo = (PublishedEditTabPanelInfo<T>) ttabPanelInfo;
+                PublishedEditTabPanelInfo<T> tabPanelInfo = (PublishedEditTabPanelInfo<T>) panelInfo;
 
                 String titleKey = tabPanelInfo.getTitleKey();
                 IModel<String> titleModel = null;
@@ -442,7 +442,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
 
             ListView<PublishedConfigurationPanelInfo<T>> pubPanelList = new ListView<>(id, pubPanels) {
                 @Serial
-                private static final long serialVersionUID = 1L;
+                private static final long serialVersionUID = -6651640961641287572L;
 
                 @Override
                 protected void populateItem(ListItem<PublishedConfigurationPanelInfo<T>> item) {

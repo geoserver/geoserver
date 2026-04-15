@@ -18,6 +18,7 @@
     <context:component-scan base-package="org.geoserver.mapml"/>
     <bean id="mapmlLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
         <property name="id" value="mapmlLayerConfig"/>
+        <property name="order" value="960" />
         <property name="componentClass" value="org.geoserver.mapml.MapMLLayerConfigurationPanel"/>
     </bean>
     <bean id="mapmlLayerGroupConfig" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">

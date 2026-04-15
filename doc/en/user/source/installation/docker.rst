@@ -201,26 +201,26 @@ Working with a Nightly build is a good way to test community modules and provide
    
    ::
    
-       acl                           gwc-mbtiles                     ogcapi-tiles
-       activeMQ-broker               gwc-sqlite                      ogr-datastore
-       backup-restore                hz-cluster                      opensearch-eo
-       cog-azure                                                     proxy-base-ext
-       cog-google                    importer-jdbc                   s3-geotiff
-       cog-http                                                      sec-keycloak
-       cog-s3                        jdbcconfig                      sec-oauth2-geonode
-       colormap                      jdbcstore                       sec-oauth2-github
-       cov-json                      jms-cluster                     sec-oauth2-google
-                                     libdeflate                      sec-oauth2-openid
-       dds                           mbtiles                         smart-data-loader
-       elasticsearch                 mbtiles-store                   solr
-       features-autopopulate         mongodb-schemaless              spatialjson
-       features-templating           monitor-kafka                   stac-datastore
-       flatgeobuf                    ncwms                           taskmanager-core
-       gdal-wcs                      netcdf-ghrsst                   taskmanager-s3
-       gdal-wps                      notification                    vector-mosaic
-       geopkg                        ogcapi-coverages                vsi
-       gpx                           ogcapi-dggs                     webp
-       graticule                     ogcapi-images                   wfs-freemarker
-       gsr                           ogcapi-maps                     wps-longitudinal-profile
-       gwc-azure-blobstore           ogcapi-styles                   wps-remote
-                                     ogcapi-tiled-features               
+       acl                           gwc-sqlite                      opensearch-eo
+       activeMQ-broker               hz-cluster                      png-wind
+       backup-restore                importer-jdbc                   proxy-base-ext
+       cog-azure                     jdbcconfig                      s3-geotiff
+       cog-google                    jdbcstore                       sec-keycloak
+       cog-http                      jms-cluster                     sec-oauth2-geonode
+       cog-s3                        libdeflate                      sec-oauth2-github
+       colormap                      mbtiles                         sec-oauth2-google
+       cov-json                      mbtiles-store                   sec-oauth2-openid
+       dds                           mongodb-schemaless              smart-data-loader
+       elasticsearch                 monitor-kafka                   solr
+       features-autopopulate         ncwms                           spatialjson
+       features-templating           netcdf-ghrsst                   stac-datastore
+       flatgeobuf                    notification                    taskmanager-core
+       gdal-wcs                      ogcapi-coverages                taskmanager-s3
+       gdal-wps                      ogcapi-dggs                     vector-mosaic
+       geopkg                        ogcapi-images                   vsi
+       gpx                           ogcapi-maps                     webp
+       graticule                     ogcapi-styles                   wfs-freemarker
+       gsr                           ogcapi-tiled-features           wps-longitudinal-profile
+       gwc-azure-blobstore           ogcapi-tiles                    wps-remote
+       gwc-mbtiles                   ogr-datastore                   
+                                                                     

@@ -221,13 +221,13 @@ To disable the Auto Complete on Web Admin login form:
 - Set the Java system property `geoserver.login.autocomplete` to off by adding `-Dgeoserver.login.autocomplete=off` to your container's JVM options
 - If the browser has already cached the credentials, please consider clearing the cache or form data after setting the JVM option.
 
-### Disable anonymous access to the browse layers page
+### Disable anonymous access to the Browse Layers page
 
-In some circumstances, you might want to provide access to the browse layers page to authenticated users only. The solution is based on adding a new **filter chain** with a rule matching the path of the browse layers page to GeoServer's [Authentication chain](../security/auth/chain.md). Here are the steps to reproduce:
+In some circumstances, you might want to provide access to the Browse Layers page to authenticated users only. The solution is based on adding a new **filter chain** with a rule matching the path of the Browse Layers page to GeoServer's [Authentication chain](../security/auth/chain.md). Here are the steps to reproduce:
 
 - Under **Security** -> **Authentication** -> **Filter Chains**, add a new HTML chain
 - Set the new chain's name to `webLayerPreview` (or likewise)
-- As Ant pattern, enter the path of the browse layers page, which is **`/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage`** (since it's an Ant pattern, the path could as well be written shorter with wildcards: **`/web/**/org.geoserver.web.demo.MapPreviewPage`**)
+- As Ant pattern, enter the path of the Browse Layers page, which is **`/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage`** (since it's an Ant pattern, the path could as well be written shorter with wildcards: **`/web/**/org.geoserver.web.demo.MapPreviewPage`**)
 - Check option **Allow creation of an HTTP session for storing the authentication token**
 - Under **Chain filters**, add filters `rememberme` and `form` (in that order) to the **Selected** list on the right side
 - Close the dialog by clicking the **Close** button; the new HTML chain has been added to the list of chains as the last entry
@@ -235,7 +235,7 @@ In some circumstances, you might want to provide access to the browse layers pag
 - Use the **Position** arrows on the left side of the list to move the newly added chain upwards accordingly
 - Save the changes you've made by clicking the **Save** button at the bottom of the page
 
-With that in place, unauthenticated users now just get forwarded to the login page when they click the browse layers menu item link.
+With that in place, unauthenticated users now just get forwarded to the login page when they click the Browse Layers menu item link.
 
 The above procedure could as well be applied to other pages of the web administration interface that one needs to remove anonymous access for. For example:
 
@@ -243,7 +243,7 @@ The above procedure could as well be applied to other pages of the web administr
 - **Demos** -> **WCS request builder** (path: **`/web/wicket/bookmarkable/org.geoserver.wcs.web.demo.WCSRequestBuilder`**)
 
 !!! warning
-    Although disabling anonymous access to the browse layers page **MAY** prevent some unauthenticated users from accessing data with some simple clicks, this is **NOT** a security feature. In particular, since other more sophisticated users, having the ability to build OGC requests, **MAY** still access critical data through GeoServer's services, this is **NOT** a replacement for a well-designed security concept based on data-level or service-level security.
+    Although disabling anonymous access to the Browse Layers page **MAY** prevent some unauthenticated users from accessing data with some simple clicks, this is **NOT** a security feature. In particular, since other more sophisticated users, having the ability to build OGC requests, **MAY** still access critical data through GeoServer's services, this is **NOT** a replacement for a well-designed security concept based on data-level or service-level security.
 
 ### X-Frame-Options Policy
 

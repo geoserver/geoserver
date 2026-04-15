@@ -312,7 +312,7 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 
 - PointSymbolizer
 
-  A point symbolizer will be represented as a series of elements containing metadata and an array of `graphics` symbols (see [here](../../../styling/sld/reference/pointsymbolizer.md#sld_reference_graphic)) , these can be well known `marks` or external graphics. The point symbolizer also provides an "URL" element which allows a client to make a request back to GeoServer to fetch a PNG image of the point symbol.
+  A point symbolizer will be represented as a series of elements containing metadata and an array of `graphics` symbols (see [here](../../../styling/sld/reference/pointsymbolizer.md#graphic)) , these can be well known `marks` or external graphics. The point symbolizer also provides an "URL" element which allows a client to make a request back to GeoServer to fetch a PNG image of the point symbol.
 
   ``` javascript
   {"Point":     {
@@ -337,7 +337,7 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 - LineSymbolizer
 
   A line symbolizer is represented as a list of metadata elements and the [stroke
-  parameters](#sld_reference_linesymbolizer_css), it is possible for there to be a [graphic-stroke](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_graphicstroke) element too.
+  parameters](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_css), it is possible for there to be a [graphic-stroke](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_graphicstroke) element too.
 
   ``` javascript
   {"Line":     {
@@ -371,8 +371,8 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 - PolygonSymbolizer
 
   A polygon symbolizer contains [stroke
-  parameters](#sld_reference_linesymbolizer_css) and [fill 
-  parameters](#sld_reference_fill).
+  parameters](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_css) and [fill 
+  parameters](../../../styling/sld/reference/polygonsymbolizer.md#fill).
 
   ``` javascript
   {"Polygon":       {

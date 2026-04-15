@@ -110,7 +110,7 @@ The following questions were listed throughout the workshop as an opportunity to
 
 ### Classification {: #ysld.line.a1 }
 
-Answer for [Challenge Classification](#ysld-line-q1):
+Answer for [Challenge Classification](linestring.md#ysld.line.q1):
 
 1.  **Challenge:** Create a new style adjust road appearance based on **type**.
 
@@ -167,7 +167,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Label Shields {: #ysld.line.a3 }
 
-    Answer for [Challenge Label Shields](#ysld.line.q3):
+    Answer for [Challenge Label Shields](linestring.md#ysld.line.q3):
 
     1.  *Challenge:* Have a look at the documentation for putting a graphic on a text symbolizer in SLD and reproduce this technique in YSLD.
 
@@ -205,7 +205,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Antialiasing {: #ysld.polygon.a1 }
 
-    Answer for [Explore Antialiasing](#ysld.polygon.q1):
+    Answer for [Explore Antialiasing](polygon.md#ysld.polygon.q1):
 
     1.  When we rendered our initial preview, without a stroke, thin white gaps (or slivers) are visible between our polygons.
 
@@ -227,7 +227,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Categorize {: #ysld.polygon.a2 }
 
-    Answer for [Explore Categorize](#ysld.polygon.q2):
+    Answer for [Explore Categorize](polygon.md#ysld.polygon.q2):
 
     1.  An exciting use of the GeoServer **shape** symbols is the theming by changing the **size** used for pattern density.
 
@@ -256,7 +256,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Halo {: #ysld.polygon.a4 }
 
-    Answer for [Challenge Halo](#ysld.polygon.q4):
+    Answer for [Challenge Halo](polygon.md#ysld.polygon.q4):
 
     1.  The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.
 
@@ -289,7 +289,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Theming using Multiple Attributes {: #ysld.polygon.a5 }
 
-    Answer for [Challenge Theming using Multiple Attributes](#ysld.polygon.q5):
+    Answer for [Challenge Theming using Multiple Attributes](polygon.md#ysld.polygon.q5):
 
     1.  A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform "integration by eyeball" (detecting correlations between attribute values information).
 
@@ -332,7 +332,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Use of Feature styles {: #ysld.polygon.a6 }
 
-    Answer for [Challenge Use of Feature styles](#ysld.polygon.q6):
+    Answer for [Challenge Use of Feature styles](polygon.md#ysld.polygon.q6):
 
     1.  Using multiple **feature-styles** to simulate line string casing. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.
 
@@ -379,7 +379,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Geometry Location {: #ysld.point.a1 }
 
-    Answer for [Challenge Geometry Location](#ysld.point.q1):
+    Answer for [Challenge Geometry Location](point.md#ysld.point.q1):
 
     1.  The **mark** property can be used to render any geometry content.
 
@@ -394,7 +394,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Dynamic Symbolization {: #ysld.point.a2 }
 
-    Answer for [Explore Dynamic Symbolization](#ysld.point.q2):
+    Answer for [Explore Dynamic Symbolization](point.md#ysld.point.q2):
 
     1.  SLD Mark and ExternalGraphic provide an opportunity for dynamic symbolization.
 
@@ -425,7 +425,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Layer Group {: #ysld.point.a3 }
 
-    Answer for [Challenge Layer Group](#ysld.point.q3):
+    Answer for [Challenge Layer Group](point.md#ysld.point.q3):
 
     1.  Use a **Layer Group** to explore how symbology works together to form a map.
 
@@ -472,7 +472,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Contrast Enhancement {: #ysld.raster.a1 }
 
-    Discussion for [Explore Contrast Enhancement](#ysld.raster.q1):
+    Discussion for [Explore Contrast Enhancement](raster.md#ysld.raster.q1):
 
     1.  A special effect that is effective with grayscale information is automatic contrast adjustment.
 
@@ -498,7 +498,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Intervals {: #ysld.raster.a2 }
 
-    Answer for [Challenge Intervals](#ysld.raster.q2):
+    Answer for [Challenge Intervals](raster.md#ysld.raster.q2):
 
     1.  The color-map **type** property dictates how the values are used to generate a resulting color.
 
@@ -535,7 +535,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Clear Digital Elevation Model Presentation {: #ysld.raster.a3 }
 
-    Answer for [Challenge Clear Digital Elevation Model Presentation](#ysld.raster.q3):
+    Answer for [Challenge Clear Digital Elevation Model Presentation](raster.md#ysld.raster.q3):
 
     1.  Now that you have seen the data on screen and have a better understanding how would you modify our initial gray-scale example?
 
@@ -559,7 +559,7 @@ Answer for [Challenge Classification](#ysld-line-q1):
 
     ### Raster Opacity {: #ysld.raster.a4 }
 
-    Discussion for [Challenge Clear Digital Elevation Model Presentation](#ysld.raster.q3):
+    Discussion for [Challenge Clear Digital Elevation Model Presentation](raster.md#ysld.raster.q3):
 
     1.  There is a quick way to make raster data transparent, raster **opacity** property works in the same fashion as with vector data. The raster as a whole will be drawn partially transparent allow content from other layers to provide context.
 

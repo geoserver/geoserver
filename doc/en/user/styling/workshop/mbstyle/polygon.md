@@ -889,7 +889,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
     ![image](../style/img/polygon_categorize.png)
 
     !!! note
-        Answer [provided](#mbstyle-polygon-a2) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.polygon.a2) at the end of the workbook.
 
 ### Challenge Halo {: #mbstyle.polygon.q4 }
 
@@ -900,7 +900,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 2.  **Challenge:** Produce a map that uses a white halo around black text.
 
     !!! note
-        Answer [provided](#mbstyle-polygon-a4) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.polygon.a4) at the end of the workbook.
 
 ### Challenge Theming using Multiple Attributes {: #mbstyle.polygon.q5 }
 
@@ -911,7 +911,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
     ![image](../style/img/polygon_multitheme.png)
 
     !!! note
-        Answer [provided](#mbstyle-polygon-a5) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.polygon.a5) at the end of the workbook.
 
 ### Challenge Use of Z-Index {: #mbstyle.polygon.q6 }
 
@@ -922,4 +922,4 @@ In a classroom setting you are encouraged to team up into groups, with each grou
     ![image](../style/img/polygon_zorder.png)
 
     !!! note
-        Answer [provided](#mbstyle-polygon-a6) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.polygon.a6) at the end of the workbook.

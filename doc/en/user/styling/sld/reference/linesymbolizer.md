@@ -30,11 +30,11 @@ The `<Stroke>` element specifies the styling of a line. There are three elements
 
 ### GraphicFill
 
-The `<GraphicFill>` element specifies that the pixels of the line are to be filled with a repeating graphic image or symbol. The graphic is specified by a `<Graphic>` sub-element, which is described in the `PointSymbolizer` [Graphic](pointsymbolizer.md#sld_reference_graphic) section.
+The `<GraphicFill>` element specifies that the pixels of the line are to be filled with a repeating graphic image or symbol. The graphic is specified by a `<Graphic>` sub-element, which is described in the `PointSymbolizer` [Graphic](pointsymbolizer.md#graphic) section.
 
 ### GraphicStroke {: #sld_reference_linesymbolizer_graphicstroke }
 
-The `<GraphicStroke>` element specifies the line is to be drawn using a repeated graphic image or symbol following the line. The graphic is specified by a `<Graphic>` sub-element, which is described in the `PointSymbolizer` [Graphic](pointsymbolizer.md#sld_reference_graphic) section.
+The `<GraphicStroke>` element specifies the line is to be drawn using a repeated graphic image or symbol following the line. The graphic is specified by a `<Graphic>` sub-element, which is described in the `PointSymbolizer` [Graphic](pointsymbolizer.md#graphic) section.
 
 The spacing of the graphic symbol can be specified using the `<Size>` element in the `<Graphic>` element, or the `<CSSParameter name="stroke-dasharray">` in the `Stroke` element.
 
@@ -42,7 +42,7 @@ The spacing of the graphic symbol can be specified using the `<Size>` element in
 
 The `<CssParameter>` elements describe the basic styling of the line. Any number of `<CssParameter>` elements can be specified.
 
-The `name` **attribute** indicates what aspect of styling an element specifies, using the standard CSS/SVG styling model. The **content** of the element supplies the value of the styling parameter. The value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions).
+The `name` **attribute** indicates what aspect of styling an element specifies, using the standard CSS/SVG styling model. The **content** of the element supplies the value of the styling parameter. The value may contain [expressions](pointsymbolizer.md#using-expressions-in-parameter-values).
 
 The following parameters are supported:
 

@@ -280,7 +280,7 @@ symbolizers:
     ![image](../style/img/raster_contrast_1.png)
 
     !!! note
-        Discussion [provided](#ysld-raster-a1) at the end of the workbook.
+        Discussion [provided](done.md#ysld.raster.a1) at the end of the workbook.
 
 ## Challenge Intervals {: #ysld.raster.q2 }
 
@@ -293,7 +293,7 @@ symbolizers:
 2.  **Challenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
 
     !!! note
-        Answer [provided](#ysld-raster-a2) at the end of the workbook.
+        Answer [provided](done.md#ysld.raster.a2) at the end of the workbook.
 
 ## Explore Image Processing
 
@@ -339,7 +339,7 @@ symbolizers:
 2.  **Challenge:** Use what you have learned to present the `usgs:dem` clearly.
 
     !!! note
-        Answer [provided](#ysld-raster-a3) at the end of the workbook.
+        Answer [provided](done.md#ysld.raster.a3) at the end of the workbook.
 
 ## Challenge Raster Opacity {: #ysld.raster.q4 }
 
@@ -348,4 +348,4 @@ symbolizers:
 2.  **Challenge:** Can you think of an example where this would be useful?
 
     !!! note
-        Discussion [provided](#ysld-raster-a4) at the end of the workbook.
+        Discussion [provided](done.md#ysld.raster.a4) at the end of the workbook.

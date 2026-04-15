@@ -11,7 +11,7 @@ Welcome to the GeoServer documentation. Choose a guide to get started:
 [:book:{: .doc-card-icon } <br/><span class="guide">User Manual</span><br/>Learn how to install, configure, and use GeoServer for publishing geospatial data](en/user/index.md){: .doc-card}
 [:computer:{: .doc-card-icon } <br/><span class="guide">Developer Guide</span></br>Contribute to GeoServer development with architecture guides and coding standards](en/developer/index.md){: .doc-card}
 [:writing_hand:{: .doc-card-icon } <br/><span class="guide">Documentation Guide</span>Learn how to write and contribute to GeoServer documentation](en/docguide/index.md){: .doc-card}
-[:electric_plug:{: .doc-card-icon } <br/><span class="guide">API Reference</span>Explore the REST API and service endpoints for programmatic access](en/api/){: .doc-card}
+[:electric_plug:{: .doc-card-icon } <br/><span class="guide">API Reference</span>Explore the REST API and service endpoints for programmatic access](en/api/index.html){: .doc-card}
 </div>
 
 <style>

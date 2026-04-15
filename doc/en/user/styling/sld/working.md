@@ -32,7 +32,7 @@ A Style Layer Descriptor is a [StyledLayerDescriptor](reference/sld.md) document
 
 Within a Style Layer Descriptor document, the name of any `<NamedLayer>` elements should match a layer (or layer group) in the catalog. Likewise, any `<NamedStyle>` elements should refer to a style in the catalog.
 
-Style Layer Descriptor styles can define new layers of styled data, by using the [InlineFeature](reference/layers.md#sld_reference_inlinefeature) element to provide feature data.
+Style Layer Descriptor styles can define new layers of styled data, by using the [InlineFeature](reference/layers.md#inlinefeature) element to provide feature data.
 
 Within GeoServer, when Style Layer Descriptor styles are used they are typically in the form of style groups. Style groups can be added to layer groups as an alternative way of defining a collection of styled layers, using either the [Web Administration interface](../../data/webadmin/layergroups.md) or the [REST API](../../rest/layergroups.md).
 
@@ -50,7 +50,7 @@ In all of these cases, if the WMS `layers` parameter is not supplied then the ma
 
 The structure of an external style is the same as a Style Layer Descriptor style, as described above.
 
-External styles can define new layers of styled data, by using the SLD [InlineFeature](reference/layers.md#sld_reference_inlinefeature) element to provide feature data. This can be used to implement dynamic feature highlighting, for example.
+External styles can define new layers of styled data, by using the SLD [InlineFeature](reference/layers.md#inlinefeature) element to provide feature data. This can be used to implement dynamic feature highlighting, for example.
 
 External styling may be generated dynamically by client applications, This provides a powerful way for clients to control styling effects.
 

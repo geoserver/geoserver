@@ -117,4 +117,4 @@ The `usgs:dem` layer used for this exercise:
 2.  **Challenge:** Can you think of an example where this would be useful?
 
     !!! note
-        Discussion [provided](#mbstyle-raster-a4) at the end of the workbook.
+        Discussion [provided](done.md#mbstyle.raster.a4) at the end of the workbook.

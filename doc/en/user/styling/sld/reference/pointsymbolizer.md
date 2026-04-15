@@ -56,7 +56,7 @@ The `<Mark>` element has the sub-elements:
 | --- | --- | --- |
 | `<WellKnownName>` | No | The name of the shape. Standard SLD shapes are `circle`, `square`, `triangle`, `star`, `cross`, or `x`. Default is `square`. |
 | `<Fill>` | No | Specifies how the symbol should be filled (for closed shapes). Options are to use `<CssParameter name="fill">` to specify a solid fill color, or using `<GraphicFill>` for a tiled graphic fill. See the `PolygonSymbolizer` [Fill](polygonsymbolizer.md#fill) for the full syntax. |
-| `<Stroke>` | No | Specifies how the symbol linework should be drawn. Some options are using `<CssParameter name="stroke">` to specify a stroke color, or using `<GraphicStroke>` for a repeated graphic. See the `LineSymbolizer` [Stroke](linesymbolizer.md#stroke) section for the syntax. |
+| `<Stroke>` | No | Specifies how the symbol linework should be drawn. Some options are using `<CssParameter name="stroke">` to specify a stroke color, or using `<GraphicStroke>` for a repeated graphic. See the `LineSymbolizer` [Stroke](linesymbolizer.md#sld_reference_stroke) section for the syntax. |
 
 ## Example
 

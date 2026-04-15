@@ -112,6 +112,7 @@ not_in_nav: |
   en/index.md
   en/LICENSE.md
   en/release/rest.md
+  en/user/data/webadmin/layerpreview.md
 
 nav:
   - Home: index.md

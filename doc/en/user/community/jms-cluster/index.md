@@ -49,7 +49,7 @@ As said above, in the default configuration the MOM runs inside GeoServer itself
 
 ### Installation
 
-To install the jms cluster modules into an existing GeoServer refer to the [jms.installation](#jms-installation) page
+To install the jms cluster modules into an existing GeoServer refer to the [Installation](#installation) page
 
 ## How to configure GeoServer Instances
 

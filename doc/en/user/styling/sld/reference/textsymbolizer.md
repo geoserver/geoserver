@@ -16,8 +16,8 @@ A `<TextSymbolizer>` contains the following elements:
 | `<LabelPlacement>` | No | Sets the position of the label relative to its associated geometry. |
 | `<Halo>` | No | Creates a colored background around the label text, for improved legibility. |
 | `<Fill>` | No | The fill style of the label text. |
-| `<Graphic>` | No | A graphic to be displayed behind the label text. See [Graphic](pointsymbolizer.md#sld_reference_graphic) for content syntax. |
-| `<Priority>` | No | The priority of the label during conflict resolution. Content may contains [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). See also [Priority Labeling](labeling.md#labeling_priority). |
+| `<Graphic>` | No | A graphic to be displayed behind the label text. See [Graphic](pointsymbolizer.md#graphic) for content syntax. |
+| `<Priority>` | No | The priority of the label during conflict resolution. Content may contains [expressions](pointsymbolizer.md#using-expressions-in-parameter-values). See also [Priority Labeling](labeling.md#labeling_priority). |
 | `<VendorOption>` | 0..N | A GeoServer-specific option. See [Labeling](labeling.md) for descriptions of the available options. Any number of options may be specified. |
 
 ### Geometry
@@ -36,7 +36,7 @@ If this element is omitted, no label is rendered.
 
 The `<Font>` element specifies the font to be used for the label. A set of `<CssParameter>` elements specify the details of the font.
 
-The `name` **attribute** indicates what aspect of the font is described, using the standard CSS/SVG font model. The **content** of the element supplies the value of the font parameter. The value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions).
+The `name` **attribute** indicates what aspect of the font is described, using the standard CSS/SVG font model. The **content** of the element supplies the value of the font parameter. The value may contain [expressions](pointsymbolizer.md#using-expressions-in-parameter-values).
 
 | **Parameter** | **Required?** | **Description** |
 |----|----|----|
@@ -60,9 +60,9 @@ The `<PointPlacement>` element indicates the label is placed at a labelling poin
 
 | **Tag** | **Required?** | **Description** |
 |----|----|----|
-| `<AnchorPoint>` | No | The location within the label bounding box that is aligned with the label point. The location is specified by `<AnchorPointX>` and `<AnchorPointY>` sub-elements, with values in the range [0..1]. Values may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). |
-| `<Displacement>` | No | Specifies that the label point should be offset from the original point. The offset is specified by `<DisplacementX>` and `<DisplacementY>` sub-elements, with values in pixels. Values may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `(0, 0)`. |
-| `<Rotation>` | No | The rotation of the label in clockwise degrees (negative values are counterclockwise). Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `0`. |
+| `<AnchorPoint>` | No | The location within the label bounding box that is aligned with the label point. The location is specified by `<AnchorPointX>` and `<AnchorPointY>` sub-elements, with values in the range [0..1]. Values may contain [expressions](pointsymbolizer.md#using-expressions-in-parameter-values). |
+| `<Displacement>` | No | Specifies that the label point should be offset from the original point. The offset is specified by `<DisplacementX>` and `<DisplacementY>` sub-elements, with values in pixels. Values may contain [expressions](pointsymbolizer.md#using-expressions-in-parameter-values). Default is `(0, 0)`. |
+| `<Rotation>` | No | The rotation of the label in clockwise degrees (negative values are counterclockwise). Value may contain [expressions](pointsymbolizer.md#using-expressions-in-parameter-values). Default is `0`. |
 
 The anchor point justification, displacement offsetting, and rotation are applied in that order.
 
@@ -72,7 +72,7 @@ The `<LinePlacement>` element indicates the label is placed along a linear path 
 
 | **Tag** | **Required?** | **Description** |
 |----|----|----|
-| `<PerpendicularOffset>` | No | The offset from the linear path, in pixels. Positive values offset to the left of the line, negative to the right. Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `0`. |
+| `<PerpendicularOffset>` | No | The offset from the linear path, in pixels. Positive values offset to the left of the line, negative to the right. Value may contain [expressions](pointsymbolizer.md#using-expressions-in-parameter-values). Default is `0`. |
 
 The appearance of text along linear paths can be further controlled by the vendor options `followLine`, `maxDisplacement`, `repeat`, `labelAllGroup`, and `maxAngleDelta`. These are described in [Labeling](labeling.md).
 
@@ -82,16 +82,16 @@ A halo creates a colored background around the label text, which improves readab
 
 | **Tag** | **Required?** | **Description** |
 |----|----|----|
-| `<Radius>` | No | The halo radius, in pixels. Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `1`. |
-| `<Fill>` | No | The color and opacity of the halo via `CssParameter` elements for `fill` and `fill-opacity`. See [Fill](polygonsymbolizer.md#sld_reference_fill) for full syntax. The parameter values may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is a **white** fill (`#FFFFFF`) at **100%** opacity. |
+| `<Radius>` | No | The halo radius, in pixels. Value may contain [expressions](pointsymbolizer.md#using-expressions-in-parameter-values). Default is `1`. |
+| `<Fill>` | No | The color and opacity of the halo via `CssParameter` elements for `fill` and `fill-opacity`. See [Fill](polygonsymbolizer.md#fill) for full syntax. The parameter values may contain [expressions](pointsymbolizer.md#using-expressions-in-parameter-values). Default is a **white** fill (`#FFFFFF`) at **100%** opacity. |
 
 ### Fill
 
-The `<Fill>` element specifies the fill style for the label text. The syntax is the same as that of the `PolygonSymbolizer` [Fill](polygonsymbolizer.md#sld_reference_fill) element. The default fill color is **black** (`#FFFFFF`) at **100%** opacity..
+The `<Fill>` element specifies the fill style for the label text. The syntax is the same as that of the `PolygonSymbolizer` [Fill](polygonsymbolizer.md#fill) element. The default fill color is **black** (`#FFFFFF`) at **100%** opacity..
 
 ### Graphic
 
-The `<Graphic>` element specifies a graphic symbol to be displayed behind the label text (if any). A classic use for this is to display "highway shields" behind road numbers provided by feature attributes. The element content has the same syntax as the `<PointSymbolizer>` [Graphic](pointsymbolizer.md#sld_reference_graphic) element. Graphics can be provided by internal [mark symbols](../extensions/pointsymbols.md), or by external images or SVG files. Their size and aspect ratio can be changed to match the text displayed with them by using the vendor options [graphic-resize](labeling.md#labeling_graphic_resize) and [graphic-margin](labeling.md#labeling_graphic_margin).
+The `<Graphic>` element specifies a graphic symbol to be displayed behind the label text (if any). A classic use for this is to display "highway shields" behind road numbers provided by feature attributes. The element content has the same syntax as the `<PointSymbolizer>` [Graphic](pointsymbolizer.md#graphic) element. Graphics can be provided by internal [mark symbols](../extensions/pointsymbols.md), or by external images or SVG files. Their size and aspect ratio can be changed to match the text displayed with them by using the vendor options [graphic-resize](labeling.md#labeling_graphic_resize) and [graphic-margin](labeling.md#labeling_graphic_margin).
 
 ## Example
 

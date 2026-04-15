@@ -1161,7 +1161,7 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 2.  **Challenge:** Try this yourself by rendering a polygon layer using a **mark** property.
 
     !!! note
-        Answer [discussed](#mbstyle-point-a1) at the end of the workbook.
+        Answer [discussed](done.md#mbstyle.point.a1) at the end of the workbook.
 
 ### Explore Dynamic Symbolization {: #mbstyle.point.q2 }
 
@@ -1277,6 +1277,6 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 4.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
     !!! note
-        Answer [provided](#mbstyle-point-a2) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.point.a2) at the end of the workbook.
 
 1.  Challenge: Use the **Interpolate** function to smoothly change the mark **size** based on city population.

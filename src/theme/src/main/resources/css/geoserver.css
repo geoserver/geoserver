@@ -2309,22 +2309,19 @@ div.value-wide {
   flex-wrap: wrap;
   align-items: center;
 }
-
-.gs-content-header .gs-content-header-title {
+.gs-content-header h3.gs-content-header-title {
   border-bottom: 2px solid transparent;
   border-image: var(--gs-brand-gradient) 1;
-}
-div:has(> div > .gs-content-header)
-  + div:has(> div > .gs-content-header)
-  .gs-content-header > .gs-content-header-title {
   font-size: 1.125rem;
-  border-bottom: 0;
   margin-top: 1rem;
   font-weight: 400;
 }
-div:has(> div > .gs-content-header)
-  + div:has(> div > .gs-content-header)
-  .gs-content-header > p {
+.gs-content-header h3.gs-content-header-subtitle {
+  font-size: 1.125rem;
+  margin-top: 1rem;
+  font-weight: 400;
+}
+.gs-content-header > p {
   font-size: 0.875rem;
 }
 .i18n-panel table td:nth-child(1) {

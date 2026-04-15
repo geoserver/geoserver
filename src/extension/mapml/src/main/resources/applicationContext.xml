@@ -18,10 +18,12 @@
     <context:component-scan base-package="org.geoserver.mapml"/>
     <bean id="mapmlLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
         <property name="id" value="mapmlLayerConfig"/>
+        <property name="order" value="960" />
         <property name="componentClass" value="org.geoserver.mapml.MapMLLayerConfigurationPanel"/>
     </bean>
     <bean id="mapmlLayerGroupConfig" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
         <property name="id" value="mapmlLayerGroupConfig"/>
+        <property name="order" value="960" />
         <property name="componentClass" value="org.geoserver.mapml.MapMLLayerGroupConfigurationPanel"/>
     </bean>
     <!-- The constructor adds the MapML gridsets through the GWC GridSetBroker  depends-on="gwcFacade"-->
@@ -88,7 +90,7 @@
         <property name="descriptionKey" value="MapMLTCRSSettingsPage.description"/>
         <property name="componentClass" value="org.geoserver.mapml.web.MapMLTCRSSettingsPage" />
         <property name="category" ref="serverCategory" />
-        <property name="icon" value="img/icons/crs.png"/>
+        <property name="icon" value="/svg/icons/geosilk/crs.svg"/>
         <property name="order" value="20"/>
     </bean>
     <bean id="charArrayWriterPool" class="org.geoserver.mapml.template.CharArrayWriterPool"/>

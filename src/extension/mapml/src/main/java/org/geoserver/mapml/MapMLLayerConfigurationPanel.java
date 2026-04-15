@@ -69,12 +69,15 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                     new org.apache.wicket.request.resource.PackageResourceReference(
                             getClass(), getClass().getSimpleName() + ".css")));
         }
+        response.render(org.apache.wicket.markup.head.JavaScriptHeaderItem.forReference(
+                new org.apache.wicket.request.resource.PackageResourceReference(
+                        getClass(), "feature-caption-selector.js")));
     }
 
     static final Logger LOGGER = Logging.getLogger(MapMLLayerConfigurationPanel.class);
 
     @Serial
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7247779727466152895L;
 
     public static final String PNG_MIME_TYPE = "image/png";
     ListMultipleChoice<String> featureCaptionAttributes;

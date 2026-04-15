@@ -90,7 +90,7 @@
         <property name="descriptionKey" value="MapMLTCRSSettingsPage.description"/>
         <property name="componentClass" value="org.geoserver.mapml.web.MapMLTCRSSettingsPage" />
         <property name="category" ref="serverCategory" />
-        <property name="icon" value="img/icons/crs.png"/>
+        <property name="icon" value="/svg/icons/geosilk/crs.svg"/>
         <property name="order" value="20"/>
     </bean>
     <bean id="charArrayWriterPool" class="org.geoserver.mapml.template.CharArrayWriterPool"/>

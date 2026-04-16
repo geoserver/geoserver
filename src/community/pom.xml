@@ -604,6 +604,7 @@
                 <configuration>
                   <!-- Skip if assembly.xml doesn't exist OR if using dependencySets -->
                   <skip>${skipDependencyCopy}</skip>
+                  <silent>true</silent>
                 </configuration>
               </execution>
             </executions>

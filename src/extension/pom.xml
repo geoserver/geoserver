@@ -635,6 +635,7 @@
                 </goals>
                 <configuration>
                   <skip>${skipDependencyCopy}</skip>
+                  <silent>true</silent>
                 </configuration>
               </execution>
             </executions>

@@ -52,7 +52,7 @@
     <property name="order" value="950" />
     <property name="titleKey" value="HeadingConfigurationPanel.wms.title" />
     <property name="descriptionKey" value="HeadingConfigurationPanel.wms.description" />
-    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    <property name="componentClass" value="org.geoserver.web.publish.SubheadingConfigurationPanel" />
   </bean>
 
   <bean id="wmsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">

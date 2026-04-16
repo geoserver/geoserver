@@ -5,11 +5,11 @@
     <wicket:panel>
       <div class="gs-panel-ParameterFilterEditor">
         <div class="gs-form">
-          <div wicket:id="container" class="gs-content-divider">
+          <div wicket:id="container">
             <div wicket:id="table">
               <form wicket:id="filtersForm" class="gs-form">
                 <div wicket:id="parameterFilters" class="gs-form">
-                  <div class="gs-content-divider gs-inline-group">
+                  <div class="gs-inline-group">
                     <h4 wicket:id="key">Key</h4>
                     <div class="gwc-remove-link">
                       <a href="#" wicket:id="removeLink">
@@ -17,12 +17,12 @@
                       </a>
                     </div>
                   </div>
-                  <div wicket:id="subform" class="gs-form-group">Filter Specific Details</div>
+                  <div wicket:id="subform" class="gs-form-group gs-content-divider">Filter Specific Details</div>
                 </div>
               </form>
             </div>
           </div>
-          <div class="gs-form">
+          <div class="gs-form gs-add-parameter-filter">
             <div class="gs-form-group">
               <label>Add filter</label>
               <div class="gs-input-group">

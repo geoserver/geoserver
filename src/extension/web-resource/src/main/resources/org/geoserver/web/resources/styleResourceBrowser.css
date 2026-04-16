@@ -1,115 +1,86 @@
 #page {
-    padding-bottom: 10px;
+  padding-bottom: 0.75rem;
 }
 
 .treeview {
-    height: calc(100vh - 325px);
-    width: 100%;
-    overflow-y: scroll;
+  width: 100%;
 }
 
-.treeview .copy
-{
-  font-weight: bold;
+.treeview .copy {
+  font-weight: 700;
 }
 
-.treeview .cut
-{
-  font-weight: bold;
+.treeview .cut {
+  font-weight: 700;
   font-style: italic;
 }
 
 .menu-wrapper {
+  position: sticky;
+  top: 0;
   display: block;
-  float: left;
   width: 100%;
-  margin: 0px 0px 15px 0px;
+  margin: 0 0 1rem 0;
 }
 
 .menu {
-  padding: 0px 5px 0px 5px;  
-  height: 30px;
-  float: left;
-  display: block;
-  background: #c6e09b;
-  border-radius: 5px;
-  moz-border-radius: 5px;
-  webkit-border-radius: 5px;
-  border: 1px solid #c6e09b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  min-height: 2rem;
+  background-color: var(--gs-primary-bg-subtle);
+  border: var(--gs-border-width) var(--gs-border-style) var(--gs-primary-border-subtle);
+  border-radius: var(--gs-border-radius);
 }
 
 .menu a {
-  display: block;    
-  float: left;
-  height: 24px;
-  cursor: pointer;  
-  padding: 4px 4px 4px 4px;
-  margin: -1px 12px -1px 12px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  color: var(--gs-body-color);
+  text-decoration: none;
+  border-radius: var(--gs-border-radius-sm);
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 
 .menu a .button-content {
-  height: 16px;
-  display: block;
-  padding: 0px 0px 0px 20px;
-  margin: 4px 0px 4px 0px;
+  display: flex;
+  align-items: center;
+  padding-left: 1.5rem;
   background-repeat: no-repeat;
   background-position: left center;
   font-weight: 500;
 }
 
 .menu a:hover {
-  background-color: #e3f0ce;
+  background-color: var(--gs-primary-border-subtle);
   text-decoration: none;
-  cursor: pointer;
 }
 
 .menu a:hover .button-content {  
-  color: #004f6c;
+  color: var(--gs-primary-text-emphasis);
 }
 
 .menu a.disabled {
-  cursor: default;
+  cursor: not-allowed;
   background-color: transparent;
-  -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
+  opacity: var(--gs-btn-disabled-opacity, 0.65);
+  pointer-events: none;
 }
 
 .menu a.disabled .button-content {  
-  color: #a0a0a0;
+  color: var(--gs-secondary-color);
 }
 
-.menu a #upload {
-  background-image: url("icons/upload.png");
-}
-
-.menu a #download {
-  background-image: url("icons/download.png");
-}
-
-.menu a #new {
-  background-image: url("icons/new.png");
-}
-
-.menu a #edit {
-  background-image: url("icons/edit.png");
-}
-
-.menu a #cut {
-  background-image: url("icons/cut.png");
-}
-
-.menu a #copy {
-  background-image: url("icons/copy.png");
-}
-
-.menu a #paste {
-  background-image: url("icons/paste.png");
-}
-
-.menu a #rename {
-  background-image: url("icons/rename.png");
-}
-
-.menu a #delete {
-  background-image: url("icons/delete.png");
-}
+.menu a #upload { background-image: url("icons/upload.png"); }
+.menu a #download { background-image: url("icons/download.png"); }
+.menu a #new { background-image: url("icons/new.png"); }
+.menu a #edit { background-image: url("icons/edit.png"); }
+.menu a #cut { background-image: url("icons/cut.png"); }
+.menu a #copy { background-image: url("icons/copy.png"); }
+.menu a #paste { background-image: url("icons/paste.png"); }
+.menu a #rename { background-image: url("icons/rename.png"); }
+.menu a #delete { background-image: url("icons/delete.png"); }

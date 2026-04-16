@@ -36,15 +36,20 @@ public class NcWmsAdminPanelTest extends GeoServerWicketTestSupport {
 
         // start the WMS admin page
         tester.startPage(WMSAdminPage.class);
-        tester.assertModelValue("form:extensions:0:content:timeSeriesPoolSize", TIME_SERIES_THREADS);
-        tester.assertModelValue("form:extensions:0:content:maxTimeSeriesValues", MAXTIMES);
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+
+        FormTester form = tester.newFormTester("form");
+
+        // form:tabs:panel:extensions:0:content:timeSeriesPoolSize
+        tester.assertModelValue("form:tabs:panel:extensions:0:content:timeSeriesPoolSize", TIME_SERIES_THREADS);
+        tester.assertModelValue("form:tabs:panel:extensions:0:content:maxTimeSeriesValues", MAXTIMES);
 
         // update the values
         final int NEW_POOL_VALUE = 5;
         final int NEW_MAXTIMES_VALUE = 27;
-        FormTester form = tester.newFormTester("form");
-        form.setValue("extensions:0:content:timeSeriesPoolSize", String.valueOf(NEW_POOL_VALUE));
-        form.setValue("extensions:0:content:maxTimeSeriesValues", String.valueOf(NEW_MAXTIMES_VALUE));
+        form = tester.newFormTester("form");
+        form.setValue("tabs:panel:extensions:0:content:timeSeriesPoolSize", String.valueOf(NEW_POOL_VALUE));
+        form.setValue("tabs:panel:extensions:0:content:maxTimeSeriesValues", String.valueOf(NEW_MAXTIMES_VALUE));
         form.submit("submit");
         tester.assertNoErrorMessage();
 

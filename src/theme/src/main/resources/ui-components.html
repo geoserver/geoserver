@@ -626,24 +626,24 @@ border-color: var(--gs-border-color);</pre>
       </div>
       <div style="display:flex;align-items:center;gap:1rem;">
         <span class="showcase-label" style="min-width:9rem;margin:0;">Inside button</span>
-        <button class="button"><i class="gs-icon gs-icon-accept"></i> Accept</button>
+        <button><i class="gs-icon gs-icon-accept"></i> Accept</button>
       </div>
       <div style="display:flex;align-items:center;gap:1rem;">
         <span class="showcase-label" style="min-width:9rem;margin:0;">Primary + icon</span>
-        <button class="button primary"><i class="gs-icon gs-icon-add"></i> Add</button>
+        <button class="primary"><i class="gs-icon gs-icon-add"></i> Add</button>
       </div>
       <div style="display:flex;align-items:center;gap:1rem;">
         <span class="showcase-label" style="min-width:9rem;margin:0;">Danger + icon</span>
-        <button class="button danger"><i class="gs-icon gs-icon-delete"></i> Delete</button>
+        <button class="danger"><i class="gs-icon gs-icon-delete"></i> Delete</button>
       </div>
     </div>
     <pre class="code-snippet">&lt;!-- Standalone icon --&gt;
 &lt;i class="gs-icon gs-icon-accept"&gt;&lt;/i&gt;
 
 &lt;!-- Icon inside a button --&gt;
-&lt;button class="button"&gt;&lt;i class="gs-icon gs-icon-accept"&gt;&lt;/i&gt; Accept&lt;/button&gt;
-&lt;button class="button primary"&gt;&lt;i class="gs-icon gs-icon-add"&gt;&lt;/i&gt; Add&lt;/button&gt;
-&lt;button class="button danger"&gt;&lt;i class="gs-icon gs-icon-delete"&gt;&lt;/i&gt; Delete&lt;/button&gt;</pre>
+&lt;button &gt;&lt;i class="gs-icon gs-icon-accept"&gt;&lt;/i&gt; Accept&lt;/button&gt;
+&lt;button class="primary"&gt;&lt;i class="gs-icon gs-icon-add"&gt;&lt;/i&gt; Add&lt;/button&gt;
+&lt;button class="danger"&gt;&lt;i class="gs-icon gs-icon-delete"&gt;&lt;/i&gt; Delete&lt;/button&gt;</pre>
     <input id="icon-filter" class="icon-filter" type="text" placeholder="Filter icons…" />
     <div id="icon-grid" class="icon-grid"></div>
   </section>
@@ -664,6 +664,7 @@ border-color: var(--gs-border-color);</pre>
         <tr><td><code>.w-lg</code></td><td>37.5rem (≈600px)</td><td>URL, long text field</td></tr>
         <tr><td><code>.w-edge</code></td><td>1%</td><td>Action/icon table column</td></tr>
         <tr><td><code>.w-full</code></td><td>100%</td><td>Full-width field</td></tr>
+        <tr><td><code>.w-fit</code></td><td>fit-content</td><td>Useful for select input to ensure all options are visible</td></tr>
         <tr><td><code>.h-sm</code></td><td>3.125rem</td><td>Compact textarea</td></tr>
         <tr><td><code>.h-md</code></td><td>6.25rem</td><td>Short textarea</td></tr>
         <tr><td><code>.h-lg</code></td><td>25rem</td><td>Code / log textarea</td></tr>
@@ -687,6 +688,14 @@ border-color: var(--gs-border-color);</pre>
       <div>
         <span class="showcase-label">.w-lg - long text (e.g. URL, file path)</span>
         <input type="text" class="w-lg" value="http://localhost:8080/geoserver/wms" />
+      </div>
+      <div>
+        <span class="showcase-label">.w-fit - dropdown / fit max content</span>
+        <select class="w-fit">
+          <option>EPSG:4326</option>
+          <option>EPSG:3857</option>
+          <option>CRS:84</option>
+        </select>
       </div>
     </div>
 

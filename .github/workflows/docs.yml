@@ -22,6 +22,11 @@ permissions:
 jobs:
   mkdocs-build:
     runs-on: ubuntu-22.04
+    env:
+      # Known build warnings to suppress (grep -vF patterns):
+      #   - Swagger UI relative links in en/release/rest.md (generated at deploy time)
+      #   - API version-switcher query params not resolvable by mkdocs
+      FILTER_WARNINGS: "grep -vF -e '../../api?urls.primaryName=' -e \"Doc file 'en/release/rest.md' contains a link\""
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -85,12 +90,12 @@ jobs:
           mike deploy $VERSION $ALIASES \
             --title "${{ steps.version.outputs.title }}" \
             --push \
-            --update-aliases --alias-type symlink
+            --update-aliases --alias-type symlink 2>&1 | eval "$FILTER_WARNINGS"
 
       # Build only on pull_request (no deploy)
       - name: Build documentation (PR validation)
         if: github.event_name == 'pull_request'
-        run: mkdocs build 2>&1 | grep -vF -e "../../api?urls.primaryName=" -e "Doc file 'en/release/rest.md' contains a link"
+        run: mkdocs build 2>&1 | eval "$FILTER_WARNINGS"
 
       # Deploy custom 404 page to gh-pages root (GitHub Pages requires /404.html)
       - name: Deploy 404 page

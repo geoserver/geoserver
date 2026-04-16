@@ -1096,10 +1096,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#jdk-17-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JDK 17 Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tomcat-101-or-tomcat-110-required" class="md-nav__link">
     <span class="md-ellipsis">
       
         Tomcat 10.1 or Tomcat 11.0 Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-modules-downgraded-to-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core modules downgraded to extension
       
     </span>
   </a>
@@ -30276,10 +30298,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#jdk-17-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JDK 17 Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tomcat-101-or-tomcat-110-required" class="md-nav__link">
     <span class="md-ellipsis">
       
         Tomcat 10.1 or Tomcat 11.0 Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-modules-downgraded-to-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core modules downgraded to extension
       
     </span>
   </a>
@@ -30798,9 +30842,19 @@
 </ol>
 </div>
 <h2 id="upgrading-geoserver-3-guidance">Upgrading GeoServer 3 Guidance<a class="headerlink" href="#upgrading-geoserver-3-guidance" title="Permanent link">&para;</a></h2>
-<p>GeoServer 3.0.x is scheduled for release in March, 2026.</p>
+<p>GeoServer 3.0.x is scheduled for release in April, 2026.</p>
+<h3 id="jdk-17-required">JDK 17 Required<a class="headerlink" href="#jdk-17-required" title="Permanent link">&para;</a></h3>
+<p>Just like in GeoServer 2.28.x series, GeoServer 3.0.x requires Java 17 to run. Be sure to install Java 17 before upgrading to GeoServer 3.0.</p>
 <h3 id="tomcat-101-or-tomcat-110-required">Tomcat 10.1 or Tomcat 11.0 Required<a class="headerlink" href="#tomcat-101-or-tomcat-110-required" title="Permanent link">&para;</a></h3>
-<p>GeoServer 3.0 makes the transition to Jakarata EE Servlet 6.0.0 and requires Tomcat 10.1 or Tomcat 11.0 for those using WebArchive distribution.</p>
+<p>GeoServer 3.0 makes the transition to Jakarta EE Servlet 6.1 and requires Tomcat 11.0 for those using WebArchive distribution.</p>
+<h3 id="core-modules-downgraded-to-extension">Core modules downgraded to extension<a class="headerlink" href="#core-modules-downgraded-to-extension" title="Permanent link">&para;</a></h3>
+<p>Some of the less used core modules have been downgraded to extensions in GeoServer 3.0. If you were using any of the following features, be sure to install the corresponding extension after upgrading:</p>
+<ul>
+<li>WCS 1.0</li>
+<li>WCS 1.1</li>
+<li>World image coverage store</li>
+<li>ArcGRID coverage store</li>
+</ul>
 <h3 id="h2-datastore-removal-geoserver-30-and-newer">H2 Datastore Removal (GeoServer 3.0 and newer)<a class="headerlink" href="#h2-datastore-removal-geoserver-30-and-newer" title="Permanent link">&para;</a></h3>
 <p>As of GeoServer 3.0, the H2 datastore extension (<code>gs-h2</code>) has been removed and is no longer available for use as a GeoServer vector datastore.</p>
 <p>If your installation contains any H2-based datastores, migrate those layers to another supported datastore before upgrading to GeoServer 3.0.</p>

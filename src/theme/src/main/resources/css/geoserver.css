@@ -412,7 +412,8 @@ fieldset > legend {
   border-top-right-radius: var(--gs-border-radius);
 }
 
-fieldset > div {
+fieldset > div,
+fieldset > form {
   padding: 0.5rem 1rem;
 }
 
@@ -2459,6 +2460,7 @@ div.value-wide {
 .gs-icon-bullet-go { background-image: url('../img/icons/silk/bullet_go.png'); }
 .gs-icon-cog { background-image: url('../svg/icons/silk-icon-scalable/cog.svg'); }
 .gs-icon-cog-photo { background-image: url('../img/icons/silk/cog_photo.png'); }
+.gs-icon-copy { background-image: url('../img/icons/copy.png'); }
 .gs-icon-database { background-image: url('../svg/icons/silk-icon-scalable/database.svg'); }
 .gs-icon-database-key { background-image: url('../img/icons/silk/database_key.png'); }
 .gs-icon-delete { background-image: url('../svg/icons/silk-icon-scalable/delete.svg'); }

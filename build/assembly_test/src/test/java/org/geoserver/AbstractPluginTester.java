@@ -13,6 +13,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Base64;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
@@ -40,6 +42,25 @@ abstract class AbstractPluginTester {
      */
     protected void prepareTestDirectory(Path testWorkDir) throws Exception {
         // Default no-op.
+    }
+
+    /**
+     * Extra {@code -D} system properties to pass to the spawned GeoServer JVM via {@code JAVA_OPTS}. Subclasses
+     * override to configure plugins that require system properties to reach a healthy startup state (e.g. remote
+     * service URLs, credentials, feature toggles). Returned values are not shell-quoted — keep them simple.
+     */
+    protected Map<String, String> systemProperties() {
+        return Map.of();
+    }
+
+    /**
+     * Basic-auth credentials ({@code "user:password"}) for all HTTP requests the tester makes — the readiness probe and
+     * any helper {@code GET} calls. Subclasses override when the plugin requires an authenticated caller (e.g. the ACL
+     * plugin, which invokes its access manager even for GetCapabilities and refuses anonymous callers when its remote
+     * API is unreachable). Returning {@code null} (the default) sends no {@code Authorization} header.
+     */
+    protected String basicAuthCredentials() {
+        return null;
     }
 
     /** Polls the startup check path until it returns HTTP 200 or the process exits/times out. */
@@ -100,6 +121,11 @@ abstract class AbstractPluginTester {
         HttpURLConnection connection = (HttpURLConnection) new URL(context.baseUrl() + path).openConnection();
         connection.setConnectTimeout(2000);
         connection.setReadTimeout(5000);
+        String credentials = basicAuthCredentials();
+        if (credentials != null) {
+            String encoded = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+            connection.setRequestProperty("Authorization", "Basic " + encoded);
+        }
         return connection;
     }
 

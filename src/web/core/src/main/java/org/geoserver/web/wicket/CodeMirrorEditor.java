@@ -153,7 +153,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         if (!isCssEmpty) {
             response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
                     new org.apache.wicket.request.resource.PackageResourceReference(
-                            getClass(), getClass().getSimpleName() + ".css")));
+                            CodeMirrorEditor.class, CodeMirrorEditor.class.getSimpleName() + ".css")));
         }
     }
 

@@ -162,8 +162,7 @@
         <module>graticule</module>
         <module>wfs-freemarker</module>
         <module>stac-datastore</module>
-        <!-- This module won't start properly from geoserver + zip -->
-        <!--module>acl</module-->
+        <module>acl</module>
         <module>geoparquet</module>
         <module>duckdb</module>
         <module>wps-download-netcdf</module>

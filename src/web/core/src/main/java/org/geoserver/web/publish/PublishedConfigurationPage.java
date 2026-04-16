@@ -242,7 +242,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
             Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
             Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
 
-            return order1.compareTo(order2);
+            return order2.compareTo(order1);
         });
     }
 
@@ -363,11 +363,29 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
     @SuppressWarnings("unchecked")
     private List<PublishedConfigurationPanelInfo<T>> filterPublishedPanels(List<PublishedConfigurationPanelInfo> list) {
         List<PublishedConfigurationPanelInfo<T>> result = new ArrayList<>();
+        // Collect applicable panels and sort into display order
         for (PublishedConfigurationPanelInfo info : list) {
             if (info.canHandle(getPublishedInfo())) {
                 result.add((PublishedConfigurationPanelInfo<T>) info);
             }
         }
+        sortPublishPanels(result);
+
+        // scan through and remove unused headings and subheadings
+        List<PublishedConfigurationPanelInfo<T>> toRemove = new ArrayList<>();
+        List<PublishedConfigurationPanelInfo<T>> headings = new ArrayList<>();
+        for (PublishedConfigurationPanelInfo<T> info : result) {
+            if (info.getComponentClass().isAssignableFrom(HeadingConfigurationPanel.class)) {
+                toRemove.addAll(headings);
+                headings.clear();
+                headings.add(info);
+            } else if (info.getComponentClass().isAssignableFrom(SubheadingConfigurationPanel.class)) {
+                headings.add(info);
+            } else if (!headings.isEmpty()) {
+                headings.clear();
+            }
+        }
+        result.removeAll(toRemove);
         return result;
     }
 
@@ -437,8 +455,6 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
         public ListView<PublishedConfigurationPanelInfo<T>> createList(String id) {
             List<PublishedConfigurationPanelInfo<T>> pubPanels = filterPublishedPanels(
                     getGeoServerApplication().getBeansOfType(PublishedConfigurationPanelInfo.class));
-            sortPublishPanels(pubPanels);
-            Collections.reverse(pubPanels);
 
             ListView<PublishedConfigurationPanelInfo<T>> pubPanelList = new ListView<>(id, pubPanels) {
                 @Serial

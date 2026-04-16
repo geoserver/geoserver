@@ -87,6 +87,14 @@
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
     </dependency>
+    <!-- Force jna 5.17.0 - gt-netcdf -> edu.ucar:netcdf4 pulls jna 5.4.0, but the rest of the GS stack
+         resolves to 5.17.0; declaring it directly pins the version that lands in target/dependency. -->
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>5.17.0</version>
+      <scope>runtime</scope>
+    </dependency>
 
   </dependencies>
 </project>

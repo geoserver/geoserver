@@ -18,6 +18,7 @@
     <module>core</module>
     <module>rest</module>
     <module>web</module>
+    <module>importer-assembly</module>
   </modules>
 
   <dependencies>

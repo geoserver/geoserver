@@ -342,22 +342,22 @@ td, th {
 
 .text-xs { font-size: 0.6875rem; }
 
-.w-xs    { width: 1.875rem !important; max-width: 1.875rem !important; }
-.w-sm    { width: 5rem !important; max-width: 5rem !important; }
-.w-md    { width: 15rem !important; max-width: 15rem !important; }
-.w-lg    { width: 37.5rem !important; max-width: 37.5rem !important; }
-.w-xl    { width: 80rem !important; max-width: 80rem !important; }
+.w-xs:not([style*="width"])    { width: 1.875rem !important; max-width: 1.875rem !important; }
+.w-sm:not([style*="width"])   { width: 5rem !important; max-width: 5rem !important; }
+.w-md:not([style*="width"])    { width: 15rem !important; max-width: 15rem !important; }
+.w-lg:not([style*="width"])    { width: 37.5rem !important; max-width: 37.5rem !important; }
+.w-xl:not([style*="width"])    { width: 80rem !important; max-width: 80rem !important; }
 
-.w-edge  { width: 1% !important; max-width: 1% !important; }
-.w-slice { width: 10% !important; max-width: 10% !important; }
-.w-wide  { width: 95% !important; max-width: 95% !important; }
-.w-full  { width: 100% !important; max-width: 100% !important; }
+.w-edge:not([style*="width"])  { width: 1% !important; max-width: 1% !important; }
+.w-slice:not([style*="width"]) { width: 10% !important; max-width: 10% !important; }
+.w-wide:not([style*="width"])  { width: 95% !important; max-width: 95% !important; }
+.w-full:not([style*="width"])  { width: 100% !important; max-width: 100% !important; }
 
-.h-sm    { height: 3.125rem !important; max-height: 3.125rem !important; }
-.h-md    { height: 6.25rem !important; max-height: 6.25rem !important; }
-.h-lg    { height: 25rem !important; max-height: 25rem !important; }
-.h-xl    { height: 100rem !important; max-height: 100rem !important; }
-.h-full  { height: 100% !important; max-height: 100% !important; }
+.h-sm:not([style*="height"])   { height: 3.125rem !important; max-height: 3.125rem !important; }
+.h-md:not([style*="height"])    { height: 6.25rem !important; max-height: 6.25rem !important; }
+.h-lg:not([style*="height"])    { height: 25rem !important; max-height: 25rem !important; }
+.h-xl:not([style*="height"])    { height: 100rem !important; max-height: 100rem !important; }
+.h-full:not([style*="height"])  { height: 100% !important; max-height: 100% !important; }
 
 .w-fit   { width: fit-content !important; flex: none !important; }
 
@@ -437,7 +437,8 @@ textarea {
 }
 
 textarea {
-  resize: vertical;
+  resize: both;
+  max-width: 100%;
   min-height: calc(1.5em + 0.75rem + calc(var(--gs-border-width) * 2));
 }
 

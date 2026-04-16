@@ -41,7 +41,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/** Verifies that GeoServer assembly results (bin.zip and plugins) work correctly. */
+/**
+ * Verifies that GeoServer assembly results (bin.zip and plugins) work correctly.
+ *
+ * @see #testBin()
+ * @see #testExtensions(String, Path)
+ * @see #testCommunityModules(String, Path)
+ */
 @SuppressWarnings("PMD.SystemPrintln")
 // very long test , prints on the stdout to provide information about current work
 public class AssemblyTest {
@@ -277,12 +283,12 @@ public class AssemblyTest {
      * @throws Exception
      */
     @Test
-    public void testBin() throws Exception {
+    void testBin() throws Exception {
         runStartupTest(null, "bin");
     }
 
     /** Tests each extension plugin zip package with the bin file, ensuring that the combo works */
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @MethodSource("extensionPlugins")
     @Execution(ExecutionMode.CONCURRENT)
     @SuppressWarnings("PMD.UnusedFormalParameter")
@@ -290,7 +296,7 @@ public class AssemblyTest {
         runStartupTest(pluginZip, extractPluginName(pluginZip.getFileName().toString()));
     }
 
-    private static Stream<Arguments> extensionPlugins() throws IOException {
+    private static Stream<Arguments> extensionPlugins() {
         return extensionZips.stream().filter(AssemblyTest::isPluginSelected).map(pluginZip -> {
             String pluginName = extractPluginName(pluginZip.getFileName().toString());
             return Arguments.of("Test extension: " + pluginName, pluginZip);
@@ -298,7 +304,7 @@ public class AssemblyTest {
     }
 
     /** Tests each community module zip package with the bin file, ensuring that the combo works */
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @MethodSource("communityPlugins")
     @Execution(ExecutionMode.CONCURRENT)
     @SuppressWarnings("PMD.UnusedFormalParameter")
@@ -306,7 +312,7 @@ public class AssemblyTest {
         runStartupTest(pluginZip, extractPluginName(pluginZip.getFileName().toString()));
     }
 
-    private static Stream<Arguments> communityPlugins() throws IOException {
+    private static Stream<Arguments> communityPlugins() {
         return communityZips.stream().filter(AssemblyTest::isPluginSelected).map(pluginZip -> {
             String pluginName = extractPluginName(pluginZip.getFileName().toString());
             return Arguments.of("Test community module: " + pluginName, pluginZip);

@@ -93,16 +93,16 @@
           <select wicket:id="kml.superoverlayMode"></select>
        </div>
        <div class="gs-list-item-class choiceItem">
-          <input type="checkbox" wicket:id="kml.kmattr"></input>
+          <input id="kml.kmattr" type="checkbox" wicket:id="kml.kmattr"></input>
           <label for="kml.kmattr"><wicket:message key="kmattr">Show vector placemarks</wicket:message></label>
        </div>
        <div class="gs-list-item-class choiceItem">
-          <input type="checkbox" wicket:id="kml.kmlplacemark"></input>
+          <input id="kml.kmlplacemark" type="checkbox" wicket:id="kml.kmlplacemark"></input>
           <label for="kml.kmlplacemark"><wicket:message key="kmlplacemark">Show raster placemarks</wicket:message></label>
        </div>
        <div class="gs-form-group">
-          <label><wicket:message key="kmScore">Raster/vector threshold (0-100, default 40)</wicket:message></label>
-          <input type="text" wicket:id="kml.kmscore" class="w-md" />
+          <label for="kml.kmscore"><wicket:message key="kmScore">Raster/vector threshold (0-100, default 40)</wicket:message></label>
+          <input id="kml.kmscore" type="text" wicket:id="kml.kmscore" class="w-md" />
         </div>
       </div>
     </fieldset>
@@ -111,20 +111,20 @@
       <legend><span><wicket:message key="resourceLimits">ResourceConsumptionLimits</wicket:message></span></legend>
       <div class="gs-form">
         <div class="gs-form-group">
-          <label><wicket:message key="maxRequestMemory">Max rendering memory</wicket:message></label>
-          <input type="text" wicket:id="maxRequestMemory" class="field w-md"/>
+          <label for="maxRequestMemory"><wicket:message key="maxRequestMemory">Max rendering memory</wicket:message></label>
+          <input id="maxRequestMemory" type="text" wicket:id="maxRequestMemory" class="field w-md"/>
         </div>
         <div class="gs-form-group">
-          <label><wicket:message key="maxRenderingTime">Max rendering time</wicket:message></label>
-          <input type="text" wicket:id="maxRenderingTime" class="field w-md"/>
+          <label for="maxRenderingTime"><wicket:message key="maxRenderingTime">Max rendering time</wicket:message></label>
+          <input id="maxRenderingTime" type="text" wicket:id="maxRenderingTime" class="field w-md"/>
         </div>
         <div class="gs-form-group">
-          <label><wicket:message key="maxRenderingErrors">Max rendering errors</wicket:message></label>
-          <input type="text" wicket:id="maxRenderingErrors" class="field w-md"/>
+          <label for="maxRenderingErrors"><wicket:message key="maxRenderingErrors">Max rendering errors</wicket:message></label>
+          <input id="maxRenderingErrors" type="text" wicket:id="maxRenderingErrors" class="field w-md"/>
         </div>
         <div class="gs-form-group">
-          <label><wicket:message key="maxRequestedDimensionValues">Max requested dimension values</wicket:message></label>
-          <input type="text" wicket:id="maxRequestedDimensionValues" class="field w-md"/>
+          <label for="maxRequestedDimensionValues"><wicket:message key="maxRequestedDimensionValues">Max requested dimension values</wicket:message></label>
+          <input id="maxRequestedDimensionValues" type="text" wicket:id="maxRequestedDimensionValues" class="field w-md"/>
         </div>
       </div>
     </fieldset>
@@ -133,8 +133,8 @@
       <legend><span><wicket:message key="mapBufferSettings">Map buffer settings</wicket:message></span></legend>
       <div class="gs-form">
         <div class="gs-form-group">
-          <label><wicket:message key="maxBuffer">Max buffer</wicket:message></label>
-          <input type="text" wicket:id="maxBuffer" class="field w-md"/>
+          <label for="maxBuffer"><wicket:message key="maxBuffer">Max buffer</wicket:message></label>
+          <input id="maxBuffer" type="text" wicket:id="maxBuffer" class="field w-md"/>
         </div>
       </div>
     </fieldset>
@@ -143,8 +143,8 @@
       <legend><span><wicket:message key="dimensionSettings">Dimensions settings</wicket:message></span></legend>
       <div class="gs-form">
         <div class="gs-form-group">
-          <label><wicket:message key="exceptionOnInvalidDimension">exceptionOnInvalidDimension</wicket:message></label>
-          <select wicket:id="exceptionOnInvalidDimension"></select>
+          <label for="exceptionOnInvalidDimension"><wicket:message key="exceptionOnInvalidDimension">exceptionOnInvalidDimension</wicket:message></label>
+          <select id="exceptionOnInvalidDimension" wicket:id="exceptionOnInvalidDimension"></select>
         </div>
       </div>
     </fieldset>
@@ -199,7 +199,7 @@
       <div class="gs-form">
        <div class="gs-form-group">
           <label><wicket:message key="svgProducer">SVG producer</wicket:message></label>
-          <select wicket:id="svg.producer"></select>
+          <select wicket:id="svg.producer" class="w-md"></select>
         </div>
         <div class="choiceItem">
           <input type="checkbox" wicket:id="svg.antialias"></input>
@@ -310,12 +310,12 @@
       <legend><span><wicket:message key="remoteStyleTime">Remote Styles Time Settings</wicket:message></span></legend>
       <div class="gs-form">
         <div class="gs-form-group">
-          <label><wicket:message key="remoteStyleTimeout">Timeout in milliseconds</wicket:message></label>
-          <input class="w-md" type="text" wicket:id="remoteStyleTimeout"></input>
+          <label for="remoteStyleTimeout"><wicket:message key="remoteStyleTimeout">Timeout in milliseconds</wicket:message></label>
+          <input id="remoteStyleTimeout" class="w-md" type="text" wicket:id="remoteStyleTimeout"></input>
         </div>
         <div class="gs-form-group">
-          <label><wicket:message key="remoteStyleMaxRequestTime">Max request time in milliseconds</wicket:message></label>
-          <input class="w-md" type="text" wicket:id="remoteStyleMaxRequestTime"></input>
+          <label for="remoteStyleMaxRequestTime"><wicket:message key="remoteStyleMaxRequestTime">Max request time in milliseconds</wicket:message></label>
+          <input id="remoteStyleMaxRequestTime" class="w-md" type="text" wicket:id="remoteStyleMaxRequestTime"></input>
         </div>
       </div>
     </fieldset>
@@ -324,8 +324,8 @@
       <legend><span><wicket:message key="layerGroupCapabilitiesSettings">Layer Group Capabilities Settings</wicket:message></span></legend>
       <div class="gs-form">
         <div class="choiceItem">
-          <input type="checkbox" wicket:id="defaultGroupStyleEnabled"/>
-          <label><wicket:message key="defaultGroupStyleEnabled">Default LayerGroup Style In GetCapabilities</wicket:message></label>
+          <input id="defaultGroupStyleEnabled" type="checkbox" wicket:id="defaultGroupStyleEnabled"/>
+          <label for="defaultGroupStyleEnabled"><wicket:message key="defaultGroupStyleEnabled">Default LayerGroup Style In GetCapabilities</wicket:message></label>
         </div>
       </div>
     </fieldset>
@@ -335,7 +335,7 @@
       <div class="gs-form">
         <div class="gs-form-group">
           <label for="defaultLocale"><wicket:message key="defaultLocale">Default Language</wicket:message></label>
-          <select wicket:id="defaultLocale"/>
+          <select id="defaultLocale" wicket:id="defaultLocale" class="w-fit"/>
         </div>
       </div>
     </fieldset>
@@ -344,8 +344,8 @@
       <legend><span><wicket:message key="markFactoryOptimization">Mark Factory Precedence</wicket:message></span></legend>
       <div class="gs-form">
         <div class="choiceItem">
-          <input type="checkbox" wicket:id="enableMarkFactory"></input>
-          <label><wicket:message key="enableMarkFactory">Enable Mark Factory Precedence</wicket:message></label>
+          <input id="enableMarkFactory" type="checkbox" wicket:id="enableMarkFactory"></input>
+          <label for="enableMarkFactory"><wicket:message key="enableMarkFactory">Enable Mark Factory Precedence</wicket:message></label>
         </div>
         <div class="gs-form-group">
           <label wicket:id="enableMarkFactoryLabel"></label>

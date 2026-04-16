@@ -33,6 +33,22 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.commonjava.maven.plugins</groupId>
+        <artifactId>directory-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>directories</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>highest-basedir</goal>
+            </goals>
+            <configuration>
+              <property>geoserverBaseDir</property>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
@@ -462,8 +478,10 @@
         <module>mysql</module>
         <module>db2</module>
         <module>gdal</module>
+        <module>iau</module>
         <module>jp2k</module>
         <module>ogr</module>
+        <module>pyramid</module>
         <module>excel-core</module>
         <module>excel-wfs</module>
         <module>excel-wps</module>
@@ -520,8 +538,10 @@
         <module>mysql</module>
         <module>db2</module>
         <module>gdal</module>
+        <module>iau</module>
         <module>jp2k</module>
         <module>ogr</module>
+        <module>pyramid</module>
         <module>excel-core</module>
         <module>excel-wfs</module>
         <module>excel-wps</module>
@@ -566,6 +586,152 @@
         <module>arcgrid</module>
         <module>image</module>
       </modules>
+    </profile>
+    <profile>
+      <id>assembly</id>
+      <build>
+        <plugins>
+          <!-- Check if an assembly file is available in the current module, will skip otherwise -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>check-assembly-file</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <exportAntProperties>true</exportAntProperties>
+                  <target>
+                    <condition property="skipAssembly" value="true">
+                      <not>
+                        <available file="src/assembly/assembly.xml"></available>
+                      </not>
+                    </condition>
+                    <condition property="skipDependencyCopy" value="true">
+                      <or>
+                        <isset property="skipAssembly"></isset>
+                        <isset property="assembly.useDependencySets"></isset>
+                      </or>
+                    </condition>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Copy dependencies of the current module. Bound to prepare-package
+               (not install) so it runs strictly before the assembly plugin, which
+               is bound to install. This ordering is independent of plugin
+               declaration order in the merged effective pom. -->
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <skip>${skipDependencyCopy}</skip>
+                  <silent>true</silent>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Run assembly based on collected dependencies-->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <descriptors>
+                <descriptor>${project.basedir}/src/assembly/assembly.xml</descriptor>
+              </descriptors>
+              <outputDirectory>${geoserverBaseDir}/target/release</outputDirectory>
+              <skipAssembly>${skipAssembly}</skipAssembly>
+              <finalName>geoserver-${project.version}</finalName>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+      Renders each module's own src/assembly/*.md files as HTML into target/html so the per-module assembly.xml can bundle
+      a locally-generated README.html / LICENSE.html without depending on the centralized src/release/extensions/ pass.
+      Auto-activated on any child that owns an src/assembly/assembly.xml.
+    -->
+    <profile>
+      <id>assembly-docs</id>
+      <activation>
+        <file>
+          <exists>src/assembly/assembly.xml</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <!--
+            Stage a filtered html header/footer template locally so the markdown plugin doesn't rely on
+            the release module having built first — the release module depends on the extensions, so it
+            runs AFTER them in the reactor and can't be a prerequisite for their process-resources
+            phase. Same approach community modules use.
+          -->
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-html-template</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/html-template</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${geoserverBaseDir}/release/src/markdown/html</directory>
+                      <filtering>true</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>com.ruleoftech</groupId>
+            <artifactId>markdown-page-generator-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>extension-docs</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+                <configuration>
+                  <inputDirectory>${project.basedir}/src/assembly</inputDirectory>
+                  <outputDirectory>${project.build.directory}/html</outputDirectory>
+                  <recursiveInput>false</recursiveInput>
+                  <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
+                  <headerHtmlFile>${project.build.directory}/html-template/header.html</headerHtmlFile>
+                  <footerHtmlFile>${project.build.directory}/html-template/footer.html</footerHtmlFile>
+                  <pegdownExtensions>TABLES,FENCED_CODE_BLOCKS,AUTOLINKS,FORCELISTITEMPARA</pegdownExtensions>
+                  <defaultTitle>true</defaultTitle>
+                  <inputFileExtensions>md</inputFileExtensions>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>

@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.rest.util.RESTFileValidatorCallback;
 import org.geoserver.util.FileTypes;
@@ -73,7 +74,8 @@ public class CoverageStoreFileValidator implements RESTFileValidatorCallback {
     /** @param inputStream input stream that is either a simple file or a zip */
     @Override
     public void accept(InputStream inputStream, String fname) {
-        if (StringUtils.isBlank(fname) || fname.contains(File.separator)) {
+        // The upload name must be a bare file name, not a path, regardless of platform separators.
+        if (StringUtils.isBlank(fname) || !fname.equals(FilenameUtils.getName(fname))) {
             throw new IllegalArgumentException("CoverageStoreFileValidator: File name is invalid:" + fname);
         }
 

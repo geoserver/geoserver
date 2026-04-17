@@ -103,7 +103,7 @@ public class CoverageStoreFileValidator implements RESTFileValidatorCallback {
 
     public Path writeToDir(InputStream inputStream, Path tempdir, String fname) throws IOException {
         Path filePath = Paths.get(tempdir.toString(), fname);
-        long bytes = java.nio.file.Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+        java.nio.file.Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         return filePath;
     }
 

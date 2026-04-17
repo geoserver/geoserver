@@ -13,11 +13,14 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
 import org.apache.commons.io.FilenameUtils;
@@ -79,7 +82,7 @@ public class RESTUtils {
             boolean deleteDirectoryContent,
             HttpServletRequest request)
             throws IOException {
-        return handleBinUpload(fileName, directory, deleteDirectoryContent, request, null);
+        return handleBinUpload(fileName, directory, deleteDirectoryContent, request, null, null);
     }
 
     /**
@@ -98,7 +101,8 @@ public class RESTUtils {
             org.geoserver.platform.resource.Resource directory,
             boolean deleteDirectoryContent,
             HttpServletRequest request,
-            String workSpace)
+            String workSpace,
+            RESTFileValidatorCallback validationCallback)
             throws IOException {
         // Creation of a StringBuilder for the selected file
         StringBuilder itemPath = new StringBuilder(fileName);
@@ -128,9 +132,44 @@ public class RESTUtils {
             }
         }
 
-        try (OutputStream os = newFile.out()) {
-            FileTypes.validateFileAndCopy(request.getInputStream(), os);
+        // we will be opening the file multiple times, so we need to make a copy of it
+        // request.getInputStream() only works once.
+        Path tempFile = null;
+        try (InputStream requestInputStream = request.getInputStream()) {
+            // create temp file and write the user's file into it
+            tempFile = java.nio.file.Files.createTempFile("RESTUTILS-", ".tmp");
+            java.nio.file.Files.copy(requestInputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            // validate obviously "bad files"
+            try (InputStream inputStream = java.nio.file.Files.newInputStream(tempFile)) {
+                FileTypes.validateComplexFile(inputStream, fileName);
+            }
+
+            // run the callback for any specific checks
+            if (validationCallback != null) {
+                try (InputStream inputStream = java.nio.file.Files.newInputStream(tempFile)) {
+                    validationCallback.accept(inputStream, fileName);
+                }
+            }
+
+            // move original file to final location
+            try (OutputStream os = newFile.out()) {
+                try (InputStream inputStream = java.nio.file.Files.newInputStream(tempFile)) {
+                    IOUtils.copy(inputStream, os);
+                }
+            }
+
+        } finally {
+            // cleanup temp file
+            if (tempFile != null) {
+                try {
+                    java.nio.file.Files.deleteIfExists(tempFile);
+                } catch (IOException e) {
+                    LOGGER.log(Level.INFO, "error deleting temp file: " + e.getMessage(), e);
+                }
+            }
         }
+
         return newFile;
     }
 

@@ -532,7 +532,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             CoverageStoreInfo storeInfo, byte[] bytes, String filename) throws Exception {
         // Create the POST request
         MockHttpServletRequest request = createRequest(RestBaseController.ROOT_PATH
-                + "/workspaces/gs/coveragestores/watertemp5/file.imagemosaic?filename="
+                + "/workspaces/gs/coveragestores/watertemp5/file.geotiff?filename="
                 + filename);
         request.setMethod("POST");
         request.setContentType("image/tiff");

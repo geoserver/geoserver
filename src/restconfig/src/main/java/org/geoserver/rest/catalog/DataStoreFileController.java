@@ -464,7 +464,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             // Prepare the directory for file upload or external upload of a zip file
             directory = createFinalRoot(workspaceName, storeName, postRequest);
         }
-        return handleFileUpload(storeName, workspaceName, filename, method, format, directory, request);
+        return handleFileUpload(storeName, workspaceName, filename, method, format, directory, request, null);
     }
 
     private Resource createFinalRoot(String workspaceName, String storeName, boolean isPost) throws IOException {

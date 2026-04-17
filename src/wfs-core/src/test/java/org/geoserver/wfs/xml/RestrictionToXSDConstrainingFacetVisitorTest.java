@@ -1,6 +1,6 @@
 package org.geoserver.wfs.xml;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import org.eclipse.xsd.XSDConstrainingFacet;
@@ -28,10 +28,11 @@ public class RestrictionToXSDConstrainingFacetVisitorTest {
 
         Or or = filterFactory.or(List.of(isEqualTo, isEqualTo, isEqualTo, isEqualTo, isEqualTo));
 
-        List<XSDConstrainingFacet> visit = facetVisitor.visit(or, null);
+        @SuppressWarnings("unchecked")
+        List<XSDConstrainingFacet> facets = (List<XSDConstrainingFacet>) or.accept(facetVisitor, List.of());
 
-        assertEquals(or.getChildren().size(), visit.size());
-        visit.forEach(facet -> assertEquals("1", facet.getLexicalValue()));
+        assertEquals(or.getChildren().size(), facets.size());
+        facets.forEach(facet -> assertEquals("1", facet.getLexicalValue()));
     }
 
     @Test
@@ -41,14 +42,15 @@ public class RestrictionToXSDConstrainingFacetVisitorTest {
         Expression maxLiteral = filterFactory.literal(1);
         PropertyIsBetween isBetween = filterFactory.between(filterFactory.literal(0.5), minLiteral, maxLiteral);
 
-        List<XSDConstrainingFacet> visit = facetVisitor.visit(isBetween, null);
+        @SuppressWarnings("unchecked")
+        List<XSDConstrainingFacet> facets = (List<XSDConstrainingFacet>) isBetween.accept(facetVisitor, List.of());
 
-        assertEquals(2, visit.size());
+        assertEquals(2, facets.size());
 
-        XSDConstrainingFacet min = visit.get(0);
+        XSDConstrainingFacet min = facets.get(0);
         assertEquals("0", min.getLexicalValue());
 
-        XSDConstrainingFacet max = visit.get(1);
+        XSDConstrainingFacet max = facets.get(1);
         assertEquals("1", max.getLexicalValue());
     }
 }

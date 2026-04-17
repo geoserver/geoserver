@@ -30,26 +30,41 @@ import org.geotools.coverage.grid.io.UnknownFormat;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 
+/**
+ * A validator that will attempt to read the file (or zip) as a coverage of the given format, and will throw an
+ * exception if no coverage read is found able to handle the file.
+ */
 public class CoverageStoreFileValidator implements RESTFileValidatorCallback {
     static final Logger LOGGER = Logging.getLogger(CoverageStoreFileValidator.class);
 
     AbstractGridFormat coverageFormat;
     Hints hints;
 
+    /**
+     * Builds a validator for the given coverage format.
+     *
+     * @param format name of the "image" format (from the user request)
+     */
     public CoverageStoreFileValidator(Format format) {
         this(format, new Hints());
     }
 
-    /** @param format name of the "image" format (from the user request) */
+    /**
+     * Builds a validator for the given coverage format.
+     *
+     * @param format name of the "image" format (from the user request)
+     * @param hints hints to use when constructing the reader (from the user request)
+     */
     public CoverageStoreFileValidator(Format format, Hints hints) {
         if (format == null || format instanceof UnknownFormat) {
             throw new IllegalArgumentException(
-                    "CoverageStoreFileValidator: format is illegal - must be non-null and not Unknown. format="
+                    "CoverageStoreFileValidator: format is not recognized - must be non-null and not Unknown. format="
                             + format);
         }
         if (!(format instanceof AbstractGridFormat)) {
             throw new IllegalArgumentException(
-                    "CoverageStoreFileValidator: format is illegal - should be a AbstractGridFormat but is " + format);
+                    "CoverageStoreFileValidator: format is not recognized - should be a AbstractGridFormat but is "
+                            + format);
         }
         this.coverageFormat = (AbstractGridFormat) format;
         this.hints = hints;
@@ -59,12 +74,8 @@ public class CoverageStoreFileValidator implements RESTFileValidatorCallback {
     @Override
     public void accept(InputStream inputStream, String fname) {
         if (StringUtils.isBlank(fname) || fname.contains(File.separator)) {
-            throw new IllegalArgumentException("CoverageStoreFileValidator: fname is illegal. fname=" + fname);
+            throw new IllegalArgumentException("CoverageStoreFileValidator: File name is invalid:" + fname);
         }
-
-        //        if (this.coverageFormat instanceof ImageMosaicFormat) {
-        //            return; // some image mosaics are not validatable if outside the coverage.
-        //        }
 
         Path tempFile = null;
         Path tempDir = null;
@@ -128,12 +139,12 @@ public class CoverageStoreFileValidator implements RESTFileValidatorCallback {
         if (coverageFormat.accepts(directory.toFile())) {
             return directory;
         }
-        // iterate through all the files in the directory and see if the coverage store handles it
+        // iterate through all the top-level files and select the first one the coverage store can handle
         try (Stream<Path> paths = Files.list(directory)) {
             for (Iterator<Path> it = paths.iterator(); it.hasNext(); ) {
                 Path insideFile = it.next();
                 if (insideFile.toFile().isDirectory()) {
-                    continue; // don't handle sub-directories
+                    continue; // don't handle subdirectories
                 }
 
                 if (coverageFormat.accepts(insideFile.toFile())) {

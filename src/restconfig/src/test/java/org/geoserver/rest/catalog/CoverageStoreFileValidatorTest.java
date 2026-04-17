@@ -4,8 +4,9 @@
  */
 package org.geoserver.rest.catalog;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -91,7 +92,7 @@ public class CoverageStoreFileValidatorTest {
                 validator.accept(stream, "malicious.zip");
             }
         });
-        assertTrue(throwable.getMessage().contains("escape"));
+        assertThat(throwable.getMessage(), containsString("escape"));
     }
 
     /** Checks that you cannot have a ".." in the filename. */
@@ -103,7 +104,7 @@ public class CoverageStoreFileValidatorTest {
                 validator.accept(stream, "../usa.zip");
             }
         });
-        assertTrue(throwable.getMessage().contains("fname is illegal"));
+        assertThat(throwable.getMessage(), containsString("File name is invalid"));
     }
 
     /** try to upload a text file as a coverage. */
@@ -115,7 +116,7 @@ public class CoverageStoreFileValidatorTest {
                 validator.accept(stream, "image.geotiff");
             }
         });
-        assertTrue(throwable.getMessage().contains("Unsupported"));
+        assertThat(throwable.getMessage(), containsString("Unsupported"));
     }
 
     /** try to upload a text file in a zipas a coverage. */
@@ -127,7 +128,7 @@ public class CoverageStoreFileValidatorTest {
                 validator.accept(stream, "image.geotiff");
             }
         });
-        assertTrue(throwable.getMessage().contains("primary"));
+        assertThat(throwable.getMessage(), containsString("primary"));
     }
 
     /** null format as input (bad) */
@@ -136,7 +137,7 @@ public class CoverageStoreFileValidatorTest {
         Throwable throwable = assertThrows(Throwable.class, () -> {
             new CoverageStoreFileValidator(null);
         });
-        assertTrue(throwable.getMessage().contains("format"));
+        assertThat(throwable.getMessage(), containsString("format"));
     }
 
     /** UnknownFormat format as input (bad) */
@@ -145,7 +146,7 @@ public class CoverageStoreFileValidatorTest {
         Throwable throwable = assertThrows(Throwable.class, () -> {
             new CoverageStoreFileValidator(new UnknownFormat());
         });
-        assertTrue(throwable.getMessage().contains("format"));
+        assertThat(throwable.getMessage(), containsString("format"));
     }
 
     /** bad format - Format is not a subclass of AbstractGridFormat. */
@@ -156,7 +157,7 @@ public class CoverageStoreFileValidatorTest {
             SecuredGridFormat securedGridFormat = new SecuredGridFormat(new GeoTiffFormat(), wp);
             new CoverageStoreFileValidator(securedGridFormat);
         });
-        assertTrue(throwable.getMessage().contains("AbstractGridFormat"));
+        assertThat(throwable.getMessage(), containsString("AbstractGridFormat"));
     }
 
     /**

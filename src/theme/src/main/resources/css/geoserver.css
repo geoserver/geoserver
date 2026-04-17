@@ -1790,6 +1790,30 @@ form a.collapsed {
   text-decoration: none;
 }
 
+/* Developer toolbar in header nav */
+.devtoolbar .gs-developer-toolbar-menu {
+  min-width: 18rem;
+}
+.devtoolbar .gs-developer-toolbar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.25em 0.5em;
+  margin: 0;
+  font-size: 1.125em;
+  color: var(--gs-body-color);
+  cursor: pointer;
+}
+.devtoolbar .gs-developer-toolbar-toggle input[type="checkbox"] {
+  margin-top: 0;
+}
+.devtoolbar .gs-dropdown-item .button {
+  width: 100%;
+  justify-content: flex-start;
+}
+
 /* Context indicator shown next to nav items when scoped to a context (workspace, layer, group) */
 .gs-ctx-indicator {
   display: inline-flex;
@@ -1826,8 +1850,7 @@ form a.collapsed {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M2 2h16v16H2zm2 2v12h12V4z'/%3E%3Cpath fill-rule='evenodd' d='M5 5h16v16H5zm2 2v12h12V7z'/%3E%3C/svg%3E");
 }
 
-.gs-header-nav [id="nodeIdContainer"],
-.gs-header-nav .devtoolbar {
+.gs-header-nav [id="nodeIdContainer"] {
   display: none;
 }
 .gs-user-avatar-dropdown {
@@ -2127,6 +2150,26 @@ label.gs-switch-label {
     margin-top: 1em;
     padding-top: 1em;
     border-top: 1px solid var(--gs-border-color);
+  }
+  .gs-header-nav .devtoolbar .gs-dropdown-header {
+    position: static;
+    padding: 0.5em 0;
+    font-weight: 600;
+    color: var(--gs-primary-text-emphasis);
+  }
+  .gs-header-nav .devtoolbar .gs-dropdown-menu {
+    display: flex;
+    position: static;
+    border: none;
+    box-shadow: none;
+    min-width: 0;
+    padding: 0;
+  }
+  .gs-header-nav .devtoolbar .gs-dropdown-item {
+    background: transparent;
+  }
+  .gs-header-nav .devtoolbar .gs-dropdown-item + .gs-dropdown-item {
+    margin-top: 0.25em;
   }
 }
 

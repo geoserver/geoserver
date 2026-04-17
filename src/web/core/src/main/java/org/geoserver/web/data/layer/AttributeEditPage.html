@@ -4,24 +4,24 @@
 </head>
 <body>
 <wicket:extend>
-  <form wicket:id="form">
-    <div class="mb-3">
+  <form wicket:id="form" class="gs-form">
+    <div class="gs-form-group">
       <label for="name"><wicket:message key="name">name</wicket:message></label>
-      <input id="name" type="text" wicket:id="name"/>
+      <input id="name" type="text" wicket:id="name" class="w-md"/>
     </div>
-    <div class="mb-3">
+    <div class="gs-form-group">
       <label for="binding"><wicket:message key="type">type</wicket:message></label>
-      <select id="binding" wicket:id="binding"></select>
+      <select id="binding" wicket:id="binding" class="w-fit"></select>
     </div>
-    <div class="choiceItem mb-3">
+    <div class="choiceItem">
         <input type="checkbox" id="nullable" wicket:id="nullable"/>
         <label for="nullable"><wicket:message key="nullable">nullable</wicket:message></label>
     </div>
-    <div wicket:id="sizeContainer" class="mb-3">
+    <div wicket:id="sizeContainer" class="gs-form-group">
       <label for="size"><wicket:message key="size">size</wicket:message></label>
-      <input id="size" type="text" wicket:id="size"/>
+      <input id="size" type="text" wicket:id="size" class="w-md"/>
     </div>
-    <div wicket:id="crsContainer" class="mb-3">
+    <div wicket:id="crsContainer" class="gs-form-group">
       <label for="crs"><wicket:message key="crs">cRS</wicket:message></label>
       <span wicket:id="crs"></span>
     </div>

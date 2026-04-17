@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
@@ -17,8 +17,10 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.factory.GeoTools;
@@ -77,7 +79,8 @@ public class FileTypes {
             MediaType.parse("application/x-java-archive"), // java: jar
             MediaType.parse("application/x-msi"), // windows: installer
             MediaType.parse("application/x-httpd-jsp"), // java: jsp (note - not robust ident by tika)
-            MediaType.parse("application/hta") // windows: HTML app
+            MediaType.parse("application/hta"), // windows: HTML app
+            MediaType.parse("text/x-jsp") // java: JSP
             );
 
     /** allow-list of simple image */
@@ -111,9 +114,10 @@ public class FileTypes {
      * <p>NOTE: turn this check off with the ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST (set to true).
      *
      * @param stream file (from user)
+     * @param fname name of the file (for file-extension checks)
      * @throws Exception if the file is in the reject-list, or is a .zip file (use validateFileNotInRejectList instead)
      */
-    public static void assertSimpleFileNotInRejectList(InputStream stream) throws Exception {
+    public static void assertSimpleFileNotInRejectList(InputStream stream, String fname) throws Exception {
         String disableCheckEnvVarValue = System.getenv(ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST);
         if (disableCheckEnvVarValue != null && disableCheckEnvVarValue.equalsIgnoreCase("true")) {
             return; // no check
@@ -122,7 +126,11 @@ public class FileTypes {
         // does this stream support mark/rest (required by tika)
         stream = wrapIfNotMarkReset(stream);
 
-        MediaType detectedMediaType = tika.getDetector().detect(stream, new Metadata());
+        Metadata fileMetadata = new Metadata();
+        if (!StringUtils.isAllEmpty(fname)) {
+            fileMetadata.set(TikaCoreProperties.RESOURCE_NAME_KEY, fname);
+        }
+        MediaType detectedMediaType = tika.getDetector().detect(stream, fileMetadata);
         if (REJECT_LIST_MIME_TYPES.contains(detectedMediaType.getBaseType())) {
             throw new IOException("Unsupported media type: " + detectedMediaType);
         }
@@ -132,6 +140,19 @@ public class FileTypes {
                     "assertSimpleFileNotInRejectList: was given a .zip file.  Use validateFileNotInRejectList instead");
         }
         // not in reject-list (good)
+    }
+
+    public static boolean isZip(Path path) throws IOException {
+        try (InputStream inputStream = Files.newInputStream(path)) {
+            return isZip(inputStream);
+        }
+    }
+
+    public static boolean isZip(InputStream inputStream) throws IOException {
+        inputStream = wrapIfNotMarkReset(inputStream);
+        Metadata fileMetadata = new Metadata();
+        MediaType detectedMediaType = tika.getDetector().detect(inputStream, fileMetadata);
+        return detectedMediaType.getBaseType().equals(ZIP_MEDIA_TYPE);
     }
 
     /**
@@ -144,10 +165,11 @@ public class FileTypes {
      * <p>NOTE: turn this check off with the ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST (set to true).
      *
      * @param stream file from user (could be .zip)
+     * @param fname name of the file (for file-extension checks)
      * @throws Exception either file is in the reject-list, or if it's a .zip file and a contained file is in the
      *     reject-list
      */
-    public static void validateFileNotInRejectList(InputStream stream) throws Exception {
+    public static void validateFileNotInRejectList(InputStream stream, String fname) throws Exception {
         String disableCheckEnvVarValue = System.getenv(ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST);
         if (disableCheckEnvVarValue != null && disableCheckEnvVarValue.equalsIgnoreCase("true")) {
             return; // no check
@@ -156,10 +178,15 @@ public class FileTypes {
         // does this stream support mark/rest (required by tika)
         stream = wrapIfNotMarkReset(stream);
 
-        MediaType detectedMediaType = tika.getDetector().detect(stream, new Metadata());
+        Metadata fileMetadata = new Metadata();
+        if (!StringUtils.isAllEmpty(fname)) {
+            fileMetadata.set(TikaCoreProperties.RESOURCE_NAME_KEY, fname);
+        }
+
+        MediaType detectedMediaType = tika.getDetector().detect(stream, fileMetadata);
         if (!detectedMediaType.getBaseType().equals(ZIP_MEDIA_TYPE)) {
             // single file
-            assertSimpleFileNotInRejectList(stream);
+            assertSimpleFileNotInRejectList(stream, fname);
             return;
         }
 
@@ -170,7 +197,7 @@ public class FileTypes {
                 if (entry.isDirectory()) {
                     continue;
                 }
-                assertSimpleFileNotInRejectList(zipStream);
+                assertSimpleFileNotInRejectList(zipStream, fname);
                 zipStream.closeEntry();
             }
         }
@@ -245,20 +272,20 @@ public class FileTypes {
         }
     }
 
+
     /**
-     * Validate a file and (if ok) copy it to the output stream. If the file (or a file inside a zip file) is bad, then
-     * throw.
+     * Validate a file. If the file (or a file inside a zip file) is bad, then throw.
      *
-     * <p>1. copy file to temp folder </br> 2. validate file(s) </br> 3. copy file to final destination </br>
+     * <p>1. copy file to temp folder </br> 2. validate file(s) </br>
      *
      * <p>NOTE: this doesn't handle a zip-inside-a-zip (will throw)
      *
      * @param inputStream file (from user)
-     * @param os final location for file
+     * @param fname name of the file (for file-extension checks)
      * @throws IOException problem with file (either file's type is in reject-list, it's a zip contains a file in the
      *     reject-list, problem copying file, or it's a zip-inside-a-zip)
      */
-    public static void validateFileAndCopy(InputStream inputStream, OutputStream os) throws IOException {
+    public static void validateComplexFile(InputStream inputStream, String fname) throws IOException {
         Path tempFile = null;
         try {
             // create temp file and write the user's file into it
@@ -267,14 +294,7 @@ public class FileTypes {
 
             // validate the file uploaded (and recurse if its a zip)
             try (InputStream tempFileInputStream = java.nio.file.Files.newInputStream(tempFile)) {
-                FileTypes.validateFileNotInRejectList(tempFileInputStream);
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
-
-            // copy the user's original file to the final destination
-            try (InputStream tempFileInputStream = java.nio.file.Files.newInputStream(tempFile)) {
-                IOUtils.copy(tempFileInputStream, os);
+                FileTypes.validateFileNotInRejectList(tempFileInputStream, fname);
             } catch (Exception e) {
                 throw new IOException(e);
             }

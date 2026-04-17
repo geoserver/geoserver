@@ -8,7 +8,7 @@ To access a remote WMTS, it is necessary to load it as a store in GeoServer. Geo
 
 ## Adding an external WMTS
 
-To connect to an external WMTS, it is necessary to load it as a new store. To start, in the [Web administration interface](../../webadmin/index.md), navigate to **Stores --> Add a new store --> WMTS**. The option is listed under **Other Data Sources**.
+To connect to an external WMTS, it is necessary to load it as a new store. To start, in the [Web administration interface](../../webadmin/index.md), navigate to **Data > Stores > Add a new store > WMTS**. The option is listed under **Other Data Sources**.
 
 ![](images/wmtsaddnew.png)
 

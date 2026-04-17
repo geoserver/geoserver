@@ -80,7 +80,7 @@ First let's gather the data that we'll be publishing.
 
 In order to verify that the `tutorial:basemap` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Data > Browse Layers** page and find the `tutorial:basemap` layer.
+1.  Navigate to the **GeoServer > Browse Layers** page and find the `tutorial:basemap` layer.
 
     !!! note
         Use the **Search** field with `tutorial` as shown to limit the number of layers to page through.

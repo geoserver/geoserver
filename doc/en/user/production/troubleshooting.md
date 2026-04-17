@@ -95,7 +95,7 @@ GeoServer provides a request logging capability that is inactive by default. Whe
 
 To track the history of the incoming requests:
 
-1.  Enable request logging by navigating to **Settings > Global** page, scroll down to **Logging Settings**, and [Enable Request Logging](../configuration/globalsettings.md#config_globalsettings_log_request).
+1.  Enable request logging by navigating to **Server > Global Settings** page, scroll down to **Logging Settings**, and [Enable Request Logging](../configuration/globalsettings.md#config_globalsettings_log_request).
 
 2.  Enable this feature using **Enable Request Logging**.
 

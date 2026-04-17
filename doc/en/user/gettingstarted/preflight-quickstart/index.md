@@ -69,7 +69,7 @@ There are several warnings shown when we first start up GeoServer and login as a
 
     This is useful when initially configuring GeoServer, however once you are comfortable everything is working correctly you can configure GeoServer to only record warnings and errors.
 
-    Navigate to **Settings > Global**. Locate the heading **Internal Settings** and adjust **Logging profile** to `PRODUCTION_LOGGING`.
+    Navigate to **Server > Global Settings**. Locate the heading **Internal Settings** and adjust **Logging profile** to `PRODUCTION_LOGGING`.
 
     ![](images/logging-profile.png)
 

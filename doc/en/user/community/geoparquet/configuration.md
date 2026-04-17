@@ -6,7 +6,7 @@ This page describes how to configure GeoParquet data stores in GeoServer, includ
 
 To create a new GeoParquet data store:
 
-1.  Navigate to **Stores --> Add new Store** in the GeoServer web admin interface
+1.  Navigate to **Data > Stores > Add new Store** in the GeoServer web admin interface
 2.  Select **GeoParquet** under "Vector Data Sources"
 3.  Configure the connection parameters as described below
 
@@ -160,7 +160,7 @@ The data store automatically detects these partitions and creates separate featu
 
 After creating and saving a GeoParquet data store:
 
-1.  Navigate to **Layers --> Add a new layer**
+1.  Navigate to **Data > Layers > Add a new layer**
 2.  Select your GeoParquet data store from the dropdown
 3.  Click **Publish** next to the layer you want to publish
 4.  Configure the layer settings (bounding box, CRS, styles, etc.)

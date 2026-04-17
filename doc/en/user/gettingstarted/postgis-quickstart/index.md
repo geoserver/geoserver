@@ -40,7 +40,7 @@ The next step is to create a workspace for the data. A workspace is a container 
 
 2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
 
-3.  Navigate to **Data --> Workspaces**.
+3.  Navigate to **Data > Workspaces**.
 
     ![](../../data/webadmin/img/data_workspaces.png)
 
@@ -65,7 +65,7 @@ The next step is to create a workspace for the data. A workspace is a container 
 
 Once the workspace is created we are ready to add a new store. The store tells GeoServer how to connect to the database.
 
-1.  Navigate to **Data-->Stores**.
+1.  Navigate to **Data > Stores**.
 
 2.  Click on `Add new Store`.
 
@@ -114,7 +114,7 @@ Once the workspace is created we are ready to add a new store. The store tells G
 
 Now that the store is loaded we can publish the layer.
 
-1.  Navigate to **Data --> Layers**.
+1.  Navigate to **Data > Layers**.
 
 2.  Click **Add a new resource**.
 

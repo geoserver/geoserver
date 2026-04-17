@@ -6,7 +6,7 @@ To add metadata to a layer follow the steps in [Adding metadata to Layer](#addin
 
 ### Manually adding metadata
 
-Open the layer: navigate to **Layers --> Choose the layer --> Metadata tab**.
+Open the layer: navigate to **Data > Layers > Choose the layer > Metadata tab**.
 
 The metadata fields are available in the panel **Metadata fields**.
 
@@ -20,7 +20,7 @@ See [Advanced Configuration](advanced.md). Choose a geonetwork from the drop dow
 
 A metadata template can contain the content for metadata fields used in multiple layers. By defining these fields in a template you create one source for the content making it easier to maintain.
 
-To link a layer with template navigate to **Layers --> Choose the layer --> Metadata tab** in the **Link with Template** panel choose a template from the dropdown and click `Link with template`
+To link a layer with template navigate to **Data > Layers > Choose the layer > Metadata tab** in the **Link with Template** panel choose a template from the dropdown and click `Link with template`
 
 The values from the template will added to the metadata of the layer. How this is done depents on the type of the field.
 

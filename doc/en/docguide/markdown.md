@@ -36,13 +36,13 @@ Use `**button**` to name user interface components for interaction (press for bu
 === "Markdown"
 
     ```markdown
-    Navigate to **Data --> Layers** page,
+    Navigate to **Data > Layers** page,
     and press **Add a new layer** to create a new layer.
     ```
 
 === "Preview"
 
-    Navigate to **Data --> Layers** page,
+    Navigate to **Data > Layers** page,
     and press **Add a new layer** to create a new layer.
 
 ### User input

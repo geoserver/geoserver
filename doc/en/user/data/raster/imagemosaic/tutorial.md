@@ -8,7 +8,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 
 ### Create a new store
 
-1.  Go to **Data Panel --> Stores** and click **Add new Store**.
+1.  Go to **Data > Stores** and click **Add new Store**.
 
 2.  Select **ImageMosaic** under **Raster Data Source**:
 
@@ -30,7 +30,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 
 ### Create a new coverage
 
-1.  Navigate to **Data Panel --> Layers** and click **Add a new resource**.
+1.  Navigate to **Data > Layers** and click **Add a new resource**.
 
 2.  Choose the name of the store you just created:
 

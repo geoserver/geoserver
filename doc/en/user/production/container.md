@@ -79,7 +79,7 @@ GeoServer provides a built-in configuration interface to enable CORS. This is th
 ![](images/cors.png)
 
 1.  Log in to the GeoServer Web Admin interface as an administrator.
-2.  Navigate to **Settings --> Global**.
+2.  Navigate to **Server > Global Settings**.
 3.  Locate the **CORS Settings** section.
 
     ![](images/cors_settings.png)

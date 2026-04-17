@@ -225,7 +225,7 @@ To disable the Auto Complete on Web Admin login form:
 
 In some circumstances, you might want to provide access to the Browse Layers page to authenticated users only. The solution is based on adding a new **filter chain** with a rule matching the path of the Browse Layers page to GeoServer's [Authentication chain](../security/auth/chain.md). Here are the steps to reproduce:
 
-- Under **Security** -> **Authentication** -> **Filter Chains**, add a new HTML chain
+- Under **Security > Authentication > Filter Chains**, add a new HTML chain
 - Set the new chain's name to `webLayerPreview` (or likewise)
 - As Ant pattern, enter the path of the Browse Layers page, which is **`/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage`** (since it's an Ant pattern, the path could as well be written shorter with wildcards: **`/web/**/org.geoserver.web.demo.MapPreviewPage`**)
 - Check option **Allow creation of an HTTP session for storing the authentication token**
@@ -239,8 +239,8 @@ With that in place, unauthenticated users now just get forwarded to the login pa
 
 The above procedure could as well be applied to other pages of the web administration interface that one needs to remove anonymous access for. For example:
 
-- **Demos** -> **Demo requests** (path: **`/web/wicket/bookmarkable/org.geoserver.web.demo.DemoRequestsPage`**)
-- **Demos** -> **WCS request builder** (path: **`/web/wicket/bookmarkable/org.geoserver.wcs.web.demo.WCSRequestBuilder`**)
+- **GeoServer > Demos > Demo requests** (path: **`/web/wicket/bookmarkable/org.geoserver.web.demo.DemoRequestsPage`**)
+- **GeoServer > Demos > WCS request builder** (path: **`/web/wicket/bookmarkable/org.geoserver.wcs.web.demo.WCSRequestBuilder`**)
 
 !!! warning
     Although disabling anonymous access to the Browse Layers page **MAY** prevent some unauthenticated users from accessing data with some simple clicks, this is **NOT** a security feature. In particular, since other more sophisticated users, having the ability to build OGC requests, **MAY** still access critical data through GeoServer's services, this is **NOT** a replacement for a well-designed security concept based on data-level or service-level security.

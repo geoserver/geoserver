@@ -1,6 +1,6 @@
 # Application Properties
 
-While many configuration and setup options are available through the Web Administration application **Settings > Global** page, more fundamental (and security minded) changes to how the application operates are made using "Application Properties" defined by (in order of priority):
+While many configuration and setup options are available through the Web Administration application **Server > Global Settings** page, more fundamental (and security minded) changes to how the application operates are made using "Application Properties" defined by (in order of priority):
 
 1.  Java System Properties
 2.  Web Application context parameters

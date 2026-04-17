@@ -32,7 +32,7 @@ As an example OGC API - Features collections lists:
 
 The `collections` resource can have a number of additional links, beyond the basic ones that the service code already includes.
 
-Navigate to **Settings > Global**. The links are configured under heading **OGC API Settings**.
+Navigate to **Server > Global Settings**. <!--The links are configured under heading **OGC API Settings**.-->
 
 ![](img/global_links.png)
 

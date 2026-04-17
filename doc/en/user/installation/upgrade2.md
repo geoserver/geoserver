@@ -3,6 +3,56 @@
 !!! warning
     Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See [Migrating a data directory between versions](../datadirectory/migrating.md) for more details.
 
+## Upgrade Process
+
+The general GeoServer upgrade process is as follows:
+
+1.  Back up the current data directory. This can involve simply copying the directory to an additional place.
+
+2.  Make sure that the current data directory is external to the application (not located inside the application file structure).
+
+    Check the GeoServer Server status page to double check the data directory location.
+
+3.  Make a note of any extensions you have installed.
+
+    - The GeoServer **Server > Server Status** page provides a **Modules** tab listing the modules installed.
+    - Some extensions include more than one module, as an example the WPS extension is listed as **`gs-wps-core`** and **`gs-web-wps`**.
+
+4.  Uninstall the old version and install the new version.
+
+    - Download [maintenance](https://geoserver.org/release/maintain) release to update existing installation.
+
+      There should generally be no problems or issues updating data directories between patch versions of GeoServer (for example, from 2.28.0 to 2.28.1 or vice versa).
+
+      It is also generally possible to revert a minor update and maintain data directory compatibility.
+
+    - Download [stable](https://geoserver.org/release/stable) release when ready to upgrade.
+
+      There should rarely be any issues involved with upgrading between minor versions (for example, from 2.27.x to 2.28.x).
+
+      Upgrading between major versions of GeoServer (for example from 2.28 to 3.0) may not be reversible, since newer versions of GeoServer may make backwards-incompatible changes to the data directory.
+
+5.  Be sure to download and install each extension used by your prior installation.
+
+6.  Make sure that the new installation continues to point to the same data directory used by the previous version.
+
+### How often should I upgrade GeoServer
+
+GeoServer operates with a time boxed release cycle, maintaining "stable" and "maintenance" releases, over the course of a year.
+
+- Plan to upgrade GeoServer **at least twice a year** as new stable releases are made.
+
+  Once the release you are using has entered "maintenance" it is a good idea to upgrade (before the release is no longer supported).
+
+  GeoServer provides some overlap between "stable" and "maintenance" releases to provide you a window of opportunity to upgrade between supported versions.
+
+- GeoServer [security policy](https://github.com/geoserver/geoserver/security/policy) indicates each release is supported with bug fixes for a year, with releases made approximately every two months.
+
+  You may also contact our service providers for extended support beyond this timeframe.
+
+- Monitor release announcements in case a new release is made that provides "Security Considerations" guidance.
+
+  It is always advisable to stay up to date with security patches. The blog post will indicate when the update is urgent, and several releases will be made concurrently (for both stable and maintenance) when urgent action is required.
 !!! note
     Upgrade instructions for [GeoServer 3](upgrade3.md) are also available.
 

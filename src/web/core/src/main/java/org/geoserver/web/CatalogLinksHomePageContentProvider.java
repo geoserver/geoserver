@@ -159,7 +159,12 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
 
             // GROUPS
             if (groupCount == 0 && layerCount > 0 && publishedInfo == null) {
-                BookmarkablePageLink addGroup = new BookmarkablePageLink<>("link", LayerGroupEditPage.class);
+                PageParameters addGroupParams = new PageParameters();
+                if (workspaceInfo != null) {
+                    addGroupParams.add(LayerGroupEditPage.WORKSPACE, workspaceInfo.getName());
+                }
+                BookmarkablePageLink addGroup =
+                        new BookmarkablePageLink<>("link", LayerGroupEditPage.class, addGroupParams);
                 addGroup.add(new Label("title", localizer.getString("addGroups", this)));
                 addGroup.setEnabled(publishedInfo == null);
                 pageLinks.add(addGroup);

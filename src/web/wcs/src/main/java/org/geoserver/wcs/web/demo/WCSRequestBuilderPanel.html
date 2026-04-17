@@ -24,9 +24,6 @@
             <div wicket:id="envelope"/>
           </div>
           <div class="gs-list-item-class" wicket:id="sourceGridContainer">
-            <label for="grid">
-              <wicket:message key="grid">grid</wicket:message>
-            </label>
             <div class="gs-form">
               <div class="choiceItem">
                 <input id="manualGrid" type="checkbox" wicket:id="manualGrid"/>
@@ -39,17 +36,19 @@
               </div>
             </div>
           </div>
-          <div class="gs-list-item-class" wicket:id="targetLayoutContainer">
-            <label for="targetLayout">
-              <wicket:message key="targetLayout">targetLayout</wicket:message>
-            </label>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
-                <select wicket:id="targetLayout"/>
+          <div class="gs-form" wicket:id="targetLayoutContainer">
+            <div class="gs-form-group">
+              <label for="targetLayout">
+                <wicket:message key="targetLayout">targetLayout</wicket:message>
+              </label>
+              <div class="gs-unordered-list-class">
+                <div class="gs-list-item-class">
+                  <select wicket:id="targetLayout" class="w-fit"/>
+                </div>
               </div>
-              <div class="gs-list-item-class">
-                <div wicket:id="targetGridToWorld"/>
-              </div>
+            </div>
+            <div class="gs-list-item-class">
+              <div wicket:id="targetGridToWorld" class="w-fit"/>
             </div>
           </div>
           <div class="gs-form-group">

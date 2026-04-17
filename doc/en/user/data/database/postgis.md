@@ -8,7 +8,7 @@ As with all formats, adding a PostGIS connection to GeoServer involves adding a 
 
 ### Using default connection
 
-To begin, navigate to **Stores --> Add a new store --> PostGIS**.
+To begin, navigate to **Data > Stores > Add a new store > PostGIS**.
 
 Fill in the *Basic Store Info* used to identify the database when managing layers.
 
@@ -88,7 +88,7 @@ When finished, click **Save**.
 
 GeoServer can also connect to a PostGIS database using [JNDI](https://docs.oracle.com/javase/tutorial/jndi/overview/index.md) (Java Naming and Directory Interface). This is used to allow a PostGIS DataStore to share a named connection pool of PostGIS connections configured in your application server.
 
-To begin, navigate to **Stores --> Add a new store --> PostGIS (JNDI)**.
+To begin, navigate to **Data > Stores > Add a new store > PostGIS (JNDI)**.
 
 ![](images/postgisjndi.png)
 

@@ -34,7 +34,7 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
 1.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
-3.  Navigate to **Data --> Workspaces**.
+3.  Navigate to **Data > Workspaces**.
 4.  Click the **Add new workspace** button to display the **New Workspace** page.
 5.  You will be prompted to enter a workspace **Name** and **Namespace URI**.
 
@@ -56,7 +56,7 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
 Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the geopackage.
 
-1.  Navigate to **Data-->Stores**.
+1.  Navigate to **Data > Stores**.
 
 2.  This page displays a list of stores, including the type of store and the workspace that the store belongs to.
 
@@ -161,7 +161,7 @@ Now that we have located the image, we can publish this information as a layer.
 
 In order to verify that the `tutorial:shaded` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Data > Browse Layers** page and find the `tutorial:shaded` layer.
+1.  Navigate to the **GeoServer > Browse Layers** page and find the `tutorial:shaded` layer.
 
     !!! note
         Use the **Search** field with `tutorial` as shown to limit the number of layers to page through.

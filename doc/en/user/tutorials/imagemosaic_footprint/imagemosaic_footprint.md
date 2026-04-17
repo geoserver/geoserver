@@ -75,11 +75,11 @@ Here are presented a few steps for configuring a new ImageMosaic layer with foot
 
 ### Step 1: Create a new ImageMosaic Layer
 
-As seen before an ImageMosaic data store can be created by going to **Stores --> Add New Store --> ImageMosaic**.
+As seen before an ImageMosaic data store can be created by going to **Data > Stores > Add New Store > ImageMosaic**.
 
 ![](../../data/raster/imagemosaic/images/imagemosaicconfigure.png)
 
-An associated Layer can be created by going to **Layers --> Add New Resource**, choosing the name of the data store created above and then clicking on the **publish** button.
+An associated Layer can be created by going to **Data > Layers > Add New Resource**, choosing the name of the data store created above and then clicking on the **publish** button.
 
 ### Step 2: Configuring a new Layer for the Mosaic
 
@@ -178,7 +178,7 @@ Zip file contains two images and their related **.msk** files. For this example 
 
 ### Step 2: Watch the layer using Browse Layers
 
-Go to **Browse Layers --> rastermask --> OpenLayers**. The result should be similar to the one below.
+Go to **GeoServer > Browse Layers > rastermask > OpenLayers**. The result should be similar to the one below.
 
 ![](img/footprint_none.png)
 
@@ -190,7 +190,7 @@ Change the **FootprintBehavior** parameter to *Transparent*. *Cut* value should 
 
 ### Step 4: Check the result
 
-Go to **Browse Layers --> rastermask --> OpenLayers**. The result should be changed now.
+Go to **GeoServer > Browse Layers > rastermask > OpenLayers**. The result should be changed now.
 
 ![](img/footprint_transparent.png)
 

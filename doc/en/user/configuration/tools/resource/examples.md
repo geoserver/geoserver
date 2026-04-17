@@ -4,7 +4,7 @@
 
 To upload a file to the global styles folder:
 
-1.  Use **Resource Browser** to select **/ --> styles** in the resource tree.
+1.  Use **Resource Browser** to select **/ > styles** in the resource tree.
 
     ![](img/upload_select_styles.png)
 

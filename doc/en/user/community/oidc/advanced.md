@@ -60,11 +60,11 @@ This setting can obviously be used to access sensitive information, and you are 
 
 To setup for troubleshooting OIDC activity:
 
-1.  Navigate to **Settings --> Global**
+1.  Navigate to **Server > Global Settings**
 
 2.  Select the logging profile `OIDC_LOGGING`
 
-3.  Navigate **Security --> Authentication**
+3.  Navigate **Security > Authentication**
 
 4.  Setup your OAuth2 OpenID Connect configuration with **Log Sensitive Information (do not use in production)** checked
 

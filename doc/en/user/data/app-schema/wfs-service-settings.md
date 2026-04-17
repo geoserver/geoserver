@@ -1,6 +1,6 @@
 # WFS Service Settings
 
-There are two GeoServer WFS service settings that are strongly recommended for interoperable complex feature services. These can be enabled through the **Services --> WFS** page on the GeoServer web interface or by manually editing the **`wfs.xml`** file in the data directory,
+There are two GeoServer WFS service settings that are strongly recommended for interoperable complex feature services. These can be enabled through the **Services > Vectors > WFS** page on the GeoServer web interface or by manually editing the **`wfs.xml`** file in the data directory,
 
 ## Canonical schema location
 
@@ -8,7 +8,7 @@ The default GeoServer behaviour is to encode WFS responses that include a `schem
 
 To enable this option, choose *one* of these:
 
-1.  Either: On the **Service --> WFS** page under *Conformance* check *Encode canonical WFS schema location*.
+1.  Either: On the **Services > Vectors > WFS** page under *Conformance* check *Encode canonical WFS schema location*.
 
 2.  Or: Insert the following line before the closing tag in **`wfs.xml`**:
 
@@ -22,7 +22,7 @@ By default GeoServer will encode WFS 1.1 responses with multiple features in a s
 
 To enable this option, choose *one* of these:
 
-1.  Either: On the **Service --> WFS** page under *Encode response with* select *Multiple "featureMember" elements*.
+1.  Either: On the **Services > Vectors > WFS** page under *Encode response with* select *Multiple "featureMember" elements*.
 
 2.  Or: Insert the following line before the closing tag in **`wfs.xml`**:
 

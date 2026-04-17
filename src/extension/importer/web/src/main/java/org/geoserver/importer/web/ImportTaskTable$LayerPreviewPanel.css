@@ -15,3 +15,12 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+.gs-panel-ImportTaskTable_LayerPreviewPanel {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+}
+.gs-panel-ImportTaskTable_LayerPreviewPanel .gs-input-group {
+      padding-bottom: 0;
+}

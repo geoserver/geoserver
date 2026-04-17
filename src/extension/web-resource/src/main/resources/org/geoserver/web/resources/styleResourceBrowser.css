@@ -32,6 +32,7 @@
   background-color: var(--gs-primary-bg-subtle);
   border: var(--gs-border-width) var(--gs-border-style) var(--gs-primary-border-subtle);
   border-radius: var(--gs-border-radius);
+  flex-wrap: wrap;
 }
 
 .menu a {

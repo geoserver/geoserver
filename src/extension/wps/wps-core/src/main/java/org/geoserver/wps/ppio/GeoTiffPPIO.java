@@ -75,7 +75,7 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
 
     private final WPSResourceManager resources;
 
-    protected GeoTiffPPIO(WPSResourceManager resources) {
+    public GeoTiffPPIO(WPSResourceManager resources) {
         super(GridCoverage2D.class, GridCoverage2D.class, "image/tiff");
         this.resources = resources;
     }

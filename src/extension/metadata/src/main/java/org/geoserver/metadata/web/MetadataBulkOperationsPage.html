@@ -16,14 +16,12 @@
 			<legend>
 				<wicket:message key="fixTitle" />
 			</legend>
-			<form>
-				<div class="gs-unordered-list-class">
-					<div class="gs-list-item-class"> <wicket:message key="fixMsg"></wicket:message></div>
-					<div class="gs-list-item-class">
-						<button wicket:id="fix">
-							<wicket:message key="fixBtn" />
-						</button>
-					</div>
+			<form class="gs-form">
+				<div class="gs-form-group"><div> <wicket:message key="fixMsg"></wicket:message></div></div>
+				<div>
+					<button wicket:id="fix">
+						<wicket:message key="fixBtn" />
+					</button>
 				</div>
 			</form>
 		</fieldset>
@@ -31,20 +29,19 @@
 			<legend>
 				<wicket:message key="importTitle" />
 			</legend>
-			<form wicket:id="formImport">
-				<div class="gs-unordered-list-class">
-					<div class="gs-list-item-class"> <wicket:message key="importMsg" /></div>
-					<div class="gs-list-item-class"> <label for="geonetworkName"><wicket:message
-								key="geonetworkName" /></label> `<select id="geonetworkName"
-						wicket:id="geonetworkName" /></div>
-					<div class="gs-list-item-class"> <label for="importCsv"><wicket:message
-								key="importCsv" /></label> <input wicket:id="importCsv" size="40"
-						type="file" /></div>
-					<div class="gs-list-item-class">
-						<button wicket:id="import">
-							<wicket:message key="importBtn" />
-						</button>
-					</div>
+			<form wicket:id="formImport" class="gs-form">
+				<div class="gs-form-group"> <div><wicket:message key="importMsg" /></div></div>
+				<div class="gs-form-group">
+					<label for="geonetworkName"><wicket:message key="geonetworkName" /></label>
+					<select id="geonetworkName" wicket:id="geonetworkName" />
+				</div>
+				<div class="gs-form-group">
+					<label for="importCsv"><wicket:message key="importCsv" /></label>
+					<input wicket:id="importCsv" size="40" type="file" /></div>
+				<div>
+					<button wicket:id="import">
+						<wicket:message key="importBtn" />
+					</button>
 				</div>
 			</form>
 		</fieldset>
@@ -52,20 +49,20 @@
 			<legend>
 				<wicket:message key="customTitle" />
 			</legend>
-			<form wicket:id="formCustom">
-				<div class="gs-unordered-list-class">
-					<div class="gs-list-item-class"> <wicket:message key="customMsg" /></div>
-					<div class="gs-list-item-class"> <label for="ruleList"><wicket:message
-								key="ruleList" /></label> `<input id="ruleList" type="text"
-						wicket:id="ruleList" /></div>
-					<div class="gs-list-item-class"> <label for="customCsv"><wicket:message
-								key="customCsv" /></label> <input wicket:id="customCsv" size="40"
-						type="file" /></div>
-					<div class="gs-list-item-class">
-						<button wicket:id="custom">
-							<wicket:message key="customBtn" />
-						</button>
-					</div>
+			<form wicket:id="formCustom" class="gs-form">
+				<div class="gs-form-group"> <div><wicket:message key="customMsg" /></div></div>
+				<div class="gs-form-group">
+					<label for="ruleList"><wicket:message key="ruleList" /></label>
+					<input id="ruleList" type="text" wicket:id="ruleList" />
+				</div>
+				<div class="gs-form-group">
+					<label for="customCsv"><wicket:message key="customCsv" /></label>
+					<input wicket:id="customCsv" size="40" type="file" />
+				</div>
+				<div>
+					<button wicket:id="custom">
+						<wicket:message key="customBtn" />
+					</button>
 				</div>
 			</form>
 		</fieldset>
@@ -73,17 +70,16 @@
 			<legend>
 				<wicket:message key="clearTitle" />
 			</legend>
-			<form wicket:id="formClear">
-				<div class="gs-unordered-list-class">
-					<div class="gs-list-item-class"> <wicket:message key="clearMsg" /></div>
-					<div class="gs-list-item-class choiceItem"><input type="checkbox"
-						id="clearTemplates" wicket:id="clearTemplates"></input> <label
-						for="clearTemplates"><wicket:message key="clearTemplates" /></label></div>
-					<div class="gs-list-item-class">
-						<button wicket:id="clear">
-							<wicket:message key="clearBtn" />
-						</button>
-					</div>
+			<form wicket:id="formClear" class="gs-form">
+				<div class="gs-form-group"> <div><wicket:message key="clearMsg" /></div></div>
+				<div class="choiceItem">
+					<input type="checkbox" id="clearTemplates" wicket:id="clearTemplates"></input>
+					<label for="clearTemplates"><wicket:message key="clearTemplates" /></label>
+				</div>
+				<div>
+					<button wicket:id="clear">
+						<wicket:message key="clearBtn" />
+					</button>
 				</div>
 			</form>
 		</fieldset>

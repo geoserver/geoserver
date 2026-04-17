@@ -18,6 +18,7 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StoreInfo;
@@ -222,5 +223,110 @@ public class StorePageTest extends GeoServerWicketTestSupport {
 
         DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(0, dv.size());
+    }
+
+    @Test
+    public void testGroupParameterFiltersToBackingStore() {
+        // ?group=testGroup — group containing BasicPolygons should show only its backing store
+        LayerInfo citeLayer = getCatalog().getLayerByName("cite:BasicPolygons");
+        StoreInfo backingStore = citeLayer.getResource().getStore();
+
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        group.setName("testGroup");
+        group.getLayers().add(citeLayer);
+        group.getStyles().add(null);
+        getCatalog().add(group);
+
+        try {
+            tester.startPage(StorePage.class, new PageParameters().add("group", "testGroup"));
+            tester.assertRenderedPage(StorePage.class);
+            tester.assertNoErrorMessage();
+
+            DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            assertEquals(1, dv.size());
+
+            StoreProvider provider = (StoreProvider) dv.getDataProvider();
+            StoreInfo rendered = provider.iterator(0, 1).next();
+            assertEquals(backingStore.getId(), rendered.getId());
+        } finally {
+            getCatalog().remove(getCatalog().getLayerGroupByName("testGroup"));
+        }
+    }
+
+    @Test
+    public void testGroupParameterWithUnknownGroupYieldsNoStores() {
+        // ?group=nonExistentGroup — no layer group with that name → empty result
+        tester.startPage(StorePage.class, new PageParameters().add("group", "nonExistentGroup"));
+        tester.assertRenderedPage(StorePage.class);
+        tester.assertNoErrorMessage();
+
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(0, dv.size());
+    }
+
+    @Test
+    public void testGroupParameterTakesPriorityOverLayerParameter() {
+        // ?group=testGroup&layer=PrimitiveGeoFeature — group param wins; result matches the
+        // group's backing store (cite), not the sf layer's backing store
+        LayerInfo citeLayer = getCatalog().getLayerByName("cite:BasicPolygons");
+        StoreInfo citeStore = citeLayer.getResource().getStore();
+
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        group.setName("testGroup");
+        group.getLayers().add(citeLayer);
+        group.getStyles().add(null);
+        getCatalog().add(group);
+
+        try {
+            tester.startPage(
+                    StorePage.class,
+                    new PageParameters().add("group", "testGroup").add("layer", "PrimitiveGeoFeature"));
+            tester.assertRenderedPage(StorePage.class);
+            tester.assertNoErrorMessage();
+
+            DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            assertEquals(1, dv.size());
+
+            StoreProvider provider = (StoreProvider) dv.getDataProvider();
+            StoreInfo rendered = provider.iterator(0, 1).next();
+            assertEquals(citeStore.getId(), rendered.getId());
+        } finally {
+            getCatalog().remove(getCatalog().getLayerGroupByName("testGroup"));
+        }
+    }
+
+    @Test
+    public void testGroupWithMultipleStoresShowsAllBackingStores() {
+        // ?group=multiStoreGroup — group spanning cite and sf workspaces exposes both backing stores
+        LayerInfo citeLayer = getCatalog().getLayerByName("cite:BasicPolygons");
+        LayerInfo sfLayer = getCatalog().getLayerByName("sf:PrimitiveGeoFeature");
+        StoreInfo citeStore = citeLayer.getResource().getStore();
+        StoreInfo sfStore = sfLayer.getResource().getStore();
+
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        group.setName("multiStoreGroup");
+        group.getLayers().add(citeLayer);
+        group.getLayers().add(sfLayer);
+        group.getStyles().add(null);
+        group.getStyles().add(null);
+        getCatalog().add(group);
+
+        try {
+            tester.startPage(StorePage.class, new PageParameters().add("group", "multiStoreGroup"));
+            tester.assertRenderedPage(StorePage.class);
+            tester.assertNoErrorMessage();
+
+            DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            assertEquals(2, dv.size());
+
+            StoreProvider provider = (StoreProvider) dv.getDataProvider();
+            Iterator<StoreInfo> it = provider.iterator(0, 2);
+            java.util.Set<String> renderedIds = new java.util.HashSet<>();
+            while (it.hasNext()) renderedIds.add(it.next().getId());
+            assertTrue(renderedIds.contains(citeStore.getId()));
+            assertTrue(renderedIds.contains(sfStore.getId()));
+        } finally {
+            getCatalog().remove(getCatalog().getLayerGroupByName("multiStoreGroup"));
+        }
     }
 }

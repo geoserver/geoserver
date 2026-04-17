@@ -728,6 +728,53 @@
                   <inputFileExtensions>md</inputFileExtensions>
                 </configuration>
               </execution>
+              <!--
+                Render the shared LICENSE.md / README.md from src/release/extensions/ into the
+                same path the per-module assembly descriptors expect.  The release module builds
+                AFTER extensions in the reactor, so extensions cannot rely on it having run first.
+                The first extension to build will generate these files; subsequent ones find them
+                already in place (the markdown plugin is a no-op when outputs are up-to-date).
+              -->
+              <execution>
+                <id>shared-extension-docs</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+                <configuration>
+                  <inputDirectory>${geoserverBaseDir}/release/extensions</inputDirectory>
+                  <outputDirectory>${geoserverBaseDir}/release/target/html/extensions</outputDirectory>
+                  <recursiveInput>false</recursiveInput>
+                  <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
+                  <headerHtmlFile>${project.build.directory}/html-template/header.html</headerHtmlFile>
+                  <footerHtmlFile>${project.build.directory}/html-template/footer.html</footerHtmlFile>
+                  <pegdownExtensions>TABLES,FENCED_CODE_BLOCKS,AUTOLINKS,FORCELISTITEMPARA</pegdownExtensions>
+                  <defaultTitle>true</defaultTitle>
+                  <inputFileExtensions>md</inputFileExtensions>
+                </configuration>
+              </execution>
+              <!--
+                Render the top-level license files (GPL, LGPL, NOTICE, etc.) into the path
+                referenced by the assembly descriptors' licenses fileSet.
+              -->
+              <execution>
+                <id>shared-licenses</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+                <configuration>
+                  <inputDirectory>${geoserverBaseDir}/../licenses</inputDirectory>
+                  <outputDirectory>${geoserverBaseDir}/release/target/html/licenses</outputDirectory>
+                  <recursiveInput>false</recursiveInput>
+                  <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
+                  <headerHtmlFile>${project.build.directory}/html-template/header.html</headerHtmlFile>
+                  <footerHtmlFile>${project.build.directory}/html-template/footer.html</footerHtmlFile>
+                  <pegdownExtensions>TABLES,FENCED_CODE_BLOCKS,AUTOLINKS,FORCELISTITEMPARA</pegdownExtensions>
+                  <defaultTitle>true</defaultTitle>
+                  <inputFileExtensions>md,txt</inputFileExtensions>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
         </plugins>

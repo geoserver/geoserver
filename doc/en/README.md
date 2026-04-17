@@ -26,13 +26,7 @@ The documentation is written with [mkdocs](https://www.mkdocs.org/), which is a 
 3. Use ***mkdocs*** to serve preview from virtual environment:
 
    ```bash
-   mkdocs serve
-   ```
-
-4. Open preview in browser:
-
-   ```bash
-   python3 -m webbrowser http://localhost:8000
+   mkdocs serve --livereload --no-directory-urls -o
    ```
 
 ## Building with Maven

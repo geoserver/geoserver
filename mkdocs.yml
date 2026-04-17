@@ -12,6 +12,7 @@ exclude_docs: |
   README.md
   target
   index.html
+  venv
   en/user/styling/ysld/reference/symbolizers/include/
   en/developer/policies/gsip_voting.md
   en/developer/quickstart/checkout.md
@@ -114,6 +115,7 @@ not_in_nav: |
   en/LICENSE.md
   en/release/rest.md
   en/user/data/webadmin/layerpreview.md
+  en/user/installation/upgrade2.md
 
 nav:
   - Home: index.md
@@ -132,7 +134,7 @@ nav:
       - en/user/installation/win_installer.md
       - en/user/installation/war.md
       - en/user/installation/docker.md
-      - en/user/installation/upgrade.md
+      - en/user/installation/upgrade3.md
     - Getting started:
       - en/user/gettingstarted/index.md
       - Using the web administration interface: en/user/gettingstarted/web-admin-quickstart/index.md
@@ -947,6 +949,7 @@ nav:
       - en/user/tutorials/feature-pregeneralized/feature-pregeneralized_tutorial.md
       - INSPIRE metadata configuration using metadata and CSW: en/user/tutorials/metadata/index.md
       - en/user/tutorials/tomcat-jndi/tomcat-jndi.md
+      - Tomcat hardening: en/user/tutorials/tomcat-hardening/index.md
       - en/user/tutorials/jboss/jboss_tutorial.md
       - en/user/tutorials/cloud-foundry/run_cf.md
 

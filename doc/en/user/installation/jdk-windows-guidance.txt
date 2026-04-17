@@ -1,4 +1,5 @@
 Download an OpenJDK release for Windows:
 
-* https://adoptium.net/temurin/releases/?version=17 Temurin 17 (LTS) - Recommended
-* https://adoptium.net/temurin/releases/?version=21 Temurin 21 (LTS)
+* [Temurin 17 (LTS)](https://adoptium.net/temurin/releases/?version=17) Temurin 17 (LTS) - Recommended
+* [Temurin 21 (LTS)](https://adoptium.net/temurin/releases/?version=21)
+

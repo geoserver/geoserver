@@ -52,12 +52,7 @@ Serve live preview locally:
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-mkdocs serve --livereload
-```
-
-Open preview in browser:
-```bash
-python3 -m webbrowser http://localhost:8000
+mkdocs serve --livereload --no-directory-urls -o
 ```
 
 See the [documentation guide])(https://docs.geoserver.org/3.0.x/en/docguide/) for more details.

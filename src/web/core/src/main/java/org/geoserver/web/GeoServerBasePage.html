@@ -33,8 +33,13 @@
                     </li>
                   </ul>
                 </li>
+                <li class="gs-dropdown-item" wicket:id="standalone" role="none">
+                  <a wicket:id="link" role="menuitem">
+                    <span wicket:id="link.label"></span><span wicket:id="link.ctxIndicator" class="gs-ctx-indicator" aria-hidden="true"></span>
+                  </a>
+                </li>
+                <div class="gs-dropdown devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
               </ul>
-              <div class="devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
             </div>
           </div>
           <div class="navigation-content-header">
@@ -65,6 +70,7 @@
                   <form wicket:id="loginform" method="post" action="../j_spring_security_check" class="gs-login-form">
                     <div wicket:id="login.include" class="authentication-form"></div>
                     <button type="submit" class="button primary">
+                      <i wicket:id="link.icon"></i>
                       <span wicket:id="link.label"></span>
                     </button>
                   </form>

@@ -3,9 +3,6 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-PanelEdit">
-        <h3>
-          <wicket:message key="titleEdit"/>
-        </h3>
         <div wicket:id="feedback"/>
         <div class="gs-unordered-list-class">
           <div class="gs-list-item-class">
@@ -13,13 +10,12 @@
               <wicket:message key="resource"/>
             </label>
             <input wicket:id="resource" size="40" type="text"/>
-            <br/>
-            <span wicket:id="createDirectory">
-              <small>
-                <wicket:message key="createDirectory"/>
-              </small>
-            </span>
           </div>
+          <span class="gs-list-item-class" wicket:id="createDirectory">
+            <small>
+              <wicket:message key="createDirectory"/>
+            </small>
+          </span>
           <div class="gs-list-item-class">
             <label>
               <wicket:message key="contents"/>

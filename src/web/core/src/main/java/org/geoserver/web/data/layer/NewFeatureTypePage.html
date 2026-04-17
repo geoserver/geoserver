@@ -6,19 +6,24 @@
 <wicket:extend>
 
     <form wicket:id="form">
-
-    <div class="mb-3">
-      <label for="name"><wicket:message key="name">Name</wicket:message></label>
-      <input id="name" type="text" wicket:id="name"/>
-    </div>
-    <div class="mb-3">
-        <label for="attributes"><wicket:message key="attributes">atts</wicket:message></label>
-        <div wicket:id="attributes"></div>
-    </div>
-
-    <div class="button-group toolbar-sticky selfclear"><a href="#" class="form-button-save button primary" wicket:id="save"><wicket:message
-        key="save">Save</wicket:message></a> <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel"><wicket:message
-        key="cancel">Cancel</wicket:message></a></div>
+      <div class="gs-form">
+        <div></div>
+        <div class="gs-form-group">
+          <label for="name"><wicket:message key="name">Name</wicket:message></label>
+          <input id="name" type="text" wicket:id="name" class="w-md"/>
+        </div>
+        <div class="gs-list-item-class">
+            <label for="attributes"><wicket:message key="attributes">atts</wicket:message></label>
+            <div wicket:id="attributes"></div>
+        </div>
+  
+        <div class="button-group toolbar-sticky selfclear">
+          <a href="#" class="form-button-save button primary" wicket:id="save"><wicket:message
+            key="save">Save</wicket:message></a>
+          <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel"><wicket:message
+            key="cancel">Cancel</wicket:message></a>
+        </div>
+      </div>
     </form>
 
     <!-- Fragments used to build the page -->

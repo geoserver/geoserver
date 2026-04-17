@@ -48,6 +48,8 @@
   <bean id="webDispatcherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"
     lazy-init="true">
+    <!-- see OWSHandlerMapping.DEFAULT_ORDER -->
+    <property name="order" value="-50"/>
     <property name="alwaysUseFullPath" value="true" />
     <property name="patternParser"><null/></property> <!-- Spring 5.x backwards compatibility -->
     <property name="mappings">
@@ -109,6 +111,7 @@
     <property name="category" ref="geoserverCategory" />
     <property name="icon" value="gs-icon-geoserver" />
     <property name="order" value="5" />
+    <property name="contextParams" value="all" />
   </bean>
   <bean id="statusMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="server.admin.status" />

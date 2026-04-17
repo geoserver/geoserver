@@ -3,7 +3,9 @@
 <body>
 <wicket:extend>
 <form wicket:id="form">
-  <h3><span><wicket:message key="ogcServices">OGC Services</wicket:message></span></h3>
+  <div class="gs-content-header">
+    <h3 class="gs-content-header-title"><span><wicket:message key="ogcServices">OGC Services</wicket:message></span></h3>
+  </div>
   <fieldset>
     <legend><span><wicket:message key="serviceSettings">Services Settings</wicket:message></span></legend>
     <div class="gs-form">
@@ -55,7 +57,9 @@
       </div>
     </div>
   </fieldset>
-  <h3><span><wicket:message key="internalSettings">Internal Settings</wicket:message></span></h3>
+  <div class="gs-content-header">
+    <h3 class="gs-content-header-title"><span><wicket:message key="internalSettings">Internal Settings</wicket:message></span></h3>
+  </div>
   <fieldset>
     <legend><span><wicket:message key="loggingSettings">Logging Settings</wicket:message></span></legend>
     <div class="gs-form">
@@ -151,17 +155,20 @@
       </div>
     </div>
   </fieldset>
-  <h3><span><wicket:message key="otherSettings">Other Settings</wicket:message></span></h3>
-  <div class="gs-form">
-    <div class="" wicket:id="extensions">
-      <fieldset wicket:id="content"></fieldset>
-    </div>
+  <div class="gs-content-header">
+    <h3 class="gs-content-header-title"><span><wicket:message key="otherSettings">Other Settings</wicket:message></span></h3>
   </div>
-  <div class="gs-form">
-    <div class="choiceItem">
-      <input id="trailingSlashMatch" type="checkbox" wicket:id="trailingSlashMatch" />
-      <label for="trailingSlashMatch"><wicket:message key="trailingSlashMatch">Match URLs with Trailing Slash (Requires restart)</wicket:message></label>
+  <fieldset>
+    <legend><span><wicket:message key="urlMapping">URL Mapping</wicket:message></span></legend>
+    <div class="gs-form">
+      <div class="choiceItem">
+        <input id="trailingSlashMatch" type="checkbox" wicket:id="trailingSlashMatch" />
+        <label for="trailingSlashMatch"><wicket:message key="trailingSlashMatch">Match URLs with Trailing Slash (Requires restart)</wicket:message></label>
+      </div>
     </div>
+  </fieldset>
+  <div wicket:id="extensions">
+    <div wicket:id="content"></div>
   </div>
   <div class="button-group toolbar-sticky selfclear">
     <button type="submit" class="form-button-save primary" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>

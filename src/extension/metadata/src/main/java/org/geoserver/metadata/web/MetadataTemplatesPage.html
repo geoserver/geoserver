@@ -12,17 +12,17 @@
     <div wicket:id="dialog"></div>
     <div wicket:id="progress"></div>
 
-    <div class="gs-unordered-list-class links-above-table">
-        <div class="gs-list-item-class"> <a class="button outline-primary" href="#" wicket:id="addNew"><i class="gs-icon gs-icon-add"></i> <wicket:message key="addNew" /></a></div>
-        <div class="gs-list-item-class"> <a class="button outline-danger" href="#" wicket:id="removeSelected"><i class="gs-icon gs-icon-delete"></i><wicket:message key="removeSelected" /></a></div>
-        <div class="gs-list-item-class"> <a class="copy-link" href="#" wicket:id="copySelected"><wicket:message key="copySelected" /></a></div>
+    <div class="action-group">
+        <a class="button outline-primary" href="#" wicket:id="addNew"><i class="gs-icon gs-icon-add"></i> <wicket:message key="addNew" /></a>
+        <a class="button outline-danger" href="#" wicket:id="removeSelected"><i class="gs-icon gs-icon-delete"></i><wicket:message key="removeSelected" /></a>
+        <a class="button" href="#" wicket:id="copySelected"><i class="gs-icon gs-icon-copy"></i><wicket:message key="copySelected" /></a>
     </div>
 
     <div wicket:id="templatesPanel"></div>
-                   
+
     <br />
 
-	<div class="button-group toolbar-sticky selfclear">
+	<div class="button-group toolbar-sticky">
 		<a href="#" class="form-button-save button primary" wicket:id="save"><wicket:message key="save" /></a> <a
 	       href="#" class="form-button-cancel button outline-danger" wicket:id="cancel"><wicket:message key="cancel" /></a>
 	</div>

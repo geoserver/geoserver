@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-csw</artifactId>
+    <version>3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>gs-csw-iso-assembly</artifactId>
+  <packaging>jar</packaging>
+  <name>CSW ISO Metadata Profile Assembly</name>
+  <description>CSW ISO metadata profile zip package builder</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.csw</groupId>
+      <artifactId>gs-csw-iso</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>

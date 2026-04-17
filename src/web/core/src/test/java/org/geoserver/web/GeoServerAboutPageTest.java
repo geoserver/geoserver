@@ -11,7 +11,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.util.tester.TagTester;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
@@ -33,7 +32,6 @@ public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
      * non-admin -> version info should NOT be there gets the page as ADMIN -> version info SHOULD be there
      */
     @Test
-    @Ignore
     public void testHideSensitiveInfo() throws Exception {
         logout();
         tester.executeUrl("./wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage");

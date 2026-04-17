@@ -15,6 +15,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -37,16 +38,19 @@ public class StorePage extends GeoServerSecuredPage {
 
     private String targetWorkspaceStr = null;
     private String targetLayerStr = null;
+    private String targetGroupStr = null;
 
     StoreProvider provider = new StoreProvider() {
         @Override
         protected Filter getContextFilter() {
+            String targetPublishedStr = targetGroupStr != null ? targetGroupStr : targetLayerStr;
+
             // Optional layer constraint: Stores which back the given LayerInfo/LayerGroupInfo.
-            if (targetLayerStr != null && !targetLayerStr.isEmpty()) {
+            if (!Strings.isEmpty(targetPublishedStr)) {
                 Set<String> layerStoreIds = new LinkedHashSet<>();
 
-                // First try a named layer, then a layer group (the UI parameter is called "layer" in both cases).
-                LayerInfo layer = getCatalog().getLayerByName(targetLayerStr);
+                // First try a named layer, then a layer group
+                LayerInfo layer = getCatalog().getLayerByName(targetPublishedStr);
                 if (layer != null) {
                     if (layer.getResource() != null) {
                         StoreInfo store = layer.getResource().getStore();
@@ -55,7 +59,7 @@ public class StorePage extends GeoServerSecuredPage {
                         }
                     }
                 } else {
-                    LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(targetLayerStr);
+                    LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(targetPublishedStr);
                     if (layerGroup != null) {
                         LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
                         for (LayerInfo li : helper.allLayers()) {
@@ -84,10 +88,9 @@ public class StorePage extends GeoServerSecuredPage {
             }
 
             // Optional workspace constraint only.
-            if (targetWorkspaceStr != null && !targetWorkspaceStr.isEmpty()) {
+            if (!Strings.isEmpty(targetWorkspaceStr)) {
                 return Predicates.equal("workspace.name", targetWorkspaceStr);
             }
-
             return null;
         }
     };
@@ -107,6 +110,11 @@ public class StorePage extends GeoServerSecuredPage {
         if (!layerParam.isEmpty()) {
             this.targetLayerStr = layerParam.toString();
         }
+        StringValue groupParam = parameters.get("group");
+        if (!groupParam.isEmpty()) {
+            this.targetGroupStr = groupParam.toString();
+        }
+
         // the table, and wire up selection change
         table = new StorePanel("table", provider, true) {
             @Override

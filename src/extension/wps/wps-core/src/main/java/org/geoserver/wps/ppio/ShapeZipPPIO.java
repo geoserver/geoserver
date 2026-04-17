@@ -45,7 +45,7 @@ public class ShapeZipPPIO extends BinaryPPIO {
     private final GeoServerResourceLoader resourceLoader;
     WPSResourceManager resources;
 
-    protected ShapeZipPPIO(
+    public ShapeZipPPIO(
             WPSResourceManager resources, GeoServer gs, Catalog catalog, GeoServerResourceLoader resourceLoader) {
         super(FeatureCollection.class, FeatureCollection.class, "application/zip");
         this.resources = resources;

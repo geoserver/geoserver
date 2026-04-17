@@ -39,7 +39,11 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.StringValue;
+import org.geoserver.catalog.LayerGroupHelper;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
@@ -62,16 +66,40 @@ public class MapPreviewPage extends GeoServerBasePage {
             new PackageResourceReference(MapPreviewPage.class, "MapPreviewPage.js");
 
     private String targetWorkspaceStr = null;
+    private String targetLayerStr = null;
+    private String targetGroupStr = null;
 
     PreviewLayerProvider provider = new PreviewLayerProvider() {
         @Override
         protected Filter getContextFilter() {
-            if (targetWorkspaceStr == null || targetWorkspaceStr.isEmpty()) {
-                return null;
+            String targetPublishedStr = targetGroupStr != null ? targetGroupStr : targetLayerStr;
+            if (targetPublishedStr != null) {
+                String targetLayer;
+                if (targetWorkspaceStr != null) {
+                    targetLayer = targetWorkspaceStr + ":" + targetPublishedStr;
+                } else {
+                    targetLayer = targetPublishedStr;
+                }
+                LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
+                if (gi != null) {
+                    LayerGroupHelper helper = new LayerGroupHelper(gi);
+                    List<String> ids = new ArrayList<>();
+                    for (PublishedInfo li : helper.allPublished()) {
+                        ids.add(li.getId());
+                    }
+                    return ids.isEmpty() ? Filter.EXCLUDE : Predicates.in("id", ids);
+                }
+                LayerInfo li = getCatalog().getLayerByName(targetLayer);
+                if (li != null) {
+                    return Predicates.equal("id", li.getId());
+                }
+                return Filter.EXCLUDE;
+            } else if (targetWorkspaceStr != null) {
+                Filter layerWsFilter = Predicates.equal("resource.store.workspace.name", targetWorkspaceStr);
+                Filter groupWsFilter = Predicates.equal("workspace.name", targetWorkspaceStr);
+                return Predicates.or(layerWsFilter, groupWsFilter);
             }
-            Filter layerWsFilter = Predicates.equal("resource.store.workspace.name", targetWorkspaceStr);
-            Filter groupWsFilter = Predicates.equal("workspace.name", targetWorkspaceStr);
-            return Predicates.or(layerWsFilter, groupWsFilter);
+            return null;
         }
     };
 
@@ -86,10 +114,17 @@ public class MapPreviewPage extends GeoServerBasePage {
         final List<String> wfsOutputFormats = getAvailableWFSFormats();
 
         StringValue wsParam = parameters.get("workspace");
+        StringValue layerParam = parameters.get("layer");
+        StringValue groupParam = parameters.get("group");
         if (!wsParam.isEmpty()) {
             this.targetWorkspaceStr = wsParam.toString();
         }
-
+        if (!layerParam.isEmpty()) {
+            this.targetLayerStr = layerParam.toString();
+        }
+        if (!groupParam.isEmpty()) {
+            this.targetGroupStr = groupParam.toString();
+        }
         // build the table
         table = new GeoServerTablePanel<>("table", provider) {
 

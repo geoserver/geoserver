@@ -54,7 +54,7 @@ import org.kordamp.json.JSONObject;
  */
 public class AggregateProcessJSONPPIO extends CDataPPIO {
 
-    protected AggregateProcessJSONPPIO() {
+    public AggregateProcessJSONPPIO() {
         super(AggregateProcess.Results.class, AggregateProcess.Results.class, "application/json");
     }
 

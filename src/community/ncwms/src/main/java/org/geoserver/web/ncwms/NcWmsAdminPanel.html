@@ -4,31 +4,23 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-NcWmsAdminPanel">
-        <div class="gs-unordered-list-class">
-          <div class="gs-list-item-class">
-            <fieldset>
-              <legend>
-                <span>
-                  <wicket:message key="ncwms">ncwms</wicket:message>
-                </span>
-              </legend>
-              <div class="gs-unordered-list-class">
-                <div class="gs-list-item-class">
-                  <label for="timeSeriesPoolSize">
-                    <wicket:message key="timeSeriesPoolSize">poolSize</wicket:message>
-                  </label>
-                  <input type="text" wicket:id="timeSeriesPoolSize" id="timeSeriesPoolSize"/>
-                </div>
-                <div class="gs-list-item-class">
-                  <label for="maxTimeSeriesValues">
-                    <wicket:message key="maxTimeSeriesValues">maxTimeSeriesValues</wicket:message>
-                  </label>
-                  <input type="text" wicket:id="maxTimeSeriesValues" id="maxTimeSeriesValues"/>
-                </div>
-              </div>
-            </fieldset>
+        <fieldset>
+          <legend><span><wicket:message key="ncwms">ncwms</wicket:message></span></legend>
+          <div class="gs-form">
+            <div class="gs-form-group">
+              <label for="timeSeriesPoolSize">
+                <wicket:message key="timeSeriesPoolSize">poolSize</wicket:message>
+              </label>
+              <input type="text" wicket:id="timeSeriesPoolSize" id="timeSeriesPoolSize" class="w-md"/>
+            </div>
+            <div class="gs-form-group">
+              <label for="maxTimeSeriesValues">
+                <wicket:message key="maxTimeSeriesValues">maxTimeSeriesValues</wicket:message>
+              </label>
+              <input type="text" wicket:id="maxTimeSeriesValues" id="maxTimeSeriesValues" class="w-md"/>
+            </div>
           </div>
-        </div>
+        </fieldset>
       </div>
     </wicket:panel>
   </body>

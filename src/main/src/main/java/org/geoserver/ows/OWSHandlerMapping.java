@@ -47,10 +47,32 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
 
     static final Logger LOGGER = Logging.getLogger(OWSHandlerMapping.class);
 
+    /**
+     * Default handler mapping order for GeoServer's URL mappings.
+     *
+     * <p>GeoServer's handler mappings need an explicit order lower than zero to take precedence over Spring Boot's
+     * auto-configured {@code RequestMappingHandlerMapping}, which defaults to order {@code 0}. In a plain Spring
+     * Framework deployment, there is no competing {@code RequestMappingHandlerMapping}, so the default order
+     * ({@code Integer.MAX_VALUE}) works fine. In Spring Boot (e.g. GeoServer Cloud), without an explicit order, all
+     * GeoServer handler mappings are shadowed by Spring Boot's defaults, which forced the use of {@code @Controller}
+     * workarounds to delegate to the GeoServer Dispatcher.
+     *
+     * <p>This value is also appropriate for {@code SimpleUrlHandlerMapping} beans in XML configuration files that serve
+     * static resources (styles, schemas, classpath resources, etc.).
+     *
+     * <p>{@link org.geoserver.gwc.controller.GwcUrlHandlerMapping} uses a separate, higher-precedence (lower numeric)
+     * order value to ensure GWC workspace-prefixed URLs are matched before OWS handler mappings attempt to interpret
+     * them.
+     *
+     * @see org.geoserver.gwc.controller.GwcUrlHandlerMapping#DEFAULT_ORDER
+     */
+    public static final int DEFAULT_ORDER = -50;
+
     Catalog catalog;
 
     public OWSHandlerMapping(Catalog catalog) {
         this.catalog = catalog;
+        setOrder(DEFAULT_ORDER);
     }
 
     @Override

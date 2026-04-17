@@ -175,14 +175,6 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         administration.setVisible(admin);
         add(administration);
 
-        //        if (admin) {
-        //            // show admin some additional details
-        //            administration.add(catalogLinks());
-        //        } else {
-        //            // add catalogLinks placeholder (even when not admin) to identify this page location
-        //            administration.add(placeholderLabel("catalogLinks"));
-        //        }
-
         // adminContent content provided by plugins across the geoserver codebase
         // for example security warnings to admin
         if (admin) {

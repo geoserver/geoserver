@@ -20,7 +20,7 @@ public class AggregateProcessPPIO extends XStreamPPIO {
 
     static final QName AggregationResults = new QName("AggregationResults");
 
-    protected AggregateProcessPPIO() {
+    public AggregateProcessPPIO() {
         super(AggregateProcess.Results.class, AggregationResults);
     }
 

@@ -4,40 +4,40 @@
 <body>
 <wicket:extend>
     <wicket:fragment wicket:id="header">
-        <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class"> <a class="button outline-primary" href="#" wicket:id="addNew">
+        <div class="action-group">
+            <a class="button outline-primary" href="#" wicket:id="addNew">
                 <i class="gs-icon gs-icon-add"></i> <wicket:message key="addNew"/>
-            </a></div>
-            <div class="gs-list-item-class"> <a class="button outline-danger" href="#" wicket:id="removeSelected">
+            </a>
+            <a class="button outline-danger" href="#" wicket:id="removeSelected">
                 <i class="gs-icon gs-icon-delete"></i><wicket:message key="removeSelected"/>
-            </a></div>
+            </a>
         </div>
     </wicket:fragment>
     <div wicket:id="rulesPanel"></div>
     <form wicket:id="form">
-        <fieldset class="mt-5">
+        <fieldset>
             <legend><span><wicket:message key="testRules"></wicket:message></span></legend>
-            <div class="gs-unordered-list-class">
-                <div class="gs-list-item-class">
+            <div class="gs-form">
+                <div class="gs-form-group">
                     <label for="input"><wicket:message key="input"></wicket:message>
                     </label>
-                    <textarea wicket:id="input" id="input" class="w-75 h-sm"></textarea>
+                    <textarea wicket:id="input" id="input" ></textarea>
                 </div>
-                <div class="gs-list-item-class">
+                <div class="gs-form-group">
                     <label for="headers"><wicket:message key="headers"></wicket:message>
                     </label>
-                    <textarea wicket:id="headers" id="input" class="w-75 h-sm"></textarea>
+                    <textarea wicket:id="headers" id="input"></textarea>
                 </div>
-                <div class="gs-list-item-class">
+                <div class="gs-form-group">
                     <label for="output"><wicket:message key="output"></wicket:message>
                     </label>
-                    <textarea wicket:id="output" id="output" class="w-75 h-sm"></textarea>
+                    <textarea wicket:id="output" id="output"></textarea>
                 </div>
             </div>
         </fieldset>
 
-        <div class="button-group selfclear">
-            <a href="#" wicket:id="test"><wicket:message key="test"></wicket:message></a>
+        <div class="button-group">
+            <a class="button" href="#" wicket:id="test"><wicket:message key="test"></wicket:message></a>
         </div>
     </form>
 </wicket:extend>

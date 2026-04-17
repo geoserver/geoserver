@@ -29,6 +29,13 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-css</artifactId>
     </dependency>
+    <!-- Runtime-only: ship asm 9.2 to match the -tree/-analysis/-util pulled transitively by parboiled -->
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>9.2</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>

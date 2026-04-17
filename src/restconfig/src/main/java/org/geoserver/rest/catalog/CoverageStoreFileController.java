@@ -5,7 +5,7 @@
 package org.geoserver.rest.catalog;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;

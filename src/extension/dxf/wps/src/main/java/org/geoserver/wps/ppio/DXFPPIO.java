@@ -24,7 +24,7 @@ import org.geotools.feature.FeatureCollection;
  * @author Andrea Aime - OpenGeo, Peter Hopfgartner - R3 GIS
  */
 public class DXFPPIO extends CDataPPIO {
-    protected DXFPPIO() {
+    public DXFPPIO() {
         super(FeatureCollection.class, FeatureCollection.class, "application/dxf");
     }
 

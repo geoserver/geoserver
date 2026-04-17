@@ -23,6 +23,7 @@
   <modules>
     <module>core</module>
     <module>wps</module>
+    <module>dxf-assembly</module>
   </modules>
 
 </project>

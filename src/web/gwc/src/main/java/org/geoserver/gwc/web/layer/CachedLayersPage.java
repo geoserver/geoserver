@@ -52,7 +52,6 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.diskquota.storage.Quota;
@@ -223,23 +222,27 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
         // openlayers preview
         Fragment f = new Fragment(id, "actionsFragment", this);
-        f.add(new ExternalLink("seedLink", href, new ResourceModel("CachedLayersPage.seed").getObject()));
+        String seedLabel = new ResourceModel("CachedLayersPage.seed").getObject();
+        ExternalLink seedLink = new ExternalLink("seedLink", href);
+        seedLink.setBody(Model.of("<i class=\"gs-icon gs-icon-add\"></i> " + seedLabel));
+        seedLink.setEscapeModelStrings(false);
+        f.add(seedLink);
         f.add(truncateLink("truncateLink", tileLayerNameModel));
         return f;
     }
 
-    private SimpleAjaxLink<String> truncateLink(final String id, IModel<TileLayer> tileLayerNameModel) {
+    private AjaxLink<String> truncateLink(final String id, IModel<TileLayer> tileLayerNameModel) {
 
         String layerName = tileLayerNameModel.getObject().getName();
         IModel<String> model = new Model<>(layerName);
-        IModel<String> labelModel = new ResourceModel("truncate");
+        IModel<String> labelModel = new ResourceModel("CachedLayersPage.truncate");
 
-        SimpleAjaxLink<String> link = new SimpleAjaxLink<>(id, model, labelModel) {
+        AjaxLink<String> link = new AjaxLink<>(id, model) {
             @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target) {
+            public void onClick(AjaxRequestTarget target) {
 
                 dialog.setTitle(new ParamResourceModel("confirmTruncateTitle", CachedLayersPage.this));
                 dialog.setDefaultModel(getDefaultModel());
@@ -286,6 +289,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 });
             }
         };
+        String truncateLabel = labelModel.getObject();
+        link.setBody(Model.of("<i class=\"gs-icon gs-icon-clear-cache\"></i> " + truncateLabel));
+        link.setEscapeModelStrings(false);
 
         return link;
     }

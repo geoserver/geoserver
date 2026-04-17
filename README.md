@@ -52,7 +52,7 @@ Serve live preview locally:
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-mkdocs serve
+mkdocs serve --livereload
 ```
 
 Open preview in browser:

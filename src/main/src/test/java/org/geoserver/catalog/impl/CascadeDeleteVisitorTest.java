@@ -14,21 +14,30 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.NamespaceWorkspaceConsistencyListener;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.AbstractCatalogListener;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geotools.api.filter.Filter;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
@@ -120,6 +129,48 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         assertEquals(0, catalog.count(ResourceInfo.class, Filter.INCLUDE));
         assertEquals(0, catalog.count(StoreInfo.class, Filter.INCLUDE));
         assertEquals(0, catalog.count(LayerGroupInfo.class, Filter.INCLUDE));
+    }
+
+    /**
+     * Regression test for the ordering constraint in {@link CascadeDeleteVisitor#visit(WorkspaceInfo)}: styles owned by
+     * the workspace must be removed before the workspace's namespace, because
+     * {@link NamespaceWorkspaceConsistencyListener} removes the workspace as soon as its namespace is removed (1:1
+     * relationship). If the namespace goes first, the workspace is gone before the visitor iterates its styles, which
+     * breaks catalog backends with referential integrity.
+     */
+    @Test
+    public void testCascadeWorkspaceRemovesStylesBeforeNamespace() {
+        Catalog catalog = getCatalog();
+        Assume.assumeTrue(
+                catalog.getListeners().stream().anyMatch(NamespaceWorkspaceConsistencyListener.class::isInstance));
+
+        assertTrue(catalog.getListeners().stream().anyMatch(NamespaceWorkspaceConsistencyListener.class::isInstance));
+        List<Class<?>> removalOrder = new ArrayList<>();
+        CatalogListener recorder = new AbstractCatalogListener() {
+            @Override
+            public void handleRemoveEvent(CatalogRemoveEvent event) {
+                Info src = event.getSource();
+                if (src instanceof StyleInfo) {
+                    removalOrder.add(StyleInfo.class);
+                } else if (src instanceof NamespaceInfo) {
+                    removalOrder.add(NamespaceInfo.class);
+                }
+            }
+        };
+        catalog.addListener(recorder);
+        try {
+            WorkspaceInfo ws = catalog.getWorkspaceByName(CITE_PREFIX);
+            assertNotNull(catalog.getStyleByName(WS_STYLE));
+            ws.accept(new CascadeDeleteVisitor(catalog));
+        } finally {
+            catalog.removeListener(recorder);
+        }
+
+        int firstNs = removalOrder.indexOf(NamespaceInfo.class);
+        int lastStyle = removalOrder.lastIndexOf(StyleInfo.class);
+        assertTrue("expected a NamespaceInfo removal, got " + removalOrder, firstNs >= 0);
+        assertTrue("expected at least one StyleInfo removal, got " + removalOrder, lastStyle >= 0);
+        assertTrue("workspace styles must be removed before the namespace, got " + removalOrder, lastStyle < firstNs);
     }
 
     @Test

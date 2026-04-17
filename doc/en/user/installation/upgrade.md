@@ -143,11 +143,25 @@ If it has been a while since you have upgraded GeoServer be cautious when upgrad
 
 ## Upgrading GeoServer 3 Guidance
 
-GeoServer 3.0.x is scheduled for release in March, 2026.
+GeoServer 3.0.x is scheduled for release in April, 2026.
+
+
+### JDK 17 Required
+
+Just like in GeoServer 2.28.x series, GeoServer 3.0.x requires Java 17 to run. Be sure to install Java 17 before upgrading to GeoServer 3.0.
 
 ### Tomcat 10.1 or Tomcat 11.0 Required
 
-GeoServer 3.0 makes the transition to Jakarata EE Servlet 6.0.0 and requires Tomcat 10.1 or Tomcat 11.0 for those using WebArchive distribution.
+GeoServer 3.0 makes the transition to Jakarta EE Servlet 6.1 and requires Tomcat 11.0 for those using WebArchive distribution.
+
+### Core modules downgraded to extension
+
+Some of the less used core modules have been downgraded to extensions in GeoServer 3.0. If you were using any of the following features, be sure to install the corresponding extension after upgrading:
+
+* WCS 1.0
+* WCS 1.1
+* World image coverage store
+* ArcGRID coverage store
 
 ### H2 Datastore Removal (GeoServer 3.0 and newer)
 

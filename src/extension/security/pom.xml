@@ -64,6 +64,7 @@
       <id>cas</id>
       <modules>
         <module>cas</module>
+        <module>cas-assembly</module>
       </modules>
     </profile>
 
@@ -71,6 +72,7 @@
       <id>allExtensions</id>
       <modules>
         <module>cas</module>
+        <module>cas-assembly</module>
       </modules>
     </profile>
 
@@ -78,6 +80,7 @@
       <id>release</id>
       <modules>
         <module>cas</module>
+        <module>cas-assembly</module>
       </modules>
     </profile>
 

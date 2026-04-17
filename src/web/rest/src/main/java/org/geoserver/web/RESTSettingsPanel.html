@@ -3,20 +3,25 @@
   <head/>
   <body>
     <wicket:panel>
-      <div class="gs-panel-RESTSettingsPanel gs-form">
-        <div class="choiceItem">
-          <input id="quiet" class="field" type="checkbox" wicket:id="quiet"/>
-          <label for="quiet" class="field checkbox">
-            <wicket:message key="quiet">Disable Logging on REST</wicket:message>
-          </label>
+      <fieldset class="gs-panel-RESTSettingsPanel">
+        <legend>
+          <wicket:message key="restSettingsPanel.title">REST Settings</wicket:message>
+        </legend>
+        <div class="gs-form">
+          <div class="choiceItem">
+            <input id="quiet" class="field" type="checkbox" wicket:id="quiet"/>
+            <label for="quiet" class="field checkbox">
+              <wicket:message key="quiet">Disable Logging on REST</wicket:message>
+            </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="rootdir" class="text">
+              <wicket:message key="rootdir">Root directory path</wicket:message>
+            </label>
+            <input id="rootdir" class="field" type="text" wicket:id="rootdir"/>
+          </div>
         </div>
-        <div class="gs-form-group">
-          <label for="rootdir" class="text">
-            <wicket:message key="rootdir">Root directory path</wicket:message>
-          </label>
-          <input id="rootdir" class="field" type="text" wicket:id="rootdir"/>
-        </div>
-      </div>
+      </fieldset>
     </wicket:panel>
   </body>
 </html>

@@ -3,177 +3,195 @@
   <head/>
   <body>
     <wicket:panel>
-      <div class="gs-panel-NetCDFOutSettingsEditor">
+      <div wicket:id="container" class="gs-panel-NetCDFOutSettingsEditor">
         <fieldset>
           <legend>
             <span>
-              <wicket:message key="NetCDFOut.title">NetCDF Output Settings</wicket:message>
+              <wicket:message key="NetCDFOut.heading">NetCDF Output Settings</wicket:message>
             </span>
           </legend>
-          <div wicket:id="container">
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
-                <label for="standardName" class="text">
-                  <wicket:message key="NetCDFOut.standardName">CF-Standard Name</wicket:message>
-                </label>
-                <input id="standardName" class="field" type="text" wicket:id="standardName" list="availableNames"/>
-                <datalist id="availableNames" class="hidden">
-                  <option wicket:id="availableNames">CF-Name</option>
-                </datalist>
-              </div>
-              <div class="gs-list-item-class">
-                <label for="uom" class="text">
-                  <wicket:message key="NetCDFOut.uom">Unit of Measure</wicket:message>
-                </label>
-                <input id="uom" class="field" type="text" wicket:id="uom"/>
-              </div>
-              <!--
-                    Everything from this comment to the end of this file should be
-                    identical in NetCDFPanel.html and NetCDFOutSettingsEditor.html
-                    Please ensure that all changes are synchronised.
-                -->
-              <div class="gs-list-item-class">
-                <label for="dataPacking">
-                  <wicket:message key="NetCDFOut.dataPacking">Data Packing</wicket:message>
-                </label>
-                <select class="select" id="dataPacking" wicket:id="dataPacking"/>
-              </div>
-              <div class="gs-list-item-class">
-                <label for="compressionLevel" class="text">
-                  <wicket:message key="NetCDFOut.compressionLevel">Compression Level</wicket:message>
-                </label>
-                <input id="compressionLevel" class="field" type="text" wicket:id="compressionLevel"/>
-              </div>
-              <div class="gs-list-item-class choiceItem">
-                <input id="shuffle" type="checkbox" wicket:id="shuffle"/>
-                <label for="shuffle" class="checkbox">
-                  <wicket:message key="NetCDFOut.shuffle">Shuffle</wicket:message>
-                </label>
-              </div>
-              <div class="gs-list-item-class choiceItem">
-                <input id="copyAttributes" type="checkbox" wicket:id="copyAttributes"/>
-                <label for="copyAttributes" class="checkbox">
-                  <wicket:message key="NetCDFOut.copyAttributes">Copy Variable Attributes</wicket:message>
-                </label>
-              </div>
-              <div class="gs-list-item-class choiceItem">
-                <input id="copyGlobalAttributes" type="checkbox" wicket:id="copyGlobalAttributes"/>
-                <label for="copyGlobalAttributes" class="checkbox">
-                  <wicket:message key="NetCDFOut.copyGlobalAttributes">Copy Global Attributes</wicket:message>
-                </label>
-              </div>
-              <div class="gs-list-item-class">
-                <label class="fw-bold fst-italic">
-                  <wicket:message key="NetCDFOut.variableAttributes">Variable Attributes</wicket:message>
-                </label>
-                <div class="d-table">
-                  <div class="d-table-row fst-italic">
-                    <div class="d-table-cell">
-                      <wicket:message key="NetCDFOut.attribute">Attribute</wicket:message>
-                    </div>
-                    <div class="d-table-cell">
-                      <wicket:message key="NetCDFOut.value">Value</wicket:message>
-                    </div>
-                  </div>
-                  <div class="d-table-row" wicket:id="variableAttributes">
-                    <div class="d-table-cell" wicket:id="variableAttributeKey"/>
-                    <div class="d-table-cell" wicket:id="variableAttributeValue"/>
-                    <div class="d-table-cell" wicket:id="removeVariableAttributeIcon"/>
-                  </div>
-                  <div class="d-table-row">
-                    <div class="d-table-cell">
-                      <input type="text" wicket:id="newVariableAttributeKey"/>
-                    </div>
-                    <div class="d-table-cell">
-                      <input type="text" wicket:id="newVariableAttributeValue"/>
-                    </div>
-                    <div class="d-table-cell">
-                      <a href="#" wicket:id="addVariableAttribute">
-                        <span wicket:id="addVariableAttributeIcon"/>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="gs-list-item-class">
-                <label class="fw-bold fst-italic">
-                  <wicket:message key="NetCDFOut.globalAttributes">Global Attributes</wicket:message>
-                </label>
-                <div class="d-table">
-                  <div class="d-table-row fst-italic">
-                    <div class="d-table-cell">
-                      <wicket:message key="NetCDFOut.attribute">Attribute</wicket:message>
-                    </div>
-                    <div class="d-table-cell">
-                      <wicket:message key="NetCDFOut.value">Value</wicket:message>
-                    </div>
-                  </div>
-                  <div class="d-table-row" wicket:id="globalAttributes">
-                    <div class="d-table-cell" wicket:id="globalAttributeKey"/>
-                    <div class="d-table-cell" wicket:id="globalAttributeValue"/>
-                    <div class="d-table-cell" wicket:id="removeGlobalAttributeIcon"/>
-                  </div>
-                  <div class="d-table-row">
-                    <div class="d-table-cell">
-                      <input type="text" wicket:id="newGlobalAttributeKey"/>
-                    </div>
-                    <div class="d-table-cell">
-                      <input type="text" wicket:id="newGlobalAttributeValue"/>
-                    </div>
-                    <div class="d-table-cell">
-                      <a href="#" wicket:id="addGlobalAttribute">
-                        <span wicket:id="addGlobalAttributeIcon"/>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="gs-list-item-class">
-                <label class="fw-bold fst-italic">
-                  <wicket:message key="NetCDFOut.extraVariables">Extra Variables</wicket:message>
-                </label>
-                <div class="d-table">
-                  <div class="d-table-row fst-italic">
-                    <div class="d-table-cell">
-                      <wicket:message key="NetCDFOut.extraVariableSource">Source</wicket:message>
-                    </div>
-                    <div class="d-table-cell">
-                      <wicket:message key="NetCDFOut.extraVariableOutput">Output</wicket:message>
-                    </div>
-                    <div class="d-table-cell">
-                      <wicket:message key="NetCDFOut.extraVariableDimensions">Dimension</wicket:message>
-                    </div>
-                  </div>
-                  <div class="d-table-row" wicket:id="extraVariables">
-                    <div class="d-table-cell" wicket:id="extraVariableSource"/>
-                    <div class="d-table-cell" wicket:id="extraVariableOutput"/>
-                    <div class="d-table-cell" wicket:id="extraVariableDimensions"/>
-                    <div class="d-table-cell" wicket:id="removeExtraVariableIcon"/>
-                  </div>
-                  <div class="d-table-row">
-                    <div class="d-table-cell">
-                      <input type="text" wicket:id="newExtraVariableSource"/>
-                    </div>
-                    <div class="d-table-cell">
-                      <input type="text" wicket:id="newExtraVariableOutput"/>
-                    </div>
-                    <div class="d-table-cell">
-                      <input type="text" wicket:id="newExtraVariableDimensions"/>
-                    </div>
-                    <div class="d-table-cell">
-                      <a href="#" wicket:id="addExtraVariable">
-                        <span wicket:id="addExtraVariableIcon"/>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div class="gs-form">
+            <div class="gs-form-group">
+              <label for="standardName" class="text">
+                <wicket:message key="NetCDFOut.standardName">CF-Standard Name</wicket:message>
+              </label>
+              <input id="standardName" class="field" type="text" wicket:id="standardName" list="availableNames"/>
+              <datalist id="availableNames" class="hidden">
+                <option wicket:id="availableNames">CF-Name</option>
+              </datalist>
+            </div>
+            <div class="gs-form-group">
+              <label for="uom" class="text">
+                <wicket:message key="NetCDFOut.uom">Unit of Measure</wicket:message>
+              </label>
+              <input id="uom" class="field" type="text" wicket:id="uom"/>
+            </div>
+            <!--
+                  Everything from this comment to the end of this file should be
+                  identical in NetCDFPanel.html and NetCDFOutSettingsEditor.html
+                  Please ensure that all changes are synchronised.
+              -->
+            <div class="gs-form-group">
+              <label for="dataPacking">
+                <wicket:message key="NetCDFOut.dataPacking">Data Packing</wicket:message>
+              </label>
+              <select type="select" id="dataPacking" wicket:id="dataPacking" class="w-md"/>
+            </div>
+            <div class="gs-form-group">
+              <label for="compressionLevel" class="text">
+                <wicket:message key="NetCDFOut.compressionLevel">Compression Level</wicket:message>
+              </label>
+              <input id="compressionLevel" class="field w-md" type="text" wicket:id="compressionLevel"/>
+            </div>
+          </div>
+          <div class="ggs-unordered-list-class choiceList">
+            <div class="gs-list-item-class choiceItem">
+              <input id="shuffle" type="checkbox" wicket:id="shuffle"/>
+              <label for="shuffle">
+                <wicket:message key="NetCDFOut.shuffle">Shuffle</wicket:message>
+              </label>
+            </div>
+            <div class="gs-list-item-class choiceItem">
+              <input id="copyAttributes" type="checkbox" wicket:id="copyAttributes"/>
+              <label for="copyAttributes">
+                <wicket:message key="NetCDFOut.copyAttributes">Copy Variable Attributes</wicket:message>
+              </label>
+            </div>
+            <div class="gs-list-item-class choiceItem">
+              <input id="copyGlobalAttributes" type="checkbox" wicket:id="copyGlobalAttributes"/>
+              <label for="copyGlobalAttributes">
+                <wicket:message key="NetCDFOut.copyGlobalAttributes">Copy Global Attributes</wicket:message>
+              </label>
             </div>
           </div>
         </fieldset>
-        <div wicket:id="extensions">
-          <div wicket:id="content"/>
-        </div>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="NetCDFOut.variableAttributes">Variable Attributes</wicket:message>
+            </span>
+          </legend>
+          <table>
+            <thead>
+              <th>
+                <wicket:message key="NetCDFOut.attribute">Attribute</wicket:message>
+              </th>
+              <th>
+                <wicket:message key="NetCDFOut.value">Value</wicket:message>
+              </th>
+              <th>
+                <wicket:message key="NetCDFOut.action">Action</wicket:message>
+              </th>
+            </thead>
+            <tbody>
+              <tr wicket:id="variableAttributes">
+                <td wicket:id="variableAttributeKey"/>
+                <td wicket:id="variableAttributeValue"/>
+                <td wicket:id="removeVariableAttributeIcon"/>
+              </tr>
+              <tr>
+                <td>
+                  <input type="text" wicket:id="newVariableAttributeKey"/>
+                </td>
+                <td>
+                  <input type="text" wicket:id="newVariableAttributeValue"/>
+                </td>
+                <td>
+                  <a href="#" wicket:id="addVariableAttribute">
+                    <span wicket:id="addVariableAttributeIcon"/>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="NetCDFOut.globalAttributes">Global Attributes</wicket:message>
+            </span>
+          </legend>
+          <table>
+              <thead>
+                <th>
+                  <wicket:message key="NetCDFOut.attribute">Attribute</wicket:message>
+                </th>
+                <th>
+                  <wicket:message key="NetCDFOut.value">Value</wicket:message>
+                </th>
+                <th>
+                  <wicket:message key="NetCDFOut.action">Action</wicket:message>
+                </th>
+              </thead>
+              <tbody>
+                <tr wicket:id="globalAttributes">
+                  <td class="d-table-cell" wicket:id="globalAttributeKey"/>
+                  <td class="d-table-cell" wicket:id="globalAttributeValue"/>
+                  <td class="d-table-cell" wicket:id="removeGlobalAttributeIcon"/>
+                </tr>
+                <tr>
+                  <td >
+                    <input type="text" wicket:id="newGlobalAttributeKey"/>
+                  </td>
+                  <td>
+                    <input type="text" wicket:id="newGlobalAttributeValue"/>
+                  </td>
+                  <td>
+                    <a href="#" wicket:id="addGlobalAttribute">
+                      <span wicket:id="addGlobalAttributeIcon"/>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+          </table>
+        </fieldset>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="NetCDFOut.extraVariables">Extra Variables</wicket:message>
+            </span>
+          </legend>
+          <table>
+            <thead>
+              <th>
+                <wicket:message key="NetCDFOut.extraVariableSource">Source</wicket:message>
+              </th>
+              <th>
+                <wicket:message key="NetCDFOut.extraVariableOutput">Output</wicket:message>
+              </th>
+              <th>
+                <wicket:message key="NetCDFOut.extraVariableDimensions">Dimension</wicket:message>
+              </th>
+            </thead>
+            <tbody>
+              <tr wicket:id="extraVariables">
+                <td class="d-table-cell" wicket:id="extraVariableSource"/>
+                <td class="d-table-cell" wicket:id="extraVariableOutput"/>
+                <td class="d-table-cell" wicket:id="extraVariableDimensions"/>
+                <td class="d-table-cell" wicket:id="removeExtraVariableIcon"/>
+              </tr>
+              <tr>
+                <td>
+                  <input type="text" wicket:id="newExtraVariableSource"/>
+                </td>
+                <td>
+                  <input type="text" wicket:id="newExtraVariableOutput"/>
+                </td>
+                <td>
+                  <input type="text" wicket:id="newExtraVariableDimensions"/>
+                </td>
+                <td>
+                  <a href="#" wicket:id="addExtraVariable">
+                    <span wicket:id="addExtraVariableIcon"/>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+      <div wicket:id="extensions">
+        <div wicket:id="content"/>
       </div>
     </wicket:panel>
   </body>

@@ -19,6 +19,7 @@
   <modules>
     <module>core</module>
     <module>web</module>
+    <module>wcs2_0-eo-assembly</module>
   </modules>
 
 </project>

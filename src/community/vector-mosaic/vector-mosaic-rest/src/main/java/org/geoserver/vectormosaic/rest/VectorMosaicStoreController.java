@@ -161,7 +161,7 @@ public class VectorMosaicStoreController extends AbstractStoreUploadController {
             // Prepare the directory for file upload or external upload of a zip file
             directory = RESTUtils.createUploadRoot(catalog, workspaceName, storeName, postRequest);
         }
-        return handleFileUpload(storeName, workspaceName, null, method, format, directory, request);
+        return handleFileUpload(storeName, workspaceName, null, method, format, directory, request, null);
     }
 
     /** Return the remote URL provided in the request. */

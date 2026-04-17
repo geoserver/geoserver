@@ -272,7 +272,6 @@ public class FileTypes {
         }
     }
 
-
     /**
      * Validate a file. If the file (or a file inside a zip file) is bad, then throw.
      *

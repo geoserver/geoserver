@@ -25,39 +25,43 @@ public class CoverageStoreFileValidatorTest {
     /** Tests a geotiff (this is a single-file upload of a geotiff). */
     @Test
     public void testValidGeotiff() throws IOException {
-        InputStream stream = getFile("test-data/NCOM_wattemp_020_20081031T0000000_12.tiff");
+        try (InputStream stream = getFile("test-data/NCOM_wattemp_020_20081031T0000000_12.tiff")) {
 
-        CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
-        validator.accept(stream, "NCOM_wattemp_020_20081031T0000000_12.tiff");
-        // should not throw
+            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
+            validator.accept(stream, "NCOM_wattemp_020_20081031T0000000_12.tiff");
+            // should not throw
+        }
     }
 
     /** Tests a geotiff INSIDE a zip (zip with a geotiff inside). */
     @Test
     public void testValidGeotiffZip() throws IOException {
-        InputStream stream = getFile("test-data/NCOM_wattemp_020_20081031T0000000_12.zip");
+        try (InputStream stream = getFile("test-data/NCOM_wattemp_020_20081031T0000000_12.zip")) {
 
-        CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
-        validator.accept(stream, "NCOM_wattemp_020_20081031T0000000_12.zip");
-        // should not throw
+            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
+            validator.accept(stream, "NCOM_wattemp_020_20081031T0000000_12.zip");
+            // should not throw
+        }
     }
 
     /** tests a world image file (multiple files inside a .zip). */
     @Test
     public void testValidWorldImageZip() throws IOException {
-        InputStream stream = getFile("test-data/usa.zip");
-        CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new WorldImageFormat());
-        validator.accept(stream, "usa.zip");
-        // should not throw
+        try (InputStream stream = getFile("test-data/usa.zip")) {
+            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new WorldImageFormat());
+            validator.accept(stream, "usa.zip");
+            // should not throw
+        }
     }
 
     /** tests a world image file reader with an empty zip. */
     @Test
     public void testEmptyWorldImageZip() throws IOException {
         assertThrows(Throwable.class, () -> {
-            InputStream stream = getFile("test-data/empty-zip.zip");
-            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new WorldImageFormat());
-            validator.accept(stream, "empty-zip.zip");
+            try (InputStream stream = getFile("test-data/empty-zip.zip")) {
+                CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new WorldImageFormat());
+                validator.accept(stream, "empty-zip.zip");
+            }
         });
     }
 
@@ -65,9 +69,10 @@ public class CoverageStoreFileValidatorTest {
     @Test
     public void testEmptyGeoTiffZip() throws IOException {
         assertThrows(Throwable.class, () -> {
-            InputStream stream = getFile("test-data/empty-zip.zip");
-            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
-            validator.accept(stream, "empty-zip.zip");
+            try (InputStream stream = getFile("test-data/empty-zip.zip")) {
+                CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
+                validator.accept(stream, "empty-zip.zip");
+            }
         });
     }
 
@@ -81,9 +86,10 @@ public class CoverageStoreFileValidatorTest {
     @Test
     public void testZipEscape() throws IOException {
         Throwable throwable = assertThrows(Throwable.class, () -> {
-            InputStream stream = getFile("test-data/malicious.zip");
-            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
-            validator.accept(stream, "malicious.zip");
+            try (InputStream stream = getFile("test-data/malicious.zip")) {
+                CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
+                validator.accept(stream, "malicious.zip");
+            }
         });
         assertTrue(throwable.getMessage().contains("escape"));
     }
@@ -92,9 +98,10 @@ public class CoverageStoreFileValidatorTest {
     @Test
     public void testFileNameEscape() {
         Throwable throwable = assertThrows(Throwable.class, () -> {
-            InputStream stream = getFile("test-data/usa.zip");
-            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
-            validator.accept(stream, "../usa.zip");
+            try (InputStream stream = getFile("test-data/usa.zip")) {
+                CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
+                validator.accept(stream, "../usa.zip");
+            }
         });
         assertTrue(throwable.getMessage().contains("fname is illegal"));
     }
@@ -103,9 +110,10 @@ public class CoverageStoreFileValidatorTest {
     @Test
     public void testSimpleInvalidFile() throws IOException {
         Throwable throwable = assertThrows(Throwable.class, () -> {
-            InputStream stream = getFile("test-data/text-file.txt");
-            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
-            validator.accept(stream, "image.geotiff");
+            try (InputStream stream = getFile("test-data/text-file.txt")) {
+                CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
+                validator.accept(stream, "image.geotiff");
+            }
         });
         assertTrue(throwable.getMessage().contains("Unsupported"));
     }
@@ -114,9 +122,10 @@ public class CoverageStoreFileValidatorTest {
     @Test
     public void testSimpleInvalidFileZip() {
         Throwable throwable = assertThrows(Throwable.class, () -> {
-            InputStream stream = getFile("test-data/text-file.zip");
-            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
-            validator.accept(stream, "image.geotiff");
+            try (InputStream stream = getFile("test-data/text-file.zip")) {
+                CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new GeoTiffFormat());
+                validator.accept(stream, "image.geotiff");
+            }
         });
         assertTrue(throwable.getMessage().contains("primary"));
     }
@@ -125,7 +134,7 @@ public class CoverageStoreFileValidatorTest {
     @Test
     public void testMustBeValidFormat() {
         Throwable throwable = assertThrows(Throwable.class, () -> {
-            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(null);
+            new CoverageStoreFileValidator(null);
         });
         assertTrue(throwable.getMessage().contains("format"));
     }
@@ -134,7 +143,7 @@ public class CoverageStoreFileValidatorTest {
     @Test
     public void testMustBeValidFormat2() {
         Throwable throwable = assertThrows(Throwable.class, () -> {
-            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(new UnknownFormat());
+            new CoverageStoreFileValidator(new UnknownFormat());
         });
         assertTrue(throwable.getMessage().contains("format"));
     }
@@ -145,7 +154,7 @@ public class CoverageStoreFileValidatorTest {
         Throwable throwable = assertThrows(Throwable.class, () -> {
             WrapperPolicy wp = WrapperPolicy.hide(null);
             SecuredGridFormat securedGridFormat = new SecuredGridFormat(new GeoTiffFormat(), wp);
-            CoverageStoreFileValidator validator = new CoverageStoreFileValidator(securedGridFormat);
+            new CoverageStoreFileValidator(securedGridFormat);
         });
         assertTrue(throwable.getMessage().contains("AbstractGridFormat"));
     }

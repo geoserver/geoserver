@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
@@ -576,6 +577,11 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         attributes.get(1).setBinding(String.class);
         attributes.get(1).setOptions(new ArrayList<>(Arrays.asList(1, "TWO", 3, "Five", "eight")));
 
+        attributes.get(2).setName("single_option");
+        attributes.get(2).setSource("description");
+        attributes.get(2).setBinding(String.class);
+        attributes.get(2).setOptions(Collections.singletonList("single"));
+
         fti.getAttributes().addAll(attributes);
         getCatalog().save(fti);
 
@@ -599,6 +605,12 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         assertXpathEvaluatesTo("3", "//xsd:element[@name='optioned']//xsd:enumeration[3]/@value", doc);
         assertXpathEvaluatesTo("Five", "//xsd:element[@name='optioned']//xsd:enumeration[4]/@value", doc);
         assertXpathEvaluatesTo("eight", "//xsd:element[@name='optioned']//xsd:enumeration[5]/@value", doc);
+
+        // check single option restriction
+        assertXpathNotExists("//xsd:element[@name='single_option']/@type", doc);
+        assertXpathExists("//xsd:element[@name='single_option']/xsd:simpleType/xsd:restriction", doc);
+        assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='single_option']//xsd:restriction/@base", doc);
+        assertXpathEvaluatesTo("single", "//xsd:element[@name='single_option']//xsd:enumeration[1]/@value", doc);
     }
 
     @Test
@@ -625,6 +637,11 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         attributes.get(2).setBinding(Integer.class);
         attributes.get(2).setOptions(new ArrayList<>(Arrays.asList(1, 2, 3, 5, 8)));
 
+        attributes.get(3).setName("single_option");
+        attributes.get(3).setSource("description");
+        attributes.get(3).setBinding(String.class);
+        attributes.get(3).setOptions(Collections.singletonList("single"));
+
         fti.getAttributes().addAll(attributes);
         getCatalog().save(fti);
 
@@ -644,7 +661,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         assertEquals(Math.E, rangedJsonRestriction.getDouble("minInclusive"), 1e-6);
         assertEquals(Math.PI, rangedJsonRestriction.getDouble("maxInclusive"), 1e-6);
 
-        // check int options restriction
+        // check options restriction
         JSONObject optionedJson = properties.getJSONObject(1);
         JSONObject optionedJsonRestriction = optionedJson.getJSONObject("restriction");
         JSONArray optionedJsonRestrictionEnumeration = optionedJsonRestriction.getJSONArray("enumeration");
@@ -656,6 +673,12 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         JSONObject optionedIntJsonRestriction = optionedIntJson.getJSONObject("restriction");
         JSONArray optionedIntJsonRestrictionEnumeration = optionedIntJsonRestriction.getJSONArray("enumeration");
         assertArrayEquals(new Integer[] {1, 2, 3, 5, 8}, optionedIntJsonRestrictionEnumeration.toArray());
+
+        // check single option restriction
+        JSONObject singleOptionedJson = properties.getJSONObject(3);
+        JSONObject singleOptionedJsonRestriction = singleOptionedJson.getJSONObject("restriction");
+        JSONArray singleOptionedJsonRestrictionEnumeration = singleOptionedJsonRestriction.getJSONArray("enumeration");
+        assertArrayEquals(new String[] {"single"}, singleOptionedJsonRestrictionEnumeration.toArray());
     }
 
     @Test

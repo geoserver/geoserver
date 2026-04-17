@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -115,9 +116,11 @@ public class FileTypes {
      *
      * @param stream file (from user)
      * @param fname name of the file (for file-extension checks)
+     * @param reject function to check if a file should be rejected based on media type and file name
      * @throws Exception if the file is in the reject-list, or is a .zip file (use validateFileNotInRejectList instead)
      */
-    public static void assertSimpleFileNotInRejectList(InputStream stream, String fname) throws Exception {
+    static void assertSimpleFileNotInRejectList(InputStream stream, String fname, BiPredicate<MediaType, String> reject)
+            throws Exception {
         String disableCheckEnvVarValue = System.getenv(ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST);
         if (disableCheckEnvVarValue != null && disableCheckEnvVarValue.equalsIgnoreCase("true")) {
             return; // no check
@@ -131,7 +134,7 @@ public class FileTypes {
             fileMetadata.set(TikaCoreProperties.RESOURCE_NAME_KEY, fname);
         }
         MediaType detectedMediaType = tika.getDetector().detect(stream, fileMetadata);
-        if (REJECT_LIST_MIME_TYPES.contains(detectedMediaType.getBaseType())) {
+        if (reject.test(detectedMediaType.getBaseType(), fname)) {
             throw new IOException("Unsupported media type: " + detectedMediaType);
         }
 
@@ -170,6 +173,11 @@ public class FileTypes {
      *     reject-list
      */
     public static void validateFileNotInRejectList(InputStream stream, String fname) throws Exception {
+        validateFileNotInRejectList(stream, fname, (mediaType, name) -> REJECT_LIST_MIME_TYPES.contains(mediaType));
+    }
+
+    static void validateFileNotInRejectList(InputStream stream, String fname, BiPredicate<MediaType, String> reject)
+            throws Exception {
         String disableCheckEnvVarValue = System.getenv(ENVIRONMENT_VAR_DISABLE_FILETYPES_REJECT_LIST);
         if (disableCheckEnvVarValue != null && disableCheckEnvVarValue.equalsIgnoreCase("true")) {
             return; // no check
@@ -186,7 +194,7 @@ public class FileTypes {
         MediaType detectedMediaType = tika.getDetector().detect(stream, fileMetadata);
         if (!detectedMediaType.getBaseType().equals(ZIP_MEDIA_TYPE)) {
             // single file
-            assertSimpleFileNotInRejectList(stream, fname);
+            assertSimpleFileNotInRejectList(stream, fname, reject);
             return;
         }
 
@@ -197,7 +205,7 @@ public class FileTypes {
                 if (entry.isDirectory()) {
                     continue;
                 }
-                assertSimpleFileNotInRejectList(zipStream, fname);
+                assertSimpleFileNotInRejectList(zipStream, entry.getName(), reject);
                 zipStream.closeEntry();
             }
         }

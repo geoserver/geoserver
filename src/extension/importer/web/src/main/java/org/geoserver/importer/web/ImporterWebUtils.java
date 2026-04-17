@@ -29,6 +29,6 @@ public class ImporterWebUtils {
 
     static void disableLink(ComponentTag tag) {
         tag.setName("a");
-        tag.addBehavior(AttributeModifier.replace("class", "disabled"));
+        tag.addBehavior(AttributeModifier.append("class", "disabled"));
     }
 }

@@ -6,21 +6,22 @@
         <div wicket:id="remapsContainer">
           <div class="gs-unordered-list-class plain" wicket:id="remaps">
             <div class="gs-list-item-class">
-              <div class="gs-unordered-list-class plain horizontal">
-                <div class="gs-list-item-class">
-                  <!--label for="att">Attribute</label-->
-                  <select name="att" wicket:id="att"/>
+              <div class="gs-form">
+                <div class="gs-form-group">
+                  <label for="att">Attribute</label>
+                  <select name="att" wicket:id="att" class="w-fit"/>
                 </div>
-                <div class="gs-list-item-class">
-                  <!--label for="type">Type</label-->
-                  <select wicket:id="type"/>
+                <div class="gs-form-group">
+                  <label for="type">Type</label>
+                  <select wicket:id="type" class="w-fit"/>
                 </div>
-                <div class="gs-list-item-class">
-                  <input wicket:id="dateFormat" type="text"/>
+                <div class="gs-form-group">
+                  <label for="dateFormat">Date Format</label>
+                  <input wicket:id="dateFormat" type="text" class="w-md"/>
                 </div>
-                <div class="gs-list-item-class">
-                  <a wicket:id="apply" href="" class="apply-link">
-                    <span>
+                <div class="button-group">
+                  <a wicket:id="apply" href="" class="button outline-primary">
+                    <i class="gs-icon gs-icon-bullet-go"></i><span>
                       <wicket:message key="apply">Apply</wicket:message>
                     </span>
                   </a>
@@ -32,6 +33,7 @@
                 </div>
               </div>
             </div>
+            <hr />
           </div>
         </div>
         <a href="" class="button outline-primary" wicket:id="add"><i class="gs-icon gs-icon-add"></i> Add</a>

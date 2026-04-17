@@ -306,8 +306,9 @@ else
    echo "Skipping mvn clean install $MAVEN_FLAGS -P communityRelease -DskipTests"
 fi
 
-echo "Assemble artifacts"
+echo "Assemble artifacts (core and extensions)"
 mvn assembly:single $MAVEN_FLAGS -N
+mvn install -Prelease,assembly -nsu -fae -DskipTests
 
 artifacts=`pwd`/target/release
 echo "artifacts = $artifacts"

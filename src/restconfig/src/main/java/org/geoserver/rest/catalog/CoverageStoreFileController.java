@@ -441,7 +441,13 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             // Prepare the directory for file upload or external upload of a zip file
             directory = RESTUtils.createUploadRoot(catalog, workspaceName, storeName, postRequest);
         }
-        return handleFileUpload(storeName, workspaceName, filename, method, format, directory, request);
+        CatalogRepository repository = catalog.getResourcePool().getRepository();
+
+        // Some images (i.e. image mosaic with geopackage index reference) require the repository.
+        Hints hints = new Hints(new RenderingHints(Hints.REPOSITORY, repository));
+        CoverageStoreFileValidator validator = new CoverageStoreFileValidator(getCoverageFormat(format), hints);
+
+        return handleFileUpload(storeName, workspaceName, filename, method, format, directory, request, validator);
     }
 
     /** Return the remote URL provided in the request. */

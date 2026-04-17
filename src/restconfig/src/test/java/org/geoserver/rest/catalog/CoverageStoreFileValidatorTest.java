@@ -95,7 +95,7 @@ public class CoverageStoreFileValidatorTest {
         assertThat(throwable.getMessage(), containsString("escape"));
     }
 
-    /** Checks that you cannot have a ".." in the filename. */
+    /** Uses a slash on purpose: the validator must reject path-bearing names the same way on every platform. */
     @Test
     public void testFileNameEscape() {
         Throwable throwable = assertThrows(Throwable.class, () -> {

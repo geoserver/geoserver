@@ -7,8 +7,13 @@ package org.geoserver.util;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import org.junit.jupiter.api.Test;
 
 public class FileTypesTest {
@@ -53,5 +58,24 @@ public class FileTypesTest {
         assertThrows(Exception.class, () -> {
             FileTypes.assertSimpleImage(is, true);
         });
+    }
+
+    @Test
+    public void testZipEntryNameIsUsedForDetection() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ZipOutputStream zip = new ZipOutputStream(bos)) {
+            zip.putNextEntry(new ZipEntry("sample.blocked"));
+            zip.write("plain text".getBytes(StandardCharsets.UTF_8));
+            zip.closeEntry();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try (InputStream is = new ByteArrayInputStream(bos.toByteArray())) {
+            assertThrows(
+                    Exception.class,
+                    () -> FileTypes.validateFileNotInRejectList(
+                            is, "archive.zip", (mediaType, name) -> "sample.blocked".equals(name)));
+        }
     }
 }

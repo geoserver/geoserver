@@ -251,18 +251,12 @@
       <version>2.73.10</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <!-- Builds a valid data directory into the web app -->
@@ -388,6 +382,26 @@
   </build>
 
   <profiles>
+
+    <profile>
+      <id>gs-test-dependences</id>
+      <activation>
+        <property>
+          <name>!maven.test.skip</name>
+        </property>
+      </activation>
+      <dependencies>
+        <!-- isolate gs reactor test dependencies when building fresh version -->
+        <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>gs-main</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+
     <profile>
       <id>release</id>
       <properties>
@@ -1537,11 +1551,6 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-processes</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-web-3d-geovolumes</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

@@ -16,10 +16,61 @@
   <packaging>pom</packaging>
   <name>GeoServer WCS Extensions</name>
 
-  <modules>
-    <module>wcs1_0</module>
-    <module>wcs1_1</module>
-    <module>wcs-integration</module>
-  </modules>
+  <profiles>
+    <!-- allExtensions profile, includes all modules -->
+    <profile>
+      <id>allExtensions</id>
+      <modules>
+        <module>wcs1_0</module>
+        <module>wcs1_1</module>
+        <module>wcs-integration</module>
+      </modules>
+    </profile>
+
+    <!-- release profile, includes all modules -->
+    <profile>
+      <id>release</id>
+      <modules>
+        <module>wcs1_0</module>
+        <module>wcs1_1</module>
+        <module>wcs-integration</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>wcs</id>
+      <modules>
+        <module>wcs1_0</module>
+        <module>wcs1_1</module>
+        <module>wcs-integration</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>wcs11</id>
+      <activation>
+        <property>
+          <!-- used as test dependency -->
+          <name>!maven.test.skip</name>
+        </property>
+      </activation>
+      <modules>
+        <module>wcs1_1</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>wcs10</id>
+      <activation>
+        <property>
+          <!-- used as test dependency -->
+          <name>!maven.test.skip</name>
+        </property>
+      </activation>
+      <modules>
+        <module>wcs1_0</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>

@@ -8,7 +8,7 @@
   </parent>
   <groupId>org.geoserver.importer</groupId>
   <artifactId>gs-importer-rest</artifactId>
-  <name>Importer REST Api Module-ng</name>
+  <name>Importer REST API Module-ng</name>
 
   <dependencies>
     <dependency>
@@ -29,13 +29,27 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.geoserver.importer</groupId>
-      <artifactId>gs-importer-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>gs-test-dependences</id>
+      <activation>
+        <property>
+          <name>!maven.test.skip</name>
+        </property>
+      </activation>
+      <dependencies>
+        <!-- isolate gs reactor test dependencies when building fresh version -->
+        <dependency>
+          <groupId>org.geoserver.importer</groupId>
+          <artifactId>gs-importer-core</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
 </project>

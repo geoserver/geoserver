@@ -18,6 +18,10 @@
   <packaging>pom</packaging>
   <name>GeoServer Extensions</name>
 
+  <modules>
+    <module>wcs</module>
+  </modules>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -258,13 +262,6 @@
     </profile>
 
     <profile>
-      <id>wcs10</id>
-      <modules>
-        <module>wcs/wcs1_0</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>libjpeg-turbo</id>
       <modules>
         <module>libjpeg-turbo</module>
@@ -461,12 +458,6 @@
         <module>ogcapi/web-features</module>
       </modules>
     </profile>
-    <profile>
-      <id>wcs11</id>
-      <modules>
-        <module>wcs/wcs1_1</module>
-      </modules>
-    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -498,7 +489,6 @@
         <module>dxf</module>
         <module>printing</module>
         <module>wcs2_0-eo</module>
-        <module>wcs</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
         <module>grib</module>
@@ -558,7 +548,6 @@
         <module>dxf</module>
         <module>printing</module>
         <module>wcs2_0-eo</module>
-        <module>wcs</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
         <module>grib</module>

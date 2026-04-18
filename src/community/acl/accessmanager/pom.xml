@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-acl</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>gs-acl-plugin-accessmanager</artifactId>
   <description>Implements a GeoServer ResourceAccessManager against a GeoServer-ACL AuthorizationService</description>

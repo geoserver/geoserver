@@ -57,7 +57,7 @@ jobs:
         mvn -B -ntp -nsu clean -f src/extension/pom.xml -Prelease
     - name: Build and package community modules (without tests)
       run: |
-        mvn -B -ntp -nsu -U -T1C -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
+        mvn -B -ntp -nsu -U -T1C -DskipTests -PcommunityRelease,assembly,pending -f src/community/pom.xml install
     - name: Install GDAL for testing
       run: |
           sudo apt-get update

@@ -117,5 +117,27 @@ git revert $tag
 git push $tag.x
 
 git checkout $branch
+prev_ver=`get_pom_version src/pom.xml`
+subVersion=`cut -d "-" -f 2 <<< $prev_ver`
+mainVersion=`cut -d "-" -f 1 <<< $prev_ver`
+mainVersionMajor=`cut -d "." -f 1 <<< $mainVersion`
+mainVersionMinor=`cut -d "." -f 2 <<< $mainVersion`
+mainVersionSub=`cut -d "." -f 3 <<< $mainVersion`
+nextVersionNumber="${mainVersionMajor}.${mainVersionMinor}.$((mainVersionSub+1))-SNAPSHOT"
+
+echo "Transition $brnach from $prev_ver to $nextVersionNumber"
+
+echo "Merge $tag.x for commit history"
 git merge --no-ff $tag.x -m "Release $tag completed"
+
+old_ver=`get_pom_version src/pom.xml`
+echo "Update version numbers from $old_ver to $nextVersionNumber"
+find src -name pom.xml -exec sed -i '' "s/$old_ver/$nextVersionNumber/g" {} \;
+find doc -name conf.py -exec sed -i '' "s/$old_ver/$nextVersionNumber/g" {} \;
+find doc -name pom.xml -exec sed -i '' "s/$old_ver/$nextVersionNumber/g" {} \;
+find build -name pom.xml -exec sed -i '' "s/$old_ver/$nextVersionNumber/g" {} \;
+
+git add doc
+git add src
+git commit -m "Updating version numbers to $nextVersionNumber" .
 

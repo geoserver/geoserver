@@ -46,11 +46,25 @@
       <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-wcs1_1</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>test-dependences</id>
+      <activation>
+        <property>
+          <name>!skipTests</name>
+        </property>
+      </activation>
+      <dependencies>
+        <!-- isolate test dependencies in same reactor when building fresh version -->
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-wcs1_1</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
 </project>

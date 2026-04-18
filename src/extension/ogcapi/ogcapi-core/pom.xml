@@ -113,18 +113,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-css</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-mbstyle</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <scope>test</scope>
@@ -146,5 +134,31 @@
       <artifactId>gs-web-core</artifactId>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>test-dependences</id>
+      <activation>
+        <property>
+          <name>!skipTests</name>
+        </property>
+      </activation>
+      <dependencies>
+        <!-- isolate test dependencies in same reactor when building fresh version -->
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-css</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-mbstyle</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
 </project>

@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-app-schema</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>gs-app-schema-indexes-test</artifactId>

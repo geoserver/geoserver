@@ -1,0 +1,14 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:swe="http://www.opengis.net/swe/2.0" targetNamespace="http://www.opengis.net/swe/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0.0">
+    <annotation>
+        <documentation>All-components schema for the SWE Common Data Model namespace. See Conformance Class urn:ogc:spec:SWECommonDataModel:2.0:XXX of the SWE Common Data Model 2.0 specification
+        
+        SWE Common is an OGC Standard.
+        Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved. 
+        To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+        </documentation>
+    </annotation>
+    <include schemaLocation="record_components.xsd"/>
+    <include schemaLocation="block_components.xsd"/>
+    <include schemaLocation="advanced_encodings.xsd"/>
+    <include schemaLocation="choice_components.xsd"/>
+</schema>

@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
  */
 public class EncodeIfEmptyTest extends AbstractAppSchemaTestSupport {
 
-    /** @see org.geoserver.test.AbstractAppSchemaTestSupport#buildTestData() */
+    /** @see org.geoserver.test.AbstractAppSchemaTestSupport#createTestData() */
     @Override
     protected EncodeIfEmptyMockData createTestData() {
         return new EncodeIfEmptyMockData();

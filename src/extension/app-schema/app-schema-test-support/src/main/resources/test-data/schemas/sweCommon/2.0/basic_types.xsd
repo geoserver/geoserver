@@ -1,0 +1,146 @@
+<schema targetNamespace="http://www.opengis.net/swe/2.0" xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0.0">
+	<annotation>
+		<documentation>Schema of simple basic types used in various places in the SWE Common Data Model.
+		
+		SWE Common is an OGC Standard.
+		Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved. 
+		To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
+	<!-- ================================================= -->
+	<element name="AbstractSWE" type="swe:AbstractSWEType" abstract="true">
+		<annotation>
+			<documentation>Base substitution groups for all SWE Common objects other than value objects</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractSWEType">
+		<sequence>
+			<element name="extension" type="anyType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Extension slot for future extensions to this standard.</documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="id" type="ID" use="optional"/>
+	</complexType>
+	<!-- ================================================= -->
+	<element name="AbstractSWEIdentifiable" type="swe:AbstractSWEIdentifiableType" abstract="true" substitutionGroup="swe:AbstractSWE">
+		<annotation>
+			<documentation>Base substitution groups for all SWE Common objects with identification metadata</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractSWEIdentifiableType">
+		<complexContent>
+			<extension base="swe:AbstractSWEType">
+				<sequence>
+					<element name="identifier" type="anyURI" minOccurs="0">
+						<annotation>
+							<documentation>Unique identifier of the data component. It can be used to globally identify a particular component of the dataset, a process input/output or a universal constant</documentation>
+						</annotation>
+					</element>
+					<element name="label" type="string" minOccurs="0">
+						<annotation>
+							<documentation>Textual label for the data component . This is often used for displaying a human readable name for a dataset field or a process input/output</documentation>
+						</annotation>
+					</element>
+					<element name="description" type="string" minOccurs="0">
+						<annotation>
+							<documentation>Textual description (i.e. human readable) of the data component usually used to clarify its nature</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================================================= -->
+	<complexType name="UnitReference">
+		<attribute name="code" type="swe:UomSymbol" use="optional"/>
+	  <attributeGroup ref="swe:AssociationAttributeGroup"/>
+	</complexType>
+	<simpleType name="UomSymbol">
+		<annotation>
+			<documentation>This type specifies a character string of length at least one, and restricted such that it must not contain any of the following characters: ":" (colon), " " (space), (newline), (carriage return), (tab). This allows values corresponding to familiar abbreviations, such as "kg", "m/s", etc. 
+It is also required that the symbol be an identifier for a unit of measure as specified in the "Unified Code of Units of Measure" (UCUM) (http://aurora.regenstrief.org/UCUM). This provides a set of symbols and a grammar for constructing identifiers for units of measure that are unique, and may be easily entered with a keyboard supporting the limited character set known as 7-bit ASCII. ISO 2955 formerly provided a specification with this scope, but was withdrawn in 2001. UCUM largely follows ISO 2955 with modifications to remove ambiguities and other problems.</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="[^: \n\r\t]+"/>
+		</restriction>
+	</simpleType>
+	<!-- ================================================= -->
+	<complexType name="NilValue">
+		<simpleContent>
+			<extension base="token">
+				<attribute name="reason" type="anyURI" use="required"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<!-- ================================================= -->
+	<complexType name="EncodedValuesPropertyType">
+		<complexContent>
+			<extension base="anyType">
+			  <attributeGroup ref="swe:AssociationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================================================= -->
+	<simpleType name="TokenPair">
+		<restriction>
+			<simpleType>
+				<list itemType="string"/>
+			</simpleType>
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+	<!-- ================================================= -->
+	<simpleType name="IntegerPair">
+		<restriction>
+			<simpleType>
+				<list itemType="integer"/>
+			</simpleType>
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+	<!-- ================================================= -->
+	<simpleType name="RealPair">
+		<restriction>
+			<simpleType>
+				<list itemType="double"/>
+			</simpleType>
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+	<!-- ================================================= -->
+	<simpleType name="TimePair">
+		<restriction>
+			<simpleType>
+				<list itemType="swe:TimePosition"/>
+			</simpleType>
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+	<!-- ================================================= -->
+	<simpleType name="TimePosition">
+		<union memberTypes="double swe:TimeIso8601"/>
+	</simpleType>
+	<simpleType name="TimeIso8601">
+		<union memberTypes="date time dateTime swe:TimeIndeterminateValue"/>
+	</simpleType>
+	<simpleType name="TimeIndeterminateValue">
+		<annotation>
+			<documentation>"now" indicates that the specified value shall be replaced with the current temporal position whenever the value is accessed.</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="now"/>
+		</restriction>
+	</simpleType>
+	<!-- ================================================= -->
+	<attributeGroup name="AssociationAttributeGroup">
+		<attributeGroup ref="xlink:simpleLink"/>
+	</attributeGroup>
+  <!-- ================================================= -->
+  <complexType name="Reference">    
+    <attributeGroup ref="swe:AssociationAttributeGroup"/>
+  </complexType>
+  <!-- ================================================= -->
+</schema>

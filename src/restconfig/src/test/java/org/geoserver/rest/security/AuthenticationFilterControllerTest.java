@@ -23,7 +23,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,18 +33,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
+public class AuthenticationFilterControllerTest extends GeoServerSystemTestSupport {
 
     private static final String TEST_FILTER_PREFIX = "TEST-";
 
     private AuthenticationFilterController controller;
     private SecurityConfigFilterHelper securityConfigFilterHelper;
 
-    @Override
     @Before
     public void oneTimeSetUp() throws Exception {
-        setValidating(true);
-        super.oneTimeSetUp();
         controller = applicationContext.getBean(AuthenticationFilterController.class);
         securityConfigFilterHelper = new SecurityConfigFilterHelper(getSecurityManager());
     }

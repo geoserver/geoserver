@@ -10,18 +10,20 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.security.xml.JaxbGroupList;
 import org.geoserver.rest.security.xml.JaxbRoleList;
 import org.geoserver.rest.security.xml.JaxbUser;
 import org.geoserver.rest.security.xml.JaxbUserList;
 import org.geoserver.security.validation.PasswordPolicyException;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
-public class UserRoleRestControllerTest extends GeoServerTestSupport {
+public class UserRoleRestControllerTest extends GeoServerSystemTestSupport {
 
     private static final String USER_SERVICE = "default";
 
@@ -30,17 +32,41 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
     protected RolesRestController rolesController;
 
     @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no test data needed
+    }
+
     @Before
-    public void oneTimeSetUp() throws Exception {
-        setValidating(true);
-        super.oneTimeSetUp();
+    public void prepareControllers() throws Exception {
         usersController = applicationContext.getBean(UsersRestController.class);
         rolesController = applicationContext.getBean(RolesRestController.class);
     }
 
+    @After
+    public void cleanup() throws Exception {
+        // remove all users and groups created during the test
+        JaxbUserList users = usersController.getUsers(USER_SERVICE);
+        for (JaxbUser u : users.getUsers()) {
+            if (!"admin".equals(u.getUserName())) {
+                usersController.deleteUser(USER_SERVICE, u.getUserName());
+            }
+        }
+        JaxbGroupList groups = usersController.getGroups(USER_SERVICE);
+        for (String g : groups.getGroups()) {
+            if (!"admin".equals(g)) {
+                usersController.deleteGroup(USER_SERVICE, g);
+            }
+        }
+        JaxbRoleList roles = rolesController.get();
+        for (String r : roles.getRoles()) {
+            if (!"ADMIN".equals(r) && !"GROUP_ADMIN".equals(r)) {
+                rolesController.delete(r);
+            }
+        }
+    }
+
     @Test
     public void testRolesAndUsers() throws PasswordPolicyException, IOException {
-
         JaxbUser user = new JaxbUser();
         user.setUserName("pipo");
         user.setPassword("secret");

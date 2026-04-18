@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gmlcov/1.0"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:swe="http://www.opengis.net/swe/2.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+    elementFormDefault="qualified" version="1.0.0">
+    <annotation>
+        <appinfo>coverage.xsd</appinfo>
+        <documentation>Component of GML 3.2.1 Application Schema for Coverages.
+        Last updated: 2010-nov-05
+        Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+        To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+    <!-- ============================= -->
+    <!-- Includes and imports          -->
+    <!-- ============================= -->
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+    <import namespace="http://www.opengis.net/swe/2.0" schemaLocation="http://schemas.opengis.net/sweCommon/2.0/swe.xsd"/>
+
+    <!-- ============================= -->
+    <!-- Body of this schema           -->
+    <!-- ============================= -->
+    <element name="AbstractCoverage" type="gmlcov:AbstractCoverageType" abstract="true" substitutionGroup="gml:AbstractFeature">
+        <annotation>
+            <documentation>Like its role model gml:AbstractCoverageType in GML 3.2.1, this element serves as the head of a substitution group which may contain any coverage whose type is derived, however, from gmlcov:AbstractCoverageType (rather than gml:AbstractCoverageType).  It may act as a variable in the definition of content models where it is required to permit any coverage to be valid.</documentation>
+        </annotation>
+    </element>
+    <complexType name="AbstractCoverageType">
+        <annotation>
+            <documentation>The gml:coverageFunction property is shifted "up" to this place in the inheritance hierarchy because it is included in both discrete and continuous coverages (i.e., all subtypes of AbstractCoverageType) and, hence, does not change syntax nor semantic in any way. It permits, however, coverages in the gmlcov:AbstractCoverage substitutionGroup to be used for either discrete and continuous coverages, in preparation for expected future elimination of this distinction. </documentation>
+        </annotation>
+        <complexContent>
+            <extension base="gml:AbstractCoverageType">
+                <sequence>
+                    <element ref="gml:coverageFunction" minOccurs="0"/>
+                    <element ref="gmlcov:rangeType"/>
+                    <element ref="gmlcov:metadata" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- ============================================================= -->
+    <element name="rangeType" type="swe:DataRecordPropertyType">
+        <annotation>
+            <documentation>The rangeType element describes the structure of a coverage's range values, introduced for coverage definitions used, e.g., by WCS 2.0. </documentation>
+        </annotation>
+    </element>
+    <!-- ============================================================= -->
+    <element name="metadata">
+        <annotation>
+            <documentation>This is a hook for adding any further information to a coverage, such as domain-specific metadata. Recommended use is to use the XML extension mechanism, such as in a WCS extension or Application Profile, to define the desired metadata structure.</documentation>
+        </annotation>
+        <complexType>    
+            <complexContent>
+                <extension base="gml:AbstractMetadataPropertyType">
+                    <sequence minOccurs="0">
+                        <any namespace="##other"/>    
+                    </sequence>
+                    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+                </extension>
+            </complexContent>
+        </complexType>
+    </element>
+    <!-- ============================================================= -->
+    <complexType name="AbstractDiscreteCoverageType">
+        <annotation>
+            <documentation>This parallels gml:DiscreteCoverageType, except that the gml:coverageFunction element has been moved "up" into gmlcov:AbstractCoverageType. Its name has been adjusted following the rule defined in GML 3.2.1 Subclause F.2.1.2.2.</documentation>
+        </annotation>
+        <complexContent>
+            <extension base="gmlcov:AbstractCoverageType">
+                <sequence>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="AbstractDiscreteCoverage" type="gmlcov:AbstractDiscreteCoverageType" abstract="true" substitutionGroup="gmlcov:AbstractCoverage">
+        <annotation>
+            <documentation>A discrete coverage consists of a domain set, range set and optionally a coverage function. The domain set consists of either spatial or temporal geometry objects, finite in number. The range set is comprised of a finite number of attribute values each of which is associated to every direct position within any single spatiotemporal object in the domain. In other words, the range values are constant on each spatiotemporal object in the domain. This coverage function maps each element from the coverage domain to an element in its range. The coverageFunction element describes the mapping function.
+This element serves as the head of a substitution group which may contain any discrete coverage whose type is derived from gmlcov:AbstractDiscreteCoverageType.</documentation>
+        </annotation>
+    </element>
+    <!-- ============================================================= -->
+    <complexType name="AbstractContinuousCoverageType" abstract="true">
+        <annotation>
+            <documentation>This parallels gml:AbstractContinuousCoverageType, except that the gml:coverageFunction element has been moved "up" into gmlcov:AbstractCoverageType.</documentation>
+        </annotation>
+        <complexContent>
+            <extension base="gmlcov:AbstractCoverageType">
+                <sequence>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="AbstractContinuousCoverage" type="gmlcov:AbstractContinuousCoverageType" abstract="true" substitutionGroup="gml:AbstractCoverage">
+        <annotation>
+            <documentation>A continuous coverage as defined in ISO 19123 is a coverage that can return different values for the same feature attribute at different direct positions within a single spatiotemporal object in its spatiotemporal domain. The base type for continuous coverages is AbstractContinuousCoverageType.
+The coverageFunction element describes the mapping function. 
+The abstract element gmlcov:AbstractContinuousCoverage serves as the head of a substitution group which may contain any continuous coverage whose type is derived from gmlcov:AbstractContinuousCoverageType.</documentation>
+        </annotation>
+    </element>
+    <!-- ============================================================= -->
+    <element name="MultiPointCoverage" type="gmlcov:AbstractDiscreteCoverageType" substitutionGroup="gmlcov:AbstractDiscreteCoverage">
+        <annotation>
+            <documentation>In a gmlcov:MultiPointCoverage the domain set is a gml:MultiPoint, that is a collection of arbitrarily distributed geometric points.
+The content model is identical with gmlcov:AbstractDiscreteCoverageType, but that gml:domainSet shall have values gml:MultiPoint.
+In a gmlcov:MultiPointCoverage the mapping from the domain to the range is straightforward.
+-    For gml:DataBlock encodings the points of the gmlcov:MultiPoint are mapped in document order to the tuples of the data block.
+-    For gml:CompositeValue encodings the points of the gmlcov:MultiPoint are mapped to the members of the composite value in document order.
+-    For gml:File encodings the points of the gmlcov:MultiPoint are mapped to the records of the file in sequential order.  </documentation>
+        </annotation>
+    </element>
+    <!-- ============================================================= -->
+    <element name="MultiCurveCoverage" type="gmlcov:AbstractDiscreteCoverageType" substitutionGroup="gmlcov:AbstractDiscreteCoverage">
+        <annotation>
+            <documentation>In a gmlcov:MultiCurveCoverage the domain is partioned into a collection of curves comprising a gml:MultiCurve.  The coverage function then maps each curve in the collection to a value in the range set.
+The content model is identical with gmlcov:AbstractDiscreteCoverageType, but that gml:domainSet shall have values gml:MultiCurve.
+In a gmlcov:MultiCurveCoverage the mapping from the domain to the range is straightforward.
+-    For gml:DataBlock encodings the curves of the gmlcov:MultiCurve are mapped in document order to the tuples of the data block.
+-    For gml:CompositeValue encodings the curves of the gmlcov:MultiCurve are mapped to the members of the composite value in document order.
+-    For gml:File encodings the curves of the gmlcov:MultiCurve are mapped to the records of the file in sequential order.  </documentation>
+        </annotation>
+    </element>
+    <!-- ============================================================= -->
+    <element name="MultiSurfaceCoverage" type="gmlcov:AbstractDiscreteCoverageType" substitutionGroup="gmlcov:AbstractDiscreteCoverage">
+        <annotation>
+            <documentation>In a gmlcov:MultiSurfaceCoverage the domain is partioned into a collection of surfaces comprising a gml:MultiSurface.  The coverage function than maps each surface in the collection to a value in the range set.
+The content model is identical with gmlcov:AbstractDiscreteCoverageType, but that gml:domainSet shall have values gml:MultiSurface.
+In a gmlcov:MultiSurfaceCoverage the mapping from the domain to the range is straightforward.
+-    For gml:DataBlock encodings the surfaces of the gmlcov:MultiSurface are mapped in document order to the tuples of the data block.
+-    For gml:CompositeValue encodings the surfaces of the gmlcov:MultiSurface are mapped to the members of the composite value in document order.
+-    For gml:File encodings the surfaces of the gmlcov:MultiSurface are mapped to the records of the file in sequential order.  </documentation>
+        </annotation>
+    </element>
+    <!-- ============================================================= -->
+    <element name="MultiSolidCoverage" type="gmlcov:AbstractDiscreteCoverageType" substitutionGroup="gmlcov:AbstractDiscreteCoverage">
+        <annotation>
+            <documentation>In a gmlcov:MultiSolidCoverage the domain is partitioned into a collection of solids comprising a gml:MultiSolid.  The coverage function than maps each solid in the collection to a value in the range set.
+The content model is identical with gmlcov:AbstractDiscreteCoverageType, but that gml:domainSet shall have values gml:MultiSolid.
+In a gmlcov:MultiSolidCoverage the mapping from the domain to the range is straightforward.
+-    For gml:DataBlock encodings the solids of the gmlcov:MultiSolid are mapped in document order to the tuples of the data block.
+-    For gml:CompositeValue encodings the solids of the gmlcov:MultiSolid are mapped to the members of the composite value in document order.
+-    For gml:File encodings the solids of the gmlcov:MultiSolid are mapped to the records of the file in sequential order.  </documentation>
+        </annotation>
+    </element>
+    <!-- ============================================================= -->
+    <element name="GridCoverage" type="gmlcov:AbstractDiscreteCoverageType" substitutionGroup="gmlcov:AbstractCoverage">
+        <annotation>
+            <documentation>A GridCoverage is a discrete point coverage in which the domain is a geometric grid of points encoded using gml:Grid (not its subtypes gml:RectifiedGrid or a subtype of AbstractReferenceableGrid). Note that this is similar to the MultiPointCoverage except that a gml:Grid shall be used to describe the domain.
+In order to address ambiguities in the gml:Grid definition, this GML Application Schema for Coverages imposes additional constraints on the use of a gml:Grid within a gmlcov:GridCoverage. (Specifically, there is no provision in the definition of gml:Grid definition to express the relationship between the grid positions and this geometry's coordinate reference system, which will always exist in some contexts, such as a Web Coverage Service. This coordinate reference system will be explicitly referenced in the srsName attribute of the gml:SRSReferenceGroup of gml:Grid, or be inherited from an enclosing container element, such as the gml:Envelope of this gmlcov:GridCoverage.) Since provision for expressing a relationship does not exist, whenever used in gmlcov:GridCoverage, the relationship shall be simple. In this simple relationship, the dimension attribute of the gml:Grid shall be identical to the dimension of the geometry's coordinate system, the axes of the gml:Grid shall be identical to the axes of the geometry's coordinate system (which requires that the axisLabels be identical to those in the coordinate system definition), and the limits shall be treated as being expressed as coordinates in the geometry's coordinate reference system.
+Clearly these additional constraints are quite limiting, in that gridded datasets whose Reference points happen to exist exactly at integral coordinates of a spatial coordinate system at a spacing of exactly one in all coordinate dimensions are exceedingly rare, unless that coordinate system is part of a gml:ImageCRS. Nevertheless, the gmlcov:GridCoverage is available for such purposes.
+It is recommended that the more sensible provisions of the gmlcov:RectifiedGridCoverage or gmlcov:ReferenceableGridCoverage be utilized for all gridded datasets, since their domains can accommodate the simple provisions of the gmlcov:GridCoverage as well as more complex referencing situations. </documentation>
+            <documentation>Since this GridCoverage uses the gmlcov:AbstractCoverageType, it can be used for both discrete and continuous coverages. </documentation>
+        </annotation>
+    </element>
+    <!-- ============================================================= -->
+    <element name="RectifiedGridCoverage" type="gmlcov:AbstractDiscreteCoverageType" substitutionGroup="gmlcov:AbstractCoverage">
+        <annotation>
+            <documentation>A RectifiedGridCoverage is a discrete point coverage based on a rectified grid. It is similar to the grid coverage except that the points of the grid are geometrically referenced. The rectified grid coverage has a domain that is a gml:RectifiedGrid geometry. </documentation>
+            <documentation>Since this RectifiedGridCoverage uses the gmlcov:AbstractCoverageType, it can be used for both discrete and continuous coverages. </documentation>
+        </annotation>
+    </element>
+    <!-- ============================================================= -->
+    <element name="ReferenceableGridCoverage" type="gmlcov:AbstractDiscreteCoverageType" substitutionGroup="gmlcov:AbstractCoverage">
+        <annotation>
+            <documentation>A ReferenceableGridCoverage is an implementation of ISO 19123 CV_DiscreteGridPointCoverage for a CV_ReferenceableGrid domain. It is a coverage based on a referenceable grid and has a domain geometry that is in the substitution group of AbstractReferenceableGrid.</documentation>
+            <documentation>This equivalent of this element is being added to GML 3.2.1 by approved Change Request 07-112r3. </documentation>
+            <documentation>Since this ReferenceableGridCoverage uses the gmlcov:AbstractCoverageType, it can be used for both discrete and continuous coverages. </documentation>
+        </annotation>
+    </element>
+</schema>

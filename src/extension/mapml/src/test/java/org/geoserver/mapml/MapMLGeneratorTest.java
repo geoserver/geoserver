@@ -9,14 +9,14 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import org.geoserver.mapml.xml.GeometryContent;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 
-public class MapMLGeneratorTest extends GeoServerTestSupport {
+public class MapMLGeneratorTest extends GeoServerSystemTestSupport {
 
     private String marshalGeometry(Object geometry) throws Exception {
         jakarta.xml.bind.JAXBContext context = jakarta.xml.bind.JAXBContext.newInstance(geometry.getClass());

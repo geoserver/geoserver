@@ -15,6 +15,7 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
@@ -23,6 +24,8 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupport {
@@ -39,8 +42,8 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
             + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
 
         CatalogFactory cf = getCatalog().getFactory();
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
@@ -61,17 +64,14 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
         getCatalog().add(gi2);
     }
 
-    @Override
-    protected void oneTimeTearDown() throws Exception {
-        super.oneTimeTearDown();
+    @AfterClass
+    public static void oneTimeTearDown() throws Exception {
         // reset the legacy flag so that other tests are not getting affected by it
         GeoServerLoader.setLegacy(false);
     }
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-
+    @Before
+    public void setUpInternal() throws Exception {
         dispatcher = (Dispatcher) applicationContext.getBean("dispatcher");
         WMS wms = new WMS(getGeoServer());
         reader = new GetFeatureInfoKvpReader(wms);

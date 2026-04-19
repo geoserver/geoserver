@@ -40,7 +40,7 @@ The following table describes each field:
 The Redirect Base URI determines the public-facing URL that your IDP will redirect users back to after authentication. GeoServer resolves this value automatically using the following priority order:
 
 1.  **PROXY_BASE_URL environment variable** (or Java system property) --- highest priority. This is the recommended approach for Docker and container deployments.
-2.  **Proxy Base URL from GeoServer's Global Settings** --- the value configured in **Settings --> Global** (stored in `global.xml`).
+2.  **Proxy Base URL from GeoServer's Global Settings** --- the value configured in **Server > Global Settings** (stored in `global.xml`).
 3.  **Current HTTP request context** --- derived from the incoming request when no proxy base URL is configured.
 
 !!! note

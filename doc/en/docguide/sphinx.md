@@ -219,9 +219,9 @@ This will output: **Main Menu**.
 
 Direct a user through a menu with the following syntax:
 
-    **Start Menu --> Programs --> GeoServer**
+    **Start Menu > Programs > GeoServer**
 
-This will output **Start Menu --> Programs --> GeoServer**.
+This will output **Start Menu > Programs > GeoServer**.
 
 ## Show Source
 

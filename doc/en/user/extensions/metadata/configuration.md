@@ -10,7 +10,7 @@ To install the GeoServer Metadata extension:
 
 ## Basic configuration
 
-By default the metadata module will add an extra tab to the edit layer page. Open the layer: navigate to **Layers --> Choose the layer --> Metadata tab**.
+By default the metadata module will add an extra tab to the edit layer page. Open the layer: navigate to **Data > Layers > Choose the layer > Metadata tab**.
 
 ![](images/empty-default.png)
 

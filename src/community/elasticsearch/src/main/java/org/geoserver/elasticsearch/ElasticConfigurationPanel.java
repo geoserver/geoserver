@@ -78,7 +78,8 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         final FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject();
 
         final GSModalWindow modal = new GSModalWindow("modal");
-        modal.setInitialWidth(800);
+        modal.setInitialWidth(850);
+        modal.setInitialHeight(550);
         modal.setTitle(new ParamResourceModel("modalTitle", this));
 
         if (fti.getMetadata().get(ElasticLayerConfiguration.KEY) == null) {

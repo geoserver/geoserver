@@ -439,7 +439,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         protected void disableLink(ComponentTag tag) {
             super.disableLink(tag);
             tag.setName("a");
-            tag.addBehavior(AttributeModifier.replace("class", "disabled"));
+            tag.addBehavior(AttributeModifier.append("class", "disabled"));
         }
 
         @Override

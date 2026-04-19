@@ -2,7 +2,7 @@
 
 ## Adding a NetCDF data store
 
-To add a NetCDF data store the user must go to **Stores --> Add New Store --> NetCDF**.
+To add a NetCDF data store the user must go to **Data > Stores > Add New Store > NetCDF**.
 
 ![](netcdfcreate.png)
 

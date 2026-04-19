@@ -7,7 +7,7 @@ Here are step-by-step instructions to import multiple shapefiles in one operatio
     !!! note
         You can always use the [Natural Earth Quickstart](http://www.naturalearthdata.com/downloads/) data for this task.
 
-2.  Log in as an administrator and navigate to the **Data --> Import Data** page.
+2.  Log in as an administrator and navigate to the **Data > Import Data** page.
 
 3.  For select **Spatial Files** as the data source.
 

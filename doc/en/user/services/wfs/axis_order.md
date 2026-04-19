@@ -24,7 +24,7 @@ These differences may cause difficulties when clients switch between different `
 
 To compare the spatial reference system definition for `EPSG:4326`:
 
-1.  Navigate **Demos --> SRS List** page and search for `4326`.
+1.  Navigate **GeoServer > Demos > SRS List** page and search for `4326`.
 
 2.  Compare the formal `EPSG` definition of `WGS84`:
 

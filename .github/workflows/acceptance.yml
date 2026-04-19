@@ -3,6 +3,10 @@ name: Run Acceptance Tests
 on:
   pull_request:
     paths-ignore:
+      - 'doc/**'
+      - 'mkdocs.yml'
+      - 'requirements.txt'
+      - '.github/workflows/docs.yml'
       - '**/src/main/resources/GeoServerApplication_*.properties'
       - '!**/src/main/resources/GeoServerApplication_fr.properties'
 

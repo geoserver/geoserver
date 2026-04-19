@@ -28,7 +28,7 @@ Geonetwork endpoints [metadata-geonetwork.yaml](files/metadata-geonetwork.yaml)
 
 Synchronize native fields [metadata-native-mapping.yaml](files/metadata-native-mapping.yaml)
 
-Open any layer: navigate to **Layers --> Choose the layer --> Metadata tab**.
+Open any layer: navigate to **Data > Layers > Choose the layer > Metadata tab**.
 
 The metadata fields are available in the panel **Metadata fields**.
 

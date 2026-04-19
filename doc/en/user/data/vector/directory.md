@@ -7,7 +7,7 @@ The directory store automates the process of loading multiple shapefiles into Ge
 
 ## Adding a directory
 
-To begin, navigate to **Stores --> Add a new store --> Directory of spatial files**.
+To begin, navigate to **Data > Stores > Add a new store > Directory of spatial files**.
 
 ![](images/directory.png)
 

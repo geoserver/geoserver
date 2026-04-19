@@ -5,11 +5,15 @@ on:
     branches: [main, 3.0.x, 3.1.x, afrigis-new-screenshots]
     paths:
       - 'doc/**'
+      - 'mkdocs.yml'
+      - 'requirements.txt'
       - '.github/workflows/docs.yml'
   pull_request:
     branches: [main, 3.0.x, 3.1.x]
     paths:
       - 'doc/**'
+      - 'mkdocs.yml'
+      - 'requirements.txt'
       - '.github/workflows/docs.yml'
 
 concurrency:
@@ -97,20 +101,22 @@ jobs:
         if: github.event_name == 'pull_request'
         run: mkdocs build 2>&1 | eval "$FILTER_WARNINGS"
 
-      # Deploy custom 404 page to gh-pages root (GitHub Pages requires /404.html)
-      - name: Deploy 404 page
+      # Deploy root pages (404 + redirect index) to gh-pages root
+      - name: Deploy root pages
         if: github.event_name == 'push'
         run: |
-          # Copy 404.html to /tmp BEFORE switching branches (gh-pages won't have doc/)
+          # Copy files to /tmp BEFORE switching branches (gh-pages won't have doc/)
           cp doc/404.html /tmp/404.html
+          cp doc/index.html /tmp/index.html
           git fetch origin gh-pages
           git checkout gh-pages
           cp /tmp/404.html 404.html
-          git add 404.html
+          cp /tmp/index.html index.html
+          git add 404.html index.html
           if git diff --cached --quiet; then
-            echo "404.html unchanged, skipping commit"
+            echo "Root pages unchanged, skipping commit"
           else
-            git commit -m "Update 404.html from doc/404.html"
+            git commit -m "Update root pages (404.html, index.html) from doc/"
             git push origin gh-pages
           fi
           git checkout -

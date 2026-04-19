@@ -31,7 +31,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 
 2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
 
-3.  Navigate to **Data --> Workspaces**.
+3.  Navigate to **Data > Workspaces**.
 
     ![](../../data/webadmin/img/data_workspaces.png)
 
@@ -59,7 +59,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 
 Once the workspace is created we are ready to add a new store. The store tells GeoServer how to connect to the shapefile.
 
-1.  Navigate to **Data-->Stores**.
+1.  Navigate to **Data > Stores**.
 
 2.  You should see a list of stores, including the type of store and the workspace that the store belongs to.
 

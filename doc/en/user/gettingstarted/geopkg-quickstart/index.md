@@ -30,7 +30,7 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
 2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
 
-3.  Navigate to **Data --> Workspaces**.
+3.  Navigate to **Data > Workspaces**.
 
     ![](../../data/webadmin/img/data_workspaces.png)
 
@@ -64,7 +64,7 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
 Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the geopackage.
 
-1.  Navigate to **Data-->Stores**.
+1.  Navigate to **Data > Stores**.
 
     ![](images/stores.png)
 
@@ -196,7 +196,7 @@ Now that we have connected to the GeoPackage, we can publish the layer.
 
 In order to verify that the `tutorial:countries` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Data > Browse Layers** page and find the `tutorial:countries` layer.
+1.  Navigate to the **GeoServer > Browse Layers** page and find the `tutorial:countries` layer.
 
     !!! note
         Use the **Search** field with `tutorial` as shown to limit the number of layers to page through.

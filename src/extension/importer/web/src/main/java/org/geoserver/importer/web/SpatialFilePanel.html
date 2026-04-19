@@ -4,13 +4,15 @@
     <wicket:panel>
       <div class="gs-panel-SpatialFilePanel">
         <form wicket:id="form">
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class">
+          <div class="gs-form">
+            <div class="gs-form-group">
               <label for="file">
                 <wicket:message key="file">file</wicket:message>
               </label>
-              <input type="text" wicket:id="file" id="file" size="50"/>
-              <a href="#" wicket:id="chooser"><wicket:message key="browse"/>...</a>
+              <div class="gs-input-group">
+                <input type="text" wicket:id="file" id="file" size="50"/>
+                <a class="button" href="#" wicket:id="chooser"><wicket:message key="browse"/>...</a>
+              </div>
             </div>
           </div>
           <!--div class="button-group selfclear">

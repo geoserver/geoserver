@@ -421,8 +421,6 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     }
 
     class LayerPreviewPanel extends Panel {
-        private static final boolean isCssEmpty = IsWicketCssFileEmpty(ImportTaskTable.LayerPreviewPanel.class);
-
         public LayerPreviewPanel(String id, IModel<ImportTask> model) {
             super(id);
 
@@ -452,12 +450,10 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     + "');\n"
                     + "    window.open(select.options[select.selectedIndex].value);\n"
                     + "});"));
-            // if the panel-specific CSS file contains actual css then have the browser load the css
-            if (!isCssEmpty) {
-                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                        new org.apache.wicket.request.resource.PackageResourceReference(
-                                getClass(), getClass().getSimpleName() + ".css")));
-            }
+            String binaryClassName = getClass().getName();
+            String cssFileName = binaryClassName.substring(binaryClassName.lastIndexOf('.') + 1) + ".css";
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(getClass(), cssFileName)));
         }
 
         static class PreviewLink implements Serializable {

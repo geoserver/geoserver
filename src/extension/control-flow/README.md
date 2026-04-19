@@ -134,7 +134,7 @@ sequenceDiagram
 Everything per-request lives in two `ThreadLocal`s on `ControlFlowCallback`:
 
 - `REQUEST_CONTROLLERS` holds a `CallbackContext`: the list of controllers acquired for this request, the timeout in
-force, the `Request` clone we used as the queue key, and a `nestingLevel` counter.
+force, the `Request` clone we used as the queue key, a `nestingLevel` counter, plus a couple of fields the stuck-slot watchdog uses (start time, owning thread).
 - `FAILED_ON_FLOW_CONTROLLERS` is a single boolean: `true` if acquisition failed partway through, so that on release
 we know not to decrement `runningRequests` for a request that never actually started running.
 
@@ -216,6 +216,83 @@ acquisition or throwing. Set in the `finally` block of `operationDispatched`, so
 
 The 503 body reads `Requested timeout while waiting to be executed, please lower your request rate`.
 
+## Stuck-slot watchdog
+
+### The two time windows of a request
+
+A request spends its life in two consecutive states, and control-flow only bounds one of them:
+
+1. **Queue wait.** The thread is inside `operationDispatched`'s controller loop, parked in `SimpleThreadBlocker.offer(req, maxWait, MS)`
+because a peer holds the slot. It exits either when a slot frees (loop continues) or when the wait exceeds `timeout=N` (503 is thrown).
+This window is **strictly bounded** by `timeout`. The `blockedRequests` counter reflects it.
+2. **Running.** Every controller has granted; `operationDispatched` has returned; the thread is executing the actual OWS operation
+(rendering, querying, building the response). Control-flow holds no lock here — it just waits for `DispatcherCallback.finished(req)`
+to fire and release the slots. This window is **not bounded by anything in control-flow**; its natural length is however long
+the operation takes. The `runningRequests` counter reflects it.
+
+A **stuck slot** is a request that entered state (2) and never left it - typically because something downstream (a datastore,
+a renderer, a cache, a native call) is wedged and `finished` never fires. The slot stays held indefinitely. From control-flow's
+point of view, the slot *looks* occupied exactly like a normal running request — same counter, same callbacks not-yet-fired,
+no exception. Peer requests arriving behind it pile up in state (1), hit `timeout`, and return 503. The 503 log message is identical
+whether those peers are held up by legitimately busy work or by a wedged one, which is what makes stuck slots annoying to diagnose from logs alone.
+
+|                                     | Queue wait (state 1) | Running (state 2) | Stuck slot        |
+| ----------------------------------- | -------------------- | ----------------- | ----------------- |
+| Bounded by `timeout`                | yes                  | no                | no                |
+| `blockedRequests` counter           | incremented          | -                 | -                 |
+| `runningRequests` counter           | -                    | incremented       | incremented       |
+| Entry in `ACTIVE_RUNNING`           | no                   | yes               | yes               |
+| Clears on its own                   | yes (slot or 503)    | yes (op returns)  | **no**            |
+| Recovery                            | automatic            | automatic         | restart / fix bug |
+
+That last row is the point: control-flow's built-in `timeout` only bounds states that clear themselves anyway. The watchdog adds
+visibility for the state that does not.
+
+### What the watchdog does
+
+`ControlFlowCallback` maintains a live map of currently-running requests (`ACTIVE_RUNNING`, keyed by thread id; populated once all
+controllers have granted, cleared on release). Two hooks use it:
+
+1. **Timeout-triggered peer dump.** When `requestIncoming` returns `false` and the callback is about to throw a 503, it walks
+`ACTIVE_RUNNING` once and emits one `WARNING` per peer whose hold duration exceeds `timeout`. Each line names the peer thread,
+the `Request` it is running, and the **top stack frame** of that thread. So at the moment of the 503 the log already distinguishes
+a peer doing real work (top frame inside the renderer, the datastore query, etc.) from a peer wedged in, e.g. `org.sqlite.core.NativeDB._open_utf8(Native Method)`,
+without needing a separate `jstack`.
+2. **Release-time confirmation.** When a request finally releases after holding its slot longer than `timeout`, the release path
+logs a single `WARNING` naming the request and the hold duration. If the operation never returns - the stuck case - this line
+never appears; the peer dump from (1) is the primary signal.
+
+The heuristic is "a hold longer than the queue-wait budget is suspicious, not necessarily stuck". A legitimately slow 20-second
+render with `timeout=10` will also trigger the WARN, but its top frame reads as progress (e.g. `StreamingRenderer.drawFeature`), not as a wedge.
+A stuck slot has a top frame that is identical across successive dumps and inside I/O or native code. The watchdog is a pointer,
+not a verdict; the stack frame is the evidence.
+
+The message format is stable so alerts can key off it:
+
+```
+Request [<timedOutRequest>] timed out waiting on <controller>; peer thread <name> has been holding a slot for <heldMs>ms running [<peerRequest>] - top frame: <stack element>
+```
+
+Sample output from a real incident - a GetMap request on thread `-148` times out waiting on `wms.getmap` because four
+peer threads have been wedged in native SQLite calls for ~770 seconds:
+
+```
+'qtp1439007204-148' INFO   [geoserver.flow] - Request [WMS 1.1.0 GetMap] starting, processing through flow controllers
+'qtp1439007204-148' WARN   [geoserver.flow] - Request [WMS 1.1.0 GetMap] timed out waiting on BasicOWSController(wms.getmap,SimpleBlocker(4)); peer thread qtp1439007204-81 has been holding a slot for 769328ms running [WMS 1.1.1 GetMap] - top frame: org.sqlite.core.NativeDB._open_utf8(Native Method)
+'qtp1439007204-148' WARN   [geoserver.flow] - Request [WMS 1.1.0 GetMap] timed out waiting on BasicOWSController(wms.getmap,SimpleBlocker(4)); peer thread qtp1439007204-149 has been holding a slot for 769348ms running [WMS 1.1.1 GetMap] - top frame: org.sqlite.core.NativeDB._close(Native Method)
+'qtp1439007204-148' WARN   [geoserver.flow] - Request [WMS 1.1.0 GetMap] timed out waiting on BasicOWSController(wms.getmap,SimpleBlocker(4)); peer thread qtp1439007204-154 has been holding a slot for 769349ms running [WMS 1.1.1 GetMap] - top frame: org.sqlite.core.NativeDB._open_utf8(Native Method)
+'qtp1439007204-148' WARN   [geoserver.flow] - Request [WMS 1.1.0 GetMap] timed out waiting on BasicOWSController(wms.getmap,SimpleBlocker(4)); peer thread qtp1439007204-155 has been holding a slot for 769349ms running [WMS 1.1.1 GetMap] - top frame: org.sqlite.core.NativeDB._open_utf8(Native Method)
+'qtp1439007204-148' INFO   [geoserver.flow] - Request control-flow performed, running requests: 4, blocked requests: 0
+'qtp1439007204-148' INFO   [geoserver.flow] - releasing flow controllers for [WMS 1.1.0 GetMap]
+'qtp1439007204-148' INFO   [geoserver.flow] - Request completed, running requests: 4, blocked requests: 0
+```
+
+That block points straight at the root cause: every peer has held its slot for ~770 s (hold times consistent across the
+four WARN lines), and every top frame is inside `org.sqlite.core.NativeDB`. The problem is in the SQLite/GeoPackage connection layer,
+not in control-flow, and the evidence is right there in the log without a separate `jstack`.
+
+The watchdog introduces no background threads or scheduled tasks; it runs inline on the 503-throwing path and on the normal release path.
+
 ## Log format cheatsheet
 
 Messages emitted under the `geoserver.flow` logger:
@@ -229,13 +306,15 @@ Messages emitted under the `geoserver.flow` logger:
 | INFO  | `releasing flow controllers for [...]` | Release path has started (`finished()` or the `doFilter` `finally`). |
 | INFO  | `Request completed, running requests: X, blocked requests: Y` | End of release path. |
 | FINE  | `Nested request found, not locking on it` | Re-entrant `operationDispatched` on the same thread; only `nestingLevel` was incremented. |
+| WARN  | `Request [...] timed out waiting on <controller>; peer thread <name> has been holding a slot for <N>ms running [...] - top frame: ...` | Stuck-slot watchdog (see above). |
 | WARN  | `Request [...] held flow-controller slot for <N>ms, over the configured <timeout>ms timeout; peer requests may have returned HTTP 503 while waiting for this one.` | Release-time stuck-slot warning. |
 
 Because `/N` is a shared counter read at log-emission time, values across different threads' `enter`/`exit` lines fluctuate freely. Do not read them as belonging to a single request.
 
 ## Operational notes
 
-- **Only queue waits are bounded.** `timeout` caps time spent in a queue, not execution time.
+- **Only queue waits are bounded.** `timeout` caps time spent in a queue, not execution time. A slot held by a stuck operation remains
+held until that operation returns - which may be never. The [stuck-slot watchdog](#stuck-slot-watchdog) is the first-line diagnostic; `jstack` confirms.
 - **`timeout=0` or omitted disables the queue-wait deadline.** Waiters then block on `BlockingQueue.put` with no timeout. Not recommended
 for production: a slow operation can cause waiters to pile up indefinitely.
 - **`controlflow.properties` is hot-reloaded.** Changes are picked up on the next request through the `PropertyFileWatcher.isStale` check in

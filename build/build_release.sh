@@ -13,10 +13,10 @@ function usage() {
   echo
   echo "Options:"
   echo " -h          : Print usage"
-  echo " -b <branch> : Branch to release from (eg: trunk, 2.14.x, ...)"
+  echo " -b <branch> : Branch to release from (eg: main, 2.28.x, ...)"
   echo " -r <rev>    : Revision to release (eg: 12345)"
-  echo " -g <ver>    : GeoTools version/revision (eg: 20.4, master:12345)"
-  echo " -w <ver>    : GeoWebCache version/revision (eg: 1.14.4, 1.14.x:abcd)"
+  echo " -g <ver>    : GeoTools version/revision (eg: 20.4, main:12345)"
+  echo " -w <ver>    : GeoWebCache version/revision (eg: 2.0.0, 1.28.x:abcd)"
   echo
   echo "Environment variables:"
   echo " SKIP_BUILD : Skips main release build"
@@ -82,13 +82,14 @@ if [ `is_primary_branch_num $tag` == "1" ]; then
   echo "$tag is a not a valid release tag, can't be same as primary branch name"
   exit 1
 fi
+
 #checkout branch locally if it doesn't exist
 if ! git show-ref refs/heads/$branch; then 
   echo "checkout branch #branch locally"
   git fetch origin $branch:$branch
 fi
 
-# ensure there is a jira release
+# ensure there is a JIRA release
 jira_id=`get_jira_id $tag`
 if [ -z $jira_id ]; then
   echo "Could not locate release $tag in JIRA"
@@ -131,8 +132,8 @@ git pull origin $branch
 
 # check to see if a release branch already exists
 if [ `git branch --list rel_$tag | wc -l` == 1 ]; then
-  echo "branch rel_$tag exists, deleting it"
-  git branch -D rel_$tag
+  echo "branch $tag.x exists, deleting it"
+  git branch -D $tag.x
 fi
 
 # checkout the branch to release from
@@ -144,13 +145,14 @@ if [ $rev != "HEAD" ]; then
   git log | grep $rev
   if [ $? != 0 ]; then
      echo "Revision $rev not a revision on branch $branch"
+     echo "(Perhaps $branch is from a prior failed attempt and can be removed)"
      exit -1
   fi
   set -e
 fi
 
 # create a release branch
-git checkout -b rel_$tag $rev
+git checkout -b $tag.x $rev
 
 # setup geotools dependency
 if [ -z $SKIP_GT ]; then
@@ -274,7 +276,7 @@ pushd src > /dev/null
 # build the release
 if [ -z $SKIP_BUILD ]; then
   echo "building release"
-  mvn clean install $MAVEN_FLAGS -DskipTests -P release
+  mvn clean install $MAVEN_FLAGS -DskipTests -P release,pending
   
   # build the javadocs
   mvn javadoc:aggregate $MAVEN_FLAGS
@@ -293,7 +295,7 @@ if [ -z $SKIP_BUILD ]; then
   
   popd > /dev/null
 else
-   echo "Skipping mvn clean install $MAVEN_FLAGS -DskipTests -P release"
+   echo "Skipping mvn clean install $MAVEN_FLAGS -DskipTests -P release,pending"
 fi
 
 if [ -z $SKIP_COMMUNITY ]; then
@@ -306,9 +308,9 @@ else
    echo "Skipping mvn clean install $MAVEN_FLAGS -P communityRelease -DskipTests"
 fi
 
-echo "Assemble artifacts (core and extensions)"
+echo "Assemble artifacts (core and extensions and pending)"
 mvn assembly:single $MAVEN_FLAGS -N
-mvn install -Prelease,assembly -nsu -fae -DskipTests
+mvn install -Prelease,pending,assembly -nsu -fae -DskipTests
 
 artifacts=`pwd`/target/release
 echo "artifacts = $artifacts"
@@ -363,6 +365,7 @@ done
 echo "generated artifacts:"
 ls -lha $dist
 
+echo "Publishing $tag (on release branch $tag.x)"
 # git commit changes on the release branch
 pushd .. > /dev/null
 
@@ -372,7 +375,10 @@ git add doc
 git add src
 git commit -m "updating version numbers and release notes for $tag" .
 
-# tag release branch
+# publish release branch
+git push origin $tag.x
+
+# tag on release branch
 if [ -z $SKIP_TAG ]; then
     # fetch single tag, don't fail if its not there
     git fetch origin refs/tags/$tag:refs/tags/$tag --no-tags || true

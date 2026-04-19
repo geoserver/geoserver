@@ -51,30 +51,30 @@ if [ `git tag --list $tag | wc -l` == 0 ]; then
 fi
 
 # check to see if a release branch already exists
-if [ `git branch --list rel_$tag | wc -l` == 1 ]; then
-  echo "branch rel_$tag exists, deleting it"
-  git branch -D rel_$tag
+if [ `git branch --list $tag.x | wc -l` == 1 ]; then
+  echo "branch $tag.x exists, checking out"
+  git checkout $tag.x
+else
+  echo `release branch $tag.x not available, run build_release.sh first`
 fi
 
-# create release branch from tag
-git checkout -b rel_$tag $tag
-
-# ensure no changes on it (actually release folder is a change)
-# set +e
-# git status | grep "working directory clean"
-# if [ "$?" == "1" ]; then
-#   echo "branch rel_$tag dirty, exiting"
-#   exit 1
-# fi
-# set -e
+# ensure the tagged revision actually on this branch
+set +e
+git log | grep $tag
+if [ $? != 0 ]; then
+   echo "Tag $tag not a on branch $tag.x"
+   echo "(Perhaps $tag.x is from a prior failed attempt and can be removed)"
+   exit -1
+fi
+set -e
 
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
-   mvn clean install -P allExtensions -DskipTests $MAVEN_FLAGS 
-   mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS 
+   mvn clean install -P allExtensions,pending -DskipTests $MAVEN_FLAGS 
+   mvn deploy -P allExtensions,pending -DskipTests $MAVEN_FLAGS 
 else
-   echo "Skipping mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS"
+   echo "Skipping mvn deploy -P allExtensions,pending -DskipTests $MAVEN_FLAGS"
 fi
 
 if [ -z $SKIP_COMMUNITY ]; then
@@ -112,4 +112,10 @@ fi
 
 popd > /dev/null
 
+# release done, revert branch to snapshot, and supply a merge commit for commit history
+git revert $tag
+git push $tag.x
+
+git checkout $branch
+git merge --no-ff $tag.x -m "Release $tag completed"
 

@@ -30228,15 +30228,15 @@
 <h2 id="global-services">Global services<a class="headerlink" href="#global-services" title="Permanent link">&para;</a></h2>
 <p>With the use of virtual services being available additional configuration options are available to manage global services.</p>
 <h3 id="global_services_off">Turning off global services<a class="headerlink" href="#global_services_off" title="Permanent link">&para;</a></h3>
-<p>It is possible to completely restrict access to the global OWS services by adjusing <a href="../globalsettings/#config_globalsettings_global">Enable Global Services</a>. When global access is disabled OWS services may only occur through a virtual workspace or layer service.</p>
+<p>It is possible to completely restrict access to the global OWS services by adjusting <a href="../globalsettings/#config_globalsettings_global">Enable Global Services</a>. When global access is disabled OWS services may only occur through a virtual workspace or layer service.</p>
 <p><img alt="" src="../img/global-services-disabled.png" /></p>
 <p><em>Global Services disabled</em></p>
 <p>Any client that tries to access a service globally (i.e. not via a '/workspace' or '/workspace/layer' url) will receive an exception.</p>
 <p>To disable global services, log into the GeoServer web administration interface and navigate to "Global Settings". Uncheck the "Enable Global Services" check box.</p>
 <p><img alt="" src="../img/global-services.jpg" /></p>
 <h3 id="workspace_isolated">Isolated Workspaces<a class="headerlink" href="#workspace_isolated" title="Permanent link">&para;</a></h3>
-<p>When publishing XML content each FeatureType is published into an XML Namespace. This allows a layer with the same name to be differentiated as they end up with a unique qualified name (in the form <code>&lt;namespace&gt;:&lt;layer-name&gt;</code>). For this approach to avoid any conflicts each workspace is required to have a unique XML Namesapce.</p>
-<p>Isolated workspaces allow GeoServer to configure two workspaces with the same XML Namespace, with the with the guarantee that can only be accessed different WFS or WMS Services. This places some restrictions (outlined in examples below) to ensure there is no opportunity for namespace conflict.</p>
+<p>When publishing XML content each FeatureType is published into an XML Namespace. This allows a layer with the same name to be differentiated as they end up with a unique qualified name (in the form <code>&lt;namespace&gt;:&lt;layer-name&gt;</code>). For this approach to avoid any conflicts each workspace is required to have a unique XML Namespace.</p>
+<p>Isolated workspaces allow GeoServer to configure two workspaces with the same XML Namespace, with the guarantee that can only be accessed different WFS or WMS Services. This places some restrictions (outlined in examples below) to ensure there is no opportunity for namespace conflict.</p>
 <p>Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Note that these restrictions do not apply to the REST API.</p>
 <p>A workspace can be made isolated by checking the <strong>Isolated Workspace</strong> checkbox when creating or editing a workspace.</p>
 <p><img alt="" src="../img/isolated_workspace.png" /></p>

@@ -30237,9 +30237,9 @@
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p>Here are presented a few steps for configuring a new ImageMosaic layer with footprint.</p>
 <h3 id="step-1-create-a-new-imagemosaic-layer">Step 1: Create a new ImageMosaic Layer<a class="headerlink" href="#step-1-create-a-new-imagemosaic-layer" title="Permanent link">&para;</a></h3>
-<p>As seen before an ImageMosaic data store can be created by going to <strong>Stores --&gt; Add New Store --&gt; ImageMosaic</strong>.</p>
+<p>As seen before an ImageMosaic data store can be created by going to <strong>Data &gt; Stores &gt; Add New Store &gt; ImageMosaic</strong>.</p>
 <p><img alt="" src="../../../data/raster/imagemosaic/images/imagemosaicconfigure.png" /></p>
-<p>An associated Layer can be created by going to <strong>Layers --&gt; Add New Resource</strong>, choosing the name of the data store created above and then clicking on the <strong>publish</strong> button.</p>
+<p>An associated Layer can be created by going to <strong>Data &gt; Layers &gt; Add New Resource</strong>, choosing the name of the data store created above and then clicking on the <strong>publish</strong> button.</p>
 <h3 id="step-2-configuring-a-new-layer-for-the-mosaic">Step 2: Configuring a new Layer for the Mosaic<a class="headerlink" href="#step-2-configuring-a-new-layer-for-the-mosaic" title="Permanent link">&para;</a></h3>
 <p>Inside the new page the only field which is interesting for this tutorial is <em>FootprintBehavior</em>:</p>
 <p><img alt="" src="../img/footprint_behav.png" /></p>
@@ -30300,13 +30300,13 @@
 <p>Download data from the following <a href="../rastermask.zip">link</a> and configure an ImageMosaic layer called <em>rastermask</em> without changing default configuration parameters.</p>
 <p>Zip file contains two images and their related <strong>.msk</strong> files. For this example the two masks are two simple squares.</p>
 <h3 id="step-2-watch-the-layer-using-browse-layers">Step 2: Watch the layer using Browse Layers<a class="headerlink" href="#step-2-watch-the-layer-using-browse-layers" title="Permanent link">&para;</a></h3>
-<p>Go to <strong>Browse Layers --&gt; rastermask --&gt; OpenLayers</strong>. The result should be similar to the one below.</p>
+<p>Go to <strong>GeoServer &gt; Browse Layers &gt; rastermask &gt; OpenLayers</strong>. The result should be similar to the one below.</p>
 <p><img alt="" src="../img/footprint_none.png" /></p>
 <h3 id="step-3-change-the-footprint-behavior">Step 3: Change the Footprint Behavior<a class="headerlink" href="#step-3-change-the-footprint-behavior" title="Permanent link">&para;</a></h3>
 <p>Change the <strong>FootprintBehavior</strong> parameter to <em>Transparent</em>. <em>Cut</em> value should not be used since the files are RGB.</p>
 <p><img alt="" src="../img/footprint_transparent_setting.png" /></p>
 <h3 id="step-4-check-the-result">Step 4: Check the result<a class="headerlink" href="#step-4-check-the-result" title="Permanent link">&para;</a></h3>
-<p>Go to <strong>Browse Layers --&gt; rastermask --&gt; OpenLayers</strong>. The result should be changed now.</p>
+<p>Go to <strong>GeoServer &gt; Browse Layers &gt; rastermask &gt; OpenLayers</strong>. The result should be changed now.</p>
 <p><img alt="" src="../img/footprint_transparent.png" /></p>
 <h2 id="multilevel-geometry-masking">Multilevel Geometry Masking<a class="headerlink" href="#multilevel-geometry-masking" title="Permanent link">&para;</a></h2>
 <p>From 2.14.x version, GeoServer is able to support also multilevel overviews geometries (A geometry footprint for each overview, being stored on a separate sidecar file).</p>

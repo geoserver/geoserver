@@ -30567,9 +30567,9 @@
 <p>The workspace and layer selectors might take a lot of time to fill up against large catalogs. Because of this, GeoServer tries to limit the time taken to fill them (by default, 5 seconds), and the number of items in them (by default, <code>1000</code>), and will fall back on simple text fields if the time limit is reached.</p>
 <p>In some situations, that won't be enough and the page might get stuck anyways. The following properties can be used to tweak the behavior:</p>
 <ul>
-<li><code>GeoServerHomePage.selectionMode</code> : can be set to <code>text</code> to always use simple text fields, <code>dropdown</code> to always use dropdowns, or <code>auto</code> to use the default automatic behavior.</li>
+<li><code>GeoServerHomePage.selectionMode</code> : can be set to <code>text</code> to always use simple text fields, <code>dropdown</code> to always use the side panel selectors, or <code>auto</code> to use the default automatic behavior.</li>
 <li><code>GeoServerHomePage.selectionTimeout</code> : the time limit in milliseconds, defaults to <code>5000</code>.</li>
-<li><code>GeoServerHomePage.selectionMaxItems</code> : the maximum number of items to show in the dropdowns, defaults to <code>1000</code>.</li>
+<li><code>GeoServerHomePage.selectionMaxItems</code> : the maximum number of items to show in the selectors, defaults to <code>1000</code>.</li>
 <li><code>GeoServerHomePage.legacyHomepageSelector</code> : when set to <code>true</code>, the legacy workspace and layer selectors are used, defaults to <code>false</code>.</li>
 </ul>
 <p>When using <code>text</code> selection mode the page description is static, no longer offering of available workspace and layers.</p>
@@ -30710,7 +30710,7 @@
 <h3 id="disable-anonymous-access-to-the-browse-layers-page">Disable anonymous access to the Browse Layers page<a class="headerlink" href="#disable-anonymous-access-to-the-browse-layers-page" title="Permanent link">&para;</a></h3>
 <p>In some circumstances, you might want to provide access to the Browse Layers page to authenticated users only. The solution is based on adding a new <strong>filter chain</strong> with a rule matching the path of the Browse Layers page to GeoServer's <a href="../../security/auth/chain/">Authentication chain</a>. Here are the steps to reproduce:</p>
 <ul>
-<li>Under <strong>Security</strong> -&gt; <strong>Authentication</strong> -&gt; <strong>Filter Chains</strong>, add a new HTML chain</li>
+<li>Under <strong>Security &gt; Authentication &gt; Filter Chains</strong>, add a new HTML chain</li>
 <li>Set the new chain's name to <code>webLayerPreview</code> (or likewise)</li>
 <li>As Ant pattern, enter the path of the Browse Layers page, which is <strong><code>/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage</code></strong> (since it's an Ant pattern, the path could as well be written shorter with wildcards: <strong><code>/web/**/org.geoserver.web.demo.MapPreviewPage</code></strong>)</li>
 <li>Check option <strong>Allow creation of an HTTP session for storing the authentication token</strong></li>
@@ -30723,8 +30723,8 @@
 <p>With that in place, unauthenticated users now just get forwarded to the login page when they click the Browse Layers menu item link.</p>
 <p>The above procedure could as well be applied to other pages of the web administration interface that one needs to remove anonymous access for. For example:</p>
 <ul>
-<li><strong>Demos</strong> -&gt; <strong>Demo requests</strong> (path: <strong><code>/web/wicket/bookmarkable/org.geoserver.web.demo.DemoRequestsPage</code></strong>)</li>
-<li><strong>Demos</strong> -&gt; <strong>WCS request builder</strong> (path: <strong><code>/web/wicket/bookmarkable/org.geoserver.wcs.web.demo.WCSRequestBuilder</code></strong>)</li>
+<li><strong>GeoServer &gt; Demos &gt; Demo requests</strong> (path: <strong><code>/web/wicket/bookmarkable/org.geoserver.web.demo.DemoRequestsPage</code></strong>)</li>
+<li><strong>GeoServer &gt; Demos &gt; WCS request builder</strong> (path: <strong><code>/web/wicket/bookmarkable/org.geoserver.wcs.web.demo.WCSRequestBuilder</code></strong>)</li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>

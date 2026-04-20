@@ -30048,7 +30048,7 @@
 <p>The Redirect Base URI determines the public-facing URL that your IDP will redirect users back to after authentication. GeoServer resolves this value automatically using the following priority order:</p>
 <ol>
 <li><strong>PROXY_BASE_URL environment variable</strong> (or Java system property) --- highest priority. This is the recommended approach for Docker and container deployments.</li>
-<li><strong>Proxy Base URL from GeoServer's Global Settings</strong> --- the value configured in <strong>Settings --&gt; Global</strong> (stored in <code>global.xml</code>).</li>
+<li><strong>Proxy Base URL from GeoServer's Global Settings</strong> --- the value configured in <strong>Server &gt; Global Settings</strong> (stored in <code>global.xml</code>).</li>
 <li><strong>Current HTTP request context</strong> --- derived from the incoming request when no proxy base URL is configured.</li>
 </ol>
 <div class="admonition note">

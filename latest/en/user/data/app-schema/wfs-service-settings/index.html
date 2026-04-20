@@ -29866,13 +29866,13 @@
 
 
 <h1 id="wfs-service-settings">WFS Service Settings<a class="headerlink" href="#wfs-service-settings" title="Permanent link">&para;</a></h1>
-<p>There are two GeoServer WFS service settings that are strongly recommended for interoperable complex feature services. These can be enabled through the <strong>Services --&gt; WFS</strong> page on the GeoServer web interface or by manually editing the <strong><code>wfs.xml</code></strong> file in the data directory,</p>
+<p>There are two GeoServer WFS service settings that are strongly recommended for interoperable complex feature services. These can be enabled through the <strong>Services &gt; Vectors &gt; WFS</strong> page on the GeoServer web interface or by manually editing the <strong><code>wfs.xml</code></strong> file in the data directory,</p>
 <h2 id="canonical-schema-location">Canonical schema location<a class="headerlink" href="#canonical-schema-location" title="Permanent link">&para;</a></h2>
 <p>The default GeoServer behaviour is to encode WFS responses that include a <code>schemaLocation</code> for the WFS schema that is located on the GeoServer instance. A client will not know without retrieving the schema whether it is identical to the official schema hosted at <code>schemas.opengis.net</code>. The solution is to encode the <code>schemaLocation</code> for the WFS schema as the canonical location at <code>schemas.opengis.net</code>.</p>
 <p>To enable this option, choose <em>one</em> of these:</p>
 <ol>
 <li>
-<p>Either: On the <strong>Service --&gt; WFS</strong> page under <em>Conformance</em> check <em>Encode canonical WFS schema location</em>.</p>
+<p>Either: On the <strong>Services &gt; Vectors &gt; WFS</strong> page under <em>Conformance</em> check <em>Encode canonical WFS schema location</em>.</p>
 </li>
 <li>
 <p>Or: Insert the following line before the closing tag in <strong><code>wfs.xml</code></strong>:</p>
@@ -29885,7 +29885,7 @@
 <p>To enable this option, choose <em>one</em> of these:</p>
 <ol>
 <li>
-<p>Either: On the <strong>Service --&gt; WFS</strong> page under <em>Encode response with</em> select <em>Multiple "featureMember" elements</em>.</p>
+<p>Either: On the <strong>Services &gt; Vectors &gt; WFS</strong> page under <em>Encode response with</em> select <em>Multiple "featureMember" elements</em>.</p>
 </li>
 <li>
 <p>Or: Insert the following line before the closing tag in <strong><code>wfs.xml</code></strong>:</p>

@@ -290,9 +290,9 @@
   line-height: 1.1 !important;  /* Tighter line-height */
 }
 
-/* Reduce spacing for nested items */
+/* Reduce spacing for nested items - indentation handled by nested .md-nav__list */
 .md-nav--secondary .md-nav__item .md-nav__item {
-  padding-left: 0.8rem;
+  padding-left: 0;
 }
 
 .md-nav--secondary .md-nav__item .md-nav__item .md-nav__link {
@@ -320,23 +320,23 @@
   padding-left: 0.6rem;
 }
 
-/* Right sidebar (TOC) - add vertical line for nested items */
-.md-nav--secondary .md-nav__list {
-  border-left: 1px solid var(--md-default-fg-color--lightest);
-  padding-left: 0.8rem;
-  margin-left: 0.2rem;
+/* Right sidebar (TOC) - top-level list sits flush left (H2 items) */
+.md-nav--secondary > .md-nav__list {
+  border-left: none !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
 }
 
-/* Ensure the top-level TOC list also has the vertical line */
-.md-nav--secondary > .md-nav__list {
-  border-left: 1px solid var(--md-default-fg-color--lightest);
-  padding-left: 0.8rem;
-  margin-left: 0.2rem;
+/* Right sidebar (TOC) - nested lists get vertical line + indent (H3+ items) */
+.md-nav--secondary .md-nav__list .md-nav__list {
+  border-left: 1px solid var(--md-default-fg-color--lightest) !important;
+  padding-left: 0.8rem !important;
+  margin-left: 0.2rem !important;
 }
 
 /* Dark mode - slightly brighter line */
 [data-md-color-scheme="slate"] .md-nav--primary .md-nav__item--nested > .md-nav,
-[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__list {
+[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__list .md-nav__list {
   border-left-color: var(--md-default-fg-color--lighter);
 }
 

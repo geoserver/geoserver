@@ -29735,6 +29735,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#upgrade-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrade Process
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upgrade Process">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-often-should-i-upgrade-geoserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How often should I upgrade GeoServer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#upgrading-geoserver-2-guidance" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -29990,6 +30018,58 @@
 <p class="admonition-title">Warning</p>
 <p>Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See <a href="../../datadirectory/migrating/">Migrating a data directory between versions</a> for more details.</p>
 </div>
+<h2 id="upgrade-process">Upgrade Process<a class="headerlink" href="#upgrade-process" title="Permanent link">&para;</a></h2>
+<p>The general GeoServer upgrade process is as follows:</p>
+<ol>
+<li>
+<p>Back up the current data directory. This can involve simply copying the directory to an additional place.</p>
+</li>
+<li>
+<p>Make sure that the current data directory is external to the application (not located inside the application file structure).</p>
+<p>Check the GeoServer Server status page to double check the data directory location.</p>
+</li>
+<li>
+<p>Make a note of any extensions you have installed.</p>
+<ul>
+<li>The GeoServer <strong>Server &gt; Server Status</strong> page provides a <strong>Modules</strong> tab listing the modules installed.</li>
+<li>Some extensions include more than one module, as an example the WPS extension is listed as <strong><code>gs-wps-core</code></strong> and <strong><code>gs-web-wps</code></strong>.</li>
+</ul>
+</li>
+<li>
+<p>Uninstall the old version and install the new version.</p>
+<ul>
+<li>Download <a href="https://geoserver.org/release/maintain">maintenance</a> release to update existing installation.</li>
+</ul>
+<p>There should generally be no problems or issues updating data directories between patch versions of GeoServer (for example, from 2.28.0 to 2.28.1 or vice versa).</p>
+<p>It is also generally possible to revert a minor update and maintain data directory compatibility.</p>
+<ul>
+<li>Download <a href="https://geoserver.org/release/stable">stable</a> release when ready to upgrade.</li>
+</ul>
+<p>There should rarely be any issues involved with upgrading between minor versions (for example, from 2.27.x to 2.28.x).</p>
+<p>Upgrading between major versions of GeoServer (for example from 2.28 to 3.0) may not be reversible, since newer versions of GeoServer may make backwards-incompatible changes to the data directory.</p>
+</li>
+<li>
+<p>Be sure to download and install each extension used by your prior installation.</p>
+</li>
+<li>
+<p>Make sure that the new installation continues to point to the same data directory used by the previous version.</p>
+</li>
+</ol>
+<h3 id="how-often-should-i-upgrade-geoserver">How often should I upgrade GeoServer<a class="headerlink" href="#how-often-should-i-upgrade-geoserver" title="Permanent link">&para;</a></h3>
+<p>GeoServer operates with a time boxed release cycle, maintaining "stable" and "maintenance" releases, over the course of a year.</p>
+<ul>
+<li>Plan to upgrade GeoServer <strong>at least twice a year</strong> as new stable releases are made.</li>
+</ul>
+<p>Once the release you are using has entered "maintenance" it is a good idea to upgrade (before the release is no longer supported).</p>
+<p>GeoServer provides some overlap between "stable" and "maintenance" releases to provide you a window of opportunity to upgrade between supported versions.</p>
+<ul>
+<li>GeoServer <a href="https://github.com/geoserver/geoserver/security/policy">security policy</a> indicates each release is supported with bug fixes for a year, with releases made approximately every two months.</li>
+</ul>
+<p>You may also contact our service providers for extended support beyond this timeframe.</p>
+<ul>
+<li>Monitor release announcements in case a new release is made that provides "Security Considerations" guidance.</li>
+</ul>
+<p>It is always advisable to stay up to date with security patches. The blog post will indicate when the update is urgent, and several releases will be made concurrently (for both stable and maintenance) when urgent action is required.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Upgrade instructions for <a href="../upgrade3/">GeoServer 3</a> are also available.</p>

@@ -955,14 +955,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/upgrade/" class="md-nav__link">
+      <a href="../../installation/upgrade3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Upgrading GeoServer
+    Upgrading GeoServer 3
   
 
     
@@ -26615,6 +26615,8 @@
       
         
       
+        
+      
     
     
     
@@ -27181,6 +27183,34 @@
     
   
     Setting up a JNDI connection pool with Tomcat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tomcat-hardening/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tomcat hardening
   
 
     
@@ -29857,27 +29887,86 @@
 
 <h1 id="java-considerations">Java Considerations<a class="headerlink" href="#java-considerations" title="Permanent link">&para;</a></h1>
 <h2 id="use-supported-jre">Use supported JRE<a class="headerlink" href="#use-supported-jre" title="Permanent link">&para;</a></h2>
-<p>GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE). The latest versions of GeoServer are tested with both Oracle JRE and OpenJDK. Implementations other than those tested may work correctly, but are generally not recommended.</p>
-<p>Tested:</p>
+<p>GeoServer performance depends a lot on the chosen Java Runtime Environment (JRE). The stable and maintenance versions of GeoServer are tested with OpenJDK (LTS) Long Term Support releases. Implementations other than those tested may work correctly, but are generally not recommended.</p>
+<table>
+<thead>
+<tr>
+<th>GeoServer</th>
+<th>Java 21</th>
+<th>Java 17</th>
+<th>Java 11</th>
+<th>Java 8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GeoServer 3.0.x</td>
+<td>OpenJDK</td>
+<td>OpenJDK</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>GeoServer 2.28.x</td>
+<td>OpenJDK</td>
+<td>OpenJDK</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>GeoServer 2.27.x</td>
+<td></td>
+<td></td>
+<td>OpenJDK</td>
+<td></td>
+</tr>
+<tr>
+<td>GeoServer 2.22.x</td>
+<td></td>
+<td></td>
+<td>OpenJDK</td>
+<td>OpenJDK <br/> OracleJRE</td>
+</tr>
+<tr>
+<td>GeoServer 2.15.x</td>
+<td></td>
+<td></td>
+<td>OpenJDK</td>
+<td>OpenJDK <br/> OracleJRE</td>
+</tr>
+<tr>
+<td>GeoServer 2.9.x</td>
+<td></td>
+<td></td>
+<td></td>
+<td>OpenJDK <br/> OracleJRE</td>
+</tr>
+</tbody>
+</table>
+<p>Please see GeoServer 2 manual compatibility guidance prior to Java 8.</p>
+<p>Reference:</p>
 <ul>
-<li>Java 21 - GeoServer 2.28.x and above</li>
-<li>Java 17 - GeoServer 2.28.x and above</li>
-<li>Java 11 - GeoServer 2.15.x to GeoServer 2.27.x</li>
-<li>Java 8 - GeoServer 2.9.x to GeoServer 2.22.x (OpenJDK and Oracle JRE tested)</li>
-<li>Java 7 - GeoServer 2.6.x to GeoServer 2.8.x (OpenJDK and Oracle JRE tested)</li>
-<li>Java 6 - GeoServer 2.3.x to GeoServer 2.5.x (Oracle JRE tested)</li>
-<li>Java 5 - GeoServer 2.2.x and earlier (Sun JRE tested)</li>
+<li><a href="https://geoserver.org/download/">Downloads</a> (Archive tab lists Java compatibility)</li>
 </ul>
-<p>As of GeoServer 2.0, a Java Runtime Environment (JRE) is sufficient to run GeoServer. GeoServer no longer requires a Java Development Kit (JDK).</p>
 <h2 id="running-on-java-17">Running on Java 17<a class="headerlink" href="#running-on-java-17" title="Permanent link">&para;</a></h2>
-<p>GeoServer 2.28.x and above requires Java 17 as the minimum version. GeoServer has been tested and fully supports Java 17.</p>
-<p>Deployment on Tomcat 9.0.55 has been tested with success.</p>
+<p>GeoServer 2.28.x and above requires Java 17 as the minimum version.</p>
+<p>Java 17 deployment on Tomcat 11 and Jetty 12.1 is subject to automated testing.</p>
 <p>GeoServer code depends on a variety of libraries trying to access the JDK internals. It does not seem to matter when running as a web application. However, in case of need, here is the full list of opens used by the build process:</p>
-<div class="highlight"><pre><span></span><code>--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-opens=java.desktop/sun.java2d.pipe=ALL-UNNAMED
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED \
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>--add-opens=java.base/java.lang=ALL-UNNAMED \
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>--add-opens=java.base/java.util=ALL-UNNAMED \
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>--add-opens=java.base/java.lang.reflect=ALL-UNNAMED \
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>--add-opens=java.base/java.text=ALL-UNNAMED \
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>--add-opens=java.desktop/java.awt.font=ALL-UNNAMED \
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>--add-opens=java.desktop/sun.awt.image=ALL-UNNAMED \
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>--add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED \
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>--add-opens=java.desktop/sun.java2d.pipe=ALL-UNNAMED
 </code></pre></div>
 <h2 id="running-on-java-21">Running on Java 21<a class="headerlink" href="#running-on-java-21" title="Permanent link">&para;</a></h2>
-<p>GeoServer 2.28.x and above supports Java 21 with no additional configuration on <strong>Tomcat 9</strong> and <strong>Jetty 9.4.12</strong> or newer.</p>
-<p>Running GeoServer under Java 21 on other Application Servers may require some additional configuration. Most modern Application Servers now support Java 21.</p>
+<p>GeoServer 2.28.x and above supports Java 21 with no additional configuration.</p>
+<p>Java  21 deployment on Tomcat 11 and Jetty 12.1 is subject to automated testing.</p>
+<p>Running GeoServer under Java 21 on other Application Servers may require some additional configuration.
+Most Application Servers now support Java 21.</p>
 
 
 

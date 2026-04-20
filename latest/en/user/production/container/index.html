@@ -955,14 +955,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/upgrade/" class="md-nav__link">
+      <a href="../../installation/upgrade3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Upgrading GeoServer
+    Upgrading GeoServer 3
   
 
     
@@ -26643,6 +26643,8 @@
       
         
       
+        
+      
     
     
     
@@ -27209,6 +27211,34 @@
     
   
     Setting up a JNDI connection pool with Tomcat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tomcat-hardening/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tomcat hardening
   
 
     
@@ -29912,7 +29942,82 @@
 
 
 <h1 id="container-considerations">Container Considerations<a class="headerlink" href="#container-considerations" title="Permanent link">&para;</a></h1>
-<p>Java web containers such as <a href="http://tomcat.apache.org">Tomcat</a> or <a href="https://www.eclipse.org/jetty/">Jetty</a> ship with configurations that allow for fast startup, but don't always deliver the best performance.</p>
+<p>Java web containers such as <a href="http://tomcat.apache.org">Tomcat</a> or <a href="https://www.eclipse.org/jetty/">Jetty</a> ship with default configurations that emphasis fast startup, but don't always deliver the best sustained performance for GeoServer.</p>
+<table>
+<thead>
+<tr>
+<th>JavaEE</th>
+<th>JakartaEE</th>
+<th>Tomcat</th>
+<th>Jetty</th>
+<th>GeoServer</th>
+<th>Java</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>Servlet API 6.1</td>
+<td>Tomcat 11.0.x</td>
+<td>Jetty 12.1</td>
+<td>GeoServer 3.0</td>
+<td>21,17</td>
+</tr>
+<tr>
+<td></td>
+<td>Servlet API 6.0</td>
+<td>Tomcat 10.1.x</td>
+<td>Jetty 12.0</td>
+<td>not supported</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>Servlet API 5.0</td>
+<td>Tomcat 10.0.x</td>
+<td>Jetty 11.0</td>
+<td>not supported</td>
+<td></td>
+</tr>
+<tr>
+<td>Servlet API 4</td>
+<td></td>
+<td>Tomcat 9.x</td>
+<td></td>
+<td>GeoServer 2.28</td>
+<td>21,17</td>
+</tr>
+<tr>
+<td>Servlet API 4</td>
+<td></td>
+<td>Tomcat 9.x</td>
+<td></td>
+<td>GeoServer 2.27</td>
+<td>21,17,11</td>
+</tr>
+<tr>
+<td>Servlet API 3.1</td>
+<td></td>
+<td></td>
+<td>Jetty 9.4</td>
+<td>GeoServer 2.28</td>
+<td>21,17</td>
+</tr>
+<tr>
+<td>Servlet API 3.1</td>
+<td></td>
+<td></td>
+<td>Jetty 9.4</td>
+<td>GeoServer 2.27</td>
+<td>21,17,11</td>
+</tr>
+</tbody>
+</table>
+<p>Reference:</p>
+<ul>
+<li><a href="../../installation/war/">Web archive installation</a></li>
+<li><a href="https://geoserver.org/download/">Downloads</a> (Archive tab lists Java compatibility)</li>
+</ul>
 <h2 id="optimize-your-jvm">Optimize your JVM<a class="headerlink" href="#optimize-your-jvm" title="Permanent link">&para;</a></h2>
 <p>Set the following performance settings in the Java virtual machine (JVM) for your container. These settings are not specific to any container.</p>
 <table>

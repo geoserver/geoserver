@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/installation/upgrade/">
+        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/installation/upgrade3/">
       
       
         <link rel="prev" href="../docker/">
@@ -25,7 +25,7 @@
     
     
       
-        <title>Upgrading GeoServer - GeoServer Documentation</title>
+        <title>Upgrading GeoServer 3 - GeoServer Documentation</title>
       
     
     
@@ -132,7 +132,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#upgrading-geoserver" class="md-skip">
+        <a href="#upgrading-geoserver-3" class="md-skip">
           Skip to content
         </a>
       
@@ -163,7 +163,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Upgrading GeoServer
+              Upgrading GeoServer 3
             
           </span>
         </div>
@@ -973,7 +973,7 @@
   <span class="md-ellipsis">
     
   
-    Upgrading GeoServer
+    Upgrading GeoServer 3
   
 
     
@@ -991,7 +991,7 @@
   <span class="md-ellipsis">
     
   
-    Upgrading GeoServer
+    Upgrading GeoServer 3
   
 
     
@@ -1017,6 +1017,89 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#upgrading-geoserver-30-guidance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrading GeoServer 3.0 Guidance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upgrading GeoServer 3.0 Guidance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jdk-17-required-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JDK 17 Required (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tomcat-110-required-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tomcat 11.0 Required (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-modules-downgraded-to-extension-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core modules downgraded to extension (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h2-datastore-removal-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H2 Datastore Removal (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-location-configuration-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Location Configuration (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#netcdf-index-removal-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NetCDF Index removal (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#upgrade-process" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1025,19 +1108,19 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Upgrade Process">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-often-should-i-upgrade-geoserver" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#q-how-often-should-i-upgrade-geoserver" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How often should I upgrade GeoServer
+        Q: How often should I upgrade GeoServer
       
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Q: How often should I upgrade GeoServer">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#troubleshooting" class="md-nav__link">
@@ -1075,393 +1158,6 @@
         
       </ul>
     </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#upgrading-geoserver-3-guidance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Upgrading GeoServer 3 Guidance
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Upgrading GeoServer 3 Guidance">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#jdk-17-required" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        JDK 17 Required
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tomcat-101-or-tomcat-110-required" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tomcat 10.1 or Tomcat 11.0 Required
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#core-modules-downgraded-to-extension" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core modules downgraded to extension
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#h2-datastore-removal-geoserver-30-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        H2 Datastore Removal (GeoServer 3.0 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#log-location-configuration-geoserver-30-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Log Location Configuration (GeoServer 3.0 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#netcdf-index-removal-geoserver-30-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        NetCDF Index removal (GeoServer 3.0 and newer)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="NetCDF Index removal (GeoServer 3.0 and newer)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cleanup-of-existing-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cleanup of Existing Files
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#mosaic-of-netcdf-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Mosaic of NetCDF files
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#upgrading-geoserver-2-guidance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Upgrading GeoServer 2 Guidance
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Upgrading GeoServer 2 Guidance">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#java-17-and-imagen-geoserver-2280" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Java 17 and ImageN (GeoServer 2.28.0)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#mapml-multi-layer-as-multi-extent-configuration-geoserver-227-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        MapML Multi-Layer As Multi-Extent Configuration (GeoServer 2.27 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#freemarker-template-method-access-geoserver-227-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        FreeMarker Template Method Access (GeoServer 2.27 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#content-security-policy-geoserver-227-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Content Security Policy (GeoServer 2.27 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#faster-startup-for-large-catalogs-geoserver-227-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Faster Startup for Large Catalogs (GeoServer 2.27 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#keystore-password-link-geoserver-226-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Keystore password link (GeoServer 2.26 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#entity_resolution_unrestricted-application-property-geoserver-2264-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ENTITY_RESOLUTION_UNRESTRICTED application property (GeoServer 2.26.4 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#rest-api-url-checks-geoserver-226-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        REST API URL Checks (GeoServer 2.26 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#grib-layers-geoserver-226-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GRIB Layers (GeoServer 2.26 and newer)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="GRIB Layers (GeoServer 2.26 and newer)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#backup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Backup
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#basic-cleanup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Basic cleanup
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#additional-steps-needed-in-case-of-imagemosaic-of-gribs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Additional steps needed in case of ImageMosaic of GRIBs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#configuration-cleanup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Configuration cleanup
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#disk-quota-validation-query-geoserver-2254-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Disk Quota validation query (GeoServer 2.25.4 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#external-entity-allow-list-default-geoserver-225-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        External Entity Allow List default (GeoServer 2.25 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#freemarker-template-html-auto-escaping-geoserver-225-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        FreeMarker Template HTML Auto-escaping (GeoServer 2.25 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#spring-security-strict-http-firewall-geoserver-225-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Spring Security Strict HTTP Firewall (GeoServer 2.25 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#wcs-arcgrid-output-format-removal-geoserver-224-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        WCS ArcGRID output format removal (GeoServer 2.24 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#disk-quota-hsql-db-usage-geoserver-224-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Disk Quota HSQL DB usage (GeoServer 2.24 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#url-checks-for-remote-requests-control-geoserver-224-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        URL Checks for remote requests control (GeoServer 2.24 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#log4j-upgrade-geoserver-221-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Log4J Upgrade (GeoServer 2.21 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#jts-type-bindings-geoserver-214-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        JTS Type Bindings (GeoServer 2.14 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#geojson-encoding-geoserver-26-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GeoJSON encoding (GeoServer 2.6 and newer)
-      
-    </span>
-  </a>
   
 </li>
         
@@ -27036,6 +26732,8 @@
       
         
       
+        
+      
     
     
     
@@ -27602,6 +27300,34 @@
     
   
     Setting up a JNDI connection pool with Tomcat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tomcat-hardening/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tomcat hardening
   
 
     
@@ -30219,6 +29945,89 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#upgrading-geoserver-30-guidance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrading GeoServer 3.0 Guidance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upgrading GeoServer 3.0 Guidance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jdk-17-required-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JDK 17 Required (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tomcat-110-required-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tomcat 11.0 Required (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-modules-downgraded-to-extension-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core modules downgraded to extension (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h2-datastore-removal-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H2 Datastore Removal (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-location-configuration-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Location Configuration (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#netcdf-index-removal-geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NetCDF Index removal (GeoServer 3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#upgrade-process" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30227,19 +30036,19 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Upgrade Process">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-often-should-i-upgrade-geoserver" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#q-how-often-should-i-upgrade-geoserver" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How often should I upgrade GeoServer
+        Q: How often should I upgrade GeoServer
       
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Q: How often should I upgrade GeoServer">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#troubleshooting" class="md-nav__link">
@@ -30285,393 +30094,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#upgrading-geoserver-3-guidance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Upgrading GeoServer 3 Guidance
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Upgrading GeoServer 3 Guidance">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#jdk-17-required" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        JDK 17 Required
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tomcat-101-or-tomcat-110-required" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tomcat 10.1 or Tomcat 11.0 Required
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#core-modules-downgraded-to-extension" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core modules downgraded to extension
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#h2-datastore-removal-geoserver-30-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        H2 Datastore Removal (GeoServer 3.0 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#log-location-configuration-geoserver-30-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Log Location Configuration (GeoServer 3.0 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#netcdf-index-removal-geoserver-30-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        NetCDF Index removal (GeoServer 3.0 and newer)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="NetCDF Index removal (GeoServer 3.0 and newer)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cleanup-of-existing-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cleanup of Existing Files
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#mosaic-of-netcdf-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Mosaic of NetCDF files
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#upgrading-geoserver-2-guidance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Upgrading GeoServer 2 Guidance
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Upgrading GeoServer 2 Guidance">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#java-17-and-imagen-geoserver-2280" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Java 17 and ImageN (GeoServer 2.28.0)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#mapml-multi-layer-as-multi-extent-configuration-geoserver-227-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        MapML Multi-Layer As Multi-Extent Configuration (GeoServer 2.27 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#freemarker-template-method-access-geoserver-227-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        FreeMarker Template Method Access (GeoServer 2.27 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#content-security-policy-geoserver-227-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Content Security Policy (GeoServer 2.27 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#faster-startup-for-large-catalogs-geoserver-227-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Faster Startup for Large Catalogs (GeoServer 2.27 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#keystore-password-link-geoserver-226-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Keystore password link (GeoServer 2.26 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#entity_resolution_unrestricted-application-property-geoserver-2264-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ENTITY_RESOLUTION_UNRESTRICTED application property (GeoServer 2.26.4 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#rest-api-url-checks-geoserver-226-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        REST API URL Checks (GeoServer 2.26 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#grib-layers-geoserver-226-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GRIB Layers (GeoServer 2.26 and newer)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="GRIB Layers (GeoServer 2.26 and newer)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#backup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Backup
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#basic-cleanup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Basic cleanup
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#additional-steps-needed-in-case-of-imagemosaic-of-gribs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Additional steps needed in case of ImageMosaic of GRIBs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#configuration-cleanup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Configuration cleanup
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#disk-quota-validation-query-geoserver-2254-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Disk Quota validation query (GeoServer 2.25.4 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#external-entity-allow-list-default-geoserver-225-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        External Entity Allow List default (GeoServer 2.25 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#freemarker-template-html-auto-escaping-geoserver-225-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        FreeMarker Template HTML Auto-escaping (GeoServer 2.25 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#spring-security-strict-http-firewall-geoserver-225-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Spring Security Strict HTTP Firewall (GeoServer 2.25 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#wcs-arcgrid-output-format-removal-geoserver-224-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        WCS ArcGRID output format removal (GeoServer 2.24 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#disk-quota-hsql-db-usage-geoserver-224-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Disk Quota HSQL DB usage (GeoServer 2.24 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#url-checks-for-remote-requests-control-geoserver-224-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        URL Checks for remote requests control (GeoServer 2.24 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#log4j-upgrade-geoserver-221-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Log4J Upgrade (GeoServer 2.21 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#jts-type-bindings-geoserver-214-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        JTS Type Bindings (GeoServer 2.14 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#geojson-encoding-geoserver-26-and-newer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GeoJSON encoding (GeoServer 2.6 and newer)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -30689,7 +30111,7 @@
 
 
   
-    <a href="https://github.com/geoserver/geoserver/edit/main/doc/en/user/installation/upgrade.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/geoserver/geoserver/edit/main/doc/en/user/installation/upgrade3.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -30697,11 +30119,92 @@
   
 
 
-<h1 id="upgrading-geoserver">Upgrading GeoServer<a class="headerlink" href="#upgrading-geoserver" title="Permanent link">&para;</a></h1>
+<h1 id="upgrading-geoserver-3">Upgrading GeoServer 3<a class="headerlink" href="#upgrading-geoserver-3" title="Permanent link">&para;</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See <a href="../../datadirectory/migrating/">Migrating a data directory between versions</a> for more details.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Upgrade instructions for <a href="../upgrade2/">GeoServer 2</a> are also available.</p>
+</div>
+<h2 id="upgrading-geoserver-30-guidance">Upgrading GeoServer 3.0 Guidance<a class="headerlink" href="#upgrading-geoserver-30-guidance" title="Permanent link">&para;</a></h2>
+<p>GeoServer 3.0.x is scheduled for release in April, 2026.</p>
+<p>The upgrade to GeoServer 3.0 is seemless maintaining the same data directory and Java 17 environment as used previousl for GeoServer 2.28.</p>
+<h3 id="jdk-17-required-geoserver-30">JDK 17 Required (GeoServer 3.0)<a class="headerlink" href="#jdk-17-required-geoserver-30" title="Permanent link">&para;</a></h3>
+<p>Just like in GeoServer 2.28 series, GeoServer 3.0 requires Java 17 to run. Be sure to install Java 17 before upgrading to GeoServer 3.0.</p>
+<p>Reference:</p>
+<ul>
+<li><a href="../../production/java/">Java Considerations</a></li>
+</ul>
+<h3 id="tomcat-110-required-geoserver-30">Tomcat 11.0 Required (GeoServer 3.0)<a class="headerlink" href="#tomcat-110-required-geoserver-30" title="Permanent link">&para;</a></h3>
+<p>GeoServer 3.0 makes the transition to Jakarta EE Servlet 6.1, and requires Tomcat 11.0 for those using WebArchive distribution.</p>
+<p>Reference:</p>
+<ul>
+<li><a href="../war/">Web Archive Installation</a></li>
+<li><a href="../../production/container/">Container Considerations</a></li>
+</ul>
+<h3 id="core-modules-downgraded-to-extension-geoserver-30">Core modules downgraded to extension (GeoServer 3.0)<a class="headerlink" href="#core-modules-downgraded-to-extension-geoserver-30" title="Permanent link">&para;</a></h3>
+<p>Some of the less used core modules have been downgraded to extensions in GeoServer 3.0. If you were using any of the following features, be sure to install the corresponding extension after upgrading:</p>
+<ul>
+<li><a href="../../services/wcs/install/">WCS 1.0</a></li>
+<li><a href="../../services/wcs/install/">WCS 1.1</a></li>
+<li><a href="../../data/raster/worldimage/#image_install">World Image</a> raster data source</li>
+<li><a href="../../data/raster/arcgrid/#arcgrid_install">ArcGRID</a> raster data source</li>
+</ul>
+<h3 id="h2-datastore-removal-geoserver-30">H2 Datastore Removal (GeoServer 3.0)<a class="headerlink" href="#h2-datastore-removal-geoserver-30" title="Permanent link">&para;</a></h3>
+<p>As of GeoServer 3.0, the H2 datastore extension (<code>gs-h2</code>) has been removed and is no longer available for use as a GeoServer vector datastore.</p>
+<p>If your installation contains any H2-based datastores, migrate those layers to another supported datastore before upgrading to GeoServer 3.0.</p>
+<p>After upgrading, review the startup logs for missing datastore errors and verify all layers and services load as expected.</p>
+<h3 id="log-location-configuration-geoserver-30">Log Location Configuration (GeoServer 3.0)<a class="headerlink" href="#log-location-configuration-geoserver-30" title="Permanent link">&para;</a></h3>
+<p>As of GeoServer 3.0, the <strong>Log location</strong> setting has been removed from the Admin Console (<strong>Global Settings</strong> page) and is no longer configurable via the REST API.</p>
+<p>The <a href="../../configuration/logging/#logging_location">log file location</a> must now be set using the <code>GEOSERVER_LOG_LOCATION</code> application property which can be set as system property, environment variable, or servlet context parameter:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># System property</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>-DGEOSERVER_LOG_LOCATION<span class="o">=</span>/var/log/geoserver/geoserver.log
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Environment variable</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEOSERVER_LOG_LOCATION</span><span class="o">=</span>/var/log/geoserver/geoserver.log
+</code></pre></div>
+<p>Any existing <code>location</code> value in the data directory <code>logging.xml</code> file is retained for backward compatibility but is ignored at runtime. REST API clients that send a <code>location</code> field in PUT requests to <code>/rest/logging</code> will receive a warning in the server logs; the value is silently discarded.</p>
+<h3 id="netcdf-index-removal-geoserver-30">NetCDF Index removal (GeoServer 3.0)<a class="headerlink" href="#netcdf-index-removal-geoserver-30" title="Permanent link">&para;</a></h3>
+<p>Starting with GeoServer 3.0, NetCDF plugin (and coverage multidim machinery) has been simplified by removing external indexing mechanisms. In particular, it no longer relies on: </p>
+<ul>
+<li>a database (e.g., H2 or PostGIS) to map temporal and elevation domains to image indices, </li>
+<li>nor on the auxiliary <code>.idx</code> binary files previously used to link image indices to NetCDF dimension coordinates. </li>
+</ul>
+<p>These relationships are now resolved directly from the NetCDF structure at runtime, reducing configuration overhead, 
+improving portability, and eliminating synchronization issues between datasets and external indexes.</p>
+<p>The NetCDF plugin no longer generates the legacy binary <code>.idx</code> files and the embedded H2 database previously used for indexing temporal and elevation domains.
+All indexing is now handled in-memory and derived directly from the NetCDF dataset structure at runtime, eliminating the need to manage or clean up external index artifacts.</p>
+<p><strong>Cleanup of Existing Files</strong></p>
+<p>Existing installations may still contain legacy index artifacts that are not needed anymore in GeoServer 3. 
+Hidden directories named like: <code>.&lt;FILENAME_HASH&gt;</code> (e.g. <code>.polyphemus_20130301_710e4edfc7d0ff89faf932b208ca22bda37a6921</code>) are companion folders created next to the NetCDF file (e.g. <code>polyphemus_20130301.nc</code>) and used to store:
+- the H2 db files:
+  - the primary H2 data storage file. (e.g. <code>polyphemus_20130301.data.db</code>)
+  - the index storage file (e.g. <code>polyphemus_20130301.index.db</code>)
+  - the transaction log (e.g. <code>polyphemus_20130301.4.log.db</code>)
+  - the debug/trage log (e.g. <code>polyphemus_20130301.trace.db</code>)</p>
+<ul>
+<li>the binary index file:</li>
+<li>FILENAME.idx (e.g. <code>polyphemus_20130301.idx</code>)</li>
+</ul>
+<p>All such files are now obsolete and can be deleted without affecting functionality.
+If the <code>NETCDF_DATA_DIR JAVA_OPT</code> is configured, these hidden folders are grouped within the specified directory instead of being located alongside each NetCDF file.</p>
+<p><strong>Mosaic of NetCDF files</strong></p>
+<p>ImageMosaics built on NetCDF files could previously depend on an AuxiliaryDatastoreFile parameter defined in the  <code>indexer.xml</code>. This parameter referenced a  <code>netcdf_datastore.properties</code> file containing connection settings for a shared database used to store the NetCDF entries catalog (allowing a single DB for the entire mosaic instead of one H2 database per NetCDF file).</p>
+<p>With the GeoServer 3 refactoring, this configuration is no longer required. The  <code>FILENAME_datastore.properties</code> file can be safely removed, along with the corresponding entry in the indexer.xml. Update the configuration as follows, going from (for example):
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="w">  </span><span class="nt">&lt;parameters&gt;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AuxiliaryFile&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;_auxiliary.xml&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AbsolutePath&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AuxiliaryDatastoreFile&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;netcdf_datastore.properties&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&lt;/parameters&gt;</span>
+</code></pre></div>
+  to
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="w">  </span><span class="nt">&lt;parameters&gt;</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AuxiliaryFile&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;_auxiliary.xml&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AbsolutePath&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&lt;/parameters&gt;</span>
+</code></pre></div></p>
 <h2 id="upgrade-process">Upgrade Process<a class="headerlink" href="#upgrade-process" title="Permanent link">&para;</a></h2>
 <p>The general GeoServer upgrade process is as follows:</p>
 <ol>
@@ -30730,7 +30233,7 @@
 <li>Download <a href="https://geoserver.org/release/stable">stable</a> release when ready to upgrade.</li>
 </ul>
 <p>There should rarely be any issues involved with upgrading between minor versions (for example, from 2.27.x to 2.28.x).</p>
-<p>Upgrading between major versions of GeoServer (for example from 2.28 to 3.0) may not be reversible, since newer versions of GeoServer may make backwards-incompatible changes to the data directory.</p>
+<p>Upgrading between major versions of GeoServer (for example from 2.28 to 3.0) may not be reversible, since newer versions of GeoServer may make backwards-incompatible changes to the data directory, or change what extensions are provided.</p>
 </li>
 <li>
 <p>Be sure to download and install each extension used by your prior installation.</p>
@@ -30739,7 +30242,7 @@
 <p>Make sure that the new installation continues to point to the same data directory used by the previous version.</p>
 </li>
 </ol>
-<h3 id="how-often-should-i-upgrade-geoserver">How often should I upgrade GeoServer<a class="headerlink" href="#how-often-should-i-upgrade-geoserver" title="Permanent link">&para;</a></h3>
+<h2 id="q-how-often-should-i-upgrade-geoserver">Q: How often should I upgrade GeoServer<a class="headerlink" href="#q-how-often-should-i-upgrade-geoserver" title="Permanent link">&para;</a></h2>
 <p>GeoServer operates with a time boxed release cycle, maintaining "stable" and "maintenance" releases, over the course of a year.</p>
 <ul>
 <li>Plan to upgrade GeoServer <strong>at least twice a year</strong> as new stable releases are made.</li>
@@ -30774,7 +30277,7 @@
 <p>If it has been a while since you have upgraded GeoServer be cautious when upgrading from an unsupported release of GeoServer all the way to the latest release. Consider <strong>first trying a quick update</strong> in one go, but be prepared to perform a sequential <strong>update to each major release in turn</strong>, applying the guidance in the section below at each stage.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Trying a quick update GeoServer 2.26.0 to GeoServer 2.28.0</p>
+<p>Trying a quick update GeoServer 2.26.0 to GeoServer 3.0.</p>
 <ol>
 <li>
 <p>Back up the current data directory</p>
@@ -30790,12 +30293,18 @@
 </ul>
 </li>
 <li>
-<p>Perform the upgrade in one go, checking the guidance on this page for any work to perform.</p>
+<p>Perform the upgrade in one go, checking the guidance for <a href="../upgrade2/">GeoServer 2</a> or <a href="./">GeoServer 3</a> work to perform.</p>
 <p>The application property <code>ENTITY_RESOLUTION_UNRESTRICTED</code> is noted, if you are affected by a change in XML Parsing. This should only affect Application Schema that made use of the <strong>Unrestricted XML External Entity Resolution</strong> setting.</p>
 <p>The application property <code>GEOSERVER_DATA_DIR_LOADER_ENABLED</code> is noted as an option if any deadlock occurs during startup due to an improvement in startup performance.</p>
 <p>A wide a range of <em>Content Security Policy</em> restrictions have been introduced, and very clear instructions noted to double check <code>proxy_base_url</code> is correct (as the GeoServer user interface will now detect and block a misconfigured system). The application property <code>org.geoserver.web.csp.strict=false</code> is available to temporarily disable this safety measure if you are locked out.</p>
-<p>Installation of Java 11 is required.</p>
+<p>Installation of Java 17 is required.</p>
 <p>Out of an abundance of caution testing raster layers is advisable due to wholesale change of the image processing engine.</p>
+<p>Changing the log file location is no longer available in global settings, and can be performed using the application property <code>GEOSERVER_LOG_LOCATION</code>.</p>
+<p>If your data directory used WorldImage or ArcGRID these formats are now available as extensions.
+You may choose to convert your data to GeoTIFF (recommended) or install the extensions to maintain compatibility.</p>
+<p>If your users depend on WCS 1.0 or WCS 1.1 this functionality is now provided as an extension.
+If you wish to continue making these services available you may install these extensions.</p>
+<p>NetCDF no longer requires as many files on disk (allowing the cleanup of unused hidden directories, <code>.idx</code> files, and <code>db</code> files).</p>
 </li>
 <li>
 <p>Review the logs during startup, and test to ensure the application is working as expected.</p>
@@ -30805,7 +30314,7 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Planning a sequential update from GeoServer 2.26.0 to GeoServer 2.28.0</p>
+<p>Planning a sequential update from GeoServer 2.26.0 to GeoServer 3.0.</p>
 <ol>
 <li>
 <p>Check the <a href="https://geoserver.org/download">Download</a> page and download the releases needed to make the transition:</p>
@@ -30813,370 +30322,51 @@
 <li>GeoServer 2.26.4</li>
 <li>GeoServer 2.27.3</li>
 <li>GeoServer 2.28.0</li>
+<li>GeoServer 3.0</li>
 </ul>
-<p>You may also make a note of the version of Java to download:</p>
+<p>You may also make a note of the versions of Java to download:</p>
 <ul>
 <li>OpenJDK 17</li>
 </ul>
 </li>
 <li>
-<p>Perform each update in sequence, checking the guidance on this page for any work to perform.</p>
+<p>Perform each update in sequence, checking the <a href="../upgrade2/">GeoServer 2</a> guidance for any work to perform.</p>
 <ul>
-<li>Updating from GeoServer 2.26.0 to GeoServer 2.26.4</li>
-</ul>
+<li>
+<p>Updating from GeoServer 2.26.0 to GeoServer 2.26.4</p>
 <p>The application property <code>ENTITY_RESOLUTION_UNRESTRICTED</code> is noted, if you are affected by a change in XML Parsing. This should only affect Application Schema that made use of the <strong>Unrestricted XML External Entity Resolution</strong> setting.</p>
 <p><em>Review the logs during startup, and test to ensure the application is working as expected.</em></p>
-<ul>
-<li>Updating from GeoSerer 2.26.4 to GeoServer 2.27.3.</li>
-</ul>
+</li>
+<li>
+<p>Updating from GeoSerer 2.26.4 to GeoServer 2.27.3.</p>
 <p>The application property <code>GEOSERVER_DATA_DIR_LOADER_ENABLED</code> is noted as an option if any deadlock occurs during startup due to an improvement in startup performance.</p>
 <p>A wide a range of <em>Content Security Policy</em> restrictions have been introduced, and very clear instructions noted to double check <code>proxy_base_url</code> is correct (as the GeoServer user interface will now detect and block a misconfigured system). The application property <code>org.geoserver.web.csp.strict=false</code> is available to temporarily disable this safety measure if you are locked out.</p>
 <p><em>Review the logs during startup, and test to ensure the application is working as expected.</em></p>
-<ul>
-<li>Updating from GeoServer 2.27.3 to GeoServer 2.28.0.</li>
-</ul>
-<p>Installation of Java 11 is required.</p>
+</li>
+<li>
+<p>Updating from GeoServer 2.27.3 to GeoServer 2.28.0.</p>
+<p>Installation of Java 17 is required.</p>
 <p>Out of an abundance of caution testing raster layers is advisable due to wholsale change of the image processing engine.</p>
 <p><em>Review the logs during startup, and test to ensure the application is working as expected.</em></p>
 </li>
-</ol>
-</div>
-<h2 id="upgrading-geoserver-3-guidance">Upgrading GeoServer 3 Guidance<a class="headerlink" href="#upgrading-geoserver-3-guidance" title="Permanent link">&para;</a></h2>
-<p>GeoServer 3.0.x is scheduled for release in April, 2026.</p>
-<h3 id="jdk-17-required">JDK 17 Required<a class="headerlink" href="#jdk-17-required" title="Permanent link">&para;</a></h3>
-<p>Just like in GeoServer 2.28.x series, GeoServer 3.0.x requires Java 17 to run. Be sure to install Java 17 before upgrading to GeoServer 3.0.</p>
-<h3 id="tomcat-101-or-tomcat-110-required">Tomcat 10.1 or Tomcat 11.0 Required<a class="headerlink" href="#tomcat-101-or-tomcat-110-required" title="Permanent link">&para;</a></h3>
-<p>GeoServer 3.0 makes the transition to Jakarta EE Servlet 6.1 and requires Tomcat 11.0 for those using WebArchive distribution.</p>
-<h3 id="core-modules-downgraded-to-extension">Core modules downgraded to extension<a class="headerlink" href="#core-modules-downgraded-to-extension" title="Permanent link">&para;</a></h3>
-<p>Some of the less used core modules have been downgraded to extensions in GeoServer 3.0. If you were using any of the following features, be sure to install the corresponding extension after upgrading:</p>
-<ul>
-<li>WCS 1.0</li>
-<li>WCS 1.1</li>
-<li>World image coverage store</li>
-<li>ArcGRID coverage store</li>
-</ul>
-<h3 id="h2-datastore-removal-geoserver-30-and-newer">H2 Datastore Removal (GeoServer 3.0 and newer)<a class="headerlink" href="#h2-datastore-removal-geoserver-30-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 3.0, the H2 datastore extension (<code>gs-h2</code>) has been removed and is no longer available for use as a GeoServer vector datastore.</p>
-<p>If your installation contains any H2-based datastores, migrate those layers to another supported datastore before upgrading to GeoServer 3.0.</p>
-<p>After upgrading, review the startup logs for missing datastore errors and verify all layers and services load as expected.</p>
-<h3 id="log-location-configuration-geoserver-30-and-newer">Log Location Configuration (GeoServer 3.0 and newer)<a class="headerlink" href="#log-location-configuration-geoserver-30-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 3.0, the <strong>Log location</strong> setting has been removed from the Admin Console (Global Settings page) and is no longer configurable via the REST API.</p>
-<div class="highlight"><pre><span></span><code>    The [log file location](../configuration/logging/#logging_location) must now be set using the `GEOSERVER_LOG_LOCATION` application property which can be set as system property, environment variable, or servlet context parameter:
-</code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># System property</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>-DGEOSERVER_LOG_LOCATION<span class="o">=</span>/var/log/geoserver/geoserver.log
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Environment variable</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEOSERVER_LOG_LOCATION</span><span class="o">=</span>/var/log/geoserver/geoserver.log
-</code></pre></div>
-<p>Any existing <code>location</code> value in the data directory <code>logging.xml</code> file is retained for backward compatibility but is ignored at runtime. REST API clients that send a <code>location</code> field in PUT requests to <code>/rest/logging</code> will receive a warning in the server logs; the value is silently discarded.</p>
-<h3 id="netcdf-index-removal-geoserver-30-and-newer">NetCDF Index removal (GeoServer 3.0 and newer)<a class="headerlink" href="#netcdf-index-removal-geoserver-30-and-newer" title="Permanent link">&para;</a></h3>
-<p>Starting with GeoServer 3.0, NetCDF plugin (and coverage multidim machinery) has been simplified by removing external indexing mechanisms. In particular, it no longer relies on: </p>
-<ul>
-<li>a database (e.g., H2 or PostGIS) to map temporal and elevation domains to image indices, </li>
-<li>nor on the auxiliary .idx binary files previously used to link image indices to NetCDF dimension coordinates. </li>
-</ul>
-<p>These relationships are now resolved directly from the NetCDF structure at runtime, reducing configuration overhead, 
-improving portability, and eliminating synchronization issues between datasets and external indexes.</p>
-<p>The NetCDF plugin no longer generates the legacy binary .idx files and the embedded H2 database previously used for indexing temporal and elevation domains.
-All indexing is now handled in-memory and derived directly from the NetCDF dataset structure at runtime, eliminating the need to manage or clean up external index artifacts.</p>
-<h4 id="cleanup-of-existing-files">Cleanup of Existing Files<a class="headerlink" href="#cleanup-of-existing-files" title="Permanent link">&para;</a></h4>
-<p>Existing installations may still contain legacy index artifacts that are not needed anymore in GeoServer 3. 
-Hidden directories named like: <code>.&lt;FILENAME_HASH&gt;</code> (e.g. <code>.polyphemus_20130301_710e4edfc7d0ff89faf932b208ca22bda37a6921</code>) are companion folders created next to the NetCDF file (e.g. <code>polyphemus_20130301.nc</code>) and used to store:
-- the H2 db files:
-  - the primary H2 data storage file. (e.g. <code>polyphemus_20130301.data.db</code>)
-  - the index storage file (e.g. <code>polyphemus_20130301.index.db</code>)
-  - the transaction log (e.g. <code>polyphemus_20130301.4.log.db</code>)
-  - the debug/trage log (e.g. <code>polyphemus_20130301.trace.db</code>)</p>
-<ul>
-<li>the binary index file:</li>
-<li>FILENAME.idx (e.g. <code>polyphemus_20130301.idx</code>)</li>
-</ul>
-<p>All such files are now obsolete and can be deleted without affecting functionality.
-If the NETCDF_DATA_DIR JAVA_OPT is configured, these hidden folders are grouped within the specified directory instead of being located alongside each NetCDF file.</p>
-<h4 id="mosaic-of-netcdf-files">Mosaic of NetCDF files<a class="headerlink" href="#mosaic-of-netcdf-files" title="Permanent link">&para;</a></h4>
-<p>ImageMosaics built on NetCDF files could previously depend on an AuxiliaryDatastoreFile parameter defined in the  <code>indexer.xml</code>. This parameter referenced a  <code>netcdf_datastore.properties</code> file containing connection settings for a shared database used to store the NetCDF entries catalog (allowing a single DB for the entire mosaic instead of one H2 database per NetCDF file).</p>
-<p>With the GeoServer 3 refactoring, this configuration is no longer required. The  <code>FILENAME_datastore.properties</code> file can be safely removed, along with the corresponding entry in the indexer.xml. Update the configuration as follows, going from (for example):
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="w">  </span><span class="nt">&lt;parameters&gt;</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AuxiliaryFile&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;_auxiliary.xml&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AbsolutePath&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AuxiliaryDatastoreFile&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;netcdf_datastore.properties&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&lt;/parameters&gt;</span>
-</code></pre></div>
-  to
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="w">  </span><span class="nt">&lt;parameters&gt;</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AuxiliaryFile&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;_auxiliary.xml&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AbsolutePath&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&lt;/parameters&gt;</span>
-</code></pre></div></p>
-<h2 id="upgrading-geoserver-2-guidance">Upgrading GeoServer 2 Guidance<a class="headerlink" href="#upgrading-geoserver-2-guidance" title="Permanent link">&para;</a></h2>
-<p>GeoServer 2.0.x was first released in October 29, 2009.</p>
-<h3 id="java-17-and-imagen-geoserver-2280">Java 17 and ImageN (GeoServer 2.28.0)<a class="headerlink" href="#java-17-and-imagen-geoserver-2280" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.28.0, Java 17 is now the minimum required Java version to run GeoServer.</p>
-<p>Additionally, the image processing engine is now ImageN:</p>
-<ul>
-<li>JAI-Ext related settings are gone from the UI (e.g. configuring if a certain operation should use JAI-Ext or not, from now on, it will use ImageN).</li>
-<li>JAI native settings have been removed (ImageN is pure Java).</li>
-<li>One notable change in the configuration is that the <code>USE_JAI_IMAGEREAD</code> parameter is now called <code>USE_IMAGEN_IMAGEREAD</code>.</li>
-</ul>
-<p>This <code>USE_IMAGEN_IMAGEREAD</code> parameter is used by image mosaic and a few other coverage readers, and is normally called "deferred loading" in the UI. GeoServer will migrate the parameter name automatically when layers are saved, and compatibility with REST scripts using the old name is preserved. If you want to migrate the data directory to the new parameter in bulk, look up all the coverage.xml files and replace the parameter name in them. For example, on Linux, the following command will perform a migration:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>find<span class="w"> </span>&lt;GEOSERVER_DATA_DIR&gt;<span class="w"> </span>-name<span class="w"> </span>coverage.xml<span class="w"> </span>-exec<span class="w"> </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/USE_JAI_IMAGEREAD/USE_IMAGEN_IMAGEREAD/g&#39;</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-</code></pre></div>
-<h3 id="mapml-multi-layer-as-multi-extent-configuration-geoserver-227-and-newer">MapML Multi-Layer As Multi-Extent Configuration (GeoServer 2.27 and newer)<a class="headerlink" href="#mapml-multi-layer-as-multi-extent-configuration-geoserver-227-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.28, the configuration option for MapML Multi-Layer as Multi-Extent has been moved from the WMS Administration page to the Publishing tab of the Layer Group configuration. Backwards compatibility with previously configured MapML implementations is maintained through the population of Layer Group metadata if the option was previously enabled in the WMS Administration page. For more information, see <a href="../../extensions/mapml/installation/">Installation</a>.</p>
-<h3 id="freemarker-template-method-access-geoserver-227-and-newer">FreeMarker Template Method Access (GeoServer 2.27 and newer)<a class="headerlink" href="#freemarker-template-method-access-geoserver-227-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.27, FreeMarker templates are now restricted from accessing methods related to certain sensitive classes to mitigate the impact of malicious templates. Most templates that can be modified by administrators will also be limited to only accessing getter methods. For more information about this, see <a href="../../tutorials/GetFeatureInfo/html/#tutorials_getfeatureinfo_html_access">Accessing Instance Methods</a>.</p>
-<p>The following is an example of the exception message seen when processing a template that previously worked but is blocked by the new restrictions:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Caused by: freemarker.core.InvalidReferenceException: The following has evaluated to null or missing:
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    ==&gt; features[0].type.catalog  [in template &quot;content_en_US.ftl&quot; at line 1, column 3]
-</code></pre></div>
-<h3 id="content-security-policy-geoserver-227-and-newer">Content Security Policy (GeoServer 2.27 and newer)<a class="headerlink" href="#content-security-policy-geoserver-227-and-newer" title="Permanent link">&para;</a></h3>
-<p>The Content-Security-Policy HTTP response header are now enabled by default in order to mitigate cross-site scripting and clickjacking attacks. The default header value asks the browser to <strong>block</strong> the use of inline JavaScript in all HTML output except in cases where it is required (e.g., OpenLayers maps).</p>
-<p>It is anticipated that future work may further restrict the default policy in the interests of safety.</p>
-<ol>
-<li>
-<p>It is expected that the web administration console functions correctly, along with extensions and community modules.</p>
-</li>
-<li>
-<p>Before starting double check that your <a href="../../configuration/globalsettings/#proxy_base">proxy base url</a> setting is correct (including HTTP/HTTPS differences).</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>CSP restrictions will detect if this information is inconsistent, preventing the user interface from functioning.</p>
-</div>
-</li>
-<li>
-<p>If you have problems with the administration console being frozen or not working, please see <a href="../../production/troubleshooting/#csp_strict">User interface non-responsive</a> for details on how to restore access during troubleshooting.</p>
-<ul>
-<li>If you encounter any CSP problems please let us know, as an open-source project we depend on public feedback and testing to report CSP problems found.</li>
-<li>With these improved CSP safety measures GeoServer may now detect vulnerabilities in your environment that were previously undetected.</li>
 </ul>
 </li>
 <li>
-<p>Managing CSP restrictions in GeoServer:</p>
+<p>Perform each update in sequence, checking the GeoServer 3 guidance on this page for any work to perform.</p>
 <ul>
 <li>
-<p>When using inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output will require use of <a href="../../security/csp/#security_csp_featureinfo_html_script">GEOSERVER_FEATUREINFO_HTML_SCRIPT</a> application property.</p>
+<p>Updating from GeoServer 2.28.0 to GeoServer 3.0</p>
+<p>Changing the log file location is no longer available in global settings, and can be performed using the application property <code>GEOSERVER_LOG_LOCATION</code>.</p>
+<p>If your data directory used WorldImage or ArcGRID these formats are now available as extensions.
+You may choose to convert your data to GeoTIFF (recommended) or install the extensions to maintain compatibility.</p>
+<p>If your users depend on WCS 1.0 or WCS 1.1 this functionality is now provided as an extension.
+If you wish to continue making these services available you may install these extensions.</p>
+<p>NetCDF no longer requires as many files on disk (allowing the cleanup of unused hidden directories, <code>.idx</code> files, and <code>db</code> files).</p>
 </li>
-<li>
-<p>If you experience issues with static web files or custom classes/plugins generating HTML output may need to update their settings.</p>
-</li>
-</ul>
-<p>For more information, see <a href="../../production/config/#production_config_csp">Content-Security-Policy</a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It is recommended that static web files be disabled if they are not necessary in order to mitigate cross-site scripting attacks. For more information, see <a href="../../tutorials/staticfiles/">Serving Static Files</a>.</p>
-</div>
-<ul>
-<li>GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on <a href="../../security/csp/">Content Security Policy Reference</a> for very detailed information.</li>
 </ul>
 </li>
 </ol>
-<h3 id="faster-startup-for-large-catalogs-geoserver-227-and-newer">Faster Startup for Large Catalogs (GeoServer 2.27 and newer)<a class="headerlink" href="#faster-startup-for-large-catalogs-geoserver-227-and-newer" title="Permanent link">&para;</a></h3>
-<p>Starting in GeoServer 2.27.0, the configuration loading process has been optimized for faster startup times, particularly for large catalogs and network filesystem deployments.</p>
-<p>With this enhancement, catalog and configuration loading is now up to 3× faster on local disks and up to 10× faster on network filesystems.</p>
-<p>Potential Considerations:</p>
-<ul>
-<li><strong>Check Compatibility</strong>: Although the new loader is a drop-in replacement, verify that your existing configurations and extensions work as expected. Testing in a staging environment before deploying to production is recommended.</li>
-</ul>
-<p>Configuration:</p>
-<ul>
-<li>No additional configuration is required for standard setups. However, if you encounter any issues, you can disable the optimized loader by setting the <code>GEOSERVER_DATA_DIR_LOADER_ENABLED=false</code> environment variable or system property.</li>
-</ul>
-<p>For additional information see <a href="../../datadirectory/setting/#datadir-loader">Data directory loader</a> documentation.</p>
-<h3 id="keystore-password-link-geoserver-226-and-newer">Keystore password link (GeoServer 2.26 and newer)<a class="headerlink" href="#keystore-password-link-geoserver-226-and-newer" title="Permanent link">&para;</a></h3>
-<p>The <strong>Password</strong> page link to <strong>Keystore password forgotten</strong> now <a href="../../security/webadmin/passwords/#security_webadmin_masterpasswordprovider">directly links</a> to the <a href="../../rest/security/#rest_security_keystore">REST API</a> endpoint, allowing the value to be read in your browser.</p>
-<p>With this change it is no longer necessary to generate a <strong><code>masterpw.info</code></strong> when upgrading an older data directory. If this file is present from an earlier upgrade it is still considering a security warning noted on the welcome page.</p>
-<h3 id="entity_resolution_unrestricted-application-property-geoserver-2264-and-newer">ENTITY_RESOLUTION_UNRESTRICTED application property (GeoServer 2.26.4 and newer)<a class="headerlink" href="#entity_resolution_unrestricted-application-property-geoserver-2264-and-newer" title="Permanent link">&para;</a></h3>
-<p>The global setting <strong>Unrestricted XML External Entity Resolution</strong> has been replaced with the <code>ENTITY_RESOLUTION_UNRESTRICTED</code> application property.</p>
-<p>For more information see <a href="../../production/config/#production_config_external_entities">External Entities Resolution</a>.</p>
-<h3 id="rest-api-url-checks-geoserver-226-and-newer">REST API URL Checks (GeoServer 2.26 and newer)<a class="headerlink" href="#rest-api-url-checks-geoserver-226-and-newer" title="Permanent link">&para;</a></h3>
-<p>URLChecks are now available for REST API upload.</p>
-<p>Use the existing <a href="../../security/urlchecks/">URL Checks</a> page to add any locations or directories for use.</p>
-<h3 id="grib-layers-geoserver-226-and-newer">GRIB Layers (GeoServer 2.26 and newer)<a class="headerlink" href="#grib-layers-geoserver-226-and-newer" title="Permanent link">&para;</a></h3>
-<p>GeoServer 2.26 upgraded underlying Unidata NetCDF libraries, from 4.x to 5.x, which includes internal changes to how GRIB files are interpreted (mapping tables and GRIB parameters interpretation changes). This results in the underlying library giving some variables a different name, as well as interpreting the temporal variables differently (e.g., from period to instant, and changing the number of available times as a consequence).</p>
-<p>Due to the above compatibility issues, <strong>some</strong> layers based on underlying GRIB datasets may stop working properly after the upgrade. If that is the case, the recommended action is to do a backup before doing the upgrade and then reconfigure the layers.</p>
-<h4 id="backup">Backup<a class="headerlink" href="#backup" title="Permanent link">&para;</a></h4>
-<ol>
-<li>Backup the GeoServer data directory</li>
-<li>Backup eventual DB tables being used as catalog for the GRIB Datasets (That could be needed if ImageMosaic of GRIB have been configured, storing the mosaic index on DB)</li>
-<li>Backup the index file automatically generated by GRIB/NetCDF library for the involved GRIB files (i.e. <em>.gbx9, </em>.ncx3; *.ncx4)</li>
-</ol>
-<h4 id="basic-cleanup">Basic cleanup<a class="headerlink" href="#basic-cleanup" title="Permanent link">&para;</a></h4>
-<ol>
-<li>
-<p>Remove any auxiliary/cache file associated with the underlying GRIB file (assuming the file is named gribfile.grib2):</p>
-<ul>
-<li>gribfile.ncx3</li>
-<li>gribfile.ncx4</li>
-<li>gribfile.gbx9</li>
-<li>.gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured <a href="../../extensions/netcdf/netcdf/#netcdf-files-in-read-only-directories">NETCDF_DATA_DIR</a> (if defined).
-The screenshot below represents an actual example of a tpcprblty.2019100912.incremental.grib2 file with related auxiliary/cache files</li>
-</ul>
-<p><img alt="" src="../images/grib_auxiliary_files.png" /></p>
-</li>
-</ol>
-<h4 id="additional-steps-needed-in-case-of-imagemosaic-of-gribs">Additional steps needed in case of ImageMosaic of GRIBs<a class="headerlink" href="#additional-steps-needed-in-case-of-imagemosaic-of-gribs" title="Permanent link">&para;</a></h4>
-<ol>
-<li>Remove any automatically created ImageMosaic configuration file within the ImageMosaic root folder. Assuming the underlying ImageMosaic was named mosaicM, containing coverages related to VariableA, VariableB, VariableC, ...:<ul>
-<li>VariableA.properties, VariableB.properties, VariableC.properties, ...</li>
-<li>VariableAsample_image.dat, VariableBsample_image.dat, VariableCsample_image.dat, ...</li>
-<li>mosaicM.xml</li>
-</ul>
-</li>
-<li>If using a datastore.properties connecting to an actual DB, clean up the tables from the DB<ul>
-<li>Assuming that all the GRIB files belonging to the same ImageMosaic are affected by the same issue, you can delete the related tables and allow the imageMosaic reconfiguration to recreate them.</li>
-<li>Based on the above example, the naming convention is that granules for VariableA are stored on table named VariableA and so on.</li>
-</ul>
-</li>
-<li>Recreate the indexer.xml and auxiliary.xml file as reported in the <a href="../../extensions/netcdf/netcdf/#setting-up-a-basic-mosaic">NetCDF documentation</a>. (At the end, GRIB file are served through the NetCDF libraries)</li>
-</ol>
-<h4 id="configuration-cleanup">Configuration cleanup<a class="headerlink" href="#configuration-cleanup" title="Permanent link">&para;</a></h4>
-<p>The GeoServer configuration refers to the "native name" of the variables, as reported by the underlying libraries, which might have changed during the upgrade.</p>
-<p>If you are lucky, the following might help you to reconfigure the layers:</p>
-<ol>
-<li>Open the <code>coverage.xml</code> file of the affected layer and check the <code>nativeName</code> and <code>nativeCoverageName</code> attributes, to the new variable name (you can pick it up from tools like ToolsUI or Panoply).</li>
-<li>Reload the GeoServer configuration, either by restarting the GeoServer service or by using the GeoServer Admin UI.</li>
-<li>Check if the layer is now working.</li>
-</ol>
-<p>If the above did not help, then a full cleanup of the GeoServer configuration is needed:</p>
-<ol>
-<li>
-<p>Remove the affected store, either Mosaic or GRIB Store, referring to the problematic GRIB files.</p>
-<ul>
-<li>Follow up standard procedure to delete affected stores and underlying layer</li>
-<li>Alternatively, consider using <a href="../../../api?urls.primaryName=Coverage%20Stores">REST APIs</a> to do that by referring to the DELETE method for <code>/workspaces/{workspace}/coveragestores/{store}</code> . Use <code>?recurse=true&amp;purge=metadata</code> to delete layers and auxiliary files as well</li>
-</ul>
-</li>
-<li>
-<p>Recreate the stores and layers using the known procedures.</p>
-</li>
-</ol>
-<h3 id="disk-quota-validation-query-geoserver-2254-and-newer">Disk Quota validation query (GeoServer 2.25.4 and newer)<a class="headerlink" href="#disk-quota-validation-query-geoserver-2254-and-newer" title="Permanent link">&para;</a></h3>
-<p>When using the JDBC Disk Quota:</p>
-<ul>
-<li>Validation query for <code>H2</code> is limited to <code>SELECT 1</code>.</li>
-<li>Validation query for <code>Oracle</code> is limited to <code>SELECT 1 FROM DUAL</code>.</li>
-<li>Validation query for other JDBC formats receive a warning in the logs if it is not one of the common examples above.</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you find your JDBC Disk Quota is no longer loaded on startup: check the logs for message about validation query, edit the configuration, and restart.</p>
 </div>
-<h3 id="external-entity-allow-list-default-geoserver-225-and-newer">External Entity Allow List default (GeoServer 2.25 and newer)<a class="headerlink" href="#external-entity-allow-list-default-geoserver-225-and-newer" title="Permanent link">&para;</a></h3>
-<p>The external entity allow list has changed to the following default locations:</p>
-<ul>
-<li><code>www.w3.org</code></li>
-<li><code>schemas.opengis.net</code></li>
-<li><code>www.opengis.net</code></li>
-<li><code>inspire.ec.europa.eu/schemas</code></li>
-<li>proxy base url if configured</li>
-</ul>
-<p>The external entity allow list is an important setting from a security standpoint. This update changes its use from a recommended best practice to a default covering the most common locations used for OGC web services.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In general only application schema extension users need to update this setting.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>To restore the previous behaviour use system property <code>ENTITY_RESOLUTION_ALLOWLIST=*</code> to allow external entity resolution from any <code>http</code> or <code>https</code> location.</p>
-</div>
-<p>For more information, including how to add additional allowed locations see <a href="../../production/config/#production_config_external_entities">External Entities Resolution</a>.</p>
-<h3 id="freemarker-template-html-auto-escaping-geoserver-225-and-newer">FreeMarker Template HTML Auto-escaping (GeoServer 2.25 and newer)<a class="headerlink" href="#freemarker-template-html-auto-escaping-geoserver-225-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.25, the FreeMarker library's HTML auto-escaping feature will be enabled by default to prevent cross-site scripting (XSS) vulnerabilities in WMS GetFeatureInfo HTML output when using the default FreeMarker templates and WMS service settings. Some users may experience incorrectly escaped HTML output when using custom templates or if HTML tags are stored in vector data stores.</p>
-<p>See the <a href="../../production/config/#production_config_freemarker_escaping">FreeMarker Template Auto-escaping</a> page for information about the limitations of this feature and for instructions to disable this feature and delegate to the WMS service setting which defaults to disabling HTML auto-escaping.</p>
-<h3 id="spring-security-strict-http-firewall-geoserver-225-and-newer">Spring Security Strict HTTP Firewall (GeoServer 2.25 and newer)<a class="headerlink" href="#spring-security-strict-http-firewall-geoserver-225-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.25, Spring Security's StrictHttpFirewall will be enabled by default which will provide stronger default protection, particularly against potential path traversal vulnerabilities.</p>
-<p>In some cases valid requests may be blocked if the names of GeoServer resources (e.g., workspaces) contain certain special characters and are included in URL paths. See the <a href="../../production/config/#production_config_spring_firewall">Spring Security Firewall</a> page for instructions to disable the strict firewall and revert to the DefaultHttpFirewall used by earlier versions.</p>
-<h3 id="wcs-arcgrid-output-format-removal-geoserver-224-and-newer">WCS ArcGRID output format removal (GeoServer 2.24 and newer)<a class="headerlink" href="#wcs-arcgrid-output-format-removal-geoserver-224-and-newer" title="Permanent link">&para;</a></h3>
-<p>The ArcGRID output format for WCS has been removed in GeoServer 2.24.0. If you have been using this format, you will need to switch to another text based format, such as GML coverage, or can get back the ArcGRID format by installing the <a href="../../community/gdal/">WCS GDAL</a> community module and use a configuration like the following (please adapt to your system):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;ToolConfiguration&gt;</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&lt;executable&gt;</span>gdal_translate<span class="nt">&lt;/executable&gt;</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">&lt;environment&gt;</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">&lt;variable</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;GDAL_DATA&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;/usr/local/share/gdal&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="nt">&lt;/environment&gt;</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="nt">&lt;formats&gt;</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="nt">&lt;Format&gt;</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">      </span><span class="nt">&lt;toolFormat&gt;</span>AAIGrid<span class="nt">&lt;/toolFormat&gt;</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">      </span><span class="nt">&lt;geoserverFormat&gt;</span>ArcGrid<span class="nt">&lt;/geoserverFormat&gt;</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">      </span><span class="nt">&lt;fileExtension&gt;</span>.asc<span class="nt">&lt;/fileExtension&gt;</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">      </span><span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">      </span><span class="nt">&lt;mimeType&gt;</span>application/arcgrid<span class="nt">&lt;/mimeType&gt;</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="nt">&lt;/Format&gt;</span>
-<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">  </span><span class="nt">&lt;/formats&gt;</span>
-<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="nt">&lt;/ToolConfiguration&gt;</span>
-</code></pre></div>
-<h3 id="disk-quota-hsql-db-usage-geoserver-224-and-newer">Disk Quota HSQL DB usage (GeoServer 2.24 and newer)<a class="headerlink" href="#disk-quota-hsql-db-usage-geoserver-224-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.24, H2 DB support will be replaced with HSQL DB for Tile Caching / Disk Quota store.</p>
-<ul>
-<li>H2 option under "Disk quota store type" and "Target database type" is replaced with HSQL.</li>
-<li>The default store type will be in-process HSQL.</li>
-<li>Existing installations with in-process H2 selection will automatically be migrated to in-process HSQL. Old H2 database files will remain in <code>gwc/diskquota_page_store_h2/</code> under the data directory. You may delete those or leave them for a possible downgrade.</li>
-<li>Important: Existing installations with external H2 database selection will not be migrated automatically. You will get an error message at startup and disk quota will be disabled, unless you use a plugin/extension with H2 dependency. But other features of GeoServer will keep working. You can go to Disk Quota page and configure an external HSQL database or switch to in-process HSQL. In case you want to keep using H2 as an in-process/external database, you can add H2 store plugin or any other extension or plugin that has H2 dependency.</li>
-<li>GeoServer installations with extensions/plugins having H2 dependency will still have H2 option under "Disk quota store type" and "Target database type".</li>
-</ul>
-<h3 id="url-checks-for-remote-requests-control-geoserver-224-and-newer">URL Checks for remote requests control (GeoServer 2.24 and newer)<a class="headerlink" href="#url-checks-for-remote-requests-control-geoserver-224-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.24, remote requests control has been added, and enabled by default, in GeoServer. This feature allows administrators to control which remote requests are allowed to be made to GeoServer. By default, no authorizations are included, thus GeoServer will deny remote requests originating from user interaction. In particular, the following use cases are affected:</p>
-<ul>
-<li>WMS operations with remotely fetch styles (<code>sld</code> parameter) and style referencing remote icons (in general, icons outside of the data directory). As a reminder, when a remote icon is not found, GeoServer will fall back to a default icon, a gray square with a black border.</li>
-<li>WMS "feature portrayal" with dynamic remote WFS references provided in the request (<code>REMOTE_OWS_TYPE</code> and <code>REMOTE_OWS_URL</code> parameters).</li>
-<li>WPS remote inputs via either GET or POST request (e.g., remote GeoJSON file source).</li>
-</ul>
-<p>The list of locations that are safe to contact can be configured using the <a href="../../security/urlchecks/">URL Checks</a> page.</p>
-<h3 id="log4j-upgrade-geoserver-221-and-newer">Log4J Upgrade (GeoServer 2.21 and newer)<a class="headerlink" href="#log4j-upgrade-geoserver-221-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.21, the logging system used by GeoServer has been upgraded from Log4J 1.2 to Log4J 2.</p>
-<ul>
-<li>
-<p>GeoServer now uses <strong><code>xml</code></strong> files for the built-in logging profiles (previously <strong><code>properties</code></strong> files were used).</p>
-</li>
-<li>
-<p>The built-in logging profiles are upgraded with <strong><code>xml</code></strong> files:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>DEFAULT_LOGGING.xml
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>DEFAULT_LOGGING.properties.bak
-</code></pre></div>
-</li>
-<li>
-<p>A backup of the prior <strong><code>properties</code></strong> files are created during the upgrade process. If you had previously made any customizations to a built-in profiles these backup files may be used as a reference when customizing the xml file.</p>
-</li>
-<li>
-<p>Log4J 2 does have the ability to read Log4j 1.2 properties files although not all features are supported.</p>
-</li>
-</ul>
-<p>Any custom <strong><code>properties</code></strong> files you created will continue to be available for use.</p>
-<ul>
-<li>
-<p>If necessary you can recover a customization you performed to a built-in logging profile by restoring to a different filename. To recover a customization from <strong><code>PRODUCTION_LOGGING.properties.bak</code></strong> rename the file to <strong><code>PRODUCTION_LOGGING.properties.bak</code></strong> to <strong><code>CUSTOM_LOGGING.properties</code></strong>.</p>
-</li>
-<li>
-<p>If you never plan to customize the built-in logging profiles the <code>UPDATE_BUILT_IN_LOGGING_PROFILES=true</code> system property will always ensure you have our latest recommendation.</p>
-</li>
-</ul>
-<h3 id="jts-type-bindings-geoserver-214-and-newer">JTS Type Bindings (GeoServer 2.14 and newer)<a class="headerlink" href="#jts-type-bindings-geoserver-214-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.14, the output produced by <a href="../../rest/">REST</a> featuretype and structured coverage requests using a different package name (<code>org.locationtech</code> instead of <code>com.vividsolutions</code>) for geometry type bindings, due to the upgrade to JTS (Java Topology Suite) 1.16.0. For example:</p>
-<p>Before:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>...
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nt">&lt;attribute&gt;</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>geom<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">      </span><span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">      </span><span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">      </span><span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">      </span><span class="nt">&lt;binding&gt;</span>com.vividsolutions.jts.geom.Point<span class="nt">&lt;/binding&gt;</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="nt">&lt;/attribute&gt;</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>...
-</code></pre></div>
-<p>After:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>...
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nt">&lt;attribute&gt;</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>geom<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">      </span><span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">      </span><span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">      </span><span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">      </span><span class="nt">&lt;binding&gt;</span>org.locationtech.jts.geom.Point<span class="nt">&lt;/binding&gt;</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="nt">&lt;/attribute&gt;</span>
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>...
-</code></pre></div>
-<p>Any REST clients which rely on this binding information should be updated to support the new names.</p>
-<h3 id="geojson-encoding-geoserver-26-and-newer">GeoJSON encoding (GeoServer 2.6 and newer)<a class="headerlink" href="#geojson-encoding-geoserver-26-and-newer" title="Permanent link">&para;</a></h3>
-<p>As of GeoServer 2.6, the GeoJSON produced by the WFS service no longer uses a non-standard encoding for the CRS. To re-enable this behavior for compatibility purposes, set <code>GEOSERVER_GEOJSON_LEGACY_CRS=true</code> as a system property, context parameter, or environment variable.</p>
 
 
 

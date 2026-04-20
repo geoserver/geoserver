@@ -20,7 +20,7 @@ exclude_docs: |
 theme:
   name: material
   custom_dir: doc/themes/geoserver
-  logo: img/geoserver-logo.png
+  logo: img/geoserver-logo.svg
   favicon: img/geoserver.ico
   palette:
     # Light mode  (colours set via extra.css to match the GeoServer app)

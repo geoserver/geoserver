@@ -7,13 +7,13 @@ render_macros: true
 
 GeoServer is packaged as a standalone Web Archive (**`geoserver.war`**) file for use with existing application servers such as [Apache Tomcat](https://tomcat.apache.org/) and [Jetty](https://jetty.org/).
 
-| JavaEE          | JakartaEE       | Application Server | GeoServer     |
-| --------------- | --------------- | ------------------ | ------------- |
-|                 | Servlet API 6.1 | Tomcat 11.0.x      | GeoServer 3   |
-|                 | Servlet API 6.0 | Tomcat 10.1.x      | GeoServer 3   |
-|                 |                 | Tomcat 10.0.x      | not supported |
-| Servlet API 4   |                 | Tomcat 9.x         | GeoServer 2   |
-| Servlet API 3.1 |                 | Jetty 9.4          | GeoServer 2   |
+| JavaEE          | JakartaEE       | Tomcat        | Jetty      | GeoServer     |
+| --------------- | --------------- | --------------| ---------- | ------------- |
+|                 | Servlet API 6.1 | Tomcat 11.0.x | Jetty 12.1 | GeoServer 3   |
+|                 | Servlet API 6.0 | Tomcat 10.1.x | Jetty 12.0 | not supported |
+|                 | Servlet API 5.0 | Tomcat 10.0.x | Jetty 11.0 | not supported |
+| Servlet API 4   |                 | Tomcat 9.x    |            | GeoServer 2   |
+| Servlet API 3.1 |                 |               | Jetty 9.4  | GeoServer 2   |
 
 GeoServer is tested using Tomcat 11.0.x, and this is the recommended application server. Other application servers have been known to work, but are not tested regularly by community members.
 
@@ -29,67 +29,21 @@ GeoServer is tested using Tomcat 11.0.x, and this is the recommended application
 
     **Linux**
 
-    We recommend using your Linux package manager allowing Java to be managed and patched alongside your operating system:
-
-    ```bash
-    sudo apt-get update
-    sudo apt-get install openjdk-17-jdk
-    ```
-
-    You may also choose to download an OpenJDK release for Linux:
-
-    * [Temurin 17 (LTS) - Recommended](https://adoptium.net/temurin/releases/?version=17)
-    * [Temurin 21 (LTS)](https://adoptium.net/temurin/releases/?version=21)
-
-    The developer tool [SDKMan](https://sdkman.io/) may be used to manage several versions:
-
-    ```bash
-    # list to determine latest Temurin JDK 17
-    sdk list java | grep "17.*-tem"
-    sdk install java 21.0.8-tem
-
-    # list to determine latest Temurin JDK 21
-    sdk list java | grep "21.*-tem"
-    sdk install java 17.0.16-tem
-
-    # change between versions 17.0.16-tem and 21.0.8-tem locally
-    sdk install use 17.0.16-tem
-    ```
+    --8<--
+    doc/en/user/installation/jdk-linux-guidance.txt
+    --8<--
 
     **Windows**
 
-    Download an OpenJDK release for Windows:
-
-    * https://adoptium.net/temurin/releases/?version=17 Temurin 17 (LTS) - Recommended
-    * https://adoptium.net/temurin/releases/?version=21 Temurin 21 (LTS)
+    --8<--
+    doc/en/user/installation/jdk-windows-guidance.txt
+    --8<--
 
     **MacOS**
 
-    Download an OpenJDK release for MacOS:
-
-    * https://adoptium.net/temurin/releases/?version=17 Temurin 17 (LTS) - Recommended
-    * https://adoptium.net/temurin/releases/?version=21 Temurin 21 (LTS)
-
-    [Homebrew](https://brew.sh/) package manager provides a “formula” to install OpenJDK:
-
-    ```bash
-    brew install openjdk@17
-    ```
-
-    The developer tool [SDKMan](https://sdkman.io/) may be used to manage several versions:
-
-    ```bash
-    # list to determine latest Temurin JDK 17
-    sdk list java | grep "17.*-tem"
-    sdk install java 21.0.8-tem
-
-    # list to determine latest Temurin JDK 21
-    sdk list java | grep "21.*-tem"
-    sdk install java 17.0.16-tem
-
-    # change between versions 17.0.16-tem and 21.0.8-tem locally
-    sdk install use 17.0.16-tem
-    ```
+    --8<--
+    doc/en/user/installation/jdk-macos-guidance.txt
+    --8<--
 
     !!! note
         For more information about Java and GeoServer compatibility, please see the section on [Java Considerations](../production/java.md).
@@ -118,112 +72,21 @@ GeoServer is tested using Tomcat 11.0.x, and this is the recommended application
     !!! note
         A restart of your application server may be necessary.
 
-## Tomcat Hardening
+7.  In a web browser, navigate to <http://localhost:8080/geoserver>.
 
-Hide the Tomcat version in error responses and its error details.
+    When you see the GeoServer Welcome page, then GeoServer is successfully installed.
 
-1.  To remove the Tomcat version, create the following file with empty parameters :
-
-        cd $CATALINA_HOME (where Tomcat binaries are installed)
-        mkdir -p ./lib/org/apache/catalina/util/
-        cat > ./lib/org/apache/catalina/util/ServerInfo.properties <<EOF
-        server.info=
-        server.number=
-        server.built=
-        EOF
-
-2.  Additionally add to **`server.xml`** the ErrorReportValve to disable showReport and showServerInfo. This is used to hide errors handled globally by tomcat in the host section.
-
-    `vi ./conf/server.xml`
-
-    Add to `<Host name=...` section this new ErrorReportValve entry:
-
-    ```xml
-    ...
-            <Host name="localhost"  appBase="webapps"
-                unpackWARs="true" autoDeploy="true">
-
-            ...
-
-            <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" />
-
-            </Host>
-        </Engine>
-        </Service>
-    </Server>
-    ```
-
-3.  Why, if security by obscurity does not work?
-
-    Even though this is not the final solution, it at least mitigates the visible eye-catcher of outdated software packages.
-
-    Let's take the attackers point of view.
-
-    Response with just HTTP status:
-
-        HTTP Status 400 – Bad Request
-
-    Ok, it looks like a Tomcat is installed.
-
-    Default full response:
-
-        HTTP Status 400 – Bad Request
-        Type Status Report
-        Message Invalid URI
-        Description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
-        Apache Tomcat/7.0.67
-
-    Ahh, great, the software is not really maintained. Tomcat is far outdated from Dec. 2015 (6 years old as of today Jan. 2022) with a lot of unfixed vulnerabilities.
-
-4.  Notice: For support reason, the local output of version.sh still outputs the current version :
-
-        $CATALINA_HOME/bin/version.sh
-         ...
-         Server number:  7.0.67
-         ...
-
-## Running
-
-1.  Use your container application's method of starting and stopping webapps to run GeoServer.
-
-2.  To access the [Web administration interface](../webadmin/index.md), open a browser and navigate to `http://SERVER/geoserver` .
-
-    For example, with Tomcat running on port 8080 on localhost, the URL would be `http://localhost:8080/geoserver`.
-
-3.  When you see the GeoServer Welcome page, GeoServer has been successfully installed.
-
-    ![](images/success.png)
+    ![](images/welcome_page.png)
 
     *GeoServer Welcome Page*
 
-## Update
+11. To shut down GeoServer, either close the persistent command-line window, or run the **`shutdown.sh`** file inside the **`bin`** directory.
 
-Update GeoServer:
 
-- Backup any customizations you have made to **`webapps/geoserver/web.xml`**.
+### Additional Tomcat tutorials
 
-  In general application properties should be [configured](../configuration/properties/index.md#application_properties_setting) using **`conf/Catalina/localhost/geoserver.xml`** rather than by modifying **`web.xml`** which is replaced each update.
+Several additional tomcat tutorials are available:
 
-- Follow the [Upgrading GeoServer](upgrade.md) to update **`geoserver.war`**.
-
-  Before you start, ensure you have moved your data directory to an external location not located inside the **`webapps/geoserver/data`** folder.
-
-- Be sure to stop the application server before deploying updated **`geoserver.war`**.
-
-  This is important as when Tomcat is running it will replace the entire **`webapps/geoserver`** folder, including any configuration in the default GEOSERVER_DATA_DIR `<file:geoserver/data>` folder location or customizations made to **`web.xml`**.
-
-- Re-apply any customizations you have made to **`webapps/geoserver/web.xml`**.
-
-Update Tomcat:
-
-- Update regularly at least the container application! And repeat the hardening process.
-
-  There are a lot of GeoServer installations visible with outdated Tomcat versions.
-
-## Uninstallation
-
-1.  Stop the container application.
-
-2.  Remove the GeoServer webapp from the container application's `webapps` directory. This will usually include the **`geoserver.war`** file as well as a **`geoserver`** directory.
-
-    Remove **`conf/Catalina/localhost/geoserver.xml`**.
+ *  [Tomcat Hardening](../tutorials/tomcat-hardening/index.md) - Recommended
+ *  [Tomcat JNDI](../tutorials/tomcat-jndi/tomcat-jndi.md)
+   

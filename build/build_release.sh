@@ -131,7 +131,7 @@ git checkout $branch
 git pull origin $branch
 
 # check to see if a release branch already exists
-if [ `git branch --list rel_$tag | wc -l` == 1 ]; then
+if [ `git branch --list $tag.x | wc -l` == 1 ]; then
   echo "branch $tag.x exists, deleting it"
   git branch -D $tag.x
 fi

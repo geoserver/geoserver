@@ -19,6 +19,7 @@ There are many ways to install GeoServer on your system. This section will discu
 - [Windows installer](win_installer.md)
 - [Web archive](war.md)
 - [Docker Container](docker.md)
-- [Upgrading GeoServer](upgrade.md)
+- [Upgrading GeoServer 2](upgrade2.md)
+- [Upgrading GeoServer 3](upgrade3.md)
 
 </div>

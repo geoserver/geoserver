@@ -1,6 +1,21 @@
 # Container Considerations
 
-Java web containers such as [Tomcat](http://tomcat.apache.org) or [Jetty](https://www.eclipse.org/jetty/) ship with configurations that allow for fast startup, but don't always deliver the best performance.
+Java web containers such as [Tomcat](http://tomcat.apache.org) or [Jetty](https://www.eclipse.org/jetty/) ship with default configurations that emphasis fast startup, but don't always deliver the best sustained performance for GeoServer.
+
+| JavaEE          | JakartaEE       | Tomcat        | Jetty      | GeoServer      | Java     |
+| --------------- | --------------- | --------------| ---------- | -------------- | -------- |
+|                 | Servlet API 6.1 | Tomcat 11.0.x | Jetty 12.1 | GeoServer 3.0  | 21,17    |
+|                 | Servlet API 6.0 | Tomcat 10.1.x | Jetty 12.0 | not supported  |          |
+|                 | Servlet API 5.0 | Tomcat 10.0.x | Jetty 11.0 | not supported  |          |
+| Servlet API 4   |                 | Tomcat 9.x    |            | GeoServer 2.28 | 21,17    |
+| Servlet API 4   |                 | Tomcat 9.x    |            | GeoServer 2.27 | 21,17,11 |
+| Servlet API 3.1 |                 |               | Jetty 9.4  | GeoServer 2.28 | 21,17    |
+| Servlet API 3.1 |                 |               | Jetty 9.4  | GeoServer 2.27 | 21,17,11 |
+
+Reference:
+
+* [Web archive installation](../installation/war.md)
+* [Downloads](https://geoserver.org/download/) (Archive tab lists Java compatibility)
 
 ## Optimize your JVM
 

@@ -621,7 +621,10 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         InternationalString organization = InternationalStringUtils.growable(
                 contactInfo.getInternationalContactOrganization(), contactInfo.getContactOrganization());
 
-        if (organization == null || onlineResource == null) {
+        if (organization == null
+                || onlineResource == null
+                || Strings.isEmpty(organization.toString(locale))
+                || Strings.isEmpty(onlineResource.toString(locale))) {
             return placeholderLabel("belongsTo");
         }
         HashMap<String, String> params = new HashMap<>();

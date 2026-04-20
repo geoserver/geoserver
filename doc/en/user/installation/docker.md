@@ -45,9 +45,9 @@ This will run the container, with the data directory included with the container
 
 4.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
-    If you see the GeoServer Welcome page, then GeoServer is successfully installed.
+    When you see the GeoServer Welcome page, then GeoServer is successfully installed.
 
-    ![](images/success.png)
+    ![](images/welcome_page.png)
 
     *GeoServer Welcome Page*
 
@@ -90,11 +90,11 @@ This will run the container with a local data directory. The data directory will
     ```
 {% endif %}
 
-4.  In a web browser, navigate to `http://localhost:8080/geoserver`.
+4.  In a web browser, navigate to <http://localhost:8080/geoserver>.
 
-    If you see the GeoServer Welcome page, then GeoServer is successfully installed.
+    When you see the GeoServer Welcome page displayed, then GeoServer is successfully installed.
 
-    ![](images/success.png)
+    ![](images/welcome_page.png)
 
     *GeoServer Welcome Page*
 

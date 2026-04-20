@@ -9,11 +9,10 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
 1.  Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment.
 
-    Download an OpenJDK release for Windows:
-
-    * [Temurin 17 (LTS) - Recommended](https://adoptium.net/temurin/releases/?version=17)
-    * [Temurin 21 (LTS)](https://adoptium.net/temurin/releases/?version=21)
-
+    --8<--
+    doc/en/user/installation/jdk-windows-guidance.txt
+    --8<--
+    
     !!! note
         For more information about Java and GeoServer, please see the section on [Java Considerations](../production/java.md).
 
@@ -120,11 +119,11 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
 18. If you installed GeoServer as a service, it is already running. Otherwise, you can start GeoServer by going to the Start Menu, and clicking **Start GeoServer** in the GeoServer folder.
 
-19. Navigate to `http://localhost:8080/geoserver` (or wherever you installed GeoServer) to access the GeoServer [Web administration interface](../webadmin/index.md).
+19. Navigate to <http://localhost:8080/geoserver> to access the GeoServer [Web administration interface](../webadmin/index.md).
 
-    If you see the GeoServer Welcome page, then GeoServer is successfully installed.
+    When you see the GeoServer Welcome page displayed, then GeoServer is successfully installed.
 
-    ![](images/success.png)
+    ![](images/welcome_page.png)
 
     *GeoServer Welcome Page*
 

@@ -2438,7 +2438,7 @@ div.value-wide {
   }
   table.gs-mobile-card-table .field-value {
     font-weight: 400;
-    width: --webkit-fill-available;
+    width: stretch;
   }
   table.gs-mobile-card-table > tbody tr th.selection {
     --gs-table-bg-type: none;
@@ -2450,7 +2450,6 @@ div.value-wide {
 
 @media (max-width: 480px) {
   table.gs-mobile-card-table .gs-mobile-field {
-    flex-direction: column;
     align-items: flex-start;
     gap: 0;
   }

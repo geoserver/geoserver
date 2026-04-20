@@ -19,7 +19,7 @@ fi
 
 # parameter defaults
 if [ -z $branch ]; then
-  branch="master"
+  branch="main"
 fi
 
 if [ -z $rev ]; then

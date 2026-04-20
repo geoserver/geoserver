@@ -15,20 +15,20 @@
           <wicket:message key="advanced">advanced</wicket:message>
         </a>
         <div wicket:id="advancedContainer">
-          <div class="gs-unordered-list-class" wicket:id="advanced">
-            <div class="gs-list-item-class choiceItem" wicket:id="excludeGeometrylessContainer">
+          <div class="gs-form" wicket:id="advanced">
+            <div class="choiceItem" wicket:id="excludeGeometrylessContainer">
               <input type="checkbox" wicket:id="excludeGeometryless" size="6"/>
               <label for="excludeGeometrylessContainer">
                 <wicket:message key="excludeGeometryless">excludeGeometryless</wicket:message>
               </label>
             </div>
-            <div class="gs-list-item-class choiceItem" wicket:id="looseBBoxContainer">
+            <div class="choiceItem" wicket:id="looseBBoxContainer">
               <input type="checkbox" wicket:id="looseBBox" size="6"/>
               <label for="looseBBoxContainer">
                 <wicket:message key="looseBBox">looseBBox</wicket:message>
               </label>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <label for="pkMetadata">
                 <wicket:message key="pkMetadata">pkMetadata</wicket:message>
               </label>

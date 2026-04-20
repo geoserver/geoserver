@@ -285,14 +285,16 @@ if [ -z $SKIP_BUILD ]; then
   # Build the docs
   ##################
 
-  pushd ../doc/en > /dev/null
-  
-  # obtains release from pom.xml
-  ant build
+  pushd .. > /dev/null
 
-  mvn clean compile $MAVEN_FLAGS
-  mvn package $MAVEN_FLAGS
-  
+  # Prepare mkdocs in a virtualenv for the docs module build.
+  python3 -m venv venv
+  source venv/bin/activate
+  pip install -r requirements.txt
+
+  pushd doc/en > /dev/null
+  mvn -nsu -fae package $MAVEN_FLAGS
+  popd > /dev/null
   popd > /dev/null
 else
    echo "Skipping mvn clean install $MAVEN_FLAGS -DskipTests -P release,pending"
@@ -326,31 +328,16 @@ popd > /dev/null
 
 pushd $artifacts > /dev/null
 
+# bundle up HTML documentation output
 htmldoc=geoserver-$tag-htmldoc.zip
+docs_htmldoc=gs-docs-$tag-htmldoc.zip
 
-if [ -e ../../../doc/en/target/$htmldoc ]; then
-  echo "Using $htmldoc assembly"
-  # use assembly
-  cp ../../../doc/en/target/$htmldoc $htmldoc
+if [ -e ../../../doc/en/target/$docs_htmldoc ]; then
+  echo "Using $docs_htmldoc assembly"
+  cp ../../../doc/en/target/$docs_htmldoc $htmldoc
 else
-  echo "Creating $htmldoc"
-  # setup doc artifacts
-  if [ -e user ]; then
-    unlink user
-  fi
-  if [ -e developer ]; then
-    unlink developer
-  fi
-  ln -sf ../../../doc/en/target/user/html user
-  ln -sf ../../../doc/en/target/developer/html developer
-  ln -sf ../../../doc/en/release/README.txt readme
-  if [ -e $htmldoc ]; then
-    rm -f $htmldoc 
-  fi
-  zip -q -r $htmldoc user developer readme
-  unlink user
-  unlink developer
-  unlink readme
+  echo "Missing documentation assembly ../../../doc/en/target/$docs_htmldoc"
+  exit 1
 fi
 
 popd > /dev/null

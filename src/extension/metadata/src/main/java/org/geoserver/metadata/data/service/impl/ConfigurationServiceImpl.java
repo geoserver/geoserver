@@ -120,7 +120,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return customNativeMappingsConfig;
     }
 
-    private void readConfiguration() {
+    /**
+     * Reads and merges all {@code *.yaml} configuration files from the metadata directory.
+     *
+     * <p>Synchronized because it's called from bodh {@link #reload()} and the {@link ResourceListener} callback from
+     * {@link #init()}, which may fire concurrently.
+     */
+    private synchronized void readConfiguration() {
         Resource folder = getFolder();
         ObjectMapper mapper = new YAMLMapper();
         List<Resource> files = Resources.list(folder, new Resources.ExtensionFilter("YAML"));

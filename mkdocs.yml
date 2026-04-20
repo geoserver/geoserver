@@ -11,7 +11,7 @@ site_dir: mkdocs_output
 exclude_docs: |
   README.md
   target
-  index.html
+  /index.html
   venv
   en/user/styling/ysld/reference/symbolizers/include/
   en/developer/policies/gsip_voting.md

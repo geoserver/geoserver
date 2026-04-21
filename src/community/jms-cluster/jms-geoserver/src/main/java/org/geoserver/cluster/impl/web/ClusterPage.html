@@ -10,34 +10,32 @@
 				<tr>
 					<td>
 						<form wicket:id="form">
-							<div class="gs-unordered-list-class">
-								<div class="gs-list-item-class"> <label for="brokerURL"><wicket:message
-											key="brokerURL">brokerURL</wicket:message></label> <input
-									id="brokerURL" class="field" type="text"
-									wicket:id="brokerURL" /></div>
-
-								<div class="gs-list-item-class"> <label for="instanceName"><wicket:message
-											key="instanceName">instanceName</wicket:message></label> <input
-									id="instanceName" class="field" type="text"
-									wicket:id="instanceName" /></div>
-									
-								<div class="gs-list-item-class"> <label for="group"><wicket:message
-											key="group">group</wicket:message></label> <input
-									id="group" class="field" type="text"
-									wicket:id="group" /></div>
-									
-								<div class="gs-list-item-class"> <label for="topicName"><wicket:message
-											key="topicName">topicName</wicket:message></label> <input
-									id="topicName" class="field" type="text"
-									wicket:id="topicName" /></div>
-								<div class="gs-list-item-class"> <table>
+							<div class="gs-form">
+								<div class="gs-form-group"> 
+									<label for="brokerURL"><wicket:message key="brokerURL">brokerURL</wicket:message></label> 
+									<input id="brokerURL" class="field" type="text" wicket:id="brokerURL" />
+								</div>
+								<div class="gs-form-group"> 
+									<label for="instanceName"><wicket:message key="instanceName">instanceName</wicket:message></label> 
+									<input id="instanceName" class="field" type="text" wicket:id="instanceName" />
+								</div>
+								<div class="gs-form-group"> 
+									<label for="group"><wicket:message key="group">group</wicket:message></label> 
+									<input id="group" class="field" type="text" wicket:id="group" />
+								</div>
+								<div class="gs-form-group"> 
+									<label for="topicName"><wicket:message key="topicName">topicName</wicket:message></label> 
+									<input id="topicName" class="field" type="text" wicket:id="topicName" />
+								</div>
+								<div class="gs-list-item-class"> 
+									<table>
 										<tr>
 											<td>
 												<button wicket:id="toggleMasterB">
 													<wicket:message key="toggleMasterB">toggleMasterB</wicket:message>
 												</button>
 											</td>
-											<td><label for="toggleMaster"><wicket:message
+											<td class="gs-inline-group"><label for="toggleMaster"><wicket:message
 														key="toggleMaster">toggleMaster</wicket:message></label> <input
 												id="toggleMaster" class="w-xs field"
 												type="text" wicket:id="toggleMaster" /></td>
@@ -48,7 +46,7 @@
 													<wicket:message key="toggleSlaveB">toggleSlaveB</wicket:message>
 												</button>
 											</td>
-											<td><label for="toggleSlave"><wicket:message
+											<td class="gs-inline-group"><label for="toggleSlave"><wicket:message
 														key="toggleSlave">toggleSlave</wicket:message></label> <input
 												id="toggleSlave" class="w-xs field"
 												type="text" wicket:id="toggleSlave" /></td>
@@ -59,7 +57,7 @@
 													<wicket:message key="connectionB">connectionB</wicket:message>
 												</button>
 											</td>
-											<td><label for="connection"><wicket:message
+											<td class="gs-inline-group"><label for="connection"><wicket:message
 														key="connection">connection</wicket:message></label><input
 												id="connection" class="w-sm field"
 												type="text" wicket:id="connection" /></td>
@@ -70,7 +68,7 @@
 													<wicket:message key="readOnlyB">readOnlyB</wicket:message>
 												</button>
 											</td>
-											<td><label for="readOnly"><wicket:message
+											<td class="gs-inline-group"><label for="readOnly"><wicket:message
 														key="readOnly">readOnly</wicket:message></label> <input
 												id="readOnly" class="w-sm field"
 												type="text" wicket:id="readOnly" /></td>
@@ -81,13 +79,13 @@
 													<wicket:message key="embeddedBrokerB">embeddedBrokerB</wicket:message>
 												</button>
 											</td>
-											<td><label for="embeddedBroker"><wicket:message
+											<td class="gs-inline-group"><label for="embeddedBroker"><wicket:message
 														key="embeddedBroker">embeddedBroker</wicket:message></label> <input
 												id="readOnly" class="w-xs field"
 												type="text" wicket:id="embeddedBroker" /></td>
 										</tr>
-									</table></div>
-
+									</table>
+								</div>
 								<div class="gs-list-item-class button-group selfclear">
 									<button type="submit" wicket:id="saveB">
 										<wicket:message key="saveB">submit</wicket:message>

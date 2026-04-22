@@ -239,6 +239,19 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
         authenticateIfNeeded(
                 (ctx, ldapEntryIdentification) -> {
                     try {
+                        LOGGER.log(Level.WARNING, "---- getUserByUsername");
+                        LOGGER.log(Level.WARNING, "username: " + username);
+                        LOGGER.log(Level.WARNING, "userSearchBase: " + userSearchBase);
+                        LOGGER.log(Level.WARNING, "userNameFilter: " + userNameFilter);
+                        try {
+                            LOGGER.log(
+                                    Level.WARNING,
+                                    "ctx.getNameInNamespace(): " + ctx.getNameInNamespace());
+                        } catch (NamingException e) {
+                            LOGGER.log(Level.WARNING, "error for ctx.getNameInNamespace()", e);
+                        }
+                        LOGGER.log(Level.WARNING, "^^^^ getUserByUsername");
+
                         DirContextOperations dco =
                                 LDAPUtils.getLdapTemplateInContext(ctx, template)
                                         .searchForSingleEntry(

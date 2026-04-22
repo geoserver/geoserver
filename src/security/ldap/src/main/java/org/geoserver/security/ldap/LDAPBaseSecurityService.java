@@ -220,8 +220,8 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
      * @return simplified username
      */
     public String groupName2UserName(String uName) {
-        LOGGER.log(Level.WARNING, "groupName2UserName: starting with uName: {0}", uName);
-        LOGGER.log(Level.WARNING, "groupName2UserName: groupMember2UserName: {0}", groupMember2UserName);
+        LOGGER.log(Level.FINE, "groupName2UserName: starting with uName: {0}", uName);
+        LOGGER.log(Level.FINE, "groupName2UserName: groupMember2UserName: {0}", groupMember2UserName);
 
         if (!StringUtils.isBlank(groupMember2UserName)) {
             try {
@@ -232,14 +232,14 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
                 if (username.isPresent()
                         && !StringUtils.isBlank(username.get().getValue().toString())) {
                     String userName = username.get().getValue().toString();
-                    LOGGER.log(Level.WARNING, "groupName2UserName: final userName: {0}", userName);
+                    LOGGER.log(Level.FINE, "groupName2UserName: final userName: {0}", userName);
                     return userName;
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "LDAP issue parsing username: " + user, e);
             }
         }
-        LOGGER.log(Level.WARNING, "groupName2UserName: final NO CHANGE! userName: {0}", uName);
+        LOGGER.log(Level.FINE, "groupName2UserName: final NO CHANGE! userName: {0}", uName);
         return uName;
     }
 

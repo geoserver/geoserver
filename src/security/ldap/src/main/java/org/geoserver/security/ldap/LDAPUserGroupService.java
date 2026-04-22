@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
@@ -215,16 +216,16 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
 
         authenticateIfNeeded((ctx, ldapEntryIdentification) -> {
             try {
-                LOGGER.log(Level.WARNING, "---- getUserByUsername");
-                LOGGER.log(Level.WARNING, "username: " + username);
-                LOGGER.log(Level.WARNING, "userSearchBase: " + userSearchBase);
-                LOGGER.log(Level.WARNING, "userNameFilter: " + userNameFilter);
+                LOGGER.log(Level.FINE, "---- getUserByUsername");
+                LOGGER.log(Level.FINE, "username: " + username);
+                LOGGER.log(Level.FINE, "userSearchBase: " + userSearchBase);
+                LOGGER.log(Level.FINE, "userNameFilter: " + userNameFilter);
                 try {
-                    LOGGER.log(Level.WARNING, "ctx.getNameInNamespace(): " + ctx.getNameInNamespace());
-                } catch (NamingException e) {
-                    LOGGER.log(Level.WARNING, "error for ctx.getNameInNamespace()", e);
+                    LOGGER.log(Level.FINE, "ctx.getNameInNamespace(): " + ctx.getNameInNamespace());
+                } catch (Exception e) {
+                    LOGGER.log(Level.FINE, "error for ctx.getNameInNamespace()", e);
                 }
-                LOGGER.log(Level.WARNING, "^^^^ getUserByUsername");
+                LOGGER.log(Level.FINE, "^^^^ getUserByUsername");
 
                 DirContextOperations dco = LDAPUtils.getLdapTemplateInContext(ctx, template)
                         .searchForSingleEntry(userSearchBase, userNameFilter, new String[] {username});
@@ -329,7 +330,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
     }
 
     private boolean acceptChildGroup(String x) {
-        return !useNestedGroups || StringUtils.containsIgnoreCase(x, groupSearchBase);
+        return !useNestedGroups || Strings.CI.contains(x, groupSearchBase);
     }
 
     @Override
@@ -390,7 +391,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
                     .toString();
             groupDnReference.setValue(dn);
         });
-        return groupDnReference.getValue();
+        return groupDnReference.get();
     }
 
     @Override

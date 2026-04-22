@@ -60,6 +60,8 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
         add(new TextField<>("allGroupsSearchFilter"));
         /** membership options */
         add(new TextField<>("groupSearchFilter"));
+        add(new TextField<>("groupMember2UserName"));
+
         add(new TextField<>("groupMembershipAttribute"));
         /** user options */
         add(new TextField<>("userSearchBase").setRequired(true));

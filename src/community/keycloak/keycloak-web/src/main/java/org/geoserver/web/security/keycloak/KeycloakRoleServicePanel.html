@@ -1,0 +1,63 @@
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+
+<body>
+<wicket:extend>
+    <div class="gs-unordered-list-class">
+        <div class="gs-list-item-class">
+            <fieldset>
+                <legend>
+                        <span>
+                            <wicket:message key="keycloakSettings"></wicket:message>
+                        </span>
+                </legend>
+                <div class="gs-form">
+                    <div class="gs-form-group">
+                        <label for="serverURL">
+                            <wicket:message key="serverURL"></wicket:message>
+                        </label>
+                        <input id="serverURL" wicket:id="serverURL" type="text"></input>
+                    </div>
+                    <div class="gs-form-group">
+                        <label for="realm">
+                            <wicket:message key="realm"></wicket:message>
+                        </label>
+                        <input id="realm" wicket:id="realm" type="text"></input>
+                    </div>
+                    <div class="gs-form-group">
+                        <label for="clientID">
+                            <wicket:message key="clientID"></wicket:message>
+                        </label>
+                        <input id="clientID" wicket:id="clientID" type="text"></input>
+                    </div>
+                    <div class="gs-form-group">
+                        <label for="clientSecret">
+                            <wicket:message key="clientSecret"></wicket:message>
+                        </label>
+                        <input id="clientSecret" wicket:id="clientSecret" type="text" autocomplete="off"></input>
+                    </div>
+                    <div class="gs-form-group">
+                        <label for="idsOfClientsList">
+                            <wicket:message key="idsOfClientsList"></wicket:message>
+                        </label>
+                        <input id="idsOfClientsList" wicket:id="idsOfClientsList" type="text"></input>
+                    </div>
+                </div>
+                <div class="gs-form-group">
+                    <div class="button-group">
+                        <a class="button" wicket:id="testConnection">
+                                <span>
+                                    <wicket:message key="testConnection"></wicket:message>
+                                </span>
+                        </a>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div wicket:id="feedback"></div>
+</wicket:extend>
+</body>
+
+</html>

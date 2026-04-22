@@ -849,6 +849,10 @@ nav:
         - en/user/community/jwt-headers/overview.md
         - en/user/community/jwt-headers/installing.md
         - en/user/community/jwt-headers/configuration.md
+      - Keycloak Role Service:
+        - en/user/community/keycloak/index.md
+        - en/user/community/keycloak/installing.md
+        - en/user/community/keycloak/configuration.md
       - Libdeflate: en/user/community/libdeflate/index.md
       - MBTiles Extension:
         - en/user/community/mbtiles/index.md

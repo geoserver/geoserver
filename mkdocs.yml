@@ -11,7 +11,7 @@ site_dir: mkdocs_output
 exclude_docs: |
   README.md
   target
-  index.html
+  /index.html
   venv
   en/user/styling/ysld/reference/symbolizers/include/
   en/developer/policies/gsip_voting.md
@@ -20,7 +20,7 @@ exclude_docs: |
 theme:
   name: material
   custom_dir: doc/themes/geoserver
-  logo: img/geoserver-logo.png
+  logo: img/geoserver-logo.svg
   favicon: img/geoserver.ico
   palette:
     # Light mode  (colours set via extra.css to match the GeoServer app)

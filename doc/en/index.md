@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+  - toc
+---
 # GeoServer Documentation
 
 Welcome to the GeoServer documentation. Choose a guide to get started:
@@ -7,32 +12,6 @@ Welcome to the GeoServer documentation. Choose a guide to get started:
 [:computer:{: .doc-card-icon } <br/><span class="guide">Developer Guide</span></br>Contribute to GeoServer development with architecture guides and coding standards](developer/index.md){: .doc-card}
 [:writing_hand:{: .doc-card-icon } <br/><span class="guide">Documentation Guide</span>Learn how to write and contribute to GeoServer documentation](docguide/index.md){: .doc-card}
 [:electric_plug:{: .doc-card-icon } <br/><span class="guide">API Reference</span>Explore the REST API and service endpoints for programmatic access](api/index.html){: .doc-card}
-</div>
-
-<div class="doc-cards">
-  <a href="user/" class="doc-card">
-    <div class="doc-card-icon">📖</div>
-    <h2>User Manual</h2>
-    <p>Learn how to install, configure, and use GeoServer for publishing geospatial data</p>
-  </a>
-
-  <a href="developer/" class="doc-card">
-    <div class="doc-card-icon">💻</div>
-    <h2>Developer Guide</h2>
-    <p>Contribute to GeoServer development with architecture guides and coding standards</p>
-  </a>
-
-  <a href="docguide/" class="doc-card">
-    <div class="doc-card-icon">✍️</div>
-    <h2>Documentation Guide</h2>
-    <p>Learn how to write and contribute to GeoServer documentation</p>
-  </a>
-
-  <a href="api/" class="doc-card">
-    <div class="doc-card-icon">🔌</div>
-    <h2>API Reference</h2>
-    <p>Explore the REST API and service endpoints for programmatic access</p>
-  </a>
 </div>
 
 <style>
@@ -70,6 +49,33 @@ Welcome to the GeoServer documentation. Choose a guide to get started:
   margin-bottom: 1rem;
   line-height: 1;
 }
+
+a.doc-card {
+  margin: 0.75rem 0 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--md-default-fg-color--light);
+}
+
+a.doc-card:link {
+  color: var(--md-default-fg-color--light);
+}
+a.doc-card:visted {
+  color: var(--md-default-fg-color--light);
+}
+a.doc-card:hover {
+  color: var(--md-default-fg-color--light);
+}
+
+a.doc-card span.guide {
+  margin: 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+  box-sizing: inherit;
+  color: var(--md-primary-fg-color);
+}
+
 
 .doc-card h2 {
   margin: 0.5rem 0;

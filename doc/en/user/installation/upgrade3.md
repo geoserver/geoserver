@@ -10,7 +10,7 @@
 
 GeoServer 3.0.x is scheduled for release in April, 2026.
 
-The upgrade to GeoServer 3.0 is seemless maintaining the same data directory and Java 17 environment as used previousl for GeoServer 2.28.
+The upgrade to GeoServer 3.0 is seamless maintaining the same data directory and Java 17 environment as used previously for GeoServer 2.28.
 
 ### JDK 17 Required (GeoServer 3.0)
 
@@ -83,7 +83,7 @@ Hidden directories named like: `.<FILENAME_HASH>` (e.g. `.polyphemus_20130301_71
   - the primary H2 data storage file. (e.g. `polyphemus_20130301.data.db`)
   - the index storage file (e.g. `polyphemus_20130301.index.db`)
   - the transaction log (e.g. `polyphemus_20130301.4.log.db`)
-  - the debug/trage log (e.g. `polyphemus_20130301.trace.db`)
+  - the debug/trace log (e.g. `polyphemus_20130301.trace.db`)
 
 - the binary index file:
   - FILENAME.idx (e.g. `polyphemus_20130301.idx`)
@@ -257,7 +257,7 @@ If it has been a while since you have upgraded GeoServer be cautious when upgrad
             
             Installation of Java 17 is required.
             
-            Out of an abundance of caution testing raster layers is advisable due to wholsale change of the image processing engine.
+            Out of an abundance of caution testing raster layers is advisable due to wholesale change of the image processing engine.
             
             *Review the logs during startup, and test to ensure the application is working as expected.*
     

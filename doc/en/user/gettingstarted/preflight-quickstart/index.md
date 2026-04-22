@@ -19,38 +19,38 @@ There are several warnings shown when we first start up GeoServer and login as a
 
     *Default admin password warning*
 
-    Click on the **change it** to open **Edit user** for the `admin` user. You may also reach this screen by navigate to **Security > Users, Groups, and Roles**. Changing the the **Users/Groups** tag, and selecting the `admin` user.
+    Click on the **change it** to open **Edit user** for the `admin` user. You may also reach this screen by navigating to **Security > Users, Groups, and Roles**. Change to the **Users/Groups** tab, and select the `admin` user.
 
     ![](images/admin-password.png)
 
-    *Change Master Password*
+    *Change Keystore Password*
 
-    User this screen to change the `admin` user password from the default:
+    Use this screen to change the `admin` user password from the default:
 
     | User name         | `admin`      |
     |-------------------|--------------------------|
     | Password          | (make up a new password) |
-    | Confirm password: | (confirm new password)   |
+    | Confirm password  | (confirm new password)   |
 
 
-3.  Change master password:
+3.  Change keystore password:
 
     ![](images/master-password-warning.png)
 
-    *Master password warning*
+    *Keystore password warning*
 
-    Click on the **change it** to open **Change Master Password**. You may also reach this screen by navigate to **Security > Passwords**, and pressing **Change password**.
+    Click on the **change it** to open **Change Keystore Password**. You may also reach this screen by navigating to **Security > Passwords**, and pressing **Change password**.
 
     ![](images/master-password.png)
 
-    *Change Master Password*
+    *Change Keystore Password*
 
-    Use this screen to change the master or keystore password.
+    Use this screen to change the keystore password.
 
     | Current password | `geoserver`  |
     |------------------|--------------------------|
     | New password     | (make up a new password) |
-    | Confirmation:    | (confirm new password)   |
+    | Confirmation     | (confirm new password)   |
 
 
     If you do not know the current password, navigate to **Security > Passwords** and there is an option to recover the password (either to a local file or via REST API).

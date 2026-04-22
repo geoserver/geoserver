@@ -221,18 +221,14 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
      */
     public String groupName2UserName(String uName) {
         LOGGER.log(Level.WARNING, "groupName2UserName: starting with uName: {0}", uName);
-        LOGGER.log(
-                Level.WARNING,
-                "groupName2UserName: groupMember2UserName: {0}",
-                groupMember2UserName);
+        LOGGER.log(Level.WARNING, "groupName2UserName: groupMember2UserName: {0}", groupMember2UserName);
 
         if (!StringUtils.isBlank(groupMember2UserName)) {
             try {
                 LdapName name = new LdapName(uName);
-                Optional<Rdn> username =
-                        name.getRdns().stream()
-                                .filter(x -> x.getType().equalsIgnoreCase(groupMember2UserName))
-                                .findFirst();
+                Optional<Rdn> username = name.getRdns().stream()
+                        .filter(x -> x.getType().equalsIgnoreCase(groupMember2UserName))
+                        .findFirst();
                 if (username.isPresent()
                         && !StringUtils.isBlank(username.get().getValue().toString())) {
                     String userName = username.get().getValue().toString();

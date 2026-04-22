@@ -58,15 +58,15 @@ Any existing `location` value in the data directory `logging.xml` file is retain
 
 ### NetCDF Index removal
 
-Starting with GeoServer 3.0, NetCDF plugin (and coverage multidim machinery) has been simplified and is now self contained. With his improvement NetCDF no longer needs a databse or `idx` files to operate. In particular, it no longer relies on: 
+Starting with GeoServer 3.0, NetCDF plugin (and coverage multidim machinery) has been simplified and is now self contained. With this improvement NetCDF no longer needs a databse or `idx` files to operate. In particular, it no longer relies on: 
 
 - a database (e.g., H2 or PostGIS) to map temporal and elevation domains to image indices, 
-- nor on the auxiliary `.idx` binary files previously used to link image indices to NetCDF dimension coordinates. 
+- nor on the auxiliary **`.idx`** binary files previously used to link image indices to NetCDF dimension coordinates. 
 
 These relationships are now resolved directly from the NetCDF structure at runtime, reducing configuration overhead, 
 improving portability, and eliminating synchronization issues between datasets and external indexes.
 
-The NetCDF plugin no longer generates the legacy binary `.idx` files and the embedded H2 database previously used for indexing temporal and elevation domains.
+The NetCDF plugin no longer generates the legacy binary **`.idx`** files and the embedded H2 database previously used for indexing temporal and elevation domains.
 All indexing is now handled in-memory and derived directly from the NetCDF dataset structure at runtime, eliminating the need to manage or clean up external index artifacts.
 
 **Cleanup of Existing Files**
@@ -115,7 +115,7 @@ For more information, and installation instructions, use the user guide [OAuth2 
 
 ## How to upgrade
 
-Care should be taken to backup your data directory, outlined as the first step below. 
+Care should be taken to backup your data directory, outlined as the first step in the upgrade process below.
 
 !!! warning
     Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See [Migrating a data directory between versions](../datadirectory/migrating.md) for more details.
@@ -142,9 +142,9 @@ The general GeoServer upgrade process is as follows:
     
     - Download [maintenance](https://geoserver.org/release/maintain) release to **update** existing installation.
        
-       There should generally be no problems or issues updating data directories between patch versions of GeoServer (for example, from 2.28.0 to 2.28.1 or vice versa).
+       There should be no problems or issues updating data directories between patch versions of GeoServer (for example, from 2.28.0 to 2.28.1).
        
-       It is also generally possible to downgrade a minor update and maintain data directory compatibility.
+       It is also generally possible to downgrade a minor update and maintain data directory compatibility (for example from 2.28.1 to 2.28.0).
     
     - Download [stable](https://geoserver.org/release/stable) release when ready to **upgrade**.
        
@@ -156,7 +156,7 @@ The general GeoServer upgrade process is as follows:
      (when upgrading from 2.20 to 2.21 the logging library changed), or
      
    - Newer versions may change what extensions are provided
-     (as is the case when moving from 2.28 to 3.0 when OIDC replaced keycloak plugin).
+     (as is the case when moving from 2.28 to 3.0 with the OIDC plugin replacing the keycloak plugin).
 
 6.  Be sure to download and install each extension used by your prior installation.
 
@@ -166,9 +166,9 @@ The general GeoServer upgrade process is as follows:
 
 ## Q: How often should I upgrade GeoServer
 
-GeoServer operates with a time boxed release cycle, maintaining "stable" and "maintenance" releases, over the course of a year.
+GeoServer [release schedule](https://github.com/geoserver/geoserver/wiki/Release-Schedule) follows a predictabe time boxed release cycle, maintaining "stable" and "maintenance" releases, over the course of a year.
 
-- Plan to upgrade GeoServer **at least twice a year** as new stable releases are made.
+- Plan to upgrade GeoServer **at least twice a year** as new stable releases are made in march
 
   Once the release you are using has entered "maintenance" it is a good idea to upgrade (before the release is no longer supported).
 
@@ -185,7 +185,7 @@ GeoServer operates with a time boxed release cycle, maintaining "stable" and "ma
 !!! note
       Do not wait for a release to fall out of support before upgrading. Doing so places you in a position of having to perform an upgrade quickly with a lot of pressure in the event a security vulnerability is announced.
 
-!!! note  
+!!! warning  
       If you do see several releases being made concurrently, in response to an urgent vulnerability, the developers will not be in a position to tell you what is going on. Their goal is to provide you an opportunity to upgrade prior to public disclosure.
     
       Those seeking more information, or with a legal obligation to be informed, are welcome to volunteer on the geoserver-security email list. See [Security Process](../../developer/policies/security.md) for details on how to participate.

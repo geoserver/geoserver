@@ -30203,7 +30203,7 @@
 </code></pre></div>
 <p>Any existing <code>location</code> value in the data directory <code>logging.xml</code> file is retained for backward compatibility but is ignored at runtime. REST API clients that send a <code>location</code> field in PUT requests to <code>/rest/logging</code> will receive a warning in the server logs; the value is silently discarded.</p>
 <h3 id="netcdf-index-removal">NetCDF Index removal<a class="headerlink" href="#netcdf-index-removal" title="Permanent link">&para;</a></h3>
-<p>Starting with GeoServer 3.0, NetCDF plugin (and coverage multidim machinery) has been simplified and is now self contained. With this improvement NetCDF no longer needs a databse or <code>idx</code> files to operate. In particular, it no longer relies on: </p>
+<p>Starting with GeoServer 3.0, NetCDF plugin (and coverage multidim machinery) has been simplified and is now self contained. With this improvement NetCDF no longer needs a database or <code>idx</code> files to operate. In particular, it no longer relies on: </p>
 <ul>
 <li>a database (e.g., H2 or PostGIS) to map temporal and elevation domains to image indices, </li>
 <li>nor on the auxiliary <strong><code>.idx</code></strong> binary files previously used to link image indices to NetCDF dimension coordinates. </li>
@@ -30244,8 +30244,8 @@ If the <code>NETCDF_DATA_DIR JAVA_OPT</code> is configured, these hidden folders
 <h3 id="oauth-and-keycloak-and-migrate-to-new-oidc-plugin">OAuth and Keycloak and migrate to new OIDC plugin<a class="headerlink" href="#oauth-and-keycloak-and-migrate-to-new-oidc-plugin" title="Permanent link">&para;</a></h3>
 <p>GeoServer 3 marks the end-of-life for several popular community plugins - which all have a single replacement in the <a href="https://docs.geoserver.org/main/en/user/community/oidc/">OIDC plugin</a> module.</p>
 <ul>
-<li>If you previously used keycloak support, there are setup instructions for <a href="https://docs.geoserver.org/main/en/user/community/oidc/oauth2/keycloak/">configuring with keycloak</a>.</li>
-<li>If you previously used an OAuth2 integration can find indivudal setup instructions for <a href="https://docs.geoserver.org/main/en/user/community/oidc/oauth2/google/">google</a>, <a href="https://docs.geoserver.org/main/en/user/community/oidc/oauth2/azure/">Azure</a>, and <a href="https://docs.geoserver.org/main/en/user/community/oidc/oauth2/azure/">GitHub</a>.</li>
+<li>If you previously used Keycloak support, there are setup instructions for <a href="https://docs.geoserver.org/main/en/user/community/oidc/oauth2/keycloak/">configuring with Keycloak</a>.</li>
+<li>If you previously used an OAuth2 integration, you can find individual setup instructions for <a href="https://docs.geoserver.org/main/en/user/community/oidc/oauth2/google/">Google</a>, <a href="https://docs.geoserver.org/main/en/user/community/oidc/oauth2/azure/">Azure</a>, and <a href="https://docs.geoserver.org/main/en/user/community/oidc/oauth2/azure/">GitHub</a>.</li>
 </ul>
 <p>For more information, and installation instructions, use the user guide <a href="https://docs.geoserver.org/main/en/user/community/oidc/">OAuth2 OpenID Connect</a> page. </p>
 <h2 id="how-to-upgrade">How to upgrade<a class="headerlink" href="#how-to-upgrade" title="Permanent link">&para;</a></h2>
@@ -30296,7 +30296,7 @@ If the <code>NETCDF_DATA_DIR JAVA_OPT</code> is configured, these hidden folders
 </li>
 <li>
 <p>Newer versions may change what extensions are provided
-     (as is the case when moving from 2.28 to 3.0 with the OIDC plugin replacing the keycloak plugin).</p>
+     (as is the case when moving from 2.28 to 3.0 with the OIDC plugin replacing the Keycloak plugin).</p>
 </li>
 <li>
 <p>Be sure to download and install each extension used by your prior installation.</p>
@@ -30305,13 +30305,13 @@ If the <code>NETCDF_DATA_DIR JAVA_OPT</code> is configured, these hidden folders
 <p>Make sure that the new installation continues to point to the same data directory used by the previous version.</p>
 </li>
 <li>
-<p>During initial startup check the logs for any warnings that may need to be addressed.</p>
+<p>During initial startup, check the logs for any warnings that may need to be addressed.</p>
 </li>
 </ol>
 <h2 id="q-how-often-should-i-upgrade-geoserver">Q: How often should I upgrade GeoServer<a class="headerlink" href="#q-how-often-should-i-upgrade-geoserver" title="Permanent link">&para;</a></h2>
 <p>GeoServer <a href="https://github.com/geoserver/geoserver/wiki/Release-Schedule">release schedule</a> follows a predictabe time boxed release cycle, maintaining "stable" and "maintenance" releases, over the course of a year.</p>
 <ul>
-<li>Plan to upgrade GeoServer <strong>at least twice a year</strong> as new stable releases are made in march</li>
+<li>Plan to upgrade GeoServer <strong>at least twice a year</strong> as new stable releases are made in March and Septemeber each year.</li>
 </ul>
 <p>Once the release you are using has entered "maintenance" it is a good idea to upgrade (before the release is no longer supported).</p>
 <p>GeoServer provides some overlap between "stable" and "maintenance" releases to provide you a window of opportunity to upgrade between supported versions.</p>

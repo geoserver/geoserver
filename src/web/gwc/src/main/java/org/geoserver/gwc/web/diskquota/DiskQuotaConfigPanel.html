@@ -30,7 +30,7 @@
               </label>
               <div class="gs-input-group">
                 <input class="w-sm" wicket:id="globalQuota" id="globalQuota" type="text"/>
-                <select class="text" id="globalQuotaUnits" wicket:id="globalQuotaUnits"/>
+                <select class="w-fit" id="globalQuotaUnits" wicket:id="globalQuotaUnits"/>
               </div>
               <div wicket:id="globalQuotaProgressBar"/>
             </div>
@@ -60,20 +60,20 @@
                 <label for="diskQuotaStore">
                   <wicket:message key="diskQuotaStore">quotastore:</wicket:message>
                 </label>
-                <select class="text" id="diskQuotaStore" wicket:id="diskQuotaStore"/>
+                <select class="w-fit" id="diskQuotaStore" wicket:id="diskQuotaStore"/>
               </div>
               <div class="gs-form" wicket:id="jdbcQuotaStoreContainer">
                 <div class="gs-form-group">
                   <label for="dialectChooser">
                     <wicket:message key="jdbcQuotaDialect">dialect:</wicket:message>
                   </label>
-                  <select class="text" id="dialectChooser" wicket:id="dialectChooser"/>
+                  <select class="w-fit" id="dialectChooser" wicket:id="dialectChooser"/>
                 </div>
                 <div class="gs-form-group">
                   <label for="connectionTypeChooser">
                     <wicket:message key="connectionTypeChooser">connectionType:</wicket:message>
                   </label>
-                  <select class="text" id="connectionTypeChooser" wicket:id="connectionTypeChooser"/>
+                  <select class="w-fit" id="connectionTypeChooser" wicket:id="connectionTypeChooser"/>
                 </div>
                 <div class="gs-form-group" wicket:id="connectionTypeContainer">
                   <div class="gs-unordered-list-class">

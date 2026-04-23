@@ -17,4 +17,4 @@ The `oidc` module is a security module that accepts users (and roles) from exter
 </div>
 
 !!! note
-    The OAuth2 OpenID Connect modules is marked pending, meaning you'll find them in the releases, but are not yet officially supported extensions. In order for this module to graduate to supported extensions, we need more installations, and public experience migrating from the previous keycloak and oauth2 modules it replaces. Please contact <alessio.fabiani@geo-solutions.it> with your experience and feedback, the [user forum](https://discourse.osgeo.org/c/geoserver/user/51) enthusaism and success.
+    The OAuth2 OpenID Connect modules is marked pending, meaning you'll find them in the releases, but are not yet officially supported extensions. In order for this module to graduate to supported extensions, we need more installations, and public experience migrating from the previous keycloak and oauth2 modules it replaces. Please contact <alessio.fabiani@geo-solutions.it> with your experience and feedback, and the [user forum](https://discourse.osgeo.org/c/geoserver/user/51) with enthusiasm and success.

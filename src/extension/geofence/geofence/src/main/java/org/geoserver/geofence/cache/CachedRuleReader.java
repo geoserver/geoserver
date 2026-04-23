@@ -12,6 +12,7 @@ import org.geoserver.geofence.cache.RuleCacheLoaderFactory.NamePw;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.AuthUser;
+import org.geoserver.geofence.services.dto.PermsResult;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geotools.util.logging.Logging;
@@ -67,6 +68,11 @@ public class CachedRuleReader implements RuleReaderService {
     @Override
     public List<ShortRule> getMatchingRules(RuleFilter filter) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public PermsResult getPermissionFilter(RuleFilter filter) {
+        return cacheManager.getPermissionFilter(filter);
     }
 
     @Override

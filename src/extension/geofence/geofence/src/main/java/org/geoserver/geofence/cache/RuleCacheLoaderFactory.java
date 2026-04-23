@@ -30,6 +30,10 @@ public class RuleCacheLoaderFactory {
         this.realRuleReaderService = realRuleReaderService;
     }
 
+    public RuleReaderService getRealRuleReaderService() {
+        return realRuleReaderService;
+    }
+
     public RuleLoader createRuleLoader() {
         return new RuleLoader();
     }

@@ -17,6 +17,7 @@ import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
 import org.geoserver.geofence.containers.ContainerLimitResolver;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.AuthUser;
+import org.geoserver.geofence.services.dto.PermsResult;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
 
@@ -165,6 +166,10 @@ public class CacheManager {
             getContainerCache() {
         logStats();
         return contCache;
+    }
+
+    public PermsResult getPermissionFilter(RuleFilter filter) {
+        return ruleServiceLoaderFactory.getRealRuleReaderService().getPermissionFilter(filter);
     }
 
     @Override

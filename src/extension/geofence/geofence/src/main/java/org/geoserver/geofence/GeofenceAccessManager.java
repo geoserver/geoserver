@@ -29,7 +29,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -46,9 +45,11 @@ import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.CatalogModeDTO;
+import org.geoserver.geofence.services.dto.PermsResult;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.geofence.util.AccessInfoUtils;
 import org.geoserver.geofence.util.GeomHelper;
+import org.geoserver.geofence.util.PermissionCatalogFilterHelper;
 import org.geoserver.geofence.wpscommon.WPSHelper;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
@@ -970,7 +971,36 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
     @Override
     public Filter getSecurityFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
-        return Predicates.acceptAll();
+        // Admin users can access everything
+        if (user != null && !(user instanceof AnonymousAuthenticationToken) && isAdmin(user)) {
+            return Filter.INCLUDE;
+        }
+
+        RuleFilter ruleFilter = buildPermissionRuleFilter(user);
+        PermsResult permsResult = rulesService.getPermissionFilter(ruleFilter);
+        if (permsResult == null) {
+            LOGGER.log(Level.SEVERE, "GeoFence returned null PermsResult for filter {0}, denying access", ruleFilter);
+            return Filter.EXCLUDE;
+        }
+        return new PermissionCatalogFilterHelper().buildCatalogFilter(permsResult, clazz);
+    }
+
+    /**
+     * Builds the {@link RuleFilter} to be used with {@link RuleReaderService#getPermissionFilter}.
+     *
+     * <p>All catalog-scoping fields (service/request/workspace/layer/subfield) are set to ANY so that the call acts as
+     * a discovery query. User, role, source address, and date are populated from the current authentication context.
+     */
+    private RuleFilter buildPermissionRuleFilter(Authentication user) {
+        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
+        ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
+        setRuleFilterUserAndRole(user, ruleFilter);
+        String sourceAddress = retrieveCallerIpAddress();
+        if (sourceAddress != null) {
+            ruleFilter.setSourceAddress(sourceAddress);
+        }
+        ruleFilter.setDate(DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
+        return ruleFilter;
     }
 
     @Override

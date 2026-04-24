@@ -55,11 +55,11 @@
         <property name="locations">
             <list>
                 <!-- Default values for an embedded file-based H2 db -->
-                <value>classpath*:geofence-default-override.properties</value>
+                <!--<value>classpath*:geofence-default-override.properties</value>-->
                 <!-- Optional overriding values for custom db. Path relative to data dir -->
                 <value>file:geofence/geofence-datasource-ovr.properties</value>
                 <!-- Optional, use this property if you want to keep your ovr file in a different location than the data dir -->
-                <value>${geofence-ovr}</value>
+                <!--<value>${geofence-ovr}</value>-->
             </list>
         </property>
         <property name="properties">

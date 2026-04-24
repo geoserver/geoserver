@@ -16,7 +16,7 @@ import static org.geoserver.gwc.web.layer.CachedLayerProvider.TYPE;
 
 import java.io.Serial;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -213,6 +213,42 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         return link;
     }
 
+    // Simple container for label+url pairs computed for preview links. Kept
+    // static and free of Wicket classes so it can be reused from tests/tools.
+    public record PreviewTarget(String label, String url) {}
+
+    /**
+     * Compute the preview targets (label + url) for a given layer and base URL. This method is static and does not
+     * construct any Wicket components so it can be reused in other contexts (tests, utilities).
+     */
+    public static List<PreviewTarget> computePreviewTargets(TileLayer layer, String baseURL) {
+        List<PreviewTarget> targets = new ArrayList<>();
+        if (layer == null) return targets;
+
+        final Set<String> gridSubsets = new TreeSet<>(layer.getGridSubsets());
+        final List<MimeType> mimeTypes = new ArrayList<>(layer.getMimeTypes());
+        mimeTypes.sort(Comparator.comparing(MimeType::getFormat));
+
+        // make the URL workspace-based (in case global services are turned off)
+        String workspaceName = "";
+        if (layer.getName().contains(":")) {
+            workspaceName = layer.getName().substring(0, layer.getName().indexOf(":")) + "/";
+        }
+        final String demoURL =
+                ResponseUtils.buildURL(baseURL + workspaceName, "gwc/demo/" + layer.getName(), null, URLType.EXTERNAL)
+                        + "?gridSet=";
+
+        for (String gridSetId : gridSubsets) {
+            for (MimeType mimeType : mimeTypes) {
+                String label = gridSetId + " / " + mimeType.getFileExtension();
+                String value = demoURL + gridSetId + "&format=" + mimeType.getFormat();
+                targets.add(new PreviewTarget(label, value));
+            }
+        }
+
+        return targets;
+    }
+
     private Component actionsLinks(String id, IModel<TileLayer> tileLayerNameModel) {
         final String name = tileLayerNameModel.getObject().getName();
         final String baseURL = ResponseUtils.baseURL(getGeoServerApplication().servletRequest());
@@ -297,14 +333,10 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     }
 
     private Component previewLinks(String id, IModel<TileLayer> tileLayerModel) {
-
         final TileLayer layer = tileLayerModel.getObject();
         if (!layer.isEnabled()) {
             return new Label(id, new ResourceModel("previewDisabled"));
         }
-        final Set<String> gridSubsets = new TreeSet<>(layer.getGridSubsets());
-        final List<MimeType> mimeTypes = new ArrayList<>(layer.getMimeTypes());
-        Collections.sort(mimeTypes, (o1, o2) -> o1.getFormat().compareTo(o2.getFormat()));
 
         Fragment f = new Fragment(id, "menuFragment", this);
 
@@ -312,31 +344,17 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
         RepeatingView previewLinks = new RepeatingView("previewLink");
 
-        // build the wms request, redirect to it in a new window, reset the selection
+        // build the wms request base and compute targets using the static helper
         final String baseURL = ResponseUtils.baseURL(getGeoServerApplication().servletRequest());
-        // Since we're working with an absolute URL, build the URL this way to ensure proxy
-        // mangling is applied.
-
-        // make the URL workspace-based (in case global services are turned off)
-        String workspaceName = "";
-        if (layer.getName().contains(":")) {
-            workspaceName = layer.getName().substring(0, layer.getName().indexOf(":")) + "/";
-        }
-        final String demoURL =
-                ResponseUtils.buildURL(baseURL + workspaceName, "gwc/demo/" + layer.getName(), null, URLType.EXTERNAL)
-                        + "?gridSet=";
+        List<PreviewTarget> targets = computePreviewTargets(layer, baseURL);
 
         int i = 0;
-        for (String gridSetId : gridSubsets) {
-            for (MimeType mimeType : mimeTypes) {
-                String label = gridSetId + " / " + mimeType.getFileExtension();
-                // build option with text and value
-                Label format = new Label(String.valueOf(i++), label);
-                String value = demoURL + gridSetId + "&format=" + mimeType.getFormat();
-                format.add(new AttributeModifier("value", new Model<>(value)));
-                previewLinks.add(format);
-            }
+        for (PreviewTarget target : targets) {
+            Label format = new Label(String.valueOf(i++), target.label);
+            format.add(new AttributeModifier("value", new Model<>(target.url)));
+            previewLinks.add(format);
         }
+
         menu.add(previewLinks);
 
         f.add(menu);

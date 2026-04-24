@@ -39,6 +39,7 @@ public class CacheManager {
     private ContainerAccessCacheLoaderFactory containerAccessCacheLoaderFactory;
 
     private LoadingCache<RuleFilter, AccessInfo> ruleCache;
+    private LoadingCache<RuleFilter, PermsResult> permCache;
     private LoadingCache<NamePw, AuthUser> userCache;
     private LoadingCache<RuleFilter, AccessInfo> authCache;
     private LoadingCache<ContainerAccessCacheLoaderFactory.ResolveParams, ContainerLimitResolver.ProcessingResult>
@@ -90,6 +91,7 @@ public class CacheManager {
         cacheConfiguration = configurationManager.getCacheConfiguration();
 
         ruleCache = getCacheBuilder().build(ruleServiceLoaderFactory.createRuleLoader());
+        permCache = getCacheBuilder().build(ruleServiceLoaderFactory.createPermLoader());
         userCache = getCacheBuilder().build(ruleServiceLoaderFactory.createUserLoader());
         authCache = getCacheBuilder().build(ruleServiceLoaderFactory.createAuthLoader());
         contCache = getCacheBuilder().build(containerAccessCacheLoaderFactory.createProcessingResultLoader());
@@ -119,6 +121,7 @@ public class CacheManager {
     public void invalidateAll() {
         if (LOGGER.isLoggable(Level.WARNING)) LOGGER.log(Level.WARNING, "Forcing cache invalidation");
         ruleCache.invalidateAll();
+        permCache.invalidateAll();
         userCache.invalidateAll();
         authCache.invalidateAll();
         contCache.invalidateAll();
@@ -131,6 +134,7 @@ public class CacheManager {
         if (LOGGER.isLoggable(Level.INFO))
             if (dumpCnt.incrementAndGet() % 10 == 0) {
                 LOGGER.info("Rules  :" + ruleCache.stats());
+                LOGGER.info("Perms  :" + permCache.stats());
                 LOGGER.info("Users  :" + userCache.stats());
                 LOGGER.info("Auth   :" + authCache.stats());
                 LOGGER.info("Cont   :" + contCache.stats());
@@ -148,6 +152,12 @@ public class CacheManager {
         if (ruleCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
         logStats();
         return ruleCache;
+    }
+
+    public LoadingCache<RuleFilter, PermsResult> getPermCache() {
+        if (permCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
+        logStats();
+        return permCache;
     }
 
     public LoadingCache<NamePw, AuthUser> getUserCache() {
@@ -168,16 +178,14 @@ public class CacheManager {
         return contCache;
     }
 
-    public PermsResult getPermissionFilter(RuleFilter filter) {
-        return ruleServiceLoaderFactory.getRealRuleReaderService().getPermissionFilter(filter);
-    }
-
     @Override
     public String toString() {
         return getClass().getSimpleName()
                 + "["
                 + "Rule:"
                 + ruleCache.stats()
+                + " Perm:"
+                + permCache.stats()
                 + " User:"
                 + userCache.stats()
                 + " Auth:"

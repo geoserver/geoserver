@@ -206,6 +206,14 @@ public class GeofencePage extends GeoServerSecuredPage {
     private static final String KEY_RULE_LOADTIME = "rule.loadtime";
     private static final String KEY_RULE_EVICTION = "rule.evict";
 
+    private static final String KEY_PERM_SIZE = "perm.size";
+    private static final String KEY_PERM_HIT = "perm.hit";
+    private static final String KEY_PERM_MISS = "perm.miss";
+    private static final String KEY_PERM_LOADOK = "perm.loadok";
+    private static final String KEY_PERM_LOADKO = "perm.loadko";
+    private static final String KEY_PERM_LOADTIME = "perm.loadtime";
+    private static final String KEY_PERM_EVICTION = "perm.evict";
+
     private static final String KEY_ADMIN_SIZE = "admin.size";
     private static final String KEY_ADMIN_HIT = "admin.hit";
     private static final String KEY_ADMIN_MISS = "admin.miss";
@@ -240,6 +248,15 @@ public class GeofencePage extends GeoServerSecuredPage {
         statsValues.put(KEY_RULE_LOADKO, "" + cache.stats().loadExceptionCount());
         statsValues.put(KEY_RULE_LOADTIME, "" + cache.stats().totalLoadTime());
         statsValues.put(KEY_RULE_EVICTION, "" + cache.stats().evictionCount());
+
+        cache = cacheManager.getPermCache();
+        statsValues.put(KEY_PERM_SIZE, "" + cache.size());
+        statsValues.put(KEY_PERM_HIT, "" + cache.stats().hitCount());
+        statsValues.put(KEY_PERM_MISS, "" + cache.stats().missCount());
+        statsValues.put(KEY_PERM_LOADOK, "" + cache.stats().loadSuccessCount());
+        statsValues.put(KEY_PERM_LOADKO, "" + cache.stats().loadExceptionCount());
+        statsValues.put(KEY_PERM_LOADTIME, "" + cache.stats().totalLoadTime());
+        statsValues.put(KEY_PERM_EVICTION, "" + cache.stats().evictionCount());
 
         cache = cacheManager.getAuthCache();
         statsValues.put(KEY_ADMIN_SIZE, "" + cache.size());

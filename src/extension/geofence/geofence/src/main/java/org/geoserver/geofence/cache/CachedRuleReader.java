@@ -40,15 +40,22 @@ public class CachedRuleReader implements RuleReaderService {
 
     @Override
     public AccessInfo getAccessInfo(RuleFilter filter) {
-        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Request for {0}", filter);
-
-        AccessInfo accessInfo = null;
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Access request for {0}", filter);
         try {
-            accessInfo = cacheManager.getRuleCache().get(filter);
+            return cacheManager.getRuleCache().get(filter);
         } catch (ExecutionException ex) {
             throw new RuntimeException(ex); // fixme: handle me
         }
-        return accessInfo;
+    }
+
+    @Override
+    public PermsResult getPermissionFilter(RuleFilter filter) {
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Perms request for {0}", filter);
+        try {
+            return cacheManager.getPermCache().get(filter);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException(ex); // fixme: handle me
+        }
     }
 
     @Override
@@ -68,11 +75,6 @@ public class CachedRuleReader implements RuleReaderService {
     @Override
     public List<ShortRule> getMatchingRules(RuleFilter filter) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public PermsResult getPermissionFilter(RuleFilter filter) {
-        return cacheManager.getPermissionFilter(filter);
     }
 
     @Override

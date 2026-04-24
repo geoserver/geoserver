@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -64,6 +65,8 @@ public class PermissionCatalogFilterHelper {
      */
     public Filter buildCatalogFilter(PermsResult permsResult, Class<? extends CatalogInfo> clazz) {
 
+        LOGGER.log(Level.FINER, "Building GeoFence security pre-filter for {0}", clazz.getName());
+
         // StyleInfo is not subject to workspace/layer rules in GeoFence
         if (StyleInfo.class.isAssignableFrom(clazz)) {
             return Filter.INCLUDE;
@@ -83,6 +86,8 @@ public class PermissionCatalogFilterHelper {
             wsProp = "workspace.name";
         } else if (ResourceInfo.class.isAssignableFrom(clazz)) {
             wsProp = "store.workspace.name";
+        } else if (PublishedInfo.class.isAssignableFrom(clazz)) {
+            wsProp = "resource.store.workspace.name";
         } else {
             LOGGER.log(Level.WARNING, "Unhandled catalog type for GeoFence security pre-filter: {0}", clazz.getName());
             return Filter.EXCLUDE;

@@ -1814,6 +1814,15 @@ form a.collapsed {
   justify-content: flex-start;
 }
 
+#header #nodeIdContainer.default-node-info {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--gs-border-radius);
+  padding: 0.5em;
+  font-size: 0.875em;
+  line-height: 1;
+}
+
 /* Context indicator shown next to nav items when scoped to a context (workspace, layer, group) */
 .gs-ctx-indicator {
   display: inline-flex;

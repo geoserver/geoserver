@@ -6,6 +6,7 @@
 package org.geoserver.flow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -20,7 +21,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.geoserver.flow.controller.BasicOWSController;
 import org.geoserver.flow.controller.SimpleThreadBlocker;
 import org.geoserver.ows.HttpErrorCodeException;
@@ -240,6 +248,133 @@ public class ControlFlowCallbackTest {
         assertEquals(0, callback.getRunningRequests());
         assertEquals(0, callback.getBlockedRequests());
         assertEquals(0, controller.getRequestsInQueue());
+    }
+
+    /**
+     * A peer thread holds the only BasicOWSController slot past the configured timeout; a second request then times out
+     * on the queue. The stuck-slot watchdog must emit a WARN naming the peer thread, the peer's {@link Request} and a
+     * {@code top frame:} string.
+     */
+    @Test
+    public void testStuckSlotWatchdogLogsPeerOnQueueTimeout() throws Exception {
+        final ControlFlowCallback callback = new ControlFlowCallback();
+        TestingConfigurator tc = new TestingConfigurator();
+        tc.timeout = 200;
+        BasicOWSController controller = new BasicOWSController("WMS", 1, new SimpleThreadBlocker(1));
+        tc.controllers.add(controller);
+        callback.provider = new DefaultFlowControllerProvider(tc);
+
+        CapturingHandler handler = new CapturingHandler();
+        Logger logger = ControlFlowCallback.LOGGER;
+        Level previous = logger.getLevel();
+        logger.setLevel(Level.ALL);
+        logger.addHandler(handler);
+
+        CountDownLatch enteredRunning = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        Request peerRequest = new Request();
+        peerRequest.setService("WMS");
+        Thread peer = new Thread(
+                () -> {
+                    callback.operationDispatched(peerRequest, null);
+                    enteredRunning.countDown();
+                    try {
+                        release.await();
+                    } catch (InterruptedException ignored) {
+                        Thread.currentThread().interrupt();
+                    }
+                    callback.finished(peerRequest);
+                },
+                "stuck-slot-peer");
+        peer.setDaemon(true);
+        peer.start();
+
+        try {
+            assertTrue("peer thread failed to acquire slot", enteredRunning.await(5, TimeUnit.SECONDS));
+            // give the peer a cushion so its held time is clearly past the timeout when the watchdog fires
+            Thread.sleep(tc.timeout + 100);
+
+            Request mainRequest = new Request();
+            mainRequest.setService("WMS");
+            try {
+                callback.operationDispatched(mainRequest, null);
+                fail("HTTP 503 expected");
+            } catch (HttpErrorCodeException e) {
+                assertEquals(503, e.getErrorCode());
+            }
+
+            List<LogRecord> warns = handler.recordsAt(Level.WARNING);
+            assertFalse("expected a watchdog WARN record", warns.isEmpty());
+            LogRecord warn = warns.get(0);
+            String message = warn.getMessage();
+            assertTrue(message, message.contains("peer thread stuck-slot-peer"));
+            assertTrue(message, message.contains("holding a slot for"));
+            assertTrue(message, message.contains("top frame:"));
+        } finally {
+            release.countDown();
+            peer.join(5000);
+            callback.finished(null);
+            logger.removeHandler(handler);
+            logger.setLevel(previous);
+            ControlFlowCallback.ACTIVE_RUNNING.clear();
+        }
+    }
+
+    /**
+     * Single request holds its slot past the configured timeout, then releases normally. The release path must emit a
+     * WARN naming the hold duration and referencing the configured timeout.
+     */
+    @Test
+    public void testHeldSlotWarnsOnSlowRelease() throws Exception {
+        ControlFlowCallback callback = new ControlFlowCallback();
+        TestingConfigurator tc = new TestingConfigurator();
+        tc.timeout = 100;
+        BasicOWSController controller = new BasicOWSController("WMS", 1, new SimpleThreadBlocker(1));
+        tc.controllers.add(controller);
+        callback.provider = new DefaultFlowControllerProvider(tc);
+
+        CapturingHandler handler = new CapturingHandler();
+        Logger logger = ControlFlowCallback.LOGGER;
+        Level previous = logger.getLevel();
+        logger.setLevel(Level.ALL);
+        logger.addHandler(handler);
+
+        try {
+            Request request = new Request();
+            request.setService("WMS");
+            callback.operationDispatched(request, null);
+            Thread.sleep(tc.timeout + 100);
+            callback.finished(request);
+
+            boolean matched = handler.recordsAt(Level.WARNING).stream()
+                    .map(LogRecord::getMessage)
+                    .anyMatch(m -> m.contains("held flow-controller slot for") && m.contains("over the configured"));
+            assertTrue("expected a release-path watchdog WARN", matched);
+        } finally {
+            logger.removeHandler(handler);
+            logger.setLevel(previous);
+            ControlFlowCallback.ACTIVE_RUNNING.clear();
+        }
+    }
+
+    /** Minimal JUL {@link Handler} that records every published record for later inspection. */
+    private static final class CapturingHandler extends Handler {
+        private final List<LogRecord> records = new CopyOnWriteArrayList<>();
+
+        @Override
+        public void publish(LogRecord record) {
+            records.add(record);
+        }
+
+        @Override
+        public void flush() {}
+
+        @Override
+        public void close() {}
+
+        List<LogRecord> recordsAt(Level level) {
+            return records.stream().filter(r -> r.getLevel() == level).toList();
+        }
     }
 
     /** A wide open configurator to be used for testing */

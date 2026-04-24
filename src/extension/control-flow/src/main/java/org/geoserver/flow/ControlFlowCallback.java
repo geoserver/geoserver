@@ -12,6 +12,8 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,6 +65,19 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
 
         int nestingLevel = 1;
 
+        /**
+         * Wall-clock time the owning thread became a "running" request (i.e. finished acquiring controllers). Used by
+         * the stuck-slot watchdog to report how long a flow-controller slot has been held when a peer request times out
+         * waiting for one. Zero until controllers are acquired; stable thereafter.
+         */
+        long runningStartMs;
+
+        /**
+         * Thread that owns this context; captured so {@link #ACTIVE_RUNNING} entries can dump the owner's top stack
+         * frame.
+         */
+        Thread owner;
+
         public CallbackContext(Request request, List<FlowController> controllers, long timeout) {
             this.controllers = controllers;
             this.timeout = timeout;
@@ -73,6 +88,14 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
     static ThreadLocal<CallbackContext> REQUEST_CONTROLLERS = new ThreadLocal<>();
 
     static ThreadLocal<Boolean> FAILED_ON_FLOW_CONTROLLERS = new ThreadLocal<>();
+
+    /**
+     * Live view of all requests currently holding flow-controller slots, keyed by the thread id of the owner. Populated
+     * once a request successfully acquires every controller and cleared on release. Used only for observability - the
+     * stuck-slot watchdog walks it when a peer request times out on a queue wait, so operators get a log line naming
+     * the thread and its top frame instead of only the generic HTTP 503.
+     */
+    static final Map<Long, CallbackContext> ACTIVE_RUNNING = new ConcurrentHashMap<>();
 
     FlowControllerProvider provider;
 
@@ -149,6 +172,9 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                     if (timeout > 0) {
                         long maxWait = maxTime - System.currentTimeMillis();
                         if (!controller.requestIncoming(requestWithOperation, maxWait)) {
+                            // Before giving up and returning 503, surface who's still holding the slots - the
+                            // queue-wait timeout itself says nothing about whether the held slots are busy or stuck.
+                            logStuckRunningRequests(controller, requestWithOperation, timeout);
                             throw new HttpErrorCodeException(
                                     503,
                                     "Requested timeout out while waiting to be executed, please lower your request rate");
@@ -161,6 +187,9 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                         LOGGER.fine(getControllerExitMessage(controller, requestWithOperation));
                     }
                 }
+                context.runningStartMs = System.currentTimeMillis();
+                context.owner = Thread.currentThread();
+                ACTIVE_RUNNING.put(context.owner.getId(), context);
             }
             failedOnFlowControllers = false;
         } finally {
@@ -203,6 +232,32 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
             message += "/" + requests;
         }
         return message;
+    }
+
+    /**
+     * Called when a request is about to return HTTP 503 because it could not acquire {@code blockedOn} within the
+     * configured timeout. Walks the live view of currently-running requests and emits one WARN line per peer that has
+     * been holding its slot for longer than the timeout. Each line includes the top stack frame of the owner thread so
+     * operators can tell queue-wait timeouts (harmless, benchmarking) apart from stuck-slot timeouts (the peer is stuck
+     * in the I/O layer, the datastore, rendering, etc.) without needing a separate jstack.
+     */
+    private static void logStuckRunningRequests(FlowController blockedOn, Request timedOutRequest, long timeout) {
+        if (!LOGGER.isLoggable(Level.WARNING) || ACTIVE_RUNNING.isEmpty()) {
+            return;
+        }
+        final long now = System.currentTimeMillis();
+        for (CallbackContext peer : ACTIVE_RUNNING.values()) {
+            boolean hasRun = peer.runningStartMs > 0 && peer.owner != null;
+            long heldMs = hasRun ? (now - peer.runningStartMs) : -1L;
+            if (hasRun && heldMs > timeout) {
+                StackTraceElement[] stack = peer.owner.getStackTrace();
+                String top = stack.length > 0 ? stack[0].toString() : "<thread exited>";
+                LOGGER.warning(
+                        "Request [%s] timed out waiting on %s; peer thread %s has been holding a slot for %dms running [%s] - top frame: %s"
+                                .formatted(
+                                        timedOutRequest, blockedOn, peer.owner.getName(), heldMs, peer.request, top));
+            }
+        }
     }
 
     @Override
@@ -280,6 +335,19 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                 if (context.nestingLevel <= 0 || forceRelease) {
                     if (Boolean.FALSE.equals(FAILED_ON_FLOW_CONTROLLERS.get())) {
                         runningRequests.decrementAndGet();
+                    }
+                    // Drop from the live-running map before we run requestComplete, so a concurrent
+                    // watchdog pass does not report a slot that is now being actively released.
+                    if (context.owner != null) {
+                        ACTIVE_RUNNING.remove(context.owner.getId(), context);
+                        if (context.timeout > 0 && context.runningStartMs > 0) {
+                            long heldMs = System.currentTimeMillis() - context.runningStartMs;
+                            if (heldMs > context.timeout) {
+                                LOGGER.warning("Request [" + context.request + "] held flow-controller slot for "
+                                        + heldMs + "ms, over the configured " + context.timeout + "ms timeout; "
+                                        + "peer requests may have returned HTTP 503 while waiting for this one.");
+                            }
+                        }
                     }
                     // call back the same controllers we used when the operation started, releasing
                     // them in inverse order

@@ -48,6 +48,7 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.PreviewLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -213,16 +214,12 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         return link;
     }
 
-    // Simple container for label+url pairs computed for preview links. Kept
-    // static and free of Wicket classes so it can be reused from tests/tools.
-    public record PreviewTarget(String label, String url) {}
-
     /**
      * Compute the preview targets (label + url) for a given layer and base URL. This method is static and does not
      * construct any Wicket components so it can be reused in other contexts (tests, utilities).
      */
-    public static List<PreviewTarget> computePreviewTargets(TileLayer layer, String baseURL) {
-        List<PreviewTarget> targets = new ArrayList<>();
+    public static List<PreviewLink> computePreviewTargets(TileLayer layer, String baseURL) {
+        List<PreviewLink> targets = new ArrayList<>();
         if (layer == null) return targets;
 
         final Set<String> gridSubsets = new TreeSet<>(layer.getGridSubsets());
@@ -240,9 +237,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
         for (String gridSetId : gridSubsets) {
             for (MimeType mimeType : mimeTypes) {
-                String label = gridSetId + " / " + mimeType.getFileExtension();
+                String label = gridSetId + "/" + mimeType.getFileExtension();
                 String value = demoURL + gridSetId + "&format=" + mimeType.getFormat();
-                targets.add(new PreviewTarget(label, value));
+                targets.add(new PreviewLink(label, value, label));
             }
         }
 
@@ -346,12 +343,12 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
         // build the wms request base and compute targets using the static helper
         final String baseURL = ResponseUtils.baseURL(getGeoServerApplication().servletRequest());
-        List<PreviewTarget> targets = computePreviewTargets(layer, baseURL);
+        List<PreviewLink> targets = computePreviewTargets(layer, baseURL);
 
         int i = 0;
-        for (PreviewTarget target : targets) {
-            Label format = new Label(String.valueOf(i++), target.label);
-            format.add(new AttributeModifier("value", new Model<>(target.url)));
+        for (PreviewLink target : targets) {
+            Label format = new Label(String.valueOf(i++), target.label());
+            format.add(new AttributeModifier("value", new Model<>(target.href())));
             previewLinks.add(format);
         }
 

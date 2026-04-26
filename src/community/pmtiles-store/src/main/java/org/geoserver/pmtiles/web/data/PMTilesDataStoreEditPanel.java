@@ -9,8 +9,10 @@ import static org.geotools.tileverse.rangereader.RangeReaderParams.MEMORY_CACHE_
 import static org.geotools.tileverse.rangereader.RangeReaderParams.RANGEREADER_PROVIDER_ID;
 import static org.geotools.tileverse.rangereader.RangeReaderParams.S3_AWS_REGION;
 
+import io.tileverse.rangereader.spi.RangeReaderConfig;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,9 +74,19 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
 
     @Override
     protected void onBeforeRender() {
-        super.onBeforeRender();
         DataStoreInfo storeInfo = (DataStoreInfo) super.storeEditForm.getModelObject();
-        String providerId = (String) storeInfo.getConnectionParameters().get(RANGEREADER_PROVIDER_ID.key);
+        Map<String, Serializable> params = storeInfo.getConnectionParameters();
+        // Translate forward-compatible storage.* keys (canonical in tileverse 2.x) to the canonical
+        // io.tileverse.rangereader.* form in place so Wicket MapModel widgets, which are bound to the
+        // factory's canonical Param.key, populate correctly for stores persisted by a future
+        // GeoServer 3.1+/tileverse 2.0 consumer.
+        Map<String, Serializable> rewritten = new LinkedHashMap<>(params.size());
+        params.forEach((k, v) -> rewritten.put(RangeReaderConfig.normalizeKey(k), v));
+        params.clear();
+        params.putAll(rewritten);
+
+        super.onBeforeRender();
+        String providerId = (String) params.get(RANGEREADER_PROVIDER_ID.key);
         sendEvent(new RangeReaderChangedEvent(providerId, null));
     }
 

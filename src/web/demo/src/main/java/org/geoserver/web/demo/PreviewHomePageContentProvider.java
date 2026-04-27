@@ -10,16 +10,21 @@ import static org.geoserver.web.util.WebUtils.toResourceName;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -28,6 +33,7 @@ import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerHomePageContentProvider;
 import org.geoserver.web.HomePagePreviewSectionProvider;
 import org.geoserver.web.PreviewLink;
+import org.geoserver.web.PreviewSectionLayout;
 
 /** Contributes preview section to GeoServer Home page. */
 public class PreviewHomePageContentProvider implements GeoServerHomePageContentProvider {
@@ -54,6 +60,8 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
      */
     static class PreviewPanel extends Panel {
         private static final boolean IS_CSS_EMPTY = IsWicketCssFileEmpty(PreviewPanel.class);
+        private static final JavaScriptResourceReference JS =
+                new JavaScriptResourceReference(PreviewPanel.class, "PreviewHomePageContentProvider.js");
 
         PreviewPanel(String id) {
             super(id);
@@ -67,6 +75,7 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                 response.render(CssHeaderItem.forReference(
                         new PackageResourceReference(getClass(), toResourceName(getClass(), "css"))));
             }
+            response.render(JavaScriptReferenceHeaderItem.forReference(JS));
         }
 
         private Component sections(String id) {
@@ -87,7 +96,9 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                     for (HomePagePreviewSectionProvider provider : providers) {
                         if (!provider.supports(published)) continue;
                         List<PreviewLink> links = provider.getLinks(published);
-                        if (links != null && !links.isEmpty()) result.add(new Section(provider.getTitleKey(), links));
+                        if (links != null && !links.isEmpty()) {
+                            result.add(new Section(provider.getTitleKey(), provider.getLayout(), links));
+                        }
                     }
                     sections.setVisible(!result.isEmpty());
                     return result;
@@ -100,19 +111,36 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                     Section section = item.getModelObject();
                     item.add(
                             new Label("sectionTitle", getLocalizer().getString(section.titleKey(), PreviewPanel.this)));
-                    item.add(new ListView<>("previewLink", section.links()) {
-                        @Override
-                        protected void populateItem(ListItem<PreviewLink> item) {
-                            PreviewLink link = item.getModelObject();
-                            item.add(new ExternalLink("theLink", link.href(), link.label()));
-                        }
-                    });
+                    item.add(
+                            new ListView<>("previewLink", section.links()) {
+                                @Override
+                                protected void populateItem(ListItem<PreviewLink> item) {
+                                    PreviewLink link = item.getModelObject();
+                                    item.add(new ExternalLink("theLink", link.href(), link.label()));
+                                }
+                            }.setVisible(section.layout() == PreviewSectionLayout.LINKS));
+                    item.add(dropdown("dropdown", section));
                 }
             });
             return sections;
         }
+
+        private Component dropdown(String id, Section section) {
+            WebMarkupContainer dropdown = new WebMarkupContainer(id);
+            dropdown.setVisible(section.layout() == PreviewSectionLayout.DROPDOWN);
+            dropdown.add(AttributeModifier.append("class", "preview-home-page-menu-select"));
+            RepeatingView options = new RepeatingView("option");
+            int i = 0;
+            for (PreviewLink link : section.links()) {
+                Label option = new Label(String.valueOf(i++), link.label());
+                option.add(AttributeModifier.replace("value", Model.of(link.href())));
+                options.add(option);
+            }
+            dropdown.add(options);
+            return dropdown;
+        }
     }
 
     /** Section title key and links to render. */
-    record Section(String titleKey, List<PreviewLink> links) {}
+    record Section(String titleKey, PreviewSectionLayout layout, List<PreviewLink> links) {}
 }

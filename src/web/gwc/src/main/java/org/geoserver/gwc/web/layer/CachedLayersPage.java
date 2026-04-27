@@ -237,7 +237,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
         for (String gridSetId : gridSubsets) {
             for (MimeType mimeType : mimeTypes) {
-                String label = gridSetId + "/" + mimeType.getFileExtension();
+                String label = gridSetId + " / " + mimeType.getFileExtension();
                 String value = demoURL + gridSetId + "&format=" + mimeType.getFormat();
                 targets.add(new PreviewLink(label, value, label));
             }

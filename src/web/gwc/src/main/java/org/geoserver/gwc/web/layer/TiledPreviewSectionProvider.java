@@ -12,6 +12,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.HomePagePreviewSectionProvider;
 import org.geoserver.web.PreviewLink;
+import org.geoserver.web.PreviewSectionLayout;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.layer.TileLayer;
 
@@ -44,5 +45,10 @@ public class TiledPreviewSectionProvider implements HomePagePreviewSectionProvid
     @Override
     public int getOrder() {
         return 40;
+    }
+
+    @Override
+    public PreviewSectionLayout getLayout() {
+        return PreviewSectionLayout.DROPDOWN;
     }
 }

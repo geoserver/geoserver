@@ -7,10 +7,16 @@
         <div class="gs-form" wicket:id="sections">
             <div wicket:id="section" class="gs-form-group">
                 <label wicket:id="sectionTitle">Section</label>
-                <div class="linkBlock">
-                    <span wicket:id="previewLink">
+                <div class="linkBlock" wicket:id="previewLink">
+                    <span>
                         <a class="text-nowrap"  target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
                     </span>
+                </div>
+                <div class="linkBlock">
+                    <select wicket:id="dropdown" class="w-fit">
+                        <option>Select one</option>
+                        <option wicket:id="option"></option>
+                    </select>
                 </div>
             </div>
         </div>

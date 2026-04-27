@@ -11,6 +11,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.HomePagePreviewSectionProvider;
 import org.geoserver.web.PreviewLink;
+import org.geoserver.web.PreviewSectionLayout;
 
 /** Contributes the common preview links defined in the demo module. */
 public class CommonPreviewSectionProvider implements HomePagePreviewSectionProvider {
@@ -36,5 +37,10 @@ public class CommonPreviewSectionProvider implements HomePagePreviewSectionProvi
     @Override
     public int getOrder() {
         return 10;
+    }
+
+    @Override
+    public PreviewSectionLayout getLayout() {
+        return PreviewSectionLayout.LINKS;
     }
 }

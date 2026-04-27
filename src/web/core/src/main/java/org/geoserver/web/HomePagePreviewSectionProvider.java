@@ -21,6 +21,11 @@ public interface HomePagePreviewSectionProvider {
     /** Builds the links to render in the section. */
     List<PreviewLink> getLinks(PublishedInfo published);
 
+    /** Preferred layout for the section. */
+    default PreviewSectionLayout getLayout() {
+        return PreviewSectionLayout.LINKS;
+    }
+
     /** Order of the section in the preview panel. */
     default int getOrder() {
         return 0;

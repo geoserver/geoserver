@@ -19,6 +19,7 @@ import org.geoserver.security.DisabledServiceResourceFilter;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.HomePagePreviewSectionProvider;
 import org.geoserver.web.PreviewLink;
+import org.geoserver.web.PreviewSectionLayout;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geotools.wfs.v1_0.WFS;
 
@@ -61,6 +62,11 @@ public class WFSPreviewSectionProvider implements HomePagePreviewSectionProvider
     @Override
     public int getOrder() {
         return 30;
+    }
+
+    @Override
+    public PreviewSectionLayout getLayout() {
+        return PreviewSectionLayout.DROPDOWN;
     }
 
     /** Builds the base GetFeature request shared by the advertised output formats. */

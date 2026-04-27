@@ -25,8 +25,8 @@ import org.junit.Test;
 /**
  * Unit tests for {@link PermissionCatalogFilterHelper}.
  *
- * <p>Tests cover all code paths in {@link PermissionCatalogFilterHelper#buildCatalogFilter} without
- * requiring a live GeoFence service.
+ * <p>Tests cover all code paths in {@link PermissionCatalogFilterHelper#buildCatalogFilter} without requiring a live
+ * GeoFence service.
  */
 public class PermissionCatalogFilterHelperTest {
 
@@ -45,10 +45,7 @@ public class PermissionCatalogFilterHelperTest {
     public void testStyleInfoAlwaysIncluded() {
         PermsResult permsResult = emptyPermsResult();
         Filter result = helper.buildCatalogFilter(permsResult, StyleInfo.class);
-        assertEquals(
-                "StyleInfo should always return Filter.INCLUDE regardless of permsResult",
-                Filter.INCLUDE,
-                result);
+        assertEquals("StyleInfo should always return Filter.INCLUDE regardless of permsResult", Filter.INCLUDE, result);
     }
 
     // -----------------------------------------------------------------------
@@ -59,20 +56,14 @@ public class PermissionCatalogFilterHelperTest {
     public void testWorkspaceInfoEmptyResourcesExcluded() {
         PermsResult permsResult = emptyPermsResult();
         Filter result = helper.buildCatalogFilter(permsResult, WorkspaceInfo.class);
-        assertEquals(
-                "WorkspaceInfo with no accessible resources should return Filter.EXCLUDE",
-                Filter.EXCLUDE,
-                result);
+        assertEquals("WorkspaceInfo with no accessible resources should return Filter.EXCLUDE", Filter.EXCLUDE, result);
     }
 
     @Test
     public void testWorkspaceInfoGlobalWildcardIncluded() {
         PermsResult permsResult = permsResultWithResources("*:*");
         Filter result = helper.buildCatalogFilter(permsResult, WorkspaceInfo.class);
-        assertEquals(
-                "WorkspaceInfo with '*:*' grant should return Filter.INCLUDE",
-                Filter.INCLUDE,
-                result);
+        assertEquals("WorkspaceInfo with '*:*' grant should return Filter.INCLUDE", Filter.INCLUDE, result);
     }
 
     @Test
@@ -242,10 +233,7 @@ public class PermissionCatalogFilterHelperTest {
         PermsResult permsResult = cqlPermsResult("INCLUDE");
         // CatalogInfo is not handled by any branch in buildCatalogFilter
         Filter result = helper.buildCatalogFilter(permsResult, CatalogInfo.class);
-        assertEquals(
-                "Unhandled CatalogInfo subtype should return Filter.EXCLUDE",
-                Filter.EXCLUDE,
-                result);
+        assertEquals("Unhandled CatalogInfo subtype should return Filter.EXCLUDE", Filter.EXCLUDE, result);
     }
 
     // -----------------------------------------------------------------------
@@ -256,10 +244,7 @@ public class PermissionCatalogFilterHelperTest {
     public void testInvalidCqlFilterExcluded() {
         PermsResult permsResult = cqlPermsResult("THIS IS NOT VALID CQL !!!@#$");
         Filter result = helper.buildCatalogFilter(permsResult, LayerInfo.class);
-        assertEquals(
-                "An invalid CQL filter in PermsResult should produce Filter.EXCLUDE",
-                Filter.EXCLUDE,
-                result);
+        assertEquals("An invalid CQL filter in PermsResult should produce Filter.EXCLUDE", Filter.EXCLUDE, result);
     }
 
     // -----------------------------------------------------------------------
@@ -291,14 +276,16 @@ public class PermissionCatalogFilterHelperTest {
 
     private static PropertyIsEqualTo assertPropertyIsEqualTo(Filter filter) {
         if (!(filter instanceof PropertyIsEqualTo)) {
-            throw new AssertionError("Expected PropertyIsEqualTo, got: " + filter.getClass().getSimpleName());
+            throw new AssertionError(
+                    "Expected PropertyIsEqualTo, got: " + filter.getClass().getSimpleName());
         }
         return (PropertyIsEqualTo) filter;
     }
 
     private static Or assertOr(Filter filter) {
         if (!(filter instanceof Or)) {
-            throw new AssertionError("Expected Or filter, got: " + filter.getClass().getSimpleName());
+            throw new AssertionError(
+                    "Expected Or filter, got: " + filter.getClass().getSimpleName());
         }
         return (Or) filter;
     }

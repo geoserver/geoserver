@@ -26,12 +26,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
- * Tests for the {@link GeofenceAccessManager#getSecurityFilter} method added as part of
- * GEOS-12096.
+ * Tests for the {@link GeofenceAccessManager#getSecurityFilter} method added as part of GEOS-12096.
  *
- * <p>These tests verify the new GeoFence-backed catalog pre-filter behavior without requiring a
- * live GeoFence service. A controlled {@link RuleReaderService} stub is injected to supply
- * predictable {@link PermsResult} values.
+ * <p>These tests verify the GeoFence-backed catalog pre-filter behavior without requiring a live GeoFence service. A
+ * controlled {@link RuleReaderService} stub is injected to supply predictable {@link PermsResult} values.
  */
 public class GeofenceAccessManagerSecurityFilterTest extends GeofenceBaseTest {
 
@@ -225,14 +223,16 @@ public class GeofenceAccessManagerSecurityFilterTest extends GeofenceBaseTest {
 
     private static PropertyIsEqualTo assertPropertyIsEqualTo(Filter filter) {
         if (!(filter instanceof PropertyIsEqualTo)) {
-            throw new AssertionError("Expected PropertyIsEqualTo, got: " + filter.getClass().getSimpleName());
+            throw new AssertionError(
+                    "Expected PropertyIsEqualTo, got: " + filter.getClass().getSimpleName());
         }
         return (PropertyIsEqualTo) filter;
     }
 
     private static Or assertOr(Filter filter) {
         if (!(filter instanceof Or)) {
-            throw new AssertionError("Expected Or filter, got: " + filter.getClass().getSimpleName());
+            throw new AssertionError(
+                    "Expected Or filter, got: " + filter.getClass().getSimpleName());
         }
         return (Or) filter;
     }

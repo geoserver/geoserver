@@ -11,6 +11,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.StringWriter;
+import java.util.Map;
+import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -21,6 +23,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
+import org.geoserver.geofence.services.dto.PermsResult;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.geofence.utils.RuleReaderServiceAdapter;
 import org.geoserver.platform.GeoServerExtensions;
@@ -34,26 +37,30 @@ import org.w3c.dom.Document;
 
 public class GeofenceAccessManagerVirtualServiceTest extends GeoServerSystemTestSupport {
 
-    RuleReaderService CUSTOM_RULE_SERVICE;
+    RuleReaderService CUSTOM_RULE_SERVICE = new RuleReaderServiceAdapter() {
+        @Override
+        public AccessInfo getAccessInfo(RuleFilter filter) {
+            if ("WFS".equalsIgnoreCase(filter.getService().getText())
+                    && MockData.BRIDGES.getLocalPart().equals(filter.getLayer().getText()))
+                return new AccessInfo(GrantType.ALLOW);
+            if ("WMS".equalsIgnoreCase(filter.getService().getText())
+                    && MockData.BUILDINGS
+                            .getLocalPart()
+                            .equals(filter.getLayer().getText())) return new AccessInfo(GrantType.ALLOW);
+            return new AccessInfo(GrantType.DENY);
+        }
+
+        @Override
+        public PermsResult getPermissionFilter(RuleFilter filter) {
+            PermsResult ret = new PermsResult();
+            ret.addAccessibleResources(Map.of("cite", Set.of("Bridges", "Buildings")));
+            ret.setCqlFilter("workspace = 'cite' AND layer in ('Bridges', 'Buildings')");
+            return ret;
+        }
+    };
 
     @Before
-    public void setUp() {
-
-        CUSTOM_RULE_SERVICE = new RuleReaderServiceAdapter() {
-            @Override
-            public AccessInfo getAccessInfo(RuleFilter filter) {
-                if ("WFS".equalsIgnoreCase(filter.getService().getText())
-                        && MockData.BRIDGES
-                                .getLocalPart()
-                                .equals(filter.getLayer().getText())) return new AccessInfo(GrantType.ALLOW);
-                if ("WMS".equalsIgnoreCase(filter.getService().getText())
-                        && MockData.BUILDINGS
-                                .getLocalPart()
-                                .equals(filter.getLayer().getText())) return new AccessInfo(GrantType.ALLOW);
-                return new AccessInfo(GrantType.DENY);
-            }
-        };
-    }
+    public void setUp() {}
 
     MockHttpServletResponse getGetMapResponse(QName qlayer, boolean layerInContext) throws Exception {
         GeofenceAccessManager gf = GeoServerExtensions.bean(GeofenceAccessManager.class);

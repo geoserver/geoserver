@@ -977,7 +977,15 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         }
 
         RuleFilter ruleFilter = buildPermissionRuleFilter(user);
-        PermsResult permsResult = rulesService.getPermissionFilter(ruleFilter);
+
+        PermsResult permsResult;
+        try {
+            permsResult = rulesService.getPermissionFilter(ruleFilter);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving permissions, skipping access to " + ruleFilter, e);
+            return null;
+        }
+
         if (permsResult == null) {
             LOGGER.log(Level.SEVERE, "GeoFence returned null PermsResult for filter {0}, denying access", ruleFilter);
             return Filter.EXCLUDE;

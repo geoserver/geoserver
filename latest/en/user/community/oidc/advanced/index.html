@@ -21621,7 +21621,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30162,7 +30162,7 @@
 <p><strong>Step 1</strong>: GeoServer will include a <code>code_challenge</code> during initial authorization code request</p>
 </li>
 <li>
-<p><strong>Step 2</strong>: GeoServer will include a <code>code_verifer</code> during the access token request.</p>
+<p><strong>Step 2</strong>: GeoServer will include a <code>code_verifier</code> during the access token request.</p>
 </li>
 </ul>
 <p>The authentication server will confirm that <code>code_verifier</code> hash matches the initial <code>code_challenge</code> in order the confirm the client is the same as in <strong>Step 1</strong>.</p>
@@ -30198,7 +30198,7 @@
 <p>In a scenario where bearer encrypted tokens are used, in encrypted form, and with roles extraction from the userinfo endpoint, a WMS client sending tokens for each request will trigger the following requests to the OIDC server:</p>
 <ul>
 <li>The bearer token is used against the <code>token</code> endpoint for username extraction</li>
-<li>Then it's used against the <code>instrospection</code> endpoint for validation (which also contains the exp attribute, see later)</li>
+<li>Then it's used against the <code>introspection</code> endpoint for validation (which also contains the exp attribute, see later)</li>
 <li>It's finally used against the <code>userinfo</code> to extract the roles</li>
 </ul>
 <p>With clients performing many small tiled requests, the traffic to the OIDC server may becomes excessive.</p>

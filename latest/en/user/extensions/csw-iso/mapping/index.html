@@ -21692,7 +21692,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -29882,8 +29882,8 @@
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>identificationInfo.MD_DataIdentification.citation.CI_Citation.date%.CI_Date.date.Date=lapply(&quot;metadata.citation-date&quot;, if_then_else(isNull(&quot;.&quot;), &quot;Expression/NIL&quot;, dateFormat(&#39;YYYY-MM-dd&#39;, &quot;.&quot;)))
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>identificationInfo.MD_DataIdentification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=list(keywords, if_then_else(equalTo(typeOf(&quot;.&quot;), &#39;FeatureTypeInfo&#39;), &#39;vector&#39;, &#39;raster&#39;))
 </code></pre></div>
-<p>The full path of each field must be specified (separated with dots). XML attributes are specified with the <code>@</code> symbol, similar to the usual XML X-path notation. To avoid confusion with the identifier-symbol at the beginning of a mapping line, use <code>@</code> (for an attribute that is not an identifier) or <code>@@</code> (for an attribute that is also the identifier) - see the feature catatalog mapping file for an example.</p>
-<p>The <code>%</code> symbol denotes where a multi-valued mapping should be split in to multiple tags. Multiple <code>%</code> symbols may be used for multi-dimensional mappings - see the feature catatalog mapping file below for an example.</p>
+<p>The full path of each field must be specified (separated with dots). XML attributes are specified with the <code>@</code> symbol, similar to the usual XML X-path notation. To avoid confusion with the identifier-symbol at the beginning of a mapping line, use <code>@</code> (for an attribute that is not an identifier) or <code>@@</code> (for an attribute that is also the identifier) - see the feature catalog mapping file for an example.</p>
+<p>The <code>%</code> symbol denotes where a multi-valued mapping should be split in to multiple tags. Multiple <code>%</code> symbols may be used for multi-dimensional mappings - see the feature catalog mapping file below for an example.</p>
 <p>Indexes with square brackets can be used to avoid merging tags that shouldn't be merged, as demonstrated above for <code>resourceConstraints</code>.</p>
 <p>To keep the result XSD compliant, the parameters <code>dateStamp.Date</code> and <code>contact.CI_ResponsibleParty.individualName.CharacterString</code> must be preceded by a <code>$</code> sign to make sure that they are always included even when using property selection.</p>
 <p>The <code>lapply</code> function can be used to apply expressions to items of lists, which can be handy with multidimensional fields.</p>

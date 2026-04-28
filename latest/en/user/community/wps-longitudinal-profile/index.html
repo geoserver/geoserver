@@ -21621,7 +21621,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30101,7 +30101,7 @@
 <p>It's possible to set wpsLongitudinalMaxThreadPoolSize (integer value) environment variable to limit the size of the extension's thread pool. It's possible to set wpsLongitudinalVerticesChunkSize (integer value) environment variable to define number of vertices processed in a chunk.</p>
 </div>
 <h2 id="tunables-and-safeguards">Tunables and safeguards<a class="headerlink" href="#tunables-and-safeguards" title="Permanent link">&para;</a></h2>
-<p>The WPS longitudinal profile process is designed to be used with large datasets and may extract many points from the input geometry. To avoid performance issues, the process has a number of tunables and safeguards, that the system administrator can specify as system or environement variables:</p>
+<p>The WPS longitudinal profile process is designed to be used with large datasets and may extract many points from the input geometry. To avoid performance issues, the process has a number of tunables and safeguards, that the system administrator can specify as system or environment variables:</p>
 <ul>
 <li><code>wpsLongitudinalMaxPoints</code>: maximum number of points to be extracted from the input geometry. The default value is 50000 (amounts to a memory usage of a few megabytes).</li>
 <li><code>wpsLongitudinalMaxThreadPoolSize</code>: size of the background thread pool used by the process to speed up calculations (all calls use the same pool). The default value matches the numbers of CPU threads.</li>

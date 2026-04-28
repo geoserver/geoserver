@@ -22020,7 +22020,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30655,7 +30655,7 @@
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span><span class="nt">&quot;WATER_KM&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1993.335</span><span class="p">,</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">  </span><span class="nt">&quot;PERSONS&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">11430602</span><span class="p">,</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">  </span><span class="nt">&quot;FAMILIES&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2924880</span><span class="p">,</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="nt">&quot;HOUSHOLD&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4202240</span><span class="p">,</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="nt">&quot;HOUSEHOLD&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4202240</span><span class="p">,</span>
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">  </span><span class="nt">&quot;MALE&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5552233</span><span class="p">,</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span><span class="nt">&quot;FEMALE&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5878369</span><span class="p">,</span>
 <a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">  </span><span class="nt">&quot;WORKERS&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4199206</span><span class="p">,</span>
@@ -30941,11 +30941,11 @@
 <p>In addition to the <code>${property}</code> and <code>$${cql}</code> directives seen before, there are two more:</p>
 <ul>
 <li>In the example above the <code>xpath('xpath')</code> function is used to reference property. When dealing with Complex Features it must be used when referencing properties inside a <code>$filter</code> or a <code>$${cql}</code> directive.</li>
-<li><code>$source</code> which is meant to provide the context against which evaluated nested element properties and xpaths. In this case the <code>"$source":"st:meteoObservations/st:MeteoObservationsFeature"</code> provides the context for the nested attributes angainst which the directives will be evaluated. When defining a <code>$source</code> for a JSON array it should be provided in a JSONObject separated from the JSON Object mapping the nested feature attributes as in the example above. When defining the <code>$source</code> for a JSONObject it can be simply added as an object attribute (see below examples).</li>
+<li><code>$source</code> which is meant to provide the context against which evaluated nested element properties and xpaths. In this case the <code>"$source":"st:meteoObservations/st:MeteoObservationsFeature"</code> provides the context for the nested attributes against which the directives will be evaluated. When defining a <code>$source</code> for a JSON array it should be provided in a JSONObject separated from the JSON Object mapping the nested feature attributes as in the example above. When defining the <code>$source</code> for a JSONObject it can be simply added as an object attribute (see below examples).</li>
 <li>When using <code>${property}</code> directive or an <code>xpath('xpath')</code> function it is possible to reference a property bounded to an upper <code>$source</code> using a <code>../</code> notation eg. <code>${../previousContextValue}</code>.</li>
 <li><code>$filter</code> provides the possibility to filter the value that will be included in the element to which is applied, in this case a json array. For instance the filter <code>$filter":"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'</code> in the <code>Winds_speed</code> array allows filtering the element that will be included in this array according to the <code>param_name value</code>.</li>
 </ul>
-<p>One note aboute the Source. It is strictly needed only when referencing a nested feature. This means that in the GeoJSON template example the <code>"$source":"st:MeteoStationsFeature"</code> could have been omitted. This not apply for nested elements definition where the <code>"$source":"st:meteoObservations/st:MeteoObservationsFeature"</code> is mandatory.</p>
+<p>One note about the Source. It is strictly needed only when referencing a nested feature. This means that in the GeoJSON template example the <code>"$source":"st:MeteoStationsFeature"</code> could have been omitted. This not apply for nested elements definition where the <code>"$source":"st:meteoObservations/st:MeteoObservationsFeature"</code> is mandatory.</p>
 <p>Follows a list of JSON template bits showing <code>filters</code> definition in context different from a JSON array, as well as <code>$source</code> definition for a JSONObject.</p>
 <ul>
 <li>Object (encode the JSON object only if the st:value is greater than 75.3).</li>
@@ -31597,7 +31597,7 @@
 <li>Nested objects available in both trees are drilled down, being recursively merged.</li>
 <li>Arrays are replaced as-is, with no merging. The eventual top level <code>features</code> array is the only exception to this rule.</li>
 <li>While order of the keys is not important in JSON, the merge is processed so that the base property names are included first in the merged result, and the new ones included in the override are added after them.</li>
-<li>If in the overalay JSON template, are present attributes with a property interpolation directive or an expression that in turn returns a JSON, the JSON attribute tree will be merged too with the corresponding one in the base JSON tree.</li>
+<li>If in the overlay JSON template, are present attributes with a property interpolation directive or an expression that in turn returns a JSON, the JSON attribute tree will be merged too with the corresponding one in the base JSON tree.</li>
 </ul>
 <p>The <code>$merge</code> directive can be used in any object, making it the root for the merge operation. This could be used as an alternative to inclusion when local customizations are needed.</p>
 <h2 id="environment-parametrization">Environment parametrization<a class="headerlink" href="#environment-parametrization" title="Permanent link">&para;</a></h2>

@@ -21694,7 +21694,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -29880,14 +29880,14 @@
 <p><img alt="" src="../images/centroid_clip2.png" /></p>
 <h2 id="sampling-for-internal-point">Sampling for internal point<a class="headerlink" href="#sampling-for-internal-point" title="Permanent link">&para;</a></h2>
 <p>The <code>KMCENTROID_CONTAIN</code> option determines whether point chosen for the centroid must fall within the feature geometry. For irregularly shaped geometries (like a "C" shaped polygon) the default centroid calculation will fall outside of the geometry. The option is set to either <code>true</code> or <code>false</code>. The default value is <code>false</code>.</p>
-<p>In order to find a contained point of a polygon a sampling tequnique is used where a number of points are chosen until one is found that falls within the polygon. The <code>KMCENTROID_SAMPLE</code> option determines how many samples to attempt. The value is an integer with a default value is 5. Note that this option only applies when <code>KMCENTROID_CONTAIN</code> is set to <code>true</code>.</p>
+<p>In order to find a contained point of a polygon a sampling technique is used where a number of points are chosen until one is found that falls within the polygon. The <code>KMCENTROID_SAMPLE</code> option determines how many samples to attempt. The value is an integer with a default value is 5. Note that this option only applies when <code>KMCENTROID_CONTAIN</code> is set to <code>true</code>.</p>
 <p>As an example consider the following "c" shaped polygon with its placemark icon. By default the icon falls outside of the polygon.</p>
 <p><img alt="" src="../images/centroid_contain0.png" /></p>
 <p>When <code>KMCENTROID_CONTAIN</code> set to <code>true</code> a point within the polygon is chosen.</p>
 <p><img alt="" src="../images/centroid_contain1.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The sampling tequnique may not always be able to find a suitable point. You can try to increase the number of samples but it is still not a guarantee. Care also must be taken when increasing the sample count since it adds overhead to the overall KML rendering process.</p>
+<p>The sampling technique may not always be able to find a suitable point. You can try to increase the number of samples but it is still not a guarantee. Care also must be taken when increasing the sample count since it adds overhead to the overall KML rendering process.</p>
 </div>
 
 

@@ -21703,7 +21703,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30023,14 +30023,14 @@
 <a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">            </span><span class="cm">&lt;!-- so, to link to another location in the current map, use href=&quot;#zoom,longitude,latitude --&gt;</span>
 <a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">            </span><span class="cm">&lt;!-- shown below. For further information on how to create links of different behaviours, --&gt;</span>
 <a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">            </span><span class="cm">&lt;!-- please refer to https://maps4html.org/web-map-doc/docs/other-elements/map-a/#target --&gt;</span>
-<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">            </span><span class="err">&lt;</span>#if<span class="w"> </span>attributes.NAME.value<span class="w"> </span>==<span class="w"> </span>&quot;museam&quot;&gt;<span class="nt">&lt;map-a</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;#16,-74.01046109936,40.70758762626&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>/#if&gt;
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">            </span><span class="err">&lt;</span>#if<span class="w"> </span>attributes.NAME.value<span class="w"> </span>==<span class="w"> </span>&quot;museum&quot;&gt;<span class="nt">&lt;map-a</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;#16,-74.01046109936,40.70758762626&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>/#if&gt;
 <a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">            </span><span class="nt">&lt;map-point&gt;</span>
 <a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="w">              </span><span class="nt">&lt;map-coordinates&gt;</span>
 <a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="w">                </span><span class="err">&lt;</span>#list<span class="w"> </span>gattribute.rawValue.coordinates<span class="w"> </span>as<span class="w"> </span>coord&gt;${coord.x}<span class="w"> </span>${coord.y}<span class="err">&lt;</span>/#list&gt;
 <a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="w">              </span><span class="nt">&lt;/map-coordinates&gt;</span>
 <a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="w">            </span><span class="nt">&lt;/map-point&gt;</span>
 <a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a><span class="w">            </span><span class="cm">&lt;!-- DO NOT FORGET to close your tags, else look for errors in your log files --&gt;</span>
-<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="w">            </span><span class="err">&lt;</span>#if<span class="w"> </span>attributes.NAME.value<span class="w"> </span>==<span class="w"> </span>&quot;museam&quot;&gt;<span class="nt">&lt;/map-a&gt;</span><span class="err">&lt;</span>/#if&gt;
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="w">            </span><span class="err">&lt;</span>#if<span class="w"> </span>attributes.NAME.value<span class="w"> </span>==<span class="w"> </span>&quot;museum&quot;&gt;<span class="nt">&lt;/map-a&gt;</span><span class="err">&lt;</span>/#if&gt;
 <a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="w">          </span><span class="nt">&lt;/map-geometry&gt;</span>
 <a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a><span class="w">         </span><span class="err">&lt;</span>/#if&gt;
 <a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a><span class="w">       </span><span class="err">&lt;</span>/#list&gt;

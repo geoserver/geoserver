@@ -21840,7 +21840,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30406,7 +30406,7 @@
 </code></pre></div>
 <p>All the sidecar hidden directories will end up being located at the top level of the NETCDF_DATA_DIR. In case you're managing a large number of NetCDF files, it's best to spread them out in subdirectories, so that the number of files in each directory is kept low. For that to happen, configure also the following:</p>
 <p><code>-DNETCDF_DATA_DIR_TREE=true</code></p>
-<p>Set up this way, the contents of the NetCDF data directory will mimick the absolute position of the NetCDF files, e.g.:</p>
+<p>Set up this way, the contents of the NetCDF data directory will mimic the absolute position of the NetCDF files, e.g.:</p>
 <ul>
 <li>A source file is in <code>/opt/data/meteo/2024/01/02/file.nc</code></li>
 <li>The NETCDF_DATA_DIR points at <code>/opt/netcdf_dd/</code></li>
@@ -30417,7 +30417,7 @@
 <p>In this case, the support files will be created in <code>/opt/netcdf_dd/meteo/2024/01/02/.file_&lt;digest&gt;</code></p>
 <h2 id="supporting-custom-netcdf-units">Supporting Custom NetCDF Units<a class="headerlink" href="#supporting-custom-netcdf-units" title="Permanent link">&para;</a></h2>
 <p>The NetCDF format expresses units using a syntax that is not always understood by our unit parser, and often, uses unit names using unrecognized symbols or that simply unknown to it. The system already comes with some smarts, but in case a unit is not recognized, it's possible to act on the configuration and extend it.</p>
-<p>There are two property files that can be setup in order to modify unit magement, one is an alias file, the other is a replacement file:</p>
+<p>There are two property files that can be setup in order to modify unit management, one is an alias file, the other is a replacement file:</p>
 <ul>
 <li>An "alias" is a different symbol/name for a base unit (e.g., instead of using "g" the NetCDF files might be using "grammes")</li>
 <li>A (text) "replacement" is used when the unit is a derived one, needing a full expression, or the syntax of the unit is simply unrecognized</li>
@@ -30482,7 +30482,7 @@
 <h1 id="mosaic-of-netcdf-files">Mosaic of NetCDF files<a class="headerlink" href="#mosaic-of-netcdf-files" title="Permanent link">&para;</a></h1>
 <h2 id="setting-up-a-basic-mosaic">Setting up a basic mosaic<a class="headerlink" href="#setting-up-a-basic-mosaic" title="Permanent link">&para;</a></h2>
 <p>A mosaic of NetCDF files is a bit different than usual, because each NetCDF file can contain multiple coverages. As a result, the mosaic setup requires extra configuration files, an <code>indexer.xml</code> acting as the mosaic index, and a <code>_auxiliary.xml</code>, describing the NetCDF file contents.</p>
-<p>Setting up these files can be a cumbersome process, so a utility has been written, which automatically fills their contents based on a sample NetCDF file (under the assumeption that all NetCDF files in the mosaic share the same variables and dimensions).</p>
+<p>Setting up these files can be a cumbersome process, so a utility has been written, which automatically fills their contents based on a sample NetCDF file (under the assumption that all NetCDF files in the mosaic share the same variables and dimensions).</p>
 <p>Given a sample NetCDF file, you can get into the mosaic directory and run the <strong>CreateIndexer</strong> tool (for the NetCDF projection files, see above). On Windows:</p>
 <div class="highlight"><pre><span></span><code>java -cp &lt;path-to-geoserver&gt;\WEB-INF\lib\*.jar org.geotools.coverage.io.netcdf.tools.CreateIndexer &lt;path-to-sample-nc-file&gt; [-p &lt;path-to-netcdf-projections&gt;] [&lt;path-to-output-directory&gt;]
 </code></pre></div>

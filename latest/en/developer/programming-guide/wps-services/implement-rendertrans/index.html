@@ -21614,7 +21614,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30096,7 +30096,7 @@
 <p>Before the transformation process is executed, it is given an opportunity to rewrite the query GeoServer makes to the source datastore, via the optional <code>invertQuery</code> or <code>invertGridGeometry</code> methods. This allows a transformation to enlarge the query extent, since some kinds of transformations may need to include data which lies outside the original query window.</p>
 <p>The query is then performed against the source datastore, and the transformation process is executed against the resulting dataset. The transformation returns a computed output dataset of the same or different format. If the output has a different coordinate system (CRS) than the requested map it is reprojected automatically. Finally, the output dataset is passed on through the rendering pipeline to be styled by the symbolizers defined in the SLD <code>&lt;FeatureTypeStyle&gt;</code>.</p>
 <h2 id="transformation-process-class">Transformation process class<a class="headerlink" href="#transformation-process-class" title="Permanent link">&para;</a></h2>
-<p>Like other WPS processes, rendering transformations are implememented as Java classes. A process class implements the <code>GSProcess</code> marker interface, and is registered with GeoServer via an <code>applicationContext.xml</code> file. For further information about the basic steps for creating, building and deploying a GeoServer WPS process in Java refer to the <a href="../implementing/">Implementing a WPS Process</a> section.</p>
+<p>Like other WPS processes, rendering transformations are implemented as Java classes. A process class implements the <code>GSProcess</code> marker interface, and is registered with GeoServer via an <code>applicationContext.xml</code> file. For further information about the basic steps for creating, building and deploying a GeoServer WPS process in Java refer to the <a href="../implementing/">Implementing a WPS Process</a> section.</p>
 <p>WPS processes must provide metadata about themselves and their parameters. The easiest way to do this is to use the GeoTools annotation-based Process API, which uses Java annotations to specify metadata. For example, the code below shows the process metadata specified for the <code>gs:Heatmap</code> rendering transformation:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nd">@DescribeProcess</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Heatmap&quot;</span><span class="p">,</span><span class="w"> </span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">             </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Computes a heatmap surface over a set of irregular data points as a GridCoverage.&quot;</span><span class="p">)</span>
@@ -30109,7 +30109,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@DescribeResult</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;result&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;The heat map surface as a raster&quot;</span><span class="p">)</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">GridCoverage2D</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="c1">// tranformation input data</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="c1">// transformation input data</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;data&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Features containing the data points&quot;</span><span class="p">)</span><span class="w"> </span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="n">SimpleFeatureCollection</span><span class="w"> </span><span class="n">obsFeatures</span><span class="p">,</span>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
@@ -30162,7 +30162,7 @@
 <p>The <code>targetGridGeometry</code> parameter is the georeferenced extent of the requested output map. It is not used in the dataset query, but may be needed for use in conjunction with the transformation parameters to determine how to rewrite the query. For instance, if a parameter is specified in output units, the output extent information is required to transform the value into units applicable in the input CRS.</p>
 <p>In addition, these methods can accept any number of the input parameters defined for the <code>execute</code> method. If defined these parameters must be annotated with <code>@DescribeParameter</code> in the same way as in the <code>execute</code> method.</p>
 <h3 id="invertquery-method">invertQuery method<a class="headerlink" href="#invertquery-method" title="Permanent link">&para;</a></h3>
-<p>This method is called when the rendering tranformation applies to vector data (the data input is of type <code>SimpleFeatureCollection</code>).</p>
+<p>This method is called when the rendering transformation applies to vector data (the data input is of type <code>SimpleFeatureCollection</code>).</p>
 <p>The method returns a new <code>Query</code> value, which contains any required alterations of extent or query optimizations. This is used to query the source dataset.</p>
 <p>The Heatmap process implements the <code>invertQuery</code> method in order to enlarge the query extent by the ground size corresponding to the <code>radiusPixels</code> parameter. To allow converting the pixel size into a ground distance the input parameters providing the output map extents are also required. The signature of the implemented method is:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">public</span><span class="w"> </span><span class="n">Query</span><span class="w"> </span><span class="nf">invertQuery</span><span class="p">(</span>
@@ -30185,7 +30185,7 @@
 <a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">        </span><span class="p">...</span>
 </code></pre></div>
 <h3 id="invertgridgeometry-method">invertGridGeometry method<a class="headerlink" href="#invertgridgeometry-method" title="Permanent link">&para;</a></h3>
-<p>This method is called when the rendering tranformation applies to raster data (the data input is of type <code>GridCoverage2D</code>).</p>
+<p>This method is called when the rendering transformation applies to raster data (the data input is of type <code>GridCoverage2D</code>).</p>
 <p>The method returns a new <code>GridGeometry</code> value, which is used as the query extent against the source raster dataset.</p>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>In summary, the key features of a rendering transformation process class are:</p>

@@ -21798,7 +21798,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30094,9 +30094,9 @@
 <p>A layer specification is a XML structure made of three parts:</p>
 <ul>
 <li>Name: a comma separated list of layer names (eventually just one)</li>
-<li>Capabilities: link to a capabilities document (optional, used when targetting remote WMS layers)</li>
+<li>Capabilities: link to a capabilities document (optional, used when targeting remote WMS layers)</li>
 <li>Parameter (key, value): an extra parameter to be added in the WMS request represented by this layer (e.g., <code>elevation</code>, <code>CQL_FILTER</code>, <code>env</code>)</li>
-<li>Opacity: an optional parameter, ranging from 0 to 100, that controls the layer image level of translucency during the merge process. When not set the layer image is fully opaque. Note that this is seperate from the overall map <code>transparent</code> boolean parameter.</li>
+<li>Opacity: an optional parameter, ranging from 0 to 100, that controls the layer image level of translucency during the merge process. When not set the layer image is fully opaque. Note that this is separate from the overall map <code>transparent</code> boolean parameter.</li>
 </ul>
 <p>For example:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;wps:ComplexData</span><span class="w"> </span><span class="na">xmlns:dwn=</span><span class="s">&quot;http://geoserver.org/wps/download&quot;</span><span class="nt">&gt;</span>
@@ -30189,7 +30189,7 @@
 <a id="__codelineno-2-64" name="__codelineno-2-64" href="#__codelineno-2-64"></a><span class="w">  </span><span class="nt">&lt;/wps:ResponseForm&gt;</span>
 <a id="__codelineno-2-65" name="__codelineno-2-65" href="#__codelineno-2-65"></a><span class="nt">&lt;/wps:Execute&gt;</span>
 </code></pre></div>
-<p>For this example the layers could have been a single one, with a "Name" equal to "giantPolygon,watertermp".</p>
+<p>For this example the layers could have been a single one, with a "Name" equal to "giantPolygon,watertemp".</p>
 <h3 id="secondary-output-map-metadata">Secondary output: map metadata<a class="headerlink" href="#secondary-output-map-metadata" title="Permanent link">&para;</a></h3>
 <p>The process offers also a secondary output, called <code>metadata</code>, which can be used to determine if there were any issue related to the requested times. The warnings are issued when the layer has a "nearest match" behavior activated, with an eventual search range.</p>
 <p>In case the requested time could not be matched exactly, a warning will be issued that might contain:</p>

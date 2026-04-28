@@ -21621,7 +21621,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -29881,7 +29881,7 @@
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="na">PropertyCollectors</span><span class="o">=</span><span class="s">TimestampFileNameExtractorSPI[regex=.*?(</span><span class="se">\\\\</span><span class="s">d{4})/(</span><span class="se">\\\\</span><span class="s">d{2})/(</span><span class="se">\\\\</span><span class="s">d{2}).*,format=yyyyMMdd,fullPath=true](time)</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="na">delegate.dbtype</span><span class="o">=</span><span class="s">geoparquet</span>
 </code></pre></div>
-<p>The data to be ingested is organized in folders containig YEAR\MONTH\DAY so we are using the <code>TimestampFileNameExtractorSPI</code> PropertyCollector configured above, which will extract the temporal information from the whole file path (<code>fullPath=true</code>) using the specified <code>regex</code> to build a <code>YYYYMMdd</code> date that will be assigned to the <code>time</code> attribute:</p>
+<p>The data to be ingested is organized in folders containing YEAR\MONTH\DAY so we are using the <code>TimestampFileNameExtractorSPI</code> PropertyCollector configured above, which will extract the temporal information from the whole file path (<code>fullPath=true</code>) using the specified <code>regex</code> to build a <code>YYYYMMdd</code> date that will be assigned to the <code>time</code> attribute:</p>
 <div class="highlight"><pre><span></span><code>TimestampFileNameExtractorSPI[regex=.*?(\\\\d{4})/(\\\\d{2})/(\\\\d{2}).*,format=yyyyMMdd,fullPath=true
 </code></pre></div>
 <p><img alt="" src="../images/vector-mosaic-config.png" /></p>

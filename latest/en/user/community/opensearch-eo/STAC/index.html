@@ -21703,7 +21703,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -29888,7 +29888,7 @@
 
 
 <h1 id="the-stac-extension">The STAC extension<a class="headerlink" href="#the-stac-extension" title="Permanent link">&para;</a></h1>
-<p>The OpenSeach for EO subsystem exposes also a <a href="https://stacspec.org/">STAC</a> service, implemented as a OGC API Features conformant <a href="https://github.com/radiantearth/stac-api-spec">STAC API</a>.</p>
+<p>The OpenSearch for EO subsystem exposes also a <a href="https://stacspec.org/">STAC</a> service, implemented as a OGC API Features conformant <a href="https://github.com/radiantearth/stac-api-spec">STAC API</a>.</p>
 <p>The landing page of the STAC API is linked from the GeoServer home page, and available at <code>$HOST:$PORT/geoserver/ogc/stac</code>. The API exposes the OpenSearch for EO contents, restructuring them as needed:</p>
 <ul>
 <li>The collections table is mapped to STAC collections</li>
@@ -29900,7 +29900,7 @@
 <li>The GeoJSON representation is built using GeoJSON <a href="../../features-templating/">features templates</a></li>
 </ul>
 <p>The default templates work against the <a href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql">default PostGIS database structure</a> and can be customized to include new properties to follow eventual database modifications.</p>
-<p>All built-in templates are copied over to the data directory for customization, and placed in the <code>$GEOSERER_DATA_DIR/templates/ogc/stac</code> folder:</p>
+<p>All built-in templates are copied over to the data directory for customization, and placed in the <code>$GEOSERVER_DATA_DIR/templates/ogc/stac</code> folder:</p>
 <ul>
 <li>collection.ftl</li>
 <li>collection_include.ftl</li>
@@ -29938,7 +29938,7 @@
 <ul>
 <li>If no <code>fields</code> query parameter is specified all the item's attribute are returned.</li>
 <li>If a <code>fields</code> attribute is specified with no values, only the item's default values (the one necessary to have a valid STAC entity) are returned: <code>id</code>,<code>type</code>,<code>geometry</code>,<code>bbox</code>,<code>links</code>,<code>assets</code>,<code>properties.datetime</code>,<code>properties.created</code>.</li>
-<li>If <code>fields</code> value is specified GeoServer will return always the default attributes, if the user doesn't target them as excluded. Eg. <code>assets</code> will always be present if not exluced explicitly (<code>fields=-assets,...</code>).</li>
+<li>If <code>fields</code> value is specified GeoServer will return always the default attributes, if the user doesn't target them as excluded. Eg. <code>assets</code> will always be present if not excluded explicitly (<code>fields=-assets,...</code>).</li>
 <li>If only include is specified, these attributes are added to the default set of attributes (set union operation).</li>
 <li>If only exclude is specified, these attributes are subtracted from the union of the default set of attributes and the include attributes (set difference operation). This will result in an entity that is not a valid Item if any of the excluded attributes are in the default set of attributes, but no error message will be raised by GeoServer.</li>
 <li>If a attribute is included, e.g. <code>properties</code>, but one or more of the nested attributes is excluded, e.g. <code>-properties.datetime</code>, then the excluded nested attributes will not appear in properties.</li>
@@ -30025,7 +30025,7 @@
 <p>The layer <code>title</code> and <code>description</code> from the GeoServer own configuration</p>
 </li>
 <li>
-<p>A list of <code>styles</code>, matching the styles associated to the layer. The first one is the default style. Each style contains the follwoing properties:</p>
+<p>A list of <code>styles</code>, matching the styles associated to the layer. The first one is the default style. Each style contains the following properties:</p>
 </li>
 <li><code>name</code>: the style name</li>
 <li>

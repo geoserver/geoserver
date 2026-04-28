@@ -21849,7 +21849,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30212,7 +30212,7 @@
 <div class="highlight"><pre><span></span><code>categorize(attribute,category0,value1,category1,value2,category2,...,belongsTo)
 </code></pre></div>
 <p>This would create a situation where the <code>attribute</code> value, if less than <code>value1</code> will be given the result of <code>category0</code>; if between <code>value1</code> and <code>value2</code>, will be given the result of <code>category1</code>; if between <code>value2</code> and <code>value3</code>, will be given the result of <code>category2</code>, etc. Values must be in ascending order.</p>
-<p>The <code>belongsTo</code> argument is optional, and can be either <code>succeeding</code> or <code>preceding</code>. It defines which interval to use when the lookup value equals the <code>attribute</code> value. If the <code>attribute</code> value is equal to <code>value1</code> and <code>suceeding</code> is used, then the result will be <code>category1</code>. If <code>preceding</code> is used then the result will be <code>category0</code>. The default is <code>succeeding</code>.</p>
+<p>The <code>belongsTo</code> argument is optional, and can be either <code>succeeding</code> or <code>preceding</code>. It defines which interval to use when the lookup value equals the <code>attribute</code> value. If the <code>attribute</code> value is equal to <code>value1</code> and <code>succeeding</code> is used, then the result will be <code>category1</code>. If <code>preceding</code> is used then the result will be <code>category0</code>. The default is <code>succeeding</code>.</p>
 <p>This is equivalent to creating the following multiple rules:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>rules:
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>- ...

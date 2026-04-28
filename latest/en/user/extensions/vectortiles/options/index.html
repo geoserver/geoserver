@@ -21633,7 +21633,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -29810,7 +29810,7 @@
 </tr>
 </tbody>
 </table>
-<p>The following SLD style, meant to be used as a "style group", demonstrates the conceptes above:</p>
+<p>The following SLD style, meant to be used as a "style group", demonstrates the concepts above:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;sld:StyledLayerDescriptor</span><span class="w"> </span><span class="na">xmlns:sld=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span><span class="w"> </span><span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span><span class="w"> </span><span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">&lt;sld:NamedLayer&gt;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">   </span><span class="nt">&lt;sld:Name&gt;</span>tiger:poly_landmarks<span class="nt">&lt;/sld:Name&gt;</span>
@@ -29871,10 +29871,10 @@
 <p>Describing the salient bits:</p>
 <ul>
 <li><code>tiger_roads</code> and <code>poi</code> are scale dependent, they won't be available in zoomed out tiles</li>
-<li><code>poly_landmarks</code> only reports CFCC and enables polygon coaleshing, allowing to merge a few polygons with the same class</li>
+<li><code>poly_landmarks</code> only reports CFCC and enables polygon coalescing, allowing to merge a few polygons with the same class</li>
 <li><code>poly_landmarks</code> also enables a separate label layer with polygon label points (<code>poly_landmarks-labels</code>), with only the NAME attribute</li>
-<li><code>tiger-roads</code> selects the attributes for labelling, and enables coaleshing, which helps a lot reducing the tile size, since each roads is split amongs many smaller features (at intersections).</li>
-<li>The usage of feature coaleshing reduces the size of vector tiles by around 50%, compared to simple attribute selection, in this case. Layers with more/more complex attributes will benefit more.</li>
+<li><code>tiger-roads</code> selects the attributes for labelling, and enables coalescing, which helps a lot reducing the tile size, since each roads is split among many smaller features (at intersections).</li>
+<li>The usage of feature coalescing reduces the size of vector tiles by around 50%, compared to simple attribute selection, in this case. Layers with more/more complex attributes will benefit more.</li>
 </ul>
 
 

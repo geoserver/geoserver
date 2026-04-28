@@ -21705,7 +21705,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -29893,7 +29893,7 @@
 <p>The transformation functions supported described in SLD and described in the <a href="../../../sld/tipstricks/transformation-func/">equivalent SLD chapter</a> are also available in CSS, the following shows examples of how they can be used.</p>
 <h2 id="recode">Recode<a class="headerlink" href="#recode" title="Permanent link">&para;</a></h2>
 <p>The <code>Recode</code> filter function transforms a set of discrete values for an attribute into another set of values, by applying a <em>(input, output)</em> mapping onto the values of the variable/expression that is provided as the first input of the function.</p>
-<p>Consider a chloropleth map of the US states dataset using the fill color to indicate the topographic regions for the states. The dataset has an attribute <code>SUB_REGION</code> containing the region code for each state. The <code>Recode</code> function is used to map each region code into a different color.</p>
+<p>Consider a choropleth map of the US states dataset using the fill color to indicate the topographic regions for the states. The dataset has an attribute <code>SUB_REGION</code> containing the region code for each state. The <code>Recode</code> function is used to map each region code into a different color.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It is to be noted that the following example specifies colors as hex string as opposed to native CSS color names, this is because the function syntax is expressed in CQL, which does not have support for native CSS color names.</p>
@@ -29918,8 +29918,8 @@
 </code></pre></div>
 <p><img alt="" src="../../../sld/tipstricks/images/recode_usa_region.png" /></p>
 <h2 id="categorize">Categorize<a class="headerlink" href="#categorize" title="Permanent link">&para;</a></h2>
-<p>The <code>Categorize</code> filter function transforms a continuous-valued attribute into a set of discrete values by assiging ranges of values and turning them into a color, size, width, opacity, etc.</p>
-<p>In the following example a coropleth map is build associating a color to the state population density in the ranges [ &lt;= 20], [20 - 100], and [ &gt; 100].</p>
+<p>The <code>Categorize</code> filter function transforms a continuous-valued attribute into a set of discrete values by assigning ranges of values and turning them into a color, size, width, opacity, etc.</p>
+<p>In the following example a choropleth map is build associating a color to the state population density in the ranges [ &lt;= 20], [20 - 100], and [ &gt; 100].</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="k">fill</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="nf">categorize</span><span class="p">(</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">         </span><span class="n">PERSONS</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">LAND_KM</span><span class="p">,</span>

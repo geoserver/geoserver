@@ -21822,7 +21822,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30150,7 +30150,7 @@
 <h3 id="colormap">ColorMap<a class="headerlink" href="#colormap" title="Permanent link">&para;</a></h3>
 <p>The <code>&lt;ColorMap&gt;</code> element defines the color values for the pixels of a raster image, as either color gradients, or a mapping of specific values to fixed colors.</p>
 <p>A color map is defined by a sequence of <code>&lt;ColorMapEntry&gt;</code> elements. Each <code>&lt;ColorMapEntry&gt;</code> element specifies a <code>color</code> and a <code>quantity</code> attribute. The quantity refers to the value of a raster pixel. The <code>color</code> value is denoted in standard hexadecimal RGB format (#RRGGBB). <code>&lt;ColorMapEntry&gt;</code> elements can also have <code>opacity</code> and <code>label</code> attributes. The <code>opacity</code> attribute overrides the global <code>&lt;Opacity&gt;</code> value. The <code>label</code> attribute is used to provide text for legends. A color map can contain up to 255 <code>&lt;ColorMapEntry&gt;</code> elements.</p>
-<p>The simplest <code>&lt;ColorMap&gt;</code> has two color map entries. One specifyies a color for the "bottom" of the dataset, and the other specifyies a color for the "top" of the dataset. Pixels with values equal to or less than the minimum value are rendered with the bottom color (and opacity). Pixels with values equal to or great than the maximum value are rendered with the top color and opacity. The colors for values in between are automatically interpolated, making creating color gradients easy.</p>
+<p>The simplest <code>&lt;ColorMap&gt;</code> has two color map entries. One specifies a color for the "bottom" of the dataset, and the other specifies a color for the "top" of the dataset. Pixels with values equal to or less than the minimum value are rendered with the bottom color (and opacity). Pixels with values equal to or great than the maximum value are rendered with the top color and opacity. The colors for values in between are automatically interpolated, making creating color gradients easy.</p>
 <p>A color map can be refined by adding additional intermediate entries. This is useful if the dataset has discrete values rather than a gradient, or if a multi-colored gradient is desired. One entry is added for each different color to be used, along with the corresponding quantity value.</p>
 <p>For example, a simple ColorMap can define a color gradient from color #323232 to color #BBBBBB over quantity values from -300 to 200:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;ColorMap&gt;</span>

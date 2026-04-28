@@ -21614,7 +21614,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -27964,10 +27964,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#modifing-the-catalog" class="md-nav__link">
+  <a href="#modifying-the-catalog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Modifing the Catalog
+        Modifying the Catalog
       
     </span>
   </a>
@@ -29907,10 +29907,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#modifing-the-catalog" class="md-nav__link">
+  <a href="#modifying-the-catalog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Modifing the Catalog
+        Modifying the Catalog
       
     </span>
   </a>
@@ -29959,7 +29959,7 @@
 <ul>
 <li>namespaces and workspaces</li>
 <li>coverage (raster) and data (vector) stores</li>
-<li>coverages and feature resoures</li>
+<li>coverages and feature resources</li>
 <li>styles</li>
 </ul>
 <p>The Catalog can be acquired from GeoServer:</p>
@@ -30002,12 +30002,12 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">//get a layer by its name</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">LayerInfo</span><span class="w"> </span><span class="n">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">catalog</span><span class="p">.</span><span class="na">getLayer</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;myLayer&quot;</span><span class="w"> </span><span class="p">);</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1">//get all the layers for a particualr feature type</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1">//get all the layers for a particular feature type</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">FeatureTypeInfo</span><span class="w"> </span><span class="n">ft</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">catalog</span><span class="p">.</span><span class="na">getFeatureType</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;http://myNamespace&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myFeatureType&quot;</span><span class="w"> </span><span class="p">);</span>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">List</span><span class="o">&lt;</span><span class="n">LayerInfo</span><span class="o">&gt;</span><span class="w"> </span><span class="n">layers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">catalog</span><span class="p">.</span><span class="na">getLayers</span><span class="p">(</span><span class="w"> </span><span class="n">ft</span><span class="w"> </span><span class="p">);</span>
 </code></pre></div>
-<h2 id="modifing-the-catalog">Modifing the Catalog<a class="headerlink" href="#modifing-the-catalog" title="Permanent link">&para;</a></h2>
-<p>Catalog objects such as stores and resoures are mutable and can be modified. However, any modifications made on an object do not apply until they are saved. For instance, consider the following example of modifying a feature type:</p>
+<h2 id="modifying-the-catalog">Modifying the Catalog<a class="headerlink" href="#modifying-the-catalog" title="Permanent link">&para;</a></h2>
+<p>Catalog objects such as stores and resources are mutable and can be modified. However, any modifications made on an object do not apply until they are saved. For instance, consider the following example of modifying a feature type:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">//get a feature type</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">FeatureTypeInfo</span><span class="w"> </span><span class="n">featureType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">catalog</span><span class="p">.</span><span class="na">getFeatureType</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;http://myNamespace.org&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myFeatureType&quot;</span><span class="w"> </span><span class="p">);</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>

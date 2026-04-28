@@ -21621,7 +21621,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -29937,7 +29937,7 @@
 <li>Make sure that the GDAL library as well as the GDAL JNI native library are available in the GeoServer path (see below).</li>
 </ol>
 <h3 id="linux-installation-details">Linux installation details<a class="headerlink" href="#linux-installation-details" title="Permanent link">&para;</a></h3>
-<p>On Linux the native librariers are commonly available via packages such as <code>gdal</code> and <code>gdal-java</code>, which, on installation, make available the required libraries on the file system (the specific name may vary):</p>
+<p>On Linux the native libraries are commonly available via packages such as <code>gdal</code> and <code>gdal-java</code>, which, on installation, make available the required libraries on the file system (the specific name may vary):</p>
 <div class="highlight"><pre><span></span><code>/usr/lib/libgdal.so
 /usr/lib/jni/libgdaljni.so
 </code></pre></div>
@@ -29962,7 +29962,7 @@ set GDAL_DATA=C:\path\to\release-1900-x64-gdal-2-4-0-mapserver-7-2-1\bin\gdal-da
 <p>If the library is properly installed you will get the "OGR" data store among the supported stores in the "new store" page. In case it's not there, check the logs, they might be reporting that the GDAL/OGR native libs are missing, if the error is not there, check that the jars have been unpacked in the right position instead.</p>
 <p>Creating a new store requires configuration of only the <strong>DatasourceName</strong> field, any other parameter is optional:</p>
 <p><img alt="" src="images/store_config.png" /></p>
-<p><em>The OGR datasore configuration page</em></p>
+<p><em>The OGR datastore configuration page</em></p>
 <p>The <strong>DatasourceName</strong> can be a reference to a file, a directory, or a set of connection parameters to a server. For example, to connect to a PostGIS database the connection parameters could be:</p>
 <p><code>PG:user=theUser password=thePassword dbname=theDatabase</code></p>
 <p>Notice how, unlike documented in the OGR page, single quotes are not needed (and actually harmful) around the user/password/dbname section. The <strong>Browse</strong> button can be used to quickly peek files or directories from the file system.</p>

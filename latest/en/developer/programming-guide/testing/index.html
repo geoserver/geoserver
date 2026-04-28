@@ -21614,7 +21614,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -31104,7 +31104,7 @@
 <tr>
 <td>sf</td>
 <td>sf</td>
-<td>AgregateGeoFeature</td>
+<td>AggregateGeoFeature</td>
 <td>Default</td>
 </tr>
 <tr>
@@ -31321,7 +31321,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GetFeatureBboxTest</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">WFSTestSupport</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
 <a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nd">@Test</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testFeatureBoudingOn</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testFeatureBoundingOn</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="n">WFSInfo</span><span class="w"> </span><span class="n">wfs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getWFS</span><span class="p">();</span>
 <a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="n">wfs</span><span class="p">.</span><span class="na">setFeatureBounding</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 <a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">    </span><span class="n">getGeoServer</span><span class="p">().</span><span class="na">save</span><span class="p">(</span><span class="n">wfs</span><span class="p">);</span>
@@ -31380,7 +31380,7 @@
 <a id="__codelineno-13-35" name="__codelineno-13-35" href="#__codelineno-13-35"></a><span class="w">  </span><span class="p">}</span>
 </code></pre></div>
 <h2 id="handling-logging">Handling Logging<a class="headerlink" href="#handling-logging" title="Permanent link">&para;</a></h2>
-<p>GeoServer has a lot of log handling built in but in a default system much of the logging is surpressed. The following code shows how to initialise GeoServer's logging system. In general this should only be done during testing of your code as excessive logging slows down the build for everyone.</p>
+<p>GeoServer has a lot of log handling built in but in a default system much of the logging is suppressed. The following code shows how to initialise GeoServer's logging system. In general this should only be done during testing of your code as excessive logging slows down the build for everyone.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">GeoServerResourceLoader</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getDataDirectory</span><span class="p">().</span><span class="na">getResourceLoader</span><span class="p">();</span>
 <a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">LoggingUtils</span><span class="p">.</span><span class="na">initLogging</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;DEFAULT_LOGGING.xml&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;logs/geoserver.log&quot;</span><span class="p">);</span>
 <a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getDataDirectory</span><span class="p">().</span><span class="na">getResourceLoader</span><span class="p">().</span><span class="na">getBaseDirectory</span><span class="p">().</span><span class="na">getPath</span><span class="p">();</span>
@@ -31495,13 +31495,13 @@
 </code></pre></div>
 <h2 id="online-tests">Online Tests<a class="headerlink" href="#online-tests" title="Permanent link">&para;</a></h2>
 <p>Often a test requires some external resource such as a database or a server to operate. Such tests should never assume that resource will be available and should skip test execution, rather than fail, when the test is not available.</p>
-<p>JUnit4 provides a handy way to do this with the <code>org.junit.Asssume</code> class. Methods of the class are called from a <code>@Before</code> hook or from a test method. For example consider the common case of connecting to a database:</p>
+<p>JUnit4 provides a handy way to do this with the <code>org.junit.Assume</code> class. Methods of the class are called from a <code>@Before</code> hook or from a test method. For example consider the common case of connecting to a database:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MyTest</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
 <a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">    </span><span class="n">Connection</span><span class="w"> </span><span class="nf">connect</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">        </span><span class="c1">//create a connection to the database</span>
 <a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">           </span><span class="n">Conection</span><span class="w"> </span><span class="n">cx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">           </span><span class="n">Connection</span><span class="w"> </span><span class="n">cx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
 <a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">           </span><span class="k">return</span><span class="w"> </span><span class="n">cx</span><span class="p">;</span>
 <a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="w">        </span><span class="p">}</span>
 <a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">        </span><span class="k">catch</span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -31550,7 +31550,7 @@
 <a id="__codelineno-22-19" name="__codelineno-22-19" href="#__codelineno-22-19"></a><span class="p">}</span><span class="w"> </span>
 </code></pre></div>
 <h2 id="acceptance-tests">Acceptance Tests<a class="headerlink" href="#acceptance-tests" title="Permanent link">&para;</a></h2>
-<p>Acceptance tests are end-to-end tests that exercise a particular functionality by running requests against a GeoServer instance and checking its reponses. The tests call the REST API and the OGC services to test functionalities such as creating a workspace and publishing a PostGIS or an ImageMosaic layer.</p>
+<p>Acceptance tests are end-to-end tests that exercise a particular functionality by running requests against a GeoServer instance and checking its responses. The tests call the REST API and the OGC services to test functionalities such as creating a workspace and publishing a PostGIS or an ImageMosaic layer.</p>
 <p>The GeoServer acceptance tests are written in Python using the <a href="https://docs.pytest.org/">pytest</a> framework. The test suite is bundled in the Python package <a href="https://pypi.org/project/geoservercloud/">python-geoservercloud</a>.</p>
 <h3 id="running-acceptance-tests">Running Acceptance Tests<a class="headerlink" href="#running-acceptance-tests" title="Permanent link">&para;</a></h3>
 <p>Requirements: Python 3, docker, make</p>

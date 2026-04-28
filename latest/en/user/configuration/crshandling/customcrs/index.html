@@ -21703,7 +21703,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -29959,7 +29959,7 @@
 </ol>
 <h2 id="override-an-official-epsg-code">Override an official EPSG code<a class="headerlink" href="#override-an-official-epsg-code" title="Permanent link">&para;</a></h2>
 <p>In some situations it is necessary to override an official EPSG code with a custom definition. A common case is the need to change the TOWGS84 parameters in order to get better reprojection accuracy in specific areas.</p>
-<p>The GeoServer referencing subsystem checks the existence of another property file, <strong><code>epsg_overrides.properties</code></strong>, whose format is the same as <strong><code>epsg.properties</code></strong>. Any definition contained in <strong><code>epsg_overrides.properties</code></strong> will <strong>override</strong> the EPSG code, while definitions stored in <strong><code>epsg.proeprties</code></strong> can only <strong>add</strong> to the database.</p>
+<p>The GeoServer referencing subsystem checks the existence of another property file, <strong><code>epsg_overrides.properties</code></strong>, whose format is the same as <strong><code>epsg.properties</code></strong>. Any definition contained in <strong><code>epsg_overrides.properties</code></strong> will <strong>override</strong> the EPSG code, while definitions stored in <strong><code>epsg.properties</code></strong> can only <strong>add</strong> to the database.</p>
 <p>Special care must be taken when overriding the Datum parameters, in particular the <strong>TOWGS84</strong> parameters. To make sure the override parameters are actually used the code of the Datum must be removed, otherwise the referencing subsystem will keep on reading the official database in search of the best Datum shift method (grid, 7 or 5 parameters transformation, plain affine transform).</p>
 <p>For example, if you need to override the official <strong>TOWGS84</strong> parameters of EPSG:23031:</p>
 <div class="highlight"><pre><span></span><code>PROJCS[&quot;ED50 / UTM zone 31N&quot;, 

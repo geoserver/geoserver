@@ -21740,7 +21740,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -29987,7 +29987,7 @@
 <p>An overview is a downsampled version of the same image, that is, a zoomed out version, which is usually much smaller. When GeoServer needs to render the Geotiff, it'll look for the most appropriate overview as a starting point, thus reading and converting way less data. Overviews can be added using <a href="http://www.gdal.org/gdaladdo.md">gdaladdo</a>, or the OverviewsEmbedded command included in Geotools. Here is a sample of using gdaladdo to add overviews that are downsampled 2, 4, 8 and 16 times compared to the original:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gdaladdo<span class="w"> </span>-r<span class="w"> </span>average<span class="w"> </span>mytiff.tif<span class="w"> </span>2<span class="w"> </span>4<span class="w"> </span>8<span class="w"> </span>16
 </code></pre></div>
-<p>As a final note, Geotiff supports various kinds of compression both lossles as well as lossy. JPEG compression can produce artifacts but it usually produce very good results on RGB or RGBA images if coupled with inner masks. Deflate compression is to be preferred with elevation or similar data when a lossless compressions is needed. Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O although at the expenses of some CPU cycles.</p>
+<p>As a final note, Geotiff supports various kinds of compression both lossless as well as lossy. JPEG compression can produce artifacts but it usually produce very good results on RGB or RGBA images if coupled with inner masks. Deflate compression is to be preferred with elevation or similar data when a lossless compressions is needed. Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O although at the expenses of some CPU cycles.</p>
 <h3 id="handling-huge-data-sets">Handling huge data sets<a class="headerlink" href="#handling-huge-data-sets" title="Permanent link">&para;</a></h3>
 <p>If you have really huge data sets (several gigabytes), odds are that simply adding overviews and tiles does not cut it, making intermediate resolution serving slow. This is because tiling occurs only on the native resolution levels, and intermediate overviews are too big for quick extraction.</p>
 <p>So, what you need is a way to have tiling on intermediate levels as well. This is supported by the ImagePyramid plugin.</p>
@@ -29998,13 +29998,13 @@
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">       </span>+-<span class="w"> </span>mosaic<span class="w"> </span>metadata<span class="w"> </span>files
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">       </span>+-<span class="w"> </span>mosaic_file_0.tiff
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">       </span>+-<span class="w"> </span>...
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">       </span>+-<span class="w"> </span>mosiac_file_n.tiff
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">       </span>+-<span class="w"> </span>mosaic_file_n.tiff
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span>+-<span class="w"> </span>...
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span>+-<span class="w"> </span>32
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">       </span>+-<span class="w"> </span>mosaic<span class="w"> </span>metadata<span class="w"> </span>files
 <a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">       </span>+-<span class="w"> </span>mosaic_file_0.tiff
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">       </span>+-<span class="w"> </span>...
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">       </span>+-<span class="w"> </span>mosiac_file_n.tiff
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">       </span>+-<span class="w"> </span>mosaic_file_n.tiff
 </code></pre></div>
 <p>Creating a pyramid by hand can theoretically be done with gdal, but in practice it's a daunting task that would require some scripting, since gdal provides no "tiler" command to extract regular tiles out of an image, nor one to create a downsampled set of tiles. As an alternative, you can use the geotools PyramidBuilder tool (documentation on how to use this is pending, contact the developers if you need to use it).</p>
 

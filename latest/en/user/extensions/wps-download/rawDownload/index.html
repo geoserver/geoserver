@@ -21814,7 +21814,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -30134,7 +30134,7 @@
 <li><code>targetSizeX</code> : size X in pixels of the output (optional, applies for raster input only)</li>
 <li><code>targetSizeY</code> : size Y in pixels of the output (optional, applies for raster input only)</li>
 <li><code>selectedBands</code> : a set of the band indices of the original raster that will be used for producing the final result (optional, applies for raster input only)</li>
-<li><code>writeParameters</code> : a set of writing parameters (optional, applies for raster input only). See <a href="#writing_params">Writing parameters</a> below section for more details on writing parameters defintion.</li>
+<li><code>writeParameters</code> : a set of writing parameters (optional, applies for raster input only). See <a href="#writing_params">Writing parameters</a> below section for more details on writing parameters definition.</li>
 <li><code>minimizeReprojections</code> : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS's coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See <a href="#heterogeneous_imagemosaic">RasterDownload of Heterogeneous CRS ImageMosaic</a> below section for more details on this param.</li>
 <li><code>bestResolutionOnMatchingCRS</code> : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See <a href="#heterogeneous_imagemosaic">RasterDownload of Heterogeneous CRS ImageMosaic</a> below section for more details on this param.</li>
 <li><code>targetVerticalCRS</code> : optional TargetVerticalCRS, to be used to transform elevation data from a VerticalCRS to another one. See <a href="#vertical_resampling">Vertical data resampling on download</a> below section for more details on this param</li>
@@ -30146,7 +30146,7 @@
 <p>the reprojected coverage will be forced to use native resolutions. For example by specifying a value of 5.0, if the percentage difference between native and reprojected data is below 5%, assuming that also the other two conditions are respected, the native resolutions will be preserved. Default values is 0.</p>
 </li>
 </ul>
-<p>The <code>targetCRS</code> and <code>RoiCRS</code> parameters are using EPSG code terminology, so, valid parameters are literals like <code>EPSG:4326</code> (if we are referring to a the Geogaphic WGS84 CRS), <code>EPSG:3857</code> (for WGS84 Web Mercator CRS), etc.</p>
+<p>The <code>targetCRS</code> and <code>RoiCRS</code> parameters are using EPSG code terminology, so, valid parameters are literals like <code>EPSG:4326</code> (if we are referring to a the Geographic WGS84 CRS), <code>EPSG:3857</code> (for WGS84 Web Mercator CRS), etc.</p>
 <h2 id="roi-definition">ROI Definition<a class="headerlink" href="#roi-definition" title="Permanent link">&para;</a></h2>
 <p>A <code>ROI</code> parameter is a geometry object which can also be defined if three different forms:</p>
 <ul>
@@ -30375,7 +30375,7 @@
 <a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">          </span><span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
 <a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">          </span><span class="nt">&lt;ows:Title&gt;</span>Zipped<span class="w"> </span>output<span class="w"> </span>files<span class="w"> </span>to<span class="w"> </span>download<span class="nt">&lt;/ows:Title&gt;</span>
 <a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">          </span><span class="nt">&lt;wps:Data&gt;</span>
-<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">              </span><span class="nt">&lt;wps:ComplexData</span><span class="w"> </span><span class="na">encoding=</span><span class="s">&quot;base64&quot;</span><span class="w"> </span><span class="na">mimeType=</span><span class="s">&quot;application/zip&quot;</span><span class="nt">&gt;</span>UEsDBBQACAgIAFdyCEkAAAAAAAAAAAAAAAApAAAAMGEwYmJkYmQtMjdkNi00...(more<span class="w"> </span>zipped<span class="w"> </span>raster<span class="w"> </span>data<span class="w"> </span>following,<span class="w"> </span>ommited<span class="w"> </span>for<span class="w"> </span>space<span class="w"> </span>saving)...<span class="nt">&lt;/wps:ComplexData&gt;</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">              </span><span class="nt">&lt;wps:ComplexData</span><span class="w"> </span><span class="na">encoding=</span><span class="s">&quot;base64&quot;</span><span class="w"> </span><span class="na">mimeType=</span><span class="s">&quot;application/zip&quot;</span><span class="nt">&gt;</span>UEsDBBQACAgIAFdyCEkAAAAAAAAAAAAAAAApAAAAMGEwYmJkYmQtMjdkNi00...(more<span class="w"> </span>zipped<span class="w"> </span>raster<span class="w"> </span>data<span class="w"> </span>following,<span class="w"> </span>omitted<span class="w"> </span>for<span class="w"> </span>space<span class="w"> </span>saving)...<span class="nt">&lt;/wps:ComplexData&gt;</span>
 <a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">          </span><span class="nt">&lt;/wps:Data&gt;</span>
 <a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="w">      </span><span class="nt">&lt;/wps:Output&gt;</span>
 <a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="w">  </span><span class="nt">&lt;/wps:ProcessOutputs&gt;</span>

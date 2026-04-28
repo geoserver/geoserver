@@ -22242,7 +22242,7 @@
   <span class="md-ellipsis">
     
   
-    Features Templatring Rest API
+    Features Templating Rest API
   
 
     
@@ -31229,7 +31229,7 @@
 <p>The representation of a import is the same as the one contained in the import creation response. The execution of a import can be a long task, as such, it's possible to add <code>async=true</code> to the request to make it run in an asynchronous fashion, the client will have to poll the import representation and check when it reaches either the "COMPLETE" or "COMPLETE_ERROR" state.</p>
 <h3 id="data">Data<a class="headerlink" href="#data" title="Permanent link">&para;</a></h3>
 <p>A import can have a "data" representing the source of the data to be imported. The data can be of different types, in particular, "file", "directory", "mosaic", "database" and "remote". During the import initialization the importer will scan the contents of said resource, and generate import tasks for each data found in it.</p>
-<p>Most data types are discussed in the task section, the only type that's specific to the whole import context is the "remote" one, that is used to ask the importer to fetch the data from a remote location autonomusly, without asking the client to perform an upload.</p>
+<p>Most data types are discussed in the task section, the only type that's specific to the whole import context is the "remote" one, that is used to ask the importer to fetch the data from a remote location autonomously, without asking the client to perform an upload.</p>
 <p>The representation of a remote resource looks as follows:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&quot;data&quot;: {
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  &quot;type&quot;: &quot;remote&quot;,
@@ -31704,7 +31704,7 @@
 <td>Retrieve the list of transformations of a task with id <taskId> within import with id <importId></td>
 <td>200</td>
 <td>n/a</td>
-<td>A list of transfromations in JSON format</td>
+<td>A list of transformations in JSON format</td>
 </tr>
 <tr>
 <td>POST</td>
@@ -31955,7 +31955,7 @@
 </tbody>
 </table>
 <h4 id="integerfieldtodatetransform">IntegerFieldToDateTransform<a class="headerlink" href="#integerfieldtodatetransform" title="Permanent link">&para;</a></h4>
-<p>Takes a integer field and transforms it to a date, interpreting the intereger field as a date</p>
+<p>Takes a integer field and transforms it to a date, interpreting the integer field as a date</p>
 <table>
 <thead>
 <tr>

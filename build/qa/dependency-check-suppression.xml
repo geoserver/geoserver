@@ -132,9 +132,19 @@
         <cpe>cpe:/a:hazelcast:hazelcast</cpe>
     </suppress>
     <suppress>
+        <notes><![CDATA[ file name: opentelemetry-semconv-1.29.0-alpha.jar -- confused with the Go implementation]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.opentelemetry\.semconv/opentelemetry-semconv@.*$</packageUrl>
+        <cpe>cpe:/a:opentelemetry:opentelemetry</cpe>
+    </suppress>
+    <suppress>
         <notes><![CDATA[file name: opentelemetry-gcp-resources-1.37.0-alpha.jar -- confused with the Go implementation]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.opentelemetry\.contrib/opentelemetry-gcp-resources@.*$</packageUrl>
         <cpe>cpe:/a:opentelemetry:opentelemetry</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: affine-0.9.2.jar -- recognizes a different java library with the same name, not used in GS]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.imagen/affine@.*$</packageUrl>
+        <cpe>cpe:/a:affine:affine</cpe>
     </suppress>
     <!-- Ignoring CVEs already fixed, that get reported anyways due to SNAPSHOT dependencies processing -->
     <suppress>

@@ -1,6 +1,6 @@
 # OGC API Service Configuration
 
-The OGC API modules provide additional services along side the existing Open Web Services (OWS).
+The OGC API modules provide additional services alongside the existing Open Web Services (OWS).
 
 ## Service
 

@@ -1,6 +1,6 @@
 # Configuration of OGC API - Features module
 
-The service operates as an additional protocol for sharing vector data along side Web Feature Service.
+The service operates as an additional protocol for sharing vector data alongside Web Feature Service.
 
 ## Service configuration
 
@@ -18,7 +18,7 @@ The service is configured using:
 
 The OGC API Feature Service is modular, allowing you to enable/disable the functionality you wish to include.
 
-- By default stable Standards and Community Standards are enabled. If WFS is strict, only official Standards are enabled and community standards are disabled
+- By default stable Standards and Community Standards are enabled. If WFS is strict, only official Standards are enabled and community standards are disabled.
 
 - The OpenAPI service description is mandatory and may not be disabled.
 

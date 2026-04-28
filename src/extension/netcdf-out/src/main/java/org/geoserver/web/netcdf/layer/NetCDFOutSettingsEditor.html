@@ -15,7 +15,7 @@
               <label for="standardName" class="text">
                 <wicket:message key="NetCDFOut.standardName">CF-Standard Name</wicket:message>
               </label>
-              <input id="standardName" class="field" type="text" wicket:id="standardName" list="availableNames"/>
+              <input id="standardName" class="w-fit" type="text" wicket:id="standardName" list="availableNames"/>
               <datalist id="availableNames" class="hidden">
                 <option wicket:id="availableNames">CF-Name</option>
               </datalist>
@@ -24,7 +24,7 @@
               <label for="uom" class="text">
                 <wicket:message key="NetCDFOut.uom">Unit of Measure</wicket:message>
               </label>
-              <input id="uom" class="field" type="text" wicket:id="uom"/>
+              <input id="uom" class="w-md" type="text" wicket:id="uom"/>
             </div>
             <!--
                   Everything from this comment to the end of this file should be
@@ -35,29 +35,29 @@
               <label for="dataPacking">
                 <wicket:message key="NetCDFOut.dataPacking">Data Packing</wicket:message>
               </label>
-              <select type="select" id="dataPacking" wicket:id="dataPacking" class="w-md"/>
+              <select type="select" id="dataPacking" wicket:id="dataPacking" class="w-fit"/>
             </div>
             <div class="gs-form-group">
               <label for="compressionLevel" class="text">
                 <wicket:message key="NetCDFOut.compressionLevel">Compression Level</wicket:message>
               </label>
-              <input id="compressionLevel" class="field w-md" type="text" wicket:id="compressionLevel"/>
+              <input id="compressionLevel" class="w-md" type="text" wicket:id="compressionLevel"/>
             </div>
           </div>
-          <div class="ggs-unordered-list-class choiceList">
-            <div class="gs-list-item-class choiceItem">
+          <div class="gs-form">
+            <div class="choiceItem">
               <input id="shuffle" type="checkbox" wicket:id="shuffle"/>
               <label for="shuffle">
                 <wicket:message key="NetCDFOut.shuffle">Shuffle</wicket:message>
               </label>
             </div>
-            <div class="gs-list-item-class choiceItem">
+            <div class="choiceItem">
               <input id="copyAttributes" type="checkbox" wicket:id="copyAttributes"/>
               <label for="copyAttributes">
                 <wicket:message key="NetCDFOut.copyAttributes">Copy Variable Attributes</wicket:message>
               </label>
             </div>
-            <div class="gs-list-item-class choiceItem">
+            <div class="choiceItem">
               <input id="copyGlobalAttributes" type="checkbox" wicket:id="copyGlobalAttributes"/>
               <label for="copyGlobalAttributes">
                 <wicket:message key="NetCDFOut.copyGlobalAttributes">Copy Global Attributes</wicket:message>

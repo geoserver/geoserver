@@ -75,7 +75,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
         GeoServerDialog dialog;
         add(dialog = new GeoServerDialog("dialog"));
-        dialog.setInitialHeight(150);
+        dialog.setInitialHeight(160);
         ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
         add(progressPanel = new ProgressPanel("progress", new ResourceModel("MetadataTemplatesPage.updatingMetadata")));

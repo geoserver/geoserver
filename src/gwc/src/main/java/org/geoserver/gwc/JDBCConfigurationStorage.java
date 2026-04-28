@@ -33,7 +33,7 @@ import org.springframework.context.ApplicationContextAware;
  *
  * @author Andrea Aime - GeoSolutions
  */
-class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManagerListener {
+public class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManagerListener {
 
     static final Logger LOGGER = Logging.getLogger(JDBCConfigurationStorage.class);
 

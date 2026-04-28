@@ -23,7 +23,7 @@ There are several warnings shown when we first start up GeoServer and login as a
 
     ![](images/admin-password.png)
 
-    *Change Keystore Password*
+    *Change Admin Password*
 
     Use this screen to change the `admin` user password from the default:
 

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-rest-openapi-generated</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>gs-rest-openapi-generated-model</artifactId>
   <packaging>jar</packaging>

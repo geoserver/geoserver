@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.geoserver.maven</groupId>
     <artifactId>gs-archetype</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.maven</groupId>

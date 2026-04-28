@@ -3,12 +3,10 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-AbstractDbPanel">
-        <form wicket:id="form">
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class">
-              <label for="connType"><wicket:message key="connType">connType</wicket:message> *</label>
-              <select class="field" wicket:id="connType" id="connType"/>
-            </div>
+        <form wicket:id="form" class="gs-form">
+          <div class="gs-form-group">
+            <label for="connType"><wicket:message key="connType">connType</wicket:message> *</label>
+            <select wicket:id="connType" id="connType" class="w-fit"/>
           </div>
           <div wicket:id="paramPanelContainer">
             <div class="gs-unordered-list-class" wicket:id="paramPanels"/>

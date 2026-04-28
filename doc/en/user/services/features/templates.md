@@ -5,7 +5,7 @@ render_macros: true
 
 # HTML Templates
 
-Built-in templates are used for html generation.
+Built-in templates are used for HTML generation.
 
 ## Template override
 
@@ -62,7 +62,7 @@ To override a template used to list features:
 
 ## Collection Example
 
-Example showing how to customize a collections being listed:
+Example showing how to customize a collection being listed:
 
 1.  The file **`ogc/features/collections.ftl`** lists published collection:
 
@@ -70,7 +70,7 @@ Example showing how to customize a collections being listed:
     --8<-- "src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl"
     ```
 
-2.  Save file to **`GEOSERVER_DATA_DIR/workspace/templates/ogc/collections.ftl`**, and rewrite as:
+2.  Save file to **`GEOSERVER_DATA_DIR/templates/ogc/collections.ftl`**, and rewrite as:
 
     ``` 
     <#include "common-header.ftl">

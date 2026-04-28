@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>gs-docs</artifactId>
   <groupId>org.geoserver.en</groupId>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>GeoServer English Documentation</name>
   <description>GeoServer English documentation</description>

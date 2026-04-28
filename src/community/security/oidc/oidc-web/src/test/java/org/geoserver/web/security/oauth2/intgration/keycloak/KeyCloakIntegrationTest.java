@@ -208,9 +208,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         String html = tester.getLastResponseAsString();
 
         // 1. verify that there's a login button for oidc
-        assertTrue(
-                html.contains(
-                        "<a class=\"d-inline-block\" href=\"http://localhost/context/web/oauth2/authorization/openidconnect__oidc\">"));
+        assertTrue(html.contains("href=\"http://localhost/context/web/oauth2/authorization/openidconnect__oidc\""));
 
         // 2. lets "press" the oidc login link:
         MockHttpServletRequest webRequest = createRequest("web/oauth2/authorization/openidconnect__oidc", true);

@@ -49,10 +49,10 @@ public class FileBreadcrumsTest {
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
 
-        tester.assertLabel("form:panel:path:0:pathItemLink:pathItem", "test-breadcrumbs/");
-        tester.assertLabel("form:panel:path:1:pathItemLink:pathItem", "one/");
-        tester.assertLabel("form:panel:path:2:pathItemLink:pathItem", "two/");
-        tester.assertLabel("form:panel:path:3:pathItemLink:pathItem", "three/");
+        tester.assertLabel("form:panel:path:0:pathItemLink:pathItem", "test-breadcrumbs /");
+        tester.assertLabel("form:panel:path:1:pathItemLink:pathItem", "one /");
+        tester.assertLabel("form:panel:path:2:pathItemLink:pathItem", "two /");
+        tester.assertLabel("form:panel:path:3:pathItemLink:pathItem", "three /");
     }
 
     @Test
@@ -64,8 +64,8 @@ public class FileBreadcrumsTest {
 
         assertEquals(new File("target/test-breadcrumbs/one"), lastClicked);
 
-        tester.assertLabel("form:panel:path:0:pathItemLink:pathItem", "test-breadcrumbs/");
-        tester.assertLabel("form:panel:path:1:pathItemLink:pathItem", "one/");
+        tester.assertLabel("form:panel:path:0:pathItemLink:pathItem", "test-breadcrumbs /");
+        tester.assertLabel("form:panel:path:1:pathItemLink:pathItem", "one /");
         assertEquals(
                 2,
                 ((ListView) tester.getComponentFromLastRenderedPage("form:panel:path"))

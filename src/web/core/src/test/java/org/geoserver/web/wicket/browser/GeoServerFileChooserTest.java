@@ -115,7 +115,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
 
         tester.assertLabel(
                 "form:panel:breadcrumbs:path:0:pathItemLink:pathItem",
-                getTestData().getDataDirectoryRoot().getName() + "/");
+                getTestData().getDataDirectoryRoot().getName() + " /");
     }
 
     @Test

@@ -19,9 +19,9 @@ Your css selectors should look like this to avoid modifying styles outside the p
       display: flex;
       flex-direction: column;
 }
-.gs-panel-UpDownPanel button {
-      width: 2rem;
-      height: 2rem;
+.gs-panel-UpDownPanel i {
+      width: 1rem;
+      height: 1rem;
       display: flex;
       align-items: center;
       justify-content: center;

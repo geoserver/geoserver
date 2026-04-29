@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.AuthUser;
+import org.geoserver.geofence.services.dto.PermsResult;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
 
@@ -30,8 +31,16 @@ public class RuleCacheLoaderFactory {
         this.realRuleReaderService = realRuleReaderService;
     }
 
+    public RuleReaderService getRealRuleReaderService() {
+        return realRuleReaderService;
+    }
+
     public RuleLoader createRuleLoader() {
         return new RuleLoader();
+    }
+
+    public PermLoader createPermLoader() {
+        return new PermLoader();
     }
 
     public AuthLoader createAuthLoader() {
@@ -74,6 +83,31 @@ public class RuleCacheLoaderFactory {
             // return realRuleReaderService.getAccessInfo(filter);
             // }
             // });
+        }
+    }
+
+    class PermLoader extends CacheLoader<RuleFilter, PermsResult> {
+
+        private PermLoader() {}
+
+        @Override
+        public PermsResult load(RuleFilter filter) throws Exception {
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading perms for {0}", filter);
+            // the service, when integrated, may modify the filter
+            RuleFilter clone = filter.clone();
+            return realRuleReaderService.getPermissionFilter(clone);
+        }
+
+        @Override
+        public ListenableFuture<PermsResult> reload(final RuleFilter filter, PermsResult perms) throws Exception {
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading perms for {0}", filter);
+
+            // the service, when integrated, may modify the filter
+            RuleFilter clone = filter.clone();
+
+            // this is a sync implementation
+            PermsResult ret = realRuleReaderService.getPermissionFilter(clone);
+            return Futures.immediateFuture(ret);
         }
     }
 

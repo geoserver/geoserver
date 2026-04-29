@@ -92,6 +92,16 @@
                                     <td wicket:id="rule.evict">-</td>
                                 </tr>
                                 <tr class="even">
+                                    <th scope="row"><wicket:message key="permCache">Perms cache</wicket:message></th>
+                                    <td wicket:id="perm.size">-</td>
+                                    <td wicket:id="perm.hit">-</td>
+                                    <td wicket:id="perm.miss">-</td>
+                                    <td wicket:id="perm.loadok">-</td>
+                                    <td wicket:id="perm.loadko">-</td>
+                                    <td wicket:id="perm.loadtime">-</td>
+                                    <td wicket:id="perm.evict">-</td>
+                                </tr>
+                                <tr class="odd">
                                     <th scope="row"><wicket:message key="adminCache">Admin cache</wicket:message></th>
                                     <td wicket:id="admin.size">-</td>
                                     <td wicket:id="admin.hit">-</td>
@@ -101,7 +111,7 @@
                                     <td wicket:id="admin.loadtime">-</td>
                                     <td wicket:id="admin.evict">-</td>
                                 </tr>
-                                <tr class="odd">
+                                <tr class="even">
                                     <th scope="row"><wicket:message key="userCache">User cache</wicket:message></th>
                                     <td wicket:id="user.size">-</td>
                                     <td wicket:id="user.hit">-</td>
@@ -111,7 +121,7 @@
                                     <td wicket:id="user.loadtime">-</td>
                                     <td wicket:id="user.evict">-</td>
                                 </tr>
-                                <tr class="even">
+                                <tr class="odd">
                                     <th scope="row"><wicket:message key="contCache">Container cache</wicket:message></th>
                                     <td wicket:id="cont.size">-</td>
                                     <td wicket:id="cont.hit">-</td>

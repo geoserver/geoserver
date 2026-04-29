@@ -12,6 +12,7 @@ import org.geoserver.geofence.cache.RuleCacheLoaderFactory.NamePw;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.AuthUser;
+import org.geoserver.geofence.services.dto.PermsResult;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geotools.util.logging.Logging;
@@ -39,15 +40,22 @@ public class CachedRuleReader implements RuleReaderService {
 
     @Override
     public AccessInfo getAccessInfo(RuleFilter filter) {
-        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Request for {0}", filter);
-
-        AccessInfo accessInfo = null;
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Access request for {0}", filter);
         try {
-            accessInfo = cacheManager.getRuleCache().get(filter);
+            return cacheManager.getRuleCache().get(filter);
         } catch (ExecutionException ex) {
             throw new RuntimeException(ex); // fixme: handle me
         }
-        return accessInfo;
+    }
+
+    @Override
+    public PermsResult getPermissionFilter(RuleFilter filter) {
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Perms request for {0}", filter);
+        try {
+            return cacheManager.getPermCache().get(filter);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException(ex); // fixme: handle me
+        }
     }
 
     @Override

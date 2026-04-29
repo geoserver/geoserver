@@ -5,7 +5,7 @@ render_macros: true
 
 # Linux binary
 
-The platform-independent binary is a GeoServer web application bundled with [Jetty](https://eclipse.org/jetty/), a scalable and memory-efficient web server and Servlet container. Jerry has the advantages of working very similarly across all operating systems and is straightforward to set up.
+The platform-independent binary is a GeoServer web application bundled with [Jetty](https://eclipse.org/jetty/), a scalable and memory-efficient web server and Servlet container. Jetty has the advantages of working very similarly across all operating systems and is straightforward to set up.
 
 !!! note
     For installing on Linux with an existing application server such as Tomcat, please see the [Web archive](war.md) section.

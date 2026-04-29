@@ -982,15 +982,15 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         try {
             permsResult = rulesService.getPermissionFilter(ruleFilter);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error retrieving permissions, skipping access to " + ruleFilter, e);
-            return null;
+            LOGGER.log(Level.SEVERE, "Error retrieving permissions for filter " + ruleFilter + ", denying access", e);
+            return Filter.EXCLUDE;
         }
 
         if (permsResult == null) {
             LOGGER.log(Level.SEVERE, "GeoFence returned null PermsResult for filter {0}, denying access", ruleFilter);
             return Filter.EXCLUDE;
         }
-        return new PermissionCatalogFilterHelper().buildCatalogFilter(permsResult, clazz);
+        return PermissionCatalogFilterHelper.buildCatalogFilter(permsResult, clazz);
     }
 
     /**

@@ -39,7 +39,7 @@ import org.geotools.util.logging.Logging;
  */
 public class PermissionCatalogFilterHelper {
 
-    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
+    static final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
     static final Logger LOGGER = Logging.getLogger(PermissionCatalogFilterHelper.class);
 
     /** Property name used for workspace in GeoFence CQL filters. */
@@ -63,7 +63,7 @@ public class PermissionCatalogFilterHelper {
      * @param clazz the target catalog type for which to build the filter
      * @return a GeoTools {@link Filter} suitable for pre-filtering the GeoServer catalog
      */
-    public Filter buildCatalogFilter(PermsResult permsResult, Class<? extends CatalogInfo> clazz) {
+    public static Filter buildCatalogFilter(PermsResult permsResult, Class<? extends CatalogInfo> clazz) {
 
         LOGGER.log(Level.FINER, "Building GeoFence security pre-filter for {0}", clazz.getName());
 
@@ -103,7 +103,7 @@ public class PermissionCatalogFilterHelper {
      * ({@code *:*} for global access, or {@code *:layer} for a specific layer in any workspace) makes all workspaces
      * visible.
      */
-    private Filter buildWorkspaceFilter(PermsResult permsResult) {
+    private static Filter buildWorkspaceFilter(PermsResult permsResult) {
         SortedSet<String> resources = permsResult.getAccessibleResources();
 
         if (resources.isEmpty()) {
@@ -123,18 +123,18 @@ public class PermissionCatalogFilterHelper {
                 })
                 .filter(ws -> ws != null && !"*".equals(ws))
                 .distinct()
-                .map(ws -> FF.equals(FF.property("name"), FF.literal(ws)))
+                .map(ws -> ff.equals(ff.property("name"), ff.literal(ws)))
                 .collect(Collectors.toList());
 
         if (wsFilters.isEmpty()) return Filter.EXCLUDE;
-        return wsFilters.size() == 1 ? wsFilters.get(0) : FF.or(wsFilters);
+        return wsFilters.size() == 1 ? wsFilters.get(0) : ff.or(wsFilters);
     }
 
     /**
      * Parses the CQL filter string and renames {@code workspace} / {@code layer} property references to the target
      * property paths.
      */
-    private Filter parseCqlAndRenameProperties(String cqlFilter, String newWsProp, String newLayerProp) {
+    private static Filter parseCqlAndRenameProperties(String cqlFilter, String newWsProp, String newLayerProp) {
         Filter filter;
         try {
             filter = ECQL.toFilter(cqlFilter);

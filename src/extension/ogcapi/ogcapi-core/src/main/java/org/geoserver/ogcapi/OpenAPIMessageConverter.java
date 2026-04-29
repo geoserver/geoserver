@@ -27,7 +27,7 @@ public class OpenAPIMessageConverter extends AbstractJackson2HttpMessageConverte
 
     public static ObjectMapper getMapper() {
         ObjectMapper mapper = Json.mapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
         mapper.writer(new DefaultPrettyPrinter());
         return mapper;
     }

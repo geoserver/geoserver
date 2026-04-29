@@ -25,7 +25,7 @@ public class MappingJackson2HttpMessageConverter
         ObjectMapper mapper = getObjectMapper();
         mapper.registerModule(new JtsModule());
         mapper.registerModule(new CloseableIteratorModule());
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
         mapper.writer(new DefaultPrettyPrinter());
     }
 

@@ -1,4 +1,4 @@
-name: Linux JDK GitHub CI
+name: Linux Locales GitHub CI
 
 on:
   pull_request:

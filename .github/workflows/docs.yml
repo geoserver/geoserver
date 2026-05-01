@@ -148,7 +148,7 @@ jobs:
           path: _gh-pages-content
 
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3

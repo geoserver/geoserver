@@ -245,13 +245,13 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     protected Attribute buildAttribute(String key, String value) {
         try {
             return new Attribute(key, Integer.parseInt(value));
-        } catch (NumberFormatException e) {
-            // ignore
+        } catch (NumberFormatException ignored) {
+            // not an integer: try double next
         }
         try {
             return new Attribute(key, Double.parseDouble(value));
-        } catch (NumberFormatException e) {
-            // ignore
+        } catch (NumberFormatException ignored) {
+            // not a double: fall back to string
         }
         return new Attribute(key, value);
     }
@@ -395,7 +395,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     }
 
     protected int checkLevel(Integer level) {
-        if (level == null || (level < 0 || level > 9)) {
+        if (level == null || level < 0 || level > 9) {
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning("NetCDF 4 compression Level not in the proper range [0, 9]: "
                         + level
@@ -453,10 +453,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 // we will put these dimension lowercase for NetCDF names
                 dimensionName = dimensionName.toLowerCase();
             }
-            if (isRange) {
-                if (boundDimension == null) {
-                    boundDimension = writerb.addDimension(NetCDFUtilities.BOUNDARY_DIMENSION, 2);
-                }
+            if (isRange && boundDimension == null) {
+                boundDimension = writerb.addDimension(NetCDFUtilities.BOUNDARY_DIMENSION, 2);
             }
             final Dimension netcdfDimension = writerb.addDimension(dimensionName, dimensionLength);
             dimension.setNetCDFDimension(netcdfDimension);
@@ -490,7 +488,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
 
     /** Write the NetCDF file */
     @Override
-    public void write() throws IOException, ucar.ma2.InvalidRangeException {
+    public void write() throws IOException, InvalidRangeException {
         try (NetcdfFormatWriter formatWriter = writer) {
             crsWriter.setWriter(formatWriter);
             for (NetCDFDimensionsManager.NetCDFDimensionMapping mapper : dimensionsManager.getDimensions()) {
@@ -580,13 +578,11 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                         LOGGER.fine(e1.getLocalizedMessage());
                     }
                 }
-                if (!parseable) {
-                    if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.info("The specified unit "
-                                + definedUnit
-                                + " can't be converted to a "
-                                + " UCAR unit so it doesn't allow to define a standard name");
-                    }
+                if (!parseable && LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("The specified unit "
+                            + definedUnit
+                            + " can't be converted to a "
+                            + " UCAR unit so it doesn't allow to define a standard name");
                 }
             }
         }
@@ -681,7 +677,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         if (Double.isNaN(noDataValue)) {
             return Double.isNaN(sampleValue);
         }
-        return (Math.abs(noDataValue - sample.doubleValue()) < EQUALITY_DELTA);
+        return Math.abs(noDataValue - sample.doubleValue()) < EQUALITY_DELTA;
     }
 
     /** Setup the proper NetCDF array indexing, taking current dimension values from the current coverage */

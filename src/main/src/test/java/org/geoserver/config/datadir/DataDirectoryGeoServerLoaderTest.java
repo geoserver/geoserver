@@ -706,10 +706,10 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
 
         // Overwrite the resource XML with a version pointing to a non-existent store ID.
         // When the loader reads this file, ResolvingProxy.resolve() returns null for the
-        // unknown store ID, leaving the store field as an unresolved ResolvingProxy typed
-        // as StoreInfo. WMSLayerInfoImpl.getStore() then casts it to WMSStoreInfo, which
-        // throws ClassCastException. Without the fix this exception escapes the catch block
-        // in doAddToCatalog and propagates fatally through ForkJoin, crashing startup.
+        // unknown store ID, leaving the store field as an unresolved ResolvingProxy. Without
+        // the fix, WMSLayerInfoImpl.getStore() casts it to WMSStoreInfo, throwing
+        // ClassCastException that escapes doAddToCatalog and propagates as
+        // IllegalStateException through ForkJoin, crashing GeoServer startup.
         Resource resourceFile = getDataDirectory().config(persistedResource);
         WMSLayerInfoImpl rawResource = (WMSLayerInfoImpl) ModificationProxy.unwrap(persistedResource);
         WMSStoreInfoImpl bogusStore = support.createWmsStore(ws);
@@ -717,7 +717,11 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         rawResource.setStore(bogusStore);
         persist(rawResource, resourceFile);
 
-        getLoader().reload();
+        // Use an isolated loader so we only exercise the WMS layer path, not the full catalog.
+        // Without the fix this throws IllegalStateException caused by ClassCastException.
+        DataDirectoryGeoServerLoader loader = newLoader();
+        CatalogImpl newCatalog = new CatalogImpl();
+        loader.postProcessBeforeInitialization(newCatalog, "catalog");
     }
 
     private void deleteStyle(String infoName, String sldFile) {

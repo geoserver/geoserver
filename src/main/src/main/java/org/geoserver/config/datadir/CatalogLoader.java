@@ -30,6 +30,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ResolvingProxy;
+import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
@@ -414,18 +415,13 @@ class CatalogLoader {
         String parent = null;
         if (info instanceof LayerInfo layer) {
             parent = layer.getResource() != null ? layer.getResource().prefixedName() : null;
-        } else if (info instanceof ResourceInfo resource) {
-            // WMSLayerInfoImpl.getStore() and CoverageInfoImpl.getStore() override ResourceInfo.getStore()
-            // with a cast to their concrete store type. If the store reference is still an unresolved
-            // ResolvingProxy (e.g. due to a parallel loading race), that cast throws ClassCastException.
-            // This is a logging helper only, so we swallow the exception rather than propagating it.
-            StoreInfo store = null;
-            try {
-                store = resource.getStore();
-            } catch (ClassCastException e) {
-                LOGGER.log(Level.FINE, "Could not determine parent store for {0} during catalog loading", baseName);
+        } else if (info instanceof ResourceInfoImpl impl) {
+            StoreInfo store = impl.rawStore();
+            if (store != null && ResolvingProxy.getRef(store) == null) {
+                parent = store.getWorkspace().getName() + "/" + store.getName();
+            } else {
+                parent = "unresolved proxy";
             }
-            parent = store != null ? store.getWorkspace().getName() + "/" + store.getName() : null;
         } else if (info instanceof StoreInfo store) {
             parent = store.getWorkspace() != null ? store.getWorkspace().getName() : null;
         } else if (info instanceof StyleInfo style) {

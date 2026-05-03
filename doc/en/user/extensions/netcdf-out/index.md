@@ -74,6 +74,67 @@ NetCDF output settings can be configured for each raster layer. The similar sect
       - Dimension is either blank to simply copy the source scalar from one granule, or the name of one output NetCDF dimension to cause values to be copied from multiple granules (such as those from an ImageMosaic over a non-spatial dimension) into a one-dimensional variable. The example above copies a single value from multiple `reftime` scalars into `forecast_reference_time` dimensioned by `time` in an ImageMosaic over time.
       - For an ImageMosaic, one granule is chosen as the source for variable attributes.
 
+## Multi-band output
+
+Coverages with more than one sample dimension — typically built via WCS
+`COVERAGE_VIEW` with `BAND_SELECT` entries — are written as **one
+output variable per band**, rather than collapsed to a single variable
+named after the layer. Each output variable's name is resolved with
+the following precedence:
+
+1. The corresponding entry from the `bandSettings` list in the
+   layer's NetCDF Output configuration, if any (see *Per-band
+   settings* below);
+2. The source band's `GridSampleDimension` description, which equals
+   the `<definition>` value when the source coverage is a
+   `COVERAGE_VIEW` with `BAND_SELECT` bands;
+3. As a last-resort fallback, `<coverageName>_<bandIndex>`.
+
+Single-band coverages — the historical and most common case — are
+unaffected and continue to write a single output variable named after
+the layer (or after `Variable Name` from the settings panel, when
+set).
+
+### Per-band settings
+
+For each source band, a `BandSetting` entry can override:
+
+- **Name** — the output NetCDF variable name (defaults to the source
+  band's sample dimension description).
+- **Unit of Measure** — the output `units` attribute (defaults to the
+  source band's unit). When both an input unit and an explicit output
+  unit are declared, values are converted at write time using the
+  Unidata unit framework.
+- **Variable Attributes** — additional `Attribute`s applied to this
+  band's output variable. These are *additive* with respect to the
+  container-level *Variable Attributes* list and **take precedence on
+  key collisions** — so per-band CF `standard_name` overrides the
+  container-level one, for instance.
+
+`BandSetting` entries are positional: the entry at index `i` applies
+to the i-th source band. When the list is shorter than the band count,
+trailing bands fall through to the auto-derived defaults; entries
+beyond the band count are silently ignored.
+
+### Example: vector field as two CF variables
+
+A `COVERAGE_VIEW` with `BAND_SELECT` bands `uo` (band 0) and `vo`
+(band 1) — built from a NetCDF source's eastward / northward
+sea-water-velocity variables — is configured with the following
+`bandSettings`:
+
+| Index | Name | UoM | Variable Attributes |
+|---|---|---|---|
+| 0 | `uo` | `m s-1` | `standard_name=eastward_sea_water_velocity` |
+| 1 | `vo` | `m s-1` | `standard_name=northward_sea_water_velocity` |
+
+The resulting NetCDF carries two CF-compliant variables — `uo` and
+`vo`, both shaped `(time, lat, lon)` — that downstream simulation
+engines such as
+[OpenDrift](https://opendrift.github.io/)'s
+`reader_netCDF_CF_generic` can locate by CF `standard_name` lookup
+without any additional client-side preparation.
+
 ## CF Standard names support
 
 Note that the output name can also be chosen from the list of CF Standard names. Check [CF standard names](http://cfconventions.org/standard-names.md) page for more info on it.

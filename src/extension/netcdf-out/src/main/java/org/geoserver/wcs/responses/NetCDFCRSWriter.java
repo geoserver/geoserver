@@ -125,9 +125,8 @@ class NetCDFCRSWriter {
         // Setup resolutions and bbox extrema to populate regularly gridded coordinate data
         double xmin = (axisOrder == AxisOrder.NORTH_EAST) ? envelope.getMinimum(1) : envelope.getMinimum(0);
         double ymin = (axisOrder == AxisOrder.NORTH_EAST) ? envelope.getMinimum(0) : envelope.getMinimum(1);
-        final double periodY = ((axisOrder == AxisOrder.NORTH_EAST)
-                ? XAffineTransform.getScaleX0(at)
-                : XAffineTransform.getScaleY0(at));
+        final double periodY =
+                (axisOrder == AxisOrder.NORTH_EAST) ? XAffineTransform.getScaleX0(at) : XAffineTransform.getScaleY0(at);
         final double periodX =
                 (axisOrder == AxisOrder.NORTH_EAST) ? XAffineTransform.getScaleY0(at) : XAffineTransform.getScaleX0(at);
 
@@ -254,8 +253,8 @@ class NetCDFCRSWriter {
         // Projection may be exposed as standard NetCDF CF GridMapping (if available)
         // as well as through SPATIAL_REF and GeoTransform attributes (GDAL way)
         if (projection != null) {
-            setGridMappingVariableAttributes(writerb, crs, varbProjection, projection);
-            setGeoreferencingAttributes(writerb, crs, transform, varbProjection);
+            setGridMappingVariableAttributes(crs, varbProjection, projection);
+            setGeoreferencingAttributes(crs, transform, varbProjection);
         } else {
             addGlobalAttributes(writerb, crs, transform);
         }
@@ -264,10 +263,7 @@ class NetCDFCRSWriter {
     /** Setup proper projection information to the output NetCDF */
     @SuppressWarnings("deprecation") // Need an alternative for attribute with list values
     private void setGridMappingVariableAttributes(
-            NetcdfFormatWriter.Builder writerb,
-            CoordinateReferenceSystem crs,
-            Variable.Builder varb,
-            NetCDFProjection projection) {
+            CoordinateReferenceSystem crs, Variable.Builder varb, NetCDFProjection projection) {
         if (!(crs instanceof GeneralDerivedCRS)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("The provided CRS is not a projected or derived CRS\n"
@@ -368,10 +364,7 @@ class NetCDFCRSWriter {
 
     /** Add the gridMapping attribute */
     private void setGeoreferencingAttributes(
-            NetcdfFormatWriter.Builder writerb,
-            CoordinateReferenceSystem crs,
-            MathTransform transform,
-            Variable.Builder varb) {
+            CoordinateReferenceSystem crs, MathTransform transform, Variable.Builder varb) {
 
         // Adding GDAL Attributes spatial_ref and GeoTransform
         varb.addAttribute(getSpatialRefAttribute(crs));

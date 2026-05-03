@@ -208,11 +208,11 @@ public class NetCDFDimensionsManager {
         /** A simple interface to deal with the values of a Dimension */
         interface DimensionValues {
 
-            abstract Object getValues();
+            Object getValues();
 
-            abstract void addValue(Object object);
+            void addValue(Object object);
 
-            abstract int getSize();
+            int getSize();
         }
 
         /** A DimensionValues based on Set of objects */

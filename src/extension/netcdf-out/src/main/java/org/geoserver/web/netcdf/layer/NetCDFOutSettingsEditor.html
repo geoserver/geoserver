@@ -177,6 +177,41 @@
                         </div>
                     </div>
                 </li>
+                <li>
+                    <label class="fw-bold fst-italic">
+                        <wicket:message key="NetCDFOut.bandSettings">Per-band Settings</wicket:message>
+                    </label>
+                    <div class="d-table">
+                        <div class="d-table-row fst-italic">
+                            <div class="d-table-cell">
+                                <wicket:message key="NetCDFOut.bandSettingName">Variable Name</wicket:message>
+                            </div>
+                            <div class="d-table-cell">
+                                <wicket:message key="NetCDFOut.bandSettingUom">Unit of Measure</wicket:message>
+                            </div>
+                        </div>
+                        <div class="d-table-row" wicket:id="bandSettings">
+                            <div class="d-table-cell"
+                                wicket:id="bandSettingName"></div>
+                            <div class="d-table-cell"
+                                wicket:id="bandSettingUom"></div>
+                            <div class="d-table-cell" wicket:id="removeBandSettingIcon"></div>
+                        </div>
+                        <div class="d-table-row">
+                            <div class="d-table-cell">
+                                <input type="text" wicket:id="newBandSettingName"/>
+                            </div>
+                            <div class="d-table-cell">
+                                <input type="text" wicket:id="newBandSettingUom"/>
+                            </div>
+                            <div class="d-table-cell">
+                                <a href="#" wicket:id="addBandSetting">
+                                    <span wicket:id="addBandSettingIcon"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
             </ul>
         </div>
       </fieldset>

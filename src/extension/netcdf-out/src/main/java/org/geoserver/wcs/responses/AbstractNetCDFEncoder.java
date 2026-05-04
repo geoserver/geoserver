@@ -90,8 +90,27 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     /** Global Attributes that are never copied from a NetCDF/GRIB source because they require special handling. */
     protected static final Set<String> COPY_GLOBAL_ATTRIBUTES_BLACKLIST = Set.of("_NCProperties");
 
-    /** Bean related to the {@link NetCDFCFParser} */
-    protected static NetCDFParserBean parserBean = GeoServerExtensions.bean(NetCDFParserBean.class);
+    /**
+     * Bean related to the {@link NetCDFCFParser}.
+     *
+     * <p>Resolved lazily via {@link #getParserBean()} so that the CF standard names table is looked up at first use
+     * (when the Spring context is fully wired and the GeoServer data directory has been provisioned), not at
+     * {@code AbstractNetCDFEncoder} class-load time. Eager resolution at class load was racy under tests that touched
+     * the encoder before the test data directory had finished initializing — the field would latch to {@code null} and
+     * every subsequent CF compliance check would silently return {@code false}, dropping the {@code standard_name}
+     * attribute from the output.
+     */
+    protected static volatile NetCDFParserBean parserBean;
+
+    /** Returns the cached {@link NetCDFParserBean}, resolving it lazily via Spring on first use. */
+    protected static NetCDFParserBean getParserBean() {
+        NetCDFParserBean local = parserBean;
+        if (local == null) {
+            local = GeoServerExtensions.bean(NetCDFParserBean.class);
+            parserBean = local;
+        }
+        return local;
+    }
 
     /**
      * A dimension mapping between dimension names and dimension manager instances We use a Linked map to preserve the
@@ -537,14 +556,15 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             // No unit defined
             return false;
         }
-        if (parserBean == null || parserBean.getParser() == null) {
+        NetCDFParserBean bean = getParserBean();
+        if (bean == null || bean.getParser() == null) {
             // Unable to check if it is cf-compliant
             return false;
         }
 
         String variableName = var.shortName;
         // Getting the parser
-        NetCDFCFParser parser = parserBean.getParser();
+        NetCDFCFParser parser = bean.getParser();
         // Checking CF convention
         boolean validName = parser.hasEntryId(variableName) || parser.hasAliasId(variableName);
         // Checking UOM

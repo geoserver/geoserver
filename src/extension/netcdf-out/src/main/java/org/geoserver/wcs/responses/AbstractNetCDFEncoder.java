@@ -133,15 +133,15 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     /** The extra variables to be copied from the source to output NetCDF */
     protected List<NetCDFSettingsContainer.ExtraVariable> extraVariables;
 
-    protected boolean shuffle = NetCDFSettingsContainer.DEFAULT_SHUFFLE;
+    protected volatile boolean shuffle = NetCDFSettingsContainer.DEFAULT_SHUFFLE;
 
     /** Whether to copy attributes from NetCDF source variable to output variable */
-    protected boolean copyAttributes = NetCDFSettingsContainer.DEFAULT_COPY_ATTRIBUTES;
+    protected volatile boolean copyAttributes = NetCDFSettingsContainer.DEFAULT_COPY_ATTRIBUTES;
 
     /** Weather to copy global attributes from NetCDF source to output */
-    protected boolean copyGlobalAttributes = NetCDFSettingsContainer.DEFAULT_COPY_GLOBAL_ATTRIBUTES;
+    protected volatile boolean copyGlobalAttributes = NetCDFSettingsContainer.DEFAULT_COPY_GLOBAL_ATTRIBUTES;
 
-    protected int compressionLevel = NetCDFSettingsContainer.DEFAULT_COMPRESSION;
+    protected volatile int compressionLevel = NetCDFSettingsContainer.DEFAULT_COMPRESSION;
 
     protected DataPacking dataPacking = DataPacking.getDefault();
 

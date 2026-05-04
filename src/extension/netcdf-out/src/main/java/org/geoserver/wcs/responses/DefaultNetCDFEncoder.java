@@ -583,7 +583,6 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
     }
 
     /** Tile-and-pixel walk that fills every band's matrix from the current granule's {@link RandomIter}. */
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     private void fillBandMatrices(
             RandomIter data,
             DataType sourceDataType,

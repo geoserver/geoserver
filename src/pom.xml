@@ -102,7 +102,7 @@
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring.ldap.version>4.0.3</spring.ldap.version>
     <spring-integration.version>7.0.4</spring-integration.version>
-    <wicket.version>10.7.0</wicket.version>
+    <wicket.version>10.8.0</wicket.version>
 
     <!-- ================================ -->
     <!-- Dependency version management    -->

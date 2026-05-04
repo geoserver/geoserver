@@ -8,6 +8,7 @@ package org.geoserver.wcs.response;
 import jakarta.activation.DataHandler;
 import jakarta.mail.BodyPart;
 import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
@@ -40,14 +41,18 @@ public class WCSMultipartResponse extends Response {
     public WCSMultipartResponse(Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         super(GridCoverage[].class);
         this.catalog = catalog;
-        this.multipart = new MimeMultipart();
         this.responseFactory = responseFactory;
+    }
+
+    private Multipart getMultipart() {
+        if (multipart == null) this.multipart = new MimeMultipart();
+        return multipart;
     }
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         // javamail outputs multipart/mixed, but in our case we're producing multipart/related
-        return multipart
+        return getMultipart()
                 .getContentType()
                 .replace("mixed", "related")
                 .replace("\n", "")
@@ -91,6 +96,7 @@ public class WCSMultipartResponse extends Response {
                 catalog.getCoverageByName(request.getIdentifier().getValue());
 
         // use javamail classes to actually encode the document
+        Multipart multipart = getMultipart();
         try {
             // coverages xml structure (always set the headers after the data
             // handlers, setting

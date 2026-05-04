@@ -67,6 +67,7 @@ import org.locationtech.jts.geom.Envelope;
 public class GetMap {
 
     private static final Logger LOGGER = Logging.getLogger(GetMap.class);
+    public static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
 
     private FilterFactory ff;
 
@@ -329,10 +330,10 @@ public class GetMap {
         if (cachingPossible) {
             map.setResponseHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");
 
-            final GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+            final GregorianCalendar calendar = new GregorianCalendar(GMT_TIME_ZONE);
             calendar.add(Calendar.SECOND, maxAge);
             DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
+            format.setTimeZone(GMT_TIME_ZONE);
             map.setResponseHeader("Expires", format.format(calendar.getTime()));
         }
 

@@ -2205,9 +2205,16 @@ div.dnd-theme-web tr {
   cursor: -webkit-grab;
 }
 div.value-wide {
-  border: 1px solid var(--gs-border-color);
-  padding: 0.25em;
+  min-width: 15rem;
   width: fit-content;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--gs-body-bg);
+  border: var(--gs-border-width) solid var(--gs-border-color);
+  border-radius: var(--gs-border-radius);
 }
 
 /*-----------
@@ -2286,6 +2293,10 @@ div.value-wide {
   flex-basis: 150px;
   flex-shrink: 0;
   padding-top: 0.375rem;
+}
+.choiceItem label .help-link,
+.gs-form-group label .help-link {
+  margin-left: 0.25rem;
 }
 .gs-form > .choiceItem {
   display: flex;

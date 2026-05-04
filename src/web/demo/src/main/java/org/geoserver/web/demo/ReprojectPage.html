@@ -16,16 +16,20 @@
     </div>
     <div class="gs-form-group">
       <label for="sourceGeom"><wicket:message key="sourceGeom">sourceGeom</wicket:message></label>
-      <div class="w-wide">
+      <div class="w-wide gs-form">
         <textarea id="sourceGeom" class="reproj-console-geom" wicket:id="sourceGeom"></textarea>
-        <a href="#" wicket:id="forward"><wicket:message key="forward">forward</wicket:message></a>
+        <div>
+          <a class="button" href="#" wicket:id="forward"><wicket:message key="forward">forward</wicket:message></a>
+        </div>
       </div>
     </div>
     <div class="gs-form-group">
         <label for="targetGeom"><wicket:message key="targetGeom">targetGeom</wicket:message></label>
-        <div class="w-wide">
+        <div class="w-wide gs-form">
           <textarea id="targetGeom" class="reproj-console-geom" wicket:id="targetGeom"></textarea>
-          <a href="#" wicket:id="backward"><wicket:message key="backward">backward</wicket:message></a>
+          <div>
+            <a class="button" href="#" wicket:id="backward"><wicket:message key="backward">backward</wicket:message></a>
+          </div>
         </div>
     </div>
   </div>

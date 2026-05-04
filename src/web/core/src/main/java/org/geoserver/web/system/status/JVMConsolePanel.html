@@ -4,7 +4,7 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-JVMConsolePanel">
-        <div class="w-wide">
+        <div class="w-wide gs-form">
           <div class="button-group selfclear">
             <a href="#" id="dumpThread" wicket:id="dumpThread" class="button">
               <wicket:message key="threadDump">Thread dump</wicket:message>
@@ -16,9 +16,11 @@
           <div>
             <textarea id="dumpContent" readonly="readonly" wicket:id="dumpContent"/>
           </div>
-          <a href="#" id="downloadlink" wicket:id="downloadlink" class="button">
-            <wicket:message key="download">download as dump text</wicket:message>
-          </a>
+          <div>
+            <a href="#" id="downloadlink" wicket:id="downloadlink" class="button">
+              <wicket:message key="download">download as dump text</wicket:message>
+            </a>
+          </div>
         </div>
       </div>
     </wicket:panel>

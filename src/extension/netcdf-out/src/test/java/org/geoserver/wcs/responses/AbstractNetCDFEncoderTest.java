@@ -7,7 +7,6 @@ package org.geoserver.wcs.responses;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Method;
 import org.junit.Test;
 
 /**
@@ -20,22 +19,11 @@ import org.junit.Test;
  */
 public class AbstractNetCDFEncoderTest {
 
-    /** Reflective dispatch — keeps the predicate package-private without forcing it to be {@code public}. */
-    private static boolean isNaN(Number sample, double noDataValue) {
-        try {
-            Method m = AbstractNetCDFEncoder.class.getDeclaredMethod("isNaN", Number.class, double.class);
-            m.setAccessible(true);
-            return (boolean) m.invoke(null, sample, noDataValue);
-        } catch (ReflectiveOperationException e) {
-            throw new AssertionError("Failed to dispatch AbstractNetCDFEncoder.isNaN", e);
-        }
-    }
-
     /** When the configured no-data is NaN, real NaN samples must still be flagged as fill. */
     @Test
     public void nanSampleIsFillWhenNoDataIsNaN() {
-        assertTrue(isNaN(Double.NaN, Double.NaN));
-        assertTrue(isNaN(Float.NaN, Double.NaN));
+        assertTrue(AbstractNetCDFEncoder.isNaN(Double.NaN, Double.NaN));
+        assertTrue(AbstractNetCDFEncoder.isNaN(Float.NaN, Double.NaN));
     }
 
     /**
@@ -44,30 +32,30 @@ public class AbstractNetCDFEncoderTest {
      */
     @Test
     public void floatExtremesAreFillWhenNoDataIsNaN() {
-        assertTrue(isNaN(-Float.MAX_VALUE, Double.NaN));
-        assertTrue(isNaN(Float.MAX_VALUE, Double.NaN));
-        assertTrue(isNaN(-Double.MAX_VALUE, Double.NaN));
-        assertTrue(isNaN(Double.MAX_VALUE, Double.NaN));
+        assertTrue(AbstractNetCDFEncoder.isNaN(-Float.MAX_VALUE, Double.NaN));
+        assertTrue(AbstractNetCDFEncoder.isNaN(Float.MAX_VALUE, Double.NaN));
+        assertTrue(AbstractNetCDFEncoder.isNaN(-Double.MAX_VALUE, Double.NaN));
+        assertTrue(AbstractNetCDFEncoder.isNaN(Double.MAX_VALUE, Double.NaN));
     }
 
     /** Realistic geophysical samples must remain valid even when the configured no-data is NaN. */
     @Test
     public void realSamplesAreNotFillWhenNoDataIsNaN() {
-        assertFalse(isNaN(0.5f, Double.NaN));
-        assertFalse(isNaN(-273.15, Double.NaN));
-        assertFalse(isNaN(1e29, Double.NaN));
-        assertFalse(isNaN(-1e29, Double.NaN));
+        assertFalse(AbstractNetCDFEncoder.isNaN(0.5f, Double.NaN));
+        assertFalse(AbstractNetCDFEncoder.isNaN(-273.15, Double.NaN));
+        assertFalse(AbstractNetCDFEncoder.isNaN(1e29, Double.NaN));
+        assertFalse(AbstractNetCDFEncoder.isNaN(-1e29, Double.NaN));
     }
 
     /** An explicit no-data sentinel matches only samples within the equality delta of it. */
     @Test
     public void explicitSentinelMatchesEqualSamplesOnly() {
         double sentinel = -9999.0;
-        assertTrue(isNaN(-9999.0, sentinel));
-        assertTrue(isNaN(-9999.0f, sentinel));
-        assertFalse(isNaN(0.0, sentinel));
-        assertFalse(isNaN(-9998.0, sentinel));
+        assertTrue(AbstractNetCDFEncoder.isNaN(-9999.0, sentinel));
+        assertTrue(AbstractNetCDFEncoder.isNaN(-9999.0f, sentinel));
+        assertFalse(AbstractNetCDFEncoder.isNaN(0.0, sentinel));
+        assertFalse(AbstractNetCDFEncoder.isNaN(-9998.0, sentinel));
         // With an explicit sentinel, the JAI-extremes guard is irrelevant.
-        assertFalse(isNaN(-Float.MAX_VALUE, sentinel));
+        assertFalse(AbstractNetCDFEncoder.isNaN(-Float.MAX_VALUE, sentinel));
     }
 }

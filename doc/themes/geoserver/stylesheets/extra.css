@@ -61,6 +61,23 @@
   color: var(--gs-header-fg-dark) !important;
 }
 
+/* GitHub source badge — visible on white/dark header */
+.md-source {
+  color: var(--gs-header-fg) !important;
+}
+
+.md-source__facts {
+  color: var(--gs-header-fg) !important;
+}
+
+[data-md-color-scheme="slate"] .md-source {
+  color: var(--gs-header-fg-dark) !important;
+}
+
+[data-md-color-scheme="slate"] .md-source__facts {
+  color: var(--gs-header-fg-dark) !important;
+}
+
 /* Search input styling on white/dark header */
 .md-search__input {
   background-color: rgba(0, 118, 161, 0.08);

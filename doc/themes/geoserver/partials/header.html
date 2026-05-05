@@ -7,7 +7,13 @@
 #}
 
 {#- Site title -#}
-<header class="md-header" data-md-component="header">
+{% set class = "md-header" %}
+{% if "navigation.tabs.sticky" in config.theme.features %}
+  {% set class = class ~ " md-header--shadow md-header--lifted" %}
+{% elif "navigation.tabs" not in config.theme.features %}
+  {% set class = class ~ " md-header--shadow" %}
+{% endif %}
+<header class="{{ class }}" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="{{ lang.t('header') }}">
 
     {#- Link to home -#}

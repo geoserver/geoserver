@@ -23,22 +23,22 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs1_x</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs2_x</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wcs2_0</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools.ogc</groupId>
@@ -133,13 +133,13 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wcs1_0</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wcs1_1</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -173,21 +173,21 @@
         <dependency>
           <groupId>org.geoserver</groupId>
           <artifactId>gs-main</artifactId>
-          <version>${gs.version}</version>
+          <version>${project.version}</version>
           <classifier>tests</classifier>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.geoserver</groupId>
           <artifactId>gs-platform</artifactId>
-          <version>${gs.version}</version>
+          <version>${project.version}</version>
           <classifier>tests</classifier>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.geoserver</groupId>
           <artifactId>gs-wcs2_0</artifactId>
-          <version>${gs.version}</version>
+          <version>${project.version}</version>
           <classifier>tests</classifier>
           <scope>test</scope>
         </dependency>

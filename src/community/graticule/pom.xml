@@ -61,7 +61,7 @@
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -72,7 +72,7 @@
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

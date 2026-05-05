@@ -52,7 +52,7 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-restconfig</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -22,7 +22,7 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogr-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>

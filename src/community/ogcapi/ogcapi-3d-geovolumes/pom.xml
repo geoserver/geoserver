@@ -38,7 +38,7 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

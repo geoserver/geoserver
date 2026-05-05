@@ -31,13 +31,13 @@
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-web-images</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
   </dependencies>

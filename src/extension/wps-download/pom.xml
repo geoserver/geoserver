@@ -115,7 +115,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-wps-core</artifactId>
-          <version>${gs.version}</version>
+          <version>${project.version}</version>
           <classifier>tests</classifier>
           <scope>test</scope>
         </dependency>

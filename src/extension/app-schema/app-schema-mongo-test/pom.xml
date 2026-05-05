@@ -42,7 +42,7 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-mongodb</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

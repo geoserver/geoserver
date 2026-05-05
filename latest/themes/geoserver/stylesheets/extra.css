@@ -24,17 +24,174 @@
   --md-typeset-a-color:         var(--gs-brand-link-dark);
 }
 
-/* --- Brand gradient on the header bottom border (mirrors the app) --- */
+/* --- Header: white (light) / dark (dark) canvas for SVG logo visibility --- */
 .md-header {
-  border-bottom: 0.25em solid transparent;
+  background-color: var(--gs-header-bg) !important;
+  border-bottom: 0.2em solid transparent;
   border-image: var(--gs-brand-gradient) 1;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }
 
-/* --- Brand gradient on the navigation tabs bottom border --- */
+[data-md-color-scheme="slate"] .md-header {
+  background-color: var(--gs-header-bg-dark) !important;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+}
+
+/* Header text & icons: brand primary (light) / brand light (dark) */
+.md-header__title,
+.md-header__topic,
+.md-header .md-icon,
+.md-header__button {
+  color: var(--gs-header-fg) !important;
+}
+
+[data-md-color-scheme="slate"] .md-header__title,
+[data-md-color-scheme="slate"] .md-header__topic,
+[data-md-color-scheme="slate"] .md-header .md-icon,
+[data-md-color-scheme="slate"] .md-header__button {
+  color: var(--gs-header-fg-dark) !important;
+}
+
+/* Palette toggle labels (dark/light mode switcher) */
+.md-header__option .md-header__button {
+  color: var(--gs-header-fg) !important;
+}
+
+[data-md-color-scheme="slate"] .md-header__option .md-header__button {
+  color: var(--gs-header-fg-dark) !important;
+}
+
+/* Search input styling on white/dark header */
+.md-search__input {
+  background-color: rgba(0, 118, 161, 0.08);
+  color: var(--gs-brand-primary);
+}
+
+[data-md-color-scheme="slate"] .md-search__input {
+  background-color: rgba(75, 160, 196, 0.12);
+  color: var(--gs-brand-primary-light);
+}
+
+/* --- Navigation tabs: white/dark canvas matching header --- */
 .md-tabs {
+  background-color: var(--gs-header-bg) !important;
   border-bottom: 0.2em solid transparent;
   border-image: var(--gs-brand-gradient) 1;
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: var(--gs-header-bg-dark) !important;
+}
+
+/* Tab link colours */
+.md-tabs__link {
+  color: var(--gs-header-fg) !important;
+  opacity: 0.7;
+}
+
+.md-tabs__link:hover,
+.md-tabs__link--active,
+.md-tabs__item--active .md-tabs__link {
+  color: var(--gs-header-fg) !important;
+  opacity: 1;
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link {
+  color: var(--gs-header-fg-dark) !important;
+  opacity: 0.7;
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link:hover,
+[data-md-color-scheme="slate"] .md-tabs__link--active,
+[data-md-color-scheme="slate"] .md-tabs__item--active .md-tabs__link {
+  color: var(--gs-header-fg-dark) !important;
+  opacity: 1;
+}
+
+/* --- Footer: match header canvas style instead of black --- */
+.md-footer {
+  background-color: var(--gs-header-bg) !important;
+  color: var(--gs-header-fg);
+  border: 0 solid transparent;
+  border-top-width: 0.2em;
+  border-image: var(--gs-brand-gradient) 1;
+  box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+  /* Ensure footer sits above sidebar overflow */
+  position: relative;
+  z-index: 2;
+}
+
+[data-md-color-scheme="slate"] .md-footer {
+  background-color: var(--gs-header-bg-dark) !important;
+  color: var(--gs-header-fg-dark);
+  box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+}
+
+/* Footer navigation links */
+.md-footer__link {
+  color: var(--gs-brand-primary) !important;
+}
+
+[data-md-color-scheme="slate"] .md-footer__link {
+  color: var(--gs-brand-primary-light) !important;
+}
+
+/* Footer meta section (copyright, social links) */
+.md-footer-meta {
+  background-color: rgba(0, 118, 161, 0.04) !important;
+  border-top: 1px solid rgba(0, 118, 161, 0.12);
+}
+
+[data-md-color-scheme="slate"] .md-footer-meta {
+  background-color: rgba(75, 160, 196, 0.06) !important;
+  border-top-color: rgba(75, 160, 196, 0.15);
+}
+
+.md-footer-meta .md-copyright,
+.md-footer-meta .md-copyright a,
+.md-footer-meta .md-social__link {
+  color: var(--gs-brand-primary) !important;
+  opacity: 0.7;
+}
+
+.md-footer-meta .md-copyright a:hover,
+.md-footer-meta .md-social__link:hover {
+  opacity: 1;
+}
+
+[data-md-color-scheme="slate"] .md-footer-meta .md-copyright,
+[data-md-color-scheme="slate"] .md-footer-meta .md-copyright a,
+[data-md-color-scheme="slate"] .md-footer-meta .md-social__link {
+  color: var(--gs-brand-primary-light) !important;
+}
+
+/* Footer direction text ("Previous" / "Next") */
+.md-footer__direction {
+  color: var(--gs-brand-primary);
+  opacity: 0.6;
+}
+
+[data-md-color-scheme="slate"] .md-footer__direction {
+  color: var(--gs-brand-primary-light);
+  opacity: 0.6;
+}
+
+/* Footer title text */
+.md-footer__title {
+  color: var(--gs-brand-primary);
+}
+
+[data-md-color-scheme="slate"] .md-footer__title {
+  color: var(--gs-brand-primary-light);
+}
+
+/* Footer icons (arrows) */
+.md-footer__button.md-icon {
+  color: var(--gs-brand-primary) !important;
+}
+
+[data-md-color-scheme="slate"] .md-footer__button.md-icon {
+  color: var(--gs-brand-primary-light) !important;
 }
 
 /* --- Link hover colour to match the app --- */
@@ -98,16 +255,16 @@
   margin: -1.5rem 0rem 1rem 0rem;
   padding: 0.35rem 0.8rem;  /* Reduced from 0.5rem to make it more compact */
   font-size: 0.75rem;  /* Reduced from 0.85rem for smaller text */
-  color: rgba(255, 255, 255, 0.9);
-  background-color: var(--md-primary-fg-color);  /* Blue background matching header */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);  /* Subtler shadow */
+  color: var(--gs-brand-primary);
+  background-color: rgba(0, 118, 161, 0.06);
+  border-bottom: 1px solid rgba(0, 118, 161, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: background-color 0.25s ease, box-shadow 0.2s ease;
 }
 
-/* Darker blue when mobile menu is open */
+/* Darker shade when mobile menu is open */
 [data-md-toggle="drawer"]:checked ~ .md-container .md-path {
-  background-color: var(--md-primary-fg-color--dark);
+  background-color: rgba(0, 118, 161, 0.10);
 }
 
 /* Enhanced shadow when scrolled */
@@ -134,9 +291,10 @@
 
 /* Breadcrumb links */
 .md-path__link {
-  color: rgba(255, 255, 255, 0.7);  /* Much more transparent for non-current items */
+  color: var(--gs-brand-primary);
+  opacity: 0.7;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 /* Make only the first breadcrumb item uppercase (the top-level section) */
@@ -145,7 +303,8 @@
 }
 
 .md-path__link:hover {
-  color: rgba(255, 255, 255, 1);
+  color: var(--gs-brand-primary);
+  opacity: 1;
   text-decoration: underline;
 }
 
@@ -157,7 +316,8 @@
 
 /* Current page (last breadcrumb) - make it clickable to go to parent index */
 .md-path__item:last-child .md-path__link {
-  color: rgba(255, 255, 255, 1);
+  color: var(--gs-brand-primary);
+  opacity: 1;
   font-weight: 500;
   /* Removed pointer-events: none to make last breadcrumb clickable */
 }
@@ -217,21 +377,23 @@
 
 /* Dark mode adjustments */
 [data-md-color-scheme="slate"] .md-path {
-  background-color: var(--md-primary-fg-color);
-  border-bottom-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: rgba(75, 160, 196, 0.08);
+  border-bottom-color: rgba(75, 160, 196, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 [data-md-color-scheme="slate"] .md-path__link {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--gs-brand-primary-light);
 }
 
 [data-md-color-scheme="slate"] .md-path__link:hover {
-  color: rgba(255, 255, 255, 1);
+  color: var(--gs-brand-primary-light);
+  opacity: 1;
 }
 
 [data-md-color-scheme="slate"] .md-path__item:last-child .md-path__link {
-  color: rgba(255, 255, 255, 1);
+  color: var(--gs-brand-primary-light);
+  opacity: 1;
 }
 
 /* High contrast mode support */

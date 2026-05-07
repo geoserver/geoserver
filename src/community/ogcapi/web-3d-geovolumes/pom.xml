@@ -17,7 +17,7 @@
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-ogcapi-3d-geovolumes</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
 

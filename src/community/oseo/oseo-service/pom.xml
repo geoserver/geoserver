@@ -23,22 +23,22 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs1_x</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

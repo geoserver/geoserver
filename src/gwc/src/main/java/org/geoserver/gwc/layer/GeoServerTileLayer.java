@@ -84,6 +84,7 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.HintsLevel;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.config.legends.LegendInfoBuilder;
 import org.geowebcache.conveyor.ConveyorTile;
@@ -380,6 +381,28 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     private ResourceInfo getResourceInfo() {
         PublishedInfo publishedInfo = getPublishedInfo();
         return publishedInfo instanceof LayerInfo li ? li.getResource() : null;
+    }
+
+    @Override
+    public HintsLevel getHintsLevel() {
+        PublishedInfo published = getPublishedInfo();
+        if (published instanceof LayerInfo layerInfo) {
+            LayerInfo.WMSInterpolation interp = layerInfo.getDefaultWMSInterpolationMethod();
+            if (interp != null) {
+                switch (interp) {
+                    case Nearest:
+                        return HintsLevel.SPEED;
+                    case Bilinear:
+                        return HintsLevel.DEFAULT;
+                    case Bicubic:
+                        return HintsLevel.QUALITY;
+                    default:
+                        throw new IllegalStateException(
+                                "Unknown interpolation method " + interp + " for layer " + getName());
+                }
+            }
+        }
+        return super.getHintsLevel();
     }
 
     /**

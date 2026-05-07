@@ -18,12 +18,12 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-service</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-restconfig</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -54,14 +54,14 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-service</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

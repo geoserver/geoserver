@@ -294,7 +294,10 @@ Sets the WMS specific publishing parameters.
 - **Additional styles**---Other styles that can be associated with this layer. Some clients (and the GeoServer Browse Layers page) will present those as styling alternatives for that layer to the user.
 - **Default rendering buffer**---Default value of the `buffer` GetMap/GetFeatureInfo vendor parameter. See the [WMS vendor parameters](../../services/wms/vendor.md) for more details.
 - **Default WMS path**---Location of the layer in the WMS capabilities layer tree. Useful for building non-opaque layer groups
-- **Default Interpolation Method**---Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see [Raster Rendering Options](../../services/wms/webadmin.md#services_webadmin_wms_raster_options) for details). Can be overridden by the [interpolations vendor parameter](../../services/wms/vendor.md#wms_vendor_parameter_interpolations).
+- **Default Interpolation Method**---Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see [Raster Rendering Options](../../services/wms/webadmin.md#services_webadmin_wms_raster_options) for details). Can be overridden by the [interpolations vendor parameter](../../services/wms/vendor.md#wms_vendor_parameter_interpolations). 
+
+    !!! note
+       The default WMS interpolation configured at the layer level is also honored when the layer is served through GeoWebCache in [full WMS mode](../../geowebcache/using.md#geowebcache_endpoint_url). In this case, the interpolation setting is propagated to the tile recomposition process and influences the resampling performed when tiles are merged and scaled to produce the final image.
 
 ### WMS Attribution
 

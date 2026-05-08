@@ -2656,10 +2656,9 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Connecting to an Oracle cluster">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#connecting-to-a-sid-or-a-service" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2669,8 +2668,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#connecting-to-database-through-ldap" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2680,8 +2679,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#oracle_loose_bbox" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2691,8 +2690,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#using-the-geometry-metadata-table" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2700,11 +2699,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -29947,10 +29941,9 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Connecting to an Oracle cluster">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#connecting-to-a-sid-or-a-service" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -29960,8 +29953,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#connecting-to-database-through-ldap" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -29971,8 +29964,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#oracle_loose_bbox" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -29982,8 +29975,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#using-the-geometry-metadata-table" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -29991,11 +29984,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -30120,17 +30108,17 @@
 <div class="highlight"><pre><span></span><code>(DESCRIPTION=(LOAD_BALANCE=on)(ADDRESS=(PROTOCOL=TCP)(HOST=host1) (PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=host2) (PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))
 </code></pre></div>
 <p>More information about this syntax can be found in the <a href="http://docs.oracle.com/cd/B28359_01/java.111/e10788/rac.htm#CHDCDFAC">Oracle documentation</a>.</p>
-<h3 id="connecting-to-a-sid-or-a-service">Connecting to a SID or a Service<a class="headerlink" href="#connecting-to-a-sid-or-a-service" title="Permanent link">&para;</a></h3>
+<h2 id="connecting-to-a-sid-or-a-service">Connecting to a SID or a Service<a class="headerlink" href="#connecting-to-a-sid-or-a-service" title="Permanent link">&para;</a></h2>
 <p>Recent versions of Oracle support connecting to a database via either a SID name or a Service name. A SID connection descriptor has the form: <code>host:port:database</code>, while a Service connection descriptor has the format <code>host:port/database</code>. GeoServer uses the SID form by default. To connect via a Service, prefix the <code>database</code> name configuration entry with a <code>/</code>.</p>
-<h3 id="connecting-to-database-through-ldap">Connecting to database through LDAP<a class="headerlink" href="#connecting-to-database-through-ldap" title="Permanent link">&para;</a></h3>
+<h2 id="connecting-to-database-through-ldap">Connecting to database through LDAP<a class="headerlink" href="#connecting-to-database-through-ldap" title="Permanent link">&para;</a></h2>
 <p>For instance if you want to establish a connection with the jdbc thin driver through LDAP, you can use following connect string for the input field <code>database</code> <code>ldap://[host]:[Port]/[db],cn=OracleContext,dc=[oracle_ldap_context]</code>.</p>
 <p>If you are using referrals, enable it by placing a jndi.properties file in geoserver's CLASSPATH, which is in geoserver/WEB-INF/classes. This property file contains:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>java.naming.referral=follow
 </code></pre></div>
-<h3 id="oracle_loose_bbox">Using loose bounding box<a class="headerlink" href="#oracle_loose_bbox" title="Permanent link">&para;</a></h3>
+<h2 id="oracle_loose_bbox">Using loose bounding box<a class="headerlink" href="#oracle_loose_bbox" title="Permanent link">&para;</a></h2>
 <p>When the <code>Loose bbox</code> option is set, only the bounding box of database geometries is used in spatial queries. This results in a significant performance gain. The downside is that some geometries may be reported as intersecting a BBOX when they actually do not.</p>
 <p>If the primary use of the database is through the <a href="../../../services/wms/">Web Map Service (WMS)</a> this flag can be set safely, since querying more geometries does not have any visible effect. However, if using the <a href="../../../services/wfs/">Web Feature Service (WFS)</a> and making use of BBOX filtering capabilities, this flag should not be set.</p>
-<h3 id="using-the-geometry-metadata-table">Using the geometry metadata table<a class="headerlink" href="#using-the-geometry-metadata-table" title="Permanent link">&para;</a></h3>
+<h2 id="using-the-geometry-metadata-table">Using the geometry metadata table<a class="headerlink" href="#using-the-geometry-metadata-table" title="Permanent link">&para;</a></h2>
 <p>The Oracle data store by default looks at the <code>MDSYS.USER_SDO*</code> and <code>MDSYS.ALL_SDO*</code> views to determine the geometry type and native SRID of each geometry column. Those views are automatically populated with information about the geometry columns stored in tables that the current user owns (for the <code>MDSYS.USER_SDO*</code> views) or can otherwise access (for the <code>MDSYS.ALL_SDO*</code> views).</p>
 <p>There are a few issues with this strategy:</p>
 <ul>

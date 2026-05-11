@@ -1,10 +1,134 @@
 "use strict";
 
-const PreviewHomePageContentProvider_SetOnChange = () => {
-    $('.preview-home-page-menu-select').on('change', event => {
-        const select = event.target;
-        window.open(select.options[select.selectedIndex].value);
-        select.selectedIndex = 0;
+const clearOverflowHiddenItems = section => {
+    section.querySelectorAll('[data-overflow-hidden="1"]').forEach(item => {
+        item.style.display = "";
+        item.removeAttribute("data-overflow-hidden");
     });
+};
+
+const updateOverflowToggle = section => {
+    clearOverflowHiddenItems(section);
+
+    const content = section.querySelector(".preview-section-content");
+    const list = section.querySelector(".preview-link-items");
+    const toggle = section.querySelector(".preview-more-toggle");
+    if (!content || !list || !toggle) return;
+
+    const isExpanded = section.classList.contains("is-expanded");
+    list.style.maxWidth = "";
+    const hasOverflow = list.scrollWidth > list.clientWidth + 1;
+    toggle.style.display = hasOverflow || isExpanded ? "inline" : "none";
+    toggle.textContent = isExpanded
+        ? toggle.getAttribute("data-less-label") || "...less"
+        : toggle.getAttribute("data-more-label") || "...more";
+
+    if (!hasOverflow || isExpanded) return;
+
+    const gap = 8;
+    const availableWidth = Math.max(0, content.clientWidth - toggle.offsetWidth - gap);
+    list.style.maxWidth = `${availableWidth}px`;
+
+    const limitRight = list.getBoundingClientRect().left + availableWidth;
+    let hideFromHere = false;
+    list.querySelectorAll("[data-filter-label]").forEach(item => {
+        if (item.style.display === "none") return;
+        const rect = item.getBoundingClientRect();
+        if (!hideFromHere && rect.right > limitRight + 0.5) {
+            hideFromHere = true;
+        }
+        if (hideFromHere) {
+            item.style.display = "none";
+            item.setAttribute("data-overflow-hidden", "1");
+        }
+    });
+};
+
+const updateAllOverflowToggles = root => {
+    root.querySelectorAll(".preview-section").forEach(updateOverflowToggle);
+};
+
+const showCopiedState = button => {
+    const icon = button.querySelector(".gs-icon");
+    if (!icon) return;
+
+    const previousTimer = button.getAttribute("data-copied-timer");
+    if (previousTimer) {
+        window.clearTimeout(Number(previousTimer));
+    }
+
+    icon.classList.remove("gs-icon-copy");
+    icon.classList.add("gs-icon-tick");
+
+    const timerId = window.setTimeout(() => {
+        icon.classList.remove("gs-icon-tick");
+        icon.classList.add("gs-icon-copy");
+        button.removeAttribute("data-copied-timer");
+    }, 3000);
+    button.setAttribute("data-copied-timer", String(timerId));
+};
+
+const PreviewHomePageContentProvider_SetOnChange = () => {
+    $(document).on("click", ".preview-copy-button", async event => {
+        event.preventDefault();
+        const button = event.currentTarget;
+        const copyUrl = button.getAttribute("data-copy-url");
+        if (!copyUrl) return;
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(copyUrl);
+            } else {
+                const textarea = document.createElement("textarea");
+                textarea.value = copyUrl;
+                textarea.style.position = "absolute";
+                textarea.style.left = "-9999px";
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                document.execCommand("copy");
+                textarea.remove();
+            }
+            showCopiedState(button);
+        } catch (e) {
+            // intentionally ignore copy failures
+        }
+    });
+
+    $(document).on("click", ".preview-more-toggle", event => {
+        const section = event.currentTarget.closest(".preview-section");
+        if (!section) return;
+        section.classList.toggle("is-expanded");
+        updateOverflowToggle(section);
+    });
+
+    const root = document.querySelector(".gs-panel-PreviewHomePageContentProvider_PreviewPanel");
+    if (!root) return;
+
+    const filterInput = root.querySelector(".preview-filter-input");
+    if (filterInput) {
+        filterInput.addEventListener("input", () => {
+            const term = filterInput.value.trim().toLowerCase();
+            root.querySelectorAll(".preview-section").forEach(section => {
+                const sectionTitle =
+                    (section.getAttribute("data-section-title") || "").toLowerCase();
+                let visibleLinks = 0;
+                section.querySelectorAll("[data-filter-label]").forEach(linkItem => {
+                    const label =
+                        (linkItem.getAttribute("data-filter-label") || linkItem.textContent || "")
+                            .toLowerCase();
+                    const isVisible = !term || label.includes(term) || sectionTitle.includes(term);
+                    linkItem.style.display = isVisible ? "" : "none";
+                    if (isVisible) visibleLinks++;
+                });
+                const sectionVisible = !term || sectionTitle.includes(term) || visibleLinks > 0;
+                section.style.display = sectionVisible ? "" : "none";
+                if (!term) section.classList.remove("is-expanded");
+                updateOverflowToggle(section);
+            });
+        });
+    }
+
+    updateAllOverflowToggles(root);
+    window.addEventListener("resize", () => updateAllOverflowToggles(root));
 };
 $(PreviewHomePageContentProvider_SetOnChange);

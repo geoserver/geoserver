@@ -4,19 +4,38 @@
 <wicket:panel>
     <h3><wicket:message key="preview">preview</wicket:message></h3>
     <div class="gs-panel-PreviewHomePageContentProvider_PreviewPanel">
+        <div class="preview-filter">
+            <input
+                    class="preview-filter-input"
+                    type="search"
+                    wicket:message="placeholder:PreviewHomePageContentProvider.filterPlaceholder" />
+        </div>
         <div class="gs-form" wicket:id="sections">
-            <div wicket:id="section" class="gs-form-group">
+            <div wicket:id="section" class="gs-form-group preview-section">
                 <label wicket:id="sectionTitle">Section</label>
-                <div class="linkBlock" wicket:id="previewLink">
-                    <span>
-                        <a class="text-nowrap"  target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
-                    </span>
-                </div>
-                <div class="linkBlock">
-                    <select wicket:id="dropdown" class="w-fit">
-                        <option>Select one</option>
-                        <option wicket:id="option"></option>
-                    </select>
+                <div class="preview-section-content">
+                    <div class="preview-link-items">
+                        <div class="linkBlock" wicket:id="previewLink">
+                            <span>
+                                <a class="text-nowrap" target="_blank" href="#" wicket:id="theLink">theTitle</a>
+                                <span class="preview-link-items-separator"></span>
+                                <button
+                                        wicket:id="copyLinkButton"
+                                        type="button"
+                                        class="preview-copy-button"
+                                        wicket:message="title:PreviewHomePageContentProvider.copyLink;aria-label:PreviewHomePageContentProvider.copyLink">
+                                    <i class="gs-icon gs-icon-copy"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <button
+                            type="button"
+                            class="preview-more-toggle"
+                            wicket:message="data-more-label:PreviewHomePageContentProvider.more;data-less-label:PreviewHomePageContentProvider.less">
+                        ...more
+                    </button>
+                    <span wicket:id="sectionHint" class="preview-section-hint">most used</span>
                 </div>
             </div>
         </div>

@@ -54,7 +54,7 @@ public class WFSPreviewSectionProvider implements HomePagePreviewSectionProvider
             String label = translate("format.wfs.", format);
             if (label.equals(previous)) continue;
             previous = label;
-            links.add(new PreviewLink(label, baseLink + "&outputFormat=" + format, format));
+            links.add(new PreviewLink(label, baseLink + "&outputFormat=" + ResponseUtils.urlEncode(format), format));
         }
         return links;
     }

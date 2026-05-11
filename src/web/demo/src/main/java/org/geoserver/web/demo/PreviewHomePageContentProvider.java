@@ -21,7 +21,6 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
@@ -109,35 +108,31 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                 @Override
                 protected void populateItem(ListItem<Section> item) {
                     Section section = item.getModelObject();
-                    item.add(
-                            new Label("sectionTitle", getLocalizer().getString(section.titleKey(), PreviewPanel.this)));
-                    item.add(
-                            new ListView<>("previewLink", section.links()) {
-                                @Override
-                                protected void populateItem(ListItem<PreviewLink> item) {
-                                    PreviewLink link = item.getModelObject();
-                                    item.add(new ExternalLink("theLink", link.href(), link.label()));
-                                }
-                            }.setVisible(section.layout() == PreviewSectionLayout.LINKS));
-                    item.add(dropdown("dropdown", section));
+                    String sectionTitle =
+                            getLocalizer().getString(section.titleKey(), PreviewPanel.this, section.titleKey());
+                    item.add(AttributeModifier.replace("data-section-title", Model.of(sectionTitle)));
+                    item.add(new Label("sectionTitle", sectionTitle));
+                    item.add(new ListView<>("previewLink", section.links()) {
+                        @Override
+                        protected void populateItem(ListItem<PreviewLink> item) {
+                            PreviewLink link = item.getModelObject();
+                            item.add(AttributeModifier.replace("data-filter-label", Model.of(link.label())));
+                            item.add(new ExternalLink("theLink", link.href(), link.label()));
+                            WebMarkupContainer copyLinkButton = new WebMarkupContainer("copyLinkButton");
+                            copyLinkButton.add(AttributeModifier.replace("data-copy-url", Model.of(link.href())));
+                            item.add(copyLinkButton);
+                        }
+                    });
+                    item.add(new Label(
+                                    "sectionHint",
+                                    getLocalizer()
+                                            .getString(
+                                                    "PreviewHomePageContentProvider.commonFormatsHint",
+                                                    PreviewPanel.this))
+                            .setVisible("commonFormats".equals(section.titleKey())));
                 }
             });
             return sections;
-        }
-
-        private Component dropdown(String id, Section section) {
-            WebMarkupContainer dropdown = new WebMarkupContainer(id);
-            dropdown.setVisible(section.layout() == PreviewSectionLayout.DROPDOWN);
-            dropdown.add(AttributeModifier.append("class", "preview-home-page-menu-select"));
-            RepeatingView options = new RepeatingView("option");
-            int i = 0;
-            for (PreviewLink link : section.links()) {
-                Label option = new Label(String.valueOf(i++), link.label());
-                option.add(AttributeModifier.replace("value", Model.of(link.href())));
-                options.add(option);
-            }
-            dropdown.add(options);
-            return dropdown;
         }
     }
 

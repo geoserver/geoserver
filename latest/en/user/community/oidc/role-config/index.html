@@ -30067,7 +30067,7 @@
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">}</span>
 </code></pre></div>
-<p>We would, therefore, specify the JSON Path to <code>resource_access.live-key2.roles</code> to get the two external IDP roles ("<code>GeonetworkAdminr</code>", and "<code>GeoserverAdmin</code>"). In keycloak, the JSON path will be of the form <code>resource_access.&lt;client name&gt;.roles</code>. Other OIDC IDPs will put the roles in a different location.</p>
+<p>We would, therefore, specify the JSON Path to <code>resource_access.live-key2.roles</code> to get the two external IDP roles ("<code>GeonetworkAdmin</code>", and "<code>GeoserverAdmin</code>"). In keycloak, the JSON path will be of the form <code>resource_access.&lt;client name&gt;.roles</code>. Other OIDC IDPs will put the roles in a different location.</p>
 <h3 id="access-token">Access Token<a class="headerlink" href="#access-token" title="Permanent link">&para;</a></h3>
 <p>If you choose the Access Token as your role source, you can also use <code>scope</code> for the JSON path. This will look at the OIDC IDP's <a href="https://auth0.com/docs/authenticate/login/oidc-conformant-authentication/oidc-adoption-auth-code-flow">code response</a> to see what <a href="https://auth0.com/docs/get-started/apis/scopes/openid-connect-scopes">scopes</a> are available.</p>
 <p>For <strong>very</strong> advanced users (not recommended - only do this if your IDP uses this mechanism), you can also extract other parts from the code response. This is only provided to help with opaque (non-JWT) Access Tokens. Here is what a typical code response looks like:</p>
@@ -30083,7 +30083,7 @@
 <h2 id="configuring-microsoft-graph">Configuring Microsoft Graph<a class="headerlink" href="#configuring-microsoft-graph" title="Permanent link">&para;</a></h2>
 <p>See the <a href="../oauth2/azure/">Azure/Entra Configuration</a></p>
 <h2 id="external-internal-role-translation">External-Internal Role Translation<a class="headerlink" href="#external-internal-role-translation" title="Permanent link">&para;</a></h2>
-<p>The <code>oidc</code> module provides an easy what to convert the name of an external IDP's role to a local GeoServer role.</p>
+<p>The <code>oidc</code> module provides an easy way to convert the name of an external IDP's role to a local GeoServer role.</p>
 <p><img alt="" src="../img/roleConvert.png" /></p>
 <p>In this example, the OIDC IDP will return a <code>geoserverAdmin</code> role (see ID Token example, above). You can configure GeoServer to understand what this means, however, this can be complex. Instead this defines a very simple translation from the role in the ID Token (<code>External Role Name</code>) to an internal GeoServer role name.</p>
 <p>In this example we are converting the IDP's <code>geoserverAdmin</code> role to <code>ROLE_ADMINISTRATOR</code>.</p>

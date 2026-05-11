@@ -30049,7 +30049,7 @@
 <h2 id="community_oidc_troubleshooting">Troubleshooting<a class="headerlink" href="#community_oidc_troubleshooting" title="Permanent link">&para;</a></h2>
 <p>There are a lot of little problems that can occur - here are some troubleshooting tips.</p>
 <ol>
-<li>Turn on GeoServer's "VERBOSE_LOGGING" configuration</li>
+<li>Turn on GeoServer's "VERBOSE_LOGGING" or "OIDC_LOGGING" configuration</li>
 <li>In your OIDC Security Filter, turn on "Log Sensitive Information (do not use in production)"</li>
 <li>Open the developer tools for your Browser and look at the requests and see if any of them have error/warning message</li>
 <li>If you can login, but don't have the correct rights, ensure that your IDP is putting roles in its ID Token, Access Token, or userinfo</li>

@@ -4,7 +4,7 @@
 
 There are a lot of little problems that can occur - here are some troubleshooting tips.
 
-1.  Turn on GeoServer's "VERBOSE_LOGGING" configuration
+1.  Turn on GeoServer's "VERBOSE_LOGGING" or "OIDC_LOGGING" configuration
 2.  In your OIDC Security Filter, turn on "Log Sensitive Information (do not use in production)"
 3.  Open the developer tools for your Browser and look at the requests and see if any of them have error/warning message
 4.  If you can login, but don't have the correct rights, ensure that your IDP is putting roles in its ID Token, Access Token, or userinfo

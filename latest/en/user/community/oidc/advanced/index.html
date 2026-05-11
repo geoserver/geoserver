@@ -30205,7 +30205,7 @@
 <li>Then it's used against the <code>introspection</code> endpoint for validation (which also contains the exp attribute, see later)</li>
 <li>It's finally used against the <code>userinfo</code> to extract the roles</li>
 </ul>
-<p>With clients performing many small tiled requests, the traffic to the OIDC server may becomes excessive.</p>
+<p>With clients performing many small tiled requests, the traffic to the OIDC server may become excessive.</p>
 <p>However, tokens have an <code>exp</code> attribute, a UNIX epoch indicating the token's expiry. The <strong>cache authentication</strong> setting makes GeoServer cache the authentication against that token until expiration to reduce traffic.</p>
 <h2 id="ssl-trusted-certificates">SSL Trusted Certificates<a class="headerlink" href="#ssl-trusted-certificates" title="Permanent link">&para;</a></h2>
 <p>When using a custom <code>Keystore</code> or trying to access a non-trusted or self-signed SSL-protected OAuth2 Provider from a non-SSH connection, you will need to add the certificates to the JVM <code>Keystore</code>.</p>

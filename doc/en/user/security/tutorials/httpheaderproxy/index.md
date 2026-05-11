@@ -117,4 +117,4 @@ The result should be a 403 response signaling that access is denied. The output 
     !!! note
         When setting the header `name: value` pair, the header `name` should match the `Request Header Attribute` that was set when creating the new Authentication Filter, and the `value` must match the username for a user who has the correct Role set. The username value is case sensitive.
     
-        In the above example, the `admin` user is assigned to the `ADMIN` role which is the role that was selected in the service rule we created. If you had a diferent user that was assigned to the `ADMIN` role, you could instead use the username for that user as the `value` in the header and you should get the correct capabilities response.
+        In the above example, the `admin` user is assigned to the `ADMIN` role which is the role that was selected in the service rule we created. If you had a different user that was assigned to the `ADMIN` role, you could instead use the username for that user as the `value` in the header and you should get the correct capabilities response.

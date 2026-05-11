@@ -22,7 +22,7 @@ A metadata template can contain the content for metadata fields used in multiple
 
 To link a layer with template navigate to **Data > Layers > Choose the layer > Metadata tab** in the **Link with Template** panel choose a template from the dropdown and click `Link with template`
 
-The values from the template will added to the metadata of the layer. How this is done depents on the type of the field.
+The values from the template will added to the metadata of the layer. How this is done depends on the type of the field.
 
 * The field is not a list
 
@@ -84,7 +84,7 @@ The actions performed are:
 
 This option allows bulk import of metadata from GeoNetwork (see [Advanced Configuration](advanced.md)) and/or linking layers to templates. The layers that should be imported or linked are specified in a CSV file. You may specify a GeoNetwork to import from.
 
-The CSV file should use semicolumn as separator. The first column of your CSV files should be the layer name, the second column should be the geonetwork UUID (or left empty if you do not want to import from geonetwork), and any number of templates may be specified afterwards in the following columns.
+The CSV file should use semicolon as separator. The first column of your CSV files should be the layer name, the second column should be the geonetwork UUID (or left empty if you do not want to import from geonetwork), and any number of templates may be specified afterwards in the following columns.
 
 ### Transfer Native To Custom
 

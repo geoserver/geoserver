@@ -4,7 +4,7 @@ A checklist of things to manually test for every release.
 
 ## Artifact size
 
-The binary release of GeoServer should be somehere around 45 - 46 megabytes.
+The binary release of GeoServer should be somewhere around 45 - 46 megabytes.
 
 ## Demos
 

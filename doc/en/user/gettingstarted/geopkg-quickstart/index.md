@@ -164,7 +164,7 @@ Now that we have connected to the GeoPackage, we can publish the layer.
     | Field         | Value            |
     |---------------|------------------|
     | Native SRS    | `EPSG:4326`      |
-    | Declaired SRS | `EPSG:4326`      |
+    | Declared SRS | `EPSG:4326`      |
     | SRS Handling  | `Force declared` |
 
 

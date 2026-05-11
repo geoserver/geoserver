@@ -189,7 +189,7 @@ Available Options are:
 3.  `BK_PASSWORD_TOKENS`: A comma separated list of equal sign separated key/values to be replaced in data store passwords in an incoming backup. For example:
 
     ```text
-    BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValye}=foo,${workspace:store2.passwd.encryptedValue}=bar
+    BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValue}=foo,${workspace:store2.passwd.encryptedValue}=bar
     ```
 
 4.  `BK_SKIP_SECURITY`: This will exclude security settings from the restore. Default: `true`.

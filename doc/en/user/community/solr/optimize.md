@@ -14,7 +14,7 @@ Once the SOLR documents have been updated with a centroid column, and it has bee
 
 *Configuring a layer with multiple geometries*
 
-With this setup the polygonal geometry will still be used for all spatial filters, and for rendering, unless the style otherwise specifical demands for the centroid.
+With this setup the polygonal geometry will still be used for all spatial filters, and for rendering, unless the style otherwise specifically demands for the centroid.
 
 Then, a style with scale dependencies can be setup in order to fetch only then centroids when fairly zoomed out, like in the following CSS example: :
 

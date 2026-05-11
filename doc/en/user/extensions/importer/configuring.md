@@ -26,5 +26,5 @@ The configuration page looks as follows:
 
 The importer extension includes a new **`IMPORTER_LOGGING`** profile which may be selected in global settings.
 
-- This profile is quiet during normal operation (similar to **`PRODUCTION_LOOGGING`**)
+- This profile is quiet during normal operation (similar to **`PRODUCTION_LOGGING`**)
 - Provides configuration and information logs on importer activity

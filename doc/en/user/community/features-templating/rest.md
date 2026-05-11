@@ -1,4 +1,4 @@
-# Features Templatring Rest API
+# Features Templating Rest API
 
 ## Introduction
 

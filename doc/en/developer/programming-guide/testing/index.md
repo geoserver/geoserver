@@ -260,7 +260,7 @@ The GeoServer system test will create a data directory with a standard set of ve
 | cite      | cite  | Ponds               | Ponds         |
 | cite      | cite  | RoadSegments        | RoadSegments  |
 | cite      | cite  | Streams             | Streams       |
-| sf        | sf    | AgregateGeoFeature  | Default       |
+| sf        | sf    | AggregateGeoFeature  | Default       |
 | sf        | sf    | GenericEntity       | Default       |
 | sf        | sf    | PrimitiveGeoFeature | Default       |
 
@@ -491,7 +491,7 @@ Making a WFS request to a test data set:
 public class GetFeatureBboxTest extends WFSTestSupport {
 
 @Test
-public void testFeatureBoudingOn() throws Exception {
+public void testFeatureBoundingOn() throws Exception {
     WFSInfo wfs = getWFS();
     wfs.setFeatureBounding(true);
     getGeoServer().save(wfs);
@@ -556,7 +556,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
 ## Handling Logging
 
-GeoServer has a lot of log handling built in but in a default system much of the logging is surpressed. The following code shows how to initialise GeoServer's logging system. In general this should only be done during testing of your code as excessive logging slows down the build for everyone.
+GeoServer has a lot of log handling built in but in a default system much of the logging is suppressed. The following code shows how to initialise GeoServer's logging system. In general this should only be done during testing of your code as excessive logging slows down the build for everyone.
 
 ```java
 GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
@@ -704,7 +704,7 @@ Furthermore, in maven test scope dependencies are not transitive in the same way
 
 Often a test requires some external resource such as a database or a server to operate. Such tests should never assume that resource will be available and should skip test execution, rather than fail, when the test is not available.
 
-JUnit4 provides a handy way to do this with the `org.junit.Asssume` class. Methods of the class are called from a `@Before` hook or from a test method. For example consider the common case of connecting to a database:
+JUnit4 provides a handy way to do this with the `org.junit.Assume` class. Methods of the class are called from a `@Before` hook or from a test method. For example consider the common case of connecting to a database:
 
 ```java
 public class MyTest {
@@ -712,7 +712,7 @@ public class MyTest {
     Connection connect() {
         //create a connection to the database
         try {
-           Conection cx = ...
+           Connection cx = ...
            return cx;
         }
         catch(Exception e) {
@@ -771,7 +771,7 @@ public static void beforeAll() throws IOException, InterruptedException {
 
 ## Acceptance Tests
 
-Acceptance tests are end-to-end tests that exercise a particular functionality by running requests against a GeoServer instance and checking its reponses. The tests call the REST API and the OGC services to test functionalities such as creating a workspace and publishing a PostGIS or an ImageMosaic layer.
+Acceptance tests are end-to-end tests that exercise a particular functionality by running requests against a GeoServer instance and checking its responses. The tests call the REST API and the OGC services to test functionalities such as creating a workspace and publishing a PostGIS or an ImageMosaic layer.
 
 The GeoServer acceptance tests are written in Python using the [pytest](https://docs.pytest.org/) framework. The test suite is bundled in the Python package [python-geoservercloud](https://pypi.org/project/geoservercloud/).
 

@@ -121,13 +121,13 @@ Encoding of a list of rules in JSON:
 | access | string | M | The type of access granted. May be `ALLOW | DENY | LIMIT`. When `LIMIT` the `limits` element should be declared. |
 | limits | complex | C | Mandatory when `access=LIMIT`. Allowed when `access=ALLOW`. Tells how the access should be limited. |
 | allowedArea | EWKT | O | Limit the geographic area that will be returned. |
-| catalogMode | String | O | GeoServer cataog mode to be applied. May be `HIDE | CHALLENGE | MIXED`. |
+| catalogMode | String | O | GeoServer catalog mode to be applied. May be `HIDE | CHALLENGE | MIXED`. |
 | layerDetails | complex | C | Only allowed when `layer` is specified. Set further limitations to the data access when the rule is matched. |
 | defaultStyle | String | O | If not null, forces a different style |
 | cqlFilterRead | CQL | O | Apply the CQL filter to the returned data. |
 | cqlFilterWrite | CQL | O | Limits the features that can be modified. |
 | allowedArea | EWKT | O | Limit the geographic area that will be returned. |
-| catalogMode | String | O | GeoServer cataog mode to be applied. May be `HIDE | CHALLENGE | MIXED`. |
+| catalogMode | String | O | GeoServer catalog mode to be applied. May be `HIDE | CHALLENGE | MIXED`. |
 | attributes | complex | O | Set R/W privileges to the single attributes |
 
 ### Filter Parameters

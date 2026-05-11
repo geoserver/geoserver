@@ -58,7 +58,7 @@ Feature chaining works both ways for the re-mapped complex features. You can cha
 
 ```xml
 <AttributeMapping>
-  <targetAttribute>gsml:occurence</targetAttribute>
+  <targetAttribute>gsml:occurrence</targetAttribute>
   <sourceExpression>
       <inputAttribute>mo:commodityDescription</inputAttribute>
       <linkElement>gsml:MappedFeature</linkElement>

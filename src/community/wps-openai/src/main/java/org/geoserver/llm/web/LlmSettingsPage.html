@@ -3,17 +3,15 @@
 <body>
 <wicket:extend>
     <form wicket:id="form">
-        <fieldset>
-            <div class="gs-unordered-list-class">
-                <div class="gs-list-item-class">
-                    <div wicket:id="llmSettingsPanel"></div>
-                </div>
+        <div class="gs-unordered-list-class">
+            <div class="gs-list-item-class">
+                <div wicket:id="llmSettingsPanel"></div>
             </div>
-            <div class="button-group toolbar-sticky selfclear">
-                <button type="submit" class="form-button-save primary" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>
-                <button type="submit" class="form-button-cancel outline-danger" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
-            </div>
-        </fieldset>
+        </div>
+        <div class="button-group toolbar-sticky selfclear">
+            <button type="submit" class="form-button-save primary" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>
+            <button type="submit" class="form-button-cancel outline-danger" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+        </div>
     </form>
 </wicket:extend>
 </body>

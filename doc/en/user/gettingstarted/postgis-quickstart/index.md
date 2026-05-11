@@ -118,7 +118,7 @@ Now that the store is loaded we can publish the layer.
 
 2.  Click **Add a new resource**.
 
-3.  From the **New Layer chooser** menu, select `nyc:nyc_buidings`.
+3.  From the **New Layer chooser** menu, select `nyc:nyc_buildings`.
 
     ![](newlayerchooser.png)
 

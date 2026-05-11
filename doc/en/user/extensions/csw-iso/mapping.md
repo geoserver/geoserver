@@ -21,9 +21,9 @@ identificationInfo.MD_DataIdentification.citation.CI_Citation.date%.CI_Date.date
 identificationInfo.MD_DataIdentification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=list(keywords, if_then_else(equalTo(typeOf("."), 'FeatureTypeInfo'), 'vector', 'raster'))
 ```
 
-The full path of each field must be specified (separated with dots). XML attributes are specified with the `@` symbol, similar to the usual XML X-path notation. To avoid confusion with the identifier-symbol at the beginning of a mapping line, use `@` (for an attribute that is not an identifier) or `@@` (for an attribute that is also the identifier) - see the feature catatalog mapping file for an example.
+The full path of each field must be specified (separated with dots). XML attributes are specified with the `@` symbol, similar to the usual XML X-path notation. To avoid confusion with the identifier-symbol at the beginning of a mapping line, use `@` (for an attribute that is not an identifier) or `@@` (for an attribute that is also the identifier) - see the feature catalog mapping file for an example.
 
-The `%` symbol denotes where a multi-valued mapping should be split in to multiple tags. Multiple `%` symbols may be used for multi-dimensional mappings - see the feature catatalog mapping file below for an example.
+The `%` symbol denotes where a multi-valued mapping should be split in to multiple tags. Multiple `%` symbols may be used for multi-dimensional mappings - see the feature catalog mapping file below for an example.
 
 Indexes with square brackets can be used to avoid merging tags that shouldn't be merged, as demonstrated above for `resourceConstraints`.
 

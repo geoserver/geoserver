@@ -5,7 +5,7 @@ render_macros: true
 
 # OGC API - 3D GeoVolumes
 
-An [OGC API - 3D GeoVolumes](https://ogcapi.ogc.org/geovolumes/) service publishing 3D conents data using an OpenAPI web service.
+An [OGC API - 3D GeoVolumes](https://ogcapi.ogc.org/geovolumes/) service publishing 3D contents data using an OpenAPI web service.
 
 ## 3D GeoVolumes Implementation status
 
@@ -27,7 +27,7 @@ The 3D GeoVolumes implementation is based on August 2024 draft of the specificat
 The service is based on a set of static configuration files that can be found either in:
 
 - The `geovolumes` directory found inside a GeoServer data directory
-- An external directory, specified by the `GEOVOLUMES_LOCATION` property (either enviromnet variable, system property, or servlet context property in `web.xml`).
+- An external directory, specified by the `GEOVOLUMES_LOCATION` property (either environment variable, system property, or servlet context property in `web.xml`).
 
 The directory needs to contain a single file, a `collections.json` that represents a simplified version of what GeoServer will return on the collections resource.
 

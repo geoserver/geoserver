@@ -4,65 +4,65 @@
     <wicket:panel>
       <div class="gs-panel-GeofenceRulePage_LayerDetailsPanel">
         <fieldset>
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class">
+          <div class="gs-form">
+            <div class="choiceItem">
               <input id="layerDetailsCheck" type="checkbox" wicket:id="layerDetailsCheck"/>
               <label for="layerDetailsCheck">
                 <wicket:message key="layerDetailsCheck"/>
               </label>
             </div>
-            <div class="gs-list-item-class">
+            <div class="gs-form-group">
               <div id="layerDetailsContainer" wicket:id="layerDetailsContainer">
-                <div class="gs-unordered-list-class">
-                  <div class="gs-list-item-class">
+                <div class="gs-form">
+                  <div class="gs-form-group">
                     <label for="layerType">
                       <wicket:message key="layerType"/>
                     </label>
                     <label wicket:id="layerType" id="layerType"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="defaultStyle">
                       <wicket:message key="defaultStyle"/>
                     </label>
-                    <select wicket:id="defaultStyle" id="defaultStyle"/>
+                    <select wicket:id="defaultStyle" id="defaultStyle" class="w-fit"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="allowedStyles">
                       <wicket:message key="allowedStyles"/>
                     </label>
                     <span wicket:id="allowedStyles" id="allowedStyles"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="cqlFilterRead">
                       <wicket:message key="cqlFilterRead"/>
                     </label>
                     <textarea wicket:id="cqlFilterRead" id="cqlFilterRead" class="w-50"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="cqlFilterWrite">
                       <wicket:message key="cqlFilterWrite"/>
                     </label>
                     <textarea wicket:id="cqlFilterWrite" id="cqlFilterWrite" class="w-50"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="catalogMode">
                       <wicket:message key="catalogMode"/>
                     </label>
-                    <select wicket:id="catalogMode" id="catalogMode"/>
+                    <select wicket:id="catalogMode" id="catalogMode" class="w-fit"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="allowedArea">
                       <wicket:message key="allowedArea"/>
                     </label>
                     <textarea wicket:id="allowedArea" id="allowedArea" class="w-50"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="spatialFilterType">
                       <wicket:message key="spatialFilterType"/>
                     </label>
-                    <select wicket:id="spatialFilterType" id="spatialFilterType"/>
+                    <select wicket:id="spatialFilterType" id="spatialFilterType" class="w-fit"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label wicket:id="layerAttributesLabel" for="layerAttributes"/>
                     <div wicket:id="layerAttributes" id="layerAttributes"/>
                   </div>

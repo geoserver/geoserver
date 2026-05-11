@@ -82,7 +82,7 @@ There are several warnings shown when we first start up GeoServer and login as a
 1.  Navigate to **About & Status > Contact Information**.
 
     - Filling in this information is shown initial Welcome page.
-    - This informaiton is included in web service description information.
+    - This information is included in web service description information.
     - Contact information may be provided for each workspace.
 
     For more information [Contact Information](../../configuration/contact.md).

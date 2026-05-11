@@ -92,7 +92,7 @@ Before being able to proceed, GeoServer must be built on the local system. See t
 
 ## Create the i18n file
 
-With Wicket (and any web application framework), any string that appears in the web application should be interationalized. In GeoServer, this is performed by creating an internationalization (i18n) file named `GeoServerApplication.properties`.
+With Wicket (and any web application framework), any string that appears in the web application should be internationalized. In GeoServer, this is performed by creating an internationalization (i18n) file named `GeoServerApplication.properties`.
 
 1.  Create the directory `src/main/resources` under the root of the `hello_web` module:
 

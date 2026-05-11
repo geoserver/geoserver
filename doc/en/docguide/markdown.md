@@ -126,12 +126,12 @@ Use `***command***` (combination of **bold** and *italics*) for proper names of 
 === "Markdown"
 
     ```markdown
-    Launch ***pgAdmin*** and connect to the databsae `tutorial`.
+    Launch ***pgAdmin*** and connect to the database `tutorial`.
     ```
 
 === "Preview"
 
-    Launch ***pgAdmin*** and connect to the databsae `tutorial`.
+    Launch ***pgAdmin*** and connect to the database `tutorial`.
 
 ### Files
 
@@ -153,8 +153,8 @@ Use `` **`file.txt`** `` (combine **bold** **monospace**) for files and path ref
 
 Material for markdown has extensive icon support, for most user interface elements we can directly make use of the appropriate icon in Markdown:
 
-- Use Material for MkDocs [Icons, Emojis](https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/) page to serach included icons.
-- You can also refrence emojii by name
+- Use Material for MkDocs [Icons, Emojis](https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/) page to search included icons.
+- You can also reference emoji by name
 - Add custom icons to **`overrides/.icons/silk`** .
 
 === "Markdown"

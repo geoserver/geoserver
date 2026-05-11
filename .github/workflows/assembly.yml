@@ -42,20 +42,20 @@ jobs:
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           gs-${{ runner.os }}-maven-
-    - name: Build GeoServer modules and extensions without tests
+    - name: Build GeoServer release along with extension and pending plugins (without tests)
       run: |
         mvn --version
-        mvn -B -ntp -U -T1C -DskipTests -Prelease -f src/pom.xml install
-    - name: Package GeoServer modules
+        mvn -B -ntp -U -T1C -DskipTests -Prelease,pending -f src/pom.xml install
+    - name: Package GeoServer release (without tests)
       run: |
-        mvn -B -ntp -nsu -N -f src/pom.xml assembly:single
-    - name: Package GeoServer extensions
+        mvn -B -ntp -nsu -N -f src/pom.xml -DskipTests assembly:single
+    - name: Package GeoServer release extension plugins (without tests)
       run: |
         mvn -B -ntp -nsu -f src/extension/pom.xml install -Prelease,assembly -DskipTests -T1C
     - name: Clean extension target directories to free disk space
       run: |
         mvn -B -ntp -nsu clean -f src/extension/pom.xml -Prelease
-    - name: Build and package community modules (without tests)
+    - name: Build and package communityRelease plugins (without tests)
       run: |
         mvn -B -ntp -nsu -U -T1C -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
     - name: Install GDAL for testing

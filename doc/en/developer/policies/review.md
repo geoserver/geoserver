@@ -29,7 +29,7 @@ Before you start:
 
 ### Initial Checks
 
-The following checks can be performed quickly and represent common mistakes or oversites. These quick checks can be performed by anyone as an initial inspection.
+The following checks can be performed quickly and represent common mistakes or oversights. These quick checks can be performed by anyone as an initial inspection.
 
 !!! note
     Providing an initial check, while better than no follow up at all, may seem petty and discouraging to the contributor. It is a good idea to state that this is only quick feedback - while either more time or an appropriate expert is found.
@@ -48,7 +48,7 @@ The following checks can be performed quickly and represent common mistakes or o
 
 - *No commented out code sections*. The version control is able to tell differences between existing and past versions of a certain file, thus, the commit should not contain commented out code sections.
 
-- *Javadocs and comments*. Public classes and methods should have a minimum of javadoc (a simple sentence explaning what the method or class does will be sufficient), difficult parts of the code should have some comments explaining what the code does (how it does it, is evident by the code). Comments should be professional (no personal opinions or jokes), current to the code (no need to explain what was there before, unless there is a high risk of it coming back), with no reference to the comment author (in case we need to know that information, a git blame will do).
+- *Javadocs and comments*. Public classes and methods should have a minimum of javadoc (a simple sentence explaining what the method or class does will be sufficient), difficult parts of the code should have some comments explaining what the code does (how it does it, is evident by the code). Comments should be professional (no personal opinions or jokes), current to the code (no need to explain what was there before, unless there is a high risk of it coming back), with no reference to the comment author (in case we need to know that information, a git blame will do).
 
   *Where possible our build process uses tools like checkstyle to double check javadocs are formatted correctly.*
 

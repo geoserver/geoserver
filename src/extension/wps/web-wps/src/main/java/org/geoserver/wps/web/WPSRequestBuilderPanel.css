@@ -15,3 +15,7 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+.gs-panel-WPSRequestBuilderPanel .gs-form-group div > label,
+.gs-panel-WPSRequestBuilderPanel .gs-form-group div > label + span {
+      word-break: break-all;
+}

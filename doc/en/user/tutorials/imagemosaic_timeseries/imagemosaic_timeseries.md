@@ -145,7 +145,7 @@ In this tutorial the chosen MOSAIC_DIR directory is called `hydroalp` and is pla
 
 ### Configure the MOSAIC_DIR:
 
-This part showsn an entire MOSAIC_DIR configuration.
+This part shows an entire MOSAIC_DIR configuration.
 
 #### datastore.properties:
 

@@ -1,6 +1,6 @@
 # The STAC extension
 
-The OpenSeach for EO subsystem exposes also a [STAC](https://stacspec.org/) service, implemented as a OGC API Features conformant [STAC API](https://github.com/radiantearth/stac-api-spec).
+The OpenSearch for EO subsystem exposes also a [STAC](https://stacspec.org/) service, implemented as a OGC API Features conformant [STAC API](https://github.com/radiantearth/stac-api-spec).
 
 The landing page of the STAC API is linked from the GeoServer home page, and available at `$HOST:$PORT/geoserver/ogc/stac`. The API exposes the OpenSearch for EO contents, restructuring them as needed:
 
@@ -14,7 +14,7 @@ Given the differences in names and structures the STAC resources are created usi
 
 The default templates work against the [default PostGIS database structure](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql) and can be customized to include new properties to follow eventual database modifications.
 
-All built-in templates are copied over to the data directory for customization, and placed in the `$GEOSERER_DATA_DIR/templates/ogc/stac` folder:
+All built-in templates are copied over to the data directory for customization, and placed in the `$GEOSERVER_DATA_DIR/templates/ogc/stac` folder:
 
 - collection.ftl
 - collection_include.ftl
@@ -54,7 +54,7 @@ When dealing with JSON output for GET requests in the context of STAC service, t
 
 - If no `fields` query parameter is specified all the item's attribute are returned.
 - If a `fields` attribute is specified with no values, only the item's default values (the one necessary to have a valid STAC entity) are returned: `id`,`type`,`geometry`,`bbox`,`links`,`assets`,`properties.datetime`,`properties.created`.
-- If `fields` value is specified GeoServer will return always the default attributes, if the user doesn't target them as excluded. Eg. `assets` will always be present if not exluced explicitly (`fields=-assets,...`).
+- If `fields` value is specified GeoServer will return always the default attributes, if the user doesn't target them as excluded. Eg. `assets` will always be present if not excluded explicitly (`fields=-assets,...`).
 - If only include is specified, these attributes are added to the default set of attributes (set union operation).
 - If only exclude is specified, these attributes are subtracted from the union of the default set of attributes and the include attributes (set difference operation). This will result in an entity that is not a valid Item if any of the excluded attributes are in the default set of attributes, but no error message will be raised by GeoServer.
 - If a attribute is included, e.g. `properties`, but one or more of the nested attributes is excluded, e.g. `-properties.datetime`, then the excluded nested attributes will not appear in properties.
@@ -142,7 +142,7 @@ Layers are kept in the `layers` attribute of a collection, each one exposes the 
 
 - The layer `title` and `description` from the GeoServer own configuration
 
-- A list of `styles`, matching the styles associated to the layer. The first one is the default style. Each style contains the follwoing properties:
+- A list of `styles`, matching the styles associated to the layer. The first one is the default style. Each style contains the following properties:
   - `name`: the style name
   - `title`: the style title
 

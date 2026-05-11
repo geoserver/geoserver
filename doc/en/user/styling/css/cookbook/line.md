@@ -276,7 +276,7 @@ This example renders the text label to follow the contour of the lines.
 
 As the [Line with default label](#css_cookbook_lines_defaultlabel) example showed, the default label behavior isn't optimal.
 
-This example is similar to the [Line with default label](#css_cookbook_lines_defaultlabel) example with the exception of **line 5** where the "label-follow-line" option is specified, which forces the labels to strickly follow the line.
+This example is similar to the [Line with default label](#css_cookbook_lines_defaultlabel) example with the exception of **line 5** where the "label-follow-line" option is specified, which forces the labels to strictly follow the line.
 
 Not all labels are visible partly because of conflict resolution, and partly because the renderer cannot find a line segment long and "straight" enough to paint the label (labels are not painted over sharp turns by default).
 

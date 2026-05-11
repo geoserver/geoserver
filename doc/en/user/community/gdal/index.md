@@ -196,4 +196,4 @@ The file showcases all possible usage of the configuration elements:
 The available format adapters are:
 
 - `GrayAlphaToRGBA`: expands a gray image with alpha channel to RGBA (mandatory for geospatial PDF for example)
-- `PallettedToRGB`: expands a paletted image RGB(A) (mandatory for geospatial PDF for example)
+- `PalettedToRGB`: expands a paletted image RGB(A) (mandatory for geospatial PDF for example)

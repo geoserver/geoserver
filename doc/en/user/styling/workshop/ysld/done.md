@@ -430,7 +430,7 @@ Answer for [Challenge Classification](linestring.md#ysld.line.q1):
     1.  Use a **Layer Group** to explore how symbology works together to form a map.
 
     - ne:NE1
-    - ne:states_provincces_shp
+    - ne:states_provinces_shp
     - ne:populated_places
 
     2.  This background is relatively busy and care must be taken to ensure both symbols and labels are clearly visible.

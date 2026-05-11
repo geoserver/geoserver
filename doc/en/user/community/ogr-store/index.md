@@ -22,7 +22,7 @@ This module can be installed following these steps:
 
 ### Linux installation details
 
-On Linux the native librariers are commonly available via packages such as `gdal` and `gdal-java`, which, on installation, make available the required libraries on the file system (the specific name may vary):
+On Linux the native libraries are commonly available via packages such as `gdal` and `gdal-java`, which, on installation, make available the required libraries on the file system (the specific name may vary):
 
     /usr/lib/libgdal.so
     /usr/lib/jni/libgdaljni.so
@@ -59,7 +59,7 @@ Creating a new store requires configuration of only the **DatasourceName** field
 
 ![](images/store_config.png)
 
-*The OGR datasore configuration page*
+*The OGR datastore configuration page*
 
 The **DatasourceName** can be a reference to a file, a directory, or a set of connection parameters to a server. For example, to connect to a PostGIS database the connection parameters could be:
 

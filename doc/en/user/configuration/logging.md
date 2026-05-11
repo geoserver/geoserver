@@ -104,7 +104,7 @@ There are however a few rules to follow:
     | INFO | Normal function indicating what application is doing. |
     | CONFIG | Normal application function during application startup and configuration |
     | DEBUG | Internal messages intended for debugging |
-    | TRACE | Metod by method tracing of execution |
+    | TRACE | Method by method tracing of execution |
     | FINEST | Really detailed troubleshooting of an algorithm |
     | ALL | Turn on all logging |
 

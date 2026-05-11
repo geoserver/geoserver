@@ -166,7 +166,7 @@ This example alters the [Simple line](#mbstyle_cookbook_lines_simpleline) to add
 
 ### Code
 
-[Download the "Offset line" MBStlye](artifacts/mbstyle_line_offsetline.json)
+[Download the "Offset line" MBStyle](artifacts/mbstyle_line_offsetline.json)
 
 ```json
 {

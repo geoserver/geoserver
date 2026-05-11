@@ -141,7 +141,7 @@ The administration interface is displayed using the browser's preferred language
 
 The language choice is saved in the session, as well as in a cookie, to retain the language choice across user sessions.
 
-### Troubleshooing
+### Troubleshooting
 
 Please see:
 

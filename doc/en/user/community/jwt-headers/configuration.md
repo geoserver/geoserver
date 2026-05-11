@@ -149,8 +149,8 @@ You can also extract roles from the Access Token in a similar manner - make sure
 | Validate JWT (Access Token) Signature | If checked, validate the Token's Signature |
 | JSON Web Key Set URL (jwks_uri) | URL for a JWK Set. This is typically called `jwks_uri` in the OIDC metadata configuration. This will be downloaded and used to check the JWT's signature. This should always be checked to ensure that the JWT has not been modified. |
 | Validate JWT (Access Token) Against Endpoint | If checked, validate the access token against an IDP's token verification URL. |
-| URL (userinfo_endpoint) | IDP's token validation URL. This URL will be retrieved by adding the Access Token to the `Authentiation: Bearer <access token>` header. It should return a HTTP 200 status code if the token is valid. This is recommened by the OIDC specification. |
-| Also validate Subject | If checked, the `sub` claim of the Access Token and the "userinfo_endpoint" `sub` claim will be checked to ensure they are equal. This is recommened by the OIDC specification. |
-| Validate JWT (Access Token) Audience | If checked, the audience of the Access Token is checked. This is recommened by the OIDC specification since this verifies that the Access Token is meant for us. |
+| URL (userinfo_endpoint) | IDP's token validation URL. This URL will be retrieved by adding the Access Token to the `Authentication: Bearer <access token>` header. It should return a HTTP 200 status code if the token is valid. This is recommended by the OIDC specification. |
+| Also validate Subject | If checked, the `sub` claim of the Access Token and the "userinfo_endpoint" `sub` claim will be checked to ensure they are equal. This is recommended by the OIDC specification. |
+| Validate JWT (Access Token) Audience | If checked, the audience of the Access Token is checked. This is recommended by the OIDC specification since this verifies that the Access Token is meant for us. |
 | Claim Name | The name of the claim the audience is in (`aud`, `azp`, or `appid` claim) the Access Token. |
 | Required Claim Value | The value this claim must be (if the claim is a list of string, then it must contain this value). |

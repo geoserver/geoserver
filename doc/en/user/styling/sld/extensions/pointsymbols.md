@@ -238,7 +238,7 @@ SVG Parameters are represented in a file like: [poi_peak.svg](https://github.com
 
 The 'param'-constructs mean that you can define the parameters: `fill`, `fill-opacity`, `outline`, `outline-opacity` and `outline-width` as part of an SVG URL reference, where a reference to this image with red fill would be: `poi_peak.svg?fill=#FF0000`.
 
-Note: When editng **`SVG`** files (e.g. in Inkscape) save using 'simple svg' format.
+Note: When editing **`SVG`** files (e.g. in Inkscape) save using 'simple svg' format.
 
 Default behaviour:
 
@@ -302,7 +302,7 @@ Parameters names are defined by the SVG file:
 
   *SVG image with fill*
 
-The use of SVG parameters can be combinded with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.
+The use of SVG parameters can be combined with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.
 
 - OnlineResource `href` URI referencing SVG Parameter with dynamic CQL expression:
 

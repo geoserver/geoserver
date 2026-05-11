@@ -3,7 +3,7 @@
 The `HTTP Based Authorization plug-in` will try to authenticate the user on an configured external authentication service. The username and the password will be sent to the service in one of the following ways:
 
 - In a Header named `X-HTTP-AUTHORIZATION`.
-- As a query parameters or as request path. For this use case the url needs to be configured by inseritng two placeholder, namely `{user}` and `{password}` , where the username and password are expected to be provided eg. `https://my-auth-service?username={username}&password={password}`.
+- As a query parameters or as request path. For this use case the url needs to be configured by inserting two placeholder, namely `{user}` and `{password}` , where the username and password are expected to be provided eg. `https://my-auth-service?username={username}&password={password}`.
 
 The Authentication Provider will perform a `GET` request, sending credential Base64 encoded. If the response status returned by the external service is different from `200` the user will not be authenticated.
 

@@ -31,7 +31,7 @@ Unless `S3_USE_ANON` is set to true the [default AWS client credential chain](<h
 
 ## GeoTiffs hosted on other Amazon S3 compatible services
 
-Access geotiffs on S3 servers not hosted on Amazon, e.g. <https://www.minio.io/> or other. There are 2 steps to access the geofiff files. configure the server in the s3.properties file and then you can use the prefix as an alias to access the file in the S3GeoTiff module for geoserver.
+Access geotiffs on S3 servers not hosted on Amazon, e.g. <https://www.minio.io/> or other. There are 2 steps to access the geotiff files. configure the server in the s3.properties file and then you can use the prefix as an alias to access the file in the S3GeoTiff module for geoserver.
 
 ### Configuration
 

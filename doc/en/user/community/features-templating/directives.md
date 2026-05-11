@@ -66,7 +66,7 @@ Assume that we want to change the default geojson output of the `topp:states` la
   "WATER_KM": 1993.335,
   "PERSONS": 11430602,
   "FAMILIES": 2924880,
-  "HOUSHOLD": 4202240,
+  "HOUSEHOLD": 4202240,
   "MALE": 5552233,
   "FEMALE": 5878369,
   "WORKERS": 4199206,
@@ -381,11 +381,11 @@ A template like this will allow to produce such an output:
 In addition to the `${property}` and `$${cql}` directives seen before, there are two more:
 
 - In the example above the `xpath('xpath')` function is used to reference property. When dealing with Complex Features it must be used when referencing properties inside a `$filter` or a `$${cql}` directive.
-- `$source` which is meant to provide the context against which evaluated nested element properties and xpaths. In this case the `"$source":"st:meteoObservations/st:MeteoObservationsFeature"` provides the context for the nested attributes angainst which the directives will be evaluated. When defining a `$source` for a JSON array it should be provided in a JSONObject separated from the JSON Object mapping the nested feature attributes as in the example above. When defining the `$source` for a JSONObject it can be simply added as an object attribute (see below examples).
+- `$source` which is meant to provide the context against which evaluated nested element properties and xpaths. In this case the `"$source":"st:meteoObservations/st:MeteoObservationsFeature"` provides the context for the nested attributes against which the directives will be evaluated. When defining a `$source` for a JSON array it should be provided in a JSONObject separated from the JSON Object mapping the nested feature attributes as in the example above. When defining the `$source` for a JSONObject it can be simply added as an object attribute (see below examples).
 - When using `${property}` directive or an `xpath('xpath')` function it is possible to reference a property bounded to an upper `$source` using a `../` notation eg. `${../previousContextValue}`.
 - `$filter` provides the possibility to filter the value that will be included in the element to which is applied, in this case a json array. For instance the filter `$filter":"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'` in the `Winds_speed` array allows filtering the element that will be included in this array according to the `param_name value`.
 
-One note aboute the Source. It is strictly needed only when referencing a nested feature. This means that in the GeoJSON template example the `"$source":"st:MeteoStationsFeature"` could have been omitted. This not apply for nested elements definition where the `"$source":"st:meteoObservations/st:MeteoObservationsFeature"` is mandatory.
+One note about the Source. It is strictly needed only when referencing a nested feature. This means that in the GeoJSON template example the `"$source":"st:MeteoStationsFeature"` could have been omitted. This not apply for nested elements definition where the `"$source":"st:meteoObservations/st:MeteoObservationsFeature"` is mandatory.
 
 Follows a list of JSON template bits showing `filters` definition in context different from a JSON array, as well as `$source` definition for a JSONObject.
 
@@ -1120,7 +1120,7 @@ The general rules for object merging are:
 - Nested objects available in both trees are drilled down, being recursively merged.
 - Arrays are replaced as-is, with no merging. The eventual top level `features` array is the only exception to this rule.
 - While order of the keys is not important in JSON, the merge is processed so that the base property names are included first in the merged result, and the new ones included in the override are added after them.
-- If in the overalay JSON template, are present attributes with a property interpolation directive or an expression that in turn returns a JSON, the JSON attribute tree will be merged too with the corresponding one in the base JSON tree.
+- If in the overlay JSON template, are present attributes with a property interpolation directive or an expression that in turn returns a JSON, the JSON attribute tree will be merged too with the corresponding one in the base JSON tree.
 
 The `$merge` directive can be used in any object, making it the root for the merge operation. This could be used as an alternative to inclusion when local customizations are needed.
 

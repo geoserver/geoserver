@@ -7,7 +7,7 @@ render_macros: true
 
 A [OGC Tiles API](https://github.com/opengeospatial/OGC-API-Tiles) delivering both tiled data (vector tiles) and tiled maps (classic map tiles).
 
-GeoServer implementation is based on an ealier specification draft (the specification is now finalized).
+GeoServer implementation is based on an earlier specification draft (the specification is now finalized).
 
 ## OGC API - Tiles Implementation status
 

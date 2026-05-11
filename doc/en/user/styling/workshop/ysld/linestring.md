@@ -207,7 +207,7 @@ Our next example is significant as it introduces how text labels are generated.
 
 This is also our first example making use of a dynamic style (where a value comes from an attribute from your data).
 
-1.  To enable LineString labeling we add a `text` symbolizer witrh a `label`.
+1.  To enable LineString labeling we add a `text` symbolizer with a `label`.
 
     Update `line_example` with the following:
 

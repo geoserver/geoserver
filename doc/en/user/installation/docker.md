@@ -144,7 +144,7 @@ Here is a list of available extensions (taken from the [build server](https://bu
 | querylayer | rat | sldservice |
 | sqlserver | vectortiles | wcs2_0-eo |
 | web-resource | wmts-multi-dimensional | wps |
-| wps-cluster-hazelcas | wps-download | wps-jdbc |
+| wps-cluster-hazelcast | wps-download | wps-jdbc |
 | ysld |  |  |
 
 ## Testing GeoServer Community modules

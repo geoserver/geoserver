@@ -76,4 +76,4 @@ ant site
 
 This uses `mkdocs serve` to serve docs locally.
 
-The `../version.py` mkdocs hook looks up the current project version, and most recent release, information in `src/pom.xml`. This information is made availabel to the macros plugin for use when writing.
+The `../version.py` mkdocs hook looks up the current project version, and most recent release, information in `src/pom.xml`. This information is made available to the macros plugin for use when writing.

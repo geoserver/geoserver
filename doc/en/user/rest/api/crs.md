@@ -55,7 +55,7 @@ The `extension` parameter specifies the type of the returned definition.
 
 | Extension   | Output                                                                                              |
 |-------------|-----------------------------------------------------------------------------------------------------|
-| json        | Return the CRS detail in json format, including ID, name, WKT, and domain of validity when avaiable |
+| json        | Return the CRS detail in json format, including ID, name, WKT, and domain of validity when available |
 | wkt         | Return the CRS definition in WKT format (WKT1)                                                      |
 
 ## `/crs/authorities`

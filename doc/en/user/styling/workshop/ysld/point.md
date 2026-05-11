@@ -792,7 +792,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 1.  Use a **Layer Group** to explore how symbology works together to form a map.
 
     - ne:NE1
-    - ne:states_provincces_shp
+    - ne:states_provinces_shp
     - ne:populated_places
 
 2.  To help start things out here is a style for `ne:states_provinces_shp`:

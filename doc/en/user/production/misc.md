@@ -16,7 +16,7 @@ In order to make it easier to find your data, your service must be available.
 
 - If your GeoServer is operating as part of a "Spatial Data Infrastructure" it may be registered with a catalogue service.
 
-  Catalogue services such as [GeoNetwork-opensource](http://geonetwork-opensource.org/) or [PyCSW](https://pycsw.org) can harvest GeoServer listing the web serivces and layers published allowing content to be more easily browsed and searched.
+  Catalogue services such as [GeoNetwork-opensource](http://geonetwork-opensource.org/) or [PyCSW](https://pycsw.org) can harvest GeoServer listing the web services and layers published allowing content to be more easily browsed and searched.
 
 ## Clustering
 
@@ -44,7 +44,7 @@ This results in running multiple GeoServer nodes behind a common proxy or load b
 
 The limitation of these approach is the startup time associated with restarting nodes. Several community modules exist to address this limitation:
 
-- The project [Cloud Native GeoServer](https://github.com/geoserver/geoserver-cloud) breaks the GeoServer application into microservies that may be scaled by Kubernetes.
+- The project [Cloud Native GeoServer](https://github.com/geoserver/geoserver-cloud) breaks the GeoServer application into microservices that may be scaled by Kubernetes.
 
   This prevents the needs to restart nodes, but requires a microservice environment.
 

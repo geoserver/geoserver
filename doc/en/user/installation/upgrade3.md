@@ -166,9 +166,9 @@ The general GeoServer upgrade process is as follows:
 
 ## Q: How often should I upgrade GeoServer
 
-GeoServer [release schedule](https://github.com/geoserver/geoserver/wiki/Release-Schedule) follows a predictabe time boxed release cycle, maintaining "stable" and "maintenance" releases, over the course of a year.
+GeoServer [release schedule](https://github.com/geoserver/geoserver/wiki/Release-Schedule) follows a predictable time boxed release cycle, maintaining "stable" and "maintenance" releases, over the course of a year.
 
-- Plan to upgrade GeoServer **at least twice a year** as new stable releases are made in March and Septemeber each year.
+- Plan to upgrade GeoServer **at least twice a year** as new stable releases are made in March and September each year.
 
   Once the release you are using has entered "maintenance" it is a good idea to upgrade (before the release is no longer supported).
 

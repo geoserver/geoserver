@@ -26,7 +26,7 @@ dpis:
 ?integerSvg: false # the library in MapServer <= 5.6 does not support floating point values in the SVG coordinate space, set this to true if using a WMS that does not support floating point values in SVG coordinates
 
 ?ignoreCapabilities: false # assume client is correct and do not load capabilities.  This is not recommended to be used unless you it fails when false (false is default)
-?disableLayersMerging: false # WMS layers with mergable parameters will be merged by default. Set this to true to disable attempts to merge.
+?disableLayersMerging: false # WMS layers with mergeable parameters will be merged by default. Set this to true to disable attempts to merge.
 ?maxPrintTimeBeforeWarningInSeconds: 30 # if print jobs take longer than this then a warning in the logs will be written along with the spec.
 ?printTimeoutMinutes: 5 # The maximum time to allow a print job to take before cancelling the print job.  The default is 5 (minutes)
 ?formats:
@@ -48,7 +48,7 @@ hosts:
 ?    - map.example.com
 ?  https2http: True # For above hosts on request on https we build a request on http
 
-?headers: ['Cookie', 'Referer'] # The header that will be copyed to the tiles http requests
+?headers: ['Cookie', 'Referer'] # The header that will be copied to the tiles http requests
 
 ?keys:
 ?  - !key
@@ -164,7 +164,7 @@ If you want to let the user rotate the map (for a given layout), you have to set
 
 ### Output filename
 
-If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client. It will be the name of the file that the client downloads. If the 'outputFilename' parameter is defined in a layout then that value will override the default name. In both cases the `.pdf` suffic is optional; if not present the server will append `.pdf` to the name.
+If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client. It will be the name of the file that the client downloads. If the 'outputFilename' parameter is defined in a layout then that value will override the default name. In both cases the `.pdf` suffix is optional; if not present the server will append `.pdf` to the name.
 
 In all cases the `json` request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has ${date}, ${time} or ${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method. If a pattern is provided it will be passed to SimpleDataFormat for processing. A few examples follow:
 
@@ -242,7 +242,7 @@ Thanks to the hosts and domain matcher it is possible to have a key for google m
 
 The "fonts" section is optional. It contains the path of the fonts you want to use. The entries can point to files (TTF, OTF, TTC, AFM, PFM) or directories. Don't point to directories containing too many files since it will slow down the start time. By default, PDF gives you access to the following fonts (Cp1252 encoding only):
 
-- Courrier (-Bold, -Oblique, -BoldOblique)
+- Courier (-Bold, -Oblique, -BoldOblique)
 - Helvetica (-Bold, -Oblique, -BoldOblique)
 - Times (-Roman, -Bold, -Oblique, -BoldOblique)
 - Symbol
@@ -654,7 +654,7 @@ Allowed only within a *mainPage*.
 
 Look [here](#table-configuration) for how to specify the *tableConfig* field.
 
-The *columnWeigth* (MF_V1.2 only) allows to define a weight for the column width. If you specify it for one column, you have to specify it for all of them. The width of a given column is tableWidth*columnWeight/sum(columnWeight).
+The *columnWeight* (MF_V1.2 only) allows to define a weight for the column width. If you specify it for one column, you have to specify it for all of them. The width of a given column is tableWidth*columnWeight/sum(columnWeight).
 
 The **source** value defines the name of the entry in the root of the client's **spec**. For example, it would look like that:
 
@@ -753,7 +753,7 @@ Display each layers along with its classes (icons and labels).
   ?         fitHeight: 0
 ```
 
-**borders** is mainly for debugging purpouses and shows all borders in the legend tables. This can be either 'true' or 'false'.
+**borders** is mainly for debugging purposes and shows all borders in the legend tables. This can be either 'true' or 'false'.
 
 **horizontalAlignment** can be left, right or center (default) and aligns all items left, right or in the center.
 
@@ -769,7 +769,7 @@ if **maxWidth** is set the whole legend gets a maximum width, just like other bl
 
 if **maxHeight** is set the whole legend gets a maximum height. This forces more than one column to appear if the legend is higher than the specified value. This can be used to enable the multi-column layout. 0 makes the maxHeight= max value, i.e. the equivalent of infinity.
 
-if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space. This can be overriden for individual classes in the spec JSON sent to the print module by adding an attribute called 'scale' and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height. If **defaultScale** equals 1, one pixel is scaled to one point (1/72 inch) in generated PDF. By default, as GeoServer legends are generated with \~90 dpi resolution (exactly 25.4/0.28), setting **defaultScale** value to 0.7937 (72*0.28/25.4) produces legend icons of same size as corresponding map icons. As the [LEGEND_OPTIONS/dpi GeoServer parameter](https://docs.geoserver.org/stable/en/user/services/wms/get_legend_graphic/index.md#controlling-legend-appearance-with-legend-options) is not handled by MapFish, the resolution will necessary be \~91 dpi, which may cause visual quality difference with the map.
+if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space. This can be overridden for individual classes in the spec JSON sent to the print module by adding an attribute called 'scale' and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height. If **defaultScale** equals 1, one pixel is scaled to one point (1/72 inch) in generated PDF. By default, as GeoServer legends are generated with \~90 dpi resolution (exactly 25.4/0.28), setting **defaultScale** value to 0.7937 (72*0.28/25.4) produces legend icons of same size as corresponding map icons. As the [LEGEND_OPTIONS/dpi GeoServer parameter](https://docs.geoserver.org/stable/en/user/services/wms/get_legend_graphic/index.md#controlling-legend-appearance-with-legend-options) is not handled by MapFish, the resolution will necessary be \~91 dpi, which may cause visual quality difference with the map.
 
 For this to work, you need to set the **layerTree** config option on MF print widgets, more precisely the legends should be present in the print.pdf JSON request.
 
@@ -804,7 +804,7 @@ The properties are:
 - `fitWidth`: width of the rectangle for fitting (defaults to 0, meaning no fit)
 - `fitHeight`: height of the rectangle for fitting (defaults to 0, meaning no fit)
 
-Both properties or only one of them can be specified. When only one property is set, the other dimension is calculated to mantain the original aspect ratio for the legend.
+Both properties or only one of them can be specified. When only one property is set, the other dimension is calculated to maintain the original aspect ratio for the legend.
 
 ### Multipage legends
 
@@ -919,7 +919,7 @@ You define that:
 
 ## Dynamic images page
 
-New layout to let you print a different number of pages dinamically.
+New layout to let you print a different number of pages dynamically.
 
 You need to put it in **`config.yaml`**:
 
@@ -948,7 +948,7 @@ Also, you cant select the pages placement inside the document with the property 
 - `beforeLastPage`: It's rendered just before last page (between main page and last page layouts)
 - `beforeMainPage`: It's rendered before main page (between first page and main page)
 
-The first use of this layout it's add a dynamic number of pages with differents images with svg content generated dynamicaly (using also the images content enhancement). This is an example of use with two dynammic images by page:
+The first use of this layout it's add a dynamic number of pages with different images with svg content generated dynamically (using also the images content enhancement). This is an example of use with two dynamic images by page:
 
 Example **`config.yaml`**:
 

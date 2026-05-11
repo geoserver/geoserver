@@ -175,6 +175,6 @@ Thus, each feature will be painted by a single line, either yellow or black.
 If instead the style contains a `@mode 'Flat'` directive at the top, it will generated two non mutually exclusive SLD rules:
 
 - One applying a 10px wide black stroke on all features
-- One applying a 1px wide yewllow stroke on all feature whose cat attribute is 'important'
+- One applying a 1px wide yellow stroke on all feature whose cat attribute is 'important'
 
 Thus, all features will at least be painted 10px black, but the 'important' ones will also have a second 1px yellow line *on top of the first one*

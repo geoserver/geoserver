@@ -6,7 +6,7 @@ The transformation functions supported described in SLD and described in the [eq
 
 The `Recode` filter function transforms a set of discrete values for an attribute into another set of values, by applying a *(input, output)* mapping onto the values of the variable/expression that is provided as the first input of the function.
 
-Consider a chloropleth map of the US states dataset using the fill color to indicate the topographic regions for the states. The dataset has an attribute `SUB_REGION` containing the region code for each state. The `Recode` function is used to map each region code into a different color.
+Consider a choropleth map of the US states dataset using the fill color to indicate the topographic regions for the states. The dataset has an attribute `SUB_REGION` containing the region code for each state. The `Recode` function is used to map each region code into a different color.
 
 !!! note
     It is to be noted that the following example specifies colors as hex string as opposed to native CSS color names, this is because the function syntax is expressed in CQL, which does not have support for native CSS color names.
@@ -35,9 +35,9 @@ Consider a chloropleth map of the US states dataset using the fill color to indi
 
 ## Categorize
 
-The `Categorize` filter function transforms a continuous-valued attribute into a set of discrete values by assiging ranges of values and turning them into a color, size, width, opacity, etc.
+The `Categorize` filter function transforms a continuous-valued attribute into a set of discrete values by assigning ranges of values and turning them into a color, size, width, opacity, etc.
 
-In the following example a coropleth map is build associating a color to the state population density in the ranges [ <= 20], [20 - 100], and [ > 100].
+In the following example a choropleth map is build associating a color to the state population density in the ranges [ <= 20], [20 - 100], and [ > 100].
 
 ```css
 * { 

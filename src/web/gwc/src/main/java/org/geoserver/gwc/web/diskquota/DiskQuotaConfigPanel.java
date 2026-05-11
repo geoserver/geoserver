@@ -170,6 +170,12 @@ public class DiskQuotaConfigPanel extends Panel {
         dialectChooser.setRequired(true);
         jdbcContainer.add(dialectChooser);
 
+        // Optional database schema for the quota store tables. Honored by
+        // JDBCQuotaStoreFactory#getJDBCStore -> JDBCQuotaStore#setSchema.
+        IModel<String> schemaModel = new PropertyModel<>(jdbcQuotaConfigModel, "schema");
+        TextField<String> schema = new TextField<>("schema", schemaModel);
+        jdbcContainer.add(schema);
+
         // add a chooser for the connection type
         List<String> connectionTypes = Arrays.asList("JNDI", "PRIVATE_POOL");
         Model<String> connectionTypeModel = new Model<>();

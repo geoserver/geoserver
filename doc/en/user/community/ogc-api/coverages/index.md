@@ -46,6 +46,6 @@ Missing functionality at the time of writing, and known issues:
 
 5.  On restart the services are listed at <http://localhost:8080/geoserver>
 
-## Configuration of OGC API - Covearges module
+## Configuration of OGC API - Coverages module
 
 The module is based on the GeoServer WCS one, follows the same configuration and exposes the same coverages.

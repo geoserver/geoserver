@@ -16,7 +16,7 @@ In particular, the following vendor options can be included:
 | vt-labels | `true`/`false`, enable the generation of a sidecar "<layerName>-labels" layer with label points. Meant to be used only for polygon geometries, as vector tile clients often lack the ability to compute a suitable label point. |
 | vt-label-attributes | A comma-separated list of attributes to include in the label layer. Typically, only the attributes needed to create the label will be included. Features will be generated only if at least one of the attribute values is not null, meaning there is a chance of creating a label. |
 
-The following SLD style, meant to be used as a "style group", demonstrates the conceptes above:
+The following SLD style, meant to be used as a "style group", demonstrates the concepts above:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
@@ -80,7 +80,7 @@ The following SLD style, meant to be used as a "style group", demonstrates the c
 Describing the salient bits:
 
 - `tiger_roads` and `poi` are scale dependent, they won't be available in zoomed out tiles
-- `poly_landmarks` only reports CFCC and enables polygon coaleshing, allowing to merge a few polygons with the same class
+- `poly_landmarks` only reports CFCC and enables polygon coalescing, allowing to merge a few polygons with the same class
 - `poly_landmarks` also enables a separate label layer with polygon label points (`poly_landmarks-labels`), with only the NAME attribute
-- `tiger-roads` selects the attributes for labelling, and enables coaleshing, which helps a lot reducing the tile size, since each roads is split amongs many smaller features (at intersections).
-- The usage of feature coaleshing reduces the size of vector tiles by around 50%, compared to simple attribute selection, in this case. Layers with more/more complex attributes will benefit more.
+- `tiger-roads` selects the attributes for labelling, and enables coalescing, which helps a lot reducing the tile size, since each roads is split among many smaller features (at intersections).
+- The usage of feature coalescing reduces the size of vector tiles by around 50%, compared to simple attribute selection, in this case. Layers with more/more complex attributes will benefit more.

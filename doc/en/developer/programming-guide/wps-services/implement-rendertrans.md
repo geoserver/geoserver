@@ -63,7 +63,7 @@ The query is then performed against the source datastore, and the transformation
 
 ## Transformation process class
 
-Like other WPS processes, rendering transformations are implememented as Java classes. A process class implements the `GSProcess` marker interface, and is registered with GeoServer via an `applicationContext.xml` file. For further information about the basic steps for creating, building and deploying a GeoServer WPS process in Java refer to the [Implementing a WPS Process](implementing.md) section.
+Like other WPS processes, rendering transformations are implemented as Java classes. A process class implements the `GSProcess` marker interface, and is registered with GeoServer via an `applicationContext.xml` file. For further information about the basic steps for creating, building and deploying a GeoServer WPS process in Java refer to the [Implementing a WPS Process](implementing.md) section.
 
 WPS processes must provide metadata about themselves and their parameters. The easiest way to do this is to use the GeoTools annotation-based Process API, which uses Java annotations to specify metadata. For example, the code below shows the process metadata specified for the `gs:Heatmap` rendering transformation:
 
@@ -85,7 +85,7 @@ The declaration of the `execute` method for the Heatmap transformation is:
 @DescribeResult(name = "result", description = "The heat map surface as a raster")
 public GridCoverage2D execute(
 
-  // tranformation input data
+  // transformation input data
   @DescribeParameter(name = "data", description = "Features containing the data points") 
     SimpleFeatureCollection obsFeatures,
 
@@ -156,7 +156,7 @@ In addition, these methods can accept any number of the input parameters defined
 
 ### invertQuery method
 
-This method is called when the rendering tranformation applies to vector data (the data input is of type `SimpleFeatureCollection`).
+This method is called when the rendering transformation applies to vector data (the data input is of type `SimpleFeatureCollection`).
 
 The method returns a new `Query` value, which contains any required alterations of extent or query optimizations. This is used to query the source dataset.
 
@@ -185,7 +185,7 @@ public Query invertQuery(
 
 ### invertGridGeometry method
 
-This method is called when the rendering tranformation applies to raster data (the data input is of type `GridCoverage2D`).
+This method is called when the rendering transformation applies to raster data (the data input is of type `GridCoverage2D`).
 
 The method returns a new `GridGeometry` value, which is used as the query extent against the source raster dataset.
 

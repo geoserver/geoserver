@@ -39,7 +39,7 @@ How to create a Google Maps mashup with a GeoRSS overlay produced by GeoServer.
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <title>Google Maps JavaScript API Example<    itle>
+    <title>Google Maps JavaScript API Example</title>
     <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=<INSERT MAPS API KEY HERE>" type="text/javascript"></script>
 
     <script type="text/javascript">

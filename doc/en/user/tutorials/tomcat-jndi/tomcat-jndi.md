@@ -58,7 +58,7 @@ Other parameters to setup connection pool:
 - timeBetweenEvictionRunsMillis (default -1) The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run.
 - numTestsPerEvictionRun (default 3) The number of objects to examine during each run of the idle object evictor thread (if any).
 - minEvictableIdleTimeMillis (default 1000 * 60 * 30) The minimum amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any).
-- removeAbandoned (default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
+- removeAbandoned (default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimeout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
 - removeAbandonedTimeout (default 300) Timeout in seconds before an abandoned connection can be removed.
 - logAbandoned (default false) Flag to log stack traces for application code which abandoned a Statement or Connection.
 

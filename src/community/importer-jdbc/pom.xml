@@ -15,7 +15,7 @@
     <dependency>
       <groupId>org.geoserver.importer</groupId>
       <artifactId>gs-importer-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -24,19 +24,19 @@
     <dependency>
       <groupId>org.geoserver.importer</groupId>
       <artifactId>gs-importer-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.importer</groupId>
       <artifactId>gs-importer-rest</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.importer</groupId>
       <artifactId>gs-importer-rest</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

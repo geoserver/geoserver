@@ -324,8 +324,7 @@
     <profile>
       <id>jwt-headers</id>
       <modules>
-        <module>jwt-headers/jwt-headers-util</module>
-        <module>jwt-headers/gs-jwt-headers</module>
+        <module>jwt-headers</module>
       </modules>
     </profile>
     <profile>

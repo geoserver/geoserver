@@ -27,7 +27,7 @@ The attributes used in the filter examples are those included in the layer. For 
 | WATER_KM      | 960.364      |
 | PERSONS       | 3294394.0    |
 | FAMILIES      | 854214.0     |
-| HOUSHOLD      | 1282489.0    |
+| HOUSEHOLD      | 1282489.0    |
 | MALE          | 1631295.0    |
 | FEMALE        | 1663099.0    |
 | WORKERS       | 1233023.0    |

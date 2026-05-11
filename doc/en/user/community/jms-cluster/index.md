@@ -38,7 +38,7 @@ This full blown deployment is composed by:
 
 - A pure Primary GeoServer(s), this instance can only send events to the topic. It cannot act as a replica
 - A set of GeoServer which can work as both Primary and Replica. These instances can send and receive messages to/from the topic. They can work as Primaries (sending message to other subscribers) as well as Replicas (these instances are also subscribers of the topic).
-- A set of pure Replicas GeoServer instances whic can only receive messages from the topic.
+- A set of pure Replicas GeoServer instances which can only receive messages from the topic.
 - A set of MOM brokers so that each GeoServer instance is configured with a set of available brokers (failover). Each broker use the shared database as persistence. Doing so if a broker fails for some reason, messages can still be written and read from the shared database.
 
 All the produced code is based on spring-jms to ensure portability amongst different MOM, but if you look at the schema, we are also leveraging ActiveMQ VirtualTopics to get dynamic routing (you can dynamically attach primary and replica).
@@ -94,7 +94,7 @@ NO DATA IS SENT THROUGH THE JMS CHANNEL The clustering solution we have put in p
 
 ## Bibliography:
 
-[JMS specs] Sun microsystens - Java Message Service - Version 1.1 April 12, 2002
+[JMS specs] Sun microsystems - Java Message Service - Version 1.1 April 12, 2002
 
 [JMS] Snyder Bosanac Davies - ActiveMQ in action - Manning
 

@@ -8,7 +8,7 @@ We will start our tour of MBStyle styling by looking at the representation of li
 
 Review of line symbology:
 
-- Lines can be used to represent either abstract concepts with length but not width such as networks and boundaries, or long thin features with a didth that is too smallt o represent on the map. This means that **the visual width of line symbols do not normally change depending on scale.**
+- Lines can be used to represent either abstract concepts with length but not width such as networks and boundaries, or long thin features with a width that is too smallt o represent on the map. This means that **the visual width of line symbols do not normally change depending on scale.**
 - Lines are recorded as LineStrings or Curves depending on the geometry model used.
 - SLD uses a **LineSymbolizer** to record how the shape of a line is drawn. The primary characteristic documented is the **Stroke** used to draw each segment between vertices.
 - Labeling of line work is anchored to the midpoint of the line. GeoServer provides a vendor option to allow label rotation aligned with line segments.

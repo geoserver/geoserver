@@ -316,7 +316,7 @@ types:
      attributes:
           - key: object-text
             fieldType: TEXT
-          - key: object-numer
+          - key: object-number
             fieldType: NUMBER
 ```
 
@@ -347,7 +347,7 @@ The `Generate` action will check the database metadata for that layer and genera
 ![](images/fa02.png)  
 *e.g. Feature attribute with generate feature types*
 
-Whitin each feature attribute there is another `Generate` action that will generate the domain.
+Within each feature attribute there is another `Generate` action that will generate the domain.
 
 ![](images/generate_domain.png)  
 *e.g. Generate domain dialog*

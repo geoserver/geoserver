@@ -26,7 +26,7 @@ Directory contents:
   Server running on port 10389
 ```
 
-The following diagram illustrates the hierarchy of the LDAP datatabse:
+The following diagram illustrates the hierarchy of the LDAP database:
 
 ![](images/acme_ldap.png)
 

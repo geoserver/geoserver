@@ -144,14 +144,14 @@ An example `mapml-feature.ftl` file to modify a point layer would look like:
             <!-- so, to link to another location in the current map, use href="#zoom,longitude,latitude -->
             <!-- shown below. For further information on how to create links of different behaviours, -->
             <!-- please refer to https://maps4html.org/web-map-doc/docs/other-elements/map-a/#target -->
-            <#if attributes.NAME.value == "museam"><map-a href="#16,-74.01046109936,40.70758762626"></#if>
+            <#if attributes.NAME.value == "museum"><map-a href="#16,-74.01046109936,40.70758762626"></#if>
             <map-point>
               <map-coordinates>
                 <#list gattribute.rawValue.coordinates as coord>${coord.x} ${coord.y}</#list>
               </map-coordinates>
             </map-point>
             <!-- DO NOT FORGET to close your tags, else look for errors in your log files -->
-            <#if attributes.NAME.value == "museam"></map-a></#if>
+            <#if attributes.NAME.value == "museum"></map-a></#if>
           </map-geometry>
          </#if>
        </#list>

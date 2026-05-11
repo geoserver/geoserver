@@ -96,7 +96,7 @@ The standard parameters for the GetMap operation are:
 
 GeoServer provides a number of useful vendor-specific parameters for the GetMap operation. These are documented in the [WMS vendor parameters](vendor.md) section.
 
-Example WMS request for `topp:states` layer to be output as a PNG map image in SRS EPGS:4326 and using default styling is: :
+Example WMS request for `topp:states` layer to be output as a PNG map image in SRS EPSG:4326 and using default styling is: :
 
 ```
 http://localhost:8080/geoserver/wms?

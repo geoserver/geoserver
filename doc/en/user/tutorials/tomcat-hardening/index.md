@@ -55,9 +55,9 @@ Hide the Tomcat version in error responses and its error details:
     ...
     ```
 
-### Why hide verison number
+### Why hide version number
 
-Prior to performing the configuraiton steps above, the default full response includes the version number:
+Prior to performing the configuration steps above, the default full response includes the version number:
 ```
 HTTP Status 400 – Bad Request
 Type Status Report

@@ -32,7 +32,7 @@ curl -v -u admin:geoserver -XGET
     <type>Double</type>
   </Attribute>
   <Attribute>
-    <name>HOUSHOLD</name>
+    <name>HOUSEHOLD</name>
     <type>Double</type>
   </Attribute>
   <Attribute>
@@ -60,7 +60,7 @@ curl -v -u admin:geoserver -XGET
             "type":"Double"
          },
          {  
-            "name":"HOUSHOLD",
+            "name":"HOUSEHOLD",
             "type":"Double"
          },
          {  

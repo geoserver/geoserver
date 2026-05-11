@@ -68,7 +68,7 @@ The use of **stroke** as a key property prevents CSS from having the idea of a d
           <sld:Name>name</sld:Name>
           <sld:Rule>
              <sld:Title>Line</sld:Title>
-             <sld:Abstract>Example line symboloization</sld:Abstract>
+             <sld:Abstract>Example line symbolization</sld:Abstract>
              <sld:LineSymbolizer>
                 <sld:Stroke>
                    <sld:CssParameter name="stroke">#0000ff</sld:CssParameter>

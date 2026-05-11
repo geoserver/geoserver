@@ -5,16 +5,21 @@
  */
 package org.geoserver.cluster.impl.web;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.util.Properties;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.client.JMSContainer;
 import org.geoserver.cluster.configuration.BrokerConfiguration;
@@ -36,6 +41,16 @@ import org.springframework.context.ApplicationContext;
 public class ClusterPage extends GeoServerSecuredPage {
 
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(ClusterPage.class);
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(ClusterPage.class);
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        if (!isCssEmpty) {
+            response.render(CssHeaderItem.forReference(
+                    new PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     public ClusterPage() {
 

@@ -4,7 +4,7 @@
 
 There are a lot of little problems that can occur - here are some troubleshooting tips.
 
-1.  Turn on GeoServer's "VERBOSE_LOGGING" configuration
+1.  Turn on GeoServer's "VERBOSE_LOGGING" or "OIDC_LOGGING" configuration
 2.  In your OIDC Security Filter, turn on "Log Sensitive Information (do not use in production)"
 3.  Open the developer tools for your Browser and look at the requests and see if any of them have error/warning message
 4.  If you can login, but don't have the correct rights, ensure that your IDP is putting roles in its ID Token, Access Token, or userinfo
@@ -122,7 +122,7 @@ To prevent client side request forgery:
 
 - **Step 1**: GeoServer will include a `code_challenge` during initial authorization code request
 
-- **Step 2**: GeoServer will include a `code_verifer` during the access token request.
+- **Step 2**: GeoServer will include a `code_verifier` during the access token request.
 
   The authentication server will confirm that `code_verifier` hash matches the initial `code_challenge` in order the confirm the client is the same as in **Step 1**.
 
@@ -175,10 +175,10 @@ The OpenId connect support can make a lot of requests to the OIDC server.
 In a scenario where bearer encrypted tokens are used, in encrypted form, and with roles extraction from the userinfo endpoint, a WMS client sending tokens for each request will trigger the following requests to the OIDC server:
 
 - The bearer token is used against the `token` endpoint for username extraction
-- Then it's used against the `instrospection` endpoint for validation (which also contains the exp attribute, see later)
+- Then it's used against the `introspection` endpoint for validation (which also contains the exp attribute, see later)
 - It's finally used against the `userinfo` to extract the roles
 
-With clients performing many small tiled requests, the traffic to the OIDC server may becomes excessive.
+With clients performing many small tiled requests, the traffic to the OIDC server may become excessive.
 
 However, tokens have an `exp` attribute, a UNIX epoch indicating the token's expiry. The **cache authentication** setting makes GeoServer cache the authentication against that token until expiration to reduce traffic.
 

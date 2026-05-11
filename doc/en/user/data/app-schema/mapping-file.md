@@ -15,7 +15,7 @@ Here is an outline of a mapping file:
     <includedTypes>...</includedTypes>
     <sourceDataStores>...</sourceDataStores>
     <catalog>...</catalog>
-    <targetTypes...</targetTypes>
+    <targetTypes>...</targetTypes>
     <typeMappings>...</typeMappings>
 ```
 </as:AppSchemaDataAccess>
@@ -469,7 +469,7 @@ When using JDBC based data stores attributes with a 1..N relationship can be map
 
 The `targetValue` refers to the value of the `<st:tag>` element, the client property is mapped with the usual syntax. Behind the scenes App-Schema will take care of associating the `st:code` attribute value with the correct tag.
 
-Another variant of this feature can be used for nested elements on an unbounded anonymous sequence, Using 'anonymousAttribute' element definition for generating child elements and values inside an anonymous umbounded sequence:
+Another variant of this feature can be used for nested elements on an unbounded anonymous sequence, Using 'anonymousAttribute' element definition for generating child elements and values inside an anonymous unbounded sequence:
 
 ```xml
 (...)
@@ -765,4 +765,4 @@ To be able to use an external Apache Solr index, we need at least to:
 - **map the Solr index field that matches the database primary key**: this is done id mapping of the root feature type, e.g.`<indexField>id</indexField>`.
 - **map each attribute that is indexed in Apache Solr**: this is done using the *indexField* element, e.g `<indexField>description_txt</indexField>`.
 
-Is worth mentioning that if an external Solr index was defined, App-Schema will always query the external Solr index first and then query the relational database.
+It is worth mentioning that if an external Solr index was defined, App-Schema will always query the external Solr index first and then query the relational database.

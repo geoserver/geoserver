@@ -47,7 +47,7 @@ A new PSC member can be nominated at any time. Voting for a new PSC is done by c
 
 Since we demand a fairly active PSC, we expect turnover may be high compared to other projects. Initially we aimed to keep it around 7 PSC members but over time, with sufficient reason, we've expanded it.
 
-Nominated PSC members must recieve a majority of +1 vote's from the PSC, and no -1's.
+Nominated PSC members must receive a majority of +1 vote's from the PSC, and no -1's.
 
 PSC Chair is nominated following the same procedures as PSC members.
 
@@ -114,7 +114,7 @@ PSC members are expected to be active on both the GeoServer User forum and the G
 *It is a requirement that all PSC members maintain good public visibility with respect to activity and management of the project. This cannot happen without a good frequency of communication.*
 
 !!! note
-    Our community is subject to both a responsible disclosure policy and a code of conduct; this is the responsibility of all partipants and is not limited to the PSC.*
+    Our community is subject to both a responsible disclosure policy and a code of conduct; this is the responsibility of all participants and is not limited to the PSC.*
 
 #### Biweekly Video Meeting Attendance
 
@@ -124,7 +124,7 @@ Meetings are a chance to quickly discuss project activities, review difficult pu
 
 #### Community Commitments
 
-As an Open Source Geospatial Foundation project we have a number of committments:
+As an Open Source Geospatial Foundation project we have a number of commitments:
 
 - Code of Conduct
 - OSGeo Officer

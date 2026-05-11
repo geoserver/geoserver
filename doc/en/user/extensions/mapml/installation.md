@@ -52,7 +52,7 @@ MapML supports 4 built-in TiledCRS:
 - MapML:CBMTILE (or EPSG:3978)
 - MapML:APSTILE (or EPSG:5936)
 
-In addition, is it possible to configure custom TiledCRS based on the available WMTS GridSets. A new MapML TCRS Settings menu is available in the GeoServer UI on the Settings section:
+In addition, it is possible to configure custom TiledCRS based on the available WMTS GridSets. A new MapML TCRS Settings menu is available in the GeoServer UI on the Server > MapML TCRS Settings section:
 
 ![](images/mapml_tcrs_menu.png)
 
@@ -130,7 +130,7 @@ If the "Use Features" checkbox is checked, the output MapML on the Browse Layers
 </map-extent>
 ```
 
-When both "Use Tiles" and "Use Features" are set in the FORMAT_OPTIONS parameter (`mapmlusefeatures:true;mapmlusetiles:true`), the MapML extension will request tiled maps in `text/mapml` format. The contents of the tiles will be clipped to the requested area, and feature attributes will be skiipped, as the MapML client cannot leverage them for the moment.
+When both "Use Tiles" and "Use Features" are set in the FORMAT_OPTIONS parameter (`mapmlusefeatures:true;mapmlusetiles:true`), the MapML extension will request tiled maps in `text/mapml` format. The contents of the tiles will be clipped to the requested area, and feature attributes will be skipped, as the MapML client cannot leverage them for the moment.
 
 ## Sub-layer Settings
 

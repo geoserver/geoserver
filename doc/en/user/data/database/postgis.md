@@ -173,7 +173,7 @@ Having a json column storing jsonvalues like the following,
 
 ```json
 { "name": "city name",
-   "description": "the city description", "districts": [ { "name":"district1", "population": 2000 }, { "name":"district2", "population": 5000 } ] "population":{ "average_age": 35, "toal": 50000 }
+   "description": "the city description", "districts": [ { "name":"district1", "population": 2000 }, { "name":"district2", "population": 5000 } ] "population":{ "average_age": 35, "total": 50000 }
 }
 ```
 

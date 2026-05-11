@@ -13,7 +13,7 @@ In particular what we want to do is:
 - Update/insert into the `EDITOR` the current GeoServer user.
 - Update/insert into the `LAST_UPDATE` the current timestamp
 
-We can leverage on two GeoServer `CQL Expressions` that allow us to get thos values at runtime
+We can leverage on two GeoServer `CQL Expressions` that allow us to get those values at runtime
 
 ```ini
 EDITOR=env('GSUSER')
@@ -22,7 +22,7 @@ LAST_UPDATE=now()
 
 The function `env('GSUSER')` reads the system environment for a variable named `GSUSER`, resolves the value and returns back the current logged-in username.
 
-This one is a special variable automatically created by GeoServer at `login` time and injected into the local environment (see `#EnviromentInjectionCallback` for more details)
+This one is a special variable automatically created by GeoServer at `login` time and injected into the local environment (see `#EnvironmentInjectionCallback` for more details)
 
 The function `now()` gets the current timestamp and returns back the date-time.
 

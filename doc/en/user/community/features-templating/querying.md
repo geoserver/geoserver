@@ -135,7 +135,7 @@ Backwards mapping capability is available for all the output formats. Consider t
 The following are example of valid CQL filters:
 
 - gsml:GeologicUnit.description = 'some string value'
-- name in ("MERCIA MUDSTONE", "UKNOWN")
+- name in ("MERCIA MUDSTONE", "UNKNOWN")
 - gsml:positionalAccuracy.valueArray1 = "100"
 
 ```json
@@ -255,7 +255,7 @@ The following are example of valid CQL filters:
 The following are example of valid CQL filters:
 
 - gsml:GeologicUnit.description = 'some string value'
-- name in ("MERCIA MUDSTONE", "UKNOWN")
+- name in ("MERCIA MUDSTONE", "UNKNOWN")
 - gsml:positionalAccuracy.valueArray1 = "100"
 
 As the last example shows, to refer to elements in arrays listing simple attributes, the index of the attribute is needed, starting from 1, in the form `{attributeName}{index}`, as in `features.gsml:positionalAccuracy.valueArray1.`

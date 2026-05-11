@@ -42,7 +42,7 @@ Typical uses include:
 
 In the same way as ImageMosaic, the commonParameters PropertyCollectors property accepts multiple collector definitions, separated by commas.
 
-Compared to ImageMosaic, which stores specific collector definitions in dedicated sidecar configuration files, VectorMosaic ProeprtyCollectors configuration embeds the specific collector definition inline within square brackets.
+Compared to ImageMosaic, which stores specific collector definitions in dedicated sidecar configuration files, VectorMosaic PropertyCollectors configuration embeds the specific collector definition inline within square brackets.
 
 ImageMosaic example: the `indexer.properties` contains a line:
 

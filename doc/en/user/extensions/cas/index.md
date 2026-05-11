@@ -41,7 +41,7 @@ This page serves as a reference for configuration options, but a step by step tu
 |----|----|
 | Name | Name of the filter |
 | CAS server URL including context root | The CAS server location (GeoServer will redirect to it, for example, in order to login, adding the necessary extra path elements) |
-| No single sign on | If checkecd, will send the "renew=true" options to the CAS server, forcing the user to login on the server at each request (unless session creation is allowed) |
+| No single sign on | If checked, will send the "renew=true" options to the CAS server, forcing the user to login on the server at each request (unless session creation is allowed) |
 | Participate in single sign out | Whether GeoServer should receive and handle callbacks for Single Sign Out. |
 | URL in CAS loutput page | CAS logout page location |
 | Proxy callback URL | The URL CAS will call back to after proxy ticket authentication |

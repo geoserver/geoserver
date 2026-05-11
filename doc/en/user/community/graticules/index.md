@@ -1,6 +1,6 @@
 # Graticule Extension
 
-This module allows GeoServer to add graticules or grids to a WMS (or to allow them to be downloaded as WFS). The extension includes a vector process that can transform the grid lines to label points based on a bounding box, to allow adding labels in WMS images (this reqiures the WPS module to be present).
+This module allows GeoServer to add graticules or grids to a WMS (or to allow them to be downloaded as WFS). The extension includes a vector process that can transform the grid lines to label points based on a bounding box, to allow adding labels in WMS images (this requires the WPS module to be present).
 
 ## Installing the graticule extension
 

@@ -114,7 +114,7 @@ In order to sync the GeoServer execution with the new modules, from the `Maven P
 
 ### Code formatting
 
-GeoServer uses the [palantir-java-format](<https://github.com/palantir/palantir-java-format?tab=readme-ov-file#palantir-java-format>) which is a fork of the google-java-format AOSP style updated Lamda expressions and 120 columns.
+GeoServer uses the [palantir-java-format](<https://github.com/palantir/palantir-java-format?tab=readme-ov-file#palantir-java-format>) which is a fork of the google-java-format AOSP style updated Lambda expressions and 120 columns.
 
 The formatter plugin is embedded in the build and will reformat the code at each build, matching the coding conventions. Please always build locally before committing!
 

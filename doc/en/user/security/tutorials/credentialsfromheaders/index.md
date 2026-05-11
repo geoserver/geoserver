@@ -34,7 +34,7 @@ This tutorial uses the [curl](http://curl.haxx.se/) utility to issue HTTP reques
 
 5.  Fill in the fields of the settings form as follows:
 
-    - Set `Name` to "apachessesion"
+    - Set `Name` to "apachesession"
     - Set `Username Header` to "X-Credentials"
     - Set `Regular Expression for Username` to "private-user=([\^&]*)"
     - Set `Password Header` to "X-Credentials"
@@ -48,7 +48,7 @@ This tutorial uses the [curl](http://curl.haxx.se/) utility to issue HTTP reques
 
 8.  Click on "default" in the chain grid.
 
-9.  Scroll down and remove all filters from the `Selected` list and add the `apachessesion` filter.
+9.  Scroll down and remove all filters from the `Selected` list and add the `apachesession` filter.
 
     ![](images/digest5.jpg)
 

@@ -87,7 +87,7 @@ Answer for [Challenge SLD Z-Index Generation](linestring.md#css.line.q2):
 
 2.  *Challenge:* There is an interesting trick in the generated SLD, can you explain how it works?
 
-3.  The Z-Order example produces multiple FeatureTypeSytle definitions, each acting like an "inner layer".
+3.  The Z-Order example produces multiple FeatureTypeStyle definitions, each acting like an "inner layer".
 
     Each FeatureTypeStyle is rendered into its own raster, and the results merged in order. The legend shown in the map preview also provides a hint, as the rule from each FeatureType style is shown.
 

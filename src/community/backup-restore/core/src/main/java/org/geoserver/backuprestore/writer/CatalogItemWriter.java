@@ -21,6 +21,9 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.catalog.impl.ResolvingProxy;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geotools.util.logging.Logging;
 import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.StepExecution;
@@ -96,7 +99,26 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(StyleInfo styleInfo) {
-        StyleInfo source = getCatalog().getStyleByName((styleInfo).getName());
+        // Use workspace-aware lookup for workspace-specific styles
+        WorkspaceInfo ws = styleInfo.getWorkspace();
+        // Resolve workspace proxy to actual workspace so the XML is written with ID reference
+        // instead of name reference. This is critical for GeoServer to load the style correctly
+        // on restart (CatalogLoaderSanitizer.validate() compares workspace IDs).
+        if (ws != null) {
+            WorkspaceInfo resolvedWs = ResolvingProxy.resolve(getCatalog(), ws);
+            if (resolvedWs != null) {
+                // Unwrap ModificationProxy to access StyleInfoImpl directly,
+                // since styleInfo may be wrapped in a proxy during restore.
+                StyleInfo unwrapped = ModificationProxy.unwrap(styleInfo);
+                if (unwrapped instanceof StyleInfoImpl) {
+                    ((StyleInfoImpl) unwrapped).setWorkspace(resolvedWs);
+                }
+                ws = resolvedWs;
+            }
+        }
+        StyleInfo source = (ws != null)
+                ? getCatalog().getStyleByName(ws, styleInfo.getName())
+                : getCatalog().getStyleByName(styleInfo.getName());
         if (source == null) {
             getCatalog().add(styleInfo);
             getCatalog().save(getCatalog().getStyle((styleInfo).getId()));

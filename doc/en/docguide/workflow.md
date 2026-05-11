@@ -95,7 +95,7 @@ You should install MkDocs on your local system (see the page on [Installing](ins
 
 1.  On a terminal, navigate to your GeoServer source checkout:
 
-2.  Run the following command to build the docs locally (generating `index.html` links for use on local filesytem):
+2.  Run the following command to build the docs locally (generating `index.html` links for use on local filesystem):
 
     ``` bash
     mkdocs build --no-directory-urls

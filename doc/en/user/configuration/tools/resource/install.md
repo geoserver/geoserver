@@ -5,7 +5,7 @@ render_macros: true
 
 # Installing the GeoServer Web Resource extension
 
-The **Resource Brower** tool is provided by the web-resource extension is listed on the GeoServer download page.
+The **Resource Browser** tool is provided by the web-resource extension is listed on the GeoServer download page.
 
 To install web-resource extension:
 

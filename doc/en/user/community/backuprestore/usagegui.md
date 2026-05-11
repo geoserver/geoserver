@@ -57,7 +57,7 @@ At the bottom of the `Execution Details` page, it's possible to download the `.z
 
 ![](images/usagegui005.png)
 
-In case some running exceptions or warning have been catched by the process, they will be presented on the execution summary. The `Error Detail Level` allows to inspect the causes by exposing the stack trace for each of them.
+In case some running exceptions or warning have been caught by the process, they will be presented on the execution summary. The `Error Detail Level` allows to inspect the causes by exposing the stack trace for each of them.
 
 ## Restoring via UI
 

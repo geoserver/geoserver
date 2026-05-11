@@ -18,7 +18,7 @@ render_macros: true
 
     - {{ snapshot }} example: [mbtiles-store](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-mbtiles-store-plugin.zip)
 
-    Download the `mbtiles-plugin` to also use the WMS output format generaring MBTiles and the WPS process doing the same. Make sure to install corresponding WPS extension for GeoServer instance before installing this plugin, or GeoServer won't start.
+    Download the `mbtiles-plugin` to also use the WMS output format generating MBTiles and the WPS process doing the same. Make sure to install corresponding WPS extension for GeoServer instance before installing this plugin, or GeoServer won't start.
 
     - {{ snapshot }} example: [mbtiles](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-mbtiles-plugin.zip)
 

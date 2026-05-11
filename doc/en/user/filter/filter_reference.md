@@ -59,7 +59,7 @@ The `<PropertyIsNull>` operator tests whether a property value is null. It conta
 |----|----|----|
 | `<PropertyName>` | Yes | contains a string specifying the name of the property to be tested |
 
-#### PropertyIsBetweeen operator
+#### PropertyIsBetween operator
 
 The `<PropertyIsBetween>` operator tests whether an expression value lies within a range given by a lower and upper bound (inclusive). It contains the elements:
 

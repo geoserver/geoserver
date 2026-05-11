@@ -267,7 +267,7 @@ The three rules are designed as follows:
 
 The order of the rules does not matter in this case, since each shape is only rendered by a single rule.
 
-The first rule fills light green all polygons whose "pop" attribute is below 200,000, the second paints medium green all poygons whose "pop" attribute is between 200,000 and 500,000, while the third rule paints dark green the remaining polygons.
+The first rule fills light green all polygons whose "pop" attribute is below 200,000, the second paints medium green all polygons whose "pop" attribute is between 200,000 and 500,000, while the third rule paints dark green the remaining polygons.
 
 What's interesting in the filters is the use of the "parseLong" filter function: this function is necessary because the "pop" attribute is a string, leaving it as is we would have a string comparison, whilst the function turns it into a number, ensuring proper numeric comparisons instead.
 

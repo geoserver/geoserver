@@ -28,7 +28,7 @@ The *Download Process* calls the *Download Estimator Process*, checks the file s
 - `targetSizeX` : size X in pixels of the output (optional, applies for raster input only)
 - `targetSizeY` : size Y in pixels of the output (optional, applies for raster input only)
 - `selectedBands` : a set of the band indices of the original raster that will be used for producing the final result (optional, applies for raster input only)
-- `writeParameters` : a set of writing parameters (optional, applies for raster input only). See [Writing parameters](#writing_params) below section for more details on writing parameters defintion.
+- `writeParameters` : a set of writing parameters (optional, applies for raster input only). See [Writing parameters](#writing_params) below section for more details on writing parameters definition.
 - `minimizeReprojections` : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS's coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See [RasterDownload of Heterogeneous CRS ImageMosaic](#heterogeneous_imagemosaic) below section for more details on this param.
 - `bestResolutionOnMatchingCRS` : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See [RasterDownload of Heterogeneous CRS ImageMosaic](#heterogeneous_imagemosaic) below section for more details on this param.
 - `targetVerticalCRS` : optional TargetVerticalCRS, to be used to transform elevation data from a VerticalCRS to another one. See [Vertical data resampling on download](#vertical_resampling) below section for more details on this param
@@ -39,7 +39,7 @@ The *Download Process* calls the *Download Estimator Process*, checks the file s
 
     the reprojected coverage will be forced to use native resolutions. For example by specifying a value of 5.0, if the percentage difference between native and reprojected data is below 5%, assuming that also the other two conditions are respected, the native resolutions will be preserved. Default values is 0.
 
-The `targetCRS` and `RoiCRS` parameters are using EPSG code terminology, so, valid parameters are literals like `EPSG:4326` (if we are referring to a the Geogaphic WGS84 CRS), `EPSG:3857` (for WGS84 Web Mercator CRS), etc.
+The `targetCRS` and `RoiCRS` parameters are using EPSG code terminology, so, valid parameters are literals like `EPSG:4326` (if we are referring to a the Geographic WGS84 CRS), `EPSG:3857` (for WGS84 Web Mercator CRS), etc.
 
 ## ROI Definition
 
@@ -321,7 +321,7 @@ When issued (and process has finished on the server), this GET request returns t
           <ows:Identifier>result</ows:Identifier>
           <ows:Title>Zipped output files to download</ows:Title>
           <wps:Data>
-              <wps:ComplexData encoding="base64" mimeType="application/zip">UEsDBBQACAgIAFdyCEkAAAAAAAAAAAAAAAApAAAAMGEwYmJkYmQtMjdkNi00...(more zipped raster data following, ommited for space saving)...</wps:ComplexData>
+              <wps:ComplexData encoding="base64" mimeType="application/zip">UEsDBBQACAgIAFdyCEkAAAAAAAAAAAAAAAApAAAAMGEwYmJkYmQtMjdkNi00...(more zipped raster data following, omitted for space saving)...</wps:ComplexData>
           </wps:Data>
       </wps:Output>
   </wps:ProcessOutputs>

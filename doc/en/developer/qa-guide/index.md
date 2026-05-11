@@ -89,7 +89,7 @@ The check is a bit fragile, in that there are multiple ways to close an object b
 </rule>
 ```
 
-For closing delegates that use an instance object instead of a class static method, the variable name is included in the prefix, so some uninformity in variable names is required.
+For closing delegates that use an instance object instead of a class static method, the variable name is included in the prefix, so some uniformity in variable names is required.
 
 ## Error Prone
 

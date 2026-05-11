@@ -7,7 +7,7 @@ BasePath: ``/geoserver/rest``
 
 (c) ${copyright.year} Open Source Geospatial Foundation - all rights reserved
 
-[Ceative commons Attribution 4.0 International](LICENSE.html)
+[Creative commons Attribution 4.0 International](LICENSE.html)
 
 Access
 ------

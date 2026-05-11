@@ -51,7 +51,7 @@ PropertyCollectors=TimestampFileNameExtractorSPI[regex=.*?(\\\\d{4})/(\\\\d{2})/
 delegate.dbtype=geoparquet
 ```
 
-The data to be ingested is organized in folders containig YEAR\\MONTH\\DAY so we are using the `TimestampFileNameExtractorSPI` PropertyCollector configured above, which will extract the temporal information from the whole file path (`fullPath=true`) using the specified `regex` to build a `YYYYMMdd` date that will be assigned to the `time` attribute:
+The data to be ingested is organized in folders containing YEAR\\MONTH\\DAY so we are using the `TimestampFileNameExtractorSPI` PropertyCollector configured above, which will extract the temporal information from the whole file path (`fullPath=true`) using the specified `regex` to build a `YYYYMMdd` date that will be assigned to the `time` attribute:
 
     TimestampFileNameExtractorSPI[regex=.*?(\\\\d{4})/(\\\\d{2})/(\\\\d{2}).*,format=yyyyMMdd,fullPath=true
 

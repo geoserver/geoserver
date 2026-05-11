@@ -168,7 +168,7 @@ The `Resources` facade provides lots of common activities for working with Resou
 
 Most of these perform common activities or check on resource status `exists(resource)`, `hidden(resource)`.
 
-Resources methods provide the flexibility to work with with Resource while not getting caught out in the dfference between DIRECTORY and RESOURCE type.
+Resources methods provide the flexibility to work with with Resource while not getting caught out in the difference between DIRECTORY and RESOURCE type.
 
 ```java
 if( Resources.exists(resource)) {
@@ -204,14 +204,14 @@ Examples:
 
 - `Resources.fromURL( baseDirectory, "resource:images/image.png")` - resource path
 - `Resources.fromURL( baseDirectory, "file:images/image.png")` - resource path (deprecated)
-- `Resources.fromURL( null, "/src/gis/cadaster/district.geopgk")` - absolute file path (linux)
+- `Resources.fromURL( null, "/src/gis/cadaster/district.geopkg")` - absolute file path (linux)
 - `Resources.fromURL( baseDirectory, "D:\\gis\\cadaster\\district.geopkg")` - absolute file path (windows)
 - `Resources.fromURL( baseDirectory, "file:///D:/gis/cadaster/district.geopkg")` - absolute file url (windows)
 - `Resources.fromURL( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/")` - null (external reference)
 
 ## Files
 
-The `Files` facade provides methods for working with file objects, and one method of critical importace to the Resource API.
+The `Files` facade provides methods for working with file objects, and one method of critical importance to the Resource API.
 
 ### Files.asResource
 
@@ -225,7 +225,7 @@ The `Files.asResource(file)` method creates a `ResourceAdapter` wrapper around a
 The other key method is `Files.url( baseDirectory, url)` which is used to look up files based on a user provided URL (or path).
 
 - `Files.url( null, "resource:styles/logo.svg")` - internal url format restricted to data directory content
-- `Files.url( null, "/src/gis/cadaster/district.geopgk")` - absolute file path (linux)
+- `Files.url( null, "/src/gis/cadaster/district.geopkg")` - absolute file path (linux)
 - `Files.url( baseDirectory, "D:\\gis\\cadaster\\district.geopkg")` - absolute file path (windows)
 - `Files.url( baseDirectory, "file:///D:/gis/cadaster/district.geopkg")` - absolute file url (windows)
 - `Files.url( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/")` - null (external reference ignored as we cannot determine a file)

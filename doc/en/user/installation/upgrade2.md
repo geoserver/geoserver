@@ -60,7 +60,7 @@ GeoServer operates with a time boxed release cycle, maintaining "stable" and "ma
 
 GeoServer 2.0.0 was first released in October 29, 2009 and has continued in active development for seventeen years with the most recent GeoServer 2.28 releases in 2026.
 
-The upgrade to [GeoServer 3](upgrade3.md) is seemless maintaining the same data directory setup, and Java 17 environment, as used for GeoServer 2.28.
+The upgrade to [GeoServer 3](upgrade3.md) is seamless maintaining the same data directory setup, and Java 17 environment, as used for GeoServer 2.28.
 
 The following section highlights key changes affecting compatibility between each release, along with any manual steps you may need to perform during the upgrade process.
 

@@ -19,7 +19,7 @@ Read more about the [Reprojection console](../demos/index.md#demos_reprojectionc
 GeoServer supports NTv2 and NADCON grid shift transforms. Grid files are not shipped out with GeoServer. They need to be downloaded, usually from your National Mapping Agency website.
 
 !!! warning
-    Grid Shift files are only valid in the specific geographic domain for which they where made; trying to transform coordinates outside this domain will result in no trasformation at all. Make sure that the Grid Shift files are valid in the area you want to transform.
+    Grid Shift files are only valid in the specific geographic domain for which they where made; trying to transform coordinates outside this domain will result in no transformation at all. Make sure that the Grid Shift files are valid in the area you want to transform.
 
 1.  Search for the *Grid File Name(s)* int the tables below, which are extracted from EPSG version 11.0.31. If you need to use a Grid Shift transform not declared in EPSG, you will need to [Define a custom Coordinate Operation](#define-a-custom-coordinate-operation).
 2.  Get the Grid File(s) from your National Mapping Agency (NTv2) or the [US National Geodetic Survey](http://www.ngs.noaa.gov/TOOLS/Nadcon/Nadcon.shtml) (NADCON).

@@ -104,13 +104,13 @@ Additional custom links can be provided for an individual layer. Use the Layer E
 
 ![](img/links.png)
 
-*Links used to define enclosure download for ne:counteries layer*
+*Links used to define enclosure download for ne:countries layer*
 
 The relationships are the same as for the `collections` resource, but used in case there is anything that is specific to the collection (e.g., the schema for the single collection).
 
 In addition, other relations can be specified, like the `tag` relation, to link to the eventual INSPIRE feature concept dictionary entry.
 
-Example from workspace `ne:counteries` collection providing enclosure for download:
+Example from workspace `ne:countries` collection providing enclosure for download:
 
 ```json
 {

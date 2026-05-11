@@ -41,7 +41,7 @@ An overview is a downsampled version of the same image, that is, a zoomed out ve
 gdaladdo -r average mytiff.tif 2 4 8 16
 ```
 
-As a final note, Geotiff supports various kinds of compression both lossles as well as lossy. JPEG compression can produce artifacts but it usually produce very good results on RGB or RGBA images if coupled with inner masks. Deflate compression is to be preferred with elevation or similar data when a lossless compressions is needed. Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O although at the expenses of some CPU cycles.
+As a final note, Geotiff supports various kinds of compression both lossless as well as lossy. JPEG compression can produce artifacts but it usually produce very good results on RGB or RGBA images if coupled with inner masks. Deflate compression is to be preferred with elevation or similar data when a lossless compressions is needed. Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O although at the expenses of some CPU cycles.
 
 ### Handling huge data sets
 
@@ -58,13 +58,13 @@ rootDirectory
        +- mosaic metadata files
        +- mosaic_file_0.tiff
        +- ...
-       +- mosiac_file_n.tiff
+       +- mosaic_file_n.tiff
     +- ...
     +- 32
        +- mosaic metadata files
        +- mosaic_file_0.tiff
        +- ...
-       +- mosiac_file_n.tiff
+       +- mosaic_file_n.tiff
 ```
 
 Creating a pyramid by hand can theoretically be done with gdal, but in practice it's a daunting task that would require some scripting, since gdal provides no "tiler" command to extract regular tiles out of an image, nor one to create a downsampled set of tiles. As an alternative, you can use the geotools PyramidBuilder tool (documentation on how to use this is pending, contact the developers if you need to use it).

@@ -19,9 +19,9 @@ The map and animation downloads work off a set of common parameters:
 A layer specification is a XML structure made of three parts:
 
 - Name: a comma separated list of layer names (eventually just one)
-- Capabilities: link to a capabilities document (optional, used when targetting remote WMS layers)
+- Capabilities: link to a capabilities document (optional, used when targeting remote WMS layers)
 - Parameter (key, value): an extra parameter to be added in the WMS request represented by this layer (e.g., `elevation`, `CQL_FILTER`, `env`)
-- Opacity: an optional parameter, ranging from 0 to 100, that controls the layer image level of translucency during the merge process. When not set the layer image is fully opaque. Note that this is seperate from the overall map `transparent` boolean parameter.
+- Opacity: an optional parameter, ranging from 0 to 100, that controls the layer image level of translucency during the merge process. When not set the layer image is fully opaque. Note that this is separate from the overall map `transparent` boolean parameter.
 
 For example:
 
@@ -130,7 +130,7 @@ A download map issued against a set of local layers can look as follows:
 </wps:Execute>
 ```
 
-For this example the layers could have been a single one, with a "Name" equal to "giantPolygon,watertermp".
+For this example the layers could have been a single one, with a "Name" equal to "giantPolygon,watertemp".
 
 ### Secondary output: map metadata
 

@@ -126,7 +126,7 @@ Now that we have located the image, we can publish this information as a layer.
 
     | Native SRS    | `EPSG:4326` |
     |---------------|-------------------------|
-    | Declaired SRS | `EPSG:4326` |
+    | Declared SRS | `EPSG:4326` |
     | SRS Handling  | `Force declared`        |
 
 

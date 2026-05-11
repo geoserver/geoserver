@@ -41,4 +41,4 @@ To download and install the required extensions by hand:
 
 5.  Restart the Application Server.
 
-6.  Login to the Web Administration application. Select **Styles** from the naviagion menu. Click **Create a new style** and ensure both CSS and YSLD are available in the formats dropdown. Click **Cancel** to return to the **Styles** page without saving.
+6.  Login to the Web Administration application. Select **Styles** from the navigation menu. Click **Create a new style** and ensure both CSS and YSLD are available in the formats dropdown. Click **Cancel** to return to the **Styles** page without saving.

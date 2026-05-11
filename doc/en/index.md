@@ -60,7 +60,7 @@ a.doc-card {
 a.doc-card:link {
   color: var(--md-default-fg-color--light);
 }
-a.doc-card:visted {
+a.doc-card:visited {
   color: var(--md-default-fg-color--light);
 }
 a.doc-card:hover {

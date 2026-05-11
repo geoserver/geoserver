@@ -178,7 +178,7 @@ In a scenario where bearer encrypted tokens are used, in encrypted form, and wit
 - Then it's used against the `introspection` endpoint for validation (which also contains the exp attribute, see later)
 - It's finally used against the `userinfo` to extract the roles
 
-With clients performing many small tiled requests, the traffic to the OIDC server may becomes excessive.
+With clients performing many small tiled requests, the traffic to the OIDC server may become excessive.
 
 However, tokens have an `exp` attribute, a UNIX epoch indicating the token's expiry. The **cache authentication** setting makes GeoServer cache the authentication against that token until expiration to reduce traffic.
 

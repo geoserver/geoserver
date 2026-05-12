@@ -24469,10 +24469,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#configure-role-role-source-id-token" class="md-nav__link">
+  <a href="#configure-role-source" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configure Role Role Source (ID Token)
+        Configure Role Source
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure Role Source">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#id-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ID Token
       
     </span>
   </a>
@@ -24480,15 +24492,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#configure-role-role-source-ms-graph-application-roles" class="md-nav__link">
+  <a href="#microsoft-graph-api-entra-id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configure Role Role Source (MS Graph) - Application Roles
+        Microsoft Graph API (Entra ID)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Configure Role Role Source (MS Graph) - Application Roles">
+    <nav class="md-nav" aria-label="Microsoft Graph API (Entra ID)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -24510,6 +24522,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -29935,10 +29952,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#configure-role-role-source-id-token" class="md-nav__link">
+  <a href="#configure-role-source" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configure Role Role Source (ID Token)
+        Configure Role Source
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure Role Source">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#id-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ID Token
       
     </span>
   </a>
@@ -29946,15 +29975,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#configure-role-role-source-ms-graph-application-roles" class="md-nav__link">
+  <a href="#microsoft-graph-api-entra-id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configure Role Role Source (MS Graph) - Application Roles
+        Microsoft Graph API (Entra ID)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Configure Role Role Source (MS Graph) - Application Roles">
+    <nav class="md-nav" aria-label="Microsoft Graph API (Entra ID)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -29976,6 +30005,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -30105,7 +30139,14 @@
 <p>Press Save</p>
 </li>
 </ol>
-<h3 id="configure-role-role-source-id-token">Configure Role Role Source (ID Token)<a class="headerlink" href="#configure-role-role-source-id-token" title="Permanent link">&para;</a></h3>
+<h3 id="configure-role-source">Configure Role Source<a class="headerlink" href="#configure-role-source" title="Permanent link">&para;</a></h3>
+<p>You have two options: </p>
+<ul>
+<li>ID Token</li>
+<li>Microsoft Graph API (Entra ID)</li>
+</ul>
+<p>ID Token appears to be simpler.</p>
+<h4 id="id-token">ID Token<a class="headerlink" href="#id-token" title="Permanent link">&para;</a></h4>
 <p>When we configured Azure, we had it attach the roles to the ID token. We can use that to assign roles inside GeoServer.</p>
 <ol>
 <li>
@@ -30121,10 +30162,10 @@
 </ul>
 </li>
 </ol>
-<h3 id="configure-role-role-source-ms-graph-application-roles">Configure Role Role Source (MS Graph) - Application Roles<a class="headerlink" href="#configure-role-role-source-ms-graph-application-roles" title="Permanent link">&para;</a></h3>
-<p>Before you can use the MS Graph for permissions, you must give the app you created more permissions.</p>
-<h4 id="setting-up-azure">Setting up Azure<a class="headerlink" href="#setting-up-azure" title="Permanent link">&para;</a></h4>
-<p>We need to setup azure so GeoServer can access the MSGraph and get the roles/groups the user is assigned to.</p>
+<h4 id="microsoft-graph-api-entra-id">Microsoft Graph API (Entra ID)<a class="headerlink" href="#microsoft-graph-api-entra-id" title="Permanent link">&para;</a></h4>
+<p>Before you can use the MS Graph for permissions, you must give the Entra App you created more permissions.</p>
+<h5 id="setting-up-azure">Setting up Azure<a class="headerlink" href="#setting-up-azure" title="Permanent link">&para;</a></h5>
+<p>We need to setup Azure so GeoServer can access the MSGraph and get the roles/groups the user is assigned to.</p>
 <p><strong>NOTE:</strong> in the ID token, the roles name is used (i.e. "geoserverAdmin"). However, in MSGraph, the role's ID is used (a guid).</p>
 <ol>
 <li>
@@ -30148,7 +30189,7 @@
 <p><img alt="" src="../../img/azure_gs_msgraph4.png" /></p>
 </li>
 <li>
-<p>On the "Api permissions" screen, press "Grant admin consent for ..."</p>
+<p>On the "API permissions" screen, press "Grant admin consent for ..."</p>
 <ul>
 <li>This will pop-up a confirmation - press "Yes"</li>
 </ul>
@@ -30163,7 +30204,7 @@
 <p><img alt="" src="../../img/azure_gs_msgraph7.png" /></p>
 </li>
 </ol>
-<h4 id="setting-up-geoserver">Setting up GeoServer<a class="headerlink" href="#setting-up-geoserver" title="Permanent link">&para;</a></h4>
+<h5 id="setting-up-geoserver">Setting up GeoServer<a class="headerlink" href="#setting-up-geoserver" title="Permanent link">&para;</a></h5>
 <p>You will need:</p>
 <ul>
 <li>"geoserverAdmin" role id (GUID)</li>
@@ -30179,7 +30220,7 @@
 <li>
 <p>Scroll down to the "Authorization" section</p>
 <ul>
-<li>Choose "Microsoft Graph (Entra ID)"</li>
+<li>Choose "Microsoft Graph API (Entra ID)"</li>
 <li>Turn on "Get Roles from the User's Application Roles (MSGraph appRoleAssignments endpoint)". GeoServer will retrieve the user's roles from the MSGraph's "appRoleAssignments". These roles are the Role ID (GUID) <strong>not</strong> the name of the role.</li>
 <li>In the "Object Id for the Azure Enterprise Application (NOT the Client Id)" box, put in your enterprise application's Object ID (GUID).</li>
 <li>In the converter map, use the role id (guid) for "geoserverAdmin" (found above) and put in "<your geoserverAdmin GUID>=ROLE_ADMINISTRATOR"</li>

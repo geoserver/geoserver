@@ -7,6 +7,7 @@ package org.geoserver.web;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,8 +20,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.Page;
 import org.apache.wicket.RuntimeConfigurationType;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -104,6 +107,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     /** optional page parameters to use when navigating to {@link #returnPageClass}. */
     protected PageParameters returnPageParams;
+
+    public static final MetaDataKey<ReturnDestination> RETURN_DESTINATION_KEY = new MetaDataKey<>() {};
 
     public static final String VERSION_3 = "jquery/jquery-3.5.1.js";
 
@@ -789,6 +794,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         String ws = getPageParameters().get("workspace").toOptionalString();
         PageParameters currentParams = (ws != null && !ws.isEmpty()) ? new PageParameters().add("workspace", ws) : null;
 
+        ReturnDestination destination = getSession().getMetaData(RETURN_DESTINATION_KEY);
+        if (destination != null) {
+            getSession().setMetaData(RETURN_DESTINATION_KEY, null);
+            setResponsePage(destination.pageClass, destination.pageParameters);
+            return;
+        }
+
         if (returnPage != null) {
             setResponsePage(returnPage);
             return;
@@ -801,6 +813,22 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         defaultPageClass = defaultPageClass != null ? defaultPageClass : GeoServerHomePage.class;
         setResponsePage(defaultPageClass, currentParams);
+    }
+
+    public static void setReturnDestination(
+            Session session, Class<? extends Page> pageClass, PageParameters pageParameters) {
+        session.setMetaData(RETURN_DESTINATION_KEY, new ReturnDestination(pageClass, pageParameters));
+    }
+
+    public static class ReturnDestination implements Serializable {
+        private static final long serialVersionUID = 1L;
+        final Class<? extends Page> pageClass;
+        final PageParameters pageParameters;
+
+        ReturnDestination(Class<? extends Page> pageClass, PageParameters pageParameters) {
+            this.pageClass = pageClass;
+            this.pageParameters = pageParameters;
+        }
     }
 
     public void addFeedbackPanels(AjaxRequestTarget target) {

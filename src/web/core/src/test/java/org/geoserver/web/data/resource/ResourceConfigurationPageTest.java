@@ -44,6 +44,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -76,6 +77,8 @@ import org.geoserver.test.PostGISTestResource;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.util.GeoServerDefaultLocale;
+import org.geoserver.web.GeoServerBasePage;
+import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.ColorPickerPanel;
@@ -1032,5 +1035,29 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         AttributeTypeInfo att = attributes.get(1); // used to be 0
         assertEquals("abstract", att.getName());
         assertEquals("description", att.getSource());
+    }
+
+    @Test
+    public void testCancelReturnsToLayerHomeWhenReturnPageParamsProvided() {
+        login();
+        LayerInfo layer = getCatalog().getLayers().get(0);
+        String workspace = layer.getResource().getStore().getWorkspace().getName();
+        String layerName = layer.getName();
+
+        PageParameters returnParams = new PageParameters();
+        returnParams.add("workspace", workspace);
+        returnParams.add("layer", layerName);
+        GeoServerBasePage.setReturnDestination(tester.getSession(), GeoServerHomePage.class, returnParams);
+
+        PageParameters params = new PageParameters();
+        params.add(ResourceConfigurationPage.WORKSPACE, workspace);
+        params.add(ResourceConfigurationPage.LAYER, layerName);
+        tester.startPage(ResourceConfigurationPage.class, params);
+        tester.clickLink("publishedinfo:cancel");
+
+        tester.assertRenderedPage(GeoServerHomePage.class);
+        PageParameters renderedParams = tester.getLastRenderedPage().getPageParameters();
+        assertEquals(workspace, renderedParams.get("workspace").toString());
+        assertEquals(layerName, renderedParams.get("layer").toString());
     }
 }

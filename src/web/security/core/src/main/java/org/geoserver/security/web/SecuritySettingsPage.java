@@ -83,8 +83,7 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
 
             GeoServerSecurityManager secMgr = getSecurityManager();
             if (secMgr.isStrongEncryptionAvailable()) {
-
-                add(new Label("strongEncryptionMsg", new StringResourceModel("strongEncryption", this, null)));
+                add(new Label("strongEncryptionMsg"));
             } else {
                 add(new Label("strongEncryptionMsg", new StringResourceModel("noStrongEncryption", this, null)));
             }

@@ -14,10 +14,9 @@ import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEve
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -40,7 +39,6 @@ import org.geoserver.web.LoginFormInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -78,10 +76,6 @@ public class OAuth2LoginButtonManagerTest {
         return "/" + DEFAULT_AUTHORIZATION_REQUEST_BASE_URI + "/" + scopedRegId;
     }
 
-    private static String expectedBeanName(String scopedRegId) {
-        return OAuth2LoginButtonManager.DYNAMIC_BEAN_NAME_PREFIX + scopedRegId;
-    }
-
     /**
      * Convenience: wire {@code securityManager.getSecurityConfig().getFilterChain().getRequestChains()} to advertise a
      * single request chain whose member filter names are {@code inChainFilterNames}. The sweep's chain-membership check
@@ -99,21 +93,19 @@ public class OAuth2LoginButtonManagerTest {
     }
 
     @Test
-    public void singleFilter_enableRegistersSingleton_disableDestroysIt() {
+    public void singleFilter_enableRegisters_disableRemoves() {
         String lFilterName = "my-filter";
         String lScopedOidc = scopedRegId(lFilterName, REG_ID_OIDC);
-        String lBeanName = expectedBeanName(lScopedOidc);
 
         // when: enable fires for the filter
         sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
 
-        // then: a LoginFormInfo is registered with the correct shape
-        ArgumentCaptor<LoginFormInfo> infoCaptor = ArgumentCaptor.forClass(LoginFormInfo.class);
-        verify(beanFactory).registerSingleton(eq(lBeanName), infoCaptor.capture());
-        LoginFormInfo registered = infoCaptor.getValue();
+        // then: the manager's registry holds a LoginFormInfo with the expected shape. The manager now exposes its
+        // contents via ExtensionProvider<LoginFormInfo>, so GeoServerExtensions.extensions(LoginFormInfo.class, ctx)
+        // picks them up on every call — no bean-factory singleton registration, no extension-cache invalidation
+        // headaches.
+        LoginFormInfo registered = sut.getRegisteredButtons().get(lScopedOidc);
         assertNotNull(registered);
-        // The filter name is encoded in the login path as <basePath>/<filterName>__<provider>; the manager exposes
-        // its own filterNameFromScopedRegId(...) helper that consumers can reuse on the path's last segment.
         assertEquals(expectedLoginPath(lScopedOidc), registered.getLoginPath());
         assertTrue(
                 "login path must end with the scoped registration id",
@@ -127,15 +119,16 @@ public class OAuth2LoginButtonManagerTest {
         assertEquals("openidconnect.login.button.title", registered.getTitleKey());
         assertEquals("OAuth2LoginAuthProviderPanel.oidcDescription", registered.getDescriptionKey());
 
-        // and: the internal registry mirrors the registration
-        assertNotNull(sut.getRegisteredButtons().get(lScopedOidc));
+        // and: ExtensionProvider exposes it under LoginFormInfo
+        assertEquals(LoginFormInfo.class, sut.getExtensionPoint());
+        assertEquals(1, sut.getExtensions(LoginFormInfo.class).size());
 
         // when: disable fires for the same filter
         sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
 
-        // then: the singleton is destroyed and the registry is empty
-        verify(beanFactory).destroySingleton(lBeanName);
+        // then: the registry is empty and the ExtensionProvider returns nothing
         assertNull(sut.getRegisteredButtons().get(lScopedOidc));
+        assertTrue(sut.getExtensions(LoginFormInfo.class).isEmpty());
     }
 
     @Test
@@ -149,9 +142,7 @@ public class OAuth2LoginButtonManagerTest {
         sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScoped1));
         sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScoped2));
 
-        // then: two distinct singletons are registered, each with its own scoped login path
-        verify(beanFactory).registerSingleton(eq(expectedBeanName(lScoped1)), any(LoginFormInfo.class));
-        verify(beanFactory).registerSingleton(eq(expectedBeanName(lScoped2)), any(LoginFormInfo.class));
+        // then: two distinct entries are tracked, each with its own scoped login path
         assertEquals(
                 expectedLoginPath(lScoped1),
                 sut.getRegisteredButtons().get(lScoped1).getLoginPath());
@@ -163,15 +154,16 @@ public class OAuth2LoginButtonManagerTest {
                 sut.getRegisteredButtons().get(lScoped1).getLoginPath().endsWith("/" + lFilter1 + "__" + REG_ID_OIDC));
         assertTrue(
                 sut.getRegisteredButtons().get(lScoped2).getLoginPath().endsWith("/" + lFilter2 + "__" + REG_ID_OIDC));
+        // ExtensionProvider returns both as a snapshot — the path GeoServerBasePage uses.
+        assertEquals(2, sut.getExtensions(LoginFormInfo.class).size());
 
         // when: only the first filter disables
         sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScoped1));
 
-        // then: only the first singleton is destroyed; the second one survives untouched
-        verify(beanFactory).destroySingleton(expectedBeanName(lScoped1));
-        verify(beanFactory, never()).destroySingleton(expectedBeanName(lScoped2));
+        // then: only the first entry is removed; the second one survives untouched
         assertNull(sut.getRegisteredButtons().get(lScoped1));
         assertNotNull(sut.getRegisteredButtons().get(lScoped2));
+        assertEquals(1, sut.getExtensions(LoginFormInfo.class).size());
     }
 
     @Test
@@ -185,11 +177,9 @@ public class OAuth2LoginButtonManagerTest {
             sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, scopedRegId(filterName, REG_ID_OIDC)));
         }
 
-        // Three independent singletons registered, each keyed by its own bean name.
+        // Three independent entries tracked, each with its own scoped login path.
         for (String filterName : filterNames) {
             String scopedId = scopedRegId(filterName, REG_ID_OIDC);
-            verify(beanFactory).registerSingleton(eq(expectedBeanName(scopedId)), any(LoginFormInfo.class));
-
             LoginFormInfo info = sut.getRegisteredButtons().get(scopedId);
             assertNotNull("expected a LoginFormInfo for " + scopedId, info);
             assertEquals(expectedLoginPath(scopedId), info.getLoginPath());
@@ -198,6 +188,7 @@ public class OAuth2LoginButtonManagerTest {
                     info.getLoginPath().endsWith("/" + filterName + "__" + REG_ID_OIDC));
             assertEquals("openid.png", info.getIcon());
         }
+        assertEquals(filterNames.length, sut.getExtensions(LoginFormInfo.class).size());
 
         // Login paths are pairwise distinct — no two filters share a login URL.
         java.util.Set<String> loginPaths = new java.util.HashSet<>();
@@ -208,7 +199,7 @@ public class OAuth2LoginButtonManagerTest {
         }
         assertEquals("each filter must have a unique login path", filterNames.length, loginPaths.size());
 
-        // Bean names are pairwise distinct too.
+        // Bean ids are pairwise distinct too.
         java.util.Set<String> beanIds = new java.util.HashSet<>();
         for (String filterName : filterNames) {
             beanIds.add(sut.getRegisteredButtons()
@@ -220,7 +211,6 @@ public class OAuth2LoginButtonManagerTest {
         // Disabling the middle filter must leave the other two intact.
         String middle = scopedRegId("auth0-staging", REG_ID_OIDC);
         sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, middle));
-        verify(beanFactory).destroySingleton(expectedBeanName(middle));
         assertNull(sut.getRegisteredButtons().get(middle));
         assertNotNull(sut.getRegisteredButtons().get(scopedRegId("keycloak-prod", REG_ID_OIDC)));
         assertNotNull(sut.getRegisteredButtons().get(scopedRegId("entra-tenant", REG_ID_OIDC)));
@@ -253,15 +243,19 @@ public class OAuth2LoginButtonManagerTest {
     }
 
     @Test
-    public void repeatedEnable_isIdempotent_doesNotReregister() {
+    public void repeatedEnable_isIdempotent_keepsExistingEntry() {
         String lScopedOidc = scopedRegId("my-filter", REG_ID_OIDC);
 
         // when: enable fires twice in a row (e.g. two consecutive filter rebuilds)
         sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
+        LoginFormInfo first = sut.getRegisteredButtons().get(lScopedOidc);
         sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
+        LoginFormInfo second = sut.getRegisteredButtons().get(lScopedOidc);
 
-        // then: only one singleton registration happened
-        verify(beanFactory, times(1)).registerSingleton(eq(expectedBeanName(lScopedOidc)), any(LoginFormInfo.class));
+        // then: the entry is identical — bean identity stays stable for any consumer holding a reference, and
+        // the ExtensionProvider snapshot returns one and only one button for this scoped id.
+        assertSame(first, second);
+        assertEquals(1, sut.getExtensions(LoginFormInfo.class).size());
     }
 
     @Test
@@ -271,9 +265,9 @@ public class OAuth2LoginButtonManagerTest {
         // when: a disable event arrives for a scoped ID we never saw enabled
         sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
 
-        // then: no destroy call to the bean factory; registry stays empty
-        verify(beanFactory, never()).destroySingleton(anyString());
+        // then: registry stays empty (and unregisterButton short-circuits when there is nothing to remove)
         assertNull(sut.getRegisteredButtons().get(lScopedOidc));
+        assertTrue(sut.getExtensions(LoginFormInfo.class).isEmpty());
     }
 
     @Test
@@ -310,7 +304,9 @@ public class OAuth2LoginButtonManagerTest {
         OAuth2LoginButtonEnablementEvent nullScoped =
                 new OAuth2LoginButtonEnablementEvent(this, true, REG_ID_OIDC, null);
         sut.enablementChanged(nullScoped);
-        verify(beanFactory, never()).registerSingleton(anyString(), any());
+        assertTrue(
+                "null scopedRegId must not produce a registered button",
+                sut.getRegisteredButtons().isEmpty());
     }
 
     @Test
@@ -346,7 +342,7 @@ public class OAuth2LoginButtonManagerTest {
         stubInChainFilterNames(securityManager, "keycloak-prod", "auth0-staging");
 
         ContextRefreshedEvent event = new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class));
-        sut.onContextRefreshed(event);
+        sut.onApplicationEvent(event);
 
         // The manager must register itself as a SecurityManagerListener so that subsequent
         // saves (via GeoServerSecurityManager#saveSecurityConfig) call back into handlePostChanged.
@@ -369,7 +365,7 @@ public class OAuth2LoginButtonManagerTest {
         // Only keycloak-prod is in the chain; orphan-filter is not — its button must NOT register.
         stubInChainFilterNames(securityManager, "keycloak-prod");
 
-        sut.onContextRefreshed(new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class)));
+        sut.onApplicationEvent(new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class)));
 
         verify(securityManager).loadFilter("keycloak-prod");
         verify(securityManager, never()).loadFilter("orphan-filter");
@@ -385,9 +381,9 @@ public class OAuth2LoginButtonManagerTest {
 
         ContextRefreshedEvent event = new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class));
 
-        sut.onContextRefreshed(event);
-        sut.onContextRefreshed(event);
-        sut.onContextRefreshed(event);
+        sut.onApplicationEvent(event);
+        sut.onApplicationEvent(event);
+        sut.onApplicationEvent(event);
 
         // A re-refresh of the context (which can happen in test harnesses or after parent-context
         // shuffling) must not re-register the listener — otherwise GeoServerSecurityManager would
@@ -397,14 +393,14 @@ public class OAuth2LoginButtonManagerTest {
 
     @Test
     public void handlePostChanged_sweepsAllOAuth2FiltersThroughLoadFilter() throws Exception {
-        // Pre-condition: simulate that the listener is already wired up via onContextRefreshed.
+        // Pre-condition: simulate that the listener is already wired up via onApplicationEvent.
         GeoServerSecurityManager securityManager = org.mockito.Mockito.mock(GeoServerSecurityManager.class);
         when(securityManager.listFilters(GeoServerOAuth2LoginAuthenticationFilter.class))
                 .thenReturn(new TreeSet<>()); // initial sweep finds nothing
         when(beanFactory.getBean(GeoServerSecurityManager.class)).thenReturn(securityManager);
         stubInChainFilterNames(securityManager); // empty chain at boot
 
-        sut.onContextRefreshed(new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class)));
+        sut.onApplicationEvent(new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class)));
 
         // Now simulate an admin saving two new filters AND adding them to the chain — handlePostChanged
         // is the call that runs once GeoServerSecurityManager#saveSecurityConfig calls fireChanged().
@@ -437,7 +433,7 @@ public class OAuth2LoginButtonManagerTest {
         // First call throws — second must still happen.
         when(securityManager.loadFilter("broken-filter")).thenThrow(new RuntimeException("simulated bad config"));
 
-        sut.onContextRefreshed(new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class)));
+        sut.onApplicationEvent(new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class)));
 
         // Defence-in-depth: a single bad filter (e.g. half-saved config) must not block the
         // remaining OIDC filters from getting their buttons registered.

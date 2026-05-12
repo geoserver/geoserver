@@ -6,8 +6,10 @@ package org.geoserver.web.security.oauth2.login;
 
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilterBuilder.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +17,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.platform.ExtensionProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.SecurityManagerListener;
@@ -28,6 +31,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
@@ -65,7 +69,11 @@ import org.springframework.context.event.EventListener;
  * @see org.geoserver.web.LoginFormInfo
  * @see org.geoserver.web.GeoServerBasePage
  */
-public class OAuth2LoginButtonManager implements BeanFactoryAware, SecurityManagerListener {
+public class OAuth2LoginButtonManager
+        implements BeanFactoryAware,
+                ApplicationListener<ContextRefreshedEvent>,
+                SecurityManagerListener,
+                ExtensionProvider<LoginFormInfo> {
 
     private static final Logger LOGGER = Logging.getLogger(OAuth2LoginButtonManager.class);
 
@@ -125,8 +133,32 @@ public class OAuth2LoginButtonManager implements BeanFactoryAware, SecurityManag
      *   <li>The sweep is idempotent — {@link #registerButton} no-ops on already-registered scoped IDs.
      * </ul>
      */
-    @EventListener
-    public void onContextRefreshed(ContextRefreshedEvent event) {
+    /**
+     * Register as a {@link SecurityManagerListener} after the application context is fully refreshed.
+     *
+     * <p>Lifecycle choice rationale:
+     *
+     * <ul>
+     *   <li>{@link #setBeanFactory(BeanFactory)} and {@code afterPropertiesSet()} fire <em>during</em> this bean's
+     *       initialization. Asking the factory for {@code GeoServerSecurityManager.class} at that moment triggers
+     *       Spring to resolve {@code authenticationManager} (still mid-construction in GeoServer's bean graph) and
+     *       throws {@code BeanCurrentlyInCreationException}.
+     *   <li>{@code @EventListener ContextRefreshedEvent} would work, but oidc-web's {@code applicationContext.xml}
+     *       doesn't declare {@code <context:annotation-config/>}, so the {@code EventListenerMethodProcessor} that
+     *       handles {@code @EventListener} is not installed in this context.
+     *   <li>{@link ApplicationListener} is a Spring-detected interface: any singleton bean implementing it is
+     *       automatically wired by {@code AbstractApplicationContext.registerListeners()} during context refresh, with
+     *       no annotation processing required.
+     * </ul>
+     *
+     * <p>Context refresh fires the listener AFTER every bean in this context (and its parents) is fully constructed, so
+     * the {@code GeoServerSecurityManager} lookup is safe.
+     *
+     * <p>The {@link #securityManagerListenerRegistered} flag guards against duplicate registration when the event fires
+     * multiple times — e.g. if both the parent and a child context publish refresh events that reach this bean.
+     */
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
         if (securityManagerListenerRegistered || beanFactory == null) {
             return;
         }
@@ -134,16 +166,16 @@ public class OAuth2LoginButtonManager implements BeanFactoryAware, SecurityManag
             securityManager = beanFactory.getBean(GeoServerSecurityManager.class);
             securityManager.addListener(this);
             securityManagerListenerRegistered = true;
-            // Initial sweep: in case the context refresh happens after security-manager bootstrap has already
-            // built filters and fired their events (early-bind race), this catches any filters whose events we
-            // missed. Idempotent against already-registered buttons.
+            LOGGER.log(Level.CONFIG, "OAuth2LoginButtonManager registered as SecurityManagerListener");
+            // Initial sweep: the security manager may have rebuilt filter chains before this listener was wired
+            // (the chain-proxy listener fires eagerly too). The sweep is idempotent against already-registered
+            // buttons and corrects for any startup-time event we missed.
             sweepOAuth2Filters();
         } catch (Exception e) {
             LOGGER.log(
                     Level.WARNING,
                     "OAuth2LoginButtonManager could not register itself as a SecurityManagerListener; "
-                            + "new OIDC filters will not get their login buttons registered until the next container "
-                            + "restart. Cause: ",
+                            + "OIDC filter changes will not take effect until the next container restart. Cause: ",
                     e);
         }
     }
@@ -155,6 +187,7 @@ public class OAuth2LoginButtonManager implements BeanFactoryAware, SecurityManag
      */
     @Override
     public void handlePostChanged(GeoServerSecurityManager pSecurityManager) {
+        LOGGER.log(Level.FINE, "OAuth2LoginButtonManager.handlePostChanged invoked — running sweep");
         sweepOAuth2Filters();
     }
 
@@ -181,12 +214,20 @@ public class OAuth2LoginButtonManager implements BeanFactoryAware, SecurityManag
         }
         try {
             Set<String> inChainFilterNames = collectInChainFilterNames();
+            LOGGER.log(
+                    Level.FINE,
+                    "OAuth2LoginButtonManager.sweep: in-chain={0}; currently-registered={1}",
+                    new Object[] {inChainFilterNames, registeredButtons.keySet()});
 
             // 1. Drop buttons for filters that were once in-chain but no longer are. Iterate over a snapshot of the
             //    registry keys to avoid concurrent modification while destroying singletons inside the loop.
             for (String existingScopedRegId : new HashSet<>(registeredButtons.keySet())) {
                 String existingFilterName = filterNameFromScopedRegId(existingScopedRegId);
                 if (!inChainFilterNames.contains(existingFilterName)) {
+                    LOGGER.log(
+                            Level.CONFIG,
+                            "Dropping OAuth2 login button for filter {0} (no longer in any chain)",
+                            existingFilterName);
                     unregisterButton(existingScopedRegId);
                 }
             }
@@ -257,6 +298,10 @@ public class OAuth2LoginButtonManager implements BeanFactoryAware, SecurityManag
     @Override
     public void setBeanFactory(BeanFactory pBeanFactory) throws BeansException {
         if (pBeanFactory instanceof DefaultListableBeanFactory) {
+            // Just remember the factory; defer the {@link GeoServerSecurityManager} lookup + listener registration
+            // until {@link #onApplicationEvent} runs, which is the only Spring hook that fires AFTER the entire
+            // application context has finished initializing (so {@code authenticationManager} is no longer
+            // mid-construction and the {@code GeoServerSecurityManager} bean is reachable).
             this.beanFactory = (DefaultListableBeanFactory) pBeanFactory;
         } else {
             LOGGER.log(
@@ -298,36 +343,21 @@ public class OAuth2LoginButtonManager implements BeanFactoryAware, SecurityManag
 
     private void registerButton(String scopedRegId, String baseRegId) {
         if (registeredButtons.containsKey(scopedRegId)) {
-            // A repeat enable for the same scoped ID happens on every filter rebuild (e.g. each Save); we
-            // keep the existing singleton so that bean identity stays stable for any consumer holding a
-            // reference and so that Spring's singleton registry does not log a "already-registered" error.
+            // A repeat enable for the same scoped ID happens on every filter rebuild (e.g. each Save); keep the
+            // existing entry so identity stays stable.
             return;
         }
         LoginFormInfo info = buildLoginFormInfo(scopedRegId, baseRegId);
-        String beanName = beanName(scopedRegId);
-        try {
-            beanFactory.registerSingleton(beanName, info);
-            registeredButtons.put(scopedRegId, info);
-            LOGGER.log(Level.FINE, "Registered OAuth2 login button singleton: {0}", beanName);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Failed to register OAuth2 login button singleton " + beanName, e);
-        }
+        registeredButtons.put(scopedRegId, info);
+        LOGGER.log(Level.FINE, "Registered OAuth2 login button: {0}", beanName(scopedRegId));
     }
 
     private void unregisterButton(String scopedRegId) {
         LoginFormInfo info = registeredButtons.remove(scopedRegId);
         if (info == null) {
-            // Spring's destroySingleton would throw if asked to destroy a never-registered bean, so we
-            // skip the call rather than relying on its behavior.
             return;
         }
-        String beanName = beanName(scopedRegId);
-        try {
-            beanFactory.destroySingleton(beanName);
-            LOGGER.log(Level.FINE, "Unregistered OAuth2 login button singleton: {0}", beanName);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Failed to destroy OAuth2 login button singleton " + beanName, e);
-        }
+        LOGGER.log(Level.FINE, "Unregistered OAuth2 login button: {0}", beanName(scopedRegId));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -415,5 +445,31 @@ public class OAuth2LoginButtonManager implements BeanFactoryAware, SecurityManag
     /** Read-only view of the registered buttons keyed by scoped registration ID. Visible for testing. */
     Map<String, LoginFormInfo> getRegisteredButtons() {
         return Collections.unmodifiableMap(registeredButtons);
+    }
+
+    // ── ExtensionProvider<LoginFormInfo> ────────────────────────────────────
+    //
+    // Bypass GeoServerExtensions.extensionsCache for our dynamic singletons. That cache (a static
+    // ConcurrentHashMap in GeoServerExtensions, keyed by extension-point class) is populated on the
+    // first lookup of bean names of a given type, and is only invalidated on a fresh ContextRefreshedEvent
+    // — NOT on registerSingleton/destroySingleton calls. So dynamically-registered LoginFormInfo singletons
+    // (the heart of this manager's model) are invisible to GeoServerBasePage between context refreshes,
+    // which manifests as "I added an OIDC filter and the button doesn't show until I restart GeoServer".
+    //
+    // ExtensionProvider is queried on EVERY call to GeoServerExtensions.extensions(...), no caching. By
+    // returning the live snapshot of our registry here we keep the rendered button list in sync with the
+    // current security configuration without requiring a JVM restart or any cache busting at the
+    // GeoServerExtensions layer.
+
+    @Override
+    public Class<LoginFormInfo> getExtensionPoint() {
+        return LoginFormInfo.class;
+    }
+
+    @Override
+    public List<LoginFormInfo> getExtensions(Class<LoginFormInfo> extensionPoint) {
+        // Snapshot — concurrent registry mutations are safe to iterate via the ConcurrentHashMap, and
+        // returning a copy decouples consumers from later updates.
+        return new ArrayList<>(registeredButtons.values());
     }
 }

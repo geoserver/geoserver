@@ -152,13 +152,16 @@ public class KeyCloakMultiFilterIntegrationTest extends KeyCloakIntegrationTestS
                 "un-scoped /web/oauth2/authorization/oidc must not appear",
                 html.contains("href=\"http://localhost/context/web/oauth2/authorization/oidc\""));
 
-        // The dynamic registry must have one LoginFormInfo per filter.
-        List<LoginFormInfo> oidcButtons = applicationContext.getBeansOfType(LoginFormInfo.class).values().stream()
-                .filter(i -> i.getComponentClass() != null
-                        && OAuth2LoginAuthProviderPanel.class
-                                .getName()
-                                .equals(i.getComponentClass().getName()))
-                .toList();
+        // The dynamic registry must have one LoginFormInfo per filter — looked up via GeoServerExtensions so the
+        // manager's ExtensionProvider<LoginFormInfo> contribution is included (raw applicationContext.getBeansOfType
+        // would miss it).
+        List<LoginFormInfo> oidcButtons =
+                org.geoserver.platform.GeoServerExtensions.extensions(LoginFormInfo.class, applicationContext).stream()
+                        .filter(i -> i.getComponentClass() != null
+                                && OAuth2LoginAuthProviderPanel.class
+                                        .getName()
+                                        .equals(i.getComponentClass().getName()))
+                        .toList();
         // Filter identity is encoded in each button's loginPath: /web/oauth2/authorization/<filterName>__<provider>.
         long primary = oidcButtons.stream()
                 .filter(i -> i.getLoginPath() != null && i.getLoginPath().contains("/" + FILTER_PRIMARY + "__"))

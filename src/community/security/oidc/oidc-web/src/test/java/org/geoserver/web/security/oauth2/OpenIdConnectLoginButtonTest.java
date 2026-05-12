@@ -182,14 +182,18 @@ public class OpenIdConnectLoginButtonTest extends GeoServerWicketTestSupport {
                 "auth0-staging button missing — expected " + expectedScopedLoginAnchor("auth0-staging"),
                 html.contains(expectedScopedLoginAnchor("auth0-staging")));
 
-        // The dynamic-registration manager must have registered one LoginFormInfo bean per filter, both visible
-        // via the standard by-type bean lookup that GeoServerBasePage uses.
-        List<LoginFormInfo> infos = applicationContext.getBeansOfType(LoginFormInfo.class).values().stream()
-                .filter(i -> i.getComponentClass() != null
-                        && OAuth2LoginAuthProviderPanel.class
-                                .getName()
-                                .equals(i.getComponentClass().getName()))
-                .toList();
+        // The dynamic-registration manager must contribute one LoginFormInfo per filter, both visible via the
+        // GeoServerExtensions lookup that GeoServerBasePage uses. We go through GeoServerExtensions (not the raw
+        // applicationContext.getBeansOfType) because the manager surfaces its buttons via
+        // ExtensionProvider<LoginFormInfo> — bypassing GeoServerExtensions' static extensionsCache that would
+        // otherwise hide dynamically-registered singletons. See OAuth2LoginButtonManager's javadoc on the cache trap.
+        List<LoginFormInfo> infos =
+                org.geoserver.platform.GeoServerExtensions.extensions(LoginFormInfo.class, applicationContext).stream()
+                        .filter(i -> i.getComponentClass() != null
+                                && OAuth2LoginAuthProviderPanel.class
+                                        .getName()
+                                        .equals(i.getComponentClass().getName()))
+                        .toList();
         assertNotNull(infos);
         long keycloakBeans = countButtonsForFilter(infos, "keycloak-prod");
         long auth0Beans = countButtonsForFilter(infos, "auth0-staging");
@@ -454,9 +458,13 @@ public class OpenIdConnectLoginButtonTest extends GeoServerWicketTestSupport {
                 auth0Info.getLoginPath().endsWith("/oauth2/authorization/auth0-staging__oidc"));
     }
 
-    /** Bean-by-type lookup that mirrors what {@code GeoServerBasePage} does when deciding which buttons to render. */
+    /**
+     * Mirrors what {@code GeoServerBasePage} does when deciding which buttons to render. Goes through
+     * {@link org.geoserver.platform.GeoServerExtensions} so the manager's {@code ExtensionProvider<LoginFormInfo>}
+     * contribution is included — the raw {@code applicationContext.getBeansOfType} would miss it.
+     */
     private List<LoginFormInfo> oauth2LoginFormInfos() {
-        return applicationContext.getBeansOfType(LoginFormInfo.class).values().stream()
+        return org.geoserver.platform.GeoServerExtensions.extensions(LoginFormInfo.class, applicationContext).stream()
                 .filter(i -> i.getComponentClass() != null
                         && OAuth2LoginAuthProviderPanel.class
                                 .getName()

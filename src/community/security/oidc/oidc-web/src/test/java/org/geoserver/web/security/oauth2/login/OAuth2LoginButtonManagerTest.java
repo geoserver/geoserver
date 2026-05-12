@@ -6,200 +6,455 @@ package org.geoserver.web.security.oauth2.login;
 
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_GIT_HUB;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_GOOGLE;
+import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_OIDC;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilterBuilder.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.disableButtonEvent;
 import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.enableButtonEvent;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeSet;
+import org.geoserver.security.GeoServerSecurityFilterChain;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.RequestFilterChain;
+import org.geoserver.security.SecurityManagerListener;
+import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId;
+import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
+import org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent;
 import org.geoserver.web.LoginFormInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
- * Tests {@link OAuth2LoginButtonManager}, in particular multi-instance tracking: a button stays enabled as long as at
- * least one filter instance enables that provider type.
+ * Tests for {@link OAuth2LoginButtonManager}'s per-filter-instance dynamic-registration behavior.
+ *
+ * <p>The manager creates one {@link LoginFormInfo} singleton per active scoped registration ID (one per filter +
+ * provider combination), registers it with the application's bean factory so
+ * {@link org.geoserver.web.GeoServerBasePage}'s by-type lookup picks it up, and destroys it on the matching disable
+ * event. Multiple filters of the same provider type produce multiple independent buttons, each pointing at its own
+ * scoped authorization endpoint.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OAuth2LoginButtonManagerTest {
 
     @Mock
-    private LoginFormInfo oidcButton;
-
-    @Mock
-    private LoginFormInfo googleButton;
-
-    @Mock
-    private LoginFormInfo gitHubButton;
+    private DefaultListableBeanFactory beanFactory;
 
     private OAuth2LoginButtonManager sut;
 
-    private boolean oidcEnabled;
-    private String oidcLoginPath;
-    private boolean googleEnabled;
-    private String googleLoginPath;
-    private boolean gitHubEnabled;
-    private String gitHubLoginPath;
-
     @Before
     public void setUp() {
-        // LoginFormInfo IDs mirror the XML config in applicationContext.xml
-        when(oidcButton.getId()).thenReturn("openIdConnectOidcLoginButton");
-        when(googleButton.getId()).thenReturn("openIdConnectGoogleLoginButton");
-        when(gitHubButton.getId()).thenReturn("openIdConnectGitHubLoginButton");
-
-        // Capture setEnabled/setLoginPath calls via Mockito doAnswer
-        org.mockito.Mockito.doAnswer(inv -> {
-                    oidcEnabled = inv.getArgument(0);
-                    return null;
-                })
-                .when(oidcButton)
-                .setEnabled(org.mockito.ArgumentMatchers.anyBoolean());
-        org.mockito.Mockito.doAnswer(inv -> {
-                    oidcLoginPath = inv.getArgument(0);
-                    return null;
-                })
-                .when(oidcButton)
-                .setLoginPath(org.mockito.ArgumentMatchers.anyString());
-
-        org.mockito.Mockito.doAnswer(inv -> {
-                    googleEnabled = inv.getArgument(0);
-                    return null;
-                })
-                .when(googleButton)
-                .setEnabled(org.mockito.ArgumentMatchers.anyBoolean());
-        org.mockito.Mockito.doAnswer(inv -> {
-                    googleLoginPath = inv.getArgument(0);
-                    return null;
-                })
-                .when(googleButton)
-                .setLoginPath(org.mockito.ArgumentMatchers.anyString());
-
-        org.mockito.Mockito.doAnswer(inv -> {
-                    gitHubEnabled = inv.getArgument(0);
-                    return null;
-                })
-                .when(gitHubButton)
-                .setEnabled(org.mockito.ArgumentMatchers.anyBoolean());
-        org.mockito.Mockito.doAnswer(inv -> {
-                    gitHubLoginPath = inv.getArgument(0);
-                    return null;
-                })
-                .when(gitHubButton)
-                .setLoginPath(org.mockito.ArgumentMatchers.anyString());
-
         sut = new OAuth2LoginButtonManager();
-        sut.setLoginFormInfos(Arrays.asList(oidcButton, googleButton, gitHubButton));
+        sut.setBeanFactory(beanFactory);
+    }
+
+    private static String scopedRegId(String filterName, String baseRegId) {
+        return GeoServerOAuth2ClientRegistrationId.scopedRegId(filterName, baseRegId);
     }
 
     private static String expectedLoginPath(String scopedRegId) {
         return "/" + DEFAULT_AUTHORIZATION_REQUEST_BASE_URI + "/" + scopedRegId;
     }
 
-    @Test
-    public void testSingleFilterEnableDisable() {
-        String lFilterName = "my-filter";
-        String lScopedOidc = GeoServerOAuth2ClientRegistrationId.scopedRegId(lFilterName, REG_ID_OIDC);
+    private static String expectedBeanName(String scopedRegId) {
+        return OAuth2LoginButtonManager.DYNAMIC_BEAN_NAME_PREFIX + scopedRegId;
+    }
 
-        // when: enable OIDC for a single filter
-        sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
-
-        // then: OIDC button enabled, path points to scoped ID
-        assertTrue(oidcEnabled);
-        assertEquals(expectedLoginPath(lScopedOidc), oidcLoginPath);
-
-        // when: disable OIDC for the same filter
-        sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
-
-        // then: OIDC button disabled
-        assertFalse(oidcEnabled);
+    /**
+     * Convenience: wire {@code securityManager.getSecurityConfig().getFilterChain().getRequestChains()} to advertise a
+     * single request chain whose member filter names are {@code inChainFilterNames}. The sweep's chain-membership check
+     * walks this exact graph.
+     */
+    private static void stubInChainFilterNames(GeoServerSecurityManager securityManager, String... inChainFilterNames) {
+        RequestFilterChain chain = org.mockito.Mockito.mock(RequestFilterChain.class);
+        when(chain.getFilterNames()).thenReturn(Arrays.asList(inChainFilterNames));
+        GeoServerSecurityFilterChain filterChain = org.mockito.Mockito.mock(GeoServerSecurityFilterChain.class);
+        Collection<RequestFilterChain> chains = List.of(chain);
+        when(filterChain.getRequestChains()).thenReturn((List<RequestFilterChain>) chains);
+        SecurityManagerConfig cfg = org.mockito.Mockito.mock(SecurityManagerConfig.class);
+        when(cfg.getFilterChain()).thenReturn(filterChain);
+        when(securityManager.getSecurityConfig()).thenReturn(cfg);
     }
 
     @Test
-    public void testTwoFiltersEnableSameProvider() {
-        String lFilter1 = "keycloak-auth";
-        String lFilter2 = "azure-auth";
-        String lScoped1 = GeoServerOAuth2ClientRegistrationId.scopedRegId(lFilter1, REG_ID_OIDC);
-        String lScoped2 = GeoServerOAuth2ClientRegistrationId.scopedRegId(lFilter2, REG_ID_OIDC);
+    public void singleFilter_enableRegistersSingleton_disableDestroysIt() {
+        String lFilterName = "my-filter";
+        String lScopedOidc = scopedRegId(lFilterName, REG_ID_OIDC);
+        String lBeanName = expectedBeanName(lScopedOidc);
+
+        // when: enable fires for the filter
+        sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
+
+        // then: a LoginFormInfo is registered with the correct shape
+        ArgumentCaptor<LoginFormInfo> infoCaptor = ArgumentCaptor.forClass(LoginFormInfo.class);
+        verify(beanFactory).registerSingleton(eq(lBeanName), infoCaptor.capture());
+        LoginFormInfo registered = infoCaptor.getValue();
+        assertNotNull(registered);
+        // The filter name is encoded in the login path as <basePath>/<filterName>__<provider>; the manager exposes
+        // its own filterNameFromScopedRegId(...) helper that consumers can reuse on the path's last segment.
+        assertEquals(expectedLoginPath(lScopedOidc), registered.getLoginPath());
+        assertTrue(
+                "login path must end with the scoped registration id",
+                registered.getLoginPath().endsWith("/" + lScopedOidc));
+        assertTrue(
+                "scoped registration id must start with the filter name", lScopedOidc.startsWith(lFilterName + "__"));
+        assertEquals("openid.png", registered.getIcon());
+        assertEquals("GET", registered.getMethod());
+        assertTrue(registered.isEnabled());
+        assertTrue(registered.isJustUseExternalLink());
+        assertEquals("openidconnect.login.button.title", registered.getTitleKey());
+        assertEquals("OAuth2LoginAuthProviderPanel.oidcDescription", registered.getDescriptionKey());
+
+        // and: the internal registry mirrors the registration
+        assertNotNull(sut.getRegisteredButtons().get(lScopedOidc));
+
+        // when: disable fires for the same filter
+        sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
+
+        // then: the singleton is destroyed and the registry is empty
+        verify(beanFactory).destroySingleton(lBeanName);
+        assertNull(sut.getRegisteredButtons().get(lScopedOidc));
+    }
+
+    @Test
+    public void twoFiltersSameProvider_eachGetsOwnIndependentButton() {
+        String lFilter1 = "keycloak-prod";
+        String lFilter2 = "auth0-staging";
+        String lScoped1 = scopedRegId(lFilter1, REG_ID_OIDC);
+        String lScoped2 = scopedRegId(lFilter2, REG_ID_OIDC);
 
         // when: both filters enable OIDC
         sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScoped1));
         sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScoped2));
 
-        // then: OIDC button enabled, path points to the most recently enabled filter
-        assertTrue(oidcEnabled);
-        assertEquals(expectedLoginPath(lScoped2), oidcLoginPath);
+        // then: two distinct singletons are registered, each with its own scoped login path
+        verify(beanFactory).registerSingleton(eq(expectedBeanName(lScoped1)), any(LoginFormInfo.class));
+        verify(beanFactory).registerSingleton(eq(expectedBeanName(lScoped2)), any(LoginFormInfo.class));
+        assertEquals(
+                expectedLoginPath(lScoped1),
+                sut.getRegisteredButtons().get(lScoped1).getLoginPath());
+        assertEquals(
+                expectedLoginPath(lScoped2),
+                sut.getRegisteredButtons().get(lScoped2).getLoginPath());
+        // Filter name embedded in the loginPath via the scoped registration id (`<filterName>__<provider>`).
+        assertTrue(
+                sut.getRegisteredButtons().get(lScoped1).getLoginPath().endsWith("/" + lFilter1 + "__" + REG_ID_OIDC));
+        assertTrue(
+                sut.getRegisteredButtons().get(lScoped2).getLoginPath().endsWith("/" + lFilter2 + "__" + REG_ID_OIDC));
 
-        // when: first filter disables OIDC
+        // when: only the first filter disables
         sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScoped1));
 
-        // then: button still enabled (filter2 still active), path updated to surviving filter
-        assertTrue(oidcEnabled);
-        assertEquals(expectedLoginPath(lScoped2), oidcLoginPath);
-
-        // when: second filter also disables
-        sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScoped2));
-
-        // then: button disabled
-        assertFalse(oidcEnabled);
+        // then: only the first singleton is destroyed; the second one survives untouched
+        verify(beanFactory).destroySingleton(expectedBeanName(lScoped1));
+        verify(beanFactory, never()).destroySingleton(expectedBeanName(lScoped2));
+        assertNull(sut.getRegisteredButtons().get(lScoped1));
+        assertNotNull(sut.getRegisteredButtons().get(lScoped2));
     }
 
     @Test
-    public void testDifferentProvidersFromDifferentFilters() {
-        String lOidcFilter = "keycloak-auth";
-        String lGitHubFilter = "github-auth";
-        String lScopedOidc = GeoServerOAuth2ClientRegistrationId.scopedRegId(lOidcFilter, REG_ID_OIDC);
-        String lScopedGitHub = GeoServerOAuth2ClientRegistrationId.scopedRegId(lGitHubFilter, REG_ID_GIT_HUB);
+    public void threeOidcFilters_allProduceDistinctButtonsWithUniqueLoginPaths() {
+        // Beyond proving "two filters → two buttons", this case guards against any future refactor that
+        // accidentally caps the registry, collapses entries sharing a base registration ID, or trims paths
+        // back to the un-scoped form.
+        String[] filterNames = {"keycloak-prod", "auth0-staging", "entra-tenant"};
 
-        // when: OIDC filter enables OIDC, GitHub filter enables GitHub
-        sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
-        sut.enablementChanged(enableButtonEvent(this, REG_ID_GIT_HUB, lScopedGitHub));
+        for (String filterName : filterNames) {
+            sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, scopedRegId(filterName, REG_ID_OIDC)));
+        }
 
-        // then: both buttons enabled with correct paths
-        assertTrue(oidcEnabled);
-        assertEquals(expectedLoginPath(lScopedOidc), oidcLoginPath);
-        assertTrue(gitHubEnabled);
-        assertEquals(expectedLoginPath(lScopedGitHub), gitHubLoginPath);
+        // Three independent singletons registered, each keyed by its own bean name.
+        for (String filterName : filterNames) {
+            String scopedId = scopedRegId(filterName, REG_ID_OIDC);
+            verify(beanFactory).registerSingleton(eq(expectedBeanName(scopedId)), any(LoginFormInfo.class));
 
-        // when: disable OIDC filter
-        sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
+            LoginFormInfo info = sut.getRegisteredButtons().get(scopedId);
+            assertNotNull("expected a LoginFormInfo for " + scopedId, info);
+            assertEquals(expectedLoginPath(scopedId), info.getLoginPath());
+            assertTrue(
+                    "loginPath must end with /<filterName>__<provider>",
+                    info.getLoginPath().endsWith("/" + filterName + "__" + REG_ID_OIDC));
+            assertEquals("openid.png", info.getIcon());
+        }
 
-        // then: OIDC disabled, GitHub still enabled
-        assertFalse(oidcEnabled);
-        assertTrue(gitHubEnabled);
+        // Login paths are pairwise distinct — no two filters share a login URL.
+        java.util.Set<String> loginPaths = new java.util.HashSet<>();
+        for (String filterName : filterNames) {
+            loginPaths.add(sut.getRegisteredButtons()
+                    .get(scopedRegId(filterName, REG_ID_OIDC))
+                    .getLoginPath());
+        }
+        assertEquals("each filter must have a unique login path", filterNames.length, loginPaths.size());
+
+        // Bean names are pairwise distinct too.
+        java.util.Set<String> beanIds = new java.util.HashSet<>();
+        for (String filterName : filterNames) {
+            beanIds.add(sut.getRegisteredButtons()
+                    .get(scopedRegId(filterName, REG_ID_OIDC))
+                    .getId());
+        }
+        assertEquals("each filter must have a unique bean id", filterNames.length, beanIds.size());
+
+        // Disabling the middle filter must leave the other two intact.
+        String middle = scopedRegId("auth0-staging", REG_ID_OIDC);
+        sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, middle));
+        verify(beanFactory).destroySingleton(expectedBeanName(middle));
+        assertNull(sut.getRegisteredButtons().get(middle));
+        assertNotNull(sut.getRegisteredButtons().get(scopedRegId("keycloak-prod", REG_ID_OIDC)));
+        assertNotNull(sut.getRegisteredButtons().get(scopedRegId("entra-tenant", REG_ID_OIDC)));
     }
 
     @Test
-    public void testDisableNonExistentScopedIdIsNoOp() {
-        String lFilterName = "my-filter";
-        String lScopedOidc = GeoServerOAuth2ClientRegistrationId.scopedRegId(lFilterName, REG_ID_OIDC);
+    public void differentProvidersOnDifferentFilters_eachGetsOwnIconAndPath() {
+        String lScopedGoogle = scopedRegId("google-corp", REG_ID_GOOGLE);
+        String lScopedGitHub = scopedRegId("github-org", REG_ID_GIT_HUB);
+        String lScopedMs = scopedRegId("entra-tenant", REG_ID_MICROSOFT);
+        String lScopedOidc = scopedRegId("keycloak", REG_ID_OIDC);
 
-        // when: disable a scoped ID that was never enabled
-        sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
-
-        // then: button disabled (no error)
-        assertFalse(oidcEnabled);
-    }
-
-    @Test
-    public void testOnlyMatchingButtonsAffected() {
-        String lFilterName = "my-filter";
-        String lScopedGoogle = GeoServerOAuth2ClientRegistrationId.scopedRegId(lFilterName, REG_ID_GOOGLE);
-
-        // when: enable Google
         sut.enablementChanged(enableButtonEvent(this, REG_ID_GOOGLE, lScopedGoogle));
+        sut.enablementChanged(enableButtonEvent(this, REG_ID_GIT_HUB, lScopedGitHub));
+        sut.enablementChanged(enableButtonEvent(this, REG_ID_MICROSOFT, lScopedMs));
+        sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
 
-        // then: only Google button enabled
-        assertTrue(googleEnabled);
-        assertEquals(expectedLoginPath(lScopedGoogle), googleLoginPath);
-        // OIDC and GitHub should not have been touched by this event
+        assertEquals("google.png", sut.getRegisteredButtons().get(lScopedGoogle).getIcon());
+        assertEquals("github.png", sut.getRegisteredButtons().get(lScopedGitHub).getIcon());
+        assertEquals("microsoft.png", sut.getRegisteredButtons().get(lScopedMs).getIcon());
+        assertEquals("openid.png", sut.getRegisteredButtons().get(lScopedOidc).getIcon());
+
+        // Google / GitHub / Microsoft are icon-only (titleKey empty); OIDC carries an i18n label.
+        assertEquals("", sut.getRegisteredButtons().get(lScopedGoogle).getTitleKey());
+        assertEquals("", sut.getRegisteredButtons().get(lScopedGitHub).getTitleKey());
+        assertEquals("", sut.getRegisteredButtons().get(lScopedMs).getTitleKey());
+        assertEquals(
+                "openidconnect.login.button.title",
+                sut.getRegisteredButtons().get(lScopedOidc).getTitleKey());
+    }
+
+    @Test
+    public void repeatedEnable_isIdempotent_doesNotReregister() {
+        String lScopedOidc = scopedRegId("my-filter", REG_ID_OIDC);
+
+        // when: enable fires twice in a row (e.g. two consecutive filter rebuilds)
+        sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
+        sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
+
+        // then: only one singleton registration happened
+        verify(beanFactory, times(1)).registerSingleton(eq(expectedBeanName(lScopedOidc)), any(LoginFormInfo.class));
+    }
+
+    @Test
+    public void disableForNeverEnabledScopedId_isNoOp() {
+        String lScopedOidc = scopedRegId("ghost-filter", REG_ID_OIDC);
+
+        // when: a disable event arrives for a scoped ID we never saw enabled
+        sut.enablementChanged(disableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
+
+        // then: no destroy call to the bean factory; registry stays empty
+        verify(beanFactory, never()).destroySingleton(anyString());
+        assertNull(sut.getRegisteredButtons().get(lScopedOidc));
+    }
+
+    @Test
+    public void filterNameWithoutScopedSeparator_treatedAsLiteralFilterName() {
+        // Defensive: scoped IDs are always of the form <filterName>__<baseRegId> in practice, but if
+        // the convention is ever broken the manager should still register a button rather than crash.
+        String rawId = "no-separator-here";
+        sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, rawId));
+
+        LoginFormInfo info = sut.getRegisteredButtons().get(rawId);
+        assertNotNull(info);
+        // The loginPath always echoes the raw scoped-id (no parsing surprises if the separator is absent).
+        assertTrue(
+                "loginPath must end with the raw scoped id when the separator is absent",
+                info.getLoginPath().endsWith("/" + rawId));
+        // filterNameFromScopedRegId returns the whole id when no separator is found — defensive parse path.
+        assertEquals(rawId, OAuth2LoginButtonManager.filterNameFromScopedRegId(rawId));
+    }
+
+    @Test
+    public void missingBeanFactory_eventsAreSwallowed() {
+        OAuth2LoginButtonManager bare = new OAuth2LoginButtonManager();
+        // intentionally no setBeanFactory call
+
+        // when: an event arrives
+        bare.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, scopedRegId("any", REG_ID_OIDC)));
+
+        // then: nothing crashes and the registry stays empty
+        assertTrue(bare.getRegisteredButtons().isEmpty());
+    }
+
+    @Test
+    public void nullScopedRegistrationId_isIgnored() {
+        OAuth2LoginButtonEnablementEvent nullScoped =
+                new OAuth2LoginButtonEnablementEvent(this, true, REG_ID_OIDC, null);
+        sut.enablementChanged(nullScoped);
+        verify(beanFactory, never()).registerSingleton(anyString(), any());
+    }
+
+    @Test
+    public void filterClass_isAuthenticationFilter() {
+        String lScopedOidc = scopedRegId("my-filter", REG_ID_OIDC);
+        sut.enablementChanged(enableButtonEvent(this, REG_ID_OIDC, lScopedOidc));
+
+        LoginFormInfo info = sut.getRegisteredButtons().get(lScopedOidc);
+        assertNotNull(info);
+        assertEquals(
+                "org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter",
+                info.getFilterClass().getName());
+    }
+
+    // ── SecurityManagerListener: auto-enablement on save ─────────────────────
+    //
+    // These tests cover the "save filter → button appears without container restart" path.
+    // After context refresh the manager must self-register as a SecurityManagerListener and
+    // sweep existing filters; subsequent saves arrive via handlePostChanged which must trigger
+    // the same sweep, forcing each OAuth2 filter through the createFilter path that publishes
+    // the OAuth2LoginButtonEnablementEvent.
+
+    @Test
+    public void contextRefresh_registersListenerAndSweepsExistingFilters() throws Exception {
+        GeoServerSecurityManager securityManager = org.mockito.Mockito.mock(GeoServerSecurityManager.class);
+        TreeSet<String> filterNames = new TreeSet<>();
+        filterNames.add("keycloak-prod");
+        filterNames.add("auth0-staging");
+        when(securityManager.listFilters(GeoServerOAuth2LoginAuthenticationFilter.class))
+                .thenReturn(filterNames);
+        when(beanFactory.getBean(GeoServerSecurityManager.class)).thenReturn(securityManager);
+        // Both filters are bound to the web chain — eligible to render a button.
+        stubInChainFilterNames(securityManager, "keycloak-prod", "auth0-staging");
+
+        ContextRefreshedEvent event = new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class));
+        sut.onContextRefreshed(event);
+
+        // The manager must register itself as a SecurityManagerListener so that subsequent
+        // saves (via GeoServerSecurityManager#saveSecurityConfig) call back into handlePostChanged.
+        verify(securityManager).addListener(same(sut));
+        // Initial sweep: each in-chain OAuth2 filter must be loaded so the builder publishes the
+        // enablement event the button manager listens for.
+        verify(securityManager).loadFilter("keycloak-prod");
+        verify(securityManager).loadFilter("auth0-staging");
+    }
+
+    @Test
+    public void contextRefresh_skipsOffChainFiltersDuringSweep() throws Exception {
+        GeoServerSecurityManager securityManager = org.mockito.Mockito.mock(GeoServerSecurityManager.class);
+        TreeSet<String> filterNames = new TreeSet<>();
+        filterNames.add("keycloak-prod");
+        filterNames.add("orphan-filter"); // configured but not bound to any chain
+        when(securityManager.listFilters(GeoServerOAuth2LoginAuthenticationFilter.class))
+                .thenReturn(filterNames);
+        when(beanFactory.getBean(GeoServerSecurityManager.class)).thenReturn(securityManager);
+        // Only keycloak-prod is in the chain; orphan-filter is not — its button must NOT register.
+        stubInChainFilterNames(securityManager, "keycloak-prod");
+
+        sut.onContextRefreshed(new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class)));
+
+        verify(securityManager).loadFilter("keycloak-prod");
+        verify(securityManager, never()).loadFilter("orphan-filter");
+    }
+
+    @Test
+    public void contextRefresh_isIdempotent_listenerRegisteredOnlyOnce() throws Exception {
+        GeoServerSecurityManager securityManager = org.mockito.Mockito.mock(GeoServerSecurityManager.class);
+        when(securityManager.listFilters(GeoServerOAuth2LoginAuthenticationFilter.class))
+                .thenReturn(new TreeSet<>());
+        when(beanFactory.getBean(GeoServerSecurityManager.class)).thenReturn(securityManager);
+        stubInChainFilterNames(securityManager); // empty chain
+
+        ContextRefreshedEvent event = new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class));
+
+        sut.onContextRefreshed(event);
+        sut.onContextRefreshed(event);
+        sut.onContextRefreshed(event);
+
+        // A re-refresh of the context (which can happen in test harnesses or after parent-context
+        // shuffling) must not re-register the listener — otherwise GeoServerSecurityManager would
+        // fire handlePostChanged N times per save.
+        verify(securityManager, times(1)).addListener(any(SecurityManagerListener.class));
+    }
+
+    @Test
+    public void handlePostChanged_sweepsAllOAuth2FiltersThroughLoadFilter() throws Exception {
+        // Pre-condition: simulate that the listener is already wired up via onContextRefreshed.
+        GeoServerSecurityManager securityManager = org.mockito.Mockito.mock(GeoServerSecurityManager.class);
+        when(securityManager.listFilters(GeoServerOAuth2LoginAuthenticationFilter.class))
+                .thenReturn(new TreeSet<>()); // initial sweep finds nothing
+        when(beanFactory.getBean(GeoServerSecurityManager.class)).thenReturn(securityManager);
+        stubInChainFilterNames(securityManager); // empty chain at boot
+
+        sut.onContextRefreshed(new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class)));
+
+        // Now simulate an admin saving two new filters AND adding them to the chain — handlePostChanged
+        // is the call that runs once GeoServerSecurityManager#saveSecurityConfig calls fireChanged().
+        TreeSet<String> newlySaved = new TreeSet<>();
+        newlySaved.add("keycloak-prod");
+        newlySaved.add("auth0-staging");
+        when(securityManager.listFilters(GeoServerOAuth2LoginAuthenticationFilter.class))
+                .thenReturn(newlySaved);
+        stubInChainFilterNames(securityManager, "keycloak-prod", "auth0-staging");
+
+        sut.handlePostChanged(securityManager);
+
+        // Each freshly-saved filter must be loaded through the provider's createFilter path,
+        // which is where the enablement event is published.
+        verify(securityManager).loadFilter("keycloak-prod");
+        verify(securityManager).loadFilter("auth0-staging");
+    }
+
+    @Test
+    public void handlePostChanged_loadFilterFailureForOneNameDoesNotSkipTheRest() throws Exception {
+        GeoServerSecurityManager securityManager = org.mockito.Mockito.mock(GeoServerSecurityManager.class);
+        TreeSet<String> filters = new TreeSet<>();
+        filters.add("broken-filter");
+        filters.add("healthy-filter");
+        when(securityManager.listFilters(GeoServerOAuth2LoginAuthenticationFilter.class))
+                .thenReturn(filters);
+        when(beanFactory.getBean(GeoServerSecurityManager.class)).thenReturn(securityManager);
+        // Both filters bound to the chain so the sweep tries to load each.
+        stubInChainFilterNames(securityManager, "broken-filter", "healthy-filter");
+        // First call throws — second must still happen.
+        when(securityManager.loadFilter("broken-filter")).thenThrow(new RuntimeException("simulated bad config"));
+
+        sut.onContextRefreshed(new ContextRefreshedEvent(org.mockito.Mockito.mock(ApplicationContext.class)));
+
+        // Defence-in-depth: a single bad filter (e.g. half-saved config) must not block the
+        // remaining OIDC filters from getting their buttons registered.
+        verify(securityManager).loadFilter("broken-filter");
+        verify(securityManager).loadFilter("healthy-filter");
+    }
+
+    @Test
+    public void handlePostChanged_beforeContextRefresh_isNoOp() {
+        // If a save event somehow reaches us before the context-refresh hook ran (the security
+        // manager reference is then null), the manager must not crash and must not attempt to
+        // reach into a null security manager.
+        GeoServerSecurityManager securityManager = org.mockito.Mockito.mock(GeoServerSecurityManager.class);
+
+        sut.handlePostChanged(securityManager); // not called via the wiring; should be silent
+
+        // No interaction at all on the passed manager — we sweep against our cached field, not the arg.
+        org.mockito.Mockito.verifyNoInteractions(securityManager);
     }
 }

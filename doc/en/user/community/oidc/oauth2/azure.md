@@ -10,10 +10,10 @@ We will use Microsoft Entra (Microsoft Azure) for login and either the Azure/Ent
 
     ![](../img/azure_create_app1.png)
 
-3.  Give the application a name ("gs-azure-app"), set it to the MultiTenant. Use "http://localhost:8080/geoserver/web/login/oauth2/code/microsoft" as the "Web" Redirect URI. Press "Register".
+3.  Give the application a name ("gs-azure-app"), set it to the MultiTenant. Use the Redirect URI shown in the GeoServer filter configuration as the "Web" Redirect URI --- it has the form `http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__microsoft` where `<filterName>` is the name of the GeoServer OIDC filter (e.g. `gs-azure-app__microsoft`). Press "Register".
 
     !!! tip
-        The exact redirect URI that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form. In production, use that value instead of `localhost`. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri).
+        The exact redirect URI that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form --- copy it verbatim. In production, use that value instead of `localhost`. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri).
     
         ![](../img/azure_create_app2.png)
 

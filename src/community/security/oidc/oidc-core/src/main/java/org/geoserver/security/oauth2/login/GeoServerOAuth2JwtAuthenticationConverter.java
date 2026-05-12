@@ -8,7 +8,8 @@ import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.toList;
 import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
 import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
-import static org.geoserver.security.jwtheaders.roles.JwtHeadersRolesExtractor.asStringList;
+import static org.geoserver.security.oauth2.common.OAuth2ClaimsHelpers.asStringList;
+import static org.geoserver.security.oauth2.common.OAuth2ClaimsHelpers.getClaim;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,9 +23,7 @@ import java.util.logging.Logger;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
-import org.geoserver.security.jwtheaders.JwtConfiguration;
-import org.geoserver.security.jwtheaders.roles.RoleConverter;
-import org.geoserver.security.jwtheaders.username.JwtHeaderUserNameExtractor;
+import org.geoserver.security.oauth2.common.OAuth2RoleConverter;
 import org.geotools.util.logging.Logging;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -45,17 +44,14 @@ public class GeoServerOAuth2JwtAuthenticationConverter
 
     private final GeoServerSecurityManager securityManager;
     private final GeoServerOAuth2LoginFilterConfig config;
-    private final RoleConverter roleConverter;
+    private final OAuth2RoleConverter roleConverter;
 
     public GeoServerOAuth2JwtAuthenticationConverter(
             GeoServerSecurityManager securityManager, GeoServerOAuth2LoginFilterConfig config) {
         this.securityManager = Objects.requireNonNull(securityManager, "securityManager");
         this.config = Objects.requireNonNull(config, "config");
-
-        JwtConfiguration jwtConfiguration = new JwtConfiguration();
-        jwtConfiguration.setRoleConverterString(config.getRoleConverterString());
-        jwtConfiguration.setOnlyExternalListedRoles(config.isOnlyExternalListedRoles());
-        this.roleConverter = new RoleConverter(jwtConfiguration);
+        this.roleConverter =
+                new OAuth2RoleConverter(config.getRoleConverterString(), config.isOnlyExternalListedRoles());
     }
 
     @Override
@@ -118,7 +114,7 @@ public class GeoServerOAuth2JwtAuthenticationConverter
         if (!StringUtils.hasText(claimName)) {
             return null;
         }
-        Object o = JwtHeaderUserNameExtractor.getClaim(claims, claimName);
+        Object o = getClaim(claims, claimName);
         if (o == null) {
             return null;
         }
@@ -158,13 +154,13 @@ public class GeoServerOAuth2JwtAuthenticationConverter
                         if (StringUtils.hasText(s)) roleStrings.add(s);
                     }
                 } else {
-                    Object raw = JwtHeaderUserNameExtractor.getClaim(claims, claimName);
+                    Object raw = getClaim(claims, claimName);
                     roleStrings.addAll(asStringList(raw));
                     roleStrings.addAll(asStringList(rawAlt));
                 }
             }
         } else {
-            Object raw = JwtHeaderUserNameExtractor.getClaim(claims, claimName);
+            Object raw = getClaim(claims, claimName);
             roleStrings.addAll(asStringList(raw));
         }
 

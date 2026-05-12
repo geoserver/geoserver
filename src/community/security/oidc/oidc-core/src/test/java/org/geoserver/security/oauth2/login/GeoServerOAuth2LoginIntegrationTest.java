@@ -543,7 +543,9 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
             assertThat(kvp, Matchers.hasEntry("client_id", CLIENT_ID));
             assertThat(
                     kvp,
-                    Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
+                    Matchers.hasEntry(
+                            "redirect_uri",
+                            "http://localhost:8080/geoserver/web/login/oauth2/code/openidconnect__oidc"));
             assertThat(kvp, Matchers.hasEntry("scope", "openid profile email phone address"));
             assertThat(kvp, Matchers.hasEntry("response_type", "code"));
 
@@ -555,7 +557,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
 
             // make believe we authenticated and got the redirect back, with the code
             MockHttpServletRequest codeRequest =
-                    createRequest("web/login/oauth2/code/oidc?code=" + CODE + "&state=" + state);
+                    createRequest("web/login/oauth2/code/openidconnect__oidc?code=" + CODE + "&state=" + state);
             codeRequest.setSession(lSession);
             executeOnSecurityFilters(codeRequest);
 
@@ -597,7 +599,9 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
             assertThat(kvp, Matchers.hasEntry("client_id", CLIENT_ID));
             assertThat(
                     kvp,
-                    Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
+                    Matchers.hasEntry(
+                            "redirect_uri",
+                            "http://localhost:8080/geoserver/web/login/oauth2/code/openidconnect__oidc"));
             assertThat(kvp, Matchers.hasEntry("scope", "openid profile email phone address"));
             assertThat(kvp, Matchers.hasEntry("response_type", "code"));
 
@@ -609,7 +613,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
 
             // make believe we authenticated and got the redirect back, with the code
             MockHttpServletRequest codeRequest =
-                    createRequest("web/login/oauth2/code/oidc?code=" + CODE + "&state=" + state);
+                    createRequest("web/login/oauth2/code/openidconnect__oidc?code=" + CODE + "&state=" + state);
             codeRequest.setSession(lSession);
             executeOnSecurityFilters(codeRequest);
 

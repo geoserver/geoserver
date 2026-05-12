@@ -29,7 +29,7 @@ If you are still having issues, you might need to attach a Java debugger to GeoS
     - If there is a problem, its most likely that:
 
         - GeoServer is configured with the wrong "User Authorization URI"
-        - The IDP is not configured to allow the redirect URL shown in the read-only **Redirect URI** field (e.g. `http://localhost:8080/geoserver/web/login/oauth2/code/oidc`)
+        - The IDP is not configured to allow the redirect URL shown in the read-only **Redirect URI** field (e.g. `http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__oidc`). The Redirect URI includes the GeoServer filter name as a prefix so that multiple OIDC filters can coexist --- a wildcard such as `.../web/login/oauth2/code/*` works well in most IDPs.
 
 2.  User logs into the IDP (if this is problematic, consult your IDP's administrator)
 

@@ -1,9 +1,16 @@
 "use strict";
 
+const applyItemDisplay = item => {
+    const isHidden =
+        item.getAttribute("data-filter-hidden") === "1" ||
+        item.getAttribute("data-overflow-hidden") === "1";
+    item.style.display = isHidden ? "none" : "";
+};
+
 const clearOverflowHiddenItems = section => {
     section.querySelectorAll('[data-overflow-hidden="1"]').forEach(item => {
-        item.style.display = "";
         item.removeAttribute("data-overflow-hidden");
+        applyItemDisplay(item);
     });
 };
 
@@ -32,14 +39,14 @@ const updateOverflowToggle = section => {
     const limitRight = list.getBoundingClientRect().left + availableWidth;
     let hideFromHere = false;
     list.querySelectorAll("[data-filter-label]").forEach(item => {
-        if (item.style.display === "none") return;
+        if (item.getAttribute("data-filter-hidden") === "1") return;
         const rect = item.getBoundingClientRect();
         if (!hideFromHere && rect.right > limitRight + 0.5) {
             hideFromHere = true;
         }
         if (hideFromHere) {
-            item.style.display = "none";
             item.setAttribute("data-overflow-hidden", "1");
+            applyItemDisplay(item);
         }
     });
 };
@@ -111,16 +118,29 @@ const PreviewHomePageContentProvider_SetOnChange = () => {
             root.querySelectorAll(".preview-section").forEach(section => {
                 const sectionTitle =
                     (section.getAttribute("data-section-title") || "").toLowerCase();
+                const sectionTitleMatch =
+                    term &&
+                    (sectionTitle.startsWith(term) ||
+                        sectionTitle
+                            .split(/\s+/)
+                            .filter(Boolean)
+                            .some(word => word.startsWith(term)));
                 let visibleLinks = 0;
                 section.querySelectorAll("[data-filter-label]").forEach(linkItem => {
+                    const rawLabel = linkItem.getAttribute("data-filter-label");
                     const label =
-                        (linkItem.getAttribute("data-filter-label") || linkItem.textContent || "")
-                            .toLowerCase();
-                    const isVisible = !term || label.includes(term) || sectionTitle.includes(term);
-                    linkItem.style.display = isVisible ? "" : "none";
+                        (rawLabel != null ? rawLabel : linkItem.textContent || "").trim().toLowerCase();
+                    const isVisible =
+                        !term || label.includes(term) || sectionTitleMatch;
+                    if (isVisible) {
+                        linkItem.removeAttribute("data-filter-hidden");
+                    } else {
+                        linkItem.setAttribute("data-filter-hidden", "1");
+                    }
+                    applyItemDisplay(linkItem);
                     if (isVisible) visibleLinks++;
                 });
-                const sectionVisible = !term || sectionTitle.includes(term) || visibleLinks > 0;
+                const sectionVisible = !term || sectionTitleMatch || visibleLinks > 0;
                 section.style.display = sectionVisible ? "" : "none";
                 if (!term) section.classList.remove("is-expanded");
                 updateOverflowToggle(section);

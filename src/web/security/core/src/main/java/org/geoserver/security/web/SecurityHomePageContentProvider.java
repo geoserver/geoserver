@@ -193,7 +193,9 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
 
             // inform about strong encryption
             if (manager.isStrongEncryptionAvailable()) {
-                add(new Label("strongEncryptionMsg"));
+                Label l = new Label("strongEncryptionMsg", Model.of(""));
+                l.setVisible(false);
+                add(l);
             } else {
                 add(new Label(
                                 "strongEncryptionMsg",

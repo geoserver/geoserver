@@ -76,7 +76,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
         String output = string(post("wfs", WFS_1_0_0_REQUEST));
         // the server tried to read a file on local file system
         assertTrue(
-                "FileNotFoundException",
+                "SAXException",
                 output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
 
         // disable entity parsing
@@ -97,7 +97,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
         String output = string(post("wfs", WFS_1_1_0_REQUEST));
         // the server tried to read a file on local file system
         assertTrue(
-                "FileNotFoundException",
+                "SAXException",
                 output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
 
         // disable entity parsing

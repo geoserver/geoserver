@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -66,6 +65,7 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.NumberRange;
+import org.geotools.xml.XMLUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -423,8 +423,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
 
         Document dom = WMSTestSupport.transform(req, tr);
-        TransformerFactory ttf = TransformerFactory.newInstance();
-        Transformer trans = ttf.newTransformer();
+        Transformer trans = XMLUtils.newTransformer();
         StringWriter sw = new StringWriter();
         trans.transform(new DOMSource(dom), new StreamResult(sw));
 

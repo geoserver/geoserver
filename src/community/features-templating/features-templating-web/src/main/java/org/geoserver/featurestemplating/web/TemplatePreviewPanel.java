@@ -63,6 +63,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.exception.GeoServerException;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.CodeMirrorEditor;
+import org.geotools.xml.XMLUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import tools.jackson.core.JacksonException;
@@ -474,8 +475,7 @@ public class TemplatePreviewPanel extends Panel {
         Source xmlInput = new StreamSource(new StringReader(input));
         StringWriter stringWriter = new StringWriter();
         try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
+            Transformer transformer = XMLUtils.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");

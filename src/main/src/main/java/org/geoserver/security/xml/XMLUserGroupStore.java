@@ -33,7 +33,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.platform.resource.Resource;
@@ -43,6 +42,7 @@ import org.geoserver.security.impl.AbstractUserGroupStore;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.validation.PasswordPolicyException;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -138,7 +138,7 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
             //                XMLValidator.Singleton.validateUserGroupRegistry(doc);
             //            }
 
-            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            Transformer tx = XMLUtils.newTransformer();
             tx.setOutputProperty(OutputKeys.METHOD, "XML");
             tx.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             tx.setOutputProperty(OutputKeys.INDENT, "yes");

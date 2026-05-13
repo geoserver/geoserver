@@ -65,6 +65,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 
 /** Smart AppSchema DataStore factory. */
@@ -315,8 +316,7 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         // save document on filename
         File file = null;
         try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transf = transformerFactory.newTransformer();
+            Transformer transf = XMLUtils.newTransformer();
             transf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transf.setOutputProperty(OutputKeys.INDENT, "yes");
             transf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");

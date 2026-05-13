@@ -31,6 +31,7 @@ import org.geoserver.wms.GetCapabilities;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
+import org.geotools.xml.XMLUtils;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -119,13 +120,13 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
             {
                 // Explicitly use SAXON's transformer factory. For some reason xalan's does not
                 // work
-                TransformerFactory tFactory = TransformerFactory.newInstance();
+                TransformerFactory tFactory = XMLUtils.newTransformerFactory();
                 String xsltSystemId =
                         getClass().getResource("getcaps_111_internalDTD.xsl").toExternalForm();
 
                 Source tsource = new StreamSource(xsltSystemId);
                 try {
-                    dtdIncludeTransformer = tFactory.newTransformer(tsource);
+                    dtdIncludeTransformer = XMLUtils.newTransformer(tsource);
                 } catch (TransformerConfigurationException e) {
                     throw new ServiceException(e);
                 }

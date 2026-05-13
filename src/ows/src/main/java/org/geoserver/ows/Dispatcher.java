@@ -43,7 +43,6 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.fileupload2.core.DiskFileItem;
@@ -63,6 +62,7 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xsd.EMFUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -603,7 +603,7 @@ public class Dispatcher extends AbstractController {
         // transform the payload back into an input stream so we can parse it as usual
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         try {
-            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(payload), new StreamResult(bout));
+            XMLUtils.newTransformer().transform(new DOMSource(payload), new StreamResult(bout));
         } catch (Exception e) {
             throw new IOException("Error encoding payload of SOAP request", e);
         }

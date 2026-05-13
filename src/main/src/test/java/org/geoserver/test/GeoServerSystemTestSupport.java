@@ -131,6 +131,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.util.logging.Log4J2LoggerFactory;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.XSD;
 import org.jsoup.Jsoup;
 import org.junit.After;
@@ -1569,19 +1570,26 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
         if (skipDTD) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            // DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "all");
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", true);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", true);
 
             factory.setNamespaceAware(true);
             factory.setValidating(false);
 
+            // DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver(new EmptyResolver());
             Document dom = builder.parse(input);
 
             return dom;
         } else {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
             factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder();
             return builder.parse(input);
         }
     }
@@ -2315,9 +2323,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected void print(Document document, OutputStream output) {
         try {
-            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            TransformerFactory txFactory = XMLUtils.newTransformerFactory();
+            txFactory.setAttribute("indent-number", 2);
+
+            Transformer tx = XMLUtils.newTransformer(txFactory);
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
-            tx.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             tx.transform(new DOMSource(document), new StreamResult(output));
         } catch (Exception e) {
             throw new RuntimeException(e);

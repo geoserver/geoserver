@@ -15,7 +15,6 @@ import java.io.ByteArrayOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
@@ -26,6 +25,7 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -119,8 +119,7 @@ public class DimensionInfoSerializationTest extends WMSTestSupport {
     }
 
     protected DimensionInfo unmarshallFromXML(Document doc) throws Exception {
-        TransformerFactory tFactory = TransformerFactory.newInstance();
-        Transformer transformer = tFactory.newTransformer();
+        Transformer transformer = XMLUtils.newTransformer();
         DOMSource source = new DOMSource(doc);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         StreamResult result = new StreamResult(baos);

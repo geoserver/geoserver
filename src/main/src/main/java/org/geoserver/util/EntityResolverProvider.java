@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.NullEntityResolver;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.xml.sax.EntityResolver;
 
@@ -74,7 +75,7 @@ public class EntityResolverProvider {
     public EntityResolver getEntityResolver() {
         if (Boolean.parseBoolean(GeoServerExtensions.getProperty(ENTITY_RESOLUTION_UNRESTRICTED))) {
             // XML parser is unrestricted, and can access any XSD location
-            return null;
+            return NullEntityResolver.INSTANCE;
         } else if (entityResolver != null) {
             // override provided (usually by a test case)
             return entityResolver;

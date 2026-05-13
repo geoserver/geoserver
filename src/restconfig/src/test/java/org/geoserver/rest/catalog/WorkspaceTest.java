@@ -20,7 +20,6 @@ import java.io.StringWriter;
 import java.util.List;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.catalog.CascadeDeleteVisitor;
@@ -31,6 +30,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.rest.RestBaseController;
+import org.geotools.xml.XMLUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.kordamp.json.JSON;
@@ -421,8 +421,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         name = (Element) dom.getElementsByTagName("name").item(0);
 
         name.setTextContent("ian");
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
+        Transformer transformer = XMLUtils.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(dom), new StreamResult(writer));

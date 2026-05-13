@@ -21,9 +21,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -540,7 +540,7 @@ public class ReaderUtils {
     public static void validate(
             Document xml, DefaultHandler errorHandler, String targetNamespace, String schemaLocation) {
         try {
-            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            Transformer tx = XMLUtils.newTransformer();
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             tx.transform(new DOMSource(xml), new StreamResult(output));
 

@@ -19,11 +19,11 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.collections4.iterators.NodeListIterator;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geotools.xml.XMLUtils;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -86,8 +86,7 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
 
         insert(root, map);
         try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
+            Transformer transformer = XMLUtils.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             Result outputTarget = new StreamResult(outputMessage.getBody());
             transformer.transform(new DOMSource(root), outputTarget);

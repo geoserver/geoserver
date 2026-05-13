@@ -12,6 +12,7 @@ import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
 import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
 import static org.geoserver.security.jwtheaders.roles.JwtHeadersRolesExtractor.asStringList;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
+import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.isRegIdOfType;
 
 import com.nimbusds.jose.JWSObject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -260,12 +261,12 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
         OAuth2UserRequest lUsrRequest = ((OAuth2ResolverParam) pParam).getUserRequest();
         ClientRegistration lClientReg = lUsrRequest.getClientRegistration();
         String lUsr = pParam.getPrincipal();
-        if (!REG_ID_MICROSOFT.equals(lClientReg.getRegistrationId())) {
+        if (!isRegIdOfType(lClientReg.getRegistrationId(), REG_ID_MICROSOFT)) {
             // actually prevented by UI validation, but make sure here to not send foreign access
             // token around
             String lMsg = "Resolving roles failed. RoleSource Microsoft Graph API supported with "
                     + "provider %s only. Currently processing login with %s instead.";
-            LOGGER.log(SEVERE, lMsg.formatted(REG_ID_MICROSOFT, lClientReg.getClientName()));
+            LOGGER.log(SEVERE, lMsg.formatted(REG_ID_MICROSOFT, lClientReg.getRegistrationId()));
             return new ArrayList<>();
         }
         List<String> lRoles = new ArrayList<>();

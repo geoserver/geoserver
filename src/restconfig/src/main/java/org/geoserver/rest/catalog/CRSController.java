@@ -141,7 +141,7 @@ public class CRSController extends RestBaseController {
             }
         }
 
-        return new DefinitionResponse(identifier, WKT, name, bbox, bboxWGS84, crs.toWKT());
+        return new DefinitionResponse(identifier, WKT, name, bbox, bboxWGS84, crs.toString());
     }
 
     private BBox buildNativeBBox(CoordinateReferenceSystem crs) {

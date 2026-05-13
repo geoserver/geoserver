@@ -295,6 +295,30 @@ public class GeoServerOAuth2RoleResolverTest {
         assertThat(lRoles, containsInAnyOrder(equalTo(ROLE_NAME_AUTHENTICATED), equalTo("ROLE1"), equalTo("ROLE2")));
     }
 
+    /**
+     * Verifies that extracting roles from MS Graph API works with a scoped registration ID (e.g.
+     * "my-filter__microsoft") as used when a filter name is configured.
+     */
+    @Test
+    public void testGetRolesFromMsGraphAPIWithScopedRegistrationId() throws Exception {
+        // given
+        context = newResolverContext(OpenIdRoleSource.MSGraphAPI);
+        OAuth2ResolverParam lParam = new OAuth2ResolverParam(PRINCIPAL_NAME, mockRequest, context, userRequest);
+
+        MSGraphRolesResolver mock = mock(MSGraphRolesResolver.class);
+        sut.setMsGraphRolesResolverSupplier(() -> mock);
+
+        List<String> lRoleNames = List.of("ROLE1", "ROLE2");
+
+        // when - use a scoped registration ID like production does
+        when(mockClientReg.getRegistrationId()).thenReturn("oidc-entra__microsoft");
+        when(mock.resolveRoles(any(), any(), any(), any())).thenReturn(lRoleNames);
+        Collection<GeoServerRole> lRoles = sut.convert(lParam);
+
+        // then
+        assertThat(lRoles, containsInAnyOrder(equalTo(ROLE_NAME_AUTHENTICATED), equalTo("ROLE1"), equalTo("ROLE2")));
+    }
+
     private DefaultResolverContext newResolverContext(RoleSource pRoleSource) {
         return new DefaultResolverContext(
                 mockSecurityManager, "default", "default", null, mockRoleConverter, pRoleSource);

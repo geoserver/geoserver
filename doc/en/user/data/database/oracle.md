@@ -57,11 +57,11 @@ In order to connect to an Oracle RAC one can use an almost full JDBC url as the 
 
 More information about this syntax can be found in the [Oracle documentation](http://docs.oracle.com/cd/B28359_01/java.111/e10788/rac.htm#CHDCDFAC).
 
-### Connecting to a SID or a Service
+## Connecting to a SID or a Service
 
 Recent versions of Oracle support connecting to a database via either a SID name or a Service name. A SID connection descriptor has the form: `host:port:database`, while a Service connection descriptor has the format `host:port/database`. GeoServer uses the SID form by default. To connect via a Service, prefix the `database` name configuration entry with a `/`.
 
-### Connecting to database through LDAP
+## Connecting to database through LDAP
 
 For instance if you want to establish a connection with the jdbc thin driver through LDAP, you can use following connect string for the input field `database` `ldap://[host]:[Port]/[db],cn=OracleContext,dc=[oracle_ldap_context]`.
 
@@ -71,13 +71,13 @@ If you are using referrals, enable it by placing a jndi.properties file in geose
 java.naming.referral=follow
 ```
 
-### Using loose bounding box {: #oracle_loose_bbox }
+## Using loose bounding box {: #oracle_loose_bbox }
 
 When the `Loose bbox` option is set, only the bounding box of database geometries is used in spatial queries. This results in a significant performance gain. The downside is that some geometries may be reported as intersecting a BBOX when they actually do not.
 
 If the primary use of the database is through the [Web Map Service (WMS)](../../services/wms/index.md) this flag can be set safely, since querying more geometries does not have any visible effect. However, if using the [Web Feature Service (WFS)](../../services/wfs/index.md) and making use of BBOX filtering capabilities, this flag should not be set.
 
-### Using the geometry metadata table
+## Using the geometry metadata table
 
 The Oracle data store by default looks at the `MDSYS.USER_SDO*` and `MDSYS.ALL_SDO*` views to determine the geometry type and native SRID of each geometry column. Those views are automatically populated with information about the geometry columns stored in tables that the current user owns (for the `MDSYS.USER_SDO*` views) or can otherwise access (for the `MDSYS.ALL_SDO*` views).
 

@@ -347,6 +347,9 @@ public class OAuth2LoginAuthProviderPanel
         add(new HelpLink("enableResourceServerModeHelp", this).setDialog(dialog));
         add(new CheckBox("enableResourceServerMode"));
 
+        add(new HelpLink("oidcAllowUnSecureLoggingHelp", this).setDialog(dialog));
+        add(new CheckBox("oidcAllowUnSecureLogging"));
+
         add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
 
         add(new HelpLink("postLogoutRedirectUriHelp", this).setDialog(dialog));
@@ -425,9 +428,6 @@ public class OAuth2LoginAuthProviderPanel
 
             lOidcContainer.add(new HelpLink("oidcUsePKCEHelp", this).setDialog(dialog));
             lOidcContainer.add(new CheckBox("oidcUsePKCE"));
-
-            lOidcContainer.add(new HelpLink("oidcAllowUnSecureLoggingHelp", this).setDialog(dialog));
-            lOidcContainer.add(new CheckBox("oidcAllowUnSecureLogging"));
 
             lOidcContainer.add(new HelpLink("oidcLogoutUriHelp", this).setDialog(dialog));
             lOidcContainer.add(new TextField<>("oidcLogoutUri"));

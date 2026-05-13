@@ -41,9 +41,9 @@ We will use Microsoft Entra (Microsoft Azure) for login and either the Azure/Ent
 
     ![](../img/azure_create_app8.png)
 
-#\. At the top press "+ Add user/group". Under "Users", press "None Selected" and then choose your account. Under "Select a role", keep the selection as "geoserverAdmin". Press "Assign".
+10. At the top press "+ Add user/group". Under "Users", press "None Selected" and then choose your account. Under "Select a role", keep the selection as "geoserverAdmin". Press "Assign".
 
-![](../img/azure_create_app9.png)
+    ![](../img/azure_create_app9.png)
 
 ## Configure GeoServer
 
@@ -74,7 +74,16 @@ Ensure you have the following:
 
 5.  Press Save
 
-### Configure Role Role Source (ID Token)
+### Configure Role Source
+
+You have two options: 
+
+* ID Token
+* Microsoft Graph API (Entra ID)
+
+ID Token appears to be simpler.
+
+#### ID Token
 
 When we configured Azure, we had it attach the roles to the ID token. We can use that to assign roles inside GeoServer.
 
@@ -87,13 +96,13 @@ When we configured Azure, we had it attach the roles to the ID token. We can use
     - Tick the "Only allow External Roles that are explicitly named above"
     - Press Save
 
-### Configure Role Role Source (MS Graph) - Application Roles
+#### Microsoft Graph API (Entra ID)
 
-Before you can use the MS Graph for permissions, you must give the app you created more permissions.
+Before you can use the MS Graph for permissions, you must give the Entra App you created more permissions.
 
-#### Setting up Azure
+##### Setting up Azure
 
-We need to setup azure so GeoServer can access the MSGraph and get the roles/groups the user is assigned to.
+We need to setup Azure so GeoServer can access the MSGraph and get the roles/groups the user is assigned to.
 
 **NOTE:** in the ID token, the roles name is used (i.e. "geoserverAdmin"). However, in MSGraph, the role's ID is used (a guid).
 
@@ -115,7 +124,7 @@ We need to setup azure so GeoServer can access the MSGraph and get the roles/gro
 
     ![](../img/azure_gs_msgraph4.png)
 
-5.  On the "Api permissions" screen, press "Grant admin consent for \..."
+5.  On the "API permissions" screen, press "Grant admin consent for \..."
 
     - This will pop-up a confirmation - press "Yes"
 
@@ -125,11 +134,11 @@ We need to setup azure so GeoServer can access the MSGraph and get the roles/gro
 
     ![](../img/azure_create_app10.png)
 
-#\. On the far left column, press "Enterprise Apps", choose your application ("gs-azure-app"), and copy the "Object ID" (**not** the Application ID). You will need this in the next step.
+7.  On the far left column, press "Enterprise Apps", choose your application ("gs-azure-app"), and copy the "Object ID" (**not** the Application ID). You will need this in the next step.
 
-![](../img/azure_gs_msgraph7.png)
+    ![](../img/azure_gs_msgraph7.png)
 
-#### Setting up GeoServer
+##### Setting up GeoServer
 
 You will need:
 
@@ -139,15 +148,15 @@ You will need:
 1.  Login into GeoServer as the ROLE_ADMINISTRATOR
 2.  On the left, go to "Security"->"Authentication", and click on your OIDC filter ("oidc-azure")
 
-#\. Scroll down to the "Authorization" section
+3.  Scroll down to the "Authorization" section
 
-- Choose "Microsoft Graph (Entra ID)"
-- Turn on "Get Roles from the User's Application Roles (MSGraph appRoleAssignments endpoint)". GeoServer will retrieve the user's roles from the MSGraph's "appRoleAssignments". These roles are the Role ID (GUID) **not** the name of the role.
-- In the "Object Id for the Azure Enterprise Application (NOT the Client Id)" box, put in your enterprise application's Object ID (GUID).
-- In the converter map, use the role id (guid) for "geoserverAdmin" (found above) and put in "<your geoserverAdmin GUID>=ROLE_ADMINISTRATOR"
-- Press Save
+    - Choose "Microsoft Graph API (Entra ID)"
+    - Turn on "Get Roles from the User's Application Roles (MSGraph appRoleAssignments endpoint)". GeoServer will retrieve the user's roles from the MSGraph's "appRoleAssignments". These roles are the Role ID (GUID) **not** the name of the role.
+    - In the "Object Id for the Azure Enterprise Application (NOT the Client Id)" box, put in your enterprise application's Object ID (GUID).
+    - In the converter map, use the role id (guid) for "geoserverAdmin" (found above) and put in "<your geoserverAdmin GUID>=ROLE_ADMINISTRATOR"
+    - Press Save
 
-![](../img/azure_gs_msgraph6.png)
+    ![](../img/azure_gs_msgraph6.png)
 
 ## Notes
 

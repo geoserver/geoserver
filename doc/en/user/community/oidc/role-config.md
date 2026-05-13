@@ -91,7 +91,7 @@ In this token's JSON claims, notice this part:
 }
 ```
 
-We would, therefore, specify the JSON Path to `resource_access.live-key2.roles` to get the two external IDP roles ("`GeonetworkAdminr`", and "`GeoserverAdmin`"). In keycloak, the JSON path will be of the form `resource_access.<client name>.roles`. Other OIDC IDPs will put the roles in a different location.
+We would, therefore, specify the JSON Path to `resource_access.live-key2.roles` to get the two external IDP roles ("`GeonetworkAdmin`", and "`GeoserverAdmin`"). In keycloak, the JSON path will be of the form `resource_access.<client name>.roles`. Other OIDC IDPs will put the roles in a different location.
 
 ### Access Token
 
@@ -117,7 +117,7 @@ See the [Azure/Entra Configuration](oauth2/azure.md)
 
 ## External-Internal Role Translation
 
-The `oidc` module provides an easy what to convert the name of an external IDP's role to a local GeoServer role.
+The `oidc` module provides an easy way to convert the name of an external IDP's role to a local GeoServer role.
 
 ![](img/roleConvert.png)
 

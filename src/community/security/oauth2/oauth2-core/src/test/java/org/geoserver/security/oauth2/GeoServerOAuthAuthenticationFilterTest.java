@@ -3,9 +3,11 @@ package org.geoserver.security.oauth2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -120,5 +122,28 @@ public class GeoServerOAuthAuthenticationFilterTest extends GeoServerSystemTestS
         GeoServerOAuth2FilterConfig target = (GeoServerOAuth2FilterConfig) filterConfig.clone(true);
         assertEquals("1234", target.getCliendId());
         assertEquals("5678", target.getClientSecret());
+    }
+
+    @Test
+    public void testDefaultAuthenticatedPrincipalBuilderReturnsStringPrincipal() {
+        class TestFilter extends GeoServerOAuthAuthenticationFilter {
+            TestFilter() {
+                super(null, null, null, null);
+            }
+
+            @Override
+            protected String getPreAuthenticatedPrincipal(HttpServletRequest request, HttpServletResponse response) {
+                return null;
+            }
+
+            Object callBuilder(String principal) {
+                return buildAuthenticatedPrincipal(principal, Collections.emptyList(), new MockHttpServletRequest());
+            }
+        }
+
+        TestFilter filter = new TestFilter();
+        String principal = "test_princcipal@email.com";
+        Object built = filter.callBuilder(principal);
+        assertSame(principal, built);
     }
 }

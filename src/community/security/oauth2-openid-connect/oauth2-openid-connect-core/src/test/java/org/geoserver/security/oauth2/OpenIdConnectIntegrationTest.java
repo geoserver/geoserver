@@ -12,7 +12,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -33,9 +36,13 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.impl.UserProfilePropertyNames;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.util.Base64;
@@ -248,7 +255,13 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                 .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
         Authentication auth = context.getAuthentication();
         assertNotNull(auth);
-        assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
+        assertTrue(auth.getPrincipal() instanceof GeoServerUser);
+        GeoServerUser principal = (GeoServerUser) auth.getPrincipal();
+        assertEquals("andrea.aime@gmail.com", principal.getUsername());
+        assertEquals("Andrea", principal.getProperties().getProperty(UserProfilePropertyNames.FIRST_NAME));
+        assertEquals("Aime", principal.getProperties().getProperty(UserProfilePropertyNames.LAST_NAME));
+        assertEquals("andrea.aime@gmail.com", principal.getProperties().getProperty(UserProfilePropertyNames.EMAIL));
+        assertNull(principal.getProperties().getProperty(UserProfilePropertyNames.PREFERRED_USERNAME));
 
         assertThat(
                 auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
@@ -274,7 +287,8 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                 GeoServerExtensions.bean(ValidatingOAuth2RestTemplate.class).getOAuth2ClientContext();
         assertEquals("CPURR33RUz-secret", oauth2Context.getAccessToken().getValue());
         assertNotNull(auth);
-        assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
+        assertTrue(auth.getPrincipal() instanceof GeoServerUser);
+        assertEquals("andrea.aime@gmail.com", ((GeoServerUser) auth.getPrincipal()).getUsername());
     }
 
     @Test
@@ -289,7 +303,8 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                 .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
         Authentication auth = context.getAuthentication();
         assertNotNull("Authentication should not be null", auth);
-        assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
+        assertTrue(auth.getPrincipal() instanceof GeoServerUser);
+        assertEquals("andrea.aime@gmail.com", ((GeoServerUser) auth.getPrincipal()).getUsername());
     }
 
     @Test
@@ -312,7 +327,8 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                 GeoServerExtensions.bean(ValidatingOAuth2RestTemplate.class).getOAuth2ClientContext();
         assertEquals("CPURR33RUz-secret", oauth2Context.getAccessToken().getValue());
         assertNotNull(auth);
-        assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
+        assertTrue(auth.getPrincipal() instanceof GeoServerUser);
+        assertEquals("andrea.aime@gmail.com", ((GeoServerUser) auth.getPrincipal()).getUsername());
         assertNotNull(oauth2Context.getAccessToken().getAdditionalInformation());
         assertNotNull(oauth2Context.getAccessToken().getAdditionalInformation().get("id_token"));
 
@@ -342,7 +358,8 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                 .loadContext(new HttpRequestResponseHolder(request, response));
         Authentication auth = context.getAuthentication();
         assertNotNull(auth);
-        assertEquals("claudius.ptolemy@gmail.com", auth.getPrincipal());
+        assertTrue(auth.getPrincipal() instanceof GeoServerUser);
+        assertEquals("claudius.ptolemy@gmail.com", ((GeoServerUser) auth.getPrincipal()).getUsername());
         assertThat(
                 auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
                 CoreMatchers.hasItems("geography", "astronomy", "ROLE_AUTHENTICATED"));
@@ -389,10 +406,90 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                 .loadContext(new HttpRequestResponseHolder(request, response));
         Authentication auth = context.getAuthentication();
         assertNotNull(auth);
-        assertEquals("claudius.ptolemy@gmail.com", auth.getPrincipal());
+        assertTrue(auth.getPrincipal() instanceof GeoServerUser);
+        assertEquals("claudius.ptolemy@gmail.com", ((GeoServerUser) auth.getPrincipal()).getUsername());
         assertThat(
                 auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
                 CoreMatchers.hasItems("geography", "astronomy", "ROLE_AUTHENTICATED"));
+    }
+
+    /**
+     * Verifies that principal profile enrichment prefers properties coming from the configured GeoServer user/group
+     * service over overlapping OIDC claim values, while still backfilling missing properties from claims.
+     */
+    @Test
+    public void testPrincipalPropertiesPreferUGS() throws Exception {
+        GeoServerSecurityManager manager = getSecurityManager();
+        OpenIdConnectFilterConfig filterConfig =
+                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        filterConfig.setUserGroupServiceName("default");
+        manager.saveFilter(filterConfig);
+
+        GeoServerUserGroupService service = manager.loadUserGroupService("default");
+        GeoServerUserGroupStore store = service.createStore();
+        GeoServerUser user = service.getUserByUsername("andrea.aime@gmail.com");
+        if (user == null) {
+            user = store.createUserObject("andrea.aime@gmail.com", "", true);
+            user.getProperties().setProperty(UserProfilePropertyNames.FIRST_NAME, "UGS Andrea");
+            user.getProperties().setProperty(UserProfilePropertyNames.PREFERRED_USERNAME, "ugs-andrea");
+            store.addUser(user);
+        } else {
+            user.getProperties().setProperty(UserProfilePropertyNames.FIRST_NAME, "UGS Andrea");
+            user.getProperties().setProperty(UserProfilePropertyNames.PREFERRED_USERNAME, "ugs-andrea");
+            store.updateUser(user);
+        }
+        store.store();
+
+        MockHttpServletRequest codeRequest = createRequest("web/?code=" + CODE);
+        MockHttpServletResponse codeResponse = executeOnSecurityFilters(codeRequest);
+
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
+        Authentication auth = context.getAuthentication();
+        assertNotNull(auth);
+        assertTrue(auth.getPrincipal() instanceof GeoServerUser);
+        GeoServerUser principal = (GeoServerUser) auth.getPrincipal();
+        assertEquals("andrea.aime@gmail.com", principal.getUsername());
+        assertEquals("UGS Andrea", principal.getProperties().getProperty(UserProfilePropertyNames.FIRST_NAME));
+        assertEquals("Aime", principal.getProperties().getProperty(UserProfilePropertyNames.LAST_NAME));
+        assertEquals("andrea.aime@gmail.com", principal.getProperties().getProperty(UserProfilePropertyNames.EMAIL));
+        assertEquals("ugs-andrea", principal.getProperties().getProperty(UserProfilePropertyNames.PREFERRED_USERNAME));
+    }
+
+    /**
+     * Verifies that authentication succeeds and principal properties are populated from OIDC claims when a user/group
+     * service is configured but does not contain the authenticated user.
+     */
+    @Test
+    public void testPrincipalPropertiesClaimsFallbackWhenUGSUserMissing() throws Exception {
+        GeoServerSecurityManager manager = getSecurityManager();
+        OpenIdConnectFilterConfig filterConfig =
+                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        filterConfig.setUserGroupServiceName("default");
+        manager.saveFilter(filterConfig);
+
+        GeoServerUserGroupService service = manager.loadUserGroupService("default");
+        GeoServerUser user = service.getUserByUsername("andrea.aime@gmail.com");
+        if (user != null) {
+            GeoServerUserGroupStore store = service.createStore();
+            store.removeUser(user);
+            store.store();
+        }
+
+        MockHttpServletRequest codeRequest = createRequest("web/?code=" + CODE);
+        MockHttpServletResponse codeResponse = executeOnSecurityFilters(codeRequest);
+
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
+        Authentication auth = context.getAuthentication();
+        assertNotNull(auth);
+        assertTrue(auth.getPrincipal() instanceof GeoServerUser);
+        GeoServerUser principal = (GeoServerUser) auth.getPrincipal();
+        assertEquals("andrea.aime@gmail.com", principal.getUsername());
+        assertEquals("Andrea", principal.getProperties().getProperty(UserProfilePropertyNames.FIRST_NAME));
+        assertEquals("Aime", principal.getProperties().getProperty(UserProfilePropertyNames.LAST_NAME));
+        assertEquals("andrea.aime@gmail.com", principal.getProperties().getProperty(UserProfilePropertyNames.EMAIL));
+        assertFalse(principal.getProperties().containsKey(UserProfilePropertyNames.PREFERRED_USERNAME));
     }
 
     private static void clearAuthentication(MockHttpServletRequest request, MockHttpServletResponse response) {

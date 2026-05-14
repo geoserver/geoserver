@@ -18,6 +18,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.NullEntityResolver;
 import org.geotools.util.Version;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
@@ -105,7 +106,13 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     }
 
     @BeforeClass
-    public static final void setUpLogging() throws Exception {
+    public static final void setupXML() throws Exception {
+        // Allow resolution of XSDs from local file system
+        Hints.putSystemDefault(Hints.ENTITY_RESOLVER, NullEntityResolver.INSTANCE);
+    }
+
+    @Before
+    public final void setUpLogging() throws Exception {
         if (isQuietTests()) {
             Logging.getLogger("org.geoserver").setLevel(Level.SEVERE);
             Logging.getLogger("org.vfny.geoserver").setLevel(Level.SEVERE);

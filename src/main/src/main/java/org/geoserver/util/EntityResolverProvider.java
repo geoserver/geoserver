@@ -12,6 +12,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.NullEntityResolver;
 import org.geotools.util.PreventLocalEntityResolver;
+import org.geotools.util.factory.Hints;
 import org.xml.sax.EntityResolver;
 
 /**
@@ -51,12 +52,15 @@ public class EntityResolverProvider {
     /**
      * Provide default EntityResolver, used if global settings not provided explicit instructions.
      *
+     * <p>This method will also stage the provided EntityResolver to {@code GeoTools.init(hints)}.
+     *
      * <p>Primarily used to stage an EntityResolver for test cases or local development.
      *
-     * @param resolver Entity resolver
+     * @param resolver Entity resolver, if {@code} then {@code NullEntityResolver.INSTANCE} is used.
      */
     public static void setEntityResolver(EntityResolver resolver) {
-        entityResolver = resolver;
+        entityResolver = resolver != null ? resolver : NullEntityResolver.INSTANCE;
+        Hints.putSystemDefault(Hints.ENTITY_RESOLVER, entityResolver);
     }
 
     /**

@@ -28,6 +28,7 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
+import org.geoserver.web.netcdf.NetCDFSettingsContainer.BandSetting;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.ExtraVariable;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.VariableAttribute;
@@ -44,6 +45,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
     protected final ListView<GlobalAttribute> globalAttributes;
     protected final ListView<VariableAttribute> variableAttributes;
     protected final ListView<ExtraVariable> extraVariables;
+    protected final ListView<BandSetting> bandSettings;
     protected final CheckBox shuffle;
     protected final CheckBox copyAttributes;
     protected final CheckBox copyGlobalAttributes;
@@ -186,6 +188,28 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         addExtraVariableLink.add(new Icon("addExtraVariableIcon", ADD_ICON));
         container.add(addExtraVariableLink);
 
+        ////////////////////////////////
+        // Per-band Settings definition
+        ////////////////////////////////
+        // One entry per source band — overrides the auto-derived output variable name and unit when the source
+        // coverage has multiple sample dimensions (typically a COVERAGE_VIEW with BAND_SELECT). Per-band
+        // variable attributes are NOT exposed in this UI yet — set them via the REST API or via the catalog
+        // XML; the container-level Variable Attributes list (above) applies to every output variable.
+
+        IModel<List<BandSetting>> bandSettingsModel = new PropertyModel<>(netcdfModel, "bandSettings");
+        bandSettings = new BandSettingListView(bandSettingsModel);
+        bandSettings.setOutputMarkupId(true);
+        container.add(bandSettings);
+        TextField<String> newBandName = new TextField<>("newBandSettingName", Model.of(""));
+        newBandName.setOutputMarkupId(true);
+        container.add(newBandName);
+        TextField<String> newBandUom = new TextField<>("newBandSettingUom", Model.of(""));
+        newBandUom.setOutputMarkupId(true);
+        container.add(newBandUom);
+        GeoServerAjaxFormLink addBandSettingLink = new AddBandSettingLink(newBandName, newBandUom);
+        addBandSettingLink.add(new Icon("addBandSettingIcon", ADD_ICON));
+        container.add(addBandSettingLink);
+
         ///////////////////////////
         // End of definition blocks
         ///////////////////////////
@@ -212,6 +236,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         globalAttributes.visitChildren(formComponentVisitor);
         variableAttributes.visitChildren(formComponentVisitor);
         extraVariables.visitChildren(formComponentVisitor);
+        bandSettings.visitChildren(formComponentVisitor);
         compressionLevel.processInput();
         dataPacking.processInput();
         shuffle.processInput();
@@ -222,6 +247,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         convertedInput.setGlobalAttributes(globalAttributes.getModelObject());
         convertedInput.setVariableAttributes(variableAttributes.getModelObject());
         convertedInput.setExtraVariables(extraVariables.getModelObject());
+        convertedInput.setBandSettings(bandSettings.getModelObject());
         convertedInput.setDataPacking(dataPacking.getModelObject());
         convertedInput.setShuffle(shuffle.getModelObject());
         convertedInput.setCopyAttributes(copyAttributes.getModelObject());
@@ -350,6 +376,66 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                 }
                 newKey.setModel(Model.of(""));
                 newValue.setModel(Model.of(""));
+                ajaxTarget.add(container);
+            }
+        }
+    }
+
+    private class BandSettingListView extends ListView<BandSetting> {
+
+        public BandSettingListView(IModel<List<BandSetting>> bandSettingsModel) {
+            super("bandSettings", bandSettingsModel);
+        }
+
+        @Override
+        protected void populateItem(final ListItem<BandSetting> item) {
+            item.add(new Label("bandSettingName", new PropertyModel<>(item.getModel(), "name")));
+            item.add(new Label("bandSettingUom", new PropertyModel<>(item.getModel(), "uom")));
+            Component removeLink = new ImageAjaxLink("removeBandSettingIcon", DELETE_ICON) {
+
+                @Override
+                protected void onClick(AjaxRequestTarget target) {
+                    List<BandSetting> list = new ArrayList<>(bandSettings.getModelObject());
+                    BandSetting setting = (BandSetting) getDefaultModelObject();
+                    list.remove(setting);
+                    bandSettings.setModelObject(list);
+                    item.remove();
+                    target.add(container);
+                }
+            };
+            removeLink.setDefaultModel(item.getModel());
+            item.add(removeLink);
+        }
+    }
+
+    private class AddBandSettingLink extends GeoServerAjaxFormLink {
+
+        private final TextField<String> newName;
+        private final TextField<String> newUom;
+
+        public AddBandSettingLink(TextField<String> newName, TextField<String> newUom) {
+            super("addBandSetting");
+            this.newName = newName;
+            this.newUom = newUom;
+        }
+
+        @Override
+        protected void onClick(AjaxRequestTarget ajaxTarget, Form form) {
+            newName.processInput();
+            newUom.processInput();
+            String name = newName.getModelObject();
+            String uom = newUom.getModelObject();
+            if ((name == null || name.trim().isEmpty())
+                    && (uom == null || uom.trim().isEmpty())) {
+                ParamResourceModel rm = new ParamResourceModel("NetCDFOut.emptyBandSetting", null, "");
+                error(rm.getString());
+            } else {
+                // Per-band variableAttributes are not editable through this UI yet — pass null and let users
+                // configure them via REST or the catalog XML. The container-level variableAttributes list
+                // already covers the common case of an attribute applied to every output variable.
+                bandSettings.getModelObject().add(new BandSetting(name, uom, null));
+                newName.setModel(Model.of(""));
+                newUom.setModel(Model.of(""));
                 ajaxTarget.add(container);
             }
         }

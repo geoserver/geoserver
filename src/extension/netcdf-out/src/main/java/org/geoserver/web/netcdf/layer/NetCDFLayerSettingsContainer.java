@@ -31,6 +31,7 @@ public class NetCDFLayerSettingsContainer extends NetCDFSettingsContainer {
         setGlobalAttributes(globalContainer.getGlobalAttributes());
         setVariableAttributes(globalContainer.getVariableAttributes());
         setExtraVariables(globalContainer.getExtraVariables());
+        setBandSettings(globalContainer.getBandSettings());
     }
 
     /**
@@ -53,6 +54,7 @@ public class NetCDFLayerSettingsContainer extends NetCDFSettingsContainer {
         copy.setGlobalAttributes(this.getGlobalAttributes());
         copy.setVariableAttributes(this.getVariableAttributes());
         copy.setExtraVariables(this.getExtraVariables());
+        copy.setBandSettings(this.getBandSettings());
         return copy;
     }
 

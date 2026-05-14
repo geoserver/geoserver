@@ -90,8 +90,27 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     /** Global Attributes that are never copied from a NetCDF/GRIB source because they require special handling. */
     protected static final Set<String> COPY_GLOBAL_ATTRIBUTES_BLACKLIST = Set.of("_NCProperties");
 
-    /** Bean related to the {@link NetCDFCFParser} */
-    protected static NetCDFParserBean parserBean = GeoServerExtensions.bean(NetCDFParserBean.class);
+    /**
+     * Bean related to the {@link NetCDFCFParser}.
+     *
+     * <p>Resolved lazily via {@link #getParserBean()} so that the CF standard names table is looked up at first use
+     * (when the Spring context is fully wired and the GeoServer data directory has been provisioned), not at
+     * {@code AbstractNetCDFEncoder} class-load time. Eager resolution at class load was racy under tests that touched
+     * the encoder before the test data directory had finished initializing — the field would latch to {@code null} and
+     * every subsequent CF compliance check would silently return {@code false}, dropping the {@code standard_name}
+     * attribute from the output.
+     */
+    protected static volatile NetCDFParserBean parserBean;
+
+    /** Returns the cached {@link NetCDFParserBean}, resolving it lazily via Spring on first use. */
+    protected static NetCDFParserBean getParserBean() {
+        NetCDFParserBean local = parserBean;
+        if (local == null) {
+            local = GeoServerExtensions.bean(NetCDFParserBean.class);
+            parserBean = local;
+        }
+        return local;
+    }
 
     /**
      * A dimension mapping between dimension names and dimension manager instances We use a Linked map to preserve the
@@ -114,15 +133,15 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     /** The extra variables to be copied from the source to output NetCDF */
     protected List<NetCDFSettingsContainer.ExtraVariable> extraVariables;
 
-    protected boolean shuffle = NetCDFSettingsContainer.DEFAULT_SHUFFLE;
+    protected volatile boolean shuffle = NetCDFSettingsContainer.DEFAULT_SHUFFLE;
 
     /** Whether to copy attributes from NetCDF source variable to output variable */
-    protected boolean copyAttributes = NetCDFSettingsContainer.DEFAULT_COPY_ATTRIBUTES;
+    protected volatile boolean copyAttributes = NetCDFSettingsContainer.DEFAULT_COPY_ATTRIBUTES;
 
     /** Weather to copy global attributes from NetCDF source to output */
-    protected boolean copyGlobalAttributes = NetCDFSettingsContainer.DEFAULT_COPY_GLOBAL_ATTRIBUTES;
+    protected volatile boolean copyGlobalAttributes = NetCDFSettingsContainer.DEFAULT_COPY_GLOBAL_ATTRIBUTES;
 
-    protected int compressionLevel = NetCDFSettingsContainer.DEFAULT_COMPRESSION;
+    protected volatile int compressionLevel = NetCDFSettingsContainer.DEFAULT_COMPRESSION;
 
     protected DataPacking dataPacking = DataPacking.getDefault();
 
@@ -246,13 +265,13 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     protected Attribute buildAttribute(String key, String value) {
         try {
             return new Attribute(key, Integer.parseInt(value));
-        } catch (NumberFormatException e) {
-            // ignore
+        } catch (NumberFormatException ignored) {
+            // not an integer: try double next
         }
         try {
             return new Attribute(key, Double.parseDouble(value));
-        } catch (NumberFormatException e) {
-            // ignore
+        } catch (NumberFormatException ignored) {
+            // not a double: fall back to string
         }
         return new Attribute(key, value);
     }
@@ -396,7 +415,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     }
 
     protected int checkLevel(Integer level) {
-        if (level == null || (level < 0 || level > 9)) {
+        if (level == null || level < 0 || level > 9) {
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning("NetCDF 4 compression Level not in the proper range [0, 9]: "
                         + level
@@ -454,10 +473,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 // we will put these dimension lowercase for NetCDF names
                 dimensionName = dimensionName.toLowerCase();
             }
-            if (isRange) {
-                if (boundDimension == null) {
-                    boundDimension = writerb.addDimension(NetCDFUtilities.BOUNDARY_DIMENSION, 2);
-                }
+            if (isRange && boundDimension == null) {
+                boundDimension = writerb.addDimension(NetCDFUtilities.BOUNDARY_DIMENSION, 2);
             }
             final Dimension netcdfDimension = writerb.addDimension(dimensionName, dimensionLength);
             dimension.setNetCDFDimension(netcdfDimension);
@@ -491,7 +508,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
 
     /** Write the NetCDF file */
     @Override
-    public void write() throws IOException, ucar.ma2.InvalidRangeException {
+    public void write() throws IOException, InvalidRangeException {
         try (NetcdfFormatWriter formatWriter = writer) {
             crsWriter.setWriter(formatWriter);
             for (NetCDFDimensionsManager.NetCDFDimensionMapping mapper : dimensionsManager.getDimensions()) {
@@ -539,14 +556,15 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             // No unit defined
             return false;
         }
-        if (parserBean == null || parserBean.getParser() == null) {
+        NetCDFParserBean bean = getParserBean();
+        if (bean == null || bean.getParser() == null) {
             // Unable to check if it is cf-compliant
             return false;
         }
 
         String variableName = var.shortName;
         // Getting the parser
-        NetCDFCFParser parser = parserBean.getParser();
+        NetCDFCFParser parser = bean.getParser();
         // Checking CF convention
         boolean validName = parser.hasEntryId(variableName) || parser.hasAliasId(variableName);
         // Checking UOM
@@ -581,13 +599,11 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                         LOGGER.fine(e1.getLocalizedMessage());
                     }
                 }
-                if (!parseable) {
-                    if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.info("The specified unit "
-                                + definedUnit
-                                + " can't be converted to a "
-                                + " UCAR unit so it doesn't allow to define a standard name");
-                    }
+                if (!parseable && LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("The specified unit "
+                            + definedUnit
+                            + " can't be converted to a "
+                            + " UCAR unit so it doesn't allow to define a standard name");
                 }
             }
         }
@@ -640,7 +656,9 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                     sample = validSample ? dataPacker.pack(sampleFloat) : dataPacker.getReservedValue();
                     setIntegerSample(netCDFDataType, matrix, matrixIndex, sample);
                 } else {
-                    matrix.setFloat(matrixIndex, sampleFloat);
+                    // Replace any non-valid sample with the configured no-data fill — falls back to NaN when no
+                    // sentinel was resolved, so the output matches the _FillValue attribute the encoder writes.
+                    matrix.setFloat(matrixIndex, validSample ? sampleFloat : (float) resolveFloatFill(noDataValue));
                 }
                 break;
             case DOUBLE:
@@ -653,7 +671,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                     sample = validSample ? dataPacker.pack(sampleDouble) : dataPacker.getReservedValue();
                     setIntegerSample(netCDFDataType, matrix, matrixIndex, sample);
                 } else {
-                    matrix.setDouble(matrixIndex, sampleDouble);
+                    matrix.setDouble(matrixIndex, validSample ? sampleDouble : resolveFloatFill(noDataValue));
                 }
                 break;
             default:
@@ -675,12 +693,39 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         }
     }
 
-    protected boolean isNaN(Number sample, double noDataValue) {
+    /**
+     * Threshold for catching the IEEE float "extremes" sentinels (±Float.MAX_VALUE, ±Double.MAX_VALUE) that JAI /
+     * EclipseImagen leak through {@code BandMerge} / {@code BAND_SELECT} on float bands when the source had NaN fill
+     * cells but no explicit {@code _FillValue} attribute. Anything beyond ±1e30 is well outside the range of any
+     * real-world geophysical quantity (currents, winds, SST, …) so we treat it as no-data.
+     */
+    protected static final double EXTREME_VALUE_THRESHOLD = 1e30;
+
+    /**
+     * Tell whether {@code sample} should be treated as no-data given the configured {@code noDataValue}.
+     *
+     * <p>Stateless and exposed as {@code static} so the no-data sentinel logic is independently unit-testable.
+     */
+    protected static boolean isNaN(Number sample, double noDataValue) {
         double sampleValue = sample.doubleValue();
         if (Double.isNaN(noDataValue)) {
-            return Double.isNaN(sampleValue);
+            // No explicit no-data sentinel: flag actual NaNs and the JAI float extremes as fill.
+            return Double.isNaN(sampleValue) || Math.abs(sampleValue) >= EXTREME_VALUE_THRESHOLD;
         }
-        return (Math.abs(noDataValue - sample.doubleValue()) < EQUALITY_DELTA);
+        return Math.abs(noDataValue - sample.doubleValue()) < EQUALITY_DELTA;
+    }
+
+    /**
+     * Resolve the value used to fill no-data cells in float / double output matrices. Mirrors the precedence used for
+     * the {@code _FillValue} attribute: prefer the explicitly resolved no-data value; fall back to NaN — which matches
+     * the default {@code _FillValue} the encoder writes when no sentinel is known and is the universal marker every
+     * CF-aware reader (Panoply, xarray, OpenDrift, …) understands without further hints.
+     */
+    private static double resolveFloatFill(Double noDataValue) {
+        if (noDataValue == null || Double.isNaN(noDataValue)) {
+            return Double.NaN;
+        }
+        return noDataValue;
     }
 
     /** Setup the proper NetCDF array indexing, taking current dimension values from the current coverage */

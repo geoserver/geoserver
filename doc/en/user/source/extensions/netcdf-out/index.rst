@@ -90,6 +90,29 @@ unaffected and continue to write a single output variable named after
 the layer (or after *Variable Name* from the settings panel, when
 set).
 
+The example below uses a Coverage View built with *Band select* that
+composes the source bands ``uo`` and ``vo`` into output bands of the
+same names:
+
+.. figure:: coverageview-bandselect.png
+
+   Coverage View edit page — *Band select* composition mode with two
+   output bands ``uo`` and ``vo``, sourced from the underlying
+   NetCDF's eastward / northward sea-water-velocity variables.
+
+The resulting band layout is visible on the Coverage configuration's
+Band Details section, which feeds the precedence rules above
+(rule #2: the per-band sample-dimension description and unit shown
+here are the defaults the NetCDF writer falls back to when no
+explicit ``BandSetting`` override is present):
+
+.. figure:: coverage-band-details.png
+
+   Coverage Band Details — two ``Real 32 bits`` bands ``uo`` and
+   ``vo``, each declared with unit ``m/s``. Without per-band
+   overrides, these names and units flow straight through to the
+   output NetCDF variables.
+
 Per-band settings
 ^^^^^^^^^^^^^^^^^
 
@@ -142,6 +165,40 @@ The resulting NetCDF carries two CF-compliant variables — ``uo`` and
 engines such as `OpenDrift <https://opendrift.github.io/>`_'s
 ``reader_netCDF_CF_generic`` can locate by CF ``standard_name``
 lookup without any additional client-side preparation.
+
+Inspecting the WCS output in
+`Panoply <https://www.giss.nasa.gov/tools/panoply/>`_ confirms the
+per-band split. The Sources tree exposes ``uo`` and ``vo`` as two
+independent ``Geo2D`` variables alongside the shared ``time``,
+``elevation``, ``lat``, ``lon`` coordinate axes:
+
+.. figure:: panoply-sources.png
+
+   Panoply Sources tab — ``uo`` and ``vo`` listed as separate
+   ``Geo2D`` variables rather than collapsed into a single
+   layer-named variable.
+
+The CDL view shows the two variables share dimensions and carry
+their own ``units`` attribute, exactly as the ``BandSetting`` table
+prescribes:
+
+.. figure:: panoply-ncdump.png
+
+   Panoply CDL view of the output file — ``uo`` and ``vo`` are
+   emitted as distinct ``float`` variables of shape
+   ``(time, elevation, lat, lon)``, each with ``units = "m/s"`` and
+   a ``_FillValue`` of ``NaNf``. The coordinate axes ``time``,
+   ``elevation``, ``lat``, ``lon`` and the global ``spatial_ref`` /
+   ``GeoTransform`` attributes are written once and shared.
+
+Each variable plots independently — here the eastward component
+``uo`` rendered over the Baltic region:
+
+.. figure:: panoply-plot.png
+
+   Panoply geo plot of ``uo`` — values within the data extent
+   (-0.7 to 0.5 m/s) read directly off the output variable; the
+   per-variable colourbar uses the CF-conformant ``units`` attribute.
 
 CF Standard names support
 -------------------------

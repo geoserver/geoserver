@@ -7,8 +7,6 @@ package org.geoserver.security.impl;
 
 import static org.geoserver.security.impl.DataAccessRule.ANY;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,12 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.tuple.Pair;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -125,10 +120,8 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
     LayerGroupContainmentCache groupsCache;
 
-    Cache<Pair<Authentication, Class<? extends CatalogInfo>>, Filter> filterCache = CacheBuilder.newBuilder()
-            .maximumSize(FILTERCACHE_SIZE)
-            .expireAfterAccess(FILTERCACHE_EXPIRY_TIME, TimeUnit.MINUTES)
-            .build();
+    private final SecurityFilterCache filterCache =
+            new SecurityFilterCache(FILTERCACHE_SIZE, FILTERCACHE_EXPIRY_TIME, this::buildSecurityPrefilter);
 
     /**
      * Pass a reference to the raw, unsecured catalog. The reference is used to evaluate the relationship between layers
@@ -510,12 +503,8 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
     public Filter getSecurityFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
         checkPropertyFile();
         if (supportsPrefilter(user, clazz)) {
-            try {
-                return filterCache.get(Pair.of(user, clazz), () -> buildSecurityPrefilter(user, clazz));
-            } catch (ExecutionException e) {
-                // this should never happen
-                LOGGER.log(Level.WARNING, "Failed to build security prefilter", e);
-            }
+            boolean adminRequest = AdminRequest.get() != null;
+            return filterCache.get(user, clazz, adminRequest);
         }
         return InMemorySecurityFilter.buildUserAccessFilter(this, user);
     }
@@ -536,16 +525,17 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         }
     }
 
-    protected Filter buildSecurityPrefilter(Authentication user, Class<? extends CatalogInfo> clazz) {
+    protected Filter buildSecurityPrefilter(
+            Authentication user, Class<? extends CatalogInfo> clazz, boolean adminRequest) {
         if (WorkspaceInfo.class.isAssignableFrom(clazz)) {
             // base access
-            boolean rootAccess = canAccess(user, root);
+            boolean rootAccess = canAccess(user, root, adminRequest);
             List<Filter> exceptions = new ArrayList<>();
             // exceptions
             for (Map.Entry<String, SecureTreeNode> entry : root.getChildren().entrySet()) {
                 String wsName = entry.getKey();
                 SecureTreeNode node = entry.getValue();
-                boolean nodeAccess = canAccess(user, node);
+                boolean nodeAccess = canAccess(user, node, adminRequest);
                 if (nodeAccess != rootAccess) {
                     if (rootAccess) {
                         exceptions.add(Predicates.notEqual("name", wsName));
@@ -563,19 +553,19 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 || ResourceInfo.class.isAssignableFrom(clazz)
                 || CoverageInfo.class.isAssignableFrom(clazz)) {
             if (RESOURCE_EQUALITY_FILTER_ENABLED) {
-                return buildEqualityResourceFilter(user, clazz);
+                return buildEqualityResourceFilter(user, clazz, adminRequest);
             } else {
-                return buildInFunctionResourceFilter(user, clazz);
+                return buildInFunctionResourceFilter(user, clazz, adminRequest);
             }
         } else if (StyleInfo.class.isAssignableFrom(clazz) || LayerGroupInfo.class.isAssignableFrom(clazz)) {
             // we just check for workspace containment
-            boolean rootAccess = canAccess(user, root);
+            boolean rootAccess = canAccess(user, root, adminRequest);
             List<Filter> exceptions = new ArrayList<>();
             // exceptions
             for (Map.Entry<String, SecureTreeNode> entry : root.getChildren().entrySet()) {
                 String wsName = entry.getKey();
                 SecureTreeNode node = entry.getValue();
-                boolean nodeAccess = canAccess(user, node);
+                boolean nodeAccess = canAccess(user, node, adminRequest);
                 if (nodeAccess != rootAccess) {
                     if (rootAccess) {
                         exceptions.add(Predicates.notEqual("workspace.name", wsName));
@@ -596,16 +586,26 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         }
     }
 
-    private Filter buildEqualityResourceFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
+    /**
+     * Backward-compatible entry point that preserves the original thread-local-driven contract.
+     *
+     * <p>New call sites should prefer the overload that accepts {@code adminRequest} explicitly.
+     */
+    protected Filter buildSecurityPrefilter(Authentication user, Class<? extends CatalogInfo> clazz) {
+        return buildSecurityPrefilter(user, clazz, AdminRequest.get() != null);
+    }
+
+    private Filter buildEqualityResourceFilter(
+            Authentication user, Class<? extends CatalogInfo> clazz, boolean adminRequest) {
         // base access
-        boolean rootAccess = canAccess(user, root);
+        boolean rootAccess = canAccess(user, root, adminRequest);
         List<Filter> exceptions = new ArrayList<>();
 
         // workspace exceptions
         for (Map.Entry<String, SecureTreeNode> wsEntry : root.getChildren().entrySet()) {
             String wsName = wsEntry.getKey();
             SecureTreeNode wsNode = wsEntry.getValue();
-            boolean wsAccess = canAccess(user, wsNode);
+            boolean wsAccess = canAccess(user, wsNode, adminRequest);
 
             List<Filter> layerExceptions = new ArrayList<>();
             for (Map.Entry<String, SecureTreeNode> layerEntry :
@@ -619,7 +619,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                     continue;
                 }
 
-                boolean layerAccess = canAccess(user, layerNode);
+                boolean layerAccess = canAccess(user, layerNode, adminRequest);
                 if (layerAccess != wsAccess) {
                     Filter prefixedNameFilter =
                             Predicates.and(typeFilter, Predicates.equal("prefixedName", prefixedName));
@@ -677,9 +677,31 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         }
     }
 
+    /**
+     * Backward-compatible entry point that preserves the original thread-local-driven contract.
+     *
+     * <p>New call sites should prefer the overload that accepts {@code adminRequest} explicitly.
+     */
     protected Filter buildInFunctionResourceFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
+        return buildInFunctionResourceFilter(user, clazz, AdminRequest.get() != null);
+    }
+
+    /**
+     * Builds a resource filter by expanding workspace and layer exceptions against the security tree.
+     *
+     * <p>The {@code adminRequest} flag controls whether tree nodes should be evaluated as normal read-access nodes or
+     * as admin-capable nodes. This keeps the filter construction aligned with the request context that selected the
+     * cache entry.
+     *
+     * @param user authenticated user whose permissions drive the filter
+     * @param clazz catalog type being filtered
+     * @param adminRequest whether the current lookup is happening inside an admin request
+     * @return a filter that admits only the resources visible in the current security context
+     */
+    protected Filter buildInFunctionResourceFilter(
+            Authentication user, Class<? extends CatalogInfo> clazz, boolean adminRequest) {
         // base access
-        boolean rootAccess = canAccess(user, root);
+        boolean rootAccess = canAccess(user, root, adminRequest);
 
         List<Filter> filters = new ArrayList<>();
         // workspace exceptions
@@ -690,7 +712,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 continue;
             }
             SecureTreeNode wsNode = wsEntry.getValue();
-            boolean wsAccess = canAccess(user, wsNode);
+            boolean wsAccess = canAccess(user, wsNode, adminRequest);
 
             List<String> layerExceptionIds = new ArrayList<>();
             for (Map.Entry<String, SecureTreeNode> layerEntry :
@@ -706,7 +728,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                         continue;
                     }
                 }
-                boolean layerAccess = canAccess(user, layerNode);
+                boolean layerAccess = canAccess(user, layerNode, adminRequest);
                 if (layerAccess != wsAccess) {
                     if (ResourceInfo.class.isAssignableFrom(clazz) && published instanceof LayerInfo info) {
                         layerExceptionIds.add(info.getResource().getId());
@@ -789,9 +811,20 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         else return null;
     }
 
-    private boolean canAccess(Authentication user, SecureTreeNode node) {
+    /**
+     * Returns whether a user can access a secured tree node in the supplied request mode.
+     *
+     * <p>In an admin request, read access alone is not enough for a node to count as visible. The user must also have
+     * admin access so the visibility checks stay aligned with workspace administration screens.
+     *
+     * @param user authenticated user being evaluated
+     * @param node secured catalog node being checked
+     * @param adminRequest whether the current lookup is occurring inside an admin request
+     * @return true if the node is visible for the given user and request mode
+     */
+    private boolean canAccess(Authentication user, SecureTreeNode node, boolean adminRequest) {
         boolean access = node.canAccess(user, AccessMode.READ);
-        if (access && AdminRequest.get() != null) {
+        if (access && adminRequest) {
             // admin request, we need to check if we can also admin those
             return node.canAccess(user, AccessMode.ADMIN);
         } else {

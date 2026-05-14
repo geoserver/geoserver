@@ -29967,12 +29967,12 @@
 <ul>
 <li>A name (i.e. "gs-app")</li>
 <li>The homepage of the geoserver (i.e. "http://localhost:8080/geoserver")</li>
-<li>The authorization callback in the form of "http://localhost:8080/geoserver/web/login/oauth2/code/gitHub"</li>
+<li>The authorization callback shown as the read-only <strong>Redirect URI</strong> field of the GeoServer filter configuration form, in the form of "http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__gitHub" (replace <code>&lt;filterName&gt;</code> with the name of the GeoServer OIDC filter, e.g. <code>gs-app__gitHub</code>)</li>
 <li>Press "Register application"</li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>The exact callback URL that GeoServer will use is shown as the read-only <strong>Redirect URI</strong> field in the filter configuration form. In production, use that value instead of <code>localhost</code>. See <a href="../../configuring/#community_oidc_redirect_base_uri">Redirect Base URI</a>.</p>
+<p>The exact callback URL that GeoServer will use is shown as the read-only <strong>Redirect URI</strong> field in the filter configuration form --- copy it verbatim. In production, use that value instead of <code>localhost</code>. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. See <a href="../../configuring/#community_oidc_redirect_base_uri">Redirect Base URI</a>.</p>
 <p><img alt="" src="../../img/github-oauth2-app.png" /></p>
 </div>
 </li>

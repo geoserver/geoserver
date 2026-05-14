@@ -30077,7 +30077,7 @@
 <p>If there is a problem, its most likely that:</p>
 <ul>
 <li>GeoServer is configured with the wrong "User Authorization URI"</li>
-<li>The IDP is not configured to allow the redirect URL shown in the read-only <strong>Redirect URI</strong> field (e.g. <code>http://localhost:8080/geoserver/web/login/oauth2/code/oidc</code>)</li>
+<li>The IDP is not configured to allow the redirect URL shown in the read-only <strong>Redirect URI</strong> field (e.g. <code>http://localhost:8080/geoserver/web/login/oauth2/code/&lt;filterName&gt;__oidc</code>). The Redirect URI includes the GeoServer filter name as a prefix so that multiple OIDC filters can coexist --- a wildcard such as <code>.../web/login/oauth2/code/*</code> works well in most IDPs.</li>
 </ul>
 </li>
 </ul>

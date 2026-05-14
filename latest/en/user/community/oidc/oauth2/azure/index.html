@@ -30071,10 +30071,10 @@
 <p><img alt="" src="../../img/azure_create_app1.png" /></p>
 </li>
 <li>
-<p>Give the application a name ("gs-azure-app"), set it to the MultiTenant. Use "http://localhost:8080/geoserver/web/login/oauth2/code/microsoft" as the "Web" Redirect URI. Press "Register".</p>
+<p>Give the application a name ("gs-azure-app"), set it to the MultiTenant. Use the Redirect URI shown in the GeoServer filter configuration as the "Web" Redirect URI --- it has the form <code>http://localhost:8080/geoserver/web/login/oauth2/code/&lt;filterName&gt;__microsoft</code> where <code>&lt;filterName&gt;</code> is the name of the GeoServer OIDC filter (e.g. <code>gs-azure-app__microsoft</code>). Press "Register".</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>The exact redirect URI that GeoServer will use is shown as the read-only <strong>Redirect URI</strong> field in the filter configuration form. In production, use that value instead of <code>localhost</code>. See <a href="../../configuring/#community_oidc_redirect_base_uri">Redirect Base URI</a>.</p>
+<p>The exact redirect URI that GeoServer will use is shown as the read-only <strong>Redirect URI</strong> field in the filter configuration form --- copy it verbatim. In production, use that value instead of <code>localhost</code>. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. See <a href="../../configuring/#community_oidc_redirect_base_uri">Redirect Base URI</a>.</p>
 <p><img alt="" src="../../img/azure_create_app2.png" /></p>
 </div>
 </li>

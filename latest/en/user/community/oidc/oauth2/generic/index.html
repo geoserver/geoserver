@@ -30121,10 +30121,10 @@
 <ul>
 <li>
 <p><strong>Redirect URI (callback URL):</strong> This is the read-only <strong>Redirect URI</strong> shown in the GeoServer filter configuration form. It has the form:</p>
-<p>https://<your-geoserver>/geoserver/web/login/oauth2/code/oidc</p>
+<p>https://<your-geoserver>/geoserver/web/login/oauth2/code/<filterName>__oidc</p>
 </li>
 </ul>
-<p>Copy this value exactly into your IDP's "Valid redirect URIs" or "Callback URL" setting.</p>
+<p>Copy this value exactly into your IDP's "Valid redirect URIs" or "Callback URL" setting. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs; many IDPs also accept a wildcard like <code>.../web/login/oauth2/code/*</code> for convenience.</p>
 <ul>
 <li><strong>Post-Logout Redirect URI:</strong> If your IDP supports single logout, also register the <strong>After-Logout Redirect URI</strong> shown in the GeoServer configuration. See <a href="../../configuring/#community_oidc_logout_behavior">Logout Behavior</a>.</li>
 </ul>

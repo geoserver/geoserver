@@ -361,6 +361,12 @@ Sets the WMS specific publishing parameters.
 * **Default WMS path**—Location of the layer in the WMS capabilities layer tree. Useful for building non-opaque layer groups
 * **Default Interpolation Method**—Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see :ref:`Raster Rendering Options <services_webadmin_wms_raster_options>` for details). Can be overridden by the :ref:`interpolations vendor parameter <wms_vendor_parameter_interpolations>`.
 
+  .. note::
+
+     The default WMS interpolation configured at the layer level is also honored when the layer is served through GeoWebCache in :ref:`full WMS mode <gwc_endpoint>`. In this case, the interpolation setting is propagated to the tile recomposition process and influences the resampling performed when tiles are merged and scaled to produce the final image.
+
+
+
 WMS Attribution
 ^^^^^^^^^^^^^^^
 

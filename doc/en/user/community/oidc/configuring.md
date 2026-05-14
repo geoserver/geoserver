@@ -61,14 +61,26 @@ Without this, GeoServer may resolve the redirect URI to an internal hostname tha
 The **Redirect URI** field is calculated automatically from the Redirect Base URI and cannot be edited directly. It has the form:
 
 ```xml
-<Redirect Base URI>/web/login/oauth2/code/<provider>
+<Redirect Base URI>/web/login/oauth2/code/<filterName>__<provider>
 ```
 
-For example:
+For example, an OIDC filter named `keycloak-prod` produces:
 
-    https://geoserver.example.com/geoserver/web/login/oauth2/code/oidc
+    https://geoserver.example.com/geoserver/web/login/oauth2/code/keycloak-prod__oidc
 
 This is the callback URL that must be registered with your IDP as a permitted redirect URI. Copy it from the form and paste it into your IDP's client configuration.
+
+!!! note "Per-filter scoped registration ID"
+    The Redirect URI includes the GeoServer filter name as a prefix (e.g. `keycloak-prod__oidc`) so that several OIDC filters of the same provider type can coexist without colliding on their callback endpoints. Each filter registers with the IDP under its own redirect URI. Many IDPs accept a wildcard such as `https://geoserver.example.com/geoserver/web/login/oauth2/code/*` for convenience.
+
+### Multiple OIDC filters {: #community_oidc_multiple_filters }
+
+GeoServer can run several OAuth2 / OpenID Connect filters at the same time --- for example one filter per identity provider (Keycloak, Auth0, custom Entra), each with its own client credentials and scopes. Each filter is configured independently in **Security -> Authentication -> Filters** and bound to the relevant request chain (typically `web/**`).
+
+When two or more OIDC filters are bound to the same chain, the GeoServer user dropdown shows **one login button per filter**. Each button is a deep link to that filter's scoped authorization endpoint (`/web/oauth2/authorization/<filterName>__<provider>`) so that Spring's OAuth2 filter chain routes the click to the matching `ClientRegistration`.
+
+!!! tip "No restart needed when adding a filter"
+    Saving a new OIDC filter through the UI registers the matching login button on the next page render --- no container restart required. The button is removed automatically when the filter is deleted or disabled.
 
 ### Logout Behavior {: #community_oidc_logout_behavior }
 

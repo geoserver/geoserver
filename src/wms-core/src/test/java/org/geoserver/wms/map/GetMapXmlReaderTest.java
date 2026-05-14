@@ -21,7 +21,7 @@ import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
@@ -146,7 +146,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
             assertTrue(e.getCause() instanceof SAXException);
         } finally {
             System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
-            EntityResolverProvider.setEntityResolver(GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
+            EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
         }
     }
 

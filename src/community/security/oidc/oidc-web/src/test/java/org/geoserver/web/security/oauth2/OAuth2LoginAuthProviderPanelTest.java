@@ -47,6 +47,37 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
     }
 
     /**
+     * Verifies that when a fresh OIDC filter is configured and saved <em>without</em> triggering the dropdown's AJAX
+     * change event — i.e. the user accepts the default selection without re-picking it — the saved configuration still
+     * reflects the underlying {@code *Enabled} boolean for the displayed provider.
+     *
+     * <p>Regression coverage for the issue where a fresh config's {@code getSelectedProvider()} fallback returned
+     * {@code "oidc"} but the matching {@code oidcEnabled} flag stayed {@code false} because {@code setSelectedProvider}
+     * was only called from the dropdown's {@code AjaxFormComponentUpdatingBehavior}, which never fires when the
+     * displayed value does not actually change. Symptom: no login button appears.
+     */
+    @Test
+    public void freshFilter_defaultProviderIsPersistedOnPanelConstruction() {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        assertFalse("Sanity: a fresh config has no provider enabled", config.isOidcEnabled());
+        assertFalse(config.isGoogleEnabled());
+        assertFalse(config.isGitHubEnabled());
+        assertFalse(config.isMsEnabled());
+
+        Model<GeoServerOAuth2LoginFilterConfig> model = new Model<>(config);
+        FormTestPage testPage = new FormTestPage(id -> new OAuth2LoginAuthProviderPanel(id, model));
+        tester.startPage(testPage);
+
+        // Panel construction performs an eager write-through of getSelectedProvider() into the
+        // underlying *Enabled flags; the dropdown's default fallback is "oidc" so we expect that one.
+        assertTrue(
+                "Panel construction must materialize the default selection into oidcEnabled", config.isOidcEnabled());
+        assertFalse(config.isGoogleEnabled());
+        assertFalse(config.isGitHubEnabled());
+        assertFalse(config.isMsEnabled());
+    }
+
+    /**
      * Verifies that the oidcAllowUnSecureLogging checkbox is visible when a non-OIDC provider (Google) is selected. The
      * checkbox lives in the common GeoServer Parameters section and should be accessible for all providers.
      */
@@ -247,7 +278,11 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals("oidcClientSecret", lConfig.getOidcClientSecret());
         assertEquals("oidcUserNameAttribute", lConfig.getOidcUserNameAttribute());
         assertEquals("oidcScopes", lConfig.getOidcScopes());
-        assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/oidc", lConfig.getOidcRedirectUri());
+        // Scoped to the filter's name: each instance has its own callback URL so Spring can route
+        // back to the correct ClientRegistration even when multiple OIDC filters share a provider type.
+        assertEquals(
+                "https://localhost:9090/geoserver/web/login/oauth2/code/" + filterName + "__oidc",
+                lConfig.getOidcRedirectUri());
 
         assertTrue(lConfig.getOidcForceAuthorizationUriHttps());
         assertTrue(lConfig.isDisableSignatureValidation());

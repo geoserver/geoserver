@@ -88,6 +88,7 @@ public class GeoServerOAuth2LoginAuthenticationProvider extends AbstractFilterPr
         lBuilder.setConfiguration(lConfig);
         lBuilder.setSecurityManager(securityManager);
         lBuilder.setEventPublisher(context);
+        lBuilder.setClientRegistrationRegistry(getOptionalBean(GeoServerOAuth2ClientRegistrationRegistry.class));
         lBuilder.setHttpSecurityCustomizer(lHttpCustomizer);
         lBuilder.setClientRegistrationCustomizer(lClientCustomizer);
         if (lBuilderCustomizer != null) {

@@ -9,7 +9,6 @@ import static java.util.Map.entry;
 import static org.geotools.imageio.netcdf.utilities.NetCDFUtilities.NETCDF;
 import static org.geotools.imageio.netcdf.utilities.NetCDFUtilities.NETCDF3_MIMETYPE;
 import static org.geotools.imageio.netcdf.utilities.NetCDFUtilities.NETCDF4;
-import static org.geotools.imageio.netcdf.utilities.NetCDFUtilities.NETCDF4_MIMETYPE;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +26,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.wcs2_0.response.MultidimensionalCoverageResponse;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -53,14 +53,14 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
                         entry(NETCDF.toLowerCase(), "nc"),
                         entry(NETCDF.toUpperCase(), "nc"),
                         entry(NETCDF3_MIMETYPE, "nc"),
-                        entry(NETCDF4_MIMETYPE, "nc")),
+                        entry(NetCDFUtilities.NETCDF4_MIMETYPE, "nc")),
                 Map.ofEntries(
                         entry(NETCDF, NETCDF3_MIMETYPE),
                         entry(NETCDF.toLowerCase(), NETCDF3_MIMETYPE),
                         entry(NETCDF.toUpperCase(), NETCDF3_MIMETYPE),
-                        entry(NETCDF4, NETCDF4_MIMETYPE),
-                        entry(NETCDF4.toLowerCase(), NETCDF4_MIMETYPE),
-                        entry(NETCDF4.toUpperCase(), NETCDF4_MIMETYPE)));
+                        entry(NETCDF4, NetCDFUtilities.NETCDF4_MIMETYPE),
+                        entry(NETCDF4.toLowerCase(), NetCDFUtilities.NETCDF4_MIMETYPE),
+                        entry(NETCDF4.toUpperCase(), NetCDFUtilities.NETCDF4_MIMETYPE)));
     }
 
     @Override

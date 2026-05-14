@@ -29798,6 +29798,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#multi-band-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-band output
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-band output">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#per-band-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-band settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-vector-field-as-two-cf-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: vector field as two CF variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cf-standard-names-support" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -29936,6 +29975,117 @@
 </ul>
 </li>
 </ul>
+<h2 id="multi-band-output">Multi-band output<a class="headerlink" href="#multi-band-output" title="Permanent link">&para;</a></h2>
+<p>Coverages with more than one sample dimension — typically built via WCS
+<code>COVERAGE_VIEW</code> with <code>BAND_SELECT</code> entries — are written as <strong>one
+output variable per band</strong>, rather than collapsed to a single variable
+named after the layer. Each output variable's name is resolved with
+the following precedence:</p>
+<ol>
+<li>The corresponding entry from the <code>bandSettings</code> list in the
+   layer's NetCDF Output configuration, if any (see <em>Per-band
+   settings</em> below);</li>
+<li>The source band's <code>GridSampleDimension</code> description, which equals
+   the <code>&lt;definition&gt;</code> value when the source coverage is a
+   <code>COVERAGE_VIEW</code> with <code>BAND_SELECT</code> bands;</li>
+<li>As a last-resort fallback, <code>&lt;coverageName&gt;_&lt;bandIndex&gt;</code>.</li>
+</ol>
+<p>Single-band coverages — the historical and most common case — are
+unaffected and continue to write a single output variable named after
+the layer (or after <code>Variable Name</code> from the settings panel, when
+set).</p>
+<p>The example below uses a Coverage View built with <code>Band select</code> that
+composes the source bands <code>uo</code> and <code>vo</code> into output bands of the same
+names:</p>
+<p><img alt="" src="coverageview-bandselect.png" /></p>
+<p><em>Coverage View edit page — <code>Band select</code> composition mode with two
+output bands <code>uo</code> and <code>vo</code>, sourced from the underlying NetCDF's
+eastward / northward sea-water-velocity variables.</em></p>
+<p>The resulting band layout is visible on the Coverage configuration's
+Band Details section, which is what feeds the precedence rules above
+(rule #2: the per-band sample-dimension description and unit shown
+here are the defaults the NetCDF writer falls back to when no explicit
+<code>BandSetting</code> override is present):</p>
+<p><img alt="" src="coverage-band-details.png" /></p>
+<p><em>Coverage Band Details — two <code>Real 32 bits</code> bands <code>uo</code> and <code>vo</code>, each
+declared with unit <code>m/s</code>. Without per-band overrides, these names and
+units flow straight through to the output NetCDF variables.</em></p>
+<h3 id="per-band-settings">Per-band settings<a class="headerlink" href="#per-band-settings" title="Permanent link">&para;</a></h3>
+<p>For each source band, a <code>BandSetting</code> entry can override:</p>
+<ul>
+<li><strong>Name</strong> — the output NetCDF variable name (defaults to the source
+  band's sample dimension description).</li>
+<li><strong>Unit of Measure</strong> — the output <code>units</code> attribute (defaults to the
+  source band's unit). When both an input unit and an explicit output
+  unit are declared, values are converted at write time using the
+  Unidata unit framework.</li>
+<li><strong>Variable Attributes</strong> — additional <code>Attribute</code>s applied to this
+  band's output variable. These are <em>additive</em> with respect to the
+  container-level <em>Variable Attributes</em> list and <strong>take precedence on
+  key collisions</strong> — so per-band CF <code>standard_name</code> overrides the
+  container-level one, for instance.</li>
+</ul>
+<p><code>BandSetting</code> entries are positional: the entry at index <code>i</code> applies
+to the i-th source band. When the list is shorter than the band count,
+trailing bands fall through to the auto-derived defaults; entries
+beyond the band count are silently ignored.</p>
+<h3 id="example-vector-field-as-two-cf-variables">Example: vector field as two CF variables<a class="headerlink" href="#example-vector-field-as-two-cf-variables" title="Permanent link">&para;</a></h3>
+<p>A <code>COVERAGE_VIEW</code> with <code>BAND_SELECT</code> bands <code>uo</code> (band 0) and <code>vo</code>
+(band 1) — built from a NetCDF source's eastward / northward
+sea-water-velocity variables — is configured with the following
+<code>bandSettings</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>UoM</th>
+<th>Variable Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>uo</code></td>
+<td><code>m s-1</code></td>
+<td><code>standard_name=eastward_sea_water_velocity</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>vo</code></td>
+<td><code>m s-1</code></td>
+<td><code>standard_name=northward_sea_water_velocity</code></td>
+</tr>
+</tbody>
+</table>
+<p>The resulting NetCDF carries two CF-compliant variables — <code>uo</code> and
+<code>vo</code>, both shaped <code>(time, lat, lon)</code> — that downstream simulation
+engines such as
+<a href="https://opendrift.github.io/">OpenDrift</a>'s
+<code>reader_netCDF_CF_generic</code> can locate by CF <code>standard_name</code> lookup
+without any additional client-side preparation.</p>
+<p>Inspecting the WCS output in <a href="https://www.giss.nasa.gov/tools/panoply/">Panoply</a>
+confirms the per-band split. The Sources tree exposes <code>uo</code> and <code>vo</code>
+as two independent <code>Geo2D</code> variables alongside the shared <code>time</code>,
+<code>elevation</code>, <code>lat</code>, <code>lon</code> coordinate axes:</p>
+<p><img alt="" src="panoply-sources.png" /></p>
+<p><em>Panoply Sources tab — <code>uo</code> and <code>vo</code> listed as separate <code>Geo2D</code>
+variables rather than collapsed into a single layer-named variable.</em></p>
+<p>The CDL view shows the two variables share dimensions and carry their
+own <code>units</code> attribute, exactly as the <code>BandSetting</code> table prescribes:</p>
+<p><img alt="" src="panoply-ncdump.png" /></p>
+<p><em>Panoply CDL view of the output file — <code>uo</code> and <code>vo</code> are emitted as
+distinct <code>float</code> variables of shape <code>(time, elevation, lat, lon)</code>,
+each with <code>units = "m/s"</code> and a <code>_FillValue</code> of <code>NaNf</code>. The
+coordinate axes <code>time</code>, <code>elevation</code>, <code>lat</code>, <code>lon</code> and the global
+<code>spatial_ref</code> / <code>GeoTransform</code> attributes are written once and
+shared.</em></p>
+<p>Each variable plots independently — here the eastward component <code>uo</code>
+rendered over the Baltic region:</p>
+<p><img alt="" src="panoply-plot.png" /></p>
+<p><em>Panoply geo plot of <code>uo</code> — values within the data extent (-0.7 to
+0.5 m/s) read directly off the output variable; the per-variable
+colourbar uses the CF-conformant <code>units</code> attribute.</em></p>
 <h2 id="cf-standard-names-support">CF Standard names support<a class="headerlink" href="#cf-standard-names-support" title="Permanent link">&para;</a></h2>
 <p>Note that the output name can also be chosen from the list of CF Standard names. Check <a href="http://cfconventions.org/standard-names.md">CF standard names</a> page for more info on it.</p>
 <p>Once you click on the dropdown, you may choose from the set of available standard names.</p>

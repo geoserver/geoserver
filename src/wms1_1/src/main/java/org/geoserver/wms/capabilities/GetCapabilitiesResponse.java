@@ -19,7 +19,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -118,9 +117,6 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
             }
 
             {
-                // Explicitly use SAXON's transformer factory. For some reason xalan's does not
-                // work
-                TransformerFactory tFactory = XMLUtils.newTransformerFactory();
                 String xsltSystemId =
                         getClass().getResource("getcaps_111_internalDTD.xsl").toExternalForm();
 

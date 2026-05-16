@@ -18,7 +18,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
-import org.geotools.util.NullEntityResolver;
 import org.geotools.util.Version;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
@@ -105,12 +104,6 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         return quietTests != null && !"false".equalsIgnoreCase(quietTests);
     }
 
-    @BeforeClass
-    public static final void setupXML() throws Exception {
-        // Allow resolution of XSDs from local file system
-        Hints.putSystemDefault(Hints.ENTITY_RESOLVER, NullEntityResolver.INSTANCE);
-    }
-
     @Before
     public final void setUpLogging() throws Exception {
         if (isQuietTests()) {
@@ -121,12 +114,19 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     }
 
     @BeforeClass
+    public static final void setupXML() throws Exception {
+        // Allow resolution of XSDs from local file system for testing
+        Hints.putSystemDefault(Hints.ENTITY_RESOLVER, DevModeEntityResolver.INSTANCE);
+    }
+
+    @BeforeClass
     public static final void setUpReferencing() throws Exception {
         // do we need to reset the referencing subsystem and reorient it with lon/lat order?
         if (System.getProperty("org.geotools.referencing.forceXY") == null
                 || !"http".equals(Hints.getSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING))) {
             System.setProperty("org.geotools.referencing.forceXY", "true");
             Hints.putSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING, "http");
+            Hints.scanSystemProperties();
         }
     }
 

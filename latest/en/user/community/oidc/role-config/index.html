@@ -24590,6 +24590,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#community_oidc_keycloak_admin_api_role_source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring Roles from the Keycloak Admin REST API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring Roles from the Keycloak Admin REST API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-choose-keycloak-admin-api-over-id-token-access-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to choose Keycloak Admin API over ID Token / Access Token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -29944,6 +29972,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#community_oidc_keycloak_admin_api_role_source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring Roles from the Keycloak Admin REST API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring Roles from the Keycloak Admin REST API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-choose-keycloak-admin-api-over-id-token-access-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to choose Keycloak Admin API over ID Token / Access Token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -29977,7 +30033,7 @@
 </ul>
 <p>For more examples, see the IDP-specific configuration examples - <a href="../oauth2/google/">Google</a>, <a href="../oauth2/github/">GitHub</a>, <a href="../oauth2/keycloak/">Keycloak</a>, <a href="../oauth2/azure/">MS Azure and Entra</a>, <a href="../oauth2/generic/">Generic OpenID Connect</a>.</p>
 <h2 id="extracting-roles-from-the-oidc-idp">Extracting Roles from the OIDC IDP<a class="headerlink" href="#extracting-roles-from-the-oidc-idp" title="Permanent link">&para;</a></h2>
-<p>The <code>oidc</code> module allows for providing user roles with the standard GeoServer role providers. It also adds four new ones: ID Token, Access Token, UserInfo, and Microsoft Graph.</p>
+<p>The <code>oidc</code> module allows for providing user roles with the standard GeoServer role providers. It also adds five OIDC-specific ones: ID Token, Access Token, UserInfo, Microsoft Graph and Keycloak Admin API.</p>
 <table>
 <thead>
 <tr>
@@ -30001,6 +30057,10 @@
 <tr>
 <td>Microsoft Graph</td>
 <td><a href="https://learn.microsoft.com/en-us/graph/overview">Microsoft Graph</a> is a Microsoft product for use with their cloud IDP. Only use this if you are using a Microsoft product like Microsoft Entra ID (formerly Azure AD).</td>
+</tr>
+<tr>
+<td>Keycloak Admin API</td>
+<td>Server-side fetch of the logged-in user's role assignments via Keycloak's <a href="https://www.keycloak.org/docs-api/latest/rest-api/index.html">Admin REST API</a>. Use this when you need to surface roles assigned to the user <strong>through groups</strong> (not just direct realm-role assignments) or when composite-role expansion needs to happen server-side. Only valid against a Keycloak IDP. See <a href="../oauth2/keycloak/#community_oidc_keycloak_admin_api">Configuring with Keycloak</a> for the prerequisite Keycloak-side setup.</td>
 </tr>
 </tbody>
 </table>
@@ -30089,6 +30149,61 @@
 <p>In this example we are converting the IDP's <code>geoserverAdmin</code> role to <code>ROLE_ADMINISTRATOR</code>.</p>
 <p>You can specify multiple translations separated by the "<code>;</code>" character.</p>
 <p>If you turn on the "<code>Only allow External Roles that are explicitly named above</code>", then roles that are not mentioned in the Role Converter Map will <strong>not</strong> be in the set of GeoServer roles. For example, in the example ID Token, the user has role "geoserverAdmin" and "geonetworkAdmin". If this is not turned on, then the user will have the GeoServer roles "ROLE_ADMINISTRATOR" (translated from "geoserverAdmin") as well as "geonetworkAdmin". If it is turned on, then they will only have the "ROLE_ADMINISTRATOR" (translated from "geoserverAdmin") role.</p>
+<h2 id="community_oidc_keycloak_admin_api_role_source">Configuring Roles from the Keycloak Admin REST API<a class="headerlink" href="#community_oidc_keycloak_admin_api_role_source" title="Permanent link">&para;</a></h2>
+<p>The <code>Keycloak Admin API</code> role source is a Keycloak-specific alternative to the token-claim-based sources. Instead of reading roles from the ID Token / Access Token / UserInfo response, GeoServer calls Keycloak's <a href="https://www.keycloak.org/docs-api/latest/rest-api/index.html">Admin REST API</a> at login time to fetch the user's role assignments:</p>
+<ol>
+<li><code>GET /admin/realms/{realm}/users?exact=true&amp;username=&lt;principal&gt;</code> — resolve the user's UUID.</li>
+<li><code>GET /admin/realms/{realm}/users/{uuid}/role-mappings/realm/composite</code> — enumerate the user's realm-role mappings (transitively expanded across composite roles and group memberships).</li>
+<li>Optionally, <code>GET /admin/realms/{realm}/users/{uuid}/role-mappings/clients/{cid}/composite</code> for each Keycloak client whose client-roles you want pulled in.</li>
+</ol>
+<p>The admin calls are authenticated via a separate access token obtained through the OAuth2 <a href="https://www.rfc-editor.org/rfc/rfc6749#section-4.4">client credentials</a> grant against the <strong>same</strong> OIDC client used for user login. The OIDC client therefore needs to satisfy two extra Keycloak-side prerequisites:</p>
+<ul>
+<li><strong>Service Accounts → Enabled</strong> (<code>serviceAccountsEnabled=true</code>)</li>
+<li><strong>Service Account Roles</strong> must include the realm-management roles needed to read users, clients, groups and realm metadata — at minimum <code>view-realm</code>, <code>view-users</code>, <code>view-clients</code>, <code>query-groups</code>.</li>
+</ul>
+<p>See <a href="../oauth2/keycloak/#community_oidc_keycloak_admin_api">Configuring Keycloak Admin API as the role source</a> for the step-by-step Keycloak setup.</p>
+<p><img alt="" src="../img/keycloak-api-role-source.png" /></p>
+<p><em>The Keycloak Admin API sub-panel on the OIDC filter's Authorization section.</em></p>
+<p>The fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Client IDs for client-roles (comma-separated, optional)</td>
+<td>If your roles live as <strong>client roles</strong> under one or more Keycloak clients (not just realm roles), list those clients' public IDs here. Leave blank to surface realm roles only.</td>
+</tr>
+<tr>
+<td>Include composite &amp; group-inherited roles</td>
+<td>Default <strong>on</strong>. Switches the per-user fetch to the <code>/composite</code> endpoint variant so Keycloak server-side flattens both composite parents and group memberships into the response. Turn off only if you need plain direct-assignment semantics.</td>
+</tr>
+<tr>
+<td>Role Converter Map</td>
+<td>Translate external IDP role names to internal GeoServer role names — exactly the same mechanism documented in the <a href="#external-internal-role-translation">External-Internal Role Translation</a> section. Useful for mapping Keycloak roles like <code>geoserver-admin</code> to GeoServer's built-in <code>ROLE_ADMINISTRATOR</code>.</td>
+</tr>
+<tr>
+<td>Only allow External Roles that are explicitly named above</td>
+<td>Same semantics as the token-based sources — when enabled, roles not in the Role Converter Map are dropped.</td>
+</tr>
+</tbody>
+</table>
+<p>The Server URL, Realm and admin client credentials are <strong>derived at resolution time</strong> from the same OIDC configuration above (the Discovery URI, Client ID, Client Secret you've already configured for the login flow). No duplicate inputs.</p>
+<h3 id="when-to-choose-keycloak-admin-api-over-id-token-access-token">When to choose Keycloak Admin API over ID Token / Access Token<a class="headerlink" href="#when-to-choose-keycloak-admin-api-over-id-token-access-token" title="Permanent link">&para;</a></h3>
+<p>Use this source when:</p>
+<ul>
+<li>The Keycloak roles you care about are assigned to users <strong>indirectly</strong> (through group membership), and you cannot or don't want to add a group-mapper protocol-mapper to surface them in the token claims.</li>
+<li>You rely on Keycloak's <a href="https://www.keycloak.org/docs/latest/server_admin/index.html#_composite-roles">composite roles</a> and want server-side transitive expansion (e.g. <code>admin</code> → <code>editor</code> → <code>viewer</code>).</li>
+<li>Your tokens are small / opaque and you'd rather not embed potentially large role sets in every request.</li>
+</ul>
+<p>Stick with the ID Token / Access Token source if:</p>
+<ul>
+<li>Your roles are already in the token claim (typical) — it's faster and avoids the extra admin-API round-trip per login.</li>
+<li>Your IDP isn't Keycloak (the admin endpoints are Keycloak-specific).</li>
+</ul>
 
 
 

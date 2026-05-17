@@ -35,6 +35,14 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         IdToken,
         AccessToken,
         MSGraphAPI,
+        /**
+         * Resolves the logged-in user's roles by delegating to a configured {@code GeoServerRoleService} — typically a
+         * {@code KeycloakRoleService} that calls Keycloak's Admin REST API via a service-account client. Symmetric to
+         * {@link #MSGraphAPI} but uses a service-account credential (not the user's access token) since Keycloak's
+         * admin API doesn't accept delegated user tokens. Which named role service to delegate to is taken from the
+         * inherited {@code roleServiceName} field (the same field the standard "Role service" pre-auth source uses).
+         */
+        KeycloakAPI,
         UserInfo;
 
         @Override
@@ -158,6 +166,25 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
 
     /** if msGraphAppRoleAssignments is true, then what is the Enterprise App's Object ID (NOT the Client Id). */
     private String msGraphAppRoleAssignmentsObjectId;
+
+    // Keycloak Admin API (used when role source = KeycloakAPI). Server URL, realm AND admin-client credentials are
+    // derived at resolution time from this filter's OIDC config:
+    //   - server URL + realm: parsed from oidcDiscoveryUri / oidcTokenUri (Keycloak {server}/realms/{realm}/...)
+    //   - admin client id + secret: reuse oidcClientId / oidcClientSecret
+    // Prerequisite: the OIDC client must have service-accounts-enabled=true and the realm-management roles
+    // (view-realm, view-users, view-clients) granted to its service-account user.
+
+    /**
+     * Optional comma-separated list of public Keycloak client IDs whose client-roles should also be pulled in alongside
+     * realm roles. Leave blank for realm-roles-only.
+     */
+    private String keycloakAdminClientIdsOfRoleScopes;
+
+    /**
+     * When {@code true}, per-user role mappings include group-inherited / composite-flattened roles via the IdP's
+     * transitive {@code /composite} endpoint variant. Default {@code true}.
+     */
+    private boolean keycloakUseCompositeRoles = true;
 
     // for role extraction
     private String roleConverterString;
@@ -821,6 +848,24 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         this.msGraphAppRoleAssignmentsObjectId =
                 StringUtils.hasText(msGraphAppRoleAssignmentsObjectId) ? msGraphAppRoleAssignmentsObjectId : null;
     }
+
+    public String getKeycloakAdminClientIdsOfRoleScopes() {
+        return keycloakAdminClientIdsOfRoleScopes;
+    }
+
+    public void setKeycloakAdminClientIdsOfRoleScopes(String keycloakAdminClientIdsOfRoleScopes) {
+        this.keycloakAdminClientIdsOfRoleScopes =
+                StringUtils.hasText(keycloakAdminClientIdsOfRoleScopes) ? keycloakAdminClientIdsOfRoleScopes : null;
+    }
+
+    public boolean isKeycloakUseCompositeRoles() {
+        return keycloakUseCompositeRoles;
+    }
+
+    public void setKeycloakUseCompositeRoles(boolean keycloakUseCompositeRoles) {
+        this.keycloakUseCompositeRoles = keycloakUseCompositeRoles;
+    }
+
     /**
      * When enabled, the resource server (Bearer JWT) validator will require the configured audience claim to match the
      * expected value.

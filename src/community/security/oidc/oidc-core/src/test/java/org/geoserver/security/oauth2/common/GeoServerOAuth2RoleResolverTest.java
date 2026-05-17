@@ -50,6 +50,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 /** Tests {@link GeoServerOAuth2RoleResolver}. */
+@SuppressWarnings("deprecation") // exercises the deprecated supplier-setter façade kept for back-compat
 public class GeoServerOAuth2RoleResolverTest {
 
     private static final String ROLES_CLAIM_NAME = "roles";

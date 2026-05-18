@@ -14,7 +14,7 @@ package org.geoserver.security.oauth2.login;
  *
  * @author awaterme
  */
-public interface GeoServerOAuth2ClientRegistrationId {
+public interface OAuth2ClientRegistrationId {
 
     String REG_ID_GIT_HUB = "gitHub";
     String REG_ID_GOOGLE = "google";

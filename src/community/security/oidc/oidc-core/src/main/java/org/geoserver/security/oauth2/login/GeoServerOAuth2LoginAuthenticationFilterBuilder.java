@@ -5,47 +5,34 @@
 package org.geoserver.security.oauth2.login;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonMap;
-import static java.util.stream.Collectors.toList;
-import static org.geoserver.security.filter.GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.scopedRegId;
-import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.disableButtonEvent;
-import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.enableButtonEvent;
-import static org.geoserver.security.oauth2.token.GeoServerOAuth2UserServices.newOAuth2UserService;
-import static org.geoserver.security.oauth2.token.GeoServerOAuth2UserServices.newOidcUserService;
-import static org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE;
-import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
-import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_POST;
+import static org.geoserver.security.oauth2.token.OAuth2UserServices.newOAuth2UserService;
+import static org.geoserver.security.oauth2.token.OAuth2UserServices.newOidcUserService;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.filter.GeoServerRoleResolvers;
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverContext;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer;
+import org.geoserver.security.oauth2.login.OAuth2LoginCustomizers.ClientRegistrationCustomizer;
+import org.geoserver.security.oauth2.login.OAuth2LoginCustomizers.HttpSecurityCustomizer;
+import org.geoserver.security.oauth2.login.builder.ClientRegistrationFactory;
+import org.geoserver.security.oauth2.login.builder.HttpSecurityConfigurer;
+import org.geoserver.security.oauth2.login.builder.LogoutHandlerFactory;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;
 import org.geoserver.security.oauth2.spring.GeoServerOAuth2AccessTokenResponseClient;
 import org.geoserver.security.oauth2.spring.GeoServerOidcIdTokenDecoderFactory;
-import org.geoserver.security.oauth2.token.GeoServerOAuth2OpaqueTokenIntrospector;
-import org.geoserver.security.oauth2.token.TokenIntrospector;
 import org.geoserver.security.oauth2.util.ConfidentialLogger;
 import org.geoserver.security.oauth2.util.HttpServletRequestSupplier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
@@ -54,10 +41,7 @@ import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResp
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.endpoint.RestClientAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
-import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
@@ -65,20 +49,10 @@ import org.springframework.security.oauth2.client.web.DefaultOAuth2Authorization
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
-import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtValidators;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
-import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.RequestMatcherRedirectFilter;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -86,12 +60,23 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 /**
  * Builder for {@link GeoServerOAuth2LoginAuthenticationFilter}.
  *
- * <p>Further documentation: Look at {@link GeoServerOAuth2LoginAuthenticationFilter}
+ * <p>Orchestrates three single-responsibility helpers under {@link org.geoserver.security.oauth2.login.builder}:
+ *
+ * <ul>
+ *   <li>{@link ClientRegistrationFactory} — assembles the per-provider Spring {@code ClientRegistration}s and publishes
+ *       button enable/disable events
+ *   <li>{@link HttpSecurityConfigurer} — wires the Spring {@code HttpSecurity} chain (oauth2Login + optional
+ *       oauth2ResourceServer) and returns the filter subset to wrap
+ *   <li>{@link LogoutHandlerFactory} — builds the RP-initiated logout handler
+ * </ul>
+ *
+ * <p>This class retains the public setter/getter surface so existing tests and consumers (in particular
+ * {@code GeoServerOAuth2LoginAuthenticationProvider}) keep working unchanged.
  *
  * @see GeoServerOAuth2LoginAuthenticationFilter
  * @author awaterme
  */
-public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServerOAuth2ClientRegistrationId {
+public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements OAuth2ClientRegistrationId {
 
     public static final String DEFAULT_AUTHORIZATION_REQUEST_BASE_URI = "web/oauth2/authorization";
 
@@ -110,19 +95,18 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     private GeoServerOidcIdTokenDecoderFactory tokenDecoderFactory;
 
     /**
-     * Application-wide registry of every active OAuth2 filter's {@link ClientRegistration}s. Injected by
+     * Application-wide registry of every active OAuth2 filter's
+     * {@link org.springframework.security.oauth2.client.registration.ClientRegistration}s. Injected by
      * {@link GeoServerOAuth2LoginAuthenticationProvider} so that all OAuth2 filters share the same repository — this is
      * what lets Spring's {@code OAuth2AuthorizationRequestRedirectFilter} inside one filter's sub-chain resolve the
      * scoped registration ID owned by another filter, avoiding the {@code InvalidClientRegistrationIdException} → HTTP
-     * 500 cascade that bit the legacy per-filter-private repository design under Spring Security 7. See
-     * {@link GeoServerOAuth2ClientRegistrationRegistry} for details.
+     * 500 cascade that bit the legacy per-filter-private repository design under Spring Security 7.
      */
-    private GeoServerOAuth2ClientRegistrationRegistry clientRegistrationRegistry;
+    private OAuth2ClientRegistrationRegistry clientRegistrationRegistry;
 
     private ClientRegistrationRepository clientRegistrationRepository;
     private OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
     private OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService;
-
     private OAuth2AuthorizedClientService authorizedClientService;
     private OAuth2AuthorizedClientRepository authorizedClientRepository;
     private DefaultOAuth2AuthorizationRequestResolver authorizationRequestResolver;
@@ -134,7 +118,6 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     private GeoServerRoleResolvers.ResolverContext roleResolverContext;
     private boolean closed;
 
-    // Might be used for customizations.
     private HttpSecurityCustomizer httpSecurityCustomizer = (h) -> {};
     private ClientRegistrationCustomizer clientRegistrationCustomizer = (h) -> {};
 
@@ -143,7 +126,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     }
 
     /**
-     * Builds a new filter, setup with the given configuration. Must be called once only.
+     * Builds a new filter, set up with the given configuration. Must be called once only.
      *
      * @return a new filter
      */
@@ -154,8 +137,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
         if (0 < configuration.getActiveProviderCount()) {
             filter.setLogoutSuccessHandler(getLogoutSuccessHandler());
-            List<Filter> lFilters = createNestedFilters();
-            filter.setNestedFilters(lFilters);
+            filter.setNestedFilters(createNestedFilters());
         }
 
         ConfidentialLogger.setEnabled(configuration.isOidcAllowUnSecureLogging());
@@ -174,80 +156,12 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
     private List<Filter> createNestedFilters() {
         try {
-            return createFiltersImpl();
+            return new HttpSecurityConfigurer(
+                            http, configuration, securityManager, tokenDecoderFactory, REQ_FILTER_TYPES, builderContext)
+                    .configure();
         } catch (Exception e) {
             throw new RuntimeException("Failed to create filter.", e);
         }
-    }
-
-    private List<Filter> createFiltersImpl() throws Exception {
-        // Each builder instance gets its own prototype-scoped tokenDecoderFactory (see applicationContext.xml).
-        tokenDecoderFactory.setGeoServerOAuth2LoginFilterConfig(configuration);
-
-        http.oauth2Login(oauthConfig -> {
-            oauthConfig.clientRegistrationRepository(getClientRegistrationRepository());
-            oauthConfig.authorizedClientRepository(getAuthorizedClientRepository());
-            oauthConfig.authorizedClientService(getAuthorizedClientService());
-
-            // Replaced deprecated endpoint DSL with lambda customizers
-            oauthConfig.userInfoEndpoint(userInfo -> {
-                userInfo.userService(getOauth2UserService());
-                userInfo.oidcUserService(getOidcUserService());
-            });
-            oauthConfig.authorizationEndpoint(
-                    authorization -> authorization.authorizationRequestResolver(getAuthorizationRequestResolver()));
-            oauthConfig.tokenEndpoint(token -> token.accessTokenResponseClient(getAccessTokenResponseClient()));
-
-            oauthConfig.loginProcessingUrl("/web/login/oauth2/code/*");
-
-            // On OAuth2/OIDC authentication failure (bad client credentials, invalid token signature,
-            // session-state mismatch, IdP refusing the code exchange, ...) Spring's default failure handler
-            // redirects to "/login?error" — a path that has no handler in the GeoServer webapp (no Wicket
-            // page mount, no servlet, no static resource). Tomcat's default servlet then serves the bare
-            // path back without a Content-Type, which browsers interpret as a downloadable empty file
-            // named "login". Redirect to /web/ instead — the Wicket-rendered home page surfaces the
-            // standard login form so users can retry without seeing a confusing file download dialog.
-            oauthConfig.failureUrl("/web/");
-        });
-
-        // Hybrid mode: accept machine-to-machine requests via Authorization: Bearer <token>
-        // using the same provider configuration already stored in this filter.
-        // For safety, this is only auto-enabled when exactly one provider is enabled.
-        //
-        // If an introspection endpoint is configured, we enable opaque-token support (RFC 7662).
-        // Otherwise we fall back to JWT validation via JWKS.
-        OpaqueTokenIntrospector opaqueIntrospector = createResourceServerOpaqueTokenIntrospectorIfApplicable();
-        JwtDecoder resourceServerJwtDecoder =
-                (opaqueIntrospector == null) ? createResourceServerJwtDecoderIfApplicable() : null;
-
-        if (opaqueIntrospector != null) {
-            // Bearer-token requests must remain stateless even if a UI login session exists.
-            http.securityContext(sc -> sc.securityContextRepository(new BearerAwareSecurityContextRepository()));
-            http.oauth2ResourceServer(oauth -> oauth.opaqueToken(ot -> ot.introspector(opaqueIntrospector)));
-        } else if (resourceServerJwtDecoder != null) {
-            // Bearer-token requests must remain stateless even if a UI login session exists.
-            http.securityContext(sc -> sc.securityContextRepository(new BearerAwareSecurityContextRepository()));
-            GeoServerOAuth2JwtAuthenticationConverter converter =
-                    new GeoServerOAuth2JwtAuthenticationConverter(securityManager, configuration);
-            http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {
-                jwt.decoder(resourceServerJwtDecoder);
-                jwt.jwtAuthenticationConverter(converter);
-            }));
-        }
-
-        httpSecurityCustomizer.accept(http);
-
-        SecurityFilterChain lChain = http.build();
-        List<Filter> lFilters = lChain.getFilters();
-        lFilters = lFilters.stream()
-                .filter(f -> REQ_FILTER_TYPES.contains(f.getClass()))
-                .collect(toList());
-
-        String lAuthEntryPoint = configuration.getAuthenticationEntryPointRedirectUri();
-        if (configuration.getEnableRedirectAuthenticationEntryPoint() && lAuthEntryPoint != null) {
-            lFilters.add(getRedirectToProviderFilter());
-        }
-        return lFilters;
     }
 
     private ResolverContext createRoleResolverContext() {
@@ -265,198 +179,11 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
                 configuration.getRoleSource());
     }
 
-    /**
-     * Build this filter's contribution to the shared client-registration repository.
-     *
-     * <p>The list of {@link ClientRegistration}s is published into {@link #clientRegistrationRegistry} (the same
-     * application-scoped registry shared by every other OAuth2 filter), keyed by this filter's name. The shared
-     * registry — not a per-filter {@code InMemoryClientRegistrationRepository} — is returned so that Spring's
-     * {@code OAuth2AuthorizationRequestRedirectFilter} inside this filter's sub-chain can resolve a scoped registration
-     * ID owned by a sibling OAuth2 filter without throwing under Spring Security 7.
-     *
-     * <p>When no shared registry has been wired (legacy / minimal test setups), the method falls back to the previous
-     * private-repository behavior so a single-filter deployment still works.
-     */
-    private ClientRegistrationRepository createClientRegistrationRepository() {
-        String lFilterName = configuration.getName();
-        List<ClientRegistration> lRegistrations = new ArrayList<>();
-        if (configuration.isGoogleEnabled()) {
-            lRegistrations.add(createGoogleClientRegistration());
-            eventPublisher.publishEvent(
-                    enableButtonEvent(this, REG_ID_GOOGLE, scopedRegId(lFilterName, REG_ID_GOOGLE)));
-        } else {
-            eventPublisher.publishEvent(
-                    disableButtonEvent(this, REG_ID_GOOGLE, scopedRegId(lFilterName, REG_ID_GOOGLE)));
-        }
-        if (configuration.isGitHubEnabled()) {
-            lRegistrations.add(createGitHubClientRegistration());
-            eventPublisher.publishEvent(
-                    enableButtonEvent(this, REG_ID_GIT_HUB, scopedRegId(lFilterName, REG_ID_GIT_HUB)));
-        } else {
-            eventPublisher.publishEvent(
-                    disableButtonEvent(this, REG_ID_GIT_HUB, scopedRegId(lFilterName, REG_ID_GIT_HUB)));
-        }
-        if (configuration.isMsEnabled()) {
-            lRegistrations.add(createMicrosoftClientRegistration());
-            eventPublisher.publishEvent(
-                    enableButtonEvent(this, REG_ID_MICROSOFT, scopedRegId(lFilterName, REG_ID_MICROSOFT)));
-        } else {
-            eventPublisher.publishEvent(
-                    disableButtonEvent(this, REG_ID_MICROSOFT, scopedRegId(lFilterName, REG_ID_MICROSOFT)));
-        }
-        if (configuration.isOidcEnabled()) {
-            lRegistrations.add(createCustomProviderRegistration());
-            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_OIDC, scopedRegId(lFilterName, REG_ID_OIDC)));
-        } else {
-            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_OIDC, scopedRegId(lFilterName, REG_ID_OIDC)));
-        }
-
-        if (clientRegistrationRegistry != null) {
-            // Atomically replace this filter's contribution to the shared registry and return the registry itself.
-            // Every OAuth2 filter's HttpSecurity is wired to the same repository instance, which is what lets each
-            // filter's Spring redirect-filter resolve any other filter's scoped registration ID.
-            clientRegistrationRegistry.replaceFilterRegistrations(lFilterName, lRegistrations);
-            return clientRegistrationRegistry;
-        }
-        // Fallback: no shared registry wired (e.g. very minimal tests). Falls back to private-per-filter semantics —
-        // multi-filter login URL routing will not work in this mode, but single-filter deployments still do.
-        return new InMemoryClientRegistrationRepository(lRegistrations);
-    }
-
-    private OAuth2AuthorizedClientService createAuthorizedClientService(
-            ClientRegistrationRepository clientRegistrationRepository) {
-        return new InMemoryOAuth2AuthorizedClientService(getClientRegistrationRepository());
-    }
-
-    private OAuth2AuthorizedClientRepository createAuthorizedClientRepository(
-            OAuth2AuthorizedClientService authorizedClientService) {
-        return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
-    }
-
-    private ClientRegistration createGoogleClientRegistration() {
-        /*
-         * Well known-endpoint:
-         * - https://accounts.google.com/.well-known/openid-configuration
-         * Documentation:
-         * - https://developers.google.com/identity/openid-connect/openid-connect
-         * Logout@Google:
-         * - seems currently not supported
-         * - https://stackoverflow.com/questions/4202161/google-account-logout-and-redirect
-         */
-
-        ClientRegistration lReg = CommonOAuth2Provider.GOOGLE
-                // registrationId is used in paths (login and authorization)
-                .getBuilder(scopedRegId(configuration.getName(), REG_ID_GOOGLE))
-                .clientId(configuration.getGoogleClientId())
-                .clientSecret(configuration.getGoogleClientSecret())
-                .userNameAttributeName(configuration.getGoogleUserNameAttribute())
-                .redirectUri(configuration.getGoogleRedirectUri())
-                .build();
-        clientRegistrationCustomizer.accept(lReg);
-        return lReg;
-    }
-
-    private ClientRegistration createGitHubClientRegistration() {
-        /*
-         * GitHub does not support OIDC, but OAuth2.
-         *
-         * Well known-endpoint:
-         * - n/a
-         * Documentation:
-         * - https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
-         * Further Information:
-         * - https://stackoverflow.com/questions/71741596/how-do-i-implement-social-login-with-github-accounts
-         * Logout@GitHub:
-         * - seems currently not supported
-         */
-
-        ClientRegistration lReg = CommonOAuth2Provider.GITHUB
-                // registrationId is used in paths (login and authorization)
-                .getBuilder(scopedRegId(configuration.getName(), REG_ID_GIT_HUB))
-                .clientId(configuration.getGitHubClientId())
-                .clientSecret(configuration.getGitHubClientSecret())
-                .userNameAttributeName(configuration.getGitHubUserNameAttribute())
-                .redirectUri(configuration.getGitHubRedirectUri())
-                .build();
-        clientRegistrationCustomizer.accept(lReg);
-        return lReg;
-    }
-
-    private ClientRegistration createMicrosoftClientRegistration() {
-        /*
-         * Well known-endpoint:
-         * - https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
-         */
-
-        String lScopeTxt = configuration.getMsScopes();
-        String[] lScopes = ScopeUtils.valueOf(lScopeTxt);
-        ClientRegistration lReg = ClientRegistration
-                // registrationId is used in paths (login and authorization)
-                .withRegistrationId(scopedRegId(configuration.getName(), REG_ID_MICROSOFT))
-                .clientId(configuration.getMsClientId())
-                .clientSecret(configuration.getMsClientSecret())
-                .userNameAttributeName(configuration.getMsUserNameAttribute())
-                .redirectUri(configuration.getMsRedirectUri())
-                .clientAuthenticationMethod(CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AUTHORIZATION_CODE)
-                .scope(lScopes)
-                .authorizationUri("https://login.microsoftonline.com/common/oauth2/v2.0/authorize")
-                .tokenUri("https://login.microsoftonline.com/common/oauth2/v2.0/token")
-                .userInfoUri("https://graph.microsoft.com/oidc/userinfo")
-                .jwkSetUri("https://login.microsoftonline.com/common/discovery/v2.0/keys")
-                .providerConfigurationMetadata(singletonMap(
-                        "end_session_endpoint", "https://login.microsoftonline.com/common/oauth2/v2.0/logout"))
-                .clientName(REG_ID_MICROSOFT)
-                .build();
-        clientRegistrationCustomizer.accept(lReg);
-        return lReg;
-    }
-
-    private ClientRegistration createCustomProviderRegistration() {
-        String lScopeTxt = configuration.getOidcScopes();
-        String[] lScopes = ScopeUtils.valueOf(lScopeTxt);
-        ClientAuthenticationMethod lAuthMethod =
-                configuration.isOidcAuthenticationMethodPostSecret() ? CLIENT_SECRET_POST : CLIENT_SECRET_BASIC;
-
-        ClientRegistration lReg = ClientRegistration
-                // registrationId is used in paths (login and authorization)
-                .withRegistrationId(scopedRegId(configuration.getName(), REG_ID_OIDC))
-                .clientId(configuration.getOidcClientId())
-                .clientSecret(configuration.getOidcClientSecret())
-                .userNameAttributeName(configuration.getOidcUserNameAttribute())
-                .redirectUri(configuration.getOidcRedirectUri())
-                .clientAuthenticationMethod(lAuthMethod)
-                .authorizationGrantType(AUTHORIZATION_CODE)
-                .scope(lScopes)
-                .authorizationUri(configuration.getOidcAuthorizationUri())
-                .tokenUri(configuration.getOidcTokenUri())
-                .userInfoUri(configuration.getOidcUserInfoUri())
-                .jwkSetUri(configuration.getOidcJwkSetUri())
-                .providerConfigurationMetadata(singletonMap("end_session_endpoint", configuration.getOidcLogoutUri()))
-                .clientName(REG_ID_OIDC)
-                .build();
-        clientRegistrationCustomizer.accept(lReg);
-        return lReg;
-    }
-
     /** @return the logoutSuccessHandler */
     public LogoutSuccessHandler getLogoutSuccessHandler() {
         if (logoutSuccessHandler == null) {
-            OidcClientInitiatedLogoutSuccessHandler lLogoutSuccessHandler =
-                    new OidcClientInitiatedLogoutSuccessHandler(getClientRegistrationRepository());
-            lLogoutSuccessHandler.setPostLogoutRedirectUri(configuration.getPostLogoutRedirectUri());
-
-            // trivial redirect strategy that just sets the LOGOUT_REDIRECT_ATTR attribute on the request
-            // This is handled by the main GS Logout system, which does a redirect.
-            lLogoutSuccessHandler.setRedirectStrategy(new RedirectStrategy() {
-                @Override
-                public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url)
-                        throws IOException {
-                    request.setAttribute(LOGOUT_REDIRECT_ATTR, url);
-                }
-            });
-
-            logoutSuccessHandler = lLogoutSuccessHandler;
+            logoutSuccessHandler = new LogoutHandlerFactory()
+                    .create(getClientRegistrationRepository(), configuration.getPostLogoutRedirectUri());
         }
         return logoutSuccessHandler;
     }
@@ -521,7 +248,8 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     /** @return the clientRegistrationRepository */
     public ClientRegistrationRepository getClientRegistrationRepository() {
         if (clientRegistrationRepository == null) {
-            clientRegistrationRepository = createClientRegistrationRepository();
+            clientRegistrationRepository = new ClientRegistrationFactory(configuration, clientRegistrationCustomizer)
+                    .build(eventPublisher, clientRegistrationRegistry, this);
         }
         return clientRegistrationRepository;
     }
@@ -534,7 +262,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     /** @return the authorizedClientService */
     public OAuth2AuthorizedClientService getAuthorizedClientService() {
         if (authorizedClientService == null) {
-            authorizedClientService = createAuthorizedClientService(getClientRegistrationRepository());
+            authorizedClientService = new InMemoryOAuth2AuthorizedClientService(getClientRegistrationRepository());
         }
         return authorizedClientService;
     }
@@ -547,7 +275,8 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     /** @return the authorizedClientRepository */
     public OAuth2AuthorizedClientRepository getAuthorizedClientRepository() {
         if (authorizedClientRepository == null) {
-            authorizedClientRepository = createAuthorizedClientRepository(getAuthorizedClientService());
+            authorizedClientRepository =
+                    new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(getAuthorizedClientService());
         }
         return authorizedClientRepository;
     }
@@ -572,99 +301,6 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     public void setAuthorizationRequestResolver(
             DefaultOAuth2AuthorizationRequestResolver pAuthorizationRequestResolver) {
         authorizationRequestResolver = pAuthorizationRequestResolver;
-    }
-
-    /**
-     * Creates a JwtDecoder for resource-server mode using the same provider configuration already stored in this
-     * filter.
-     *
-     * <p>To keep configuration simple (no additional auth filter config), this method only enables resource-server
-     * support when exactly one provider is enabled. GitHub is excluded since it is OAuth2-only and does not expose
-     * OIDC/JWKS metadata.
-     */
-    private JwtDecoder createResourceServerJwtDecoderIfApplicable() {
-        if (configuration != null && !configuration.isEnableResourceServerMode()) {
-            return null;
-        }
-
-        if (configuration == null) {
-            return null;
-        }
-
-        if (configuration.getActiveProviderCount() != 1) {
-            return null;
-        }
-
-        // Resolve the (single) enabled provider's JWKS endpoint
-        String jwkSetUri = null;
-        if (configuration.isGoogleEnabled()) {
-            ClientRegistration reg = getClientRegistrationRepository()
-                    .findByRegistrationId(scopedRegId(configuration.getName(), REG_ID_GOOGLE));
-            jwkSetUri = reg == null ? null : reg.getProviderDetails().getJwkSetUri();
-        } else if (configuration.isMsEnabled()) {
-            ClientRegistration reg = getClientRegistrationRepository()
-                    .findByRegistrationId(scopedRegId(configuration.getName(), REG_ID_MICROSOFT));
-            jwkSetUri = reg == null ? null : reg.getProviderDetails().getJwkSetUri();
-        } else if (configuration.isOidcEnabled()) {
-            jwkSetUri = configuration.getOidcJwkSetUri();
-        } else {
-            // GitHub-only (or unknown) provider: no JWKS available
-            return null;
-        }
-
-        if (!StringUtils.isNotBlank(jwkSetUri)) {
-            return null;
-        }
-
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
-        OAuth2TokenValidator<Jwt> validator = JwtValidators.createDefault();
-        if (configuration.isValidateTokenAudience()) {
-            OAuth2TokenValidator<Jwt> aud = new GeoServerJwtAudienceValidator(
-                    configuration.getValidateTokenAudienceClaimName(),
-                    configuration.getValidateTokenAudienceClaimValue());
-            validator = new DelegatingOAuth2TokenValidator<>(validator, aud);
-        }
-        decoder.setJwtValidator(validator);
-        return decoder;
-    }
-
-    /**
-     * Creates an {@link OpaqueTokenIntrospector} for resource-server mode (opaque tokens) using the same provider
-     * configuration already stored in this filter.
-     *
-     * <p>To keep configuration simple (no additional auth filter config), this method only enables opaque-token support
-     * when exactly one provider is enabled and an introspection endpoint URL is configured.
-     */
-    private OpaqueTokenIntrospector createResourceServerOpaqueTokenIntrospectorIfApplicable() {
-        if (configuration != null && !configuration.isEnableResourceServerMode()) {
-            return null;
-        }
-
-        if (configuration == null) {
-            return null;
-        }
-
-        if (configuration.getActiveProviderCount() != 1) {
-            return null;
-        }
-
-        // For now we only support opaque introspection for the custom OIDC provider.
-        if (!configuration.isOidcEnabled()) {
-            return null;
-        }
-
-        String introspectionUrl = configuration.getOidcIntrospectionUrl();
-        if (!StringUtils.isNotBlank(introspectionUrl)) {
-            return null;
-        }
-
-        TokenIntrospector delegate = new TokenIntrospector(
-                introspectionUrl,
-                configuration.getOidcClientId(),
-                configuration.getOidcClientSecret(),
-                configuration.isOidcAuthenticationMethodPostSecret());
-
-        return new GeoServerOAuth2OpaqueTokenIntrospector(delegate, securityManager, configuration);
     }
 
     /** @return the redirectToProviderFilter */
@@ -738,13 +374,13 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     }
 
     /**
-     * Inject the application-wide {@link GeoServerOAuth2ClientRegistrationRegistry}. When set, the builder publishes
-     * this filter's registrations into the shared registry and returns it from
-     * {@link #createClientRegistrationRepository()} so that Spring's redirect / login filters in every OAuth2 filter's
-     * sub-chain can resolve scoped registration IDs owned by sibling filters. Required for multi-filter deployments;
-     * when {@code null}, the builder falls back to the legacy private per-filter repository.
+     * Inject the application-wide {@link OAuth2ClientRegistrationRegistry}. When set, the builder publishes this
+     * filter's registrations into the shared registry and returns it from {@link #getClientRegistrationRepository()} so
+     * that Spring's redirect / login filters in every OAuth2 filter's sub-chain can resolve scoped registration IDs
+     * owned by sibling filters. Required for multi-filter deployments; when {@code null}, the builder falls back to the
+     * legacy private per-filter repository.
      */
-    public void setClientRegistrationRegistry(GeoServerOAuth2ClientRegistrationRegistry pRegistry) {
+    public void setClientRegistrationRegistry(OAuth2ClientRegistrationRegistry pRegistry) {
         clientRegistrationRegistry = pRegistry;
     }
 
@@ -766,4 +402,55 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             clientRegistrationCustomizer = pClientRegistrationCustomizer;
         }
     }
+
+    /**
+     * Adapter exposing this builder as a {@link HttpSecurityConfigurer.BuilderContext} — lets the configurer pull all
+     * lazily-initialized inputs without leaking the builder's public surface to it.
+     */
+    private final HttpSecurityConfigurer.BuilderContext builderContext = new HttpSecurityConfigurer.BuilderContext() {
+        @Override
+        public ClientRegistrationRepository clientRegistrationRepository() {
+            return getClientRegistrationRepository();
+        }
+
+        @Override
+        public OAuth2AuthorizedClientRepository authorizedClientRepository() {
+            return getAuthorizedClientRepository();
+        }
+
+        @Override
+        public OAuth2AuthorizedClientService authorizedClientService() {
+            return getAuthorizedClientService();
+        }
+
+        @Override
+        public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
+            return getOauth2UserService();
+        }
+
+        @Override
+        public OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
+            return getOidcUserService();
+        }
+
+        @Override
+        public DefaultOAuth2AuthorizationRequestResolver authorizationRequestResolver() {
+            return getAuthorizationRequestResolver();
+        }
+
+        @Override
+        public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
+            return getAccessTokenResponseClient();
+        }
+
+        @Override
+        public Filter redirectToProviderFilter() {
+            return getRedirectToProviderFilter();
+        }
+
+        @Override
+        public HttpSecurityCustomizer httpSecurityCustomizer() {
+            return httpSecurityCustomizer;
+        }
+    };
 }

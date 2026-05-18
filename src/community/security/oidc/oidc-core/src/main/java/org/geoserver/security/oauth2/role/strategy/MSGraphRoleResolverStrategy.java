@@ -6,8 +6,8 @@ package org.geoserver.security.oauth2.role.strategy;
 
 import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.joining;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.isRegIdOfType;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_MICROSOFT;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.isRegIdOfType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.role.GeoServerOAuth2RoleResolver.OAuth2ResolverParam;
 import org.geoserver.security.oauth2.role.provider.msgraph.MSGraphRolesResolver;
 import org.geotools.util.logging.Logging;

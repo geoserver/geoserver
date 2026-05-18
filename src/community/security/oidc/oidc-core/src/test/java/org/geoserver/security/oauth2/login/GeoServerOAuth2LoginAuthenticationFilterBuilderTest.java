@@ -6,10 +6,10 @@ package org.geoserver.security.oauth2.login;
 
 import static java.util.Collections.singleton;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_GIT_HUB;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_GOOGLE;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_OIDC;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_GIT_HUB;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_GOOGLE;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_MICROSOFT;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_OIDC;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.login.builder.HttpSecurityConfigurer;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;
 import org.geoserver.security.oauth2.spring.GeoServerOidcIdTokenDecoderFactory;
 import org.geoserver.security.oauth2.token.GeoServerOAuth2OpaqueTokenIntrospector;
@@ -442,8 +443,8 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         ClientRegistrationRepository lClientRepo = sut.getClientRegistrationRepository();
         assertNotNull(lClientRepo);
 
-        String lScopedGoogle = GeoServerOAuth2ClientRegistrationId.scopedRegId("my-oidc-filter", REG_ID_GOOGLE);
-        String lScopedOidc = GeoServerOAuth2ClientRegistrationId.scopedRegId("my-oidc-filter", REG_ID_OIDC);
+        String lScopedGoogle = OAuth2ClientRegistrationId.scopedRegId("my-oidc-filter", REG_ID_GOOGLE);
+        String lScopedOidc = OAuth2ClientRegistrationId.scopedRegId("my-oidc-filter", REG_ID_OIDC);
 
         assertNotNull("Scoped Google registration expected", lClientRepo.findByRegistrationId(lScopedGoogle));
         assertNotNull("Scoped OIDC registration expected", lClientRepo.findByRegistrationId(lScopedOidc));
@@ -495,9 +496,15 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
 
     private static OpaqueTokenIntrospector invokeOpaqueIntrospectorFactory(
             GeoServerOAuth2LoginAuthenticationFilterBuilder builder) throws Exception {
-        Method m = GeoServerOAuth2LoginAuthenticationFilterBuilder.class.getDeclaredMethod(
-                "createResourceServerOpaqueTokenIntrospectorIfApplicable");
+        // Opaque-introspector construction was moved to HttpSecurityConfigurer as part of refactor #2.
+        // The helper only consults the filter config + security manager, so we can construct a minimal
+        // configurer (other constructor args left null) and invoke its package-private factory method.
+        GeoServerOAuth2LoginFilterConfig config =
+                (GeoServerOAuth2LoginFilterConfig) readField(builder, "configuration", true);
+        GeoServerSecurityManager sm = (GeoServerSecurityManager) readField(builder, "securityManager", true);
+        HttpSecurityConfigurer cfg = new HttpSecurityConfigurer(null, config, sm, null, null, null);
+        Method m = HttpSecurityConfigurer.class.getDeclaredMethod("buildOpaqueIntrospectorIfApplicable");
         m.setAccessible(true);
-        return (OpaqueTokenIntrospector) m.invoke(builder);
+        return (OpaqueTokenIntrospector) m.invoke(cfg);
     }
 }

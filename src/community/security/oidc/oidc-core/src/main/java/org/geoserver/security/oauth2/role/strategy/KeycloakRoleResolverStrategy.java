@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.role.GeoServerOAuth2RoleResolver.OAuth2ResolverParam;
 import org.geoserver.security.oauth2.role.provider.keycloak.KeycloakRolesResolver;
 import org.geotools.util.logging.Logging;

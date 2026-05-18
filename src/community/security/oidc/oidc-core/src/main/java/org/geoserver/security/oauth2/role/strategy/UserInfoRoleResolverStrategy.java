@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.role.GeoServerOAuth2RoleResolver.OAuth2ResolverParam;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.GrantedAuthority;

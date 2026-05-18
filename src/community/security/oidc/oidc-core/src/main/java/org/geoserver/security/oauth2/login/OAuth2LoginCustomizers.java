@@ -13,7 +13,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  *
  * @author awaterme
  */
-public class GeoServerOAuth2LoginCustomizers {
+public class OAuth2LoginCustomizers {
 
     public interface HttpSecurityCustomizer extends Consumer<HttpSecurity> {}
 

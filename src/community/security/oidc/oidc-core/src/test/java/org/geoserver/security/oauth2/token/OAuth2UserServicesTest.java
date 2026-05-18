@@ -24,10 +24,10 @@ import org.geoserver.security.filter.GeoServerRoleResolvers.DefaultResolverConte
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverParam;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.role.GeoServerOAuth2RoleResolver;
-import org.geoserver.security.oauth2.token.GeoServerOAuth2UserServices.GeoServerOAuth2UserService;
-import org.geoserver.security.oauth2.token.GeoServerOAuth2UserServices.GeoServerOidcUserService;
+import org.geoserver.security.oauth2.token.OAuth2UserServices.GeoServerOAuth2UserService;
+import org.geoserver.security.oauth2.token.OAuth2UserServices.GeoServerOidcUserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -46,8 +46,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-/** Tests for {@link GeoServerOAuth2UserServices} */
-public class GeoServerOAuth2UserServicesTest {
+/** Tests for {@link OAuth2UserServices} */
+public class OAuth2UserServicesTest {
 
     private static final String USER_NAME_ATTR = "principal";
 

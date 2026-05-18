@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.role.GeoServerOAuth2RoleResolver.OAuth2ResolverParam;
 import org.geoserver.security.oauth2.role.provider.keycloak.KeycloakRolesResolver;
 import org.junit.Test;

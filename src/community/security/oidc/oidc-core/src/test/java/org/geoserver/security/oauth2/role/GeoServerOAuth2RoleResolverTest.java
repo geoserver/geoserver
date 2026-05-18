@@ -8,7 +8,7 @@ package org.geoserver.security.oauth2.role;
 import static java.time.Instant.now;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_MICROSOFT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -34,7 +34,7 @@ import org.geoserver.security.filter.GeoServerRoleResolvers.DefaultResolverConte
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverParam;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.role.GeoServerOAuth2RoleResolver.OAuth2ResolverParam;
 import org.geoserver.security.oauth2.role.provider.msgraph.MSGraphRolesResolver;
 import org.junit.Before;

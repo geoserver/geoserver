@@ -51,7 +51,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  * over a {@link ConcurrentHashMap}; write paths ({@code replace}, {@code remove}) are {@code synchronized} so that the
  * filter-keyed grouping and the flat lookup map stay consistent under concurrent filter rebuilds.
  */
-public final class GeoServerOAuth2ClientRegistrationRegistry
+public final class OAuth2ClientRegistrationRegistry
         implements ClientRegistrationRepository, Iterable<ClientRegistration> {
 
     /** Per-filter contribution: filter name → its set of registrations. */

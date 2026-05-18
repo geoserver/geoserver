@@ -36,7 +36,7 @@ public class GeoServerOAuth2ResourceServerFilterConfigValidatorTest {
         Object arg1 = "arg1";
         Object arg2 = "arg2";
 
-        GeoServerOAuth2FilterConfigException exception = validator.createFilterException(errorId, arg1, arg2);
+        OAuth2FilterConfigException exception = validator.createFilterException(errorId, arg1, arg2);
 
         assertNotNull(exception);
         assertEquals(errorId, exception.getId());
@@ -49,7 +49,7 @@ public class GeoServerOAuth2ResourceServerFilterConfigValidatorTest {
     public void testCreateFilterExceptionNoArgs() {
         String errorId = "TEST_ERROR_ID_NO_ARGS";
 
-        GeoServerOAuth2FilterConfigException exception = validator.createFilterException(errorId);
+        OAuth2FilterConfigException exception = validator.createFilterException(errorId);
 
         assertNotNull(exception);
         assertEquals(errorId, exception.getId());
@@ -58,8 +58,8 @@ public class GeoServerOAuth2ResourceServerFilterConfigValidatorTest {
 
     @Test
     public void testCreateFilterExceptionReturnsCorrectType() {
-        GeoServerOAuth2FilterConfigException exception = validator.createFilterException("ERROR");
+        OAuth2FilterConfigException exception = validator.createFilterException("ERROR");
 
-        assertTrue(exception instanceof GeoServerOAuth2FilterConfigException);
+        assertTrue(exception instanceof OAuth2FilterConfigException);
     }
 }

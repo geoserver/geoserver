@@ -6,21 +6,20 @@
  */
 package org.geoserver.security.oauth2.config;
 
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2FilterConfigException.MSGRAPH_COMBINATION_INVALID;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_USER_NAME_REQUIRED;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2FilterConfigException.OAUTH2_USERAUTHURI_NOT_HTTPS;
+import static org.geoserver.security.oauth2.config.OAuth2FilterConfigException.MSGRAPH_COMBINATION_INVALID;
+import static org.geoserver.security.oauth2.config.OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED;
+import static org.geoserver.security.oauth2.config.OAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED;
+import static org.geoserver.security.oauth2.config.OAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED;
+import static org.geoserver.security.oauth2.config.OAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED;
+import static org.geoserver.security.oauth2.config.OAuth2FilterConfigException.OAUTH2_CLIENT_USER_NAME_REQUIRED;
+import static org.geoserver.security.oauth2.config.OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED;
+import static org.geoserver.security.oauth2.config.OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED;
+import static org.geoserver.security.oauth2.config.OAuth2FilterConfigException.OAUTH2_USERAUTHURI_NOT_HTTPS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.test.GeoServerMockTestSupport;
@@ -151,7 +150,7 @@ public class GeoServerOAuth2LoginFilterConfigValidatorTest extends GeoServerMock
             lValidate.call();
         } catch (FilterConfigException ex) {
             // then: actual validation ok, next validation fails
-            assertExceptionCodeWithArgCount(ex, GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED, 1);
+            assertExceptionCodeWithArgCount(ex, OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED, 1);
         }
         config.setOidcClientId("myClientId");
 
@@ -165,7 +164,7 @@ public class GeoServerOAuth2LoginFilterConfigValidatorTest extends GeoServerMock
         config.setOidcLogoutUri("blbla");
         try {
             lValidate.call();
-        } catch (GeoServerOAuth2FilterConfigException ex) {
+        } catch (OAuth2FilterConfigException ex) {
             assertExceptionCodeWithArgCount(ex, OAUTH2_URL_IN_LOGOUT_URI_MALFORMED, 0);
         }
         config.setOidcLogoutUri("http://localhost/gesoerver");
@@ -177,24 +176,23 @@ public class GeoServerOAuth2LoginFilterConfigValidatorTest extends GeoServerMock
         config.setOidcScopes("email,profile");
         try {
             lValidate.call();
-        } catch (GeoServerOAuth2FilterConfigException ex) {
-            assertExceptionCodeWithArgCount(
-                    ex, GeoServerOAuth2FilterConfigException.OAUTH2_USER_INFO_URI_REQUIRED_NO_OIDC, 0);
+        } catch (OAuth2FilterConfigException ex) {
+            assertExceptionCodeWithArgCount(ex, OAuth2FilterConfigException.OAUTH2_USER_INFO_URI_REQUIRED_NO_OIDC, 0);
         }
 
         config.setOidcScopes("openid,email,profile");
 
         try {
             lValidate.call();
-        } catch (GeoServerOAuth2FilterConfigException ex) {
-            assertExceptionCodeWithArgCount(ex, GeoServerOAuth2FilterConfigException.OAUTH2_JWK_SET_URI_REQUIRED, 0);
+        } catch (OAuth2FilterConfigException ex) {
+            assertExceptionCodeWithArgCount(ex, OAuth2FilterConfigException.OAUTH2_JWK_SET_URI_REQUIRED, 0);
         }
 
         config.setOidcJwkSetUri("lalala");
         try {
             lValidate.call();
-        } catch (GeoServerOAuth2FilterConfigException ex) {
-            assertExceptionCodeWithArgCount(ex, GeoServerOAuth2FilterConfigException.OAUTH2_WKTS_URL_MALFORMED, 0);
+        } catch (OAuth2FilterConfigException ex) {
+            assertExceptionCodeWithArgCount(ex, OAuth2FilterConfigException.OAUTH2_WKTS_URL_MALFORMED, 0);
         }
 
         config.setOidcJwkSetUri("https://jwkset");
@@ -262,8 +260,7 @@ public class GeoServerOAuth2LoginFilterConfigValidatorTest extends GeoServerMock
             validator.validateOAuth2FilterConfig(config);
             fail("Expected FilterConfigException");
         } catch (FilterConfigException ex) {
-            assertExceptionCodeWithArgCount(
-                    ex, GeoServerOAuth2FilterConfigException.ROLE_SOURCE_ID_TOKEN_INVALID_FOR_GITHUB, 0);
+            assertExceptionCodeWithArgCount(ex, OAuth2FilterConfigException.ROLE_SOURCE_ID_TOKEN_INVALID_FOR_GITHUB, 0);
         }
     }
 
@@ -284,8 +281,7 @@ public class GeoServerOAuth2LoginFilterConfigValidatorTest extends GeoServerMock
             validator.validateOAuth2FilterConfig(config);
             fail("Expected FilterConfigException");
         } catch (FilterConfigException ex) {
-            assertExceptionCodeWithArgCount(
-                    ex, GeoServerOAuth2FilterConfigException.ROLE_SOURCE_USER_INFO_URI_REQUIRED, 0);
+            assertExceptionCodeWithArgCount(ex, OAuth2FilterConfigException.ROLE_SOURCE_USER_INFO_URI_REQUIRED, 0);
         }
 
         config.setOidcUserInfoUri("https://userinfo");

@@ -27,7 +27,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId;
+import org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId;
 import org.geoserver.security.oauth2.role.OAuth2RoleConverter;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.GrantedAuthority;
@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  * them before returning the {@link OAuth2AuthenticatedPrincipal}.
  */
 public final class GeoServerOAuth2OpaqueTokenIntrospector
-        implements OpaqueTokenIntrospector, GeoServerOAuth2ClientRegistrationId {
+        implements OpaqueTokenIntrospector, OAuth2ClientRegistrationId {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerOAuth2OpaqueTokenIntrospector.class);
 

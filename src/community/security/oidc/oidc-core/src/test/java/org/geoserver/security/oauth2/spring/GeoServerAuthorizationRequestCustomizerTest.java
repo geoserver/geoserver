@@ -4,8 +4,8 @@
  */
 package org.geoserver.security.oauth2.spring;
 
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_GOOGLE;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_OIDC;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_GOOGLE;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_OIDC;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId;
+import org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -106,13 +106,13 @@ public class GeoServerAuthorizationRequestCustomizerTest {
     /** verifiesPKCE parameters are present for GitHub */
     @Test
     public void testPkceWithGitHub() {
-        testPkceForRegistrationId(GeoServerOAuth2ClientRegistrationId.REG_ID_GIT_HUB);
+        testPkceForRegistrationId(OAuth2ClientRegistrationId.REG_ID_GIT_HUB);
     }
 
     /** verifiesPKCE parameters are present for Microsoft */
     @Test
     public void testPkceWithMs() {
-        testPkceForRegistrationId(GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT);
+        testPkceForRegistrationId(OAuth2ClientRegistrationId.REG_ID_MICROSOFT);
     }
 
     private void testPkceForRegistrationId(String pRegistrationId) {

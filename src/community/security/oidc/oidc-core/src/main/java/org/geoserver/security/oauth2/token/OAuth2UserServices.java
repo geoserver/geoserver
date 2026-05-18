@@ -33,11 +33,11 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
  *
  * @author awaterme
  */
-public class GeoServerOAuth2UserServices {
+public class OAuth2UserServices {
 
-    private static final Logger LOGGER = Logging.getLogger(GeoServerOAuth2UserServices.class);
+    private static final Logger LOGGER = Logging.getLogger(OAuth2UserServices.class);
 
-    static class GeoServerOAuth2UserService extends GeoServerOAuth2UserServices
+    static class GeoServerOAuth2UserService extends OAuth2UserServices
             implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
         private Supplier<OAuth2UserService<OAuth2UserRequest, OAuth2User>> delegateSupplier =
@@ -65,7 +65,7 @@ public class GeoServerOAuth2UserServices {
         }
     }
 
-    static class GeoServerOidcUserService extends GeoServerOAuth2UserServices
+    static class GeoServerOidcUserService extends OAuth2UserServices
             implements OAuth2UserService<OidcUserRequest, OidcUser> {
 
         private Supplier<OAuth2UserService<OidcUserRequest, OidcUser>> delegateSupplier = () -> new OidcUserService();
@@ -113,7 +113,7 @@ public class GeoServerOAuth2UserServices {
     protected GeoServerOAuth2LoginFilterConfig config;
     protected Supplier<GeoServerOAuth2RoleResolver> resolverSupplier = () -> new GeoServerOAuth2RoleResolver(config);
 
-    public GeoServerOAuth2UserServices(
+    public OAuth2UserServices(
             ResolverContext resolverContext,
             Supplier<HttpServletRequest> requestSupplier,
             GeoServerOAuth2LoginFilterConfig config) {

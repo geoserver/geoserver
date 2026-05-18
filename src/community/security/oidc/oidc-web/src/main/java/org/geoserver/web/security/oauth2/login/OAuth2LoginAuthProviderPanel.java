@@ -4,11 +4,11 @@
  */
 package org.geoserver.web.security.oauth2.login;
 
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.AccessToken;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.IdToken;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.KeycloakAPI;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.MSGraphAPI;
-import static org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.UserInfo;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.AccessToken;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.IdToken;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.KeycloakAPI;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.MSGraphAPI;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.UserInfo;
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import com.google.common.io.CharStreams;
@@ -46,7 +46,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.login.OAuth2Provider;
 import org.geoserver.security.web.auth.PreAuthenticatedUserNameFilterPanel;
 import org.geoserver.security.web.auth.RoleSourceChoiceRenderer;

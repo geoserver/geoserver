@@ -20,7 +20,7 @@ public class GeoServerOAuth2ResourceServerFilterConfigValidator extends FilterCo
     }
 
     @Override
-    protected GeoServerOAuth2FilterConfigException createFilterException(String errorid, Object... args) {
-        return new GeoServerOAuth2FilterConfigException(errorid, args);
+    protected OAuth2FilterConfigException createFilterException(String errorid, Object... args) {
+        return new OAuth2FilterConfigException(errorid, args);
     }
 }

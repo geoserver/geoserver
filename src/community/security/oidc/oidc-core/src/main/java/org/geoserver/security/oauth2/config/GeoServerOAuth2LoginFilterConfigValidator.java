@@ -11,7 +11,6 @@ import java.util.List;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
 import org.geoserver.security.oauth2.login.ScopeUtils;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.validation.FilterConfigValidator;
@@ -86,39 +85,39 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
     }
 
     private void validateTokenAudience(GeoServerOAuth2LoginFilterConfig filterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+            throws OAuth2FilterConfigException {
         if (!filterConfig.isValidateTokenAudience()) {
             return;
         }
         if (!StringUtils.hasLength(filterConfig.getValidateTokenAudienceClaimName())) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED);
         }
         if (!StringUtils.hasLength(filterConfig.getValidateTokenAudienceClaimValue())) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED);
         }
     }
 
     private void validateRoleSourceUserInfo(GeoServerOAuth2LoginFilterConfig filterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+            throws OAuth2FilterConfigException {
         if (OpenIdRoleSource.UserInfo.equals(filterConfig.getRoleSource())
                 && !StringUtils.hasLength(filterConfig.getOidcUserInfoUri())) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.ROLE_SOURCE_USER_INFO_URI_REQUIRED);
+            throw createFilterException(OAuth2FilterConfigException.ROLE_SOURCE_USER_INFO_URI_REQUIRED);
         }
     }
 
     private void validateRoleSourceIdToken(GeoServerOAuth2LoginFilterConfig filterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+            throws OAuth2FilterConfigException {
         if (OpenIdRoleSource.IdToken.equals(filterConfig.getRoleSource()) && filterConfig.isGitHubEnabled()) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.ROLE_SOURCE_ID_TOKEN_INVALID_FOR_GITHUB);
+            throw createFilterException(OAuth2FilterConfigException.ROLE_SOURCE_ID_TOKEN_INVALID_FOR_GITHUB);
         }
     }
 
     /**
      * @param pFilterConfig
-     * @throws GeoServerOAuth2FilterConfigException
+     * @throws OAuth2FilterConfigException
      */
     private void validateRoleSourceMsGraph(GeoServerOAuth2LoginFilterConfig pFilterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+            throws OAuth2FilterConfigException {
         RoleSource lRoleSource = pFilterConfig.getRoleSource();
         if (!OpenIdRoleSource.MSGraphAPI.equals(lRoleSource)) {
             return;
@@ -128,121 +127,116 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
         boolean lOnlyMs = pFilterConfig.isMsEnabled() && lCount == 1;
 
         if (!(lNoEnabled || lOnlyMs)) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.MSGRAPH_COMBINATION_INVALID);
+            throw createFilterException(OAuth2FilterConfigException.MSGRAPH_COMBINATION_INVALID);
         }
     }
 
     /**
      * @param pFilterConfig
-     * @throws GeoServerOAuth2FilterConfigException
+     * @throws OAuth2FilterConfigException
      */
     private void validateAuthenticationEntryPoint(GeoServerOAuth2LoginFilterConfig pFilterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+            throws OAuth2FilterConfigException {
         if (pFilterConfig.getEnableRedirectAuthenticationEntryPoint()) {
             int lActiveCount = pFilterConfig.getActiveProviderCount();
             if (lActiveCount != 1) {
-                throw createFilterException(GeoServerOAuth2FilterConfigException.AEP_DENIED_WRONG_PROVIDER_COUNT);
+                throw createFilterException(OAuth2FilterConfigException.AEP_DENIED_WRONG_PROVIDER_COUNT);
             }
         }
     }
 
-    private void validateOidcJwkSet(GeoServerOAuth2LoginFilterConfig filterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+    private void validateOidcJwkSet(GeoServerOAuth2LoginFilterConfig filterConfig) throws OAuth2FilterConfigException {
         // currently required
         // when UI option to choose algorithm is introduced, this becomes conditionally optional
         if (!StringUtils.hasLength(filterConfig.getOidcJwkSetUri())) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_JWK_SET_URI_REQUIRED);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_JWK_SET_URI_REQUIRED);
         }
 
         try {
             new URL(filterConfig.getOidcJwkSetUri());
         } catch (MalformedURLException ex) {
-            throw new GeoServerOAuth2FilterConfigException(
-                    GeoServerOAuth2FilterConfigException.OAUTH2_WKTS_URL_MALFORMED);
+            throw new OAuth2FilterConfigException(OAuth2FilterConfigException.OAUTH2_WKTS_URL_MALFORMED);
         }
     }
 
-    private void validateScopes(String pScopes, String pProviderName) throws GeoServerOAuth2FilterConfigException {
+    private void validateScopes(String pScopes, String pProviderName) throws OAuth2FilterConfigException {
         if (!StringUtils.hasLength(pScopes)) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_SCOPE_REQUIRED, pProviderName);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_SCOPE_REQUIRED, pProviderName);
         }
         String[] lScopes = ScopeUtils.valueOf(pScopes);
         boolean lMix = Arrays.stream(lScopes).anyMatch(s -> s.contains(" "));
         if (lMix) {
-            throw createFilterException(
-                    GeoServerOAuth2FilterConfigException.OAUTH2_SCOPE_DELIMITER_MIXED, pProviderName);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_SCOPE_DELIMITER_MIXED, pProviderName);
         }
     }
 
-    private void validateClientId(String pClientId, String pProviderName) throws GeoServerOAuth2FilterConfigException {
+    private void validateClientId(String pClientId, String pProviderName) throws OAuth2FilterConfigException {
         if (!StringUtils.hasLength(pClientId)) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED, pProviderName);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED, pProviderName);
         }
     }
 
-    private void validateUserNameAttribute(String pUserName, String pProviderName)
-            throws GeoServerOAuth2FilterConfigException {
+    private void validateUserNameAttribute(String pUserName, String pProviderName) throws OAuth2FilterConfigException {
         if (!StringUtils.hasLength(pUserName)) {
-            throw createFilterException(
-                    GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_USER_NAME_REQUIRED, pProviderName);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_USER_NAME_REQUIRED, pProviderName);
         }
     }
 
     private void validateOidcRedirectUri(GeoServerOAuth2LoginFilterConfig filterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+            throws OAuth2FilterConfigException {
         if (StringUtils.hasLength(filterConfig.getOidcRedirectUri())) {
             try {
                 new URL(filterConfig.getOidcRedirectUri());
             } catch (MalformedURLException ex) {
-                throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_REDIRECT_URI_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_REDIRECT_URI_MALFORMED);
             }
         }
     }
 
     private void validateOidcLogoutUri(GeoServerOAuth2LoginFilterConfig filterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+            throws OAuth2FilterConfigException {
         if (StringUtils.hasLength(filterConfig.getOidcLogoutUri())) {
             try {
                 new URL(filterConfig.getOidcLogoutUri());
             } catch (MalformedURLException ex) {
-                throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED);
             }
         }
     }
 
     private void validateOidcAuthorizationUri(GeoServerOAuth2LoginFilterConfig filterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+            throws OAuth2FilterConfigException {
         if (!StringUtils.hasLength(filterConfig.getOidcAuthorizationUri())) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
         }
         if (StringUtils.hasLength(filterConfig.getOidcAuthorizationUri())) {
             URL userAuthorizationUri = null;
             try {
                 userAuthorizationUri = new URL(filterConfig.getOidcAuthorizationUri());
             } catch (MalformedURLException ex) {
-                throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
             }
             if (filterConfig.getOidcForceAuthorizationUriHttps()
                     && "https".equalsIgnoreCase(userAuthorizationUri.getProtocol()) == false)
-                throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_USERAUTHURI_NOT_HTTPS);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_USERAUTHURI_NOT_HTTPS);
         }
     }
 
     private void validateOidcTokenUri(GeoServerOAuth2LoginFilterConfig filterConfig)
-            throws GeoServerOAuth2FilterConfigException {
+            throws OAuth2FilterConfigException {
         if (!StringUtils.hasLength(filterConfig.getOidcTokenUri())) {
-            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
         }
         if (StringUtils.hasLength(filterConfig.getOidcTokenUri())) {
             URL accessTokenUri = null;
             try {
                 accessTokenUri = new URL(filterConfig.getOidcTokenUri());
             } catch (MalformedURLException ex) {
-                throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
             }
             if (filterConfig.getOidcForceTokenUriHttps()
                     && "https".equalsIgnoreCase(accessTokenUri.getProtocol()) == false)
-                throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
         }
     }
 
@@ -256,15 +250,14 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
 
         if (!lUriPresent) {
             if (!lOidcScopePresent) {
-                throw new GeoServerOAuth2FilterConfigException(
-                        GeoServerOAuth2FilterConfigException.OAUTH2_USER_INFO_URI_REQUIRED_NO_OIDC);
+                throw new OAuth2FilterConfigException(
+                        OAuth2FilterConfigException.OAUTH2_USER_INFO_URI_REQUIRED_NO_OIDC);
             }
         } else {
             try {
                 new URL(filterConfig.getOidcUserInfoUri());
             } catch (MalformedURLException ex) {
-                throw createFilterException(
-                        GeoServerOAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
             }
         }
     }
@@ -280,13 +273,12 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
      */
     private void validateClientSecret(String pClientSecret, String pProviderName) throws FilterConfigException {
         if (!StringUtils.hasLength(pClientSecret)) {
-            throw createFilterException(
-                    GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED, pProviderName);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED, pProviderName);
         }
     }
 
     @Override
-    protected GeoServerOAuth2FilterConfigException createFilterException(String errorid, Object... args) {
-        return new GeoServerOAuth2FilterConfigException(errorid, args);
+    protected OAuth2FilterConfigException createFilterException(String errorid, Object... args) {
+        return new OAuth2FilterConfigException(errorid, args);
     }
 }

@@ -23,6 +23,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
 import org.geoserver.security.oauth2.token.TokenIntrospector;
 import org.junit.BeforeClass;
@@ -525,7 +526,7 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         loginConfig.setOidcScopes("openid profile email phone address");
         loginConfig.setEnableRedirectAuthenticationEntryPoint(false);
         loginConfig.setOidcUserNameAttribute("email");
-        loginConfig.setRoleSource(GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.IdToken);
+        loginConfig.setRoleSource(OpenIdRoleSource.IdToken);
         loginConfig.setTokenRolesClaim("resource_access.gs-client.roles");
         loginConfig.setRoleConverterString("geoserverAdmin=ROLE_ADMINISTRATOR");
         loginConfig.setOnlyExternalListedRoles(true);

@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * machine-to-machine requests carrying {@code Authorization: Bearer <JWT>}.
  */
 public class GeoServerOAuth2JwtAuthenticationConverter
-        implements Converter<Jwt, AbstractAuthenticationToken>, GeoServerOAuth2ClientRegistrationId {
+        implements Converter<Jwt, AbstractAuthenticationToken>, OAuth2ClientRegistrationId {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerOAuth2JwtAuthenticationConverter.class);
 

@@ -7,17 +7,17 @@ package org.geoserver.security.oauth2.config;
 import java.io.Serial;
 import org.geoserver.security.validation.FilterConfigException;
 
-public class GeoServerOAuth2FilterConfigException extends FilterConfigException {
+public class OAuth2FilterConfigException extends FilterConfigException {
 
     /** serialVersionUID */
     @Serial
     private static final long serialVersionUID = -3686715589371356406L;
 
-    public GeoServerOAuth2FilterConfigException(String errorId, Object... args) {
+    public OAuth2FilterConfigException(String errorId, Object... args) {
         super(errorId, args);
     }
 
-    public GeoServerOAuth2FilterConfigException(String errorId, String message, Object... args) {
+    public OAuth2FilterConfigException(String errorId, String message, Object... args) {
         super(errorId, message, args);
     }
 

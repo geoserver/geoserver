@@ -31,7 +31,7 @@ import org.geoserver.security.filter.GeoServerRoleResolvers.RoleResolver;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.role.provider.keycloak.KeycloakRolesResolver;
 import org.geoserver.security.oauth2.role.provider.msgraph.MSGraphRolesResolver;
 import org.geoserver.security.oauth2.role.strategy.AccessTokenRoleResolverStrategy;

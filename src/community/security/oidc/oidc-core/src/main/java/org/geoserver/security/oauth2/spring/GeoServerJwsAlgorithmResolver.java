@@ -4,7 +4,7 @@
  */
 package org.geoserver.security.oauth2.spring;
 
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_OIDC;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_OIDC;
 
 import java.util.function.Function;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;

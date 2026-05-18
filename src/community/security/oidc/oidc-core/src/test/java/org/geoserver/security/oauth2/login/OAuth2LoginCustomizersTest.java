@@ -17,8 +17,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 
-/** Tests for {@link GeoServerOAuth2LoginCustomizers}. */
-public class GeoServerOAuth2LoginCustomizersTest {
+/** Tests for {@link OAuth2LoginCustomizers}. */
+public class OAuth2LoginCustomizersTest {
 
     // ==================== HttpSecurityCustomizer tests ====================
 
@@ -27,14 +27,14 @@ public class GeoServerOAuth2LoginCustomizersTest {
         // Verify the interface extends Consumer
         assertTrue(
                 "HttpSecurityCustomizer should extend Consumer",
-                Consumer.class.isAssignableFrom(GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer.class));
+                Consumer.class.isAssignableFrom(OAuth2LoginCustomizers.HttpSecurityCustomizer.class));
     }
 
     @Test
     public void testHttpSecurityCustomizerCanBeImplementedAsLambda() {
         AtomicBoolean called = new AtomicBoolean(false);
 
-        GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer customizer = http -> {
+        OAuth2LoginCustomizers.HttpSecurityCustomizer customizer = http -> {
             called.set(true);
         };
 
@@ -48,7 +48,7 @@ public class GeoServerOAuth2LoginCustomizersTest {
     public void testHttpSecurityCustomizerReceivesHttpSecurity() {
         AtomicReference<HttpSecurity> received = new AtomicReference<>();
 
-        GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer customizer = received::set;
+        OAuth2LoginCustomizers.HttpSecurityCustomizer customizer = received::set;
 
         HttpSecurity mockHttp = mock(HttpSecurity.class);
         customizer.accept(mockHttp);
@@ -61,7 +61,7 @@ public class GeoServerOAuth2LoginCustomizersTest {
     public void testHttpSecurityCustomizerAsMethodReference() {
         HttpSecurityCapture capture = new HttpSecurityCapture();
 
-        GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer customizer = capture::capture;
+        OAuth2LoginCustomizers.HttpSecurityCustomizer customizer = capture::capture;
 
         HttpSecurity mockHttp = mock(HttpSecurity.class);
         customizer.accept(mockHttp);
@@ -75,14 +75,14 @@ public class GeoServerOAuth2LoginCustomizersTest {
     public void testClientRegistrationCustomizerIsConsumer() {
         assertTrue(
                 "ClientRegistrationCustomizer should extend Consumer",
-                Consumer.class.isAssignableFrom(GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer.class));
+                Consumer.class.isAssignableFrom(OAuth2LoginCustomizers.ClientRegistrationCustomizer.class));
     }
 
     @Test
     public void testClientRegistrationCustomizerCanBeImplementedAsLambda() {
         AtomicBoolean called = new AtomicBoolean(false);
 
-        GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer customizer = registration -> {
+        OAuth2LoginCustomizers.ClientRegistrationCustomizer customizer = registration -> {
             called.set(true);
         };
 
@@ -96,7 +96,7 @@ public class GeoServerOAuth2LoginCustomizersTest {
     public void testClientRegistrationCustomizerReceivesClientRegistration() {
         AtomicReference<ClientRegistration> received = new AtomicReference<>();
 
-        GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer customizer = received::set;
+        OAuth2LoginCustomizers.ClientRegistrationCustomizer customizer = received::set;
 
         ClientRegistration registration = createTestClientRegistration();
         customizer.accept(registration);
@@ -109,7 +109,7 @@ public class GeoServerOAuth2LoginCustomizersTest {
     public void testClientRegistrationCustomizerCanAccessRegistrationProperties() {
         AtomicReference<String> clientIdRef = new AtomicReference<>();
 
-        GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer customizer =
+        OAuth2LoginCustomizers.ClientRegistrationCustomizer customizer =
                 registration -> clientIdRef.set(registration.getClientId());
 
         ClientRegistration registration = createTestClientRegistration();
@@ -124,14 +124,14 @@ public class GeoServerOAuth2LoginCustomizersTest {
     public void testFilterBuilderCustomizerIsConsumer() {
         assertTrue(
                 "FilterBuilderCustomizer should extend Consumer",
-                Consumer.class.isAssignableFrom(GeoServerOAuth2LoginCustomizers.FilterBuilderCustomizer.class));
+                Consumer.class.isAssignableFrom(OAuth2LoginCustomizers.FilterBuilderCustomizer.class));
     }
 
     @Test
     public void testFilterBuilderCustomizerCanBeImplementedAsLambda() {
         AtomicBoolean called = new AtomicBoolean(false);
 
-        GeoServerOAuth2LoginCustomizers.FilterBuilderCustomizer customizer = builder -> {
+        OAuth2LoginCustomizers.FilterBuilderCustomizer customizer = builder -> {
             called.set(true);
         };
 
@@ -146,7 +146,7 @@ public class GeoServerOAuth2LoginCustomizersTest {
     public void testFilterBuilderCustomizerReceivesFilterBuilder() {
         AtomicReference<GeoServerOAuth2LoginAuthenticationFilterBuilder> received = new AtomicReference<>();
 
-        GeoServerOAuth2LoginCustomizers.FilterBuilderCustomizer customizer = received::set;
+        OAuth2LoginCustomizers.FilterBuilderCustomizer customizer = received::set;
 
         GeoServerOAuth2LoginAuthenticationFilterBuilder mockBuilder =
                 mock(GeoServerOAuth2LoginAuthenticationFilterBuilder.class);
@@ -164,11 +164,9 @@ public class GeoServerOAuth2LoginCustomizersTest {
         CallOrderTracker firstCallOrder = new CallOrderTracker();
         CallOrderTracker secondCallOrder = new CallOrderTracker();
 
-        GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer first =
-                http -> firstCallOrder.set(callOrder.incrementAndGet());
+        OAuth2LoginCustomizers.HttpSecurityCustomizer first = http -> firstCallOrder.set(callOrder.incrementAndGet());
 
-        GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer second =
-                http -> secondCallOrder.set(callOrder.incrementAndGet());
+        OAuth2LoginCustomizers.HttpSecurityCustomizer second = http -> secondCallOrder.set(callOrder.incrementAndGet());
 
         // Use andThen from Consumer interface
         Consumer<HttpSecurity> chained = first.andThen(second);
@@ -186,10 +184,10 @@ public class GeoServerOAuth2LoginCustomizersTest {
         CallOrderTracker firstCallOrder = new CallOrderTracker();
         CallOrderTracker secondCallOrder = new CallOrderTracker();
 
-        GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer first =
+        OAuth2LoginCustomizers.ClientRegistrationCustomizer first =
                 reg -> firstCallOrder.set(callOrder.incrementAndGet());
 
-        GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer second =
+        OAuth2LoginCustomizers.ClientRegistrationCustomizer second =
                 reg -> secondCallOrder.set(callOrder.incrementAndGet());
 
         Consumer<ClientRegistration> chained = first.andThen(second);
@@ -207,10 +205,10 @@ public class GeoServerOAuth2LoginCustomizersTest {
         CallOrderTracker firstCallOrder = new CallOrderTracker();
         CallOrderTracker secondCallOrder = new CallOrderTracker();
 
-        GeoServerOAuth2LoginCustomizers.FilterBuilderCustomizer first =
+        OAuth2LoginCustomizers.FilterBuilderCustomizer first =
                 builder -> firstCallOrder.set(callOrder.incrementAndGet());
 
-        GeoServerOAuth2LoginCustomizers.FilterBuilderCustomizer second =
+        OAuth2LoginCustomizers.FilterBuilderCustomizer second =
                 builder -> secondCallOrder.set(callOrder.incrementAndGet());
 
         Consumer<GeoServerOAuth2LoginAuthenticationFilterBuilder> chained = first.andThen(second);

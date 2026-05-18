@@ -20,7 +20,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 
 /**
- * Unit tests for {@link GeoServerOAuth2ClientRegistrationRegistry}.
+ * Unit tests for {@link OAuth2ClientRegistrationRegistry}.
  *
  * <p>These cover the invariants the rest of the OIDC plugin relies on for the shared-registry fix to the Spring 7
  * multi-filter HTTP 500 bug:
@@ -31,13 +31,13 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
  *   <li>removal / retain semantics drop entries cleanly so a deleted filter's old client credentials cannot resolve.
  * </ul>
  */
-public class GeoServerOAuth2ClientRegistrationRegistryTest {
+public class OAuth2ClientRegistrationRegistryTest {
 
-    private GeoServerOAuth2ClientRegistrationRegistry sut;
+    private OAuth2ClientRegistrationRegistry sut;
 
     @Before
     public void setUp() {
-        sut = new GeoServerOAuth2ClientRegistrationRegistry();
+        sut = new OAuth2ClientRegistrationRegistry();
     }
 
     private static ClientRegistration registrationFor(String scopedRegId) {

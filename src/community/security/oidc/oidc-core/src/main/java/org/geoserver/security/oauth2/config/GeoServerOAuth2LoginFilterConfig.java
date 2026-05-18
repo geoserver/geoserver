@@ -13,9 +13,8 @@ import java.util.List;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
-import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityAuthFilterConfig;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId;
+import org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId;
 import org.geoserver.security.oauth2.login.OAuth2Provider;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -27,31 +26,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * @author awaterme
  */
 public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFilterConfig
-        implements SecurityAuthFilterConfig, GeoServerOAuth2ClientRegistrationId {
+        implements SecurityAuthFilterConfig, OAuth2ClientRegistrationId {
 
     @Serial
     private static final long serialVersionUID = -8581346584859849804L;
-
-    /** Supports extraction of roles among the token claims */
-    public static enum OpenIdRoleSource implements RoleSource {
-        IdToken,
-        AccessToken,
-        MSGraphAPI,
-        /**
-         * Resolves the logged-in user's roles by delegating to a configured {@code GeoServerRoleService} — typically a
-         * {@code KeycloakRoleService} that calls Keycloak's Admin REST API via a service-account client. Symmetric to
-         * {@link #MSGraphAPI} but uses a service-account credential (not the user's access token) since Keycloak's
-         * admin API doesn't accept delegated user tokens. Which named role service to delegate to is taken from the
-         * inherited {@code roleServiceName} field (the same field the standard "Role service" pre-auth source uses).
-         */
-        KeycloakAPI,
-        UserInfo;
-
-        @Override
-        public boolean equals(RoleSource other) {
-            return other != null && other.toString().equals(toString());
-        }
-    }
 
     /**
      * Constant used to set up the proxy base in tests that are running without a GeoServer instance or an actual HTTP
@@ -209,7 +187,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
      * the same provider type produce distinct callback URLs.
      *
      * <p>The URI uses the {@code <filterName>__<baseRegId>} scoped registration ID — matching the
-     * {@link org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId#scopedRegId(String, String) scoped
+     * {@link org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId#scopedRegId(String, String) scoped
      * registration ID} that the filter builder assigns to the corresponding Spring {@code ClientRegistration}. This
      * keeps each filter's Keycloak / IdP callback distinct at URL level, not just at session-state level, which is
      * essential when administrators register multiple filters of the same provider type (e.g. one OIDC filter per
@@ -222,7 +200,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
      */
     private String redirectUri(String pRegId) {
         String lBase = baseRedirectUriNormalized();
-        String scopedId = GeoServerOAuth2ClientRegistrationId.scopedRegId(getName(), pRegId);
+        String scopedId = OAuth2ClientRegistrationId.scopedRegId(getName(), pRegId);
         return lBase + OIDC_INCOMING_CODE_ENDPOINT + scopedId;
     }
 

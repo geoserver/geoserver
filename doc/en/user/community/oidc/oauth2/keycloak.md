@@ -52,7 +52,7 @@ docker run --name geoserver_keycloak -p 7777:8080 \
 7.  Set the "Root URL" and "Home URL" as "http://localhost:8080". Set the "Valid post logout redirect URIs" and "Valid redirect URIs" as "http://localhost:8080/*". Then press "Save".
 
     !!! tip
-        The exact redirect URI that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form (e.g. `http://localhost:8080/geoserver/web/login/oauth2/code/oidc`). In production, you may want to register only this specific URI rather than a wildcard. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri).
+        The exact redirect URI that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form (e.g. `http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__oidc`, where `<filterName>` is the name of the GeoServer OIDC filter). The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. In production, you may want to register only the specific URIs you actually use rather than a wildcard; in that case register one entry per filter you intend to deploy. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri).
     
         ![](../img/keycloak-create-client4.png)
 

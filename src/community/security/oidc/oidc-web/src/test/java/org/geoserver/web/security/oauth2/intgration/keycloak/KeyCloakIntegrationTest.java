@@ -88,7 +88,9 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
     String oidcLogin_responseType = "code";
     String oidcLogin_client_id = "gs-client";
     String oidcLogin_scope = "openid profile email phone address";
-    String oidcLogin_redirect_uri = "http://localhost:8080/geoserver/web/login/oauth2/code/oidc";
+    // Scoped to the filter name "openidconnect" — each filter's callback URL carries its own scoped registration ID
+    // so Spring can map the callback back to the right ClientRegistration. See GeoServerOAuth2ClientRegistrationId.
+    String oidcLogin_redirect_uri = "http://localhost:8080/geoserver/web/login/oauth2/code/openidconnect__oidc";
 
     /**
      * Configure GS logging level.
@@ -290,7 +292,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
                         .getValue());
         assertEquals(
                 System.getProperty("OPENID_TEST_GS_PROXY_BASE", "http://localhost:8080/geoserver")
-                        + "/web/login/oauth2/code/oidc",
+                        + "/web/login/oauth2/code/openidconnect__oidc",
                 params.stream()
                         .filter(x -> x.getName().equals("redirect_uri"))
                         .findFirst()
@@ -356,7 +358,8 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         String redirectCodeToGS =
                 keycloakResponseSubmitUserPassword.headers.get("Location").get(0);
         // should be redirecting to GS's code endpoint
-        assertTrue(redirectCodeToGS.startsWith("http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
+        assertTrue(redirectCodeToGS.startsWith(
+                "http://localhost:8080/geoserver/web/login/oauth2/code/openidconnect__oidc"));
 
         String shortenedRedirectCodeToGS = redirectCodeToGS.substring("http://localhost:8080/geoserver/".length());
 

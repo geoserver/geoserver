@@ -6,6 +6,7 @@ package org.geoserver.security.oauth2.login;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -292,6 +293,56 @@ public class GeoServerOAuth2LoginFilterConfigTest {
 
         // Should reflect the new base immediately
         assertEquals("http://host-b/geoserver/web/", config.getPostLogoutRedirectUri());
+    }
+
+    /**
+     * Each filter instance produces redirect URIs scoped to its name. Without scoping, multiple OIDC filters in the
+     * same GeoServer would share an identical callback URL — Keycloak / IdP cannot route the callback to the right
+     * Spring {@code ClientRegistration} by URL alone, and the system has to rely entirely on the session-stored state
+     * parameter, which is fragile across browser tabs and IdP behaviours. With scoping, each filter's callback URL
+     * carries its own scoped registration ID (e.g. {@code keycloak-prod__oidc}) and the routing is unambiguous.
+     */
+    @Test
+    public void testRedirectUris_scopedToFilterName() {
+        System.setProperty(
+                GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://gs.example.com/geoserver");
+
+        GeoServerOAuth2LoginFilterConfig primary = new GeoServerOAuth2LoginFilterConfig();
+        primary.setName("keycloak-prod");
+        primary.calculateRedirectUris();
+
+        GeoServerOAuth2LoginFilterConfig secondary = new GeoServerOAuth2LoginFilterConfig();
+        secondary.setName("auth0-staging");
+        secondary.calculateRedirectUris();
+
+        String base = "http://gs.example.com/geoserver/web/login/oauth2/code/";
+        assertEquals(base + "keycloak-prod__oidc", primary.getOidcRedirectUri());
+        assertEquals(base + "keycloak-prod__google", primary.getGoogleRedirectUri());
+        assertEquals(base + "keycloak-prod__gitHub", primary.getGitHubRedirectUri());
+        assertEquals(base + "keycloak-prod__microsoft", primary.getMsRedirectUri());
+
+        assertEquals(base + "auth0-staging__oidc", secondary.getOidcRedirectUri());
+
+        // Pairwise distinctness — the per-filter routing depends on this.
+        assertNotEquals(primary.getOidcRedirectUri(), secondary.getOidcRedirectUri());
+    }
+
+    /**
+     * Backwards-compatibility: when the filter has no name yet (e.g. just-constructed config, before the security
+     * manager assigns the name from the saved XML), the redirect URI falls back to the un-scoped base form. This keeps
+     * the no-name code path well-defined; once the filter name is set and
+     * {@link GeoServerOAuth2LoginFilterConfig#calculateRedirectUris()} is called by the provider, the URI is upgraded
+     * to the scoped form.
+     */
+    @Test
+    public void testRedirectUris_unscopedWhenFilterNameMissing() {
+        System.setProperty(
+                GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://gs.example.com/geoserver");
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        // intentionally no setName() — simulates the just-constructed / pre-deserialize state
+        config.calculateRedirectUris();
+
+        assertEquals("http://gs.example.com/geoserver/web/login/oauth2/code/oidc", config.getOidcRedirectUri());
     }
 
     /** All three UI fields should use the same dynamic base. */

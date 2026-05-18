@@ -30216,67 +30216,6 @@
 </ul>
 <p><img alt="" src="../../img/keycloak-rolesource-id.png" /></p>
 <p><strong>NOTE:</strong> You can also change the above to get the role from the ID Token, Access Token, or userinfo.</p>
-<h3 id="community_oidc_keycloak_admin_api">Configure Role Source — Keycloak Admin API (server-side fetch)<a class="headerlink" href="#community_oidc_keycloak_admin_api" title="Permanent link">&para;</a></h3>
-<p>As an alternative to reading roles from a token claim, the OIDC plugin can fetch the user's role assignments directly from Keycloak's Admin REST API at login time. This is the recommended source when:</p>
-<ul>
-<li>The user's effective roles include <strong>group-inherited</strong> roles (Keycloak does not put group-role mappings into the token by default).</li>
-<li>You rely on Keycloak <a href="https://www.keycloak.org/docs/latest/server_admin/index.html#_composite-roles">composite roles</a> and want server-side transitive expansion.</li>
-</ul>
-<p>The admin calls are authenticated via the OAuth2 <a href="https://www.rfc-editor.org/rfc/rfc6749#section-4.4">client credentials</a> grant against the <strong>same</strong> OIDC client used for user login. You therefore need to enable two Keycloak-side knobs on the <code>gs-client</code> client created above.</p>
-<h4 id="step-1-enable-service-accounts-on-the-oidc-client">Step 1 — Enable Service Accounts on the OIDC client<a class="headerlink" href="#step-1-enable-service-accounts-on-the-oidc-client" title="Permanent link">&para;</a></h4>
-<ol>
-<li>In the Keycloak admin console, open the realm (e.g. <code>gs-realm</code>), navigate to <strong>Clients → gs-client</strong>.</li>
-<li>On the <strong>Settings</strong> tab, scroll to <strong>Capability config</strong> and toggle <strong>Service accounts roles</strong> to <strong>On</strong>. Press Save.</li>
-</ol>
-<h4 id="step-2-grant-realm-management-roles-to-the-service-account">Step 2 — Grant realm-management roles to the service account<a class="headerlink" href="#step-2-grant-realm-management-roles-to-the-service-account" title="Permanent link">&para;</a></h4>
-<p>The service-account user (auto-created when the previous step is enabled, named <code>service-account-gs-client</code>) needs read access to the realm's users, clients and groups.</p>
-<ol>
-<li>Still on the <code>gs-client</code> page, click the <strong>Service account roles</strong> tab (only visible after Step 1).</li>
-<li>Click <strong>Assign role</strong>. In the dialog filter, type <code>realm-management</code> and pick the appropriate realm's client → tick:<ul>
-<li><code>view-realm</code></li>
-<li><code>view-users</code></li>
-<li><code>view-clients</code></li>
-<li><code>query-groups</code></li>
-</ul>
-</li>
-<li>Press <strong>Assign</strong>.</li>
-</ol>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>For a one-shot setup, the same can be done from a shell using <code>kcadm.sh</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>geoserver_keycloak<span class="w"> </span>/opt/keycloak/bin/kcadm.sh<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>config<span class="w"> </span>credentials<span class="w"> </span>--server<span class="w"> </span>http://localhost:7777<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span>--realm<span class="w"> </span>master<span class="w"> </span>--user<span class="w"> </span>geoserver<span class="w"> </span>--password<span class="w"> </span>geoserver
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>geoserver_keycloak<span class="w"> </span>/opt/keycloak/bin/kcadm.sh<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span>add-roles<span class="w"> </span>-r<span class="w"> </span>gs-realm<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span>--uusername<span class="w"> </span>service-account-gs-client<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span>--cclientid<span class="w"> </span>realm-management<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span>--rolename<span class="w"> </span>view-realm<span class="w"> </span>--rolename<span class="w"> </span>view-users<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span>--rolename<span class="w"> </span>view-clients<span class="w"> </span>--rolename<span class="w"> </span>query-groups
-</code></pre></div>
-</div>
-<h4 id="step-3-switch-the-oidc-filter-to-keycloak-admin-api">Step 3 — Switch the OIDC filter to <strong>Keycloak Admin API</strong><a class="headerlink" href="#step-3-switch-the-oidc-filter-to-keycloak-admin-api" title="Permanent link">&para;</a></h4>
-<p>Back in the GeoServer OIDC filter form, scroll to <strong>Authorization → Role source resolution</strong> and select <strong>Keycloak Admin API</strong> from the dropdown. The Server URL, Realm and admin-client credentials are derived from the OIDC configuration you already entered above — the only mandatory input is the role source itself.</p>
-<p><img alt="" src="../../img/keycloak-api-role-source.png" /></p>
-<p><em>Keycloak Admin API role source. Server URL, Realm and admin client credentials are derived at resolution time from this filter's OIDC configuration; only the optional client-roles list, the composite-roles toggle and the role-converter mapping are exposed inline.</em></p>
-<p>Optional fields:</p>
-<ul>
-<li><strong>Client IDs for client-roles</strong> — leave blank to surface realm roles only. List client IDs here if your roles live under specific Keycloak clients.</li>
-<li><strong>Include composite &amp; group-inherited roles</strong> — leave <strong>on</strong> (default) so Keycloak's <code>/composite</code> endpoint flattens group + composite-role memberships server-side.</li>
-<li>
-<p><strong>Role Converter Map</strong> — translates external Keycloak role names to GeoServer role names. To make holders of the Keycloak <code>geoserverAdmin</code> role full GeoServer admins, set this to <code>geoserverAdmin=ROLE_ADMINISTRATOR</code>.</p>
-<p><img alt="" src="../../img/keycloak-api-role-converter.png" /></p>
-<p><em>The Role Converter Map field — same semantics as the ID-Token-based source; commonly used to map a Keycloak admin role to GeoServer's built-in <code>ROLE_ADMINISTRATOR</code>.</em></p>
-</li>
-</ul>
-<p>Press <strong>Save</strong>.</p>
-<h4 id="verifying">Verifying<a class="headerlink" href="#verifying" title="Permanent link">&para;</a></h4>
-<p>After a successful login with role source = Keycloak Admin API, the GeoServer log (at DEBUG / FINE for <code>org.geoserver.security.oauth2.common</code>) shows two lines:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Role assignments for &#39;&lt;username&gt;&#39; from Keycloak Admin API (realm &#39;&lt;realm&gt;&#39;): &lt;comma-list-of-roles&gt;
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>User &#39;&lt;username&gt;&#39; received roles from roleSource=KeycloakAPI: &lt;converted-roles&gt;,ROLE_AUTHENTICATED
-</code></pre></div>
-<p>If you see <code>Non-2xx from .../admin/realms/.../users?...: 403</code>, the service-account user is missing one or more realm-management roles — redo Step 2.</p>
 <h3 id="allow-web-access-filter-chain">Allow Web Access (Filter Chain)<a class="headerlink" href="#allow-web-access-filter-chain" title="Permanent link">&para;</a></h3>
 <ul>
 <li>

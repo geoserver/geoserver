@@ -179,6 +179,43 @@
             </tbody>
           </table>
         </fieldset>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="NetCDFOut.bandSettings">Per-band Settings</wicket:message>
+            </span>
+          </legend>
+          <table>
+            <thead>
+            <th>
+              <wicket:message key="NetCDFOut.bandSettingName">Variable Name</wicket:message>
+            </th>
+            <th>
+              <wicket:message key="NetCDFOut.bandSettingUom">Unit of Measure</wicket:message>
+            </th>
+            </thead>
+            <tbody>
+            <tr wicket:id="bandSettings">
+              <td class="d-table-cell" wicket:id="bandSettingName"/>
+              <td class="d-table-cell" wicket:id="bandSettingUom"/>
+              <td class="d-table-cell" wicket:id="removeBandSettingIcon"/>
+            </tr>
+            <tr>
+              <td>
+                <input type="text" wicket:id="newBandSettingName"/>
+              </td>
+              <td>
+                <input type="text" wicket:id="newBandSettingUom"/>
+              </td>
+              <td>
+                <a href="#" wicket:id="addBandSetting">
+                  <span wicket:id="addBandSettingIcon"/>
+                </a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </fieldset>
       </div>
       <div wicket:id="extensions">
         <div wicket:id="content"/>

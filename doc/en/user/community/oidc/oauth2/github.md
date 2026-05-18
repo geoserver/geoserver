@@ -18,11 +18,11 @@ The first thing to do is to configure the OAuth2 Provider and obtain `Client ID`
 
     - A name (i.e. "gs-app")
     - The homepage of the geoserver (i.e. "http://localhost:8080/geoserver")
-    - The authorization callback in the form of "http://localhost:8080/geoserver/web/login/oauth2/code/gitHub"
+    - The authorization callback shown as the read-only **Redirect URI** field of the GeoServer filter configuration form, in the form of "http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__gitHub" (replace `<filterName>` with the name of the GeoServer OIDC filter, e.g. `gs-app__gitHub`)
     - Press "Register application"
 
     !!! tip
-        The exact callback URL that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form. In production, use that value instead of `localhost`. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri).
+        The exact callback URL that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form --- copy it verbatim. In production, use that value instead of `localhost`. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri).
     
         ![](../img/github-oauth2-app.png)
 

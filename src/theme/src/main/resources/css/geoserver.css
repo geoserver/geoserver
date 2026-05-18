@@ -1914,6 +1914,32 @@ form a.collapsed {
   margin-bottom: 0.5em;
   padding: 0.25em;
 }
+/* External login buttons (OIDC / OAuth2 / CAS / ...).
+ *
+ * The Wicket template repeats the wrapper element per registered LoginFormInfo, so several configured filters produce
+ * sibling .gs-login-external-links divs. Layout goals:
+ *   1. multiple buttons sit side-by-side (not stacked vertically);
+ *   2. the group is centered horizontally;
+ *   3. no impact on other dropdown items when no OIDC button is present (rules opt-in via :has()).
+ *
+ * Scoping: every rule is anchored at .gs-user-dropdown-panel so nothing leaks outside the user dropdown. The
+ * parent <ul> rule fires only when at least one .gs-login-external-links wrapper is present (the :has() guard);
+ * with no OIDC buttons configured the existing dropdown layout is untouched. */
+.gs-user-dropdown-panel .gs-user-dropdown-info ul:has(> .gs-login-external-links) {
+  text-align: center;
+}
+.gs-user-dropdown-panel .gs-login-external-links {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.25em 0.375em;
+  vertical-align: middle;
+}
+.gs-user-dropdown-panel .gs-login-external-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 .gs-user-dropdown-panel input[type="text"],
 .gs-user-dropdown-panel input[type="password"] {
   height: 2em;

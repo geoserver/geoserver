@@ -5,7 +5,7 @@
 package org.geoserver.security.oauth2.spring;
 
 import java.util.function.Function;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.springframework.security.oauth2.client.oidc.authentication.OidcIdTokenValidator;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;

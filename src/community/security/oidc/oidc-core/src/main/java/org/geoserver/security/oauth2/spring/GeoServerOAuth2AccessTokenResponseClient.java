@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.geoserver.security.oauth2.util.ConfidentialLogger;
+import org.geoserver.security.oauth2.common.ConfidentialLogger;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;

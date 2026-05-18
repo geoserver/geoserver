@@ -5,8 +5,8 @@
 package org.geoserver.web.security.oauth2.login;
 
 import java.io.Serial;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
+import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /** Configuration panel extension for {@link GeoServerOAuthAuthenticationFilter}. */

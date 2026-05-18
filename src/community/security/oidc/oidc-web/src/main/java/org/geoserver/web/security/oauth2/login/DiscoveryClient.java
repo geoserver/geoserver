@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.geotools.util.SuppressFBWarnings;
 import org.springframework.web.client.RestTemplate;
 

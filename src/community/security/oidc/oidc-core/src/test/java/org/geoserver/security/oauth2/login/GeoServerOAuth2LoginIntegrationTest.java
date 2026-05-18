@@ -62,7 +62,6 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;

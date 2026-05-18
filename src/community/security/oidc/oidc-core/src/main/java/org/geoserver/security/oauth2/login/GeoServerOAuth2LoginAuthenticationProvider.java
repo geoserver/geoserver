@@ -15,8 +15,6 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.AbstractFilterProvider;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfigValidator;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.FilterBuilderCustomizer;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer;

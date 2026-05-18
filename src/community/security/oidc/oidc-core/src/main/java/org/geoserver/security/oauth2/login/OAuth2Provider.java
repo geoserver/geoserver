@@ -6,7 +6,6 @@ package org.geoserver.security.oauth2.login;
 
 import java.util.Arrays;
 import java.util.List;
-import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 
 /**
  * Supported OAuth2/OpenID Connect providers.

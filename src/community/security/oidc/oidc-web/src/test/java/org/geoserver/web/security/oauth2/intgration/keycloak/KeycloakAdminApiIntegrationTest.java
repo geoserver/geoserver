@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import org.geoserver.security.oauth2.role.provider.keycloak.KeycloakRolesResolver;
+import org.geoserver.security.oauth2.common.keycloak.KeycloakRolesResolver;
 import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.BeforeClass;

@@ -7,8 +7,8 @@ package org.geoserver.web.security.oauth2.resourceserver;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.geoserver.security.oauth2.config.GeoServerOAuth2ResourceServerFilterConfig;
 import org.geoserver.security.oauth2.resourceserver.GeoServerOAuth2ResourceServerAuthenticationFilter;
-import org.geoserver.security.oauth2.resourceserver.GeoServerOAuth2ResourceServerFilterConfig;
 import org.junit.Test;
 
 /** Tests for {@link OAuth2ResourceServerAuthProviderPanelInfo}. */

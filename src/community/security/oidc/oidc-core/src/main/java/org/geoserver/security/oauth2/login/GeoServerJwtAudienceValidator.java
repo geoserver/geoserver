@@ -4,8 +4,8 @@
  */
 package org.geoserver.security.oauth2.login;
 
-import static org.geoserver.security.oauth2.common.OAuth2ClaimsHelpers.asStringList;
-import static org.geoserver.security.oauth2.common.OAuth2ClaimsHelpers.getClaim;
+import static org.geoserver.security.oauth2.token.OAuth2ClaimsHelpers.asStringList;
+import static org.geoserver.security.oauth2.token.OAuth2ClaimsHelpers.getClaim;
 
 import java.util.List;
 import java.util.Map;

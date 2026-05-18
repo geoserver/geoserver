@@ -24590,6 +24590,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#community_oidc_user_profile_properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Profile Properties
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Profile Properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resolution-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolution order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lookup-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lookup key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failure-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -29944,6 +29994,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#community_oidc_user_profile_properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Profile Properties
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Profile Properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resolution-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolution order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lookup-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lookup key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failure-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -30089,6 +30189,51 @@
 <p>In this example we are converting the IDP's <code>geoserverAdmin</code> role to <code>ROLE_ADMINISTRATOR</code>.</p>
 <p>You can specify multiple translations separated by the "<code>;</code>" character.</p>
 <p>If you turn on the "<code>Only allow External Roles that are explicitly named above</code>", then roles that are not mentioned in the Role Converter Map will <strong>not</strong> be in the set of GeoServer roles. For example, in the example ID Token, the user has role "geoserverAdmin" and "geonetworkAdmin". If this is not turned on, then the user will have the GeoServer roles "ROLE_ADMINISTRATOR" (translated from "geoserverAdmin") as well as "geonetworkAdmin". If it is turned on, then they will only have the "ROLE_ADMINISTRATOR" (translated from "geoserverAdmin") role.</p>
+<h2 id="community_oidc_user_profile_properties">User Profile Properties<a class="headerlink" href="#community_oidc_user_profile_properties" title="Permanent link">&para;</a></h2>
+<p>In addition to roles, the OIDC module populates the GeoServer user profile properties (<code>first_name</code>, <code>last_name</code>, <code>preferred_username</code>, <code>email</code>) on the authenticated principal. Downstream components that honour <a href="../../../security/usergrouprole/">User Details Display Settings</a> --- including the top-right logged-in-user label and any code that reads <code>GeoServerUser.getProperties()</code> --- will then show profile data instead of the raw IDP subject identifier.</p>
+<h3 id="resolution-order">Resolution order<a class="headerlink" href="#resolution-order" title="Permanent link">&para;</a></h3>
+<p>For each property, the value is taken from the first source that provides a non-blank value:</p>
+<ol>
+<li>The configured <strong>GeoServer user/group service</strong>, looked up by the resolved principal name.</li>
+<li>The OIDC claims merged from the ID Token and the UserInfo response (UserInfo wins on overlap). For non-OIDC OAuth2 providers, the OAuth2 attribute map is used instead.</li>
+</ol>
+<p>The claim-to-property mapping is:</p>
+<table>
+<thead>
+<tr>
+<th>GeoServer property</th>
+<th>OIDC claim / OAuth2 attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>first_name</code></td>
+<td><code>given_name</code></td>
+</tr>
+<tr>
+<td><code>last_name</code></td>
+<td><code>family_name</code></td>
+</tr>
+<tr>
+<td><code>preferred_username</code></td>
+<td><code>preferred_username</code></td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td><code>email</code></td>
+</tr>
+</tbody>
+</table>
+<p>This means an administrator can override IDP-provided profile data by setting the matching property on the user inside the configured user/group service. Properties already set on the user/group entry are <strong>never</strong> overwritten by IDP claims.</p>
+<h3 id="lookup-key">Lookup key<a class="headerlink" href="#lookup-key" title="Permanent link">&para;</a></h3>
+<p>The principal name resolved from the configured <code>userNameAttributeName</code> is used as both the Spring principal name and the user/group service lookup key. If the IDP returns an opaque identifier (e.g. an Azure B2C object identifier) as the principal name, the matching entry in the user/group service must use that same identifier as its username for the override to take effect.</p>
+<h3 id="failure-handling">Failure handling<a class="headerlink" href="#failure-handling" title="Permanent link">&para;</a></h3>
+<p>The user/group lookup is best-effort. The following conditions <strong>never</strong> prevent login:</p>
+<ul>
+<li>No user/group service is configured for the filter --- properties are populated from claims only.</li>
+<li>The configured service cannot be loaded, or returns no user for the resolved name --- properties are populated from claims only.</li>
+<li>The lookup throws an I/O error --- a warning is logged and the login proceeds with claim-derived properties.</li>
+</ul>
 
 
 

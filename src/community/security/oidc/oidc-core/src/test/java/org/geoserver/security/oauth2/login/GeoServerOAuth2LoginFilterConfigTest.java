@@ -140,6 +140,40 @@ public class GeoServerOAuth2LoginFilterConfigTest {
         assertEquals(base + "microsoft", config.getMsRedirectUri());
     }
 
+    /**
+     * The single-provider auto-redirect entry-point URL must be properly delimited and scoped: a slash between
+     * {@code /authorization} and the registration ID, and the registration ID must use the scoped
+     * {@code <filterName>__<provider>} form introduced by PR #9499. Before this fix the method produced
+     * {@code .../web/oauth2/authorizationoidc} (no slash, unscoped) which broke the auto-redirect loop when only one
+     * provider was enabled.
+     */
+    @Test
+    public void testAuthenticationEntryPointRedirectUri_isScopedAndProperlyDelimited() {
+        System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://example/gs");
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        config.setName("myfilter");
+        config.setOidcEnabled(true);
+
+        assertEquals(
+                "http://example/gs/web/oauth2/authorization/myfilter__oidc",
+                config.getAuthenticationEntryPointRedirectUri());
+    }
+
+    /**
+     * With no filter name set, the entry-point URL falls back to the un-scoped form (the scoped-registration helper
+     * degrades gracefully when name is null/blank). This keeps construction-time invocations working before XStream
+     * populates the {@code name} field.
+     */
+    @Test
+    public void testAuthenticationEntryPointRedirectUri_noFilterNameFallsBackUnscoped() {
+        System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://example/gs");
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        config.setOidcEnabled(true);
+
+        assertEquals(
+                "http://example/gs/web/oauth2/authorization/oidc", config.getAuthenticationEntryPointRedirectUri());
+    }
+
     // ── JIRA #6: Empty-to-null normalization ────────────────────────────────
 
     /** Setting an optional URI to empty string should normalize to null. */

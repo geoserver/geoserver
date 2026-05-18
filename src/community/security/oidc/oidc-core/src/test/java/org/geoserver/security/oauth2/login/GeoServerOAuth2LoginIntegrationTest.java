@@ -359,7 +359,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         MockHttpServletResponse resp2 = executeOnSecurityFilters(req2);
 
         assertEquals(302, resp2.getStatus());
-        assertEquals(baseRedirectUri + "web/oauth2/authorizationoidc", resp2.getHeader("Location"));
+        assertEquals(baseRedirectUri + "web/oauth2/authorization/openidconnect__oidc", resp2.getHeader("Location"));
     }
 
     @Test
@@ -445,7 +445,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
 
             // With RS mode disabled, Bearer requests fall back to the login entrypoint behavior
             assertEquals(302, resp.getStatus());
-            assertEquals(baseRedirectUri + "web/oauth2/authorizationoidc", resp.getHeader("Location"));
+            assertEquals(baseRedirectUri + "web/oauth2/authorization/openidconnect__oidc", resp.getHeader("Location"));
             assertNull(authRef.get());
         } finally {
             GeoServerOAuth2LoginFilterConfig restore =
@@ -581,7 +581,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         // then: "skip login dialog"/AEP is enabled -> spring's initiate login endpoint
         assertEquals(302, webResponse.getStatus());
         String location = webResponse.getHeader("Location");
-        String authStartPath = "web/oauth2/authorizationoidc";
+        String authStartPath = "web/oauth2/authorization/openidconnect__oidc";
         assertEquals(baseRedirectUri + authStartPath, location);
 
         // when: request to spring's initiate login endpoint is issued on same session
@@ -655,7 +655,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         // then: "skip login dialog"/AEP is enabled -> spring's initiate login endpoint
         assertEquals(302, webResponse.getStatus());
         String location = webResponse.getHeader("Location");
-        String authStartPath = "web/oauth2/authorizationoidc";
+        String authStartPath = "web/oauth2/authorization/openidconnect__oidc";
         assertEquals(baseRedirectUri + authStartPath, location);
 
         // when: request to spring's initiate login endpoint is issued on same session

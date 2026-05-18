@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

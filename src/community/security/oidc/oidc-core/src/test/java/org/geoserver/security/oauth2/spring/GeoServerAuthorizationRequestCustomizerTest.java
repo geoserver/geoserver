@@ -16,8 +16,8 @@ import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterN
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;

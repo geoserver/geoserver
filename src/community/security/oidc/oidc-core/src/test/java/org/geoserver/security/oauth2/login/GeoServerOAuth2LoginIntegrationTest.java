@@ -14,6 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -50,7 +51,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.geoserver.data.test.SystemTestData;
@@ -59,9 +62,13 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.impl.UserProfilePropertyNames;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
@@ -77,7 +84,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jose.jws.JwsAlgorithms;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -352,7 +359,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         MockHttpServletResponse resp2 = executeOnSecurityFilters(req2);
 
         assertEquals(302, resp2.getStatus());
-        assertEquals(baseRedirectUri + "web/oauth2/authorizationoidc", resp2.getHeader("Location"));
+        assertEquals(baseRedirectUri + "web/oauth2/authorization/openidconnect__oidc", resp2.getHeader("Location"));
     }
 
     @Test
@@ -438,7 +445,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
 
             // With RS mode disabled, Bearer requests fall back to the login entrypoint behavior
             assertEquals(302, resp.getStatus());
-            assertEquals(baseRedirectUri + "web/oauth2/authorizationoidc", resp.getHeader("Location"));
+            assertEquals(baseRedirectUri + "web/oauth2/authorization/openidconnect__oidc", resp.getHeader("Location"));
             assertNull(authRef.get());
         } finally {
             GeoServerOAuth2LoginFilterConfig restore =
@@ -451,7 +458,34 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
 
     @Test
     public void testRoleExtraction() throws Exception {
+        // given
         // request token with basic auth
+        openIdService.stubFor(WireMock.post(urlPathEqualTo("/token"))
+                .withBasicAuth(CLIENT_ID, CLIENT_SECRET)
+                .withRequestBody(containing("grant_type=authorization_code"))
+                .withRequestBody(containing("code=" + CODE))
+                .withRequestBody(containing(
+                        "redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fgeoserver%2Fweb%2Flogin%2Foauth2%2Fcode%2Foidc"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withTransformers("token-endpoint")));
+
+        // when
+        verifyLoginLogout();
+    }
+
+    /**
+     * Verifies that when a user/group service is configured and contains the authenticated user, locally stored
+     * properties override overlapping OIDC claim values while remaining properties are still backfilled from claims.
+     */
+    @Test
+    public void testRoleExtractionWithUserGroupServicePropertyOverride() throws Exception {
+        configureUserGroupService("default");
+        Properties properties = new Properties();
+        properties.setProperty(UserProfilePropertyNames.FIRST_NAME, "Stored");
+        properties.setProperty(UserProfilePropertyNames.PREFERRED_USERNAME, "stored-user");
+        addUserWithProperties("andrea.aime@gmail.com", properties);
 
         openIdService.stubFor(WireMock.post(urlPathEqualTo("/token"))
                 .withBasicAuth(CLIENT_ID, CLIENT_SECRET)
@@ -464,7 +498,29 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                         .withTransformers("token-endpoint")));
 
-        verifyLoginLogout();
+        verifyLoginLogoutAndAssertProperties("Stored", "Aime", "andrea.aime@gmail.com", "stored-user");
+    }
+
+    /**
+     * Verifies that when a user/group service is configured but does not contain the authenticated user, login still
+     * succeeds and user properties are derived from OIDC claims only.
+     */
+    @Test
+    public void testRoleExtractionWithUserGroupServiceMissingUserFallsBackToClaims() throws Exception {
+        configureUserGroupService("default");
+
+        openIdService.stubFor(WireMock.post(urlPathEqualTo("/token"))
+                .withBasicAuth(CLIENT_ID, CLIENT_SECRET)
+                .withRequestBody(containing("grant_type=authorization_code"))
+                .withRequestBody(containing("code=" + CODE))
+                .withRequestBody(containing(
+                        "redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fgeoserver%2Fweb%2Flogin%2Foauth2%2Fcode%2Foidc"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withTransformers("token-endpoint")));
+
+        verifyLoginLogoutAndAssertProperties("Andrea", "Aime", "andrea.aime@gmail.com", null);
     }
 
     @Test
@@ -525,7 +581,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         // then: "skip login dialog"/AEP is enabled -> spring's initiate login endpoint
         assertEquals(302, webResponse.getStatus());
         String location = webResponse.getHeader("Location");
-        String authStartPath = "web/oauth2/authorizationoidc";
+        String authStartPath = "web/oauth2/authorization/openidconnect__oidc";
         assertEquals(baseRedirectUri + authStartPath, location);
 
         // when: request to spring's initiate login endpoint is issued on same session
@@ -543,7 +599,9 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
             assertThat(kvp, Matchers.hasEntry("client_id", CLIENT_ID));
             assertThat(
                     kvp,
-                    Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
+                    Matchers.hasEntry(
+                            "redirect_uri",
+                            "http://localhost:8080/geoserver/web/login/oauth2/code/openidconnect__oidc"));
             assertThat(kvp, Matchers.hasEntry("scope", "openid profile email phone address"));
             assertThat(kvp, Matchers.hasEntry("response_type", "code"));
 
@@ -555,7 +613,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
 
             // make believe we authenticated and got the redirect back, with the code
             MockHttpServletRequest codeRequest =
-                    createRequest("web/login/oauth2/code/oidc?code=" + CODE + "&state=" + state);
+                    createRequest("web/login/oauth2/code/openidconnect__oidc?code=" + CODE + "&state=" + state);
             codeRequest.setSession(lSession);
             executeOnSecurityFilters(codeRequest);
 
@@ -569,6 +627,24 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
     }
 
     private void verifyLoginLogout() throws IOException, ServletException {
+        verifyLoginLogoutInternal(gsUser -> {});
+    }
+
+    private void verifyLoginLogoutAndAssertProperties(
+            String expectedFirstName, String expectedLastName, String expectedEmail, String expectedPreferredUsername)
+            throws IOException, ServletException {
+        verifyLoginLogoutInternal(gsUser -> {
+            assertEquals(expectedFirstName, gsUser.getProperties().getProperty(UserProfilePropertyNames.FIRST_NAME));
+            assertEquals(expectedLastName, gsUser.getProperties().getProperty(UserProfilePropertyNames.LAST_NAME));
+            assertEquals(expectedEmail, gsUser.getProperties().getProperty(UserProfilePropertyNames.EMAIL));
+            assertEquals(
+                    expectedPreferredUsername,
+                    gsUser.getProperties().getProperty(UserProfilePropertyNames.PREFERRED_USERNAME));
+        });
+    }
+
+    private void verifyLoginLogoutInternal(Consumer<GeoServerUser> principalAssertions)
+            throws IOException, ServletException {
         // given: request a protected URL
         MockHttpServletRequest webRequest = createRequest("web/");
 
@@ -579,7 +655,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         // then: "skip login dialog"/AEP is enabled -> spring's initiate login endpoint
         assertEquals(302, webResponse.getStatus());
         String location = webResponse.getHeader("Location");
-        String authStartPath = "web/oauth2/authorizationoidc";
+        String authStartPath = "web/oauth2/authorization/openidconnect__oidc";
         assertEquals(baseRedirectUri + authStartPath, location);
 
         // when: request to spring's initiate login endpoint is issued on same session
@@ -597,7 +673,9 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
             assertThat(kvp, Matchers.hasEntry("client_id", CLIENT_ID));
             assertThat(
                     kvp,
-                    Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
+                    Matchers.hasEntry(
+                            "redirect_uri",
+                            "http://localhost:8080/geoserver/web/login/oauth2/code/openidconnect__oidc"));
             assertThat(kvp, Matchers.hasEntry("scope", "openid profile email phone address"));
             assertThat(kvp, Matchers.hasEntry("response_type", "code"));
 
@@ -609,7 +687,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
 
             // make believe we authenticated and got the redirect back, with the code
             MockHttpServletRequest codeRequest =
-                    createRequest("web/login/oauth2/code/oidc?code=" + CODE + "&state=" + state);
+                    createRequest("web/login/oauth2/code/openidconnect__oidc?code=" + CODE + "&state=" + state);
             codeRequest.setSession(lSession);
             executeOnSecurityFilters(codeRequest);
 
@@ -619,10 +697,13 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
                     .get();
             Authentication auth = context.getAuthentication();
             assertNotNull(auth);
-            assertEquals(DefaultOidcUser.class, auth.getPrincipal().getClass());
-            DefaultOidcUser lUser = (DefaultOidcUser) auth.getPrincipal();
+            assertTrue(auth.getPrincipal() instanceof OidcUser);
+            assertTrue(auth.getPrincipal() instanceof GeoServerUser);
+            OidcUser lUser = (OidcUser) auth.getPrincipal();
+            GeoServerUser gsUser = (GeoServerUser) auth.getPrincipal();
             assertEquals("andrea.aime@gmail.com", lUser.getName());
             assertEquals(lNonce, lUser.getNonce());
+            principalAssertions.accept(gsUser);
 
             assertThat(
                     auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
@@ -643,6 +724,24 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
             kvp = KvpUtils.parseQueryString(location);
             assertThat(kvp, Matchers.hasEntry("id_token_hint", lIdTokenValue));
         }
+    }
+
+    private void configureUserGroupService(String userGroupServiceName) throws IOException, SecurityConfigException {
+        GeoServerSecurityManager manager = getSecurityManager();
+        GeoServerOAuth2LoginFilterConfig config =
+                (GeoServerOAuth2LoginFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        config.setUserGroupServiceName(userGroupServiceName);
+        manager.saveFilter(config);
+    }
+
+    private void addUserWithProperties(String username, Properties properties) throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        GeoServerUserGroupService ugService = secMgr.loadUserGroupService("default");
+        GeoServerUserGroupStore ugStore = ugService.createStore();
+        GeoServerUser user = ugStore.createUserObject(username, "unused-password", true);
+        user.getProperties().putAll(properties);
+        ugStore.addUser(user);
+        ugStore.store();
     }
 
     private void repointJwkSetUri(String jwksPath) throws IOException, SecurityConfigException {

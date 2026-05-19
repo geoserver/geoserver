@@ -91,7 +91,7 @@ In this token's JSON claims, notice this part:
 }
 ```
 
-We would, therefore, specify the JSON Path to `resource_access.live-key2.roles` to get the two external IDP roles ("`GeonetworkAdminr`", and "`GeoserverAdmin`"). In keycloak, the JSON path will be of the form `resource_access.<client name>.roles`. Other OIDC IDPs will put the roles in a different location.
+We would, therefore, specify the JSON Path to `resource_access.live-key2.roles` to get the two external IDP roles ("`GeonetworkAdmin`", and "`GeoserverAdmin`"). In keycloak, the JSON path will be of the form `resource_access.<client name>.roles`. Other OIDC IDPs will put the roles in a different location.
 
 ### Access Token
 
@@ -117,7 +117,7 @@ See the [Azure/Entra Configuration](oauth2/azure.md)
 
 ## External-Internal Role Translation
 
-The `oidc` module provides an easy what to convert the name of an external IDP's role to a local GeoServer role.
+The `oidc` module provides an easy way to convert the name of an external IDP's role to a local GeoServer role.
 
 ![](img/roleConvert.png)
 
@@ -128,3 +128,37 @@ In this example we are converting the IDP's `geoserverAdmin` role to `ROLE_ADMIN
 You can specify multiple translations separated by the "`;`" character.
 
 If you turn on the "`Only allow External Roles that are explicitly named above`", then roles that are not mentioned in the Role Converter Map will **not** be in the set of GeoServer roles. For example, in the example ID Token, the user has role "geoserverAdmin" and "geonetworkAdmin". If this is not turned on, then the user will have the GeoServer roles "ROLE_ADMINISTRATOR" (translated from "geoserverAdmin") as well as "geonetworkAdmin". If it is turned on, then they will only have the "ROLE_ADMINISTRATOR" (translated from "geoserverAdmin") role.
+
+## User Profile Properties {: #community_oidc_user_profile_properties }
+
+In addition to roles, the OIDC module populates the GeoServer user profile properties (`first_name`, `last_name`, `preferred_username`, `email`) on the authenticated principal. Downstream components that honour [User Details Display Settings](../../security/usergrouprole/index.md) --- including the top-right logged-in-user label and any code that reads `GeoServerUser.getProperties()` --- will then show profile data instead of the raw IDP subject identifier.
+
+### Resolution order
+
+For each property, the value is taken from the first source that provides a non-blank value:
+
+1.  The configured **GeoServer user/group service**, looked up by the resolved principal name.
+2.  The OIDC claims merged from the ID Token and the UserInfo response (UserInfo wins on overlap). For non-OIDC OAuth2 providers, the OAuth2 attribute map is used instead.
+
+The claim-to-property mapping is:
+
+| GeoServer property | OIDC claim / OAuth2 attribute |
+|---|---|
+| `first_name` | `given_name` |
+| `last_name` | `family_name` |
+| `preferred_username` | `preferred_username` |
+| `email` | `email` |
+
+This means an administrator can override IDP-provided profile data by setting the matching property on the user inside the configured user/group service. Properties already set on the user/group entry are **never** overwritten by IDP claims.
+
+### Lookup key
+
+The principal name resolved from the configured `userNameAttributeName` is used as both the Spring principal name and the user/group service lookup key. If the IDP returns an opaque identifier (e.g. an Azure B2C object identifier) as the principal name, the matching entry in the user/group service must use that same identifier as its username for the override to take effect.
+
+### Failure handling
+
+The user/group lookup is best-effort. The following conditions **never** prevent login:
+
+- No user/group service is configured for the filter --- properties are populated from claims only.
+- The configured service cannot be loaded, or returns no user for the resolved name --- properties are populated from claims only.
+- The lookup throws an I/O error --- a warning is logged and the login proceeds with claim-derived properties.

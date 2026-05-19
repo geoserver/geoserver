@@ -24,9 +24,9 @@ When registering GeoServer as a client or application with your IDP, you will ne
 
 - **Redirect URI (callback URL):** This is the read-only **Redirect URI** shown in the GeoServer filter configuration form. It has the form:
 
-      https://<your-geoserver>/geoserver/web/login/oauth2/code/oidc
+      https://<your-geoserver>/geoserver/web/login/oauth2/code/<filterName>__oidc
 
-  Copy this value exactly into your IDP's "Valid redirect URIs" or "Callback URL" setting.
+  Copy this value exactly into your IDP's "Valid redirect URIs" or "Callback URL" setting. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs; many IDPs also accept a wildcard like `.../web/login/oauth2/code/*` for convenience.
 
 - **Post-Logout Redirect URI:** If your IDP supports single logout, also register the **After-Logout Redirect URI** shown in the GeoServer configuration. See [Logout Behavior](../configuring.md#community_oidc_logout_behavior).
 

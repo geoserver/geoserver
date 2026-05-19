@@ -68,4 +68,13 @@
 		class="org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration" />
 		
 	<bean id="oidcIdTokenDecoderFactory" class="org.geoserver.security.oauth2.spring.GeoServerOidcIdTokenDecoderFactory"/>
+
+	<!--
+		Application-wide registry of every active OAuth2 filter's ClientRegistration entries. Shared by every
+		GeoServerOAuth2LoginAuthenticationFilter so that Spring's OAuth2 redirect / login filters can resolve scoped
+		registration IDs owned by sibling filters — fixes the Spring Security 7 InvalidClientRegistrationIdException
+		that bit multi-OIDC-filter deployments under the previous per-filter-private repository design.
+	-->
+	<bean id="geoServerOAuth2ClientRegistrationRegistry"
+		class="org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationRegistry"/>
 </beans>

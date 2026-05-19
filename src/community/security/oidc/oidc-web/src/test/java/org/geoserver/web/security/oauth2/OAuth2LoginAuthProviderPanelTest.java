@@ -11,7 +11,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.web.AbstractSecurityNamedServicePanelTest;
 import org.geoserver.security.web.AbstractSecurityPage;
@@ -41,6 +44,137 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         Model<GeoServerOAuth2LoginFilterConfig> model = new Model<>(new GeoServerOAuth2LoginFilterConfig());
         FormTestPage testPage = new FormTestPage(id -> new OAuth2LoginAuthProviderPanel(id, model));
         tester.startPage(testPage);
+    }
+
+    /**
+     * Verifies that when a fresh OIDC filter is configured and saved <em>without</em> triggering the dropdown's AJAX
+     * change event — i.e. the user accepts the default selection without re-picking it — the saved configuration still
+     * reflects the underlying {@code *Enabled} boolean for the displayed provider.
+     *
+     * <p>Regression coverage for the issue where a fresh config's {@code getSelectedProvider()} fallback returned
+     * {@code "oidc"} but the matching {@code oidcEnabled} flag stayed {@code false} because {@code setSelectedProvider}
+     * was only called from the dropdown's {@code AjaxFormComponentUpdatingBehavior}, which never fires when the
+     * displayed value does not actually change. Symptom: no login button appears.
+     */
+    @Test
+    public void freshFilter_defaultProviderIsPersistedOnPanelConstruction() {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        assertFalse("Sanity: a fresh config has no provider enabled", config.isOidcEnabled());
+        assertFalse(config.isGoogleEnabled());
+        assertFalse(config.isGitHubEnabled());
+        assertFalse(config.isMsEnabled());
+
+        Model<GeoServerOAuth2LoginFilterConfig> model = new Model<>(config);
+        FormTestPage testPage = new FormTestPage(id -> new OAuth2LoginAuthProviderPanel(id, model));
+        tester.startPage(testPage);
+
+        // Panel construction performs an eager write-through of getSelectedProvider() into the
+        // underlying *Enabled flags; the dropdown's default fallback is "oidc" so we expect that one.
+        assertTrue(
+                "Panel construction must materialize the default selection into oidcEnabled", config.isOidcEnabled());
+        assertFalse(config.isGoogleEnabled());
+        assertFalse(config.isGitHubEnabled());
+        assertFalse(config.isMsEnabled());
+    }
+
+    /**
+     * Verifies that the oidcAllowUnSecureLogging checkbox is visible when a non-OIDC provider (Google) is selected. The
+     * checkbox lives in the common GeoServer Parameters section and should be accessible for all providers.
+     */
+    @Test
+    public void testOidcAllowUnSecureLoggingVisibleForGoogleProvider() throws Exception {
+        String filterName = "LoggingCheckboxFilter";
+        navigateToOpenIdPanel(filterName);
+
+        String prefix = "panel:content:";
+
+        // Select Google provider (index 1 in dropdown: OIDC=0, Google=1, GitHub=2, MS=3)
+        formTester.select(prefix + "providerSelector", 1);
+        Component providerSelectorComponent = formTester.getForm().get(prefix + "providerSelector");
+        tester.executeAjaxEvent(providerSelectorComponent, "change");
+
+        // The oidcAllowUnSecureLogging checkbox should be visible regardless of provider
+        Component panel = formTester.getForm().get("panel:content");
+        assertNotNull("Panel content should exist", panel);
+
+        Component[] found = new Component[1];
+        ((MarkupContainer) panel).visitChildren(Component.class, new IVisitor<Component, Void>() {
+            @Override
+            public void component(Component component, IVisit<Void> visit) {
+                if ("oidcAllowUnSecureLogging".equals(component.getId()) && component.isVisibleInHierarchy()) {
+                    found[0] = component;
+                    visit.stop();
+                }
+            }
+        });
+
+        assertNotNull("oidcAllowUnSecureLogging checkbox should be visible when Google provider is selected", found[0]);
+    }
+
+    /**
+     * Verifies that OIDC-specific advanced settings (force HTTPS, PKCE, signature validation, etc.) are visible only
+     * when the OIDC provider is selected, and hidden for non-OIDC providers like Google.
+     */
+    @Test
+    public void testOidcSpecificSettingsVisibleOnlyForOidcProvider() throws Exception {
+        String filterName = "OidcVisibilityFilter";
+        navigateToOpenIdPanel(filterName);
+
+        String prefix = "panel:content:";
+
+        // --- Part 1: Select OIDC provider (index 0) and verify OIDC-specific fields ARE visible ---
+        formTester.select(prefix + "providerSelector", 0);
+        Component providerSelectorComponent = formTester.getForm().get(prefix + "providerSelector");
+        tester.executeAjaxEvent(providerSelectorComponent, "change");
+
+        Component formPanel = formTester.getForm().get("panel:content");
+        assertNotNull("Form panel content should exist after selecting OIDC", formPanel);
+
+        String[] oidcSpecificFields = {
+            "oidcTokenUri",
+            "oidcAuthorizationUri",
+            "oidcUsePKCE",
+            "disableSignatureValidation",
+            "oidcForceAuthorizationUriHttps",
+            "oidcForceTokenUriHttps"
+        };
+
+        for (String fieldId : oidcSpecificFields) {
+            Component[] found = new Component[1];
+            ((MarkupContainer) formPanel).visitChildren(Component.class, new IVisitor<Component, Void>() {
+                @Override
+                public void component(Component component, IVisit<Void> visit) {
+                    if (fieldId.equals(component.getId()) && component.isVisibleInHierarchy()) {
+                        found[0] = component;
+                        visit.stop();
+                    }
+                }
+            });
+            assertNotNull("OIDC provider selected: field '" + fieldId + "' should be visible", found[0]);
+        }
+
+        // --- Part 2: Select Google provider (index 1) and verify OIDC-specific fields are NOT visible ---
+        formTester.select(prefix + "providerSelector", 1);
+        providerSelectorComponent = formTester.getForm().get(prefix + "providerSelector");
+        tester.executeAjaxEvent(providerSelectorComponent, "change");
+
+        formPanel = formTester.getForm().get("panel:content");
+        assertNotNull("Form panel content should exist after switching to Google", formPanel);
+
+        for (String fieldId : oidcSpecificFields) {
+            Component[] found = new Component[1];
+            ((MarkupContainer) formPanel).visitChildren(Component.class, new IVisitor<Component, Void>() {
+                @Override
+                public void component(Component component, IVisit<Void> visit) {
+                    if (fieldId.equals(component.getId()) && component.isVisibleInHierarchy()) {
+                        found[0] = component;
+                        visit.stop();
+                    }
+                }
+            });
+            assertNull(
+                    "Google provider selected: OIDC-specific field '" + fieldId + "' should NOT be visible", found[0]);
+        }
     }
 
     /**
@@ -106,7 +240,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         formTester.setValue(prefix + "displayOnOidc:oidcForceTokenUriHttps", true);
         formTester.setValue(prefix + "displayOnOidc:disableSignatureValidation", true);
         formTester.setValue(prefix + "displayOnOidc:oidcUsePKCE", true);
-        formTester.setValue(prefix + "displayOnOidc:oidcAllowUnSecureLogging", true);
+        formTester.setValue("panel:content:oidcAllowUnSecureLogging", true);
 
         formTester.setValue(prefix + "displayOnOidc:oidcResponseMode", "query");
         formTester.setValue(prefix + "displayOnOidc:oidcAuthenticationMethodPostSecret", true);
@@ -144,7 +278,11 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals("oidcClientSecret", lConfig.getOidcClientSecret());
         assertEquals("oidcUserNameAttribute", lConfig.getOidcUserNameAttribute());
         assertEquals("oidcScopes", lConfig.getOidcScopes());
-        assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/oidc", lConfig.getOidcRedirectUri());
+        // Scoped to the filter's name: each instance has its own callback URL so Spring can route
+        // back to the correct ClientRegistration even when multiple OIDC filters share a provider type.
+        assertEquals(
+                "https://localhost:9090/geoserver/web/login/oauth2/code/" + filterName + "__oidc",
+                lConfig.getOidcRedirectUri());
 
         assertTrue(lConfig.getOidcForceAuthorizationUriHttps());
         assertTrue(lConfig.isDisableSignatureValidation());
@@ -161,7 +299,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         formTester.setValue(prefix + "displayOnOidc:oidcForceAuthorizationUriHttps", false);
         formTester.setValue(prefix + "displayOnOidc:disableSignatureValidation", false);
         formTester.setValue(prefix + "displayOnOidc:oidcUsePKCE", false);
-        formTester.setValue(prefix + "displayOnOidc:oidcAllowUnSecureLogging", false);
+        formTester.setValue("panel:oidcAllowUnSecureLogging", false);
         formTester.setValue(prefix + "displayOnOidc:oidcResponseMode", "");
         formTester.setValue(prefix + "displayOnOidc:oidcAuthenticationMethodPostSecret", false);
 

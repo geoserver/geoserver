@@ -296,6 +296,16 @@ public class OAuth2LoginAuthProviderPanel
         add(providerSelector);
         add(new HelpLink("providerSelectorHelp", this).setDialog(dialog));
 
+        // Eager write-through of the dropdown's effective selection into the underlying *Enabled
+        // booleans. The dropdown's AjaxFormComponentUpdatingBehavior only fires on user-driven
+        // change events, so for a fresh config the getter's "oidc" default would render in the UI
+        // without ever calling setSelectedProvider — the filter would then save with oidcEnabled
+        // (and every other *Enabled) false, the filter builder would publish a disableButtonEvent
+        // and the login button would never appear. Calling the setter here makes the persisted
+        // state self-consistent with the displayed default, idempotent for configs that already
+        // have an explicit selection.
+        configModel.getObject().setSelectedProvider(configModel.getObject().getSelectedProvider());
+
         // -- Provider settings panels (one per provider, shown/hidden based on dropdown) --
         RepeatingView prefixView = new RepeatingView("pfv");
         add(prefixView);
@@ -346,6 +356,9 @@ public class OAuth2LoginAuthProviderPanel
 
         add(new HelpLink("enableResourceServerModeHelp", this).setDialog(dialog));
         add(new CheckBox("enableResourceServerMode"));
+
+        add(new HelpLink("oidcAllowUnSecureLoggingHelp", this).setDialog(dialog));
+        add(new CheckBox("oidcAllowUnSecureLogging"));
 
         add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
 
@@ -425,9 +438,6 @@ public class OAuth2LoginAuthProviderPanel
 
             lOidcContainer.add(new HelpLink("oidcUsePKCEHelp", this).setDialog(dialog));
             lOidcContainer.add(new CheckBox("oidcUsePKCE"));
-
-            lOidcContainer.add(new HelpLink("oidcAllowUnSecureLoggingHelp", this).setDialog(dialog));
-            lOidcContainer.add(new CheckBox("oidcAllowUnSecureLogging"));
 
             lOidcContainer.add(new HelpLink("oidcLogoutUriHelp", this).setDialog(dialog));
             lOidcContainer.add(new TextField<>("oidcLogoutUri"));

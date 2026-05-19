@@ -8,6 +8,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.nimbusds.jose.JOSEObject;
 import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import java.io.IOException;
 import java.text.ParseException;
@@ -17,9 +18,11 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -27,12 +30,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.RoleCalculator;
+import org.geoserver.security.impl.UserProfilePropertyNames;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource;
 import org.geoserver.security.oauth2.bearer.TokenValidator;
 import org.geoserver.security.oauth2.pkce.PKCERequestEnhancer;
@@ -63,6 +69,11 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
      * date/time."
      */
     static final String ACCESS_TOKEN_EXPIRATION = "OpenIdConnect-AccessTokenExpiration";
+
+    private static final String CLAIM_GIVEN_NAME = "given_name";
+    private static final String CLAIM_FAMILY_NAME = "family_name";
+    private static final String CLAIM_PREFERRED_USERNAME = "preferred_username";
+    private static final String CLAIM_EMAIL = "email";
 
     TokenValidator bearerTokenValidator;
 
@@ -198,6 +209,149 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             if (exp > Instant.now().getEpochSecond()) { // epoch is guaranteed to be in UTC like exp
                 req.setAttribute(ACCESS_TOKEN_EXPIRATION, exp);
             }
+        }
+    }
+
+    /**
+     * Builds an OIDC-aware principal enriched with profile properties.
+     *
+     * <p>Property population follows this precedence:
+     *
+     * <ol>
+     *   <li>Existing properties from the configured GeoServer user/group service (if available)
+     *   <li>Missing properties backfilled from OpenID Connect claims
+     * </ol>
+     *
+     * <p>Claim lookup uses merged claims where user-info values override id-token values on key collisions.
+     */
+    @Override
+    protected Object buildAuthenticatedPrincipal(
+            String principalName, Collection<GeoServerRole> roles, HttpServletRequest request) {
+        OpenIdConnectGeoServerUser user = new OpenIdConnectGeoServerUser(principalName, roles);
+
+        Properties properties = user.getProperties();
+        mergeUserGroupServiceProperties(principalName, properties);
+
+        Map<String, Object> claims = getMergedClaims(request);
+        putIfMissing(properties, UserProfilePropertyNames.FIRST_NAME, claims.get(CLAIM_GIVEN_NAME));
+        putIfMissing(properties, UserProfilePropertyNames.LAST_NAME, claims.get(CLAIM_FAMILY_NAME));
+        putIfMissing(properties, UserProfilePropertyNames.PREFERRED_USERNAME, claims.get(CLAIM_PREFERRED_USERNAME));
+        putIfMissing(properties, UserProfilePropertyNames.EMAIL, claims.get(CLAIM_EMAIL));
+        return user;
+    }
+
+    /**
+     * Copies user profile properties from the configured GeoServer user/group service into the provided target
+     * properties.
+     *
+     * <p>This method is best-effort and intentionally non-fatal: if the service name is blank, the service cannot be
+     * loaded, the user does not exist, or access fails, enrichment continues with claim-only data.
+     */
+    private void mergeUserGroupServiceProperties(String principalName, Properties properties) {
+        String userGroupServiceName = getUserGroupServiceName();
+        if (userGroupServiceName == null || userGroupServiceName.trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            GeoServerUserGroupService userGroupService =
+                    getSecurityManager().loadUserGroupService(userGroupServiceName);
+            if (userGroupService == null) {
+                return;
+            }
+
+            GeoServerUser gsUser = userGroupService.getUserByUsername(principalName);
+            if (gsUser == null) {
+                return;
+            }
+
+            Properties gsUserProperties = gsUser.getProperties();
+            if (gsUserProperties != null) {
+                properties.putAll(gsUserProperties);
+            }
+        } catch (IOException | RuntimeException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "OIDC: Failed to read user/group properties from service {0}, will continue with token claims",
+                    userGroupServiceName);
+            LOGGER.log(Level.FINE, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Returns merged claims used for profile enrichment.
+     *
+     * <p>Merge order is:
+     *
+     * <ol>
+     *   <li>ID token claims as base
+     *   <li>User-info claims overriding any duplicate keys
+     * </ol>
+     *
+     * <p>If the id token is missing or cannot be parsed, user-info claims are still used.
+     */
+    private Map<String, Object> getMergedClaims(HttpServletRequest request) {
+        Map<String, Object> claims = new HashMap<>();
+
+        String idToken = getIdToken(request);
+        if (idToken != null) {
+            try {
+                JWT jwt = JWTParser.parse(idToken);
+                JWTClaimsSet claimSet = jwt.getJWTClaimsSet();
+                if (claimSet != null && claimSet.getClaims() != null) {
+                    claims.putAll(claimSet.getClaims());
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.FINE, "OIDC: Could not parse id_token while building principal", e);
+            }
+        }
+
+        Object userInfoObj = request.getAttribute(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
+        if (userInfoObj instanceof Map<?, ?> userInfoMap) {
+            userInfoMap.forEach((k, v) -> {
+                if (k instanceof String) {
+                    claims.put((String) k, v);
+                }
+            });
+        }
+        return claims;
+    }
+
+    /**
+     * Resolves the id token value from request-scoped authentication data.
+     *
+     * <p>Lookup order is:
+     *
+     * <ol>
+     *   <li>Request attribute {@link #ID_TOKEN_VALUE}
+     *   <li>Current access-token additional information entry {@code id_token}
+     * </ol>
+     *
+     * @return non-blank id token value, or {@code null} when unavailable
+     */
+    private String getIdToken(HttpServletRequest request) {
+        Object idTokenValue = request.getAttribute(ID_TOKEN_VALUE);
+        if (idTokenValue instanceof String idToken && !idToken.trim().isEmpty()) {
+            return idToken;
+        }
+
+        OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
+        if (token != null && token.getAdditionalInformation() != null) {
+            Object additionalIdToken = token.getAdditionalInformation().get("id_token");
+            if (additionalIdToken instanceof String idToken && !idToken.trim().isEmpty()) {
+                return idToken;
+            }
+        }
+        return null;
+    }
+
+    /** Sets a user property only when absent and the supplied claim value is a non-blank string. */
+    private void putIfMissing(Properties properties, String key, Object value) {
+        if (properties.getProperty(key) != null) {
+            return;
+        }
+        if (value instanceof String stringValue && !stringValue.trim().isEmpty()) {
+            properties.setProperty(key, stringValue);
         }
     }
 

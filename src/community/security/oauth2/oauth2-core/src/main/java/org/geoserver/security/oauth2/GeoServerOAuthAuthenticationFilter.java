@@ -351,11 +351,31 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
                     }
                 }
 
-                result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
+                Object authenticatedPrincipal = buildAuthenticatedPrincipal(principal, roles, request);
+                result = new PreAuthenticatedAuthenticationToken(authenticatedPrincipal, null, roles);
             }
             result.setDetails(getAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(result);
         }
+    }
+
+    /**
+     * Builds the principal object stored in the authenticated token.
+     *
+     * <p>This is an extension hook intentionally receiving the resolved user name, roles, and request context so
+     * subclasses can build richer principal objects (for example principals enriched from request-scoped token claims)
+     * without changing this base authentication flow.
+     *
+     * <p>Default behavior preserves the historical contract and returns the string principal name.
+     *
+     * @param principalName resolved authenticated principal name
+     * @param roles resolved authorities for the authenticated user
+     * @param request current request, useful for request-scoped authentication attributes
+     * @return principal object to store in {@link PreAuthenticatedAuthenticationToken}
+     */
+    protected Object buildAuthenticatedPrincipal(
+            String principalName, Collection<GeoServerRole> roles, HttpServletRequest request) {
+        return principalName;
     }
 
     @Override

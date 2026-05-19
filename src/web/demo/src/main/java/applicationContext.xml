@@ -49,6 +49,14 @@
       <ref bean="geoServer"/>
     </property>
   </bean>
+  <bean id="geoJSONPreview" class="org.geoserver.web.demo.GeoJSONFormatLink">
+    <property name="id" value="geojson"/>
+    <property name="titleKey" value="geojson.title"/>
+    <property name="order" value="25"/>
+    <property name="geoserver">
+      <ref bean="geoServer"/>
+    </property>
+  </bean>
   <bean id="kMLPreview" class="org.geoserver.web.demo.KMLFormatLink">
     <property name="id" value="kml"/>
     <property name="titleKey" value="kml.title"/>

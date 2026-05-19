@@ -39,13 +39,18 @@ public class PreviewFormatsUiBehaviorTest {
     public void testExpandCollapseHooksAndScriptAreRendered() throws IOException {
         String html = panelHtml();
         assertTrue(html.contains("preview-more-toggle"));
+        assertTrue(html.contains("aria-expanded=\"false\""));
         assertTrue(
                 html.contains(
-                        "data-more-label:PreviewHomePageContentProvider.more;data-less-label:PreviewHomePageContentProvider.less"));
-        assertTrue(html.contains("...more"));
+                        "data-expand-label:PreviewHomePageContentProvider.expandSection;data-collapse-label:PreviewHomePageContentProvider.collapseSection"));
+        assertTrue(html.contains("preview-section-header"));
+        assertTrue(html.contains("gs-icon-bullet-arrow-right"));
         String js = panelJs();
         assertTrue(js.contains("section.classList.toggle(\"is-expanded\")"));
         assertTrue(js.contains("updateOverflowToggle(section)"));
+        assertTrue(js.contains("aria-expanded"));
+        assertTrue(js.contains("gs-icon-bullet-arrow-right"));
+        assertTrue(js.contains("gs-icon-bullet-arrow-down"));
         assertFalse(js.contains("onchange="));
     }
 

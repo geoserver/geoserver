@@ -25,16 +25,26 @@ const updateOverflowToggle = section => {
     const isExpanded = section.classList.contains("is-expanded");
     list.style.maxWidth = "";
     const hasOverflow = list.scrollWidth > list.clientWidth + 1;
-    toggle.style.display = hasOverflow || isExpanded ? "inline" : "none";
-    toggle.textContent = isExpanded
-        ? toggle.getAttribute("data-less-label") || "...less"
-        : toggle.getAttribute("data-more-label") || "...more";
+    toggle.style.display = hasOverflow || isExpanded ? "inline-flex" : "none";
+    const icon = toggle.querySelector(".gs-icon");
+    if (icon) {
+        icon.classList.remove("gs-icon-bullet-arrow-right", "gs-icon-bullet-arrow-down");
+        icon.classList.add(
+            isExpanded ? "gs-icon-bullet-arrow-down" : "gs-icon-bullet-arrow-right"
+        );
+    }
+    toggle.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+    const expandLabel =
+        toggle.getAttribute("data-expand-label") || "Show more formats";
+    const collapseLabel =
+        toggle.getAttribute("data-collapse-label") || "Show fewer formats";
+    toggle.setAttribute("aria-label", isExpanded ? collapseLabel : expandLabel);
+    toggle.setAttribute("title", isExpanded ? collapseLabel : expandLabel);
 
     if (!hasOverflow || isExpanded) return;
 
-    const gap = 8;
-    const availableWidth = Math.max(0, content.clientWidth - toggle.offsetWidth - gap);
-    list.style.maxWidth = `${availableWidth}px`;
+    list.style.maxWidth = `${content.clientWidth}px`;
+    const availableWidth = content.clientWidth;
 
     const limitRight = list.getBoundingClientRect().left + availableWidth;
     let hideFromHere = false;

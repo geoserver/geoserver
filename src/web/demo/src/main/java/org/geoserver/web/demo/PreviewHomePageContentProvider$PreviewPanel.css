@@ -16,6 +16,13 @@ Your css selectors should look like this to avoid modifying styles outside the p
  ----------------------------------------------------------
 */
 
+[data-gs-theme=light] {
+    --gs-preview-section-border-color: #dee2e6ad;
+}
+[data-gs-theme=dark] {
+    --gs-preview-section-border-color: #373739b8;
+}
+
 .gs-panel-PreviewHomePageContentProvider_PreviewPanel .linkBlock {
     padding-top: 0px;
 }
@@ -37,11 +44,23 @@ Your css selectors should look like this to avoid modifying styles outside the p
 }
 
 .gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-section + .preview-section {
-    border-top: 1px solid var(--gs-border-color);
+    border-top: 1px solid var(--gs-preview-section-border-color);
 }
 
-.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-section label {
-    padding-top: 2px;
+.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+    padding-top: 2px !important;
+}
+
+.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-section-header label {
+    padding-top: 0;
+    margin: 0;
+}
+.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-section-header button {
+    margin-top: 2px;
 }
 
 .gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-link-items {
@@ -103,16 +122,22 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
 .gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-more-toggle {
     display: none;
-    margin-left: 0.35rem;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
     border: 0;
     background: transparent;
-    color: var(--gs-link-color);
-    align-self: end;
-    padding: 0 0.5rem 0.25rem;
+    padding: 0;
+    line-height: 1;
+}
+
+.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-more-toggle .gs-icon {
+    width: 1rem;
+    height: 1rem;
 }
 
 .gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-section-content {
     display: flex;
     align-items: flex-start;
-    gap: 0.25rem;
+    min-width: 0;
 }

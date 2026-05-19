@@ -123,13 +123,6 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                             item.add(copyLinkButton);
                         }
                     });
-                    item.add(new Label(
-                                    "sectionHint",
-                                    getLocalizer()
-                                            .getString(
-                                                    "PreviewHomePageContentProvider.commonFormatsHint",
-                                                    PreviewPanel.this))
-                            .setVisible("commonFormats".equals(section.titleKey())));
                 }
             });
             return sections;

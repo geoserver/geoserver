@@ -12,7 +12,16 @@
         </div>
         <div class="gs-form" wicket:id="sections">
             <div wicket:id="section" class="gs-form-group preview-section">
-                <label wicket:id="sectionTitle">Section</label>
+                <div class="preview-section-header">
+                    <label wicket:id="sectionTitle">Section</label>
+                    <button
+                            type="button"
+                            class="preview-more-toggle"
+                            aria-expanded="false"
+                            wicket:message="data-expand-label:PreviewHomePageContentProvider.expandSection;data-collapse-label:PreviewHomePageContentProvider.collapseSection;aria-label:PreviewHomePageContentProvider.expandSection;title:PreviewHomePageContentProvider.expandSection">
+                        <i class="gs-icon gs-icon-bullet-arrow-right"></i>
+                    </button>
+                </div>
                 <div class="preview-section-content">
                     <div class="preview-link-items">
                         <div class="linkBlock" wicket:id="previewLink">
@@ -29,13 +38,6 @@
                             </span>
                         </div>
                     </div>
-                    <button
-                            type="button"
-                            class="preview-more-toggle"
-                            wicket:message="data-more-label:PreviewHomePageContentProvider.more;data-less-label:PreviewHomePageContentProvider.less">
-                        ...more
-                    </button>
-                    <span wicket:id="sectionHint" class="preview-section-hint">most used</span>
                 </div>
             </div>
         </div>

@@ -50,6 +50,7 @@ Your css selectors should look like this to avoid modifying styles outside the p
 .gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-section-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.35rem;
     min-width: 0;
     padding-top: 2px !important;
@@ -61,6 +62,10 @@ Your css selectors should look like this to avoid modifying styles outside the p
 }
 .gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-section-header button {
     margin-top: 2px;
+}
+.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-section-header button i.gs-icon {
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 .gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-link-items {
@@ -76,7 +81,7 @@ Your css selectors should look like this to avoid modifying styles outside the p
     overflow: visible;
 }
 
-.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-link-items > .linkBlock > span {
+.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-link-items > .linkBlock > a {
     display: inline-flex;
     align-items: center;
     border: 1px solid var(--gs-border-color);
@@ -85,31 +90,12 @@ Your css selectors should look like this to avoid modifying styles outside the p
     overflow: hidden;
     font-size: 0.875rem;
     width: max-content;
-}
-
-.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-link-items > .linkBlock > span > a {
-    display: inline-flex;
-    align-items: center;
     padding: 0.25rem 0.675rem;
     color: var(--gs-primary-text-emphasis);
     text-decoration: none;
 }
 
-.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-link-items-separator {
-    height: 1.25rem;
-    border-left: 1px solid var(--gs-border-color);
-}
-.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-copy-button {
-    justify-content: center;
-    width: 2rem;
-    border: 0;
-    border-radius: 0;
-    padding: 0.375rem;
-    background-color: var(--gs-body-bg);
-}
-
-.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-copy-button:hover,
-.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-link-items > .linkBlock > span > a:hover {
+.gs-panel-PreviewHomePageContentProvider_PreviewPanel .preview-link-items > .linkBlock > a:hover {
     background: var(--gs-primary-bg-subtle);
 }
 

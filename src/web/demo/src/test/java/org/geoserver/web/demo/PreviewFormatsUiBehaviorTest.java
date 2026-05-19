@@ -16,13 +16,11 @@ import org.junit.Test;
 public class PreviewFormatsUiBehaviorTest {
 
     @Test
-    public void testFormatsLayoutRendersPillAndCopyControls() throws IOException {
+    public void testFormatsLayoutRendersPreviewLinks() throws IOException {
         String html = panelHtml();
         assertTrue(html.contains("preview-link-items"));
         assertTrue(html.contains("preview-section-content"));
-        assertTrue(html.contains("preview-link-items-separator"));
-        assertTrue(html.contains("preview-copy-button"));
-        assertTrue(html.contains("wicket:id=\"copyLinkButton\""));
+        assertTrue(html.contains("wicket:id=\"theLink\""));
     }
 
     @Test

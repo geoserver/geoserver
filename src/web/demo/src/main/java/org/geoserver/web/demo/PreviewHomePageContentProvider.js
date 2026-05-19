@@ -65,52 +65,7 @@ const updateAllOverflowToggles = root => {
     root.querySelectorAll(".preview-section").forEach(updateOverflowToggle);
 };
 
-const showCopiedState = button => {
-    const icon = button.querySelector(".gs-icon");
-    if (!icon) return;
-
-    const previousTimer = button.getAttribute("data-copied-timer");
-    if (previousTimer) {
-        window.clearTimeout(Number(previousTimer));
-    }
-
-    icon.classList.remove("gs-icon-copy");
-    icon.classList.add("gs-icon-tick");
-
-    const timerId = window.setTimeout(() => {
-        icon.classList.remove("gs-icon-tick");
-        icon.classList.add("gs-icon-copy");
-        button.removeAttribute("data-copied-timer");
-    }, 3000);
-    button.setAttribute("data-copied-timer", String(timerId));
-};
-
 const PreviewHomePageContentProvider_SetOnChange = () => {
-    $(document).on("click", ".preview-copy-button", async event => {
-        event.preventDefault();
-        const button = event.currentTarget;
-        const copyUrl = button.getAttribute("data-copy-url");
-        if (!copyUrl) return;
-        try {
-            if (navigator.clipboard && window.isSecureContext) {
-                await navigator.clipboard.writeText(copyUrl);
-            } else {
-                const textarea = document.createElement("textarea");
-                textarea.value = copyUrl;
-                textarea.style.position = "absolute";
-                textarea.style.left = "-9999px";
-                document.body.appendChild(textarea);
-                textarea.focus();
-                textarea.select();
-                document.execCommand("copy");
-                textarea.remove();
-            }
-            showCopiedState(button);
-        } catch (e) {
-            // intentionally ignore copy failures
-        }
-    });
-
     $(document).on("click", ".preview-more-toggle", event => {
         const section = event.currentTarget.closest(".preview-section");
         if (!section) return;

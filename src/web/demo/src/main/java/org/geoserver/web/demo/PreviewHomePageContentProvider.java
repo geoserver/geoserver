@@ -118,9 +118,6 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                             PreviewLink link = item.getModelObject();
                             item.add(AttributeModifier.replace("data-filter-label", Model.of(link.label())));
                             item.add(new ExternalLink("theLink", link.href(), link.label()));
-                            WebMarkupContainer copyLinkButton = new WebMarkupContainer("copyLinkButton");
-                            copyLinkButton.add(AttributeModifier.replace("data-copy-url", Model.of(link.href())));
-                            item.add(copyLinkButton);
                         }
                     });
                 }

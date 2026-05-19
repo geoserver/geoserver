@@ -16,16 +16,18 @@ When the extension has been installed, **GeoPackage** will be an option in the *
 
 *Configuring a GeoPackage Vector data store*
 
-| **Option** | **Description** |
-|----|----|
-| **database** | URI specifying geopackage file. |
-| **user** | User to access database. |
-| **passwd** | Password to access database. |
+| **Option** | **Description**                                                                                     |
+|----|-----------------------------------------------------------------------------------------------------|
+| **database** | URI specifying geopackage file.                                                                     |
+| **user** | User to access database.                                                                            |
+| **passwd** | Password to access database.                                                                        |
 | **namespace** | Namespace to be associated with the database. This field is altered by changing the workspace name. |
-| **max connections** | Maximum amount of open connections to the database. |
-| **min connections** | Minimum number of pooled connections. |
-| **fetch size** | Number of records read with each interaction with the database. |
-| **Connection timeout** | Time (in seconds) the connection pool will wait before timing out. |
-| **validate connections** | Checks the connection is alive before using it. |
+| **max connections** | Maximum amount of open connections to the database.                                                 |
+| **min connections** | Minimum number of pooled connections.                                                               |
+| **fetch size** | Number of records read with each interaction with the database.                                     |
+| **Connection timeout** | Time (in seconds) the connection pool will wait before timing out.                                  |
+| **validate connections** | Checks the connection is alive before using it.                                                     |
+| **read_only** | Whether to open the database in read only mode.                                                     |
+| **immutable** | Give SQLite a hint that the database will not be modified, allowing for some further optimizations. |
 
 When finished, click **Save**.

@@ -175,9 +175,26 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         this.oidcRedirectUri = redirectUri(REG_ID_OIDC);
     }
 
+    /**
+     * Builds the redirect URI for a given provider, scoped to this filter's name so that multiple filter instances of
+     * the same provider type produce distinct callback URLs.
+     *
+     * <p>The URI uses the {@code <filterName>__<baseRegId>} scoped registration ID — matching the
+     * {@link org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId#scopedRegId(String, String) scoped
+     * registration ID} that the filter builder assigns to the corresponding Spring {@code ClientRegistration}. This
+     * keeps each filter's Keycloak / IdP callback distinct at URL level, not just at session-state level, which is
+     * essential when administrators register multiple filters of the same provider type (e.g. one OIDC filter per
+     * identity provider — Keycloak + Auth0 + Entra-as-custom).
+     *
+     * <p>If the filter has no name yet (e.g. at construction time, before XStream deserialization populates the
+     * {@code name} field), the URI degrades gracefully to the un-scoped {@code <baseRegId>} form. The provider that
+     * loads the filter calls {@link #calculateRedirectUris()} once the name is set, which produces the correct scoped
+     * URIs.
+     */
     private String redirectUri(String pRegId) {
         String lBase = baseRedirectUriNormalized();
-        return lBase + OIDC_INCOMING_CODE_ENDPOINT + pRegId;
+        String scopedId = GeoServerOAuth2ClientRegistrationId.scopedRegId(getName(), pRegId);
+        return lBase + OIDC_INCOMING_CODE_ENDPOINT + scopedId;
     }
 
     private String createPostLogoutRedirectUri() {
@@ -217,7 +234,10 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         }
         String lBase = baseRedirectUriNormalized();
 
-        return lBase + DEFAULT_AUTHORIZATION_REQUEST_BASE_URI + lRegIds.get(0);
+        return lBase
+                + DEFAULT_AUTHORIZATION_REQUEST_BASE_URI
+                + "/"
+                + GeoServerOAuth2ClientRegistrationId.scopedRegId(getName(), lRegIds.get(0));
     }
 
     /**

@@ -7,6 +7,7 @@ package org.geoserver.web.netcdf;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 
@@ -40,6 +41,8 @@ public class NetCDFSettingsContainer implements Serializable {
 
     public static final List<ExtraVariable> DEFAULT_EXTRA_VARIABLES = new ArrayList<>();
 
+    public static final List<BandSetting> DEFAULT_BAND_SETTINGS = new ArrayList<>();
+
     private int compressionLevel = DEFAULT_COMPRESSION;
 
     private boolean shuffle = DEFAULT_SHUFFLE;
@@ -55,6 +58,8 @@ public class NetCDFSettingsContainer implements Serializable {
     private List<VariableAttribute> variableAttributes = DEFAULT_VARIABLE_ATTRIBUTES;
 
     private List<ExtraVariable> extraVariables = DEFAULT_EXTRA_VARIABLES;
+
+    private List<BandSetting> bandSettings = DEFAULT_BAND_SETTINGS;
 
     private MetadataMap metadata = new MetadataMap();
 
@@ -135,6 +140,29 @@ public class NetCDFSettingsContainer implements Serializable {
         this.extraVariables = extraVariables;
     }
 
+    /**
+     * Per-band output settings. When the source coverage has more than one sample dimension and this list is non-empty,
+     * the encoder writes one output variable per band, using the entry at index {@code i} to override the
+     * band-{@code i} variable's name, unit of measure, and per-variable attributes (the global
+     * {@link #variableAttributes} list still applies to every output variable; per-band attributes are additive and
+     * take precedence on key collisions).
+     *
+     * <p>When this list is empty AND the source coverage is multi-band, the encoder falls back to one output variable
+     * per band named after the band's {@link org.geotools.coverage.GridSampleDimension#getDescription()} — which is
+     * what a {@code COVERAGE_VIEW} {@code BAND_SELECT} {@code <definition>} field sets — preserving fully
+     * backward-compatible single-variable behavior on single-band coverages.
+     */
+    public List<BandSetting> getBandSettings() {
+        if (bandSettings == null) {
+            bandSettings = DEFAULT_BAND_SETTINGS;
+        }
+        return bandSettings;
+    }
+
+    public void setBandSettings(List<BandSetting> bandSettings) {
+        this.bandSettings = bandSettings;
+    }
+
     public MetadataMap getMetadata() {
         if (metadata == null) {
             metadata = new MetadataMap();
@@ -149,7 +177,7 @@ public class NetCDFSettingsContainer implements Serializable {
         private String value;
 
         public String getKey() {
-            if ((key == null || key.trim().isEmpty())) {
+            if (key == null || key.trim().isEmpty()) {
                 throw new IllegalArgumentException("Missing attribute key");
             }
             return key.trim();
@@ -214,6 +242,84 @@ public class NetCDFSettingsContainer implements Serializable {
         @SuppressWarnings("PMD.OverrideBothEqualsAndHashcode")
         public boolean equals(Object other) {
             return other instanceof VariableAttribute && super.equals(other);
+        }
+    }
+
+    /**
+     * Per-band output settings. Each entry maps to the source coverage's sample dimension at the same index. Used by
+     * the encoder when the source coverage has more than one sample dimension to write a separate output variable per
+     * band — see {@link NetCDFSettingsContainer#getBandSettings()} for the activation rules and defaults.
+     */
+    public static class BandSetting implements Serializable {
+
+        /**
+         * Output variable name for this band. When {@code null} or empty, the encoder uses the source band's
+         * {@link org.geotools.coverage.GridSampleDimension#getDescription() sample dimension description} — which
+         * equals the {@code <definition>} value when the source coverage is a {@code COVERAGE_VIEW} with
+         * {@code BAND_SELECT} entries.
+         */
+        private String name;
+
+        /** Output unit of measure for this band. When {@code null} or empty, the band's source unit is used as-is. */
+        private String uom;
+
+        /**
+         * Attributes to add to this band's output variable (in addition to the container-level
+         * {@link NetCDFSettingsContainer#getVariableAttributes() variableAttributes}). Per-band entries take precedence
+         * on key collisions.
+         */
+        private List<VariableAttribute> variableAttributes;
+
+        public BandSetting() {}
+
+        public BandSetting(String name, String uom, List<VariableAttribute> variableAttributes) {
+            this.name = name;
+            this.uom = uom;
+            this.variableAttributes = variableAttributes;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getUom() {
+            return uom;
+        }
+
+        public void setUom(String uom) {
+            this.uom = uom;
+        }
+
+        public List<VariableAttribute> getVariableAttributes() {
+            if (variableAttributes == null) {
+                variableAttributes = new ArrayList<>();
+            }
+            return variableAttributes;
+        }
+
+        public void setVariableAttributes(List<VariableAttribute> variableAttributes) {
+            this.variableAttributes = variableAttributes;
+        }
+
+        /** @see java.lang.Object#equals(java.lang.Object) */
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof BandSetting bs)) {
+                return false;
+            }
+            return Objects.equals(name, bs.name)
+                    && Objects.equals(uom, bs.uom)
+                    && getVariableAttributes().equals(bs.getVariableAttributes());
+        }
+
+        /** @see java.lang.Object#hashCode() */
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, uom, getVariableAttributes());
         }
     }
 

@@ -48,73 +48,15 @@
         </bean>
     -->
     
-	<!-- login buttons -->
- 	<bean id="openIdConnectGoogleLoginButton" class="org.geoserver.web.LoginFormInfo">
- 	     <!-- id must contain Spring oauthClient registrationId for enablement to work -->
- 	     <!-- see GeoServerOAuth2LoginAuthenticationProvider and OAuth2LoginButtonManager-->
- 		<property name="id" value="openIdConnectGoogleLoginButton" />
- 		<property name="titleKey" value="" />
- 		<property name="descriptionKey" value="OAuth2LoginAuthProviderPanel.googleDescription" />
- 		<property name="componentClass" value="org.geoserver.web.security.oauth2.login.OAuth2LoginAuthProviderPanel" />
- 		<property name="name" value="openidconnect-google" />
- 		<property name="icon" value="google.png" />
- 		<property name="filterClass" value="org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter" />
- 		<property name="loginPath" value="/web/oauth2/authorization/google" />
- 		<property name="method" value="GET" />
- 		<property name="enabled" value="false" />
-        <property name="justUseExternalLink" value="true" />
-    </bean>
- 	  <bean id="openIdConnectGitHubLoginButton" class="org.geoserver.web.LoginFormInfo">
- 	  <!-- id must contain Spring oauthClient registrationId for enablement to work -->
-        <property name="id" value="openIdConnectGitHubLoginButton" />
-        <property name="titleKey" value="" />
-        <property name="descriptionKey" value="OAuth2LoginAuthProviderPanel.gitHubDescription" />
-        <property name="componentClass" value="org.geoserver.web.security.oauth2.login.OAuth2LoginAuthProviderPanel" />
-        <property name="name" value="openidconnect-github" />
-        <property name="icon" value="github.png" />
-        <property name="filterClass" value="org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter" />
-        <property name="loginPath" value="/web/oauth2/authorization/gitHub" />
-        <property name="method" value="GET" />
-        <property name="enabled" value="false" />
-        <property name="justUseExternalLink" value="true" />
-      </bean>
-      <bean id="openIdConnectMicrosoftLoginButton" class="org.geoserver.web.LoginFormInfo">
-      <!-- id must contain Spring oauthClient registrationId for enablement to work -->
-        <property name="id" value="openIdConnectMicrosoftLoginButton" />
-        <property name="titleKey" value="" />
-        <property name="descriptionKey" value="OAuth2LoginAuthProviderPanel.msDescription" />
-        <property name="componentClass" value="org.geoserver.web.security.oauth2.login.OAuth2LoginAuthProviderPanel" />
-        <property name="name" value="openidconnect-microsoft" />
-        <property name="icon" value="microsoft.png" />
-        <property name="filterClass" value="org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter" />
-        <property name="loginPath" value="/web/oauth2/authorization/microsoft" />
-        <property name="method" value="GET" />
-        <property name="enabled" value="false" />
-        <property name="justUseExternalLink" value="true" />
-          </bean>
-    <bean id="openIdConnectOidcLoginButton" class="org.geoserver.web.LoginFormInfo">
-        <!-- id must contain Spring oauthClient registrationId for enablement to work -->
-        <property name="id" value="openIdConnectOidcLoginButton" />
-        <property name="titleKey" value="openidconnect.login.button.title" />
-        <property name="descriptionKey" value="OAuth2LoginAuthProviderPanel.oidcDescription" />
-        <property name="componentClass" value="org.geoserver.web.security.oauth2.login.OAuth2LoginAuthProviderPanel" />
-        <property name="name" value="openidconnect-oidc" />
-        <property name="icon" value="openid.png" />
-        <property name="filterClass" value="org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter" />
-        <property name="loginPath" value="/web/oauth2/authorization/oidc" />
-        <property name="method" value="GET" />
-        <property name="enabled" value="false" />
-        <property name="justUseExternalLink" value="true" />
-    </bean>
-    <bean id="oauth2LoginButtonManager" class="org.geoserver.web.security.oauth2.login.OAuth2LoginButtonManager" lazy-init="false">
-        <property name="loginFormInfos">
-	        <list>
-	            <ref bean="openIdConnectGoogleLoginButton"/>
-	            <ref bean="openIdConnectGitHubLoginButton"/>
-	            <ref bean="openIdConnectMicrosoftLoginButton"/>
-	            <ref bean="openIdConnectOidcLoginButton"/>
-	        </list>
-        </property>
-    </bean>
+    <!--
+        Login buttons are registered dynamically per filter instance by the OAuth2LoginButtonManager
+        below. See its Javadoc and OAuth2LoginButtonEnablementEvent for the registration lifecycle.
+        Until 2026-05 four static openIdConnect*LoginButton beans lived here and were mutated in
+        place by the manager; that design collapsed multiple filter instances sharing the same
+        provider type into a single button pointing at "an arbitrary surviving one", which broke
+        deployments that configure several filters of the same provider type (e.g. one OIDC filter
+        per identity provider).
+    -->
+    <bean id="oauth2LoginButtonManager" class="org.geoserver.web.security.oauth2.login.OAuth2LoginButtonManager" lazy-init="false"/>
 
 </beans>

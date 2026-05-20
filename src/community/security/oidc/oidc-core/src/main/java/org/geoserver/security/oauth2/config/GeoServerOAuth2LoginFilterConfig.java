@@ -241,7 +241,10 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         }
         String lBase = baseRedirectUriNormalized();
 
-        return lBase + DEFAULT_AUTHORIZATION_REQUEST_BASE_URI + lRegIds.get(0);
+        return lBase
+                + DEFAULT_AUTHORIZATION_REQUEST_BASE_URI
+                + "/"
+                + OAuth2ClientRegistrationId.scopedRegId(getName(), lRegIds.get(0));
     }
 
     /**

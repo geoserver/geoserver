@@ -45,7 +45,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.context.request.RequestContextListener;
 
 /**
@@ -145,7 +145,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
         // get IDTOKEN.resource_access.gs-client.roles
         // this should be "geoserverAdmin" (from keycloak)
-        DefaultOidcUser principal = (DefaultOidcUser) auth.getPrincipal();
+        OidcUser principal = (OidcUser) auth.getPrincipal();
         @SuppressWarnings("rawtypes")
         Map resourceAccess = (Map) principal.getIdToken().getClaim("resource_access");
         assertNotNull(resourceAccess);

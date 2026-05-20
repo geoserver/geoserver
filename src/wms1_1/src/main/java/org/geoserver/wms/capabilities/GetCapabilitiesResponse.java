@@ -140,9 +140,9 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
                  * so, a SAX XMLReader with an EntityResolver that resolves to the local copy of the
                  * DTD will be used.
                  */
-                SAXParserFactory spf = SAXParserFactory.newInstance();
+                SAXParserFactory spf = XMLUtils.newSAXParserFactory();
                 spf.setNamespaceAware(true); // xslt _needs_ namespace aware input source
-                SAXParser sp = spf.newSAXParser();
+                SAXParser sp = XMLUtils.newSAXParser(spf);
                 XMLReader rawCapsReader = sp.getXMLReader();
                 rawCapsReader.setEntityResolver(new EntityResolver() {
                     @Override

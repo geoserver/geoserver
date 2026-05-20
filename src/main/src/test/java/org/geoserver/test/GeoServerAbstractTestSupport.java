@@ -816,25 +816,25 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     protected Document dom(InputStream input, boolean skipDTD)
             throws ParserConfigurationException, SAXException, IOException {
         if (skipDTD) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
             factory.setNamespaceAware(true);
             factory.setValidating(false);
 
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
             builder.setEntityResolver(new EmptyResolver());
             Document dom = builder.parse(input);
 
             return dom;
         } else {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
             factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
             return builder.parse(input);
         }
     }
 
     /**
-     * Resolves everything to an empty xml document, useful for skipping errors due to missing dtds and the like
+     * Resolves everything to an empty xml document, useful for skipping errors due to missing DTDs and the like
      *
      * @author Andrea Aime - TOPP
      */
@@ -957,7 +957,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
     /** Utility method to print out a dom. */
     protected void print(Document dom) throws Exception {
-        TransformerFactory txFactory = TransformerFactory.newInstance();
+        TransformerFactory txFactory = XMLUtils.newTransformerFactory();
         try {
             txFactory.setAttribute("indent-number", 2);
         } catch (Exception e) {

@@ -116,11 +116,11 @@ public class AcknowledgementTransformer extends AbstractCSWTransformer {
 
         private Document parseAsXML(String data) {
             try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
                 factory.setNamespaceAware(true);
                 factory.setValidating(false);
 
-                DocumentBuilder builder = factory.newDocumentBuilder();
+                DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
                 if (!data.startsWith("<?xml")) {
                     data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + data;
                 }

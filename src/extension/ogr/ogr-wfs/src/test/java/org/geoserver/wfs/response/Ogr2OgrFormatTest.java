@@ -299,14 +299,15 @@ public class Ogr2OgrFormatTest {
     /**
      * Parses a stream into a dom.
      *
-     * @param skipDTD If true, will skip loading and validating against the associated DTD
+     * @param input Input stream to parse into document
+     * @return dom
      */
     protected Document dom(InputStream input) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
         factory.setNamespaceAware(true);
         factory.setValidating(false);
 
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
         return builder.parse(input);
     }
 }

@@ -13,7 +13,6 @@ import static org.junit.Assert.assertSame;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -113,8 +112,7 @@ public class DimensionInfoSerializationTest extends WMSTestSupport {
         XStreamPersister persister = xpf.createXMLPersister();
         persister.save(di, baos);
         baos.flush();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder();
         return builder.parse(new ByteArrayInputStream(baos.toByteArray()));
     }
 

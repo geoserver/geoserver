@@ -447,11 +447,11 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         try (InputStream dtdInputStream = new ByteArrayInputStream(dtd.getBytes())) {
 
             // parse and validate the capabilities document against the DTD
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
             factory.setValidating(true);
             factory.setNamespaceAware(true);
 
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
 
             // Normally, the DTD would downloaded from the internet.  We don't want to do that, so
             // we tell the parse to use our DTD instead of downloading it.

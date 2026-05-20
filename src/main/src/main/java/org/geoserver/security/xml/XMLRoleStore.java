@@ -30,7 +30,6 @@ import java.io.OutputStream;
 import java.util.SortedSet;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -78,7 +77,7 @@ public class XMLRoleStore extends AbstractRoleStore {
 
         DocumentBuilder builder = null;
         try {
-            builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder = XMLUtils.newDocumentBuilder();
         } catch (ParserConfigurationException e1) {
             throw new IOException(e1);
         }

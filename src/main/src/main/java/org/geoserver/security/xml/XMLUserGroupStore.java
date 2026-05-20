@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.util.SortedSet;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -83,8 +82,7 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
 
         DocumentBuilder builder = null;
         try {
-            DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
-            builder = fac.newDocumentBuilder();
+            builder = XMLUtils.newDocumentBuilder();
         } catch (ParserConfigurationException e1) {
             throw new IOException(e1);
         }

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.ConfigurationException;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -61,7 +62,8 @@ public class ReaderUtils {
      */
     public static Element parse(Reader xml) {
         InputSource in = new InputSource(xml);
-        DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
+
+        DocumentBuilderFactory dfactory = XMLUtils.newDocumentBuilderFactory();
 
         dfactory.setNamespaceAware(false);
         dfactory.setValidating(false);
@@ -72,7 +74,8 @@ public class ReaderUtils {
         Document doc;
 
         try {
-            doc = dfactory.newDocumentBuilder().parse(in);
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(dfactory);
+            doc = builder.parse(in);
         } catch (Exception e) {
             String msg = "Error reading : " + xml;
             throw new RuntimeException(msg, e);
@@ -570,34 +573,27 @@ public class ReaderUtils {
 
             // TODO: pretty sure this doesn't actually do validation
             // ahhh... xml in java....
-            SAXParserFactory sf = SAXParserFactory.newInstance();
+            SAXParserFactory sf = XMLUtils.newSAXParserFactory();
             sf.setNamespaceAware(true);
             sf.setValidating(true);
-            SAXParser parser = sf.newSAXParser();
+            SAXParser parser = XMLUtils.newSAXParser(sf);
             parser.setProperty(
                     "http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
 
-            //            SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
-            //               parser.setProperty("http://xml.org/sax/features/validation",
+            //            parser.setProperty("http://xml.org/sax/features/validation", Boolean.TRUE);
+            //            parser.setProperty("http://apache.org/xml/features/validation/schema", Boolean.TRUE);
+            //            parser.setProperty("http://apache.org/xml/features/validation/schema-full-checking",
             // Boolean.TRUE);
-            //
-            //                parser.setProperty("http://apache.org/xml/features/validation/schema",
-            //                    Boolean.TRUE);
-            //
-            // parser.setProperty("http://apache.org/xml/features/validation/schema-full-checking",
-            //                    Boolean.TRUE);
 
             if (schemaLocation != null) {
                 parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", schemaLocation);
-                //                        if ( targetNamespace != null ) {
+                //                if ( targetNamespace != null ) {
                 //
                 // parser.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation",
-                //                                    targetNamespace + " " + schemaLocation );
-                //                        }
+                //                            targetNamespace + " " + schemaLocation );
+                //                }
             }
-
             parser.parse(in, errorHandler);
-
         } catch (Exception e) {
             String msg = "Error reading : " + xml;
             throw new RuntimeException(msg, e);

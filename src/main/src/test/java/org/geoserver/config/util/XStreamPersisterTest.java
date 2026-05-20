@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -1704,7 +1703,7 @@ public class XStreamPersisterTest {
     }
 
     protected Document dom(InputStream in) throws ParserConfigurationException, SAXException, IOException {
-        return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+        return XMLUtils.newDocumentBuilder().parse(in);
     }
 
     protected void print(InputStream in) throws Exception {

@@ -130,4 +130,138 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   </rule>
   
 
+  <rule name="AvoidDocumentBuilderFactory"
+        language="java"
+        message="Do not use DocumentBuildeFactory instance directly; recommend XMLUtils.newDocumentBuilderFactory()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of DocumentBuilderFactory.newInstance() which should be avoided in favor of
+      XMLUtils.DocumentBuilderFactory(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+          <value>
+              <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.parsers.DocumentBuilderFactory#newInstance()")]
+              ]]>
+          </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidDocumentBuilder"
+        language="java"
+        message="Do not use DocumentBuilder directly; recommend XMLUtils.newDocumentBuilder()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of DocumentBuilderFactory.newDocumentBuilder() which should be avoided in favor of
+      XMLUtils.newDocumentBuilder(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+          <value>
+              <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.parsers.DocumentBuilderFactory#newDocumentBuilder()")]
+              ]]>
+          </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidTransformFactory"
+        language="java"
+        message="Do not use TransformerFactory directly; recommend XMLUtils.newInstance()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of TransformerFactory.newInstance() which should be avoided in favor of
+      XMLUtils.newTransformerFactory(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+          <value>
+              <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.transform.TransformerFactory#newInstance()")]
+              ]]>
+          </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidTransformer"
+        language="java"
+        message="Do not use TransformerFactory.newTransformer() directly; recommend XMLUtils.newTransformer()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of TransformerFactory.newTransformer() which should be avoided in favor of
+      XMLUtils.newTransformer(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.transform.TransformerFactory#newTransformer()")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidTransformerSource"
+        language="java"
+        message="Do not use TransformerFactory.newTransformer(source) directly; recommend XMLUtils.newTransformer(source)"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of TransformerFactory.newTransformer(Source) which should be avoided in favor of
+      XMLUtils.newTransformer(Source,Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.transform.TransformerFactory#newTransformer(javax.xml.transform.Source)")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidSAXParserFactory"
+        language="java"
+        message="Do not use ParserFactory.newInstance() directly; recommend XMLUtils.newSAXParserFactory()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of SAXParserFactory.newInstance() which should be avoided in favor of
+      XMLUtils.newSAXParserFactory(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.parsers.SAXParserFactory#newInstance()")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidSaxParser"
+        language="java"
+        message="Do not use SAXParserFactory.newSAXParser() directly; recommend XMLUtils.newSAXParser()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of SAXParserFactory.newSAXParser() which should be avoided in favor of
+      XMLUtils.newSAXParser(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.parsers.SAXParserFactory#newInstance()")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
 </ruleset>

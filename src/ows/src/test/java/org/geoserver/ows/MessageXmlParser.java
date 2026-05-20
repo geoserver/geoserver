@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.geotools.util.Version;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -26,14 +27,12 @@ public class MessageXmlParser extends XmlRequestReader {
     @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
+        DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory();
         dbf.setExpandEntityReferences(false);
         dbf.setValidating(false);
         dbf.setNamespaceAware(true);
 
-        DocumentBuilder builder = dbf.newDocumentBuilder();
-        // builder.setEntityResolver(PreventLocalEntityResolver.INSTANCE);
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder(dbf);
         try {
             Document doc = builder.parse(new InputSource(reader));
             String message = doc.getDocumentElement().getAttribute("message");

@@ -59,6 +59,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.wcs.v2_0.WCSConfiguration;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.Parser;
 import org.junit.After;
 import org.locationtech.jts.geom.CoordinateXY;
@@ -138,10 +139,10 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                             // without
                             // having to really implement every bit of it is to create a
                             // DOMImplementationLS
-                            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                            DocumentBuilderFactory builderFactory = XMLUtils.newDocumentBuilderFactory();
                             builderFactory.setNamespaceAware(true);
 
-                            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+                            DocumentBuilder builder = XMLUtils.newDocumentBuilder(builderFactory);
                             // fake xml to parse
                             String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><empty></empty>";
                             dom = (DOMImplementationLS) builder.parse(new ByteArrayInputStream(xml.getBytes()))

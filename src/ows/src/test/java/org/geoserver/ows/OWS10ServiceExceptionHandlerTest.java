@@ -20,6 +20,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
+import org.geotools.xml.XMLUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -97,10 +98,10 @@ public class OWS10ServiceExceptionHandlerTest {
         InputStream input =
                 new ByteArrayInputStream(response.getContentAsString().getBytes());
 
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory docBuilderFactory = XMLUtils.newDocumentBuilderFactory();
         docBuilderFactory.setNamespaceAware(true);
 
-        Document doc = docBuilderFactory.newDocumentBuilder().parse(input);
+        Document doc = XMLUtils.newDocumentBuilder(docBuilderFactory).parse(input);
         assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
     }
 
@@ -116,10 +117,10 @@ public class OWS10ServiceExceptionHandlerTest {
         InputStream input =
                 new ByteArrayInputStream(response.getContentAsString().getBytes());
 
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory docBuilderFactory = XMLUtils.newDocumentBuilderFactory();
         docBuilderFactory.setNamespaceAware(true);
 
-        Document doc = docBuilderFactory.newDocumentBuilder().parse(input);
+        Document doc = XMLUtils.newDocumentBuilder(docBuilderFactory).parse(input);
 
         assertEquals(
                 "round-tripped through character entities",
@@ -141,10 +142,10 @@ public class OWS10ServiceExceptionHandlerTest {
         InputStream input =
                 new ByteArrayInputStream(response.getContentAsString().getBytes());
 
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory docBuilderFactory = XMLUtils.newDocumentBuilderFactory();
         docBuilderFactory.setNamespaceAware(true);
 
-        Document doc = docBuilderFactory.newDocumentBuilder().parse(input);
+        Document doc = XMLUtils.newDocumentBuilder(docBuilderFactory).parse(input);
 
         String message = message1 + "\n" + message2;
         assertEquals(
@@ -169,10 +170,10 @@ public class OWS10ServiceExceptionHandlerTest {
         InputStream input =
                 new ByteArrayInputStream(response.getContentAsString().getBytes());
 
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory docBuilderFactory = XMLUtils.newDocumentBuilderFactory();
         docBuilderFactory.setNamespaceAware(true);
 
-        Document doc = docBuilderFactory.newDocumentBuilder().parse(input);
+        Document doc = XMLUtils.newDocumentBuilder(docBuilderFactory).parse(input);
         // normalise whitespace
         String exceptionText = xpath.evaluate("ows:ExceptionReport/ows:Exception/ows:ExceptionText", doc)
                 .replaceAll("\\s+", " ");
@@ -195,10 +196,10 @@ public class OWS10ServiceExceptionHandlerTest {
         InputStream input =
                 new ByteArrayInputStream(response.getContentAsString().getBytes());
 
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory docBuilderFactory = XMLUtils.newDocumentBuilderFactory();
         docBuilderFactory.setNamespaceAware(true);
 
-        Document doc = docBuilderFactory.newDocumentBuilder().parse(input);
+        Document doc = XMLUtils.newDocumentBuilder(docBuilderFactory).parse(input);
         // normalise whitespace
         String exceptionText = xpath.evaluate("ows:ExceptionReport/ows:Exception/ows:ExceptionText", doc)
                 .replaceAll("\\s+", " ");

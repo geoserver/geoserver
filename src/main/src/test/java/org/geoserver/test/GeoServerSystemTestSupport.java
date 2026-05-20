@@ -1517,7 +1517,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
 
         if (skipDTD) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             try {
                 factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
@@ -1536,15 +1536,15 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             factory.setNamespaceAware(true);
             factory.setValidating(false);
 
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
             builder.setEntityResolver(EmptyResolver.INSTANCE);
             Document dom = builder.parse(input);
 
             return dom;
         } else {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
             factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
             return builder.parse(input);
         }
     }

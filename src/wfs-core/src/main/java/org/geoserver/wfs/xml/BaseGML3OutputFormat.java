@@ -75,12 +75,11 @@ public abstract class BaseGML3OutputFormat extends WFSGetFeatureOutputFormat imp
     protected static DOMSource xslt;
 
     static {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory docFactory = XMLUtils.newDocumentBuilderFactory();
         docFactory.setNamespaceAware(true);
         Document xsdDocument = null;
         try {
-            xsdDocument = docFactory
-                    .newDocumentBuilder()
+            xsdDocument = XMLUtils.newDocumentBuilder(docFactory)
                     .parse(BaseGML3OutputFormat.class.getResourceAsStream("/ChangeNumberOfFeature.xslt"));
             xslt = new DOMSource(xsdDocument);
         } catch (Exception e) {

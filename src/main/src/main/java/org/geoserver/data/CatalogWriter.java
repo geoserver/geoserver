@@ -58,11 +58,11 @@ public class CatalogWriter {
 
     public CatalogWriter() {
         try {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory builderFactory = XMLUtils.newDocumentBuilderFactory();
             builderFactory.setNamespaceAware(false);
             builderFactory.setValidating(false);
 
-            document = builderFactory.newDocumentBuilder().newDocument();
+            document = XMLUtils.newDocumentBuilder(builderFactory).newDocument();
             catalog = document.createElement("catalog");
             document.appendChild(catalog);
         } catch (Exception e) {

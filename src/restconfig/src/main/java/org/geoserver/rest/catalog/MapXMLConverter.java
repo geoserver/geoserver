@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -56,7 +55,7 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
 
         Document dom;
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder();
             builder.setEntityResolver(catalog.getResourcePool().getEntityResolver());
             dom = builder.parse(inputMessage.getBody());
         } catch (SAXException | IOException | ParserConfigurationException e) {
@@ -76,7 +75,7 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
 
         Element root;
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder();
             Document doc = builder.newDocument();
             root = doc.createElement(getMapName(map));
             doc.appendChild(root);

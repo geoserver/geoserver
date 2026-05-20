@@ -19,6 +19,7 @@ import org.geoserver.smartdataloader.domain.DomainModelConfig;
 import org.geoserver.smartdataloader.domain.entities.DomainModel;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.geoserver.smartdataloader.visitors.appschema.AppSchemaVisitor;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -43,8 +44,7 @@ public abstract class JDBCCyclicAppSchemaVisitorTest extends AbstractJDBCSmartDa
 
         try (InputStream is =
                 JDBCAppSchemaVisitorTest.class.getResourceAsStream("meteo-stations-appschema-cyclic.xml")) {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            DocumentBuilder dBuilder = XMLUtils.newDocumentBuilder();
             Document control = dBuilder.parse(is);
             // clean sourceDataStores nodes from control and dmv doc to allow assertion based on xml
             // comparision

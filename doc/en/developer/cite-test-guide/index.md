@@ -623,7 +623,7 @@ make stop
 
 to just shut down the docker composition without cleaning up the `logs/` directory.
 
-# GitHub Actions{%raw%}[]{#commandline}{%endraw%} {: #teamengine }
+# GitHub Actions
 
 In order to keep up to date, a [CITE Tests workflow](https://github.com/geoserver/geoserver/actions/workflows/cite.yml) runs automatically on each PR.
 

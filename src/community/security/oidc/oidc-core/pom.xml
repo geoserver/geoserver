@@ -154,8 +154,8 @@
         <configuration>
           <excludes>
             <!-- Interface-only classes with no executable code -->
-            <exclude>**/GeoServerOAuth2LoginCustomizers.class</exclude>
-            <exclude>**/GeoServerOAuth2LoginCustomizers$*.class</exclude>
+            <exclude>**/OAuth2LoginCustomizers.class</exclude>
+            <exclude>**/OAuth2LoginCustomizers$*.class</exclude>
           </excludes>
         </configuration>
       </plugin>

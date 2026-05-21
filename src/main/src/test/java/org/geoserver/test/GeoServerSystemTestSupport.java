@@ -128,6 +128,8 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.NullEntityResolver;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.XSD;
@@ -1542,9 +1544,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
             return dom;
         } else {
-            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
+            Hints hints = new Hints(Hints.ENTITY_RESOLVER, NullEntityResolver.INSTANCE);
+
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory(hints);
             factory.setNamespaceAware(true);
-            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
+
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory, hints);
             return builder.parse(input);
         }
     }

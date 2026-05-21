@@ -139,6 +139,8 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
         // this request forces an IOException
         try (BufferedReader input = getResourceInputStream("WMSPostServiceException.xml")) {
             System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+            // This depends on EntityResolverProvider configuring GeoTools with
+            // NullEntityResolver, providing a very relaxed set of parsing restrictions
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
             fail("ServiceException with IOException Expected");
         } catch (ServiceException e) {

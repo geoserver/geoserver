@@ -1433,7 +1433,7 @@ public class Dispatcher extends AbstractController {
             // do a more lax serach, search only on the element name if the
             // namespace was unspecified
             if (namespace == null || namespace.isEmpty()) {
-                String msg = "No namespace specified in request, searching for " + " xml reader by element name only";
+                String msg = "No namespace specified in request, searching for xml reader by element name only";
                 logger.info(msg);
 
                 for (XmlRequestReader xmlReader : xmlReaders) {

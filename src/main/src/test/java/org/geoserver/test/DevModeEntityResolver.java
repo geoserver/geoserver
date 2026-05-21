@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.test;
 
 import java.io.File;
@@ -10,7 +14,7 @@ import org.xml.sax.SAXException;
 
 /**
  * In IDEs during development GeoTools sources can be in the classpath of GeoServer tests, this resolver allows them to
- * be resolved while blocking the rest
+ * be resolved while blocking the rest.
  */
 public class DevModeEntityResolver extends PreventLocalEntityResolver {
 

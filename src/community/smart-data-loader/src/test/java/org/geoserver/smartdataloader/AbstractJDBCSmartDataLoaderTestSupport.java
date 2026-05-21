@@ -9,7 +9,6 @@ import java.sql.DatabaseMetaData;
 import java.util.Properties;
 import javax.sql.DataSource;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;

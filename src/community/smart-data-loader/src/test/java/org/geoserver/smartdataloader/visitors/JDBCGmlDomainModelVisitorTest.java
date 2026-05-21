@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.sql.DatabaseMetaData;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;

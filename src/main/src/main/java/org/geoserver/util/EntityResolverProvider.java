@@ -42,8 +42,16 @@ public class EntityResolverProvider {
      */
     private final AllowListEntityResolver ALLOWLIST_ENTITY_RESOLVER;
 
-    /** A entity resolver provider that always disables entity resolution */
-    public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER = new EntityResolverProvider(null);
+    /**
+     * Testing placeholder: an entity resolver provider that throws IllegalStateException if used, intended for use in
+     * test cases to ensure that {@link #setEntityResolver(EntityResolver)} is called prior to parsing.
+     */
+    public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER = new EntityResolverProvider();
+
+    /** Placeholder EntityResolverProvider used by {@code RESOLVE_DISABLED_PROVIDER}. */
+    protected EntityResolverProvider() {
+        this.ALLOWLIST_ENTITY_RESOLVER = new AllowListEntityResolver();
+    }
 
     public EntityResolverProvider(GeoServer geoServer) {
         this.ALLOWLIST_ENTITY_RESOLVER = new AllowListEntityResolver(geoServer);

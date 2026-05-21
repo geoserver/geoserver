@@ -89,11 +89,19 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
     /** The path to the GeoServer webapp lib directory. */
     private final String geoServerLib;
 
+    /** Disabled AllowListEntityResolver used as a placeholder. */
+    public AllowListEntityResolver() {
+        this.geoServer = null;
+        this.baseURL = null;
+        this.ALLOWED_URIS = null;
+        this.geoServerLib = null;
+    }
+
     /**
-     * AllowListEntityResolver willing to resolve commong ogc and w3c entities, and those relative to GeoServer proxy
+     * AllowListEntityResolver willing to resolve common ogc and w3c entities, and those relative to GeoServer proxy
      * base url.
      *
-     * @param geoServer Used to obtain settings for proxy base url
+     * @param geoServer Used to obtain settings for proxy base url, or {@code null} when used in unit test.
      */
     public AllowListEntityResolver(GeoServer geoServer) {
         this(geoServer, null);
@@ -156,6 +164,13 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("resolveEntity request: name=%s, publicId=%s, baseURI=%s, systemId=%s"
                     .formatted(name, publicId, baseURI, systemId));
+        }
+        if (this.ALLOWED_URIS == null) {
+            // Placeholder AllowListEntityResolver used when EntityResolveProvider is setup for testing,
+            // Please call EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE) or
+            // similar if you end up at this exception message
+            throw new IllegalStateException(
+                    "EntityResolverProvider.setEntityResolver(entityResolver) must be called prior to parsing");
         }
 
         try {
@@ -323,6 +338,9 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
 
     @Override
     public String toString() {
+        if (ALLOWED_URIS == null) {
+            return "AllowListEntityResolver: EntityResolveProvider.RESOLVE_DISABLED_PROVIDER Placeholder";
+        }
         StringBuilder builder = new StringBuilder("AllowListEntityResolver:( ");
         builder.append(this.baseURL);
         builder.append(" ");

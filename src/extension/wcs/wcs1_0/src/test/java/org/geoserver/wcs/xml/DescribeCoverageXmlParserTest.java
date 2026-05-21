@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.StringReader;
 import net.opengis.wcs10.DescribeCoverageType;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
 import org.geotools.wcs.WCSConfiguration;
@@ -24,6 +25,7 @@ public class DescribeCoverageXmlParserTest {
     @Before
     public void setUp() throws Exception {
         configuration = new WCSConfiguration();
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
         reader = new WcsXmlReader(
                 "DescribeCoverage", "1.0.0", configuration, EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }

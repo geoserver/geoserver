@@ -76,5 +76,5 @@
 		that bit multi-OIDC-filter deployments under the previous per-filter-private repository design.
 	-->
 	<bean id="geoServerOAuth2ClientRegistrationRegistry"
-		class="org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationRegistry"/>
+		class="org.geoserver.security.oauth2.login.OAuth2ClientRegistrationRegistry"/>
 </beans>

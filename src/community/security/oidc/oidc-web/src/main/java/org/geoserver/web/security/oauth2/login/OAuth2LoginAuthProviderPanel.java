@@ -4,10 +4,11 @@
  */
 package org.geoserver.web.security.oauth2.login;
 
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.AccessToken;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.IdToken;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.MSGraphAPI;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.UserInfo;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.AccessToken;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.IdToken;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.KeycloakAPI;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.MSGraphAPI;
+import static org.geoserver.security.oauth2.config.OpenIdRoleSource.UserInfo;
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import com.google.common.io.CharStreams;
@@ -44,8 +45,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RoleSource;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.login.OAuth2Provider;
 import org.geoserver.security.web.auth.PreAuthenticatedUserNameFilterPanel;
 import org.geoserver.security.web.auth.RoleSourceChoiceRenderer;
@@ -244,6 +245,49 @@ public class OAuth2LoginAuthProviderPanel
             add(new TextField<String>("msGraphAppRoleAssignmentsObjectId").setRequired(false));
 
             add(new TextField<String>("tokenRolesClaim").setRequired(false));
+            add(new TextField<String>("roleConverterString").setRequired(false));
+            add(new CheckBox("onlyExternalListedRoles").setRequired(false));
+        }
+    }
+
+    /**
+     * Role-source sub-panel for {@link OpenIdRoleSource#KeycloakAPI}. Mirrors the layout of {@link MSGraphPanel}:
+     * exposes the Keycloak-specific picker (which configured {@code KeycloakRoleService} to delegate to) plus the
+     * cross-cutting role-converter and "only allow listed roles" controls. The role-converter visualisation table uses
+     * the same {@code roleConverterStringChanged()} JS hook MS Graph wires up.
+     */
+    static class KeycloakAPIPanel extends Panel {
+        private static final boolean isCssEmpty =
+                IsWicketCssFileEmpty(OAuth2LoginAuthProviderPanel.KeycloakAPIPanel.class);
+
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void renderHead(IHeaderResponse response) {
+            super.renderHead(response);
+            // Same role-converter live-visualisation hook MS Graph uses
+            String script = " roleConverterStringChanged();\n";
+            script += "$('#roleConverterString').on('input',function() { roleConverterStringChanged(this); } \n);\n\n";
+            response.render(OnDomReadyHeaderItem.forScript(script));
+            response.render(CssHeaderItem.forCSS(oidcPanelCSS, "oidcPanelCSS"));
+            response.render(JavaScriptContentHeaderItem.forScript(oidcPanelJS, "oidcAuthFilterPanelJS"));
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
+        public KeycloakAPIPanel(String id, RoleSource model) {
+            super(id, new Model<>());
+            // Server URL, realm AND admin-client credentials are all derived at resolution time from this filter's
+            // existing OIDC config (oidcDiscoveryUri / oidcClientId / oidcClientSecret). The OIDC client itself must
+            // have service-accounts-enabled=true and realm-management roles assigned to its service account.
+            add(new TextField<String>("keycloakAdminClientIdsOfRoleScopes").setRequired(false));
+            add(new CheckBox("keycloakUseCompositeRoles"));
+
+            // Cross-cutting role transformation, same fields the MS Graph sub-panel exposes
             add(new TextField<String>("roleConverterString").setRequired(false));
             add(new CheckBox("onlyExternalListedRoles").setRequired(false));
         }
@@ -481,6 +525,9 @@ public class OAuth2LoginAuthProviderPanel
         }
         if (MSGraphAPI.equals(model)) {
             return new MSGraphPanel("panel", model);
+        }
+        if (KeycloakAPI.equals(model)) {
+            return new KeycloakAPIPanel("panel", model);
         }
         return super.getRoleSourcePanel(model);
     }

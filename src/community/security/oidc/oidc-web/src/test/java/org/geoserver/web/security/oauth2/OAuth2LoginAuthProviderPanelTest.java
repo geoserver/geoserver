@@ -15,7 +15,7 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.web.AbstractSecurityNamedServicePanelTest;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.SecurityNamedServiceNewPage;

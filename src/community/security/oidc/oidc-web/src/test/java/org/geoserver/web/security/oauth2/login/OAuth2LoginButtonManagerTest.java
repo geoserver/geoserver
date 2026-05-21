@@ -4,11 +4,11 @@
  */
 package org.geoserver.web.security.oauth2.login;
 
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_GIT_HUB;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_GOOGLE;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_OIDC;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilterBuilder.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_GIT_HUB;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_GOOGLE;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_MICROSOFT;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_OIDC;
 import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.disableButtonEvent;
 import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.enableButtonEvent;
 import static org.junit.Assert.assertEquals;
@@ -32,8 +32,8 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.SecurityManagerListener;
 import org.geoserver.security.config.SecurityManagerConfig;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
+import org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId;
 import org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent;
 import org.geoserver.web.LoginFormInfo;
 import org.junit.Before;
@@ -69,7 +69,7 @@ public class OAuth2LoginButtonManagerTest {
     }
 
     private static String scopedRegId(String filterName, String baseRegId) {
-        return GeoServerOAuth2ClientRegistrationId.scopedRegId(filterName, baseRegId);
+        return OAuth2ClientRegistrationId.scopedRegId(filterName, baseRegId);
     }
 
     private static String expectedLoginPath(String scopedRegId) {

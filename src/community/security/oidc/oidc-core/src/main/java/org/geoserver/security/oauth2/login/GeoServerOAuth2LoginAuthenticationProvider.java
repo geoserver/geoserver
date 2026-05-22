@@ -15,9 +15,11 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.AbstractFilterProvider;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.FilterBuilderCustomizer;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfigValidator;
+import org.geoserver.security.oauth2.login.OAuth2LoginCustomizers.ClientRegistrationCustomizer;
+import org.geoserver.security.oauth2.login.OAuth2LoginCustomizers.FilterBuilderCustomizer;
+import org.geoserver.security.oauth2.login.OAuth2LoginCustomizers.HttpSecurityCustomizer;
 import org.geoserver.security.validation.SecurityConfigValidator;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -42,7 +44,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
  *     flexible configuration
  */
 public class GeoServerOAuth2LoginAuthenticationProvider extends AbstractFilterProvider
-        implements ApplicationListener<ApplicationEvent>, GeoServerOAuth2ClientRegistrationId {
+        implements ApplicationListener<ApplicationEvent>, OAuth2ClientRegistrationId {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerOAuth2LoginAuthenticationProvider.class);
 
@@ -88,7 +90,7 @@ public class GeoServerOAuth2LoginAuthenticationProvider extends AbstractFilterPr
         lBuilder.setConfiguration(lConfig);
         lBuilder.setSecurityManager(securityManager);
         lBuilder.setEventPublisher(context);
-        lBuilder.setClientRegistrationRegistry(getOptionalBean(GeoServerOAuth2ClientRegistrationRegistry.class));
+        lBuilder.setClientRegistrationRegistry(getOptionalBean(OAuth2ClientRegistrationRegistry.class));
         lBuilder.setHttpSecurityCustomizer(lHttpCustomizer);
         lBuilder.setClientRegistrationCustomizer(lClientCustomizer);
         if (lBuilderCustomizer != null) {

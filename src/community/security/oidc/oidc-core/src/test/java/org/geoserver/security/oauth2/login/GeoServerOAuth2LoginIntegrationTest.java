@@ -69,6 +69,8 @@ import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.UserProfilePropertyNames;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
@@ -268,7 +270,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         filterConfig.setOidcScopes("openid profile email phone address");
         filterConfig.setEnableRedirectAuthenticationEntryPoint(true);
         filterConfig.setOidcUserNameAttribute("email");
-        filterConfig.setRoleSource(GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.IdToken);
+        filterConfig.setRoleSource(OpenIdRoleSource.IdToken);
         filterConfig.setTokenRolesClaim("roles");
         // for ease of testing, do not use HTTPS
         filterConfig.setOidcForceAuthorizationUriHttps(false);

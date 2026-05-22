@@ -7,7 +7,7 @@ package org.geoserver.web.security.oauth2.resourceserver;
 import static org.junit.Assert.assertNotNull;
 
 import org.apache.wicket.model.Model;
-import org.geoserver.security.oauth2.resourceserver.GeoServerOAuth2ResourceServerFilterConfig;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2ResourceServerFilterConfig;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;

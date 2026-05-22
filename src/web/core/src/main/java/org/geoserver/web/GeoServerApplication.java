@@ -63,6 +63,7 @@ import org.geoserver.web.util.DataDirectoryConverterLocator;
 import org.geoserver.web.util.GeoToolsConverterAdapter;
 import org.geoserver.web.util.converters.StringBBoxConverter;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.web.wicket.WicketSecureRandomSupplier;
 import org.geotools.data.util.MeasureConverterFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.measure.Measure;
@@ -247,6 +248,8 @@ public class GeoServerApplication extends WebApplication
     @SuppressWarnings("deprecation")
     @Override
     protected void init() {
+        // fips secure Wicket random supplier
+        getSecuritySettings().setRandomSupplier(new WicketSecureRandomSupplier());
         // enable GeoServer custom resource locators
         getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());

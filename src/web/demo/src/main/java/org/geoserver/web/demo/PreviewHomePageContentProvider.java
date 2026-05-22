@@ -31,6 +31,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerHomePageContentProvider;
 import org.geoserver.web.HomePagePreviewSectionProvider;
+import org.geoserver.web.PreviewCatalogLinkSupport;
 import org.geoserver.web.PreviewLink;
 import org.geoserver.web.PreviewSectionLayout;
 
@@ -99,6 +100,8 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                             result.add(new Section(provider.getTitleKey(), provider.getLayout(), links));
                         }
                     }
+                    addCatalogLinkSections(result, published);
+                    result.sort(Comparator.comparingInt(PreviewHomePageContentProvider::sectionOrder));
                     sections.setVisible(!result.isEmpty());
                     return result;
                 }
@@ -117,7 +120,15 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                         protected void populateItem(ListItem<PreviewLink> item) {
                             PreviewLink link = item.getModelObject();
                             item.add(AttributeModifier.replace("data-filter-label", Model.of(link.label())));
-                            item.add(new ExternalLink("theLink", link.href(), link.label()));
+                            if (link.catalogLinkType() != null) {
+                                item.add(AttributeModifier.replace(
+                                        "data-catalog-link", Model.of(link.catalogLinkType())));
+                            }
+                            ExternalLink externalLink = new ExternalLink("theLink", link.href(), link.label());
+                            if (link.title() != null) {
+                                externalLink.add(AttributeModifier.append("title", link.title()));
+                            }
+                            item.add(externalLink);
                         }
                     });
                 }
@@ -128,4 +139,31 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
 
     /** Section title key and links to render. */
     record Section(String titleKey, PreviewSectionLayout layout, List<PreviewLink> links) {}
+
+    /**
+     * Adds dedicated metadata and data link sections. Display order is fixed in {@link #sectionOrder}: metadata first,
+     * then common/map/feature (and tiled) formats, then data links last.
+     */
+    private static void addCatalogLinkSections(List<Section> sections, PublishedInfo published) {
+        List<PreviewLink> metadata = PreviewCatalogLinkSupport.metadataLinks(published);
+        if (!metadata.isEmpty()) {
+            sections.add(new Section(PreviewCatalogLinkSupport.METADATA_LINKS, PreviewSectionLayout.LINKS, metadata));
+        }
+        List<PreviewLink> data = PreviewCatalogLinkSupport.dataLinks(published);
+        if (!data.isEmpty()) {
+            sections.add(new Section(PreviewCatalogLinkSupport.DATA_LINKS, PreviewSectionLayout.LINKS, data));
+        }
+    }
+
+    private static int sectionOrder(Section section) {
+        return switch (section.titleKey()) {
+            case PreviewCatalogLinkSupport.METADATA_LINKS -> 5;
+            case PreviewCatalogLinkSupport.COMMON_FORMATS -> 10;
+            case PreviewCatalogLinkSupport.MAP_FORMATS -> 20;
+            case PreviewCatalogLinkSupport.VECTOR_FORMATS -> 30;
+            case PreviewCatalogLinkSupport.TILED_FORMATS -> 40;
+            case PreviewCatalogLinkSupport.DATA_LINKS -> 50;
+            default -> 25;
+        };
+    }
 }

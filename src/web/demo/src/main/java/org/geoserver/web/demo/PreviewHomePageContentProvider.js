@@ -50,6 +50,7 @@ const updateOverflowToggle = section => {
     let hideFromHere = false;
     list.querySelectorAll("[data-filter-label]").forEach(item => {
         if (item.getAttribute("data-filter-hidden") === "1") return;
+        if (item.getAttribute("data-catalog-link")) return;
         const rect = item.getBoundingClientRect();
         if (!hideFromHere && rect.right > limitRight + 0.5) {
             hideFromHere = true;

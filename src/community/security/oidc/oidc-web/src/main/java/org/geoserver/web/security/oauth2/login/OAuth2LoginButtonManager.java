@@ -21,9 +21,9 @@ import org.geoserver.platform.ExtensionProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.SecurityManagerListener;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationRegistry;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
+import org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId;
+import org.geoserver.security.oauth2.login.OAuth2ClientRegistrationRegistry;
 import org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent;
 import org.geoserver.web.LoginFormInfo;
 import org.geotools.util.logging.Logging;
@@ -237,7 +237,7 @@ public class OAuth2LoginButtonManager
             //     authorization URL would 302 to the IdP even though no GeoServer filter is mounted to handle the
             //     callback. The button manager owns lifecycle here because it is the listener wired to security
             //     configuration changes; the OAuth2 builder publishes registrations, the manager removes them.
-            GeoServerOAuth2ClientRegistrationRegistry registry = lookupClientRegistrationRegistry();
+            OAuth2ClientRegistrationRegistry registry = lookupClientRegistrationRegistry();
             if (registry != null) {
                 registry.retainFilters(inChainFilterNames);
             }
@@ -264,16 +264,16 @@ public class OAuth2LoginButtonManager
     }
 
     /**
-     * Resolve the application-wide {@link GeoServerOAuth2ClientRegistrationRegistry}, if present. May be {@code null}
-     * in legacy / minimal test contexts that do not declare the registry bean — in which case the manager simply skips
-     * registry cleanup and relies on the builder's fallback path.
+     * Resolve the application-wide {@link OAuth2ClientRegistrationRegistry}, if present. May be {@code null} in legacy
+     * / minimal test contexts that do not declare the registry bean — in which case the manager simply skips registry
+     * cleanup and relies on the builder's fallback path.
      */
-    private GeoServerOAuth2ClientRegistrationRegistry lookupClientRegistrationRegistry() {
+    private OAuth2ClientRegistrationRegistry lookupClientRegistrationRegistry() {
         if (beanFactory == null) {
             return null;
         }
         try {
-            return beanFactory.getBean(GeoServerOAuth2ClientRegistrationRegistry.class);
+            return beanFactory.getBean(OAuth2ClientRegistrationRegistry.class);
         } catch (Exception e) {
             return null;
         }
@@ -393,7 +393,7 @@ public class OAuth2LoginButtonManager
 
     /**
      * Extracts the filter name from a scoped registration ID. The convention enforced by
-     * {@link GeoServerOAuth2ClientRegistrationId#scopedRegId(String, String)} is
+     * {@link OAuth2ClientRegistrationId#scopedRegId(String, String)} is
      * {@code <filterName><SCOPED_REG_ID_SEPARATOR><baseRegistrationId>}. When the separator is missing — a defensive
      * case that should not occur in practice — the whole string is treated as the filter name.
      */

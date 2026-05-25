@@ -8,8 +8,8 @@ import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.toList;
 import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
 import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
-import static org.geoserver.security.oauth2.common.OAuth2ClaimsHelpers.asStringList;
-import static org.geoserver.security.oauth2.common.OAuth2ClaimsHelpers.getClaim;
+import static org.geoserver.security.oauth2.token.OAuth2ClaimsHelpers.asStringList;
+import static org.geoserver.security.oauth2.token.OAuth2ClaimsHelpers.getClaim;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +23,8 @@ import java.util.logging.Logger;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
-import org.geoserver.security.oauth2.common.OAuth2RoleConverter;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.role.OAuth2RoleConverter;
 import org.geotools.util.logging.Logging;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -38,7 +39,7 @@ import org.springframework.util.StringUtils;
  * machine-to-machine requests carrying {@code Authorization: Bearer <JWT>}.
  */
 public class GeoServerOAuth2JwtAuthenticationConverter
-        implements Converter<Jwt, AbstractAuthenticationToken>, GeoServerOAuth2ClientRegistrationId {
+        implements Converter<Jwt, AbstractAuthenticationToken>, OAuth2ClientRegistrationId {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerOAuth2JwtAuthenticationConverter.class);
 

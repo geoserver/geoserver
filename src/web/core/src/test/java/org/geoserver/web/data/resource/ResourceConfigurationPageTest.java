@@ -1038,7 +1038,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testCancelReturnsToLayerHomeWhenReturnPageParamsProvided() {
+    public void testCancelReturnsToCorrectHomeWhenReturnEncodedInPageParameters() {
         login();
         LayerInfo layer = getCatalog().getLayers().get(0);
         String workspace = layer.getResource().getStore().getWorkspace().getName();
@@ -1047,11 +1047,11 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         PageParameters returnParams = new PageParameters();
         returnParams.add("workspace", workspace);
         returnParams.add("layer", layerName);
-        GeoServerBasePage.setReturnDestination(tester.getSession(), GeoServerHomePage.class, returnParams);
 
         PageParameters params = new PageParameters();
         params.add(ResourceConfigurationPage.WORKSPACE, workspace);
         params.add(ResourceConfigurationPage.LAYER, layerName);
+        GeoServerBasePage.addReturnDestination(params, GeoServerHomePage.class, returnParams);
         tester.startPage(ResourceConfigurationPage.class, params);
         tester.clickLink("publishedinfo:cancel");
 

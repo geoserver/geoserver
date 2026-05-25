@@ -284,10 +284,10 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
         }
 
         /**
-         * Link that records {@link GeoServerHomePage} as the session return destination, then navigates to the target
-         * page (same mechanism as {@link BreadcrumbNavigationPanel}). Uses Wicket {@link Link} listener navigation so
-         * {@link #onClick()} runs; a raw bookmarkable {@code href} would skip the server listener and would not set the
-         * return destination.
+         * Link that encodes {@link GeoServerHomePage} as the return destination in target page parameters, then
+         * navigates to the target page (same mechanism as {@link BreadcrumbNavigationPanel}). Uses Wicket {@link Link}
+         * listener navigation so {@link #onClick()} runs; a raw bookmarkable {@code href} would skip the server
+         * listener and would not attach the return destination.
          */
         private static final class HomeReturnPageLink extends Link<Void> {
             @Serial
@@ -310,7 +310,7 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
 
             @Override
             public void onClick() {
-                GeoServerBasePage.setReturnDestination(getSession(), GeoServerHomePage.class, homeReturnParams);
+                GeoServerBasePage.addReturnDestination(targetParams, GeoServerHomePage.class, homeReturnParams);
                 setResponsePage(pageClass, targetParams);
             }
         }

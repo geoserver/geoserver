@@ -20,10 +20,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.Page;
 import org.apache.wicket.RuntimeConfigurationType;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -108,7 +106,17 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     /** optional page parameters to use when navigating to {@link #returnPageClass}. */
     protected PageParameters returnPageParams;
 
-    public static final MetaDataKey<ReturnDestination> RETURN_DESTINATION_KEY = new MetaDataKey<>() {};
+    /**
+     * Return destination from the request that opened this page, kept when {@link #getPageParameters()} is overridden
+     * and no longer exposes {@link #RETURN_CLASS_PARAM} / {@link #RETURN_PARAM_PREFIX} keys.
+     */
+    private PageParameters encodedReturnDestination;
+
+    /** Page parameter holding the fully qualified class name of the return destination page. */
+    public static final String RETURN_CLASS_PARAM = "_returnClass";
+
+    /** Prefix for page parameters encoding return-destination context (e.g. {@code _return.workspace}). */
+    public static final String RETURN_PARAM_PREFIX = "_return.";
 
     public static final String VERSION_3 = "jquery/jquery-3.5.1.js";
 
@@ -119,6 +127,26 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     protected GeoServerBasePage() {
         commonBaseInit();
+    }
+
+    /**
+     * Retains return-destination parameters from the request that opened this page. Call from {@code PageParameters}
+     * constructors that delegate to other constructors without passing parameters to
+     * {@link #GeoServerBasePage(PageParameters)}.
+     */
+    protected void captureReturnDestination(PageParameters source) {
+        if (source == null || source.get(RETURN_CLASS_PARAM).toOptionalString() == null) {
+            return;
+        }
+        encodedReturnDestination = new PageParameters();
+        for (String key : source.getNamedKeys()) {
+            if (RETURN_CLASS_PARAM.equals(key) || key.startsWith(RETURN_PARAM_PREFIX)) {
+                String value = source.get(key).toOptionalString();
+                if (value != null) {
+                    encodedReturnDestination.add(key, value);
+                }
+            }
+        }
     }
 
     protected void commonBaseInit() {
@@ -771,6 +799,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      * Returns from the page by navigating to one of {@link #returnPage} or {@link #returnPageClass}, processed in that
      * order.
      *
+     * <p>Return destinations encoded in page parameters via {@link #addReturnDestination(PageParameters, Class,
+     * PageParameters)} are consulted first so multiple browser tabs do not interfere with each other.
+     *
      * <p>This method should be called by pages that must return after doing some task on a form submit such as a save
      * or a cancel. If no return page has been set via {@link #setReturnPage(Page)} or {@link #setReturnPage(Class)}
      * then {@link GeoServerHomePage} is used.
@@ -794,9 +825,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         String ws = getPageParameters().get("workspace").toOptionalString();
         PageParameters currentParams = (ws != null && !ws.isEmpty()) ? new PageParameters().add("workspace", ws) : null;
 
-        ReturnDestination destination = getSession().getMetaData(RETURN_DESTINATION_KEY);
+        ReturnDestination destination = getReturnDestinationFromPageParameters();
         if (destination != null) {
-            getSession().setMetaData(RETURN_DESTINATION_KEY, null);
             setResponsePage(destination.pageClass, destination.pageParameters);
             return;
         }
@@ -815,12 +845,50 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         setResponsePage(defaultPageClass, currentParams);
     }
 
-    public static void setReturnDestination(
-            Session session, Class<? extends Page> pageClass, PageParameters pageParameters) {
-        session.setMetaData(RETURN_DESTINATION_KEY, new ReturnDestination(pageClass, pageParameters));
+    /**
+     * Encodes a return destination in {@code targetParams} so {@link #doReturn()} can navigate back without session
+     * metadata (safe when multiple browser tabs share the same HTTP session).
+     */
+    public static void addReturnDestination(
+            PageParameters targetParams, Class<? extends Page> pageClass, PageParameters returnPageParameters) {
+        targetParams.add(RETURN_CLASS_PARAM, pageClass.getName());
+        if (returnPageParameters != null) {
+            for (String key : returnPageParameters.getNamedKeys()) {
+                String value = returnPageParameters.get(key).toOptionalString();
+                if (value != null) {
+                    targetParams.add(RETURN_PARAM_PREFIX + key, value);
+                }
+            }
+        }
     }
 
-    public static class ReturnDestination implements Serializable {
+    private ReturnDestination getReturnDestinationFromPageParameters() {
+        PageParameters source = encodedReturnDestination != null ? encodedReturnDestination : super.getPageParameters();
+        String returnClass = source.get(RETURN_CLASS_PARAM).toOptionalString();
+        if (returnClass == null) {
+            return null;
+        }
+        PageParameters returnParams = new PageParameters();
+        for (String key : source.getNamedKeys()) {
+            if (key.startsWith(RETURN_PARAM_PREFIX)) {
+                String paramName = key.substring(RETURN_PARAM_PREFIX.length());
+                String value = source.get(key).toOptionalString();
+                if (value != null) {
+                    returnParams.add(paramName, value);
+                }
+            }
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            Class<? extends Page> pageClass = (Class<? extends Page>) Class.forName(returnClass);
+            return new ReturnDestination(pageClass, returnParams.isEmpty() ? null : returnParams);
+        } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.WARNING, "Could not resolve return page class: " + returnClass, e);
+            return null;
+        }
+    }
+
+    static class ReturnDestination implements Serializable {
         private static final long serialVersionUID = 1L;
         final Class<? extends Page> pageClass;
         final PageParameters pageParameters;

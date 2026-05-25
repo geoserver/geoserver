@@ -253,8 +253,8 @@ public class BreadcrumbNavigationPanel extends Panel {
         Link<Void> menuLink = new Link<>("menuLink") {
             @Override
             public void onClick() {
-                GeoServerBasePage.setReturnDestination(
-                        getSession(), GeoServerHomePage.class, returnParams.isEmpty() ? null : returnParams);
+                GeoServerBasePage.addReturnDestination(
+                        targetParams, GeoServerHomePage.class, returnParams.isEmpty() ? null : returnParams);
                 setResponsePage(ctxMenu.getComponentClass(), targetParams);
             }
         };

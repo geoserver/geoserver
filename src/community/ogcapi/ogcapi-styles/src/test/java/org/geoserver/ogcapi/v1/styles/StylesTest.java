@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.v1.styles;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
@@ -52,6 +53,7 @@ public class StylesTest extends StylesTestSupport {
                         "RoadSegments",
                         "Streams",
                         "ws:NamedPlacesWS",
+                        "ws2:NamedPlacesWS2",
                         "cssSample",
                         "generic",
                         "line",
@@ -72,5 +74,30 @@ public class StylesTest extends StylesTestSupport {
                 exists(
                         json,
                         "styles[?(@.id == 'Default')].links[?(@.rel == 'stylesheet' && @.type == 'application/vnd.geoserver.geocss+css')]"));
+    }
+
+    @Test
+    public void testStylesWorkspaceScoped() throws Exception {
+        DocumentContext json = getAsJSONPath("ws/ogc/styles/v1/styles", 200);
+        List<String> ids = json.read("styles[*].id");
+
+        // styles from the current workspace are visible (name is dequalified under a virtual service)
+        assertTrue("expected NamedPlacesWS in " + ids, ids.contains("NamedPlacesWS"));
+        // global styles remain accessible from the workspace-scoped listing
+        assertTrue("expected global 'Default' style in " + ids, ids.contains("Default"));
+        // styles belonging to another workspace must not leak in
+        assertFalse("ws2 style leaked into ws listing: " + ids, ids.contains("NamedPlacesWS2"));
+        assertFalse("qualified ws2 style leaked into ws listing: " + ids, ids.contains("ws2:NamedPlacesWS2"));
+    }
+
+    @Test
+    public void testStylesWorkspaceScopedOtherWorkspace() throws Exception {
+        DocumentContext json = getAsJSONPath("ws2/ogc/styles/v1/styles", 200);
+        List<String> ids = json.read("styles[*].id");
+
+        assertTrue("expected NamedPlacesWS2 in " + ids, ids.contains("NamedPlacesWS2"));
+        assertTrue("expected global 'Default' style in " + ids, ids.contains("Default"));
+        assertFalse("ws style leaked into ws2 listing: " + ids, ids.contains("NamedPlacesWS"));
+        assertFalse("qualified ws style leaked into ws2 listing: " + ids, ids.contains("ws:NamedPlacesWS"));
     }
 }

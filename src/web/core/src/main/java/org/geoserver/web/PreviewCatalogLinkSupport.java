@@ -11,7 +11,9 @@ import java.util.logging.Logger;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataLinkInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
@@ -107,8 +109,24 @@ public final class PreviewCatalogLinkSupport {
             return null;
         }
         Catalog catalog = GeoServerApplication.get().getCatalog();
+        String prefixedName = resource.prefixedName();
+        if (resource instanceof FeatureTypeInfo) {
+            FeatureTypeInfo resolved = catalog.getFeatureTypeByName(prefixedName);
+            if (resolved != null) {
+                return resolved;
+            }
+        } else if (resource instanceof CoverageInfo) {
+            CoverageInfo resolved = catalog.getCoverageByName(prefixedName);
+            if (resolved != null) {
+                return resolved;
+            }
+        }
+        ResourceInfo resolved = catalog.getResourceByName(prefixedName, ResourceInfo.class);
+        if (resolved != null) {
+            return resolved;
+        }
         if (resource.getId() != null) {
-            ResourceInfo resolved = catalog.getResource(resource.getId(), ResourceInfo.class);
+            resolved = catalog.getResource(resource.getId(), ResourceInfo.class);
             if (resolved != null) {
                 return resolved;
             }

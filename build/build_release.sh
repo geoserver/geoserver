@@ -273,6 +273,9 @@ popd > /dev/null
 
 pushd src > /dev/null
 
+# Determine major version to select branch-specific behaviour
+major_version=$(echo "$tag" | cut -d. -f1)
+
 # build the release
 if [ -z $SKIP_BUILD ]; then
   echo "building release"
@@ -285,17 +288,24 @@ if [ -z $SKIP_BUILD ]; then
   # Build the docs
   ##################
 
-  pushd .. > /dev/null
+  if [ "$major_version" -ge 3 ]; then
+    # GeoServer 3.x+ uses MkDocs
+    pushd .. > /dev/null
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
 
-  # Prepare mkdocs in a virtualenv for the docs module build.
-  python3 -m venv venv
-  source venv/bin/activate
-  pip install -r requirements.txt
-
-  pushd doc/en > /dev/null
-  mvn -nsu -fae package $MAVEN_FLAGS
-  popd > /dev/null
-  popd > /dev/null
+    pushd doc/en > /dev/null
+    mvn -nsu -fae package $MAVEN_FLAGS
+    popd > /dev/null
+    popd > /dev/null
+  else
+    # GeoServer 2.x uses Sphinx (Maven-based doc build)
+    pushd ../doc/en > /dev/null
+    mvn clean compile $MAVEN_FLAGS
+    mvn package $MAVEN_FLAGS
+    popd > /dev/null
+  fi
 else
    echo "Skipping mvn clean install $MAVEN_FLAGS -DskipTests -P release,pending"
 fi
@@ -330,14 +340,41 @@ pushd $artifacts > /dev/null
 
 # bundle up HTML documentation output
 htmldoc=geoserver-$tag-htmldoc.zip
-docs_htmldoc=gs-docs-$tag-htmldoc.zip
 
-if [ -e ../../../doc/en/target/$docs_htmldoc ]; then
-  echo "Using $docs_htmldoc assembly"
-  cp ../../../doc/en/target/$docs_htmldoc $htmldoc
+if [ "$major_version" -ge 3 ]; then
+  # MkDocs assembly uses gs-docs- prefix
+  docs_htmldoc=gs-docs-$tag-htmldoc.zip
+  if [ -e ../../../doc/en/target/$docs_htmldoc ]; then
+    echo "Using $docs_htmldoc assembly"
+    cp ../../../doc/en/target/$docs_htmldoc $htmldoc
+  else
+    echo "Missing documentation assembly ../../../doc/en/target/$docs_htmldoc"
+    exit 1
+  fi
 else
-  echo "Missing documentation assembly ../../../doc/en/target/$docs_htmldoc"
-  exit 1
+  # Sphinx docs - check for assembly or build manually
+  if [ -e ../../../doc/en/target/$htmldoc ]; then
+    echo "Using $htmldoc assembly"
+    cp ../../../doc/en/target/$htmldoc $htmldoc
+  else
+    echo "Creating $htmldoc"
+    if [ -e user ]; then
+      unlink user
+    fi
+    if [ -e developer ]; then
+      unlink developer
+    fi
+    ln -sf ../../../doc/en/target/user/html user
+    ln -sf ../../../doc/en/target/developer/html developer
+    ln -sf ../../../doc/en/release/README.txt readme
+    if [ -e $htmldoc ]; then
+      rm -f $htmldoc
+    fi
+    zip -q -r $htmldoc user developer readme
+    unlink user
+    unlink developer
+    unlink readme
+  fi
 fi
 
 popd > /dev/null

@@ -44,7 +44,7 @@ By default GeoServer includes an example data directory allowing you to try out 
 
 ## External data directory location
 
-To make [upgrading](../installation/upgrade.md) easier, **Web Archive** users should switch to an *external* data directory (outside the application).
+To make [upgrading](../../installation/upgrade3.md) easier, **Web Archive** users should switch to an *external* data directory (outside the application).
 
 | Platform | Example location                                          |
 |----------|-----------------------------------------------------------|

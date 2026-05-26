@@ -78,6 +78,9 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
 
     @Before
     public void initialize() {
+        // Expand root and directory nodes so children are rendered (lazy rendering)
+        one.expanded.setObject(true);
+        two.expanded.setObject(true);
         treeView = new TreeView<>("treeView", one);
     }
 
@@ -145,6 +148,11 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
         assertEquals(false, one.getExpanded().getObject());
         assertTrue(treeView.getSelectedNodes().isEmpty());
         assertEquals(0, treeView.getSelectedViews().length);
+
+        // re-expand root for subsequent tests (programmatic expand + re-render)
+        one.expanded.setObject(true);
+        two.expanded.setObject(true);
+        tester.startComponentInPage(treeView);
 
         // multi-select toggle with ctrl
         tester.executeAjaxEvent("treeView:rootView:1:children:2:label:selectableLabel", "click");
@@ -223,6 +231,8 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
         tester.startComponentInPage(treeView);
         MockNode five = new MockNode(5, four);
         assertEquals("4", treeView.getNearestView(five).getId());
+        // four must be expanded for its child (five) to be rendered
+        four.expanded.setObject(true);
         tester.startComponentInPage(treeView);
         assertEquals("5", treeView.getNearestView(five).getId());
     }

@@ -8894,7 +8894,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#request-limits" class="md-nav__link">
+  <a href="#wms_configuration_limits" class="md-nav__link">
     <span class="md-ellipsis">
       
         Request limits
@@ -8908,7 +8908,7 @@
   <a href="#layergroup-capabilities-settings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        LayerGroup capabilities settings
+        LayerGroup Capabilities Settings
       
     </span>
   </a>
@@ -29845,7 +29845,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#request-limits" class="md-nav__link">
+  <a href="#wms_configuration_limits" class="md-nav__link">
     <span class="md-ellipsis">
       
         Request limits
@@ -29859,7 +29859,7 @@
   <a href="#layergroup-capabilities-settings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        LayerGroup capabilities settings
+        LayerGroup Capabilities Settings
       
     </span>
   </a>
@@ -29893,57 +29893,84 @@
 
 <h1 id="wms-configuration">WMS configuration<a class="headerlink" href="#wms-configuration" title="Permanent link">&para;</a></h1>
 <h2 id="layer-groups">Layer Groups<a class="headerlink" href="#layer-groups" title="Permanent link">&para;</a></h2>
-<p>A Layer Group is a group of layers that can be referred to by one layer name. For example, if you put three layers (call them <code>layer_A</code>, <code>layer_B</code>, and <code>layer_C</code>) under one Layer Group layer, then when a user makes a WMS <code>GetMap</code> request for that group name, they will get a map of those three layers.</p>
-<p>For information on configuring Layer Groups in the Web Administration Interface see <a href="../../../data/webadmin/layergroups/">Layer Groups</a>.</p>
-<h2 id="request-limits">Request limits<a class="headerlink" href="#request-limits" title="Permanent link">&para;</a></h2>
+<p>A Layer Group is a group of layers that can be referred to by one layer name. For example, if you put three layers (call them layer_A, layer_B, and layer_C) under the one "Layer Group" layer, then when a user makes a WMS getMap request for that group name, they will get a map of those three layers.</p>
+<p>For information on configuring Layer Groups in the Web Administration Interface see <a href="../../../data/webadmin/layergroups/">Layer Groups</a></p>
+<h2 id="wms_configuration_limits">Request limits<a class="headerlink" href="#wms_configuration_limits" title="Permanent link">&para;</a></h2>
 <p>The request limit options allow the administrator to limit the resources consumed by each WMS <code>GetMap</code> request.</p>
-<p>The following table shows the option names, a description, and the minimum GeoServer version at which the option is available.</p>
+<p>The following table shows the option names, a description, and the minimum GeoServer version at which the option is available (older versions will ignore it if set).</p>
 <table>
 <thead>
 <tr>
-<th>Option</th>
-<th>Description</th>
-<th>Version</th>
+<th><strong>Option</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Version</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><strong>Max rendering memory (KB)</strong></td>
-<td>Sets the maximum amount of memory a single GetMap request is allowed to use (in kilobytes). The limit is checked before request execution by estimating how much memory would be required to produce the output result. If the estimated memory size is below the limit, the request is executed; otherwise it is cancelled.</td>
+<td>Sets the maximum amount of memory a single GetMap request is allowed to use (in kilobytes). The limit is checked before request execution by estimating how much memory would be required to produce the output in the format requested. For example, for an image format the estimate is based on the size of the required rendering memory (which is determined by the image size, the pixel bit depth, and the number of active FeatureTypeStyles at the requested scale). If the estimated memory size is below the limit, the request is executed; otherwise it is cancelled.</td>
 <td>1.7.5</td>
 </tr>
 <tr>
 <td><strong>Max rendering time (s)</strong></td>
-<td>Sets the maximum number of seconds GeoServer will spend processing a request. This time limits the "blind processing" portion of the request, i.e. reading data and computing the output result. The execution time does not include the time taken to write results back to the client.</td>
+<td>Sets the maximum amount of time GeoServer will spend processing a request (in seconds). This time limits the "blind processing" portion of the request, that is, the time taken to read data and compute the output result (which may occur concurrently). If the execution time reaches the limit, the request is cancelled. The time required to write results back to the client is not limited by this parameter, since this is determined by the (unknown) network latency between the server and the client. For example, in the case of PNG/JPEG image generation, this option limits the data reading and rendering time, but not the time taken to write the image out.</td>
 <td>1.7.5</td>
 </tr>
 <tr>
 <td><strong>Max rendering errors (count)</strong></td>
-<td>Sets the maximum number of rendering errors tolerated by a GetMap request. By default GetMap makes a best-effort attempt to serve the result, ignoring invalid features, reprojection errors and the like. Limiting the number of errors can help identify issues and conserve CPU cycles.</td>
+<td>Sets the maximum amount of rendering errors tolerated by a GetMap request. By default GetMap makes a best-effort attempt to serve the result, ignoring invalid features, reprojection errors and the like. Setting a limit on the number of errors ignored can make it easier to notice issues, and conserves CPU cycles by reducing the errors which must be handled and logged</td>
 <td>1.7.5</td>
 </tr>
 <tr>
 <td><strong>Max number of dimension values</strong></td>
-<td>Sets the maximum number of dimension (time, elevation, custom) values that a client can request in a GetMap/GetFeatureInfo request. The work is usually proportional to the number of values, which are held in memory.</td>
+<td>Sets the maximum number of dimension (time, elevation, custom) values that a client can request in a GetMap/GetFeatureInfo request (the work to be done is usually proportional to said number of times, and the list of values is kept in memory during the processing)</td>
 <td>2.14.0</td>
 </tr>
 </tbody>
 </table>
-<p>The default value of each limit is <code>0</code>, which means the limit is not applied.</p>
-<p>When any of the request limits is exceeded, the GetMap operation is cancelled and a <code>ServiceException</code> is returned to the client.</p>
-<p>When setting these limits, consider peak conditions. For example, under normal circumstances a GetMap request may take less than a second. Under high load it may take longer, but it is usually not desirable to allow it to run for 30 minutes.</p>
-<h2 id="layergroup-capabilities-settings">LayerGroup capabilities settings<a class="headerlink" href="#layergroup-capabilities-settings" title="Permanent link">&para;</a></h2>
+<p>The default value of each limit is <code>0</code>, which specifies that the limit is not applied.</p>
+<p>If any of the request limits is exceeded, the GetMap operation is cancelled and a <code>ServiceException</code> is returned to the client.</p>
+<p>When setting the above limits it is suggested that peak conditions be taken into consideration. For example, under normal circumstances a GetMap request may take less than a second. Under high load it is acceptable for it to take longer, but it's usually not desirable to allow a request to go on for 30 minutes.</p>
+<p>The following table shows examples of reasonable values for the request limits:</p>
 <table>
 <thead>
 <tr>
-<th>Option</th>
-<th>Description</th>
+<th><strong>Option</strong></th>
+<th><strong>Value</strong></th>
+<th><strong>Rationale</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>maxRequestMemory</td>
+<td>16384</td>
+<td>16MB are sufficient to render a 2048x2048 image at 4 bytes per pixel (full color and transparency), or a 8x8 meta-tile when using GeoWebCache or TileCache. Note that the rendering process uses a separate memory buffer for each FeatureTypeStyle in an SLD, so this also affects the maximum image size. For example, if an SLD contains two FeatureTypeStyle elements in order to draw cased lines for a highway, the maximum image size will be limited to 1448x1448 (the memory requirement increases with the product of the image dimensions, so halving the memory decreases image dimensions by only about 30%)</td>
+</tr>
+<tr>
+<td>maxRenderingTime</td>
+<td>120</td>
+<td>A request that processes for a full two minutes is probably rendering too many features, regardless of the current server load. This may be caused by a request against a big layer using a style that does not have suitable scale dependencies</td>
+</tr>
+<tr>
+<td>maxRenderingErrors</td>
+<td>100</td>
+<td>Encountering 100 errors is probably the result of a request trying to reproject a big data set into a projection that is not appropriate for the output extent, resulting in many reprojection failures.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="layergroup-capabilities-settings">LayerGroup Capabilities Settings<a class="headerlink" href="#layergroup-capabilities-settings" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Option</strong></th>
+<th><strong>Description</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Default LayerGroup Style In GetCapabilities</td>
-<td>Enable/disable the encoding of the default LayerGroup style in GetCapabilities responses for LayerGroup with mode Named Tree, Container Tree, or Earth Observation Tree. Single and Opaque groups are not affected by the option and will always show the default style. By default the option is set to enabled.</td>
+<td>Enable/disable the encoding of the default LayerGroup style in GetCapabilties responses for LayerGroup with mode Named Tree, Container Tree, Earth Observation Tree. Single and Opaque groups are not affected by the option and will always show the default style. By default the option is set to enabled.</td>
 </tr>
 </tbody>
 </table>

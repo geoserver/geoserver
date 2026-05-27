@@ -17,18 +17,34 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.csw.records.iso.MetaDataDescriptor;
 import org.geoserver.csw.store.internal.CSWInternalTestSupport;
+import org.geoserver.test.DevModeEntityResolver;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.gml3.v3_2.GML;
+import org.geotools.util.NullEntityResolver;
+import org.geotools.util.factory.Hints;
 import org.geotools.xlink.XLINK;
 import org.geotools.xsd.ows.OWS;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /** @author Niels Charlier */
 public class MDTestSupport extends CSWInternalTestSupport {
+
+    @Before
+    public void setUp() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @BeforeClass
     public static void configureXMLUnit() throws Exception {
@@ -50,6 +66,7 @@ public class MDTestSupport extends CSWInternalTestSupport {
         namespaces.put("gml", GML.NAMESPACE);
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        Hints.putSystemDefault(Hints.ENTITY_RESOLVER, DevModeEntityResolver.INSTANCE);
     }
 
     // Lazy Loading.

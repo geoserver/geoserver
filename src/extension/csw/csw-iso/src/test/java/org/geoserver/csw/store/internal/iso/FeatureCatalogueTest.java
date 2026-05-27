@@ -12,13 +12,28 @@ import java.util.UUID;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.DevModeEntityResolver;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.util.NullEntityResolver;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class FeatureCatalogueTest extends MDTestSupport {
 
     private static String uuid = UUID.randomUUID().toString();
+
+    @Before
+    public void setUp() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @SuppressWarnings("unchecked")
     @Override

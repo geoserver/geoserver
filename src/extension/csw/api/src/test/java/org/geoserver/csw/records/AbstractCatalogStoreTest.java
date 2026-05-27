@@ -26,39 +26,52 @@ import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
+import org.geotools.util.NullEntityResolver;
+import org.geotools.util.factory.Hints;
 import org.junit.Test;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class AbstractCatalogStoreTest {
 
     @Test
     public void testNamespaceSupport() throws IOException, URISyntaxException {
-        AbstractCatalogStore store = new AbstractCatalogStore() {
-            {
-                support(CSWRecordDescriptor.getInstance());
-                support(GSRecordDescriptor.getInstance());
-            }
-
-            @Override
-            public FeatureCollection<FeatureType, Feature> getRecordsInternal(
-                    RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t) throws IOException {
-                if (rd == GSRecordDescriptor.getInstance()) {
-                    return new MemoryFeatureCollection(
-                            GSRecordDescriptor.getInstance().getFeatureType());
-                } else {
-                    throw new RuntimeException("Was expecting the geoserver record descriptor");
+        EntityResolver prior =
+                (EntityResolver) Hints.putSystemDefault(Hints.ENTITY_RESOLVER, NullEntityResolver.INSTANCE);
+        try {
+            AbstractCatalogStore store = new AbstractCatalogStore() {
+                {
+                    support(CSWRecordDescriptor.getInstance());
+                    support(GSRecordDescriptor.getInstance());
                 }
-            }
-        };
 
-        RecordDescriptor[] descriptors = store.getRecordDescriptors();
-        assertEquals(2, descriptors.length);
-        assertEquals(CSWRecordDescriptor.getInstance(), descriptors[0]);
-        assertEquals(GSRecordDescriptor.getInstance(), descriptors[1]);
-        Query query = new Query("Record");
-        query.setNamespace(new URI(GSRecordDescriptor.GS_NAMESPACE));
-        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT, null);
-        assertEquals(GSRecordDescriptor.getInstance().getFeatureType(), records.getSchema());
+                @Override
+                public FeatureCollection<FeatureType, Feature> getRecordsInternal(
+                        RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t) throws IOException {
+                    if (rd == GSRecordDescriptor.getInstance()) {
+                        return new MemoryFeatureCollection(
+                                GSRecordDescriptor.getInstance().getFeatureType());
+                    } else {
+                        throw new RuntimeException("Was expecting the geoserver record descriptor");
+                    }
+                }
+            };
+
+            RecordDescriptor[] descriptors = store.getRecordDescriptors();
+            assertEquals(2, descriptors.length);
+            assertEquals(CSWRecordDescriptor.getInstance(), descriptors[0]);
+            assertEquals(GSRecordDescriptor.getInstance(), descriptors[1]);
+            Query query = new Query("Record");
+            query.setNamespace(new URI(GSRecordDescriptor.GS_NAMESPACE));
+            FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT, null);
+            assertEquals(GSRecordDescriptor.getInstance().getFeatureType(), records.getSchema());
+        } finally {
+            if (prior != null) {
+                Hints.putSystemDefault(Hints.ENTITY_RESOLVER, prior);
+            } else {
+                Hints.removeSystemDefault(Hints.ENTITY_RESOLVER);
+            }
+        }
     }
 
     static class GSRecordDescriptor extends AbstractRecordDescriptor {

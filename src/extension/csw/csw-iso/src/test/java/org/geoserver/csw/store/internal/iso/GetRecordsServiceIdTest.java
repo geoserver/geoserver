@@ -14,8 +14,11 @@ import java.util.Arrays;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.DevModeEntityResolver;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.NullEntityResolver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +28,16 @@ import org.w3c.dom.Document;
 public class GetRecordsServiceIdTest extends MDTestSupport {
 
     private File serviceQueryablesIgnore, originalQueryablesIgnore, queryables;
+
+    @Before
+    public void setUp() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

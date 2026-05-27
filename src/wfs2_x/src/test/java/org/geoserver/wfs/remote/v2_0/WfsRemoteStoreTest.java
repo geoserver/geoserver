@@ -20,8 +20,10 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.v2_0.WFS20TestSupport;
 import org.geotools.api.data.DataAccess;
@@ -29,12 +31,25 @@ import org.geotools.data.util.NullProgressListener;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.NullEntityResolver;
 import org.geotools.util.decorate.Wrapper;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /** Contains integration tests related with GeoServer WFS 2.0 remote store. */
 public class WfsRemoteStoreTest extends WFS20TestSupport {
+
+    @Before
+    public void setUp() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Test
     @SuppressWarnings("deprecation")

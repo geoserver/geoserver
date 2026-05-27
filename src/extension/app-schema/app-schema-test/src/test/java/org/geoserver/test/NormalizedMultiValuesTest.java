@@ -29,13 +29,17 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.type.Name;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.feature.NameImpl;
 import org.geotools.jdbc.JDBCFeatureStore;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kordamp.json.JSONArray;
 import org.kordamp.json.JSONException;
@@ -74,6 +78,16 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
                 "http://www.opengis.net/wfs/2.0",
                 "gml",
                 "http://www.opengis.net/gml/3.2");
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
     }
 
     @Override

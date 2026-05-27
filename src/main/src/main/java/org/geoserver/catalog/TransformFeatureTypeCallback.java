@@ -18,10 +18,12 @@ import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.util.InternationalString;
 import org.geotools.data.transform.Definition;
 import org.geotools.data.transform.TransformFactory;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
@@ -33,6 +35,8 @@ import org.geotools.util.SimpleInternationalString;
  * eventual {@link AttributeTypeInfo} list.
  */
 public class TransformFeatureTypeCallback {
+
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory(null);
 
     public FeatureType retypeFeatureType(FeatureTypeInfo fti, FeatureType schema) throws IOException {
         List<AttributeTypeInfo> attributes = fti.getAttributes();
@@ -75,7 +79,12 @@ public class TransformFeatureTypeCallback {
     private Definition toDefinition(AttributeTypeInfo ati) {
         try {
             String name = ati.getName();
-            Expression source = ECQL.toExpression(ati.getSource());
+            Expression source;
+            if (ati.getRawSource() == null) {
+                source = FF.property(name);
+            } else {
+                source = ECQL.toExpression(ati.getSource());
+            }
             Class<?> binding = ati.getBinding();
             InternationalString descriptionInternational = createDescriptionInternationalString(ati);
             boolean nillable = ati.isNillable();

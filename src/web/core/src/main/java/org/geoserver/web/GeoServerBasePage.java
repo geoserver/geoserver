@@ -803,9 +803,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      * <p>Navigation target is resolved in the following order:
      *
      * <ol>
-     *   <li>Return destination encoded in page parameters via
-     *       {@link #addReturnDestination(PageParameters, Class, PageParameters)} (takes priority so multiple browser
-     *       tabs sharing the same HTTP session do not interfere with each other).
+     *   <li>Return destination encoded in page parameters via {@link #addReturnDestination(PageParameters, Class,
+     *       PageParameters)} (takes priority so multiple browser tabs sharing the same HTTP session do not interfere
+     *       with each other).
      *   <li>{@link #returnPage} if set via {@link #setReturnPage(Page)}.
      *   <li>{@link #returnPageClass} if set via {@link #setReturnPage(Class)}.
      *   <li>{@link GeoServerHomePage} as the final fallback.
@@ -822,9 +822,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      * Returns from the page, consulting return destinations in the following order:
      *
      * <ol>
-     *   <li>Return destination encoded in page parameters via
-     *       {@link #addReturnDestination(PageParameters, Class, PageParameters)} (takes priority so multiple browser
-     *       tabs sharing the same HTTP session do not interfere with each other).
+     *   <li>Return destination encoded in page parameters via {@link #addReturnDestination(PageParameters, Class,
+     *       PageParameters)} (takes priority so multiple browser tabs sharing the same HTTP session do not interfere
+     *       with each other).
      *   <li>{@link #returnPage} if set via {@link #setReturnPage(Page)}.
      *   <li>{@link #returnPageClass} if set via {@link #setReturnPage(Class)}.
      *   <li>{@code defaultPageClass} if non-null.

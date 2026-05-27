@@ -22,22 +22,11 @@ import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.util.NullEntityResolver;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class DescribeRecordTest extends CSWSimpleTestSupport {
-    @Before
-    public void setUp() throws Exception {
-        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
-    }
 
     @Test
     public void testKVPReaderNS() throws Exception {

@@ -7,7 +7,12 @@ package org.geoserver.test.web;
 
 import java.util.Arrays;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.test.FeatureChainingMockData;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class Gml311LinksTest extends AbstractMapPreviewPageTest {
@@ -21,6 +26,16 @@ public class Gml311LinksTest extends AbstractMapPreviewPageTest {
                         "http://localhost/context/ex/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex%3ASecondParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
                         "http://localhost/context/ex/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex%3AParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
                         "http://localhost/context/om/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=om%3AObservation&amp;outputFormat=gml3&amp;maxFeatures=50"));
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
     }
 
     @Override

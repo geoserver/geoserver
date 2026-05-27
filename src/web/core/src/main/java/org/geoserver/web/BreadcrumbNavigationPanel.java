@@ -20,6 +20,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -237,8 +238,26 @@ public class BreadcrumbNavigationPanel extends Panel {
         }
 
         PageParameters targetParams = ctxMenu.getPageParameters(wName, lName, level);
-        BookmarkablePageLink<Void> menuLink =
-                new BookmarkablePageLink<>("menuLink", ctxMenu.getComponentClass(), targetParams);
+        PageParameters returnParams = new PageParameters();
+        if (wName != null && !wName.isEmpty()) {
+            returnParams.add("workspace", wName);
+        }
+        if (lName != null && !lName.isEmpty()) {
+            if ("LAYER_GROUP".equals(level)) {
+                returnParams.add("group", lName);
+            } else {
+                returnParams.add("layer", lName);
+            }
+        }
+
+        Link<Void> menuLink = new Link<>("menuLink") {
+            @Override
+            public void onClick() {
+                GeoServerBasePage.addReturnDestination(
+                        targetParams, GeoServerHomePage.class, returnParams.isEmpty() ? null : returnParams);
+                setResponsePage(ctxMenu.getComponentClass(), targetParams);
+            }
+        };
 
         menuLink.add(org.apache.wicket.AttributeModifier.append("class", ctxMenu.getId()));
 

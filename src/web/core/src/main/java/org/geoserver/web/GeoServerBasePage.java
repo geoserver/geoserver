@@ -7,6 +7,7 @@ package org.geoserver.web;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -105,15 +106,49 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     /** optional page parameters to use when navigating to {@link #returnPageClass}. */
     protected PageParameters returnPageParams;
 
+    /**
+     * Return destination from the request that opened this page, kept when {@link #getPageParameters()} is overridden
+     * and no longer exposes {@link #RETURN_CLASS_PARAM} / {@link #RETURN_PARAM_PREFIX} keys.
+     */
+    private PageParameters encodedReturnDestination;
+
+    /** Page parameter holding the fully qualified class name of the return destination page. */
+    public static final String RETURN_CLASS_PARAM = "_returnClass";
+
+    /** Prefix for page parameters encoding return-destination context (e.g. {@code _return.workspace}). */
+    public static final String RETURN_PARAM_PREFIX = "_return.";
+
     public static final String VERSION_3 = "jquery/jquery-3.5.1.js";
 
     protected GeoServerBasePage(final PageParameters parameters) {
         super(parameters);
+        captureReturnDestination(parameters);
         commonBaseInit();
     }
 
     protected GeoServerBasePage() {
         commonBaseInit();
+    }
+
+    /**
+     * Retains return-destination parameters from the request that opened this page.
+     *
+     * <p>This is called automatically by {@link #GeoServerBasePage(PageParameters)}. Subclasses only need to call it
+     * explicitly from {@code PageParameters} constructors that delegate to {@link #GeoServerBasePage()} instead.
+     */
+    protected void captureReturnDestination(PageParameters source) {
+        if (source == null || source.get(RETURN_CLASS_PARAM).toOptionalString() == null) {
+            return;
+        }
+        encodedReturnDestination = new PageParameters();
+        for (String key : source.getNamedKeys()) {
+            if (RETURN_CLASS_PARAM.equals(key) || key.startsWith(RETURN_PARAM_PREFIX)) {
+                String value = source.get(key).toOptionalString();
+                if (value != null) {
+                    encodedReturnDestination.add(key, value);
+                }
+            }
+        }
     }
 
     protected void commonBaseInit() {
@@ -763,31 +798,54 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /**
-     * Returns from the page by navigating to one of {@link #returnPage} or {@link #returnPageClass}, processed in that
-     * order.
+     * Returns from the page, equivalent to {@link #doReturn(Class) doReturn(null)}.
+     *
+     * <p>Navigation target is resolved in the following order:
+     *
+     * <ol>
+     *   <li>Return destination encoded in page parameters via {@link #addReturnDestination(PageParameters, Class,
+     *       PageParameters)} (takes priority so multiple browser tabs sharing the same HTTP session do not interfere
+     *       with each other).
+     *   <li>{@link #returnPage} if set via {@link #setReturnPage(Page)}.
+     *   <li>{@link #returnPageClass} if set via {@link #setReturnPage(Class)}.
+     *   <li>{@link GeoServerHomePage} as the final fallback.
+     * </ol>
      *
      * <p>This method should be called by pages that must return after doing some task on a form submit such as a save
-     * or a cancel. If no return page has been set via {@link #setReturnPage(Page)} or {@link #setReturnPage(Class)}
-     * then {@link GeoServerHomePage} is used.
+     * or a cancel.
      */
     protected void doReturn() {
         doReturn(null);
     }
 
     /**
-     * Returns from the page by navigating to one of {@link #returnPage} or {@link #returnPageClass}, processed in that
-     * order.
+     * Returns from the page, consulting return destinations in the following order:
      *
-     * <p>This method accepts a parameter to use as a default in cases where {@link #returnPage} and
-     * {@link #returnPageClass} are not set and a default other than {@link GeoServerHomePage} should be used.
+     * <ol>
+     *   <li>Return destination encoded in page parameters via {@link #addReturnDestination(PageParameters, Class,
+     *       PageParameters)} (takes priority so multiple browser tabs sharing the same HTTP session do not interfere
+     *       with each other).
+     *   <li>{@link #returnPage} if set via {@link #setReturnPage(Page)}.
+     *   <li>{@link #returnPageClass} if set via {@link #setReturnPage(Class)}.
+     *   <li>{@code defaultPageClass} if non-null.
+     *   <li>{@link GeoServerHomePage} as the final fallback.
+     * </ol>
      *
      * <p>This method should be called by pages that must return after doing some task on a form submit such as a save
-     * or a cancel. If no return page has been set via {@link #setReturnPage(Page)} or {@link #setResponsePage(Class)}
-     * then {@link GeoServerHomePage} is used.
+     * or a cancel.
+     *
+     * @param defaultPageClass page to navigate to when no explicit return destination has been set; if {@code null},
+     *     falls back to {@link GeoServerHomePage}
      */
     protected void doReturn(Class<? extends Page> defaultPageClass) {
         String ws = getPageParameters().get("workspace").toOptionalString();
         PageParameters currentParams = (ws != null && !ws.isEmpty()) ? new PageParameters().add("workspace", ws) : null;
+
+        ReturnDestination destination = getReturnDestinationFromPageParameters();
+        if (destination != null) {
+            setResponsePage(destination.pageClass, destination.pageParameters);
+            return;
+        }
 
         if (returnPage != null) {
             setResponsePage(returnPage);
@@ -801,6 +859,105 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         defaultPageClass = defaultPageClass != null ? defaultPageClass : GeoServerHomePage.class;
         setResponsePage(defaultPageClass, currentParams);
+    }
+
+    /**
+     * Encodes a return destination in {@code targetParams} so {@link #doReturn()} can navigate back without session
+     * metadata (safe when multiple browser tabs share the same HTTP session).
+     *
+     * <p>Only allowlisted destinations are accepted.
+     *
+     * @throws IllegalArgumentException if {@code pageClass} is not in the allowlist
+     */
+    public static void addReturnDestination(
+            PageParameters targetParams, Class<? extends Page> pageClass, PageParameters returnPageParameters) {
+        ReturnPageToken token = ReturnPageToken.fromPageClass(pageClass);
+        if (token == null) {
+            String name = pageClass != null ? pageClass.getName() : "null";
+            throw new IllegalArgumentException("Return page class is not allowlisted: " + name);
+        }
+        targetParams.add(RETURN_CLASS_PARAM, token.token);
+        if (returnPageParameters != null) {
+            for (String key : returnPageParameters.getNamedKeys()) {
+                String value = returnPageParameters.get(key).toOptionalString();
+                if (value != null) {
+                    targetParams.add(RETURN_PARAM_PREFIX + key, value);
+                }
+            }
+        }
+    }
+
+    private ReturnDestination getReturnDestinationFromPageParameters() {
+        PageParameters source = encodedReturnDestination != null ? encodedReturnDestination : super.getPageParameters();
+        String returnToken = source.get(RETURN_CLASS_PARAM).toOptionalString();
+        if (returnToken == null) {
+            return null;
+        }
+        PageParameters returnParams = new PageParameters();
+        for (String key : source.getNamedKeys()) {
+            if (key.startsWith(RETURN_PARAM_PREFIX)) {
+                String paramName = key.substring(RETURN_PARAM_PREFIX.length());
+                String value = source.get(key).toOptionalString();
+                if (value != null) {
+                    returnParams.add(paramName, value);
+                }
+            }
+        }
+        ReturnPageToken token = ReturnPageToken.fromToken(returnToken);
+        if (token == null) {
+            LOGGER.log(Level.WARNING, "Could not resolve allowlisted return page token: " + returnToken);
+            return null;
+        }
+        return new ReturnDestination(token.pageClass, returnParams.isEmpty() ? null : returnParams);
+    }
+
+    /** Allowlisted return destinations decoded from {@link #RETURN_CLASS_PARAM}. */
+    private enum ReturnPageToken {
+        HOME("home", GeoServerHomePage.class);
+
+        final String token;
+        final Class<? extends Page> pageClass;
+
+        ReturnPageToken(String token, Class<? extends Page> pageClass) {
+            this.token = token;
+            this.pageClass = pageClass;
+        }
+
+        static ReturnPageToken fromToken(String token) {
+            if (token == null) {
+                return null;
+            }
+            for (ReturnPageToken value : values()) {
+                // Keep legacy support for existing URLs that still contain the old FQCN.
+                if (value.token.equals(token) || value.pageClass.getName().equals(token)) {
+                    return value;
+                }
+            }
+            return null;
+        }
+
+        static ReturnPageToken fromPageClass(Class<? extends Page> pageClass) {
+            if (pageClass == null) {
+                return null;
+            }
+            for (ReturnPageToken value : values()) {
+                if (value.pageClass.equals(pageClass)) {
+                    return value;
+                }
+            }
+            return null;
+        }
+    }
+
+    static class ReturnDestination implements Serializable {
+        private static final long serialVersionUID = 1L;
+        final Class<? extends Page> pageClass;
+        final PageParameters pageParameters;
+
+        ReturnDestination(Class<? extends Page> pageClass, PageParameters pageParameters) {
+            this.pageClass = pageClass;
+            this.pageParameters = pageParameters;
+        }
     }
 
     public void addFeedbackPanels(AjaxRequestTarget target) {

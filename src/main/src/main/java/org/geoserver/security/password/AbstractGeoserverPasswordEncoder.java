@@ -158,7 +158,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return this.isPasswordValid(encodedPassword, rawPassword.toString(), null);
+        return this.isPasswordValid(encodedPassword, rawPassword == null ? null : rawPassword.toString(), null);
     }
 
     @Override

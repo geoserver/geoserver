@@ -16,6 +16,8 @@
   <bean id="wmsServiceDescriptor" class="org.geoserver.wms.web.WMSServiceDescriptionProvider">
   </bean>
 
+  <bean id="wmsPreviewSectionProvider" class="org.geoserver.wms.web.WMSPreviewSectionProvider"/>
+
   <bean id="wmsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wms"/>
     <property name="titleKey" value="wms.title"/>

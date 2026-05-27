@@ -723,12 +723,10 @@
   <bean id="catalogLinksHomePageContentProvider"
         class="org.geoserver.web.CatalogLinksHomePageContentProvider"/>
 
-  <bean id="metadataHomePageContentProvider"
-        class="org.geoserver.web.MetadataHomePageContentProvider"/>
+  <bean id="metadataPreviewSectionProvider"
+        class="org.geoserver.web.PreviewCatalogLinkSupport$MetadataPreviewSectionProvider"/>
 
-  <bean id="dataLinkHomePageContentProvider"
-        class="org.geoserver.web.DataLinkHomePageContentProvider"/>
-
-
+  <bean id="dataPreviewSectionProvider"
+        class="org.geoserver.web.PreviewCatalogLinkSupport$DataPreviewSectionProvider"/>
 
 </beans>

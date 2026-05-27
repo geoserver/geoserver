@@ -5,6 +5,7 @@
 package org.geoserver.web.demo;
 
 import org.apache.wicket.markup.html.link.ExternalLink;
+import org.geoserver.web.PreviewLink;
 import org.geoserver.web.ToolLinkExternalInfo;
 
 /**
@@ -23,12 +24,8 @@ public abstract class CommonFormatLink extends ToolLinkExternalInfo implements C
         super();
     }
 
-    /**
-     * Returns an ExternalLink object that is used to link to the layer preview.
-     *
-     * @param layer the PreviewLayer object for which the preview link is returned
-     */
-    public abstract ExternalLink getFormatLink(PreviewLayer layer);
+    /** Returns a link used to preview the layer. */
+    public abstract PreviewLink getFormatLink(PreviewLayer layer);
 
     @Override
     public void setComponentClass(Class<ExternalLink> componentClass) {}

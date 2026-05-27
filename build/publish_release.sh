@@ -39,6 +39,9 @@ fi
 
 pushd .. > /dev/null
 
+# Determine major version to select branch-specific behaviour
+major_version=$(echo "$tag" | cut -d. -f1)
+
 # init_git $git_user $git_email
 
 # fetch single tag
@@ -50,23 +53,26 @@ if [ `git tag --list $tag | wc -l` == 0 ]; then
   exit 1
 fi
 
-# check to see if a release branch already exists
-if [ `git branch --list $tag.x | wc -l` == 1 ]; then
-  echo "branch $tag.x exists, checking out"
-  git checkout $tag.x
-else
-  echo `release branch $tag.x not available, run build_release.sh first`
-fi
+if [ "$major_version" -ge 3 ]; then
+  # GeoServer 3.x+ uses persistent release branch $tag.x
+  if [ `git branch --list $tag.x | wc -l` == 1 ]; then
+    echo "branch $tag.x exists, checking out"
+    git checkout $tag.x
+  else
+    echo "release branch $tag.x not available, run build_release.sh first"
+    exit 1
+  fi
 
-# ensure the tagged revision actually on this branch
-set +e
-git log | grep $tag
-if [ $? != 0 ]; then
-   echo "Tag $tag not a on branch $tag.x"
-   echo "(Perhaps $tag.x is from a prior failed attempt and can be removed)"
-   exit -1
+  # ensure the tagged revision is actually on this branch (ancestry check)
+  if ! git merge-base --is-ancestor $tag HEAD; then
+     echo "Tag $tag is not an ancestor of branch $tag.x"
+     echo "(Perhaps $tag.x is from a prior failed attempt and can be removed)"
+     exit 1
+  fi
+else
+  # GeoServer 2.x uses tag directly
+  git checkout $tag
 fi
-set -e
 
 # deploy the release to maven repo
 pushd src > /dev/null
@@ -112,10 +118,13 @@ fi
 
 popd > /dev/null
 
-# release done, revert branch to snapshot, and supply a merge commit for commit history
-git revert $tag
-git push $tag.x
+# GeoServer 3.x+: revert release commit on branch, merge back to development branch
+if [ "$major_version" -ge 3 ]; then
+  git revert --no-edit $tag
+  git push origin $tag.x
 
-git checkout $branch
-git merge --no-ff $tag.x -m "Release $tag completed"
+  git checkout $branch
+  git merge --no-ff $tag.x -m "Release $tag completed"
+  git push origin $branch
+fi
 

@@ -321,11 +321,11 @@ This job will rsync all the artifacts located at:
 
     https://build.geoserver.org/geoserver/release/<RELEASE>
 
-to the SourceForge FRS server. Navigate to [SourceForge](https://sourceforge.net/projects/geoserver/) and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags (you will need to be logged in as a SourceForge admin user) on the `.exe` and `.bin` artifacts so that they show up as the appropriate default for users downloading on the Windows and Linux platforms. This does not apply to maintenance or support releases.
+to the SourceForge FRS server. Navigate to [SourceForge](https://sourceforge.net/projects/geoserver/files/GeoServer/) and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags (you will need to be logged in as a SourceForge admin user) on the `.exe` and `.bin` artifacts so that they show up as the appropriate default for users downloading on the Windows and Linux platforms. This does not apply to maintenance or support releases.
 
 ## Cite Certification
 
-For a major (2.xx.0) release, follow the [instructions](https://docs.geoserver.org/main/en/developer/cite-test-guide/index.md#cite-certification) to obtain certification, and include it in the release notes below.
+For a major (2.xx.0) release, follow the [instructions](https://docs.geoserver.org/main/en/developer/cite-test-guide/index#cite-certification) to obtain certification, and include it in the release notes below.
 
 ## Release notes
 

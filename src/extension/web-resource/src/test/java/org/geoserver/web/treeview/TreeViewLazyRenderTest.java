@@ -154,26 +154,30 @@ public class TreeViewLazyRenderTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testExpandViaCheckboxRendersChildren() {
-        // Start with everything collapsed except root
-        assertFalse(dirA.expanded.getObject());
-
-        tester.startComponentInPage(treeView);
-
-        // Verify dirA children are not rendered initially
-        Component dirAChildren = tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:children");
-        assertEquals(0, ((RepeatingView) dirAChildren).size());
-
-        // Programmatically expand dirA (simulates what the checkbox does)
+    public void testCheckboxAjaxRefreshesNodeView() {
+        // Start with dirA expanded so the checkbox is checked
         dirA.expanded.setObject(true);
-        // Re-render the tree to trigger onBeforeRender with the new expanded state
+
         tester.startComponentInPage(treeView);
 
-        // Children should now be rendered
+        // Verify dirA children ARE rendered initially (expanded)
+        Component dirAChildren = tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:children");
+        assertEquals("Expanded node should have children rendered", 2, ((RepeatingView) dirAChildren).size());
+
+        // Collapse dirA via the checkbox (AJAX) - clicking a checked checkbox unchecks it.
+        // This exercises the real onUpdate() path and will fail if
+        // AjaxCheckBox.onUpdate() forgets to call target.add(...)
+        tester.executeAjaxEvent("treeView:rootView:1:children:2:cbExpand", "click");
+
+        // The checkbox should have toggled the expanded model to false
+        assertFalse("Checkbox click should have set expanded to false", dirA.expanded.getObject());
+
+        // Children should no longer be rendered (lazy rendering removes them)
         dirAChildren = tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:children");
-        assertEquals("After expanding, children should be rendered", 2, ((RepeatingView) dirAChildren).size());
-        assertNotNull(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:children:4"));
-        assertNotNull(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:children:5"));
+        assertEquals(
+                "After collapsing via checkbox, children should not be rendered",
+                0,
+                ((RepeatingView) dirAChildren).size());
     }
 
     @Test

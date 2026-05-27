@@ -325,7 +325,7 @@ to the SourceForge FRS server. Navigate to [SourceForge](https://sourceforge.net
 
 ## Cite Certification
 
-For a major (2.xx.0) release, follow the [instructions](https://docs.geoserver.org/main/en/developer/cite-test-guide/index.md#cite-certification) to obtain certification, and include it in the release notes below.
+For a major (2.xx.0) release, follow the [instructions](https://docs.geoserver.org/main/en/developer/cite-test-guide/index#cite-certification) to obtain certification, and include it in the release notes below.
 
 ## Release notes
 

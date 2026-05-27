@@ -6,9 +6,10 @@ package org.geoserver.web;
 
 import java.util.List;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.platform.ExtensionPriority;
 
 /** Contributes a preview section to the GeoServer home page. */
-public interface HomePagePreviewSectionProvider {
+public interface HomePagePreviewSectionProvider extends ExtensionPriority {
 
     /** Returns whether this provider applies to the current published object. */
     default boolean supports(PublishedInfo published) {
@@ -21,13 +22,9 @@ public interface HomePagePreviewSectionProvider {
     /** Builds the links to render in the section. */
     List<PreviewLink> getLinks(PublishedInfo published);
 
-    /** Preferred layout for the section. */
-    default PreviewSectionLayout getLayout() {
-        return PreviewSectionLayout.LINKS;
-    }
-
-    /** Order of the section in the preview panel. */
-    default int getOrder() {
-        return 0;
+    /** Priority of the section in the preview panel. */
+    @Override
+    default int getPriority() {
+        return ExtensionPriority.LOWEST;
     }
 }

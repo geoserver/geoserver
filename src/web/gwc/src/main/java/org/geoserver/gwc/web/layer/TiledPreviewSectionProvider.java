@@ -4,15 +4,14 @@
  */
 package org.geoserver.gwc.web.layer;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.HomePagePreviewSectionProvider;
+import org.geoserver.web.PreviewCatalogLinkSupport;
 import org.geoserver.web.PreviewLink;
-import org.geoserver.web.PreviewSectionLayout;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.layer.TileLayer;
 
@@ -26,7 +25,7 @@ public class TiledPreviewSectionProvider implements HomePagePreviewSectionProvid
 
     @Override
     public String getTitleKey() {
-        return "tiledFormats";
+        return PreviewCatalogLinkSupport.TILED_FORMATS;
     }
 
     @Override
@@ -39,16 +38,11 @@ public class TiledPreviewSectionProvider implements HomePagePreviewSectionProvid
             return List.of();
         }
         String baseURL = ResponseUtils.baseURL(GeoServerApplication.get().servletRequest());
-        return new ArrayList<>(CachedLayersPage.computePreviewTargets(layer, baseURL));
+        return CachedLayersPage.computePreviewTargets(layer, baseURL);
     }
 
     @Override
-    public int getOrder() {
-        return 40;
-    }
-
-    @Override
-    public PreviewSectionLayout getLayout() {
-        return PreviewSectionLayout.DROPDOWN;
+    public int getPriority() {
+        return PreviewCatalogLinkSupport.TILED_FORMATS_PRIORITY;
     }
 }

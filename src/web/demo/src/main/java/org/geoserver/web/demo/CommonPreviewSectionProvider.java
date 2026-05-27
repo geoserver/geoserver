@@ -10,15 +10,15 @@ import java.util.List;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.HomePagePreviewSectionProvider;
+import org.geoserver.web.PreviewCatalogLinkSupport;
 import org.geoserver.web.PreviewLink;
-import org.geoserver.web.PreviewSectionLayout;
 
 /** Contributes the common preview links defined in the demo module. */
 public class CommonPreviewSectionProvider implements HomePagePreviewSectionProvider {
 
     @Override
     public String getTitleKey() {
-        return "commonFormats";
+        return PreviewCatalogLinkSupport.COMMON_FORMATS;
     }
 
     @Override
@@ -35,12 +35,7 @@ public class CommonPreviewSectionProvider implements HomePagePreviewSectionProvi
     }
 
     @Override
-    public int getOrder() {
-        return 10;
-    }
-
-    @Override
-    public PreviewSectionLayout getLayout() {
-        return PreviewSectionLayout.LINKS;
+    public int getPriority() {
+        return PreviewCatalogLinkSupport.COMMON_FORMATS_PRIORITY;
     }
 }

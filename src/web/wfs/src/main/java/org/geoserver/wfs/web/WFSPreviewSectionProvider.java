@@ -18,8 +18,8 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.security.DisabledServiceResourceFilter;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.HomePagePreviewSectionProvider;
+import org.geoserver.web.PreviewCatalogLinkSupport;
 import org.geoserver.web.PreviewLink;
-import org.geoserver.web.PreviewSectionLayout;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geotools.wfs.v1_0.WFS;
 
@@ -35,7 +35,7 @@ public class WFSPreviewSectionProvider implements HomePagePreviewSectionProvider
 
     @Override
     public String getTitleKey() {
-        return "vectorFormats";
+        return PreviewCatalogLinkSupport.VECTOR_FORMATS;
     }
 
     @Override
@@ -60,13 +60,8 @@ public class WFSPreviewSectionProvider implements HomePagePreviewSectionProvider
     }
 
     @Override
-    public int getOrder() {
-        return 30;
-    }
-
-    @Override
-    public PreviewSectionLayout getLayout() {
-        return PreviewSectionLayout.DROPDOWN;
+    public int getPriority() {
+        return PreviewCatalogLinkSupport.VECTOR_FORMATS_PRIORITY;
     }
 
     /** Builds the base GetFeature request shared by the advertised output formats. */

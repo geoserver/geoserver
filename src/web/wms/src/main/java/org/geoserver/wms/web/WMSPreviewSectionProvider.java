@@ -23,8 +23,8 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.security.DisabledServiceResourceFilter;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.HomePagePreviewSectionProvider;
+import org.geoserver.web.PreviewCatalogLinkSupport;
 import org.geoserver.web.PreviewLink;
-import org.geoserver.web.PreviewSectionLayout;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
@@ -46,7 +46,7 @@ public class WMSPreviewSectionProvider implements HomePagePreviewSectionProvider
 
     @Override
     public String getTitleKey() {
-        return "mapFormats";
+        return PreviewCatalogLinkSupport.MAP_FORMATS;
     }
 
     @Override
@@ -81,13 +81,8 @@ public class WMSPreviewSectionProvider implements HomePagePreviewSectionProvider
     }
 
     @Override
-    public int getOrder() {
-        return 20;
-    }
-
-    @Override
-    public PreviewSectionLayout getLayout() {
-        return PreviewSectionLayout.DROPDOWN;
+    public int getPriority() {
+        return PreviewCatalogLinkSupport.MAP_FORMATS_PRIORITY;
     }
 
     /** Builds the base GetMap request shared by the advertised output formats. */

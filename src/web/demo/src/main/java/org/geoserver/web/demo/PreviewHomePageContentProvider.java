@@ -8,7 +8,6 @@ import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geoserver.web.util.WebUtils.toResourceName;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -31,9 +30,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerHomePageContentProvider;
 import org.geoserver.web.HomePagePreviewSectionProvider;
-import org.geoserver.web.PreviewCatalogLinkSupport;
 import org.geoserver.web.PreviewLink;
-import org.geoserver.web.PreviewSectionLayout;
 
 /** Contributes preview section to GeoServer Home page. */
 public class PreviewHomePageContentProvider implements GeoServerHomePageContentProvider {
@@ -89,19 +86,16 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
                     if (published == null) return List.of();
 
                     List<HomePagePreviewSectionProvider> providers =
-                            new ArrayList<>(GeoServerExtensions.extensions(HomePagePreviewSectionProvider.class));
-                    providers.sort(Comparator.comparingInt(HomePagePreviewSectionProvider::getOrder));
+                            GeoServerExtensions.extensions(HomePagePreviewSectionProvider.class);
 
                     List<Section> result = new ArrayList<>();
                     for (HomePagePreviewSectionProvider provider : providers) {
                         if (!provider.supports(published)) continue;
                         List<PreviewLink> links = provider.getLinks(published);
                         if (links != null && !links.isEmpty()) {
-                            result.add(new Section(provider.getTitleKey(), provider.getLayout(), links));
+                            result.add(new Section(provider.getTitleKey(), links));
                         }
                     }
-                    addCatalogLinkSections(result, published);
-                    result.sort(Comparator.comparingInt(PreviewHomePageContentProvider::sectionOrder));
                     sections.setVisible(!result.isEmpty());
                     return result;
                 }
@@ -138,32 +132,5 @@ public class PreviewHomePageContentProvider implements GeoServerHomePageContentP
     }
 
     /** Section title key and links to render. */
-    record Section(String titleKey, PreviewSectionLayout layout, List<PreviewLink> links) {}
-
-    /**
-     * Adds dedicated metadata and data link sections. Display order is fixed in {@link #sectionOrder}: metadata first,
-     * then common/map/feature (and tiled) formats, then data links last.
-     */
-    private static void addCatalogLinkSections(List<Section> sections, PublishedInfo published) {
-        List<PreviewLink> metadata = PreviewCatalogLinkSupport.metadataLinks(published);
-        if (!metadata.isEmpty()) {
-            sections.add(new Section(PreviewCatalogLinkSupport.METADATA_LINKS, PreviewSectionLayout.LINKS, metadata));
-        }
-        List<PreviewLink> data = PreviewCatalogLinkSupport.dataLinks(published);
-        if (!data.isEmpty()) {
-            sections.add(new Section(PreviewCatalogLinkSupport.DATA_LINKS, PreviewSectionLayout.LINKS, data));
-        }
-    }
-
-    private static int sectionOrder(Section section) {
-        return switch (section.titleKey()) {
-            case PreviewCatalogLinkSupport.METADATA_LINKS -> 5;
-            case PreviewCatalogLinkSupport.COMMON_FORMATS -> 10;
-            case PreviewCatalogLinkSupport.MAP_FORMATS -> 20;
-            case PreviewCatalogLinkSupport.VECTOR_FORMATS -> 30;
-            case PreviewCatalogLinkSupport.TILED_FORMATS -> 40;
-            case PreviewCatalogLinkSupport.DATA_LINKS -> 50;
-            default -> 25;
-        };
-    }
+    record Section(String titleKey, List<PreviewLink> links) {}
 }

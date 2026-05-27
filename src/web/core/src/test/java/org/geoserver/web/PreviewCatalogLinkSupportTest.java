@@ -8,6 +8,7 @@ import static org.geoserver.data.test.CiteTestData.POLYGONS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import org.geoserver.catalog.Catalog;
@@ -16,6 +17,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.junit.Test;
 
 /** Verifies catalog metadata and data links are exposed as home page preview links. */
@@ -56,6 +58,52 @@ public class PreviewCatalogLinkSupportTest extends GeoServerWicketTestSupport {
         assertEquals("http://example.org/data.zip", links.get(0).href());
         assertFalse(links.get(0).label().isEmpty());
         assertEquals(PreviewLink.DATA, links.get(0).catalogLinkType());
+    }
+
+    @Test
+    public void testCatalogLinkProvidersArePublishedAsExtensions() {
+        List<HomePagePreviewSectionProvider> providers =
+                GeoServerExtensions.extensions(HomePagePreviewSectionProvider.class);
+
+        HomePagePreviewSectionProvider metadataProvider = null;
+        HomePagePreviewSectionProvider dataProvider = null;
+        for (HomePagePreviewSectionProvider provider : providers) {
+            if (provider instanceof PreviewCatalogLinkSupport.MetadataPreviewSectionProvider) {
+                metadataProvider = provider;
+            } else if (provider instanceof PreviewCatalogLinkSupport.DataPreviewSectionProvider) {
+                dataProvider = provider;
+            }
+        }
+
+        assertNotNull(metadataProvider);
+        assertNotNull(dataProvider);
+        assertEquals(PreviewCatalogLinkSupport.METADATA_LINKS, metadataProvider.getTitleKey());
+        assertEquals(PreviewCatalogLinkSupport.DATA_LINKS, dataProvider.getTitleKey());
+        assertEquals(1, metadataProvider.getLinks(layer()).size());
+        assertEquals(1, dataProvider.getLinks(layer()).size());
+    }
+
+    @Test
+    public void testCatalogLinkProviderPriorityOrdering() {
+        List<HomePagePreviewSectionProvider> providers =
+                GeoServerExtensions.extensions(HomePagePreviewSectionProvider.class);
+
+        int metadataIndex = -1;
+        int dataIndex = -1;
+        for (int i = 0; i < providers.size(); i++) {
+            HomePagePreviewSectionProvider provider = providers.get(i);
+            if (provider instanceof PreviewCatalogLinkSupport.MetadataPreviewSectionProvider) {
+                metadataIndex = i;
+                assertEquals(PreviewCatalogLinkSupport.METADATA_LINKS_PRIORITY, provider.getPriority());
+            } else if (provider instanceof PreviewCatalogLinkSupport.DataPreviewSectionProvider) {
+                dataIndex = i;
+                assertEquals(PreviewCatalogLinkSupport.DATA_LINKS_PRIORITY, provider.getPriority());
+            }
+        }
+
+        assertTrue(metadataIndex >= 0);
+        assertTrue(dataIndex >= 0);
+        assertTrue(metadataIndex < dataIndex);
     }
 
     private void addCatalogLinks() {

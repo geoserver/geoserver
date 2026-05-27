@@ -19,6 +19,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.platform.ExtensionPriority;
 import org.geotools.util.logging.Logging;
 
 /** Builds {@link PreviewLink}s from catalog metadata and data links for the home page preview panel. */
@@ -30,6 +31,12 @@ public final class PreviewCatalogLinkSupport {
     public static final String MAP_FORMATS = "mapFormats";
     public static final String VECTOR_FORMATS = "vectorFormats";
     public static final String TILED_FORMATS = "tiledFormats";
+    public static final int METADATA_LINKS_PRIORITY = ExtensionPriority.HIGHEST + 5;
+    public static final int COMMON_FORMATS_PRIORITY = ExtensionPriority.HIGHEST + 10;
+    public static final int MAP_FORMATS_PRIORITY = ExtensionPriority.HIGHEST + 20;
+    public static final int VECTOR_FORMATS_PRIORITY = ExtensionPriority.HIGHEST + 30;
+    public static final int TILED_FORMATS_PRIORITY = ExtensionPriority.HIGHEST + 40;
+    public static final int DATA_LINKS_PRIORITY = ExtensionPriority.HIGHEST + 50;
 
     private static final Logger LOGGER = Logging.getLogger(PreviewCatalogLinkSupport.class);
 
@@ -181,6 +188,42 @@ public final class PreviewCatalogLinkSupport {
         } catch (Exception e) {
             LOGGER.log(Level.FINE, e.getMessage());
             return format;
+        }
+    }
+
+    /** Contributes catalog metadata links as a dedicated preview section. */
+    public static class MetadataPreviewSectionProvider implements HomePagePreviewSectionProvider {
+        @Override
+        public String getTitleKey() {
+            return METADATA_LINKS;
+        }
+
+        @Override
+        public List<PreviewLink> getLinks(PublishedInfo published) {
+            return metadataLinks(published);
+        }
+
+        @Override
+        public int getPriority() {
+            return METADATA_LINKS_PRIORITY;
+        }
+    }
+
+    /** Contributes catalog data links as a dedicated preview section. */
+    public static class DataPreviewSectionProvider implements HomePagePreviewSectionProvider {
+        @Override
+        public String getTitleKey() {
+            return DATA_LINKS;
+        }
+
+        @Override
+        public List<PreviewLink> getLinks(PublishedInfo published) {
+            return dataLinks(published);
+        }
+
+        @Override
+        public int getPriority() {
+            return DATA_LINKS_PRIORITY;
         }
     }
 }

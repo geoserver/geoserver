@@ -30,8 +30,8 @@ import org.geoserver.wms.GetCapabilities;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
+import org.geotools.util.EntityResolver3;
 import org.geotools.xml.XMLUtils;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -144,7 +144,26 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
                 spf.setNamespaceAware(true); // xslt _needs_ namespace aware input source
                 SAXParser sp = XMLUtils.newSAXParser(spf);
                 XMLReader rawCapsReader = sp.getXMLReader();
-                rawCapsReader.setEntityResolver(new EntityResolver() {
+
+                rawCapsReader.setEntityResolver(new EntityResolver3() {
+                    @Override
+                    public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
+                        return new InputSource(); // will produce failure rather than allow access
+                    }
+
+                    @Override
+                    public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
+                            throws SAXException, IOException {
+                        final String dtdLocation = "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd";
+                        String dtdSystemId = getClass().getResource(dtdLocation).toExternalForm();
+                        return new InputSource(dtdSystemId);
+                    }
+
+                    @Override
+                    public String getAccess() {
+                        return "file,jar:file";
+                    }
+
                     @Override
                     public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
                         final String dtdLocation = "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd";

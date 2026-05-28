@@ -7,6 +7,7 @@ package org.geoserver.test;
 import java.io.File;
 import java.io.IOException;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geotools.util.EntityResolver3;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -16,9 +17,20 @@ import org.xml.sax.SAXException;
  * In IDEs during development GeoTools sources can be in the classpath of GeoServer tests, this resolver allows them to
  * be resolved while blocking the rest.
  */
-public class DevModeEntityResolver extends PreventLocalEntityResolver {
+public class DevModeEntityResolver extends PreventLocalEntityResolver implements EntityResolver3 {
 
     public static final EntityResolver INSTANCE = new DevModeEntityResolver();
+
+    /**
+     * DevModeEntityResolver allows access {@code "file"} resources in addition to the PreventLocalEntityResolver
+     * support for {@code "http"} and internal resources.
+     *
+     * @return "http,jar:file,jar:nested,vfs,file"
+     */
+    @Override
+    public String getAccess() {
+        return super.getAccess() + ",file";
+    }
 
     @Override
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
@@ -42,7 +54,7 @@ public class DevModeEntityResolver extends PreventLocalEntityResolver {
     }
 
     private boolean isClassResource(String baseURI, String systemId) throws SAXException {
-        if (systemId.startsWith("../") || !systemId.contains("/")) {
+        if (systemId.startsWith("../") || systemId.startsWith("./") || !systemId.contains("/")) {
             // relative to local file being parsed
             return true;
         } else if (!systemId.contains("://") && baseURI != null) {

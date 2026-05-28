@@ -31,6 +31,15 @@ import org.junit.Test;
 
 public class StylesTest extends GeoServerSystemTestSupport {
 
+    //    @BeforeClass
+    //    public static void setUpBeforeClass() throws Exception {
+    //        Hints.putSystemDefault(Hints.ENTITY_RESOLVER, NullEntityResolver.INSTANCE);
+    //    }
+    //
+    //    @AfterClass
+    //    public static void tearDownAfterClass() throws Exception {
+    //        Hints.putSystemDefault(Hints.ENTITY_RESOLVER, DefaultEntityResolver.INSTANCE);
+    //    }
     @Test
     public void testLookup() throws Exception {
         assertTrue(Styles.handler(SLDHandler.FORMAT) instanceof SLDHandler);
@@ -97,6 +106,7 @@ public class StylesTest extends GeoServerSystemTestSupport {
         } catch (Exception e) {
             String message = e.getMessage();
             assertThat(message, containsString("Entity resolution disallowed"));
+            // old message, check for the file name
             assertThat(message, containsString("/this/file/does/not/exist"));
         }
     }

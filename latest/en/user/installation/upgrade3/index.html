@@ -30169,7 +30169,7 @@
 
 <h1 id="upgrading-geoserver-3">Upgrading GeoServer 3<a class="headerlink" href="#upgrading-geoserver-3" title="Permanent link">&para;</a></h1>
 <h2 id="upgrading-geoserver-300-guidance">Upgrading GeoServer 3.0.0 Guidance<a class="headerlink" href="#upgrading-geoserver-300-guidance" title="Permanent link">&para;</a></h2>
-<p>GeoServer 3.0.x is scheduled for release in April, 2026.</p>
+<p>GeoServer 3.0.x is scheduled for release in April/May 2026.</p>
 <p>The upgrade to GeoServer 3.0 is seamless maintaining the same data directory and Java 17 environment as used previously for GeoServer 2.28.</p>
 <h3 id="jdk-17-required">JDK 17 Required<a class="headerlink" href="#jdk-17-required" title="Permanent link">&para;</a></h3>
 <p>Just like in GeoServer 2.28 series, GeoServer 3.0 requires Java 17 to run. Be sure to install Java 17 before upgrading to GeoServer 3.0.</p>
@@ -30293,14 +30293,16 @@ If the <code>NETCDF_DATA_DIR JAVA_OPT</code> is configured, these hidden folders
 </li>
 <li>
 <p>Always check the upgrade guidance, as upgrading GeoServer may not be reversible, since:</p>
-</li>
+<ul>
 <li>
 <p>newer versions of GeoServer may make backwards-incompatible changes to the data directory
-     (when upgrading from 2.20 to 2.21 the logging library changed), or</p>
+   (when upgrading from 2.20 to 2.21 the logging library changed), or</p>
 </li>
 <li>
 <p>Newer versions may change what extensions are provided
-     (as is the case when moving from 2.28 to 3.0 with the OIDC plugin replacing the Keycloak plugin).</p>
+   (as is the case when moving from 2.28 to 3.0 with the OIDC plugin replacing the Keycloak plugin).</p>
+</li>
+</ul>
 </li>
 <li>
 <p>Be sure to download and install each extension used by your prior installation.</p>
@@ -30408,7 +30410,7 @@ If you wish to continue making these services available you may install these ex
 <p><em>Review the logs during startup, and test to ensure the application is working as expected.</em></p>
 </li>
 <li>
-<p>Updating from GeoSerer 2.26.4 to GeoServer 2.27.3.</p>
+<p>Updating from GeoServer 2.26.4 to GeoServer 2.27.3.</p>
 <p>The application property <code>GEOSERVER_DATA_DIR_LOADER_ENABLED</code> is noted as an option if any deadlock occurs during startup due to an improvement in startup performance.</p>
 <p>A wide a range of <em>Content Security Policy</em> restrictions have been introduced, and very clear instructions noted to double check <code>proxy_base_url</code> is correct (as the GeoServer user interface will now detect and block a misconfigured system). The application property <code>org.geoserver.web.csp.strict=false</code> is available to temporarily disable this safety measure if you are locked out.</p>
 <p><em>Review the logs during startup, and test to ensure the application is working as expected.</em></p>

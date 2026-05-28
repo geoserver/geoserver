@@ -92,7 +92,7 @@ The [Security](../security/webadmin/index.md) section configures the built-in [s
 
 The [Demos](../configuration/demos/index.md) section contains links to example WMS, WCS, and WFS requests for GeoServer as well as a listing all SRS info known to GeoServer. In addition, there is a reprojection console for converting coordinates between spatial reference systems, and a request builder for WCS requests.
 
-### You do not need to be logged into GeoServer to access these pages.
+**You do not need to be logged into GeoServer to access these pages.**
 
 ## Tools
 

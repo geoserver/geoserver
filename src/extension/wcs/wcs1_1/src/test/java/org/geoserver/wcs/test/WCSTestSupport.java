@@ -19,7 +19,9 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.util.factory.Hints;
 import org.geotools.xml.XMLUtils;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -43,8 +45,9 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
             wcsTestFile = new File("wcs1_1/schemas/wcs/1.1.1/wcsAll.xsd");
         }
 
+        Hints hints = new Hints(Hints.ENTITY_RESOLVER, DevModeEntityResolver.INSTANCE);
         try {
-            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, hints);
             WCS11_SCHEMA = factory.newSchema(wcsTestFile);
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.1.1 schemas", e);

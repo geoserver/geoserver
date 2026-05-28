@@ -10,13 +10,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class SLDValidatorTest {
@@ -27,10 +25,12 @@ public class SLDValidatorTest {
     public void setUp() throws Exception {
         EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
     }
+
     @After
     public void tearDown() throws Exception {
         EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
     }
+
     @Test
     public void testValid() throws Exception {
         SLDValidator validator = new SLDValidator();

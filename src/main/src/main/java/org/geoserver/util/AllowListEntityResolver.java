@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geotools.util.EntityResolver3;
 import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.util.Requests;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.ext.EntityResolver2;
 
 /**
  * Restricted EntityResolver allowing connections to geoserver base proxy, and OGC / W3C content, and those provided by
@@ -33,7 +33,7 @@ import org.xml.sax.ext.EntityResolver2;
  *
  * @author Jody Garnett (GeoCat)
  */
-public class AllowListEntityResolver implements EntityResolver2, Serializable {
+public class AllowListEntityResolver implements EntityResolver3, Serializable {
 
     public static final String ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL = "ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL";
 
@@ -146,6 +146,16 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
             ALLOWED_URIS = Pattern.compile(regex);
         }
         this.geoServerLib = getGeoServerLibDir();
+    }
+
+    /**
+     * AllowListEntity resolver provides access to {@code"http"}, internal resources, and {@code "file"} data directory.
+     *
+     * @return {@code "http,jar:file,jar:nested,vfs,file"}
+     */
+    @Override
+    public String getAccess() {
+        return "http,jar:file,jar:nested,vfs,file";
     }
 
     @Override

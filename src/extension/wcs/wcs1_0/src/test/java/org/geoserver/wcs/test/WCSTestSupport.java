@@ -28,8 +28,10 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.util.factory.Hints;
 import org.geotools.xml.XMLUtils;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -53,20 +55,21 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     protected static final Schema WCS10_DESCRIBECOVERAGE_SCHEMA;
 
     static {
+        Hints hints = new Hints(Hints.ENTITY_RESOLVER, DevModeEntityResolver.INSTANCE);
         try {
-            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, hints);
             WCS10_GETCAPABILITIES_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.0.0/wcsCapabilities.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.0.0 schemas", e);
         }
         try {
-            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, hints);
             WCS10_GETCOVERAGE_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.0.0/getCoverage.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.0.0 schemas", e);
         }
         try {
-            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, hints);
             WCS10_DESCRIBECOVERAGE_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.0.0/describeCoverage.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.0.0 schemas", e);

@@ -24,8 +24,9 @@ public class DevModeEntityResolver extends PreventLocalEntityResolver {
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
         if (isLocalGeoToolsSchema(null, systemId) || isDataDirectory(systemId)) {
             return null;
+        } else if (isClassResource(null, systemId)) {
+            return null;
         }
-
         return super.resolveEntity(publicId, systemId);
     }
 
@@ -34,9 +35,22 @@ public class DevModeEntityResolver extends PreventLocalEntityResolver {
             throws SAXException, IOException {
         if (isLocalGeoToolsSchema(baseURI, systemId) || isDataDirectory(systemId)) {
             return null;
+        } else if (isClassResource(baseURI, systemId)) {
+            return null;
         }
-
         return super.resolveEntity(name, publicId, baseURI, systemId);
+    }
+
+    private boolean isClassResource(String baseURI, String systemId) throws SAXException {
+        if (systemId.startsWith("../") || !systemId.contains("/")) {
+            // relative to local file being parsed
+            return true;
+        } else if (!systemId.contains("://") && baseURI != null) {
+            // location relative to a baseURI
+            String path = baseURI.toLowerCase();
+            return path.contains("../");
+        }
+        return false;
     }
 
     private boolean isLocalGeoToolsSchema(String baseURI, String systemId) {

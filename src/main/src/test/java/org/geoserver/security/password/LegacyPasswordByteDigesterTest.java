@@ -4,7 +4,10 @@
  */
 package org.geoserver.security.password;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.codec.binary.Base64;
 import org.jasypt.digest.StandardByteDigester;

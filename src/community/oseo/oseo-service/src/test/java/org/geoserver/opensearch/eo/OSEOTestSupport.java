@@ -29,6 +29,7 @@ import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -52,7 +53,7 @@ public abstract class OSEOTestSupport extends GeoServerSystemTestSupport {
     protected SimpleNamespaceContext namespaceContext;
 
     static {
-        final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
             OS_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
             ATOM_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
@@ -63,7 +64,7 @@ public abstract class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     private static Schema getOsSchema() {
         if (OS_SCHEMA == null) {
-            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             try {
                 OS_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
             } catch (Exception e) {
@@ -76,7 +77,7 @@ public abstract class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     private static Schema getAtomSchema() {
         if (ATOM_SCHEMA == null) {
-            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             try {
                 ATOM_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
             } catch (Exception e) {

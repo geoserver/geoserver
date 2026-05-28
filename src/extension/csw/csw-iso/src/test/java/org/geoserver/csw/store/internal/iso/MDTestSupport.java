@@ -26,6 +26,7 @@ import org.geotools.gml3.v3_2.GML;
 import org.geotools.util.NullEntityResolver;
 import org.geotools.util.factory.Hints;
 import org.geotools.xlink.XLINK;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.ows.OWS;
 import org.junit.After;
 import org.junit.Before;
@@ -74,7 +75,7 @@ public class MDTestSupport extends CSWInternalTestSupport {
 
     protected static Validator getValidator() {
         if (validator == null) {
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema;
             try {
                 schema = factory.newSchema(new StreamSource(MDTestSupport.class

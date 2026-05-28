@@ -126,7 +126,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                     entry("http://www.geoserver.org/wcsgs/2.0", "/schemas/wcs/2.0/"));
 
             try {
-                final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
                 factory.setResourceResolver(new LSResourceResolver() {
 

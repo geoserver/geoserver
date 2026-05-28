@@ -167,8 +167,8 @@
   <!-- Thread pool for seeding -->
   <bean id="gwcSeederThreadPoolExec" 
     class="org.geoserver.gwc.seed.SeederThreadLocalTransferExecutor">
-    <constructor-arg value="16"/><!-- Size of core pool -->
-    <constructor-arg value="32"/><!-- Maximum size of pool -->
+    <constructor-arg value="#{gwcGeoServervConfigPersister.config.seederCorePoolSize != null ? gwcGeoServervConfigPersister.config.seederCorePoolSize : 16}"/><!-- Size of core pool -->
+    <constructor-arg value="#{gwcGeoServervConfigPersister.config.seederMaxPoolSize != null ? gwcGeoServervConfigPersister.config.seederMaxPoolSize : 32}"/><!-- Maximum size of pool -->
   </bean>
 
   <!-- Breeder (the one that seeds) -->

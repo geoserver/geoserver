@@ -28,6 +28,7 @@ public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEnc
         digester = new LegacyPasswordByteDigester();
     }
 
+    @Override
     protected PasswordEncoder createStringEncoder() {
         return new PasswordEncoder() {
             @Override

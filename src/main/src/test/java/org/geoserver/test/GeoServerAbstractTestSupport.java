@@ -852,7 +852,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     }
 
     protected void checkValidationErorrs(Document dom, String schemaLocation) throws SAXException, IOException {
-        final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = factory.newSchema(new File(schemaLocation));
         checkValidationErrors(dom, schema);
     }

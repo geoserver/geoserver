@@ -30,6 +30,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.xml.XMLUtils;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -53,19 +54,19 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
 
     static {
         try {
-            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             WCS10_GETCAPABILITIES_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.0.0/wcsCapabilities.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.0.0 schemas", e);
         }
         try {
-            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             WCS10_GETCOVERAGE_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.0.0/getCoverage.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.0.0 schemas", e);
         }
         try {
-            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             WCS10_DESCRIBECOVERAGE_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.0.0/describeCoverage.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.0.0 schemas", e);

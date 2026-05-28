@@ -23,13 +23,13 @@ import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.KvpUtils;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -113,7 +113,7 @@ public final class ResponseUtils {
     public static List<SAXException> validate(
             Source xml, URL schemaURL, boolean skipTargetNamespaceException, EntityResolver entityResolver) {
         try {
-            Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+            Schema schema = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI)
                     .newSchema(schemaURL);
             Validator v = schema.newValidator();
             if (entityResolver != null) {

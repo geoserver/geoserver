@@ -7,6 +7,7 @@ package org.geoserver.data.test;
 
 import java.io.File;
 import java.io.IOException;
+import org.geoserver.test.IOTestUtils;
 import org.geoserver.util.IOUtils;
 
 @SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
@@ -21,7 +22,7 @@ public class LiveSystemTestData extends SystemTestData {
 
     @Override
     public void setUp() throws Exception {
-        data = IOUtils.createRandomDirectory("./target", "live", "data");
+        data = IOTestUtils.createRandomDirectory("./target", "live");
         IOUtils.deepCopy(source, data);
     }
 

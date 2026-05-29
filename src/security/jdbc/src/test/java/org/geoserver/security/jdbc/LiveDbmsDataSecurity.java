@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.geoserver.data.test.LiveDbmsData;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.impl.Util;
+import org.geoserver.test.IOTestUtils;
 import org.geoserver.util.IOUtils;
 
 public class LiveDbmsDataSecurity extends LiveDbmsData {
@@ -34,7 +35,7 @@ public class LiveDbmsDataSecurity extends LiveDbmsData {
     @Override
     @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
-        data = IOUtils.createRandomDirectory("./target", "live", "data");
+        data = IOTestUtils.createRandomDirectory("./target", "live");
         IOUtils.deepCopy(source, data);
     }
 

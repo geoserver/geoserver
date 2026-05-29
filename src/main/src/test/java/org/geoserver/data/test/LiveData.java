@@ -6,6 +6,7 @@
 package org.geoserver.data.test;
 
 import java.io.File;
+import org.geoserver.test.IOTestUtils;
 import org.geoserver.util.IOUtils;
 
 public class LiveData implements TestData {
@@ -23,7 +24,7 @@ public class LiveData implements TestData {
      */
     @Override
     public void setUp() throws Exception {
-        data = IOUtils.createRandomDirectory("./target", "live", "data");
+        data = IOTestUtils.createRandomDirectory("./target", "live");
         IOUtils.deepCopy(source, data);
     }
 

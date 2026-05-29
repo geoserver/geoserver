@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.FileUtils;
-import org.geoserver.util.IOUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -42,7 +41,7 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
             throws BeansException {
         super(configLocation, false);
         try {
-            contextTmp = IOUtils.createRandomDirectory("./target", "mock", "tmp");
+            contextTmp = IOTestUtils.createRandomDirectory("./target", "mock");
             servletContext.setAttribute("javax.servlet.context.tempdir", contextTmp);
         } catch (Exception e) {
             throw new RuntimeException(e);

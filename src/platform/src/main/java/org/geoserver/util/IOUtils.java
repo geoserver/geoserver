@@ -20,10 +20,10 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -158,32 +158,14 @@ public class IOUtils {
     }
 
     /**
-     * Creates a directory as a child of baseDir. The directory name will be preceded by prefix and followed by suffix
-     */
-    public static File createRandomDirectory(String baseDir, String prefix, String suffix) throws IOException {
-        File tempDir = File.createTempFile(prefix, suffix, new File(baseDir));
-        tempDir.delete();
-        if (!tempDir.mkdir()) throw new IOException("Could not create the temp directory " + tempDir.getPath());
-        return tempDir;
-    }
-
-    /**
      * Creates a temporary directory whose name will start by prefix
      *
      * <p>Strategy is to leverage the system temp directory, then create a sub-directory.
      */
     public static File createTempDirectory(String prefix) throws IOException {
-        File dummyTemp = File.createTempFile("blah", null);
-        String sysTempDir = dummyTemp.getParentFile().getAbsolutePath();
-        dummyTemp.delete();
+        Path tmpPath = java.nio.file.Files.createTempDirectory(prefix);
 
-        File reqTempDir = new File(sysTempDir
-                + File.separator
-                + prefix
-                + ThreadLocalRandom.current().nextDouble());
-        reqTempDir.mkdir();
-
-        return reqTempDir;
+        return tmpPath.toFile();
     }
 
     /**

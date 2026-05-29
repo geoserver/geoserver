@@ -5,11 +5,9 @@
  */
 package org.geoserver.security.password;
 
-import static org.geoserver.security.SecurityUtils.toBytes;
+import static org.geoserver.security.SecurityUtils.scramble;
 
-import org.apache.commons.codec.binary.Base64;
-import org.jasypt.digest.StandardByteDigester;
-import org.jasypt.util.password.StrongPasswordEncryptor;
+import org.geoserver.security.SecurityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -23,39 +21,59 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author christian
  */
 public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEncoder {
+    private final LegacyPasswordByteDigester digester;
 
     public GeoServerDigestPasswordEncoder() {
         setReversible(false);
+        digester = new LegacyPasswordByteDigester();
     }
 
     @Override
     protected PasswordEncoder createStringEncoder() {
-        PasswordEncoder encoder = new JasyptPasswordEncoderWrapper();
-        ((JasyptPasswordEncoderWrapper) encoder).setPasswordEncryptor(new StrongPasswordEncryptor());
-        ((JasyptPasswordEncoderWrapper) encoder).setPrefix(getPrefix());
-        return encoder;
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                byte[] bytes = toBytes(rawPassword);
+                try {
+                    return digester.encode(bytes);
+                } finally {
+                    scramble(bytes);
+                }
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                byte[] bytes = toBytes(rawPassword);
+                try {
+                    return digester.matches(bytes, encodedPassword);
+                } finally {
+                    scramble(bytes);
+                }
+            }
+        };
     }
 
     @Override
     protected CharArrayPasswordEncoder createCharEncoder() {
         return new CharArrayPasswordEncoder() {
-            StandardByteDigester digester = new StandardByteDigester();
-
-            {
-                digester.setAlgorithm("SHA-256");
-                digester.setIterations(100000);
-                digester.setSaltSizeBytes(16);
-                digester.initialize();
+            @Override
+            public String encodePassword(char[] rawPassword, Object salt) {
+                byte[] bytes = SecurityUtils.toBytes(rawPassword);
+                try {
+                    return digester.encode(bytes);
+                } finally {
+                    scramble(bytes);
+                }
             }
 
             @Override
-            public String encodePassword(char[] rawPass, Object salt) {
-                return new String(Base64.encodeBase64(digester.digest(toBytes(rawPass))));
-            }
-
-            @Override
-            public boolean isPasswordValid(String encPass, char[] rawPass, Object salt) {
-                return digester.matches(toBytes(rawPass), Base64.decodeBase64(encPass.getBytes()));
+            public boolean isPasswordValid(String encPassword, char[] rawPassword, Object salt) {
+                byte[] bytes = SecurityUtils.toBytes(rawPassword);
+                try {
+                    return digester.matches(bytes, encPassword);
+                } finally {
+                    scramble(bytes);
+                }
             }
         };
     }
@@ -67,6 +85,27 @@ public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEnc
 
     @Override
     public String encode(CharSequence rawPassword) {
-        return createCharEncoder().encodePassword(decodeToCharArray(rawPassword.toString()), null);
+        byte[] bytes = toBytes(rawPassword);
+        try {
+            return digester.encode(bytes);
+        } finally {
+            scramble(bytes);
+        }
+    }
+
+    protected byte[] toBytes(CharSequence charSequence) {
+        if (charSequence == null) {
+            throw new IllegalArgumentException("charSequence cannot be null");
+        }
+
+        char[] chars = new char[charSequence.length()];
+        try {
+            for (int i = 0; i < charSequence.length(); i++) {
+                chars[i] = charSequence.charAt(i);
+            }
+            return SecurityUtils.toBytes(chars);
+        } finally {
+            scramble(chars);
+        }
     }
 }

@@ -324,6 +324,7 @@ For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml
 
 - Set up nesting on the container feature type mapping as usual:
 
+```xml
       <AttributeMapping>
         <targetAttribute>gsml:specification</targetAttribute>
         <sourceExpression>
@@ -332,9 +333,11 @@ For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml
           <linkField>gml:name[2]</linkField>
         </sourceExpression>
       </AttributeMapping>
+```
 
 - Set up xlink:href as client property on the other mapping file:
 
+```xml
       <AttributeMapping>
         <targetAttribute>gsml:occurrence</targetAttribute>      
         <sourceExpression>
@@ -348,6 +351,7 @@ For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml
            <value>strConcat('urn:cgi:feature:MappedFeature:', ID)</value>
         </ClientProperty>       
       </AttributeMapping>
+```
 
 As we are getting the client property value from a nested feature, we have to set it as if we are chaining the feature; but we also add the client property containing *xlink:href* in the attribute mapping. The code will detect the *xlink:href* setting, and will not proceed to build the nested feature's attributes, and we will end up with empty attributes with *xlink:href* client properties.
 

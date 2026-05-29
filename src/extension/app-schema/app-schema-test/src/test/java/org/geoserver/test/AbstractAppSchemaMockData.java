@@ -149,7 +149,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
 
     static File newRandomDirectory() {
         try {
-            return IOUtils.createRandomDirectory("target", "app-schema-mock", "data");
+            return IOTestUtils.createRandomDirectory("target", "app-schema-mock");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

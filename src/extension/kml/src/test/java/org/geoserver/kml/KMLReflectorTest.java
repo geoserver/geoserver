@@ -488,7 +488,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
 
         // create the kmz
-        File tempDir = org.geoserver.util.IOUtils.createRandomDirectory("./target", "kmplacemark", "test");
+        File tempDir = org.geoserver.test.IOUtils.createRandomDirectory("./target", "kmplacemark");
         tempDir.deleteOnExit();
 
         File zip = new File(tempDir, "kmz.zip");

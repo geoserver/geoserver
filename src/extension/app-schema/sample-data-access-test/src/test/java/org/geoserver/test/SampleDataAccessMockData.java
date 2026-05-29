@@ -56,7 +56,7 @@ public class SampleDataAccessMockData extends SystemTestData {
 
     /** Constructor. Creates empty mock data directory. */
     public SampleDataAccessMockData() throws IOException {
-        data = IOUtils.createRandomDirectory("./target", "sample-data-access-mock", "data");
+        data = org.geoserver.test.IOUtils.createRandomDirectory("./target", "sample-data-access-mock");
         data.delete();
         data.mkdir();
 

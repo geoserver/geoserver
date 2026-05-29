@@ -315,7 +315,7 @@ public class MockData implements TestData {
 
     public MockData() throws IOException {
         // setup the root
-        data = IOUtils.createRandomDirectory("./target", "mock", "data");
+        data = org.geoserver.test.IOUtils.createRandomDirectory("./target", "mock");
         data.delete();
         data.mkdir();
 

@@ -23,7 +23,7 @@ public class LiveData implements TestData {
      */
     @Override
     public void setUp() throws Exception {
-        data = IOUtils.createRandomDirectory("./target", "live", "data");
+        data = org.geoserver.test.IOUtils.createRandomDirectory("./target", "live");
         IOUtils.deepCopy(source, data);
     }
 

@@ -2980,8 +2980,8 @@ public class DownloadProcessTest extends WPSTestSupport {
      */
     private ShapefileDataStore decodeShape(InputStream input) throws Exception {
         // create the temp directory and register it as a temporary resource
-        File tempDir = IOUtils.createRandomDirectory(
-                IOUtils.createTempDirectory("shpziptemp").getAbsolutePath(), "download-process", "download-services");
+        File tempDir = org.geoserver.test.IOUtils.createRandomDirectory(
+                IOUtils.createTempDirectory("shpziptemp").getAbsolutePath(), "download-process");
 
         // unzip to the temporary directory
         File shapeFile = null;
@@ -3038,8 +3038,8 @@ public class DownloadProcessTest extends WPSTestSupport {
      */
     private GeoPackage decodeGeoPackage(InputStream input) throws Exception {
         // create the temp directory and register it as a temporary resource
-        File tempDir = IOUtils.createRandomDirectory(
-                IOUtils.createTempDirectory("gpkgziptemp").getAbsolutePath(), "download-process", "download-services");
+        File tempDir = org.geoserver.test.IOUtils.createRandomDirectory(
+                IOUtils.createTempDirectory("gpkgziptemp").getAbsolutePath(), "download-process");
 
         // unzip to the temporary directory
         File geopackage = null;

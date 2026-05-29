@@ -122,7 +122,7 @@ public class SystemTestData extends CiteTestData {
 
     public SystemTestData() throws IOException {
         // setup the root
-        data = IOUtils.createRandomDirectory("./target", "default", "data");
+        data = org.geoserver.test.IOUtils.createRandomDirectory("./target", "default");
         data.delete();
         data.mkdir();
     }

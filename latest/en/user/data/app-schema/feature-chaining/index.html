@@ -30553,39 +30553,39 @@
 <p>Obviously you can only encode one side of the relationship, or you'll end up with an endless loop. You would need to pick one side to "chain" and use xlink:href for the other side of the relationship.</p>
 <p>For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml:specification.</p>
 <ul>
-<li>
-<p>Set up nesting on the container feature type mapping as usual:</p>
-<p><AttributeMapping>
-    <targetAttribute>gsml:specification</targetAttribute>
-    <sourceExpression>
-        <OCQL>GEOLOGIC_UNIT_ID</OCQL>
-      <linkElement>gsml:GeologicUnit</linkElement>
-      <linkField>gml:name[2]</linkField>
-    </sourceExpression>
-  </AttributeMapping></p>
-</li>
-<li>
-<p>Set up xlink:href as client property on the other mapping file:</p>
-<p><AttributeMapping>
-    <targetAttribute>gsml:occurrence</targetAttribute>    <br />
-    <sourceExpression>
-      <OCQL>id</OCQL>
-      <linkElement>gsml:MappedFeature</linkElement>
-      <linkField>gsml:specification</linkField>
-    </sourceExpression>                             <br />
-    <isMultiple>true</isMultiple>                                     <br />
-    <ClientProperty>
-       <name>xlink:href</name>
-       <value>strConcat('urn:cgi:feature:MappedFeature:', ID)</value>
-    </ClientProperty>     <br />
-  </AttributeMapping></p>
-</li>
+<li>Set up nesting on the container feature type mapping as usual:</li>
 </ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="w">      </span><span class="nt">&lt;AttributeMapping&gt;</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">        </span><span class="nt">&lt;targetAttribute&gt;</span>gsml:specification<span class="nt">&lt;/targetAttribute&gt;</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">        </span><span class="nt">&lt;sourceExpression&gt;</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">            </span><span class="nt">&lt;OCQL&gt;</span>GEOLOGIC_UNIT_ID<span class="nt">&lt;/OCQL&gt;</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">          </span><span class="nt">&lt;linkElement&gt;</span>gsml:GeologicUnit<span class="nt">&lt;/linkElement&gt;</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">          </span><span class="nt">&lt;linkField&gt;</span>gml:name[2]<span class="nt">&lt;/linkField&gt;</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">        </span><span class="nt">&lt;/sourceExpression&gt;</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">      </span><span class="nt">&lt;/AttributeMapping&gt;</span>
+</code></pre></div>
+<ul>
+<li>Set up xlink:href as client property on the other mapping file:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="w">      </span><span class="nt">&lt;AttributeMapping&gt;</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">        </span><span class="nt">&lt;targetAttribute&gt;</span>gsml:occurrence<span class="nt">&lt;/targetAttribute&gt;</span><span class="w">      </span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">        </span><span class="nt">&lt;sourceExpression&gt;</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">          </span><span class="nt">&lt;OCQL&gt;</span>id<span class="nt">&lt;/OCQL&gt;</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">          </span><span class="nt">&lt;linkElement&gt;</span>gsml:MappedFeature<span class="nt">&lt;/linkElement&gt;</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">          </span><span class="nt">&lt;linkField&gt;</span>gsml:specification<span class="nt">&lt;/linkField&gt;</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">        </span><span class="nt">&lt;/sourceExpression&gt;</span><span class="w">                               </span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">        </span><span class="nt">&lt;isMultiple&gt;</span>true<span class="nt">&lt;/isMultiple&gt;</span><span class="w">                                       </span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">        </span><span class="nt">&lt;ClientProperty&gt;</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">           </span><span class="nt">&lt;name&gt;</span>xlink:href<span class="nt">&lt;/name&gt;</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">           </span><span class="nt">&lt;value&gt;</span>strConcat(&#39;urn:cgi:feature:MappedFeature:&#39;,<span class="w"> </span>ID)<span class="nt">&lt;/value&gt;</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">        </span><span class="nt">&lt;/ClientProperty&gt;</span><span class="w">       </span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">      </span><span class="nt">&lt;/AttributeMapping&gt;</span>
+</code></pre></div>
 <p>As we are getting the client property value from a nested feature, we have to set it as if we are chaining the feature; but we also add the client property containing <em>xlink:href</em> in the attribute mapping. The code will detect the <em>xlink:href</em> setting, and will not proceed to build the nested feature's attributes, and we will end up with empty attributes with <em>xlink:href</em> client properties.</p>
 <p>This would be the encoded result for gsml:GeologicUnit:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">&lt;gsml:GeologicUnit</span><span class="w"> </span><span class="na">gml:id=</span><span class="s">&quot;gu.25678&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">         </span><span class="nt">&lt;gsml:occurrence</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">&quot;urn:cgi:feature:MappedFeature:mf2&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">         </span><span class="nt">&lt;gsml:occurrence</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">&quot;urn:cgi:feature:MappedFeature:mf3&quot;</span><span class="nt">/&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">&lt;gsml:GeologicUnit</span><span class="w"> </span><span class="na">gml:id=</span><span class="s">&quot;gu.25678&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">         </span><span class="nt">&lt;gsml:occurrence</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">&quot;urn:cgi:feature:MappedFeature:mf2&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">         </span><span class="nt">&lt;gsml:occurrence</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">&quot;urn:cgi:feature:MappedFeature:mf3&quot;</span><span class="nt">/&gt;</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

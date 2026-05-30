@@ -131,6 +131,7 @@ import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.GridSubsetFactory;
+import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
@@ -799,6 +800,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         ConveyorTile tileResp = null;
         try {
             tileResp = tileLayer.getTile(tileReq);
+        } catch (OutsideCoverageException e) {
+            final String msg = e.getMessage() != null ? e.getMessage() : "tile outside coverage";
+            requestMistmatchTarget.append(msg);
+            log.log(Level.FINE, msg);
         } catch (Exception e) {
             log.log(Level.INFO, "Error dispatching tile request to GeoServer", e);
         }

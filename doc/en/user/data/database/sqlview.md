@@ -9,11 +9,11 @@ Even more usefully, SQL View queries can be parameterized via string substitutio
 
 ## Creating a SQL View
 
-In order to create a SQL View the administrator invokes the **Create new layer** page. When a database store is selected, the usual list of tables and views available for publication appears, A link **Configure new SQL view\...** also appears:
+In order to create a SQL View the administrator invokes the **Create new layer** page. When a database store is selected, the usual list of tables and views available for publication appears, A **SQL Query** section, containing a **New SQL view\...** button also appears:
 
 ![](images/createsqlview.png)
 
-Selecting the **Configure new SQL view\...** link opens a new page where the SQL view query can be specified:
+Selecting the **New SQL view\...** button opens a new page where the SQL view query can be specified:
 
 ![](images/createsql.png)
 

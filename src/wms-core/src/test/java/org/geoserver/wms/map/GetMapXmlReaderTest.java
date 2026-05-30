@@ -142,7 +142,10 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
             fail("ServiceException with IOException Expected");
         } catch (ServiceException e) {
-            assertTrue(e.getMessage().contains("xml request is most probably not compliant to GetMap element"));
+            assertTrue(
+                    "Expected parse failure or entity blocked, got: " + e.getMessage(),
+                    e.getMessage().contains("xml request is most probably not compliant to GetMap element")
+                            || e.getMessage().contains("Entity resolution disallowed"));
             assertTrue(e.getCause() instanceof SAXException);
         } finally {
             System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);

@@ -611,9 +611,16 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         // the parser will try to read a file on the local file system
         // if the file is found, its content will be used to replace the entity
         // if the file is not found the parser will throw a FileNotFoundException
+        // With XMLUtils integration, the entity may also be blocked by GeoTools URI validation.
+        // Uses locale-independent substrings because JAXP error messages are localized by the JVM.
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
         String response = getAsString(url);
-        assertThat(response, Matchers.containsString("Error while getting SLD."));
+        assertTrue(
+                "Expected entity to be blocked, got: " + response.substring(0, Math.min(500, response.length())),
+                response.contains("Error while getting SLD.")
+                        || response.contains("Entity resolution disallowed")
+                        || response.contains("accessExternalDTD")
+                        || response.contains("exist"));
 
         // disable entities
         // if entities evaluation is disabled

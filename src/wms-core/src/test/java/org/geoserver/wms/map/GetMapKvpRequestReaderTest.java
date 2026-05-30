@@ -96,6 +96,7 @@ import org.geotools.util.logging.Logging;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
+import org.xml.sax.EntityResolver;
 
 @SuppressWarnings("unchecked")
 public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
@@ -177,10 +178,14 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     public void testSldEntityResolver() throws Exception {
         WMS wms = new WMS(getGeoServer());
         // enable entities in external SLD files
-        // test no custom entity resolver will be used
+        // test entity resolver allows unrestricted access
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
         GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
-        assertNull(reader.getEntityResolverProvider().getEntityResolver());
+        EntityResolver resolver = reader.getEntityResolverProvider().getEntityResolver();
+        // unrestricted mode returns NullEntityResolver (allows all) or null
+        assertTrue(
+                "Expected null or NullEntityResolver, got: " + resolver,
+                resolver == null || resolver instanceof org.geotools.util.NullEntityResolver);
 
         // disable entities
         // since XML entities are disabled for external SLD files

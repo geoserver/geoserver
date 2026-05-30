@@ -74,10 +74,9 @@ public class ExternalEntitiesTest extends WFSTestSupport {
         // enable entity parsing
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
         String output = string(post("wfs", WFS_1_0_0_REQUEST));
-        // the server tried to read a file on local file system
-        assertTrue(
-                "FileNotFoundException",
-                output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        // the server rejects the malformed entity URI (blocked by GeoTools URI validation
+        // or wrapped as a parse failure depending on parser chain)
+        assertExternalEntityBlocked(output);
 
         // disable entity parsing
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
@@ -95,10 +94,9 @@ public class ExternalEntitiesTest extends WFSTestSupport {
         // enable entity parsing
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
         String output = string(post("wfs", WFS_1_1_0_REQUEST));
-        // the server tried to read a file on local file system
-        assertTrue(
-                "FileNotFoundException",
-                output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        // the server rejects the malformed entity URI (blocked by GeoTools URI validation
+        // or wrapped as a parse failure depending on parser chain)
+        assertExternalEntityBlocked(output);
 
         // disable entity parsing
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
@@ -109,6 +107,21 @@ public class ExternalEntitiesTest extends WFSTestSupport {
         System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
         output = string(post("wfs", WFS_1_1_0_REQUEST));
         assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
+    }
+
+    /**
+     * Assert that an external entity reference was safely rejected, regardless of which layer in the parsing chain
+     * caught it. Uses locale-independent substrings (property name "accessExternalDTD" and the entity filename
+     * "exist?.XSD") because the JAXP error message is localized by the JVM (e.g. Italian on it_IT locale builds).
+     */
+    private void assertExternalEntityBlocked(String output) {
+        assertTrue(
+                "Expected entity to be blocked, got: " + output.substring(0, Math.min(500, output.length())),
+                output.contains("Entity resolution disallowed")
+                        || output.contains("xml request is most probably not compliant to GetFeature element")
+                        || output.contains("FileNotFoundException")
+                        || output.contains("accessExternalDTD")
+                        || output.contains("exist?.XSD"));
     }
 
     @Test

@@ -98,6 +98,20 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         final EnvelopePanel nativeBBox = new EnvelopePanel("nativeBoundingBox", nativeBBoxModel);
         nativeBBox.setOutputMarkupId(true);
         refForm.add(nativeBBox);
+
+        // Warning label shown when CRS has no defined bounds (e.g. EPSG:404000)
+        final Label noBoundsWarning = new Label(
+                "noBoundsWarning",
+                "CRS "
+                        + model.getObject().getSRS()
+                        + " has no defined spatial extent."
+                        + " Use 'Compute from data' to set bounds, or enter them manually.");
+        noBoundsWarning.setOutputMarkupId(true);
+        noBoundsWarning.setOutputMarkupPlaceholderTag(true);
+        noBoundsWarning.setVisible(
+                CatalogBuilder.DEFAULT_SRS.equals(model.getObject().getSRS()));
+        refForm.add(noBoundsWarning);
+
         AjaxSubmitLink nativeBoundsLink = computeNativeBoundsLink(refForm, nativeBBox);
 
         // lat/lon bbox
@@ -134,7 +148,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(declaredCRS);
 
         // compute from native or declared crs links
-        refForm.add(computeBoundsFromSRS(refForm, nativeBBox));
+        refForm.add(computeBoundsFromSRS(refForm, nativeBBox, noBoundsWarning));
 
         projectionPolicy = new DropDownChoice<>(
                 "srsHandling",
@@ -189,7 +203,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
      * Compute the native bounds from the native CRS. Acts as an alternative to computing the bounds from the data
      * itself.
      */
-    AjaxSubmitLink computeBoundsFromSRS(final Form<ResourceInfo> refForm, final EnvelopePanel nativeBoundsPanel) {
+    AjaxSubmitLink computeBoundsFromSRS(
+            final Form<ResourceInfo> refForm, final EnvelopePanel nativeBoundsPanel, final Label noBoundsWarning) {
 
         return new AjaxSubmitLink("computeLatLonFromNativeSRS", refForm) {
             @Serial
@@ -205,9 +220,13 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
                 if (nativeBBox != null) {
                     nativeBoundsPanel.setModelObject(nativeBBox);
+                    noBoundsWarning.setVisible(false);
+                } else {
+                    noBoundsWarning.setVisible(true);
                 }
 
                 target.add(nativeBoundsPanel);
+                target.add(noBoundsWarning);
             }
 
             @Override

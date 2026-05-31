@@ -15,7 +15,6 @@ import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -59,9 +58,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         assertNotNull(layer);
         ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
         tester.startPage(page);
-        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs")).setSelectedTab(4);
-        tester.submitForm("publishedinfo");
-        tester.assertComponent("publishedinfo:tabs:panel:metadataPanel", MetadataPanel.class);
+        navigateToMetadataTab();
     }
 
     @After

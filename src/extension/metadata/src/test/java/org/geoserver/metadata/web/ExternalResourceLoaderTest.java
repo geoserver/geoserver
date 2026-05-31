@@ -9,12 +9,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Locale;
 import org.apache.wicket.Session;
-import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.util.file.File;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
-import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.metadata.web.resource.WicketResourceResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
@@ -87,9 +85,7 @@ public class ExternalResourceLoaderTest extends AbstractWicketMetadataTest {
         LayerInfo layer = geoServer.getCatalog().getLayerByName("mylayer");
         ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
         tester.startPage(page);
-        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs")).setSelectedTab(4);
-        tester.submitForm("publishedinfo");
-        tester.assertComponent("publishedinfo:tabs:panel:metadataPanel", MetadataPanel.class);
+        navigateToMetadataTab();
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:0:component",

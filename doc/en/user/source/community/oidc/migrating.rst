@@ -22,11 +22,29 @@ uninstalled plugin. Instead it degrades gracefully:
 * the on-disk configuration is **left untouched** — nothing is rewritten, so the data directory keeps working with the
   older GeoServer until you migrate it.
 
+For example, opening a GeoServer 2.x data directory whose ``web`` chain used an ``openIdConnectAuthentication`` filter
+named ``keycloak-oidc`` produces, on the administrator home page:
+
+.. code-block:: text
+
+   The following security components could not be loaded and have been disabled. They were most likely created
+   by a community plugin that is not installed in this GeoServer; reconfigure or remove them and restart GeoServer:
+
+     * keycloak-oidc (gs-sec-oauth2-openid-connect (OpenID Connect / Azure AD)): Created by the no longer installed
+       plugin gs-sec-oauth2-openid-connect (OpenID Connect / Azure AD); reconfigure it with the current
+       authentication connector.
+
+   The following authentication filter chains were updated as a result:
+
+     * "web": removed [keycloak-oidc]
+
+and the matching startup log line::
+
+   WARN [geoserver.security] - Disabled security filter(s) [keycloak-oidc] were removed from chain 'web'
+
 .. figure:: images/home-page-warning.png
 
    Administrator home page listing the disabled legacy security components and the affected filter chains.
-
-   .. todo:: screenshot to be captured during the migration field test (blur any endpoints / realm names).
 
 .. note::
 
@@ -95,9 +113,19 @@ For each disabled legacy filter:
 
 .. figure:: images/oidc-login-filter.png
 
-   Configuring the unified OpenID Connect login filter.
+   The unified OpenID Connect login filter configured for a generic OpenID Connect provider (Keycloak): discovery
+   populated the endpoints, and the read-only *Redirect URI* shows the
+   ``<baseUrl>/web/login/oauth2/code/<filterName>__oidc`` value to register with the IdP.
 
-   .. todo:: screenshot to be captured during the migration field test.
+.. note::
+
+   This migration path was validated end to end against Keycloak: a GeoServer 2.x data directory with an
+   ``openIdConnectAuthentication`` filter was opened by GeoServer 3.0 (filter disabled and stripped from the ``web``
+   chain, warning shown), a new *OpenID Connect Login* filter was configured for the same realm, and an interactive
+   login succeeded. The new connector issues a standards-compliant authorization request with **PKCE**
+   (``code_challenge_method=S256``), a CSRF ``state`` and an OIDC ``nonce``, and properly URL-encodes the requested
+   scopes — none of which the legacy redirect entry point did. A principal that resolves no roles from the configured
+   role source is still authenticated (granted ``ROLE_AUTHENTICATED``) rather than failing.
 
 legacy-openid-connect → OIDC
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -148,15 +176,21 @@ This is the change most likely to break a migrated login if it is missed. The le
 URL as the OAuth2 ``redirect_uri`` (for example ``https://geoserver.example.org/geoserver``) together with a fixed,
 provider-specific login path such as ``/j_spring_oauth2_openid_connect_login``.
 
-The new connector follows the Spring Security 6 convention and uses a **per-filter, per-provider** callback path:
+The new connector follows the Spring Security 6 convention. Each **enabled provider** of a login filter has its own
+callback (redirect) URI, shown read-only as *Redirect URI* in that provider's section of the filter configuration page.
+**Copy that exact value** into your IdP rather than constructing it by hand. The values follow these patterns:
 
 .. code-block:: text
 
-   <baseUrl>/web/login/oauth2/code/<filterName>__<provider>
+   <baseUrl>/web/login/oauth2/code/google              # built-in Google provider
+   <baseUrl>/web/login/oauth2/code/gitHub              # built-in GitHub provider
+   <baseUrl>/web/login/oauth2/code/microsoft           # built-in Microsoft / Azure AD provider
+   <baseUrl>/web/login/oauth2/code/<filterName>__oidc  # generic OpenID Connect provider
 
-where ``<provider>`` is one of ``google``, ``gitHub``, ``microsoft`` or ``oidc`` and ``<filterName>`` is the name of the
-authentication filter. For a filter named ``oidc``, configured as a generic OpenID Connect provider, with the base URL
-``https://geoserver.example.org/geoserver``, the callback becomes:
+The built-in Google, GitHub and Microsoft providers use a fixed provider key. The generic *OpenID Connect* provider —
+used for **Keycloak, GeoNode, and any standards-compliant IdP** — instead embeds the **filter name**, so multiple
+OpenID Connect filters each get a distinct callback. For a filter named ``oidc`` with the base URL
+``https://geoserver.example.org/geoserver`` the OpenID Connect callback is:
 
 .. code-block:: text
 
@@ -167,9 +201,9 @@ then the current request, so make sure your *Proxy Base URL* is set correctly be
 
 .. important::
 
-   Register this exact URL as an allowed redirect URI at your IdP **before** switching over, and remove the old one.
-   Because the path now embeds the filter name, multiple filters of the same provider type each get a distinct callback
-   URL — they must each be registered separately.
+   Register the exact *Redirect URI* shown on the filter page as an allowed redirect URI at your IdP **before**
+   switching over, and remove the old one. Because the OpenID Connect path embeds the filter name, multiple OpenID
+   Connect filters each get a distinct callback URL — they must each be registered separately.
 
 The login is now started from ``<baseUrl>/web/oauth2/authorization/<filterName>__<provider>`` (replacing the legacy
 ``/j_spring_oauth2_*_login`` endpoints), and the post-logout redirect defaults to ``<baseUrl>/web/`` — register that as

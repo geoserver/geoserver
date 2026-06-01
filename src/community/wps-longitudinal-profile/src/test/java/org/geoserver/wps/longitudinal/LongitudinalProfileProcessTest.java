@@ -11,11 +11,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -30,7 +33,11 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.data.util.DefaultProgressListener;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -148,18 +155,18 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         checkBasicProfile(requestXml, null);
     }
 
-    private void checkBasicProfile(String requestXml, String expctedLayer) throws Exception {
+    private void checkBasicProfile(String requestXml, String expectedLayer) throws Exception {
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
-        assertEquals(214.94, infos.get("altitudePositive"));
+        assertEquals(37.03, infos.get("altitudePositive"));
         assertEquals(-64.28, infos.get("altitudeNegative"));
         assertEquals(1746.0248, infos.get("totalDistance"));
         assertEquals(843478.25, infos.get("firstPointX"));
         assertEquals(6420349.0, infos.get("firstPointY"));
         assertEquals(844102.7, infos.get("lastPointX"));
         assertEquals(6420614.0, infos.get("lastPointY"));
-        if (expctedLayer != null) {
-            assertEquals(expctedLayer, infos.get("layer"));
+        if (expectedLayer != null) {
+            assertEquals(expectedLayer, infos.get("layer"));
         } else {
             assertEquals(JSONNull.getInstance(), infos.get("layer"));
         }
@@ -205,7 +212,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
-        assertEquals(214.94, infos.get("altitudePositive"));
+        assertEquals(37.03, infos.get("altitudePositive"));
         assertEquals(-64.28, infos.get("altitudeNegative"));
         assertEquals(2463.6123, infos.get("totalDistance"));
         assertEquals(536188.94, infos.get("firstPointX"));
@@ -291,7 +298,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
-        assertEquals(195.69, infos.get("altitudePositive"));
+        assertEquals(39.78, infos.get("altitudePositive"));
         assertEquals(-67.03, infos.get("altitudeNegative"));
         // check it's a meaningful distance in meters, not some random number in degrees
         assertEquals(1746.9653, infos.get("totalDistance"));
@@ -338,7 +345,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         JSONObject infos = response.getJSONObject("infos");
 
         // Dataset is ~ 4m in resolution. Diagonal resolution is ~5.65
-        assertEquals(258.0, infos.get("altitudePositive"));
+        assertEquals(80.09, infos.get("altitudePositive"));
         assertEquals(-107.34, infos.get("altitudeNegative"));
         assertEquals(1746.0248, infos.get("totalDistance"));
         assertEquals(843478.25, infos.get("firstPointX"));
@@ -383,7 +390,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
 
-        assertEquals(256.9, infos.get("altitudePositive"));
+        assertEquals(78.99, infos.get("altitudePositive"));
         assertEquals(-106.03, infos.get("altitudeNegative"));
         assertEquals(1746.9653, infos.get("totalDistance"));
         assertEquals(4.8166676, infos.get("firstPointX"));
@@ -415,6 +422,39 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         assertEquals(22.130537, profile7.get("slope"));
         assertEquals(4.8170360, profile7.get("x"));
         assertEquals(44.86718, profile7.get("y"));
+    }
+
+    @Test
+    public void testTwoPointProfileAltitudeIncrement() throws Exception {
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:3857", true);
+        GridCoverage2D coverage = createTwoByTwoCoverage(crs);
+        Geometry geometry = new WKTReader().read("LINESTRING(0.5 1.5, 1.5 1.5)");
+        geometry.setUserData(crs);
+
+        LongitudinalProfileProcess process = new LongitudinalProfileProcess(getGeoServer());
+        LongitudinalProfileProcess.LongitudinalProfileProcessResult result =
+                process.execute(null, coverage, null, geometry, 10d, null, 0, null, null);
+
+        OperationInfo info = result.getOperationInfo();
+        assertEquals(25.0, info.getAltitudePositive(), 0);
+        assertEquals(0.0, info.getAltitudeNegative(), 0);
+
+        List<ProfileInfo> profile = result.getProfileInfoList();
+        assertEquals(2, profile.size());
+        assertEquals(200.0, profile.get(0).getAltitude(), 0);
+        assertEquals(225.0, profile.get(1).getAltitude(), 0);
+    }
+
+    private GridCoverage2D createTwoByTwoCoverage(CoordinateReferenceSystem crs) {
+        BufferedImage image = new BufferedImage(2, 2, BufferedImage.TYPE_BYTE_GRAY);
+        WritableRaster raster = image.getRaster();
+        raster.setSample(0, 0, 0, 200);
+        raster.setSample(1, 0, 0, 225);
+        raster.setSample(0, 1, 0, 230);
+        raster.setSample(1, 1, 0, 240);
+
+        ReferencedEnvelope envelope = new ReferencedEnvelope(0, 2, 0, 2, crs);
+        return new GridCoverageFactory().create("two-by-two", image, envelope);
     }
 
     @Test

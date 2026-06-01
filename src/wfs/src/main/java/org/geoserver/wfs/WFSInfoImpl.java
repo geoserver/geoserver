@@ -7,7 +7,7 @@ package org.geoserver.wfs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,7 +29,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected Boolean allowGlobalQueries = true;
     protected Boolean simpleConversionEnabled = false;
     protected boolean getFeatureOutputTypeCheckingEnabled = false;
-    protected Set<String> getFeatureOutputTypes = new HashSet<>();
+    protected Set<String> getFeatureOutputTypes = new LinkedHashSet<>();
 
     protected String csvDateFormat;
 

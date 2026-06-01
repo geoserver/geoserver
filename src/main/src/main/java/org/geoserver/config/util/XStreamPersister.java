@@ -803,6 +803,7 @@ public class XStreamPersister {
 
                 // unwrap any proxies
                 value = unwrapProxies(value);
+
                 wrapped.visit(name, type, definedIn, value);
             }
         }

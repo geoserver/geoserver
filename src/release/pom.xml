@@ -149,7 +149,7 @@
         <executions>
           <execution>
             <id>extract-slf4j-version-from-jarname</id>
-            <phase>validate</phase>
+            <phase>test</phase>
             <goals>
               <goal>run</goal>
             </goals>
@@ -187,6 +187,21 @@
                 </pathconvert>
 
                 <echo>Using SLF4J version: ${slf4j.version}</echo>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
+            <id>remove-dependencies</id>
+            <phase>install</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <!-- remove some unwanted dependencies that get pulled over -->
+              <target>
+                <delete>
+                  <fileset dir="${project.build.directory}/dependency" includes="servlet-api-*.jar,core*.jar"></fileset>
+                </delete>
               </target>
             </configuration>
           </execution>
@@ -252,69 +267,6 @@
             <goals>
               <goal>copy-dependencies</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>remove-dependencies</id>
-            <phase>install</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <!-- remove some unwanted dependencies that get pulled over -->
-              <target>
-                <delete>
-                  <fileset dir="${project.build.directory}/dependency" includes="servlet-api-*.jar,core*.jar"></fileset>
-                </delete>
-              </target>
-            </configuration>
-          </execution>
-          <execution>
-            <id>extract-slf4j-version-from-jarname</id>
-            <phase>test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <exportAntProperties>true</exportAntProperties>
-              <target name="extract-slf4j-version">
-
-                <!-- Find all slf4j-api-*.jar in target/dependency -->
-                <pathconvert pathsep="," property="slf4j.matches">
-                  <fileset dir="${project.build.directory}/dependency">
-                    <include name="slf4j-api-*.jar"></include>
-                  </fileset>
-                </pathconvert>
-
-                <!-- Fail fast if none found -->
-                <fail message="No slf4j-api-*.jar found under ${project.build.directory}/dependency">
-                  <condition>
-                    <equals arg1="${slf4j.matches}" arg2=""></equals>
-                  </condition>
-                </fail>
-
-                <!-- Fail if multiple (avoid ambiguity) -->
-                <fail message="Multiple slf4j-api jars found: ${slf4j.matches}. Keep only one.">
-                  <condition>
-                    <contains string="${slf4j.matches}" substring=","></contains>
-                  </condition>
-                </fail>
-
-                <!-- Extract the version from the single match -->
-                <pathconvert property="slf4j.version">
-                  <path>
-                    <pathelement location="${slf4j.matches}"></pathelement>
-                  </path>
-                  <mapper from="^.*[/\\]slf4j-api-(.*)\.jar$" to="\1" type="regexp"></mapper>
-                </pathconvert>
-
-                <echo>Using SLF4J version: ${slf4j.version}</echo>
-              </target>
-            </configuration>
           </execution>
         </executions>
       </plugin>

@@ -51,6 +51,9 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
@@ -73,6 +76,9 @@ import org.geoserver.security.concurrent.LockingRoleService;
 import org.geoserver.security.concurrent.LockingUserGroupService;
 import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
+import org.geoserver.security.config.DisabledFilterConfig;
+import org.geoserver.security.config.DisabledRoleServiceConfig;
+import org.geoserver.security.config.DisabledSecurityComponentConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
@@ -99,6 +105,7 @@ import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfi
 import org.geoserver.security.file.FileWatcher;
 import org.geoserver.security.file.RoleFileWatcher;
 import org.geoserver.security.file.UserGroupFileWatcher;
+import org.geoserver.security.filter.DisabledSecurityFilter;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
@@ -517,22 +524,28 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             }
         });
         for (String fName : listFilters()) {
-            SecurityFilterConfig fConfig = loadFilterConfig(fName, mh);
-            if (fConfig != null) {
-                if (fConfig instanceof J2eeAuthenticationBaseFilterConfig j2eeConfig) {
-                    // add default J2EE RoleSource that was the only one possible
-                    // before 2.5
-                    if (j2eeConfig.getRoleSource() == null) {
-                        j2eeConfig.setRoleSource(J2EERoleSource.J2EE);
+            try {
+                SecurityFilterConfig fConfig = loadFilterConfig(fName, mh);
+                if (fConfig != null) {
+                    if (fConfig instanceof J2eeAuthenticationBaseFilterConfig j2eeConfig) {
+                        // add default J2EE RoleSource that was the only one possible
+                        // before 2.5
+                        if (j2eeConfig.getRoleSource() == null) {
+                            j2eeConfig.setRoleSource(J2EERoleSource.J2EE);
+                        }
+                    } else if (fConfig instanceof PreAuthenticatedUserNameFilterConfig userNameConfig) {
+                        RoleSource rs = userNameConfig.getRoleSource();
+                        if (rs != null) {
+                            // use the right RoleSource enum
+                            userNameConfig.setRoleSource(PreAuthenticatedUserNameRoleSource.valueOf(rs.toString()));
+                        }
                     }
-                } else if (fConfig instanceof PreAuthenticatedUserNameFilterConfig userNameConfig) {
-                    RoleSource rs = userNameConfig.getRoleSource();
-                    if (rs != null) {
-                        // use the right RoleSource enum
-                        userNameConfig.setRoleSource(PreAuthenticatedUserNameRoleSource.valueOf(rs.toString()));
-                    }
+                    saveFilter(fConfig, mh);
                 }
-                saveFilter(fConfig, mh);
+            } catch (Exception e) {
+                // a filter that can no longer be migrated (e.g. created by an uninstalled plugin)
+                // must not abort the whole migration; it is disabled and reported during init
+                LOGGER.log(Level.WARNING, "Skipping migration of security filter: " + fName, e);
             }
         }
     }
@@ -565,6 +578,18 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         listeners.remove(listener);
     }
 
+    /** Diagnostics about security components disabled during the last configuration load. */
+    private final SecurityConfigDiagnostics configDiagnostics = new SecurityConfigDiagnostics();
+
+    /**
+     * Returns diagnostics describing the security components (filters, providers, role services) that could not be
+     * loaded and were disabled during the last configuration load, together with the filter chains that were altered as
+     * a result. Empty in the normal, healthy case.
+     */
+    public SecurityConfigDiagnostics getConfigDiagnostics() {
+        return configDiagnostics;
+    }
+
     /** List of active/configured authentication providers */
     public List<GeoServerAuthenticationProvider> getAuthenticationProviders() {
         return authProviders;
@@ -587,6 +612,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     synchronized void init(SecurityManagerConfig config) throws Exception {
+
+        // rebuild the diagnostics for this configuration load
+        configDiagnostics.clear();
 
         // load the keystore password provider
 
@@ -635,10 +663,26 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         // add the custom/configured ones
         if (!config.getAuthProviderNames().isEmpty()) {
             for (String authProviderName : config.getAuthProviderNames()) {
-                // TODO: handle failure here... perhaps simply disabling when auth provider
-                // fails to load?
-                GeoServerAuthenticationProvider authProvider = authProviderHelper.load(authProviderName);
-                authProviders.add(authProvider);
+                try {
+                    GeoServerAuthenticationProvider authProvider = authProviderHelper.load(authProviderName);
+                    if (authProvider != null) {
+                        authProviders.add(authProvider);
+                    }
+                } catch (Exception e) {
+                    // a misconfigured or no longer available authentication provider must not
+                    // prevent the whole security subsystem (and GeoServer) from starting: disable
+                    // it and report it via getConfigDiagnostics()
+                    configDiagnostics.addDisabledComponent(new SecurityConfigDiagnostics.DisabledComponent(
+                            SecurityConfigDiagnostics.ComponentType.AUTHENTICATION_PROVIDER,
+                            authProviderName,
+                            null,
+                            null,
+                            "Authentication provider could not be loaded: " + rootCauseMessage(e)));
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Disabling authentication provider '" + authProviderName + "' which could not be loaded",
+                            e);
+                }
             }
         }
 
@@ -662,11 +706,227 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         setProviders(allAuthProviders);
 
         this.securityConfig = new SecurityManagerConfig(config);
+
+        // detect security filters that can no longer be loaded (e.g. created by a community plugin
+        // that is not installed), disable them and remove them from the filter chains so that
+        // GeoServer can still start; the problems are reported via getConfigDiagnostics()
+        detectAndDisableInvalidFilters(this.securityConfig);
+
         this.initialized = true;
     }
 
     void init(MasterPasswordConfig config) {
         this.masterPasswordConfig = new MasterPasswordConfig(config);
+    }
+
+    /**
+     * Detects authentication filters that can no longer be loaded (for example because they were created by a community
+     * plugin that is no longer installed), records them in the {@link #getConfigDiagnostics() diagnostics}, and removes
+     * them from the in-memory request filter chains so that GeoServer can start. On-disk configuration is left
+     * untouched: an administrator must migrate it manually, after which the filters are restored on restart.
+     *
+     * <p>When removing a filter leaves a chain without any authentication filter and that chain has no security
+     * interceptor to enforce access control, a fail-closed {@link DisabledSecurityFilter} is injected so the previously
+     * protected chain does not silently become open.
+     */
+    private void detectAndDisableInvalidFilters(SecurityManagerConfig config) {
+        Set<String> disabledFilters = new TreeSet<>();
+        try {
+            for (String name : listFilters()) {
+                SecurityConfigDiagnostics.DisabledComponent disabled = classifyFilter(name);
+                if (disabled != null) {
+                    configDiagnostics.addDisabledComponent(disabled);
+                    disabledFilters.add(name);
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Error scanning security filter configurations for validity", e);
+        }
+        stripDisabledFiltersFromChains(config, disabledFilters);
+    }
+
+    /**
+     * Removes the given disabled filter names from every request chain in the configuration, recording each altered
+     * chain in the diagnostics. When removing a filter leaves a chain without any authentication filter and the chain
+     * has no security interceptor to enforce access control, a fail-closed {@link DisabledSecurityFilter} is injected
+     * so the previously protected chain does not silently become open. Package visible for testing.
+     */
+    void stripDisabledFiltersFromChains(SecurityManagerConfig config, Set<String> disabledFilters) {
+        if (disabledFilters.isEmpty() || config.getFilterChain() == null) {
+            return;
+        }
+        List<RequestFilterChain> originalChains = config.getFilterChain().getRequestChains();
+        List<RequestFilterChain> resultChains = new ArrayList<>(originalChains.size());
+        boolean changed = false;
+        for (RequestFilterChain requestChain : originalChains) {
+            if (requestChain.getFilterNames().stream().noneMatch(disabledFilters::contains)) {
+                // nothing to strip; keep the chain as is (it is never mutated)
+                resultChains.add(requestChain);
+                continue;
+            }
+
+            // clone before mutating so the caller's configuration (and the on-disk one persisted by
+            // saveSecurityConfig) is left untouched: the strip only affects the in-memory runtime config
+            RequestFilterChain workingChain = cloneRequestChain(requestChain);
+            List<String> removed = new ArrayList<>();
+            for (String filterName : new ArrayList<>(workingChain.getFilterNames())) {
+                if (disabledFilters.contains(filterName)) {
+                    workingChain.getFilterNames().remove(filterName);
+                    removed.add(filterName);
+                }
+            }
+
+            // getFilterNames() holds only the chain's user-configured authentication filters (the validator enforces
+            // that they are GeoServerAuthenticationFilter for variable chains; role/context/interceptor filters are
+            // auto-injected into the compiled list, not here), so "no names left" means "no authenticator left"
+            boolean lostAuthenticator = workingChain.getFilterNames().isEmpty();
+            boolean accessDenied = false;
+            if (lostAuthenticator && !workingChain.isDisabled() && !hasSecurityInterceptor(workingChain)) {
+                // fail closed: keep a previously protected chain from silently becoming open
+                workingChain.getFilterNames().add(GeoServerSecurityFilterChain.DISABLED_FILTER);
+                accessDenied = true;
+            }
+
+            configDiagnostics.addAffectedChain(new SecurityConfigDiagnostics.AffectedChain(
+                    workingChain.getName(), removed, lostAuthenticator, accessDenied));
+            LOGGER.log(
+                    Level.WARNING,
+                    "Disabled security filter(s) {0} were removed from chain ''{1}''{2}",
+                    new Object[] {removed, workingChain.getName(), accessDenied ? "; access to it is now denied" : ""});
+            resultChains.add(workingChain);
+            changed = true;
+        }
+        if (changed) {
+            config.setFilterChain(new GeoServerSecurityFilterChain(resultChains));
+        }
+    }
+
+    private static RequestFilterChain cloneRequestChain(RequestFilterChain chain) {
+        try {
+            return (RequestFilterChain) chain.clone();
+        } catch (CloneNotSupportedException e) {
+            // RequestFilterChain implements Cloneable; this should not happen
+            throw new IllegalStateException("Unable to clone request filter chain " + chain.getName(), e);
+        }
+    }
+
+    /**
+     * Classifies a persisted authentication filter, returning a {@link SecurityConfigDiagnostics.DisabledComponent}
+     * describing why it is unusable, or {@code null} if the filter is healthy.
+     */
+    private SecurityConfigDiagnostics.DisabledComponent classifyFilter(String name) {
+        SecurityFilterConfig config;
+        try {
+            config = loadFilterConfig(name, true);
+        } catch (Exception e) {
+            // log the full cause so an administrator can diagnose; keep the reported reason generic so a malformed
+            // configuration file cannot surface raw (possibly sensitive) field content on the home page
+            LOGGER.log(Level.WARNING, "Security filter '" + name + "' could not be read and will be disabled", e);
+            return new SecurityConfigDiagnostics.DisabledComponent(
+                    SecurityConfigDiagnostics.ComponentType.AUTHENTICATION_FILTER,
+                    name,
+                    sniffRootElement(name),
+                    null,
+                    "its configuration could not be read (see the GeoServer logs for details)");
+        }
+        if (config == null) {
+            return null;
+        }
+        if (config instanceof DisabledSecurityComponentConfig legacy) {
+            return new SecurityConfigDiagnostics.DisabledComponent(
+                    SecurityConfigDiagnostics.ComponentType.AUTHENTICATION_FILTER,
+                    name,
+                    legacy.getOriginalAlias(),
+                    legacy.getSourcePlugin(),
+                    "Created by the no longer installed plugin "
+                            + legacy.getSourcePlugin()
+                            + "; reconfigure it with the current authentication connector.");
+        }
+        String className = config.getClassName();
+        if (className == null) {
+            return null;
+        }
+        if (!classExists(className)) {
+            return new SecurityConfigDiagnostics.DisabledComponent(
+                    SecurityConfigDiagnostics.ComponentType.AUTHENTICATION_FILTER,
+                    name,
+                    sniffRootElement(name),
+                    null,
+                    "Filter class is not available: " + className);
+        }
+        return null;
+    }
+
+    /** Tests whether a class is resolvable, trying the thread context class loader and then this class' loader. */
+    private static boolean classExists(String className) {
+        ClassLoader[] loaders = {
+            Thread.currentThread().getContextClassLoader(), GeoServerSecurityManager.class.getClassLoader()
+        };
+        for (ClassLoader loader : loaders) {
+            if (loader == null) {
+                continue;
+            }
+            try {
+                Class.forName(className, false, loader);
+                return true;
+            } catch (ClassNotFoundException | LinkageError ignore) {
+                // not resolvable by this loader; try the next one
+            }
+        }
+        return false;
+    }
+
+    private boolean hasSecurityInterceptor(RequestFilterChain chain) {
+        return chain instanceof VariableFilterChain variableChain
+                && StringUtils.hasLength(variableChain.getInterceptorName());
+    }
+
+    /** Records a disabled legacy security component (one backed by a placeholder configuration). */
+    void recordDisabledLegacyComponent(
+            SecurityConfigDiagnostics.ComponentType type, String name, DisabledSecurityComponentConfig legacy) {
+        configDiagnostics.addDisabledComponent(new SecurityConfigDiagnostics.DisabledComponent(
+                type,
+                name,
+                legacy.getOriginalAlias(),
+                legacy.getSourcePlugin(),
+                "Created by the no longer installed plugin " + legacy.getSourcePlugin() + "."));
+    }
+
+    /** Returns the root XML element name of a persisted filter configuration, or {@code null}. */
+    private String sniffRootElement(String name) {
+        try {
+            Resource resource = filterRoot().get(name).get(CONFIG_FILENAME);
+            if (resource.getType() == Type.UNDEFINED) {
+                return null;
+            }
+            XMLInputFactory factory = XMLInputFactory.newFactory();
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            try (InputStream in = resource.in()) {
+                XMLStreamReader reader = factory.createXMLStreamReader(in);
+                try {
+                    while (reader.hasNext()) {
+                        if (reader.next() == XMLStreamConstants.START_ELEMENT) {
+                            return reader.getLocalName();
+                        }
+                    }
+                } finally {
+                    reader.close();
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.FINE, "Could not determine root element of filter config " + name, e);
+        }
+        return null;
+    }
+
+    private static String rootCauseMessage(Throwable e) {
+        Throwable root = e;
+        while (root.getCause() != null && root.getCause() != root) {
+            root = root.getCause();
+        }
+        String message = root.getMessage();
+        return message != null ? message : root.getClass().getSimpleName();
     }
 
     public KeyStoreProvider getKeyStoreProvider() {
@@ -1378,8 +1638,20 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     public SortedSet<String> listFilters(Class<?> type) throws IOException {
         SortedSet<String> configs = new TreeSet<>();
         for (String name : listFilters()) {
-            SecurityFilterConfig config = loadFilterConfig(name, true);
-            if (config.getClassName() == null) {
+            SecurityFilterConfig config;
+            try {
+                config = loadFilterConfig(name, true);
+            } catch (Exception e) {
+                // a filter config that can no longer be read (e.g. created by an uninstalled plugin)
+                // must not break listing; it is reported separately as a disabled component
+                LOGGER.log(Level.WARNING, "Skipping unreadable security filter config: " + name, e);
+                continue;
+            }
+            if (config == null || config.getClassName() == null) {
+                continue;
+            }
+            if (config instanceof DisabledSecurityComponentConfig) {
+                // disabled placeholder: not a usable filter of any type
                 continue;
             }
 
@@ -2542,8 +2814,36 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
         xp.getXStream().alias("security", SecurityManagerConfig.class);
 
-        for (GeoServerSecurityProvider roleService : all) {
-            roleService.configure(xp);
+        // First register the XStream aliases contributed for security components from removed or uninstalled plugins,
+        // mapping each to a generic disabled placeholder so an old data directory still deserializes (the components
+        // are then disabled and reported via getConfigDiagnostics() instead of failing GeoServer startup). These are
+        // registered BEFORE provider.configure() so an installed plugin always wins: if the plugin is actually present
+        // and registers the same alias, its real configuration overrides the legacy placeholder.
+        Set<String> legacyAliases = new HashSet<>();
+        for (GeoServerSecurityProvider provider : all) {
+            for (LegacySecurityAlias legacy : provider.getLegacyAliases()) {
+                Class<?> placeholder =
+                        switch (legacy.type()) {
+                            case AUTHENTICATION_FILTER -> DisabledFilterConfig.class;
+                            case ROLE_SERVICE -> DisabledRoleServiceConfig.class;
+                            default -> null;
+                        };
+                if (placeholder == null) {
+                    continue;
+                }
+                if (!legacyAliases.add(legacy.alias())) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Ignoring duplicate legacy security alias ''{0}'' contributed by {1}",
+                            new Object[] {legacy.alias(), provider.getClass().getName()});
+                    continue;
+                }
+                xp.getXStream().alias(legacy.alias(), placeholder);
+            }
+        }
+
+        for (GeoServerSecurityProvider provider : all) {
+            provider.configure(xp);
         }
         return xp;
     }
@@ -2747,6 +3047,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             SecurityNamedServiceConfig config = loadConfig(name, true);
             if (config == null) {
                 // no such config
+                return null;
+            }
+
+            if (config instanceof DisabledSecurityComponentConfig legacy) {
+                // placeholder for a role service created by a plugin that is no longer installed:
+                // record it and report no service so the caller falls back to the default one
+                recordDisabledLegacyComponent(SecurityConfigDiagnostics.ComponentType.ROLE_SERVICE, name, legacy);
                 return null;
             }
 
@@ -3065,6 +3372,15 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             if (config == null) {
                 // no such config
                 return null;
+            }
+
+            if (config instanceof DisabledSecurityComponentConfig) {
+                // placeholder for a filter created by a plugin that is no longer installed: return a
+                // fail-closed stand-in rather than failing to resolve the filter
+                DisabledSecurityFilter disabled = new DisabledSecurityFilter();
+                disabled.setName(name);
+                disabled.setSecurityManager(GeoServerSecurityManager.this);
+                return disabled;
             }
 
             // look up the service for this config

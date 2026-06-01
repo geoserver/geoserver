@@ -12,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
@@ -27,6 +26,7 @@ import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -71,7 +71,7 @@ public class GML3FeatureProducerTest extends WFS1XTestSupport {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         producer().write(fcType, output, request(MockData.SEVEN));
 
-        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder docBuilder = XMLUtils.newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
         assertEquals(7, document.getElementsByTagName("cdf:Seven").getLength());
     }
@@ -86,7 +86,7 @@ public class GML3FeatureProducerTest extends WFS1XTestSupport {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         producer().write(fcType, output, request(MockData.SEVEN, MockData.FIFTEEN));
 
-        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder docBuilder = XMLUtils.newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
         assertEquals(
                 7 + 15,
@@ -106,7 +106,7 @@ public class GML3FeatureProducerTest extends WFS1XTestSupport {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         producer().write(fcType, output, request(MockData.SEVEN, MockData.POLYGONS));
 
-        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder docBuilder = XMLUtils.newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
         assertEquals(
                 7 + npolys,

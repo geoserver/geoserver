@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
@@ -27,6 +26,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 
@@ -269,8 +269,7 @@ public class FileTypes {
             entityResolver = GeoTools.getEntityResolver(new Hints());
         }
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder();
         builder.setEntityResolver(entityResolver);
         Document svgDoc = builder.parse(stream);
 

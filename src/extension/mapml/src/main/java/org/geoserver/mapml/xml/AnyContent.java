@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -80,9 +81,9 @@ public class AnyContent {
         if (content != null) {
             try {
                 // Parse the HTML/XML string into DOM nodes
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
                 factory.setNamespaceAware(true);
-                DocumentBuilder builder = factory.newDocumentBuilder();
+                DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
 
                 // Wrap in a root element to parse as valid XML
                 String wrapped = "<wrapper>" + content + "</wrapper>";

@@ -17,6 +17,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.metadata.data.service.RemoteDocumentReader;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -37,10 +38,10 @@ public class LocalDocumentReaderMock implements RemoteDocumentReader {
         for (Resource resource : dataDirectory.get("metadata").list()) {
             if (resource.name().contains(uuid)) {
                 try {
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory();
                     dbf.setNamespaceAware(true);
                     try (InputStream stream = resource.in()) {
-                        DocumentBuilder db = dbf.newDocumentBuilder();
+                        DocumentBuilder db = XMLUtils.newDocumentBuilder(dbf);
                         Document doc = db.parse(stream);
                         doc.getDocumentElement().normalize();
                         return doc;

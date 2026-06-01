@@ -12,13 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.type.Name;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.feature.NameImpl;
 import org.geotools.jdbc.JDBCFeatureStore;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -29,6 +33,16 @@ public class UnboundedSequenceMultiValuesTest extends AbstractAppSchemaTestSuppo
     // xpath engines used to check WFS responses
     private XpathEngine WFS11_XPATH_ENGINE;
     private XpathEngine WFS20_XPATH_ENGINE;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Before
     public void beforeTest() {

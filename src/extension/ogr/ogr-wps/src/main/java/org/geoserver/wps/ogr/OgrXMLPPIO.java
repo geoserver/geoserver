@@ -10,13 +10,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.response.Ogr2OgrOutputFormat;
 import org.geoserver.wps.ppio.XMLPPIO;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.xml.XMLUtils;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -68,8 +68,7 @@ public class OgrXMLPPIO extends XMLPPIO {
         encode(value, os);
 
         InputStream bis = new ByteArrayInputStream(os.toByteArray());
-        SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-        SAXParser saxParser = saxParserFactory.newSAXParser();
+        SAXParser saxParser = XMLUtils.newSAXParser();
         XMLReader parser = saxParser.getXMLReader();
         parser.setContentHandler(handler);
         parser.parse(new InputSource(bis));

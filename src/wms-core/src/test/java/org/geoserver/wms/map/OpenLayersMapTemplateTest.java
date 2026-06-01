@@ -22,6 +22,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -57,11 +58,11 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
         map.put("yx", "false");
         template.process(map, new OutputStreamWriter(output));
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory();
         dbf.setValidating(false);
         dbf.setExpandEntityReferences(false);
 
-        DocumentBuilder docBuilder = dbf.newDocumentBuilder();
+        DocumentBuilder docBuilder = XMLUtils.newDocumentBuilder(dbf);
         docBuilder.setEntityResolver((publicId, systemId) -> {
             StringReader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             InputSource source = new InputSource(reader);

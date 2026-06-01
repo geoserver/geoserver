@@ -7,7 +7,7 @@ package org.geoserver.catalog.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -47,7 +47,7 @@ public class LayerInfoImpl implements LayerInfo {
 
     protected StyleInfo defaultStyle;
 
-    protected Set<StyleInfo> styles = new HashSet<>();
+    protected Set<StyleInfo> styles = new LinkedHashSet<>();
 
     protected ResourceInfo resource;
 

@@ -111,6 +111,21 @@ For each disabled legacy filter:
    under ``security/role/<name>``) from the data directory.
 #. Restart GeoServer. The home page warning clears once the obsolete configuration is gone.
 
+.. note::
+
+   **When does the warning clear?** It is rebuilt only when the security subsystem re-initializes — at startup, or
+   when the global :menuselection:`Security --> Authentication` settings are saved — so refreshing the home page on
+   its own never changes it. The warning has two independent parts:
+
+   * *The following authentication filter chains were updated* clears as soon as no chain still references the
+     unknown filter — saving the *Authentication* page already rewrites the chains without it.
+   * *The following security components could not be loaded* clears only once the obsolete ``security/filter/<name>``
+     (and, for Keycloak, ``security/role/<name>``) directory is removed from the data directory.
+
+   A disabled component is **not** listed among the *Authentication* filters, so it cannot be removed with the
+   *Remove selected* button — delete its directory on disk, then restart GeoServer, which is the reliable way to
+   re-evaluate both parts.
+
 .. figure:: images/oidc-login-filter.png
 
    The unified OpenID Connect login filter configured for a generic OpenID Connect provider (Keycloak): discovery

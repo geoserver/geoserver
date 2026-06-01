@@ -98,7 +98,7 @@
     <spring.security.version>5.8.16</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring-integration.version>5.5.18</spring-integration.version>
-    <wicket.version>9.21.0</wicket.version>
+    <wicket.version>9.23.0</wicket.version>
 
     <!-- ================================ -->
     <!-- Dependency version management    -->

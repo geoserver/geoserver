@@ -815,9 +815,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * describing why it is unusable, or {@code null} if the filter is healthy.
      */
     private SecurityConfigDiagnostics.DisabledComponent classifyFilter(String name) {
-        SecurityFilterConfig config;
+        SecurityNamedServiceConfig config;
         try {
-            config = loadFilterConfig(name, true);
+            // load as the base config type: a filter referenced by a chain may be persisted with a generic
+            // SecurityNamedServiceConfig rather than a SecurityFilterConfig, and narrowing to the latter here would
+            // throw ClassCastException and spuriously disable a perfectly loadable filter
+            config = filterHelper.loadConfigAsBase(name, true);
         } catch (Exception e) {
             // log the full cause so an administrator can diagnose; keep the reported reason generic so a malformed
             // configuration file cannot surface raw (possibly sensitive) field content on the home page
@@ -846,7 +849,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         if (className == null) {
             return null;
         }
-        if (!classExists(className)) {
+        // A filter is loadable iff a registered GeoServerSecurityProvider can create it; this mirrors exactly how
+        // FilterHelper.load resolves a filter. A bare Class.forName check is both too strict and too lax: too strict
+        // because a filter contributed by a provider whose class is not visible to this class' loader (e.g. a test
+        // or alternate classloader) would be wrongly disabled and stripped from its chain; too lax because a class
+        // present on the classpath but backed by no provider still cannot be instantiated at request time.
+        if (!hasMatchingFilterProvider(className)) {
             return new SecurityConfigDiagnostics.DisabledComponent(
                     SecurityConfigDiagnostics.ComponentType.AUTHENTICATION_FILTER,
                     name,
@@ -857,20 +865,16 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return null;
     }
 
-    /** Tests whether a class is resolvable, trying the thread context class loader and then this class' loader. */
-    private static boolean classExists(String className) {
-        ClassLoader[] loaders = {
-            Thread.currentThread().getContextClassLoader(), GeoServerSecurityManager.class.getClassLoader()
-        };
-        for (ClassLoader loader : loaders) {
-            if (loader == null) {
-                continue;
-            }
-            try {
-                Class.forName(className, false, loader);
+    /**
+     * Returns {@code true} if a registered {@link GeoServerSecurityProvider} can create a filter for the given class
+     * name, i.e. the filter is actually loadable. Mirrors {@link FilterHelper#load(String)} resolution, which is the
+     * correct test of "is this filter still backed by an installed plugin".
+     */
+    private boolean hasMatchingFilterProvider(String className) {
+        for (GeoServerSecurityProvider provider : lookupSecurityProviders()) {
+            Class<? extends GeoServerSecurityFilter> filterClass = provider.getFilterClass();
+            if (filterClass != null && filterClass.getName().equals(className)) {
                 return true;
-            } catch (ClassNotFoundException | LinkageError ignore) {
-                // not resolvable by this loader; try the next one
             }
         }
         return false;
@@ -2932,6 +2936,16 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         /** loads the named entity config from persistence */
         public C loadConfig(String name, boolean allowEnvParametrization) throws IOException {
             return loadConfig(name, null, allowEnvParametrization);
+        }
+
+        /**
+         * Loads the named config as the base {@link SecurityNamedServiceConfig} type, without narrowing to the concrete
+         * service-specific subtype (e.g. {@link SecurityFilterConfig}). Used by the validity diagnostics, which must
+         * tolerate a component referenced by a chain but persisted with a generic config: narrowing here would throw
+         * {@link ClassCastException} and wrongly flag a perfectly loadable component as disabled.
+         */
+        SecurityNamedServiceConfig loadConfigAsBase(String name, boolean allowEnvParametrization) throws IOException {
+            return loadConfig(name, allowEnvParametrization);
         }
 
         /** saves the user group service config to persistence */

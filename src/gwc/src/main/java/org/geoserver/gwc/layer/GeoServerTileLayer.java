@@ -116,6 +116,7 @@ import org.geowebcache.locks.LockProvider.Lock;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeException;
 import org.geowebcache.mime.MimeType;
+import org.geowebcache.service.HttpErrorCodeException;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
 import org.geowebcache.util.GWCVars;
@@ -538,7 +539,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             mime = formats.get(0);
         } else {
             if (!formats.contains(mime)) {
-                throw new IllegalArgumentException(mime.getFormat() + " is not a supported format for " + getName());
+                throw new HttpErrorCodeException(400, mime.getFormat() + " is not a supported format for " + getName());
             }
         }
 

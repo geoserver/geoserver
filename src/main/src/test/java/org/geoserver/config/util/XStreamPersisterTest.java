@@ -33,11 +33,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -95,6 +93,7 @@ import org.geotools.referencing.wkt.UnformattableObjectException;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
+import org.geotools.xml.XMLUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -1694,7 +1693,7 @@ public class XStreamPersisterTest {
     }
 
     ByteArrayInputStream in(Document dom) throws Exception {
-        Transformer tx = TransformerFactory.newInstance().newTransformer();
+        Transformer tx = XMLUtils.newTransformer();
         tx.setOutputProperty(OutputKeys.INDENT, "yes");
 
         ByteArrayOutputStream out = out();
@@ -1704,11 +1703,11 @@ public class XStreamPersisterTest {
     }
 
     protected Document dom(InputStream in) throws ParserConfigurationException, SAXException, IOException {
-        return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+        return XMLUtils.newDocumentBuilder().parse(in);
     }
 
     protected void print(InputStream in) throws Exception {
-        Transformer tx = TransformerFactory.newInstance().newTransformer();
+        Transformer tx = XMLUtils.newTransformer();
         tx.setOutputProperty(OutputKeys.INDENT, "yes");
 
         tx.transform(new StreamSource(in), new StreamResult(System.out));

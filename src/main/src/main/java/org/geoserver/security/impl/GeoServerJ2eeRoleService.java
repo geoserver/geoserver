@@ -32,6 +32,7 @@ import org.geoserver.security.event.RoleLoadedEvent;
 import org.geoserver.security.event.RoleLoadedListener;
 import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.springframework.util.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -257,9 +258,10 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService i
         Set<String> result = new HashSet<>();
 
         try {
-            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+            SAXParserFactory parserFactory = XMLUtils.newSAXParserFactory();
             parserFactory.setNamespaceAware(true);
-            SAXParser parser = parserFactory.newSAXParser();
+
+            SAXParser parser = XMLUtils.newSAXParser(parserFactory);
             XMLReader xmlReader = parser.getXMLReader();
 
             InputSource inputSource = new InputSource(new FileInputStream(file));

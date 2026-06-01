@@ -30,6 +30,7 @@ import org.geotools.api.style.Style;
 import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.util.NullEntityResolver;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 import org.vfny.geoserver.util.SLDValidator;
@@ -151,6 +152,7 @@ public class StyleGeneratorTest {
 
             // make sure it's valid
             SLDValidator validator = new SLDValidator();
+            validator.setEntityResolver(NullEntityResolver.INSTANCE);
             List errors = validator.validateSLD(new ByteArrayInputStream(input));
             assertEquals(0, errors.size());
 

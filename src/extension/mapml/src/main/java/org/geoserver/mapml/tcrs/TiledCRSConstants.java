@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -33,6 +32,7 @@ import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.geowebcache.config.DefaultGridsets;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
@@ -550,8 +550,7 @@ public class TiledCRSConstants {
             File globalConfig = loader.get("global.xml").file();
 
             // Set up XML parser
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            DocumentBuilder dBuilder = XMLUtils.newDocumentBuilder();
             Document doc = dBuilder.parse(globalConfig);
 
             doc.getDocumentElement().normalize();
@@ -589,8 +588,7 @@ public class TiledCRSConstants {
             File globalConfig = loader.get("gwc/geowebcache.xml").file();
 
             // Set up XML parser
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            DocumentBuilder dBuilder = XMLUtils.newDocumentBuilder();
             Document doc = dBuilder.parse(globalConfig);
 
             doc.getDocumentElement().normalize();

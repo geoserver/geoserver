@@ -14,12 +14,12 @@ import java.util.logging.Level;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kordamp.json.JSONArray;
@@ -165,7 +165,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         try {
             domSrc = new DOMSource(domDoc);
 
-            txformer = TransformerFactory.newInstance().newTransformer();
+            txformer = XMLUtils.newTransformer();
             txformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
             txformer.setOutputProperty(OutputKeys.METHOD, "xml");
             txformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");

@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -43,7 +44,6 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.fileupload2.core.DiskFileItem;
@@ -62,7 +62,10 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
+import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xsd.EMFUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -152,6 +155,7 @@ public class Dispatcher extends AbstractController {
     /** SOAP mime type */
     static final String SOAP_MIME = "application/soap+xml";
 
+    /** Access {@code }EntityResolverProvider.getEntityResolver()} from gs-main module. */
     private Method getEntityResolver = null;
 
     {
@@ -555,17 +559,40 @@ public class Dispatcher extends AbstractController {
         return req;
     }
 
+    /**
+     * Access {@code EntityResolverProvider.getEntityResolver()} from gs-main module.
+     *
+     * @return EntityResolver configured for application use, or {@code null} allowing full access.
+     */
+    private EntityResolver getEntityResolver() {
+        Object provider = GeoServerExtensions.bean("entityResolverProvider");
+        if (provider != null && getEntityResolver != null) {
+            try {
+                return (EntityResolver) getEntityResolver.invoke(provider);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                return null; // Entity resolver not available
+            }
+        }
+        return null; // Entity resolver not available
+    }
+
     BufferedReader soapReader(HttpServletRequest httpRequest, Request request) throws IOException {
         // in order to pull out the payload we have to parse the entire request and then reencode it
         // not nice... but then again neither is using SOAP
         Document dom = null;
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            Hints hints;
+            EntityResolver entityResolver = getEntityResolver();
+            if (entityResolver != null)
+                hints = GeoTools.addDefaultHints(new Hints(Hints.ENTITY_RESOLVER, entityResolver));
+            else hints = null;
+
+            DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory(hints);
             dbf.setNamespaceAware(true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Object provider = GeoServerExtensions.bean("entityResolverProvider");
-            if (provider != null && getEntityResolver != null) {
-                db.setEntityResolver((EntityResolver) getEntityResolver.invoke(provider));
+
+            DocumentBuilder db = XMLUtils.newDocumentBuilder(dbf, hints);
+            if (entityResolver != null) {
+                db.setEntityResolver(entityResolver);
             }
             dom = db.parse(httpRequest.getInputStream());
         } catch (Exception e) {
@@ -603,7 +630,7 @@ public class Dispatcher extends AbstractController {
         // transform the payload back into an input stream so we can parse it as usual
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         try {
-            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(payload), new StreamResult(bout));
+            XMLUtils.newTransformer().transform(new DOMSource(payload), new StreamResult(bout));
         } catch (Exception e) {
             throw new IOException("Error encoding payload of SOAP request", e);
         }
@@ -1406,7 +1433,7 @@ public class Dispatcher extends AbstractController {
             // do a more lax serach, search only on the element name if the
             // namespace was unspecified
             if (namespace == null || namespace.isEmpty()) {
-                String msg = "No namespace specified in request, searching for " + " xml reader by element name only";
+                String msg = "No namespace specified in request, searching for xml reader by element name only";
                 logger.info(msg);
 
                 for (XmlRequestReader xmlReader : xmlReaders) {

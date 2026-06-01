@@ -7,13 +7,17 @@ package org.geoserver.ows;
 
 import java.io.Reader;
 import java.util.Map;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.geotools.util.NullEntityResolver;
 import org.geotools.util.Version;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+/** XmlRequestReader used for testing, as such it is designed to access local xsd files. */
 public class MessageXmlParser extends XmlRequestReader {
     public MessageXmlParser() {
         this(null, new Version("1.0.0"));
@@ -25,15 +29,17 @@ public class MessageXmlParser extends XmlRequestReader {
 
     @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
+        DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory();
+        dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+        dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
+        dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "all");
         dbf.setExpandEntityReferences(false);
         dbf.setValidating(false);
         dbf.setNamespaceAware(true);
 
-        DocumentBuilder builder = dbf.newDocumentBuilder();
-        // builder.setEntityResolver(PreventLocalEntityResolver.INSTANCE);
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder(dbf);
+        builder.setEntityResolver(NullEntityResolver.INSTANCE);
+
         try {
             Document doc = builder.parse(new InputSource(reader));
             String message = doc.getDocumentElement().getAttribute("message");

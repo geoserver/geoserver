@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import java.io.StringReader;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -22,6 +21,7 @@ import org.geoserver.system.status.MetricInfo;
 import org.geoserver.system.status.MetricValue;
 import org.geoserver.system.status.Metrics;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.kordamp.json.JSONArray;
 import org.kordamp.json.JSONObject;
@@ -97,9 +97,8 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
                 getAsServletResponse(RestBaseController.ROOT_PATH + "/about/system-status.xml");
         assertEquals(200, response.getStatus());
         assertEquals("application/xml", response.getContentType());
-        Document xml = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder()
-                .parse(new InputSource(new StringReader(response.getContentAsString())));
+        Document xml =
+                XMLUtils.newDocumentBuilder().parse(new InputSource(new StringReader(response.getContentAsString())));
         XPathExpression expression = XPathFactory.newInstance().newXPath().compile("//value");
         NodeList nodes = (NodeList) expression.evaluate(xml, XPathConstants.NODESET);
         for (int i = 0; i < nodes.getLength(); i++) {

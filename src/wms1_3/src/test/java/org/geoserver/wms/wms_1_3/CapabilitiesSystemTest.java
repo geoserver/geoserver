@@ -36,6 +36,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.XML;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -106,7 +107,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
     public void testValidateCapabilitiesXML() throws Exception {
         final Document dom = getAsDOM("ows?service=WMS&version=1.3.0&request=GetCapabilities");
 
-        SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        SchemaFactory factory = XMLUtils.newSchemaFactory("http://www.w3.org/2001/XMLSchema");
         URL schemaLocation = getClass().getResource("/schemas/wms/1.3.0/capabilities_1_3_0.xsd");
 
         factory.setResourceResolver(new LSResourceResolver() {

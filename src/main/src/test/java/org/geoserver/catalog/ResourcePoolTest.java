@@ -50,7 +50,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FileUtils;
@@ -131,6 +130,7 @@ import org.geotools.util.Version;
 import org.geotools.util.factory.FactoryRegistry;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
+import org.geotools.xml.XMLUtils;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -459,9 +459,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             title.getFirstChild().setNodeValue("foo");
 
             try (OutputStream output = new FileOutputStream(info)) {
-                TransformerFactory.newInstance()
-                        .newTransformer()
-                        .transform(new DOMSource(dom), new StreamResult(output));
+                XMLUtils.newTransformer().transform(new DOMSource(dom), new StreamResult(output));
             }
 
             getGeoServer().reload();

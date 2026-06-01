@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -76,6 +75,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
 import org.geotools.util.URLs;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.styling.SLDTransformer;
 import org.junit.Before;
 import org.junit.Test;
@@ -223,7 +223,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         String path = Paths.path("styles", Paths.convert(buildingsStyle.getFilename()));
         Resource styleFile = loader.get(path);
 
-        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder db = XMLUtils.newDocumentBuilder();
         Document d1 = db.parse(styleFile.in());
 
         // GEOS-3257, actually drag into xml and compare with xmlunit to avoid

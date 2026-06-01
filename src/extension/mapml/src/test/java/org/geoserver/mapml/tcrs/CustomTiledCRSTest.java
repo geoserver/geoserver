@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -35,6 +34,7 @@ import org.geoserver.mapml.MapMLConstants;
 import org.geoserver.mapml.MapMLTestSupport;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
+import org.geotools.xml.XMLUtils;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.jsoup.Jsoup;
@@ -181,8 +181,7 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
         Node gridSetNode;
         try {
             // Create a new DocumentBuilderFactory
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder();
 
             // Create a new Document
             Document doc = builder.newDocument();

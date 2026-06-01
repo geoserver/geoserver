@@ -27,6 +27,8 @@ import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.CatalogStoreCapabilities;
 import org.geoserver.csw.store.RepositoryItem;
 import org.geoserver.platform.resource.Files;
+import org.geoserver.test.DevModeEntityResolver;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.Transaction;
 import org.geotools.api.feature.Attribute;
@@ -45,7 +47,9 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.SortByImpl;
+import org.geotools.util.NullEntityResolver;
 import org.geotools.util.factory.Hints;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -59,6 +63,16 @@ public class SimpleCatalogStoreTest {
     @BeforeClass
     public static void forceAxisOrder() {
         Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, true);
+    }
+
+    @BeforeClass
+    public static void beforeAllTests() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void afterAllTests() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
     }
 
     @Test

@@ -15,6 +15,7 @@ import java.io.IOException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.spatial.BBOX;
@@ -35,6 +36,9 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.gml.producer.CoordinateFormatter;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -54,6 +58,16 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
     final String EPSG_4326 = "urn:x-ogc:def:crs:EPSG:4326";
 
     final String EPSG_4283 = "EPSG:4283";
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected SRSReprojectionMockData createTestData() {

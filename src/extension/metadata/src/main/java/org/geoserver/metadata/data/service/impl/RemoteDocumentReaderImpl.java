@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.geoserver.metadata.data.service.RemoteDocumentReader;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -26,10 +27,10 @@ public class RemoteDocumentReaderImpl implements RemoteDocumentReader {
     @Override
     public Document readDocument(URL url) throws IOException {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory();
             dbf.setNamespaceAware(true);
             try (InputStream stream = url.openStream()) {
-                DocumentBuilder db = dbf.newDocumentBuilder();
+                DocumentBuilder db = XMLUtils.newDocumentBuilder(dbf);
                 Document doc = db.parse(stream);
                 doc.getDocumentElement().normalize();
                 return doc;

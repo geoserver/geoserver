@@ -27,6 +27,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.AbstractRoleService;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.util.IOUtils;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,11 +44,11 @@ public class XMLRoleService extends AbstractRoleService {
 
     public XMLRoleService() throws IOException {
         super();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
         factory.setNamespaceAware(true);
         factory.setIgnoringComments(true);
         try {
-            builder = factory.newDocumentBuilder();
+            builder = XMLUtils.newDocumentBuilder(factory);
         } catch (ParserConfigurationException e) {
             throw new IOException(e);
         }

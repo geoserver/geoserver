@@ -19,7 +19,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -31,7 +30,8 @@ import org.geoserver.wms.GetCapabilities;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
-import org.xml.sax.EntityResolver;
+import org.geotools.util.EntityResolver3;
+import org.geotools.xml.XMLUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -117,15 +117,12 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
             }
 
             {
-                // Explicitly use SAXON's transformer factory. For some reason xalan's does not
-                // work
-                TransformerFactory tFactory = TransformerFactory.newInstance();
                 String xsltSystemId =
                         getClass().getResource("getcaps_111_internalDTD.xsl").toExternalForm();
 
                 Source tsource = new StreamSource(xsltSystemId);
                 try {
-                    dtdIncludeTransformer = tFactory.newTransformer(tsource);
+                    dtdIncludeTransformer = XMLUtils.newTransformer(tsource);
                 } catch (TransformerConfigurationException e) {
                     throw new ServiceException(e);
                 }
@@ -143,11 +140,30 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
                  * so, a SAX XMLReader with an EntityResolver that resolves to the local copy of the
                  * DTD will be used.
                  */
-                SAXParserFactory spf = SAXParserFactory.newInstance();
+                SAXParserFactory spf = XMLUtils.newSAXParserFactory();
                 spf.setNamespaceAware(true); // xslt _needs_ namespace aware input source
-                SAXParser sp = spf.newSAXParser();
+                SAXParser sp = XMLUtils.newSAXParser(spf);
                 XMLReader rawCapsReader = sp.getXMLReader();
-                rawCapsReader.setEntityResolver(new EntityResolver() {
+
+                rawCapsReader.setEntityResolver(new EntityResolver3() {
+                    @Override
+                    public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
+                        return new InputSource(); // will produce failure rather than allow access
+                    }
+
+                    @Override
+                    public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
+                            throws SAXException, IOException {
+                        final String dtdLocation = "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd";
+                        String dtdSystemId = getClass().getResource(dtdLocation).toExternalForm();
+                        return new InputSource(dtdSystemId);
+                    }
+
+                    @Override
+                    public String getAccess() {
+                        return "file,jar:file";
+                    }
+
                     @Override
                     public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
                         final String dtdLocation = "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd";

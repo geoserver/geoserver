@@ -92,21 +92,15 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
         }
 
         @Override
-        public void setBaseURI(String baseURI) {
-            //
-        }
+        public void setBaseURI(String baseURI) {}
 
         @Override
         public boolean getCertifiedText() {
-            // TODO Auto-generated method stub
             return false;
         }
 
         @Override
-        public void setCertifiedText(boolean certifiedText) {
-            // TODO Auto-generated method stub
-
-        }
+        public void setCertifiedText(boolean certifiedText) {}
     }
 
     EntityResolver entityResolver;
@@ -129,6 +123,9 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
             throw new RuntimeException(e);
         }
         // otherwise fall back on the default resolution path
-        return delegate.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
+        if (delegate != null) {
+            return delegate.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
+        }
+        return null;
     }
 }

@@ -11,13 +11,13 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.wcs2_0.response.WCS20CoverageMetadataProvider;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.springframework.stereotype.Service;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -71,24 +71,22 @@ public class WCSCustomCoverageMetadataProvider implements WCS20CoverageMetadataP
         }
 
         try {
-            SAXParserFactory.newInstance()
-                    .newSAXParser()
-                    .parse(new InputSource(new StringReader(xml)), new DefaultHandler() {
-                        @Override
-                        public void startElement(String uri, String localName, String qName, Attributes attributes) {
-                            tx.start(qName, attributes);
-                        }
+            XMLUtils.newSAXParser().parse(new InputSource(new StringReader(xml)), new DefaultHandler() {
+                @Override
+                public void startElement(String uri, String localName, String qName, Attributes attributes) {
+                    tx.start(qName, attributes);
+                }
 
-                        @Override
-                        public void endElement(String uri, String localName, String qName) throws SAXException {
-                            tx.end(qName);
-                        }
+                @Override
+                public void endElement(String uri, String localName, String qName) throws SAXException {
+                    tx.end(qName);
+                }
 
-                        @Override
-                        public void characters(char[] ch, int start, int length) throws SAXException {
-                            tx.chars(new String(ch, start, length));
-                        }
-                    });
+                @Override
+                public void characters(char[] ch, int start, int length) throws SAXException {
+                    tx.chars(new String(ch, start, length));
+                }
+            });
         } catch (SAXException | ParserConfigurationException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
         }

@@ -27,6 +27,7 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.util.Converters;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.OptionalComponentParameter;
 import org.geotools.xsd.Parser;
@@ -73,7 +74,7 @@ public class WFSXmlUtils {
 
     public static Document xmlDocument(String xmlString)
             throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
 
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
@@ -82,7 +83,7 @@ public class WFSXmlUtils {
 
         factory.setXIncludeAware(false);
 
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
 
         return builder.parse(new InputSource(new StringReader(xmlString)));
     }

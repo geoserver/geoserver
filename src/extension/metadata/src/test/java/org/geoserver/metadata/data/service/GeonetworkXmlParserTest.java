@@ -25,6 +25,7 @@ import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,10 +119,10 @@ public class GeonetworkXmlParserTest extends AbstractMetadataTest {
         for (Resource resource : dataDirectory.get("metadata").list()) {
             if (resource.name().equals(fileName)) {
                 try {
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory();
                     dbf.setNamespaceAware(true);
                     try (InputStream stream = resource.in()) {
-                        DocumentBuilder db = dbf.newDocumentBuilder();
+                        DocumentBuilder db = XMLUtils.newDocumentBuilder(dbf);
                         Document doc = db.parse(stream);
                         doc.getDocumentElement().normalize();
                         return doc;

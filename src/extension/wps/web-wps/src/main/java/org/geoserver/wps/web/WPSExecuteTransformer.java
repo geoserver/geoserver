@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import org.geoserver.catalog.Catalog;
@@ -31,6 +30,7 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.wps.WPS;
 import org.geotools.xlink.XLINK;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.w3c.dom.Document;
@@ -348,9 +348,7 @@ class WPSExecuteTransformer extends TransformerBase {
 
         private void dumpAsXML(Document document) {
             try {
-                TransformerFactory.newInstance()
-                        .newTransformer()
-                        .transform(new DOMSource(document), new SAXResult(contentHandler));
+                XMLUtils.newTransformer().transform(new DOMSource(document), new SAXResult(contentHandler));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -362,9 +360,9 @@ class WPSExecuteTransformer extends TransformerBase {
                 return null;
             }
             try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
                 factory.setNamespaceAware(true);
-                DocumentBuilder builder = factory.newDocumentBuilder();
+                DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
                 builder.setEntityResolver(entityResolver);
                 if (!data.startsWith("<?xml")) {
                     data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + data;

@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.XmlRequestReader;
@@ -24,6 +23,7 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.filter.Filter;
 import org.geotools.gml.GMLFilterDocument;
 import org.geotools.gml.GMLFilterGeometry;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.filter.FilterFilter;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
@@ -121,8 +121,7 @@ public abstract class FilterKvpParser extends KvpParser {
 
         // read in XML file and parse to content handler
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
+            SAXParser parser = XMLUtils.newSAXParser();
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
             adapter.setEntityResolver(entityResolverProvider.getEntityResolver());
             adapter.setContentHandler(documentFilter);

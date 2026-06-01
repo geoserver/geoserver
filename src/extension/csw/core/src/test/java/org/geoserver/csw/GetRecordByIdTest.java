@@ -18,6 +18,7 @@ import org.geoserver.csw.kvp.GetRecordByIdKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.util.PreventLocalEntityResolver;
@@ -64,6 +65,8 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test
     public void testEntityExpansion() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+
         CSWXmlReader reader = new CSWXmlReader(
                 "GetRecordById",
                 "2.0.2",

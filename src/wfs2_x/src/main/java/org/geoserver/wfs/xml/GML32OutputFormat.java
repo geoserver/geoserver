@@ -33,6 +33,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.gml3.v3_2.GMLConfiguration;
 import org.geotools.wfs.v2_0.WFS;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
 import org.w3c.dom.Document;
@@ -53,12 +54,11 @@ public class GML32OutputFormat extends BaseGML3OutputFormat {
     protected static DOMSource xslt;
 
     static {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory docFactory = XMLUtils.newDocumentBuilderFactory();
         docFactory.setNamespaceAware(true);
         Document xsdDocument = null;
         try {
-            xsdDocument = docFactory
-                    .newDocumentBuilder()
+            xsdDocument = XMLUtils.newDocumentBuilder(docFactory)
                     .parse(BaseGML3OutputFormat.class.getResourceAsStream("/ChangeNumberOfFeature32.xslt"));
             xslt = new DOMSource(xsdDocument);
         } catch (Exception e) {

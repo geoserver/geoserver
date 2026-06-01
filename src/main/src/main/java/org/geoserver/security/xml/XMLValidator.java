@@ -15,6 +15,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -78,7 +79,7 @@ public class XMLValidator {
         synchronized (lockUR) {
             if (versionMapUR != null) return; // another tread was faster
             versionMapUR = new HashMap<>();
-            SchemaFactory factory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory factory = XMLUtils.newSchemaFactory(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
             Schema schema = null;
             try {
@@ -97,7 +98,7 @@ public class XMLValidator {
             if (versionMapRR != null) return; // another tread was faster
 
             versionMapRR = new HashMap<>();
-            SchemaFactory factory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory factory = XMLUtils.newSchemaFactory(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
             Schema schema = null;
             try {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.backuprestore.processor;
 
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +28,7 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.impl.ResolvingProxy;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.step.StepExecution;
@@ -257,9 +259,15 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         ValidationResult result = null;
         try {
             ResourceInfo layerResouce = layer.getResource();
-            if (layerResouce == null) {
+            if (layerResouce == null || isUnresolvedProxy(layerResouce)) {
                 return null;
             }
+
+            // Drop dangling style references: a default/extra style that could not be resolved during
+            // deserialization is left as an unresolved ResolvingProxy. Persisting it emits class="dynamic-proxy"
+            // into layer.xml, which is unparseable on the next reload and loses the layer entirely. A layer with no
+            // explicit default style is still valid and recoverable.
+            sanitizeDanglingStyles(layer);
 
             WorkspaceInfo ws = resolveWorkspace(layer);
 
@@ -286,6 +294,29 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             return null;
         }
         return getClazz().cast(layer);
+    }
+
+    /**
+     * Drops style references on the layer that could not be resolved during deserialization (left as unresolved
+     * {@link ResolvingProxy} instances), so they are not persisted as {@code class="dynamic-proxy"} into layer.xml.
+     */
+    private void sanitizeDanglingStyles(LayerInfo layer) {
+        if (isUnresolvedProxy(layer.getDefaultStyle())) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Layer ''{0}'' has an unresolvable default style reference; dropping it to keep the restored "
+                            + "configuration valid.",
+                    layer.getName());
+            layer.setDefaultStyle(null);
+        }
+        layer.getStyles().removeIf(CatalogItemProcessor::isUnresolvedProxy);
+    }
+
+    /** Whether the given catalog reference is an unresolved {@link ResolvingProxy} (a dangling reference). */
+    private static boolean isUnresolvedProxy(Object ref) {
+        return ref != null
+                && Proxy.isProxyClass(ref.getClass())
+                && Proxy.getInvocationHandler(ref) instanceof ResolvingProxy;
     }
 
     private T process(ResourceInfo resource) {

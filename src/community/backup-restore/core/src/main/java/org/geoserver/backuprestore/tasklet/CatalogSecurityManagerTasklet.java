@@ -117,6 +117,17 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
             final Resource sourceRestoreFolder = Resources.fromURL(inputFolderURL);
             final Resource sourceSecurityResource = BackupUtils.dir(sourceRestoreFolder, SECURITY_RESOURCE_NAME);
 
+            // A backup taken with a workspace filter (or with skip-security) does not include the security folder.
+            // In that case the restore must NOT touch the target's security: deleting it (below) and copying an empty
+            // source would leave the instance with no user/group services, and the subsequent reload fails with
+            // "User/group service default does not exist". Detect the missing security config and skip instead, so a
+            // partial / cross-instance restore leaves the target's existing security settings intact.
+            if (!Resources.exists(sourceSecurityResource.get("config.xml"))) {
+                LOGGER.warning("The backup archive contains no security configuration (no security/config.xml); "
+                        + "skipping security restore and leaving the target's security settings untouched.");
+                return RepeatStatus.FINISHED;
+            }
+
             // Test that the security folder has been correctly saved
             GeoServerSecurityManager testGssm = null;
             try {

@@ -1161,6 +1161,13 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         }
         // restore tile layers
         restoreGWCTileLayersInfos(gwcCatalog, layersByName, gwcRestoreCatalog);
+
+        // Prune stale/dangling tile layers whose published id no longer resolves to a catalog layer or layer group.
+        // This matters for partial restores, where the gwc-layers directory is not wiped, so configs for layers that
+        // are absent in the target accumulate (GWC keys tile layers strictly by published id, with no name fallback).
+        if (!isDryRun()) {
+            pruneDanglingGwcTileLayers(gwcCatalog);
+        }
     }
 
     /** */
@@ -1216,6 +1223,25 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 // - Warning or Exception
                 throw new IllegalArgumentException(
                         "TileLayer with same name already exists: " + layerName + ": <" + layerID + ">");
+            }
+        }
+    }
+
+    /**
+     * Removes tile-layer configurations whose published id no longer resolves to a catalog layer or layer group. GWC
+     * keys tile layers strictly by published id, so such entries are dangling — e.g. after a partial restore that did
+     * not wipe the gwc-layers directory, or after the referenced layer/group was removed.
+     */
+    private void pruneDanglingGwcTileLayers(TileLayerCatalog gwcCatalog) {
+        for (String id : new java.util.HashSet<>(gwcCatalog.getLayerIds())) {
+            if (getCatalog().getLayer(id) == null && getCatalog().getLayerGroup(id) == null) {
+                GeoServerTileLayerInfo info = gwcCatalog.getLayerById(id);
+                LOGGER.warning("Pruning stale GWC tile layer '"
+                        + (info != null ? info.getName() : id)
+                        + "' (id="
+                        + id
+                        + "): no matching catalog layer or layer group.");
+                gwcCatalog.delete(id);
             }
         }
     }

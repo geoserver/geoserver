@@ -45,7 +45,12 @@
 		<property name="isolationLevelForCreate" value="ISOLATION_READ_COMMITTED" />
 	</bean>
 
-	<bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
+	<!--
+	  TolerantMapJobRegistry (a MapJobRegistry that ignores duplicate registrations) is used instead of
+	  the stock MapJobRegistry: in the full GeoServer assembly the backup/restore jobs are presented to
+	  the registry twice and the strict registry aborts start-up with a DuplicateJobException.
+	-->
+	<bean id="jobRegistry" class="org.geoserver.backuprestore.TolerantMapJobRegistry" />
 
 	<!-- auto-registers the Job beans by name into the job registry (replaces JobRegistryBeanPostProcessor) -->
 	<bean class="org.springframework.batch.core.configuration.support.JobRegistrySmartInitializingSingleton">

@@ -62,7 +62,7 @@ public class RestoreController extends AbstractBackupRestoreController {
     }
 
     @GetMapping(
-            path = "restore{.+}",
+            path = "restore",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper restoreGet(@RequestParam(name = "format", required = false) String format) {
 

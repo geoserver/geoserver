@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -42,7 +42,6 @@
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-tester</artifactId>
-      <version>10.7.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

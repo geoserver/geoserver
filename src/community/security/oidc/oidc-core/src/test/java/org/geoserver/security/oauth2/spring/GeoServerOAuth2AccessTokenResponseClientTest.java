@@ -4,8 +4,8 @@
  */
 package org.geoserver.security.oauth2.spring;
 
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_GOOGLE;
-import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_OIDC;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_GOOGLE;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_OIDC;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
@@ -18,8 +18,8 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.geoserver.security.oauth2.common.ConfidentialLogger;
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.util.ConfidentialLogger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

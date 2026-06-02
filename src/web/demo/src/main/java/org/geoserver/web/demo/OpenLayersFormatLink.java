@@ -4,19 +4,15 @@
  */
 package org.geoserver.web.demo;
 
-import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.web.PreviewLink;
 
 public class OpenLayersFormatLink extends CommonFormatLink {
 
     @Override
-    public ExternalLink getFormatLink(PreviewLayer layer) {
-
-        ExternalLink olLink = new ExternalLink(
-                this.getComponentId(),
-                layer.getWmsLink() + "&format=application/openlayers",
-                (new StringResourceModel(this.getTitleKey(), null, null)).getString());
-        olLink.setVisible(layer.hasServiceSupport("WMS"));
-        return olLink;
+    public PreviewLink getFormatLink(PreviewLayer layer) {
+        if (!layer.hasServiceSupport("WMS")) return null;
+        String label = new StringResourceModel(this.getTitleKey(), null, null).getString();
+        return new PreviewLink(label, layer.getWmsLink() + "&format=application/openlayers", label);
     }
 }

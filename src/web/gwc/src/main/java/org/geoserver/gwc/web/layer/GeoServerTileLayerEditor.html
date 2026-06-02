@@ -60,15 +60,21 @@
                   </div>
                   <div class="gs-form-group">
                     <label for="expireCache">
-                      <wicket:message key="expireCache">Expire server cache after n seconds (set to 0 to use source setting)</wicket:message>
+                      <wicket:message key="expireCache">Expire server cache after n seconds</wicket:message>
                     </label>
-                    <input id="tileExpireCache" wicket:id="expireCache" class="field w-md" type="text"/>
+                    <input id="tileExpireCache" wicket:id="expireCache" class="w-md" type="text"/>
+                    <div class="gs-instruction">
+                      <wicket:message key="expireCacheInstruction">Set to 0 to use source setting</wicket:message>
+                    </div>
                   </div>
                   <div class="gs-form-group">
                     <label for="expireClients">
-                      <wicket:message key="expireClients">Expire client cache after n seconds (set to 0 to use server setting)</wicket:message>
+                      <wicket:message key="expireClients">Expire client cache after n seconds</wicket:message>
                     </label>
-                    <input id="tileExpireClients" wicket:id="expireClients" class="field w-md" type="text"/>
+                    <input id="tileExpireClients" wicket:id="expireClients" class="w-md" type="text"/>
+                    <div class="gs-instruction">
+                      <wicket:message key="expireClientsInstruction">Set to 0 to use server setting</wicket:message>
+                    </div>
                   </div>
                   <div class="gs-list-item-class">
                     <label class="text">

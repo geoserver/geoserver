@@ -40,6 +40,7 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -47,6 +48,7 @@ import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -668,6 +670,58 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         assertEquals(RESOURCE, styles.get("default_raster.sld").getType());
         assertEquals(RESOURCE, styles.get(StyleInfo.DEFAULT_GENERIC + ".xml").getType());
         assertEquals(RESOURCE, styles.get("default_generic.sld").getType());
+    }
+
+    /**
+     * Regression test for GEOS-12023: CatalogLoader.describe() calls resource.getStore(), which subclasses like
+     * WMSLayerInfoImpl and CoverageInfoImpl override with a type-specific cast. If the store reference is an unresolved
+     * ResolvingProxy (e.g. when the store ID can't be matched during parallel catalog loading), that cast throws
+     * ClassCastException. This exception escapes the try-catch in doAddToCatalog because the SEVERE failure-log lambda
+     * also calls describe(), causing a second throw that is uncaught, propagating fatally through ForkJoin and
+     * preventing GeoServer startup.
+     */
+    @Test
+    public void wmsLayerWithUnresolvableStoreDoesNotCrashLoader() throws Exception {
+        Catalog catalog = getCatalog();
+        WorkspaceInfo ws = support.addWorkspace("wmsRegressionWs");
+
+        // Create a WMS store and a WMS layer resource in the data directory
+        WMSStoreInfoImpl store = support.createWmsStore(ws);
+        catalog.add(store);
+        WMSStoreInfo persistedStore = catalog.getStore(store.getId(), WMSStoreInfo.class);
+
+        WMSLayerInfo wmsResource = catalog.getFactory().createWMSLayer();
+        wmsResource.setName("wmsRegressionLayer");
+        wmsResource.setNativeName("wmsRegressionLayer");
+        wmsResource.setTitle("WMS Regression Layer");
+        wmsResource.setNamespace(catalog.getNamespaceByPrefix(ws.getName()));
+        wmsResource.setStore(persistedStore);
+        catalog.add(wmsResource);
+
+        WMSLayerInfo persistedResource = catalog.getResource(wmsResource.getId(), WMSLayerInfo.class);
+        LayerInfo layer = catalog.getFactory().createLayer();
+        layer.setResource(persistedResource);
+        layer.setDefaultStyle(catalog.getStyleByName(StyleInfo.DEFAULT_RASTER));
+        catalog.add(layer);
+
+        // Overwrite the resource XML with a version pointing to a non-existent store ID.
+        // When the loader reads this file, ResolvingProxy.resolve() returns null for the
+        // unknown store ID, leaving the store field as an unresolved ResolvingProxy. Without
+        // the fix, WMSLayerInfoImpl.getStore() casts it to WMSStoreInfo, throwing
+        // ClassCastException that escapes doAddToCatalog and propagates as
+        // IllegalStateException through ForkJoin, crashing GeoServer startup.
+        Resource resourceFile = getDataDirectory().config(persistedResource);
+        WMSLayerInfoImpl rawResource = (WMSLayerInfoImpl) ModificationProxy.unwrap(persistedResource);
+        WMSStoreInfoImpl bogusStore = support.createWmsStore(ws);
+        bogusStore.setId("non-existent-store-id");
+        rawResource.setStore(bogusStore);
+        persist(rawResource, resourceFile);
+
+        // Use an isolated loader so we only exercise the WMS layer path, not the full catalog.
+        // Without the fix this throws IllegalStateException caused by ClassCastException.
+        DataDirectoryGeoServerLoader loader = newLoader();
+        CatalogImpl newCatalog = new CatalogImpl();
+        loader.postProcessBeforeInitialization(newCatalog, "catalog");
     }
 
     private void deleteStyle(String infoName, String sldFile) {

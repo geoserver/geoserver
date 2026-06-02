@@ -25,7 +25,7 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-ows</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>

@@ -58,5 +58,10 @@ public class NetCDFOutSettingsPanelTest extends GeoServerWicketTestSupport {
         assertNotNull(container.getExtraVariables());
         assertNotNull(container2.getExtraVariables());
         assertEquals(container.getExtraVariables(), container2.getExtraVariables());
+
+        // bandSettings round-trip: the per-band settings list is part of the global container's contract too.
+        assertNotNull(container.getBandSettings());
+        assertNotNull(container2.getBandSettings());
+        assertEquals(container.getBandSettings(), container2.getBandSettings());
     }
 }

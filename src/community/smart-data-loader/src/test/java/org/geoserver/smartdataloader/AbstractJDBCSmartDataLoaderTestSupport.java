@@ -9,7 +9,6 @@ import java.sql.DatabaseMetaData;
 import java.util.Properties;
 import javax.sql.DataSource;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
@@ -19,6 +18,7 @@ import org.geoserver.smartdataloader.metadata.jdbc.JdbcDataStoreMetadataConfig;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.jdbc.JDBCTestSetup;
 import org.geotools.test.FixtureUtilities;
+import org.geotools.xml.XMLUtils;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -123,8 +123,7 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
 
     protected void saveDocument(Document doc, String filepath) {
         try (FileOutputStream output = new FileOutputStream(filepath)) {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
+            Transformer transformer = XMLUtils.newTransformer();
             transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             DOMSource source = new DOMSource(doc);

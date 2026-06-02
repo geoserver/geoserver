@@ -1039,7 +1039,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             SecretKey skey = kgen.generateKey();
             byte[] raw = skey.getEncoded();
             SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
-            Cipher cipher = Cipher.getInstance("AES");
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
             cipher.doFinal("This is just an example".getBytes());

@@ -48,6 +48,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
+import org.geoserver.web.PreviewLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.GsIcon;
@@ -188,11 +189,11 @@ public class MapPreviewPage extends GeoServerBasePage {
         List<CommonFormatLink> formats = getGeoServerApplication().getBeansOfType(CommonFormatLink.class);
         Collections.sort(formats);
         for (CommonFormatLink link : formats) {
-            ExternalLink externalLink = link.getFormatLink(layer);
-            if (externalLink != null && externalLink.isVisible()) {
-                // check links are visible (links may be invisible due to their service being disabled)
-                links.add(externalLink);
-            }
+            PreviewLink previewLink = link.getFormatLink(layer);
+            if (previewLink == null) continue;
+            ExternalLink externalLink = new ExternalLink("theLink", previewLink.href(), previewLink.label());
+            if (previewLink.title() != null) externalLink.add(AttributeModifier.append("title", previewLink.title()));
+            links.add(externalLink);
         }
         return links;
     }

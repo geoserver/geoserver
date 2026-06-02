@@ -94,7 +94,6 @@
     <!-- ================================ -->
     <!-- Project version management       -->
     <!-- ================================ -->
-    <gs.version>3.0.0-SNAPSHOT</gs.version>
     <gt.version>35-SNAPSHOT</gt.version>
     <gwc.version>2.0-SNAPSHOT</gwc.version>
     <spring.version>7.0.7</spring.version>
@@ -102,7 +101,7 @@
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring.ldap.version>4.0.3</spring.ldap.version>
     <spring-integration.version>7.0.4</spring-integration.version>
-    <wicket.version>10.7.0</wicket.version>
+    <wicket.version>10.8.0</wicket.version>
 
     <!-- ================================ -->
     <!-- Dependency version management    -->
@@ -134,7 +133,7 @@
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
     <servlet-api.version>6.1.0</servlet-api.version>
     <xalan.version>2.7.3</xalan.version>
-    <protobuf.version>4.34.1</protobuf.version>
+    <protobuf.version>4.35.0</protobuf.version>
 
     <!-- ================================ -->
     <!-- Maven plugin configuration      -->
@@ -252,156 +251,156 @@
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-platform</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-platform</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-ows</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-ows</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-main</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-main</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-theme</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wcs</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-wcs1_0</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-wcs1_1</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wcs2_0</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wcs2_0</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs1_x</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs2_x</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs2_x</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms1_1</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms1_3</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms-gml</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms1_1</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms1_3</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-gwc</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-gwc-rest</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-rest</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.web</groupId>
         <artifactId>gs-web-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-kml</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>

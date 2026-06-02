@@ -14,12 +14,13 @@ import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.geoserver.security.ldap.LDAPRoleServiceConfig;
 import org.geoserver.security.web.role.RoleServicePanel;
+import org.geoserver.web.data.store.PasswordTextFieldWriteOnlyModel;
 
 public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig> {
 
@@ -51,15 +52,11 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
         @Serial
         private static final long serialVersionUID = 8919421089437979222L;
 
-        public LDAPAuthenticationPanel(String id) {
+        public LDAPAuthenticationPanel(String id, IModel<LDAPRoleServiceConfig> configModel) {
             super(id, new Model<>());
             add(new TextField<>("user"));
 
-            PasswordTextField pwdField = new PasswordTextField("password");
-            // avoid reseting the password which results in an
-            // empty password on saving a modified configuration
-            pwdField.setResetPassword(false);
-            add(pwdField);
+            add(new PasswordTextFieldWriteOnlyModel("password", new PropertyModel<>(configModel, "password")));
         }
 
         public void resetModel() {
@@ -99,7 +96,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
         });
         hierarchicalGroupsInit();
 
-        LDAPAuthenticationPanel authPanel = new LDAPAuthenticationPanel("authenticationPanel");
+        LDAPAuthenticationPanel authPanel = new LDAPAuthenticationPanel("authenticationPanel", model);
         authPanel.setVisible(model.getObject().isBindBeforeGroupSearch());
         add(new WebMarkupContainer("authenticationPanelContainer")
                 .add(authPanel)

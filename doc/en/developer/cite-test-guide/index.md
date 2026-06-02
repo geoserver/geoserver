@@ -623,11 +623,11 @@ make stop
 
 to just shut down the docker composition without cleaning up the `logs/` directory.
 
-# GitHub Actions{%raw%}[]{#commandline}{%endraw%} {: #teamengine }
+## GitHub Actions
 
 In order to keep up to date, a [CITE Tests workflow](https://github.com/geoserver/geoserver/actions/workflows/cite.yml) runs automatically on each PR.
 
-# CITE Certification
+## CITE Certification
 
 Shortly before a major (2.xx.0) release, the following process should be followed in order to obtain CITE Certification for the major release.
 

@@ -64,7 +64,7 @@ public abstract class FileBreadcrumbs extends Panel {
                 boolean last = item.getIndex() == getList().size() - 1;
 
                 // the link to the current path item
-                Label name = new Label("pathItem", file.getName() + "/");
+                Label name = new Label("pathItem", file.getName() + " /");
                 Link<File> link = new IndicatingAjaxFallbackLink<>("pathItemLink", item.getModel()) {
 
                     @Serial

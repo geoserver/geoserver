@@ -23,11 +23,13 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.io.WKTReader;
 import org.w3c.dom.Document;
@@ -38,6 +40,11 @@ public class KMLPPIOTest extends GeoServerTestSupport {
     private XpathEngine xpath;
 
     private KMLPPIO ppio;
+
+    @Before
+    public void setup() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected void oneTimeSetUp() throws Exception {

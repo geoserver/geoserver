@@ -68,6 +68,7 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
@@ -319,10 +320,10 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         tr.transform(req, out);
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory();
         dbf.setNamespaceAware(namespaceAware);
 
-        DocumentBuilder db = dbf.newDocumentBuilder();
+        DocumentBuilder db = XMLUtils.newDocumentBuilder(dbf);
 
         /**
          * Resolves everything to an empty xml document, useful for skipping errors due to missing dtds and the like

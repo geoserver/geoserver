@@ -23,17 +23,17 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-features-templating-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -64,14 +64,14 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

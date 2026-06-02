@@ -73,7 +73,7 @@
         <dependency>
           <groupId>org.geoserver</groupId>
           <artifactId>gs-gwc</artifactId>
-          <version>${gs.version}</version>
+          <version>${project.version}</version>
           <classifier>tests</classifier>
           <scope>test</scope>
         </dependency>

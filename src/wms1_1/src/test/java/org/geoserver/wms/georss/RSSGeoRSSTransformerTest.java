@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -29,6 +28,7 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.map.FeatureLayer;
 import org.geotools.util.factory.GeoTools;
+import org.geotools.xml.XMLUtils;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -283,7 +283,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(map, output);
 
-        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder docBuilder = XMLUtils.newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
         return document;
     }

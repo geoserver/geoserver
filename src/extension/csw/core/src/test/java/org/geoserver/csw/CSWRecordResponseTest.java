@@ -76,8 +76,11 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
     SimpleCatalogStore store =
             new SimpleCatalogStore(Files.asResource(new File("./src/test/resources/org/geoserver/csw/records")));
 
+    @Override
     @Before
     public void setUp() throws Exception {
+        super.setUp();
+
         // init xmlunit
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("csw", CSW.NAMESPACE);

@@ -18,6 +18,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.gen.info.GeneralizationInfos;
 import org.geotools.util.URLs;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -76,13 +77,13 @@ public class GeneralizationInfosProviderImpl extends org.geotools.data.gen.info.
         Resource configurationResource = loader.fromURL(url);
 
         Document doc = null;
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
         factory.setIgnoringComments(true);
         factory.setNamespaceAware(true);
         factory.setIgnoringElementContentWhitespace(true);
 
         try (InputStream in = configurationResource.in()) {
-            DocumentBuilder db = factory.newDocumentBuilder();
+            DocumentBuilder db = XMLUtils.newDocumentBuilder(factory);
             doc = db.parse(in);
             VALIDATOR.validate(new DOMSource(doc));
         } catch (Exception e) {

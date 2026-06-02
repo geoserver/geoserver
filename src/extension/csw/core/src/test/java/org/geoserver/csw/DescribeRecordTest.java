@@ -18,8 +18,10 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.csw.kvp.DescribeRecordKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
+import org.geotools.util.NullEntityResolver;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -176,9 +178,14 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
 
     @Test
     public void testAlternativeNamespacePrefix() throws Exception {
-        Document dom = getAsDOM(
-                "csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=fuffa:Record&namespace=xmlns(fuffa=http://www.opengis.net/cat/csw/2.0.2)");
-        assertCswRecordSchema(dom, false);
+        try {
+            EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+            Document dom = getAsDOM(
+                    "csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=fuffa:Record&namespace=xmlns(fuffa=http://www.opengis.net/cat/csw/2.0.2)");
+            assertCswRecordSchema(dom, false);
+        } finally {
+            EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+        }
     }
 
     @Test

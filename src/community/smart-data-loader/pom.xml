@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-app-schema-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -79,7 +79,6 @@
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-tester</artifactId>
-      <version>10.7.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -105,7 +104,7 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

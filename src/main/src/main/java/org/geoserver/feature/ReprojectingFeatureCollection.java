@@ -223,7 +223,10 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
 
             if (object instanceof Geometry geometry) {
                 // check for crs
-                CoordinateReferenceSystem crs = (CoordinateReferenceSystem) geometry.getUserData();
+                CoordinateReferenceSystem crs = null;
+                if (geometry.getUserData() instanceof CoordinateReferenceSystem) {
+                    crs = (CoordinateReferenceSystem) geometry.getUserData();
+                }
 
                 if (crs == null) {
                     // no crs specified on geometry, check default

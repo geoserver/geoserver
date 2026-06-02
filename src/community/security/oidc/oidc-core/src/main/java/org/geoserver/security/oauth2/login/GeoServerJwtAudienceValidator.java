@@ -4,11 +4,11 @@
  */
 package org.geoserver.security.oauth2.login;
 
-import static org.geoserver.security.jwtheaders.roles.JwtHeadersRolesExtractor.asStringList;
+import static org.geoserver.security.oauth2.token.OAuth2ClaimsHelpers.asStringList;
+import static org.geoserver.security.oauth2.token.OAuth2ClaimsHelpers.getClaim;
 
 import java.util.List;
 import java.util.Map;
-import org.geoserver.security.jwtheaders.username.JwtHeaderUserNameExtractor;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
@@ -43,7 +43,7 @@ public final class GeoServerJwtAudienceValidator implements OAuth2TokenValidator
         }
 
         Map<String, Object> claims = token.getClaims();
-        Object raw = JwtHeaderUserNameExtractor.getClaim(claims, claimName);
+        Object raw = getClaim(claims, claimName);
         List<String> audiences = asStringList(raw);
 
         boolean match = audiences != null && audiences.stream().anyMatch(expectedValue::equals);

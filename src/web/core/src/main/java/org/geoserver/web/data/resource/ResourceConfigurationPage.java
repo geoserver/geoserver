@@ -53,6 +53,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
 
     public ResourceConfigurationPage(PageParameters parameters) {
         this(parameters.get(WORKSPACE).toOptionalString(), parameters.get(LAYER).toString());
+        captureReturnDestination(parameters);
     }
 
     public ResourceConfigurationPage(String workspaceName, String layerName) {
@@ -105,7 +106,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
     @Override
     public PageParameters getPageParameters() {
         PageParameters params = super.getPageParameters();
-        if (params.isEmpty() && myModel != null) {
+        if (!hasNavigationContext(params) && myModel != null) {
             LayerInfo layer = getPublishedInfo();
             if (layer != null && layer.getResource() != null) {
                 PageParameters derived = new PageParameters();
@@ -116,6 +117,19 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
             }
         }
         return params;
+    }
+
+    /**
+     * True when page parameters carry workspace/layer (or group/name) context for navigation, not only return metadata.
+     */
+    private static boolean hasNavigationContext(PageParameters params) {
+        if (params == null || params.isEmpty()) {
+            return false;
+        }
+        return params.get(WORKSPACE).toOptionalString() != null
+                || params.get(LAYER).toOptionalString() != null
+                || params.get("group").toOptionalString() != null
+                || params.get("name").toOptionalString() != null;
     }
 
     private void updateResourceInLayerModel(ResourceInfo resource) {

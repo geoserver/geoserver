@@ -72,6 +72,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
     public LayerGroupEditPage(PageParameters parameters) {
         this(isNewRequest(parameters));
+        captureReturnDestination(parameters);
 
         String groupName = parameters.get(GROUP).toString();
         if (Strings.isEmpty(groupName)) {

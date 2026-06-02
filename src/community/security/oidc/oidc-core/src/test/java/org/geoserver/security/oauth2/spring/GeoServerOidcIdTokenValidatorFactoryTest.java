@@ -7,7 +7,7 @@ package org.geoserver.security.oauth2.spring;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;

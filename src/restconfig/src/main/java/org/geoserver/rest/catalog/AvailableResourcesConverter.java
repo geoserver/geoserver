@@ -18,11 +18,11 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geotools.xml.XMLUtils;
 import org.kordamp.json.JSONArray;
 import org.kordamp.json.JSONObject;
 import org.springframework.http.HttpInputMessage;
@@ -117,7 +117,7 @@ public class AvailableResourcesConverter extends BaseMessageConverter<AvailableR
         // outputMessage.getBody()
         Transformer transformer;
         try (OutputStream os = outputMessage.getBody()) {
-            transformer = TransformerFactory.newInstance().newTransformer();
+            transformer = XMLUtils.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             Source source = new StreamSource(new ByteArrayInputStream(out.toByteArray()));
             transformer.transform(source, new StreamResult(os));

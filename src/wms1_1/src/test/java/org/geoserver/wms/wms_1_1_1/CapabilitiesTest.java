@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -54,6 +53,7 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
 import org.geotools.referencing.CRS;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -695,8 +695,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         DOMSource domSource = new DOMSource(dom);
         StringWriter writer = new StringWriter();
         StreamResult result = new StreamResult(writer);
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
+        Transformer transformer = XMLUtils.newTransformer();
         transformer.transform(domSource, result);
 
         assertTrue(writer.toString().contains(info.getRootLayerTitle()));

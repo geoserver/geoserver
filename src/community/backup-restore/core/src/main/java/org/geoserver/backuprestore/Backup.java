@@ -688,6 +688,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                             case PARAM_DRY_RUN_MODE:
                             case PARAM_BEST_EFFORT_MODE:
                             case PARAM_SKIP_GWC:
+                            case PARAM_PRESERVE_IDS:
                                 if (paramsBuilder.toJobParameters().getString(k) == null) {
                                     paramsBuilder.addString(k, "true");
                                 }

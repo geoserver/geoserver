@@ -8,6 +8,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.util.tester.WicketTester;
+import org.geoserver.metadata.data.service.impl.ConfigurationServiceImpl;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
 import org.junit.After;
@@ -19,6 +20,9 @@ public abstract class AbstractWicketMetadataTest extends AbstractMetadataTest {
 
     @Autowired
     protected GeoServerApplication app;
+
+    @Autowired
+    private ConfigurationServiceImpl configService;
 
     protected WicketTester tester;
 
@@ -38,6 +42,13 @@ public abstract class AbstractWicketMetadataTest extends AbstractMetadataTest {
 
     @Before
     public void start() throws Exception {
+        // Defensive: ensure metadata configuration is loaded before creating the WicketTester.
+        // While JUnit 4 guarantees parent @Before (setupAndLoadDataDirectory) runs first,
+        // the config can still be null if readConfiguration() failed silently (YAML files
+        // not yet copied to the data directory, or parse errors logged at FINE level).
+        if (configService.getMetadataConfiguration() == null) {
+            configService.reload();
+        }
         tester = new WicketTester(app, true);
     }
 

@@ -165,7 +165,7 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
 
     private StepExecution execution = null;
 
-    private TaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
+    private TaskExecutor taskExecutor = createDefaultTaskExecutor();
 
     private boolean interruptOnCancel = false;
 
@@ -600,6 +600,17 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
      */
     public void setTerminationCheckInterval(long checkInterval) {
         this.checkInterval = checkInterval;
+    }
+
+    /**
+     * Creates the default task executor with a concurrency limit of 1. This ensures tasklets run on a separate thread
+     * (preserving timeout and cancellation support) while preventing multiple concurrent tasklets from competing for
+     * GeoServer resource locks, which causes deadlocks.
+     */
+    private static TaskExecutor createDefaultTaskExecutor() {
+        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+        executor.setConcurrencyLimit(1);
+        return executor;
     }
 
     /**

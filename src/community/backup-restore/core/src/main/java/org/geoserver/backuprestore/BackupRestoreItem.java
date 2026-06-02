@@ -177,6 +177,13 @@ public abstract class BackupRestoreItem<T> {
 
         this.xstream = xStreamPersisterFactory.createXMLPersister();
 
+        // BK_PRESERVE_IDS opt-in: when set, a backup keeps catalog ids and writes cross-references by id (an id-based
+        // archive that can be migrated into a foreign catalog); the default strips ids and references by name. On the
+        // restore side the reader auto-adapts - ReferenceConverter.unmarshal reads whichever of <id>/<name> is present
+        // and ResolvingProxy resolves by id first, name second - so no matching flag is required to restore.
+        boolean preserveIds =
+                Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_PRESERVE_IDS, "false"));
+
         if (backupFacade.getRestoreExecutions() != null
                 && !backupFacade.getRestoreExecutions().isEmpty()
                 && backupFacade.getRestoreExecutions().containsKey(jobExecution.getId())) {
@@ -186,7 +193,9 @@ public abstract class BackupRestoreItem<T> {
         } else {
             this.currentJobExecution = backupFacade.getBackupExecutions().get(jobExecution.getId());
             this.catalog = backupFacade.getCatalog();
-            this.xstream.setExcludeIds();
+            if (!preserveIds) {
+                this.xstream.setExcludeIds();
+            }
             this.isNew = false;
         }
 
@@ -194,7 +203,9 @@ public abstract class BackupRestoreItem<T> {
 
         // Set Catalog
         this.xstream.setCatalog(this.catalog);
-        this.xstream.setReferenceByName(true);
+        // On a backup, write references by id only when preserving ids; restores keep the legacy value (the reader
+        // ignores it - referenceByName only gates marshalling).
+        this.xstream.setReferenceByName(isNew || !preserveIds);
         this.xp = this.xstream.getXStream();
 
         Assert.notNull(this.xp, "xStream persister should not be NULL");

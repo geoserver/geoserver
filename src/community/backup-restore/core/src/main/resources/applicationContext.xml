@@ -42,7 +42,7 @@
 			<property name="timeout" value="600000"/>
 		</bean>
 	
-	<bean id="chunkTimeoutPolicy" class="org.springframework.batch.repeat.policy.TimeoutTerminationPolicy">
+	<bean id="chunkTimeoutPolicy" class="org.springframework.batch.infrastructure.repeat.policy.TimeoutTerminationPolicy">
 		<!-- milliseconds: 10 minutes timeout for each step -->
 		<constructor-arg value="600000"/>
 	</bean>

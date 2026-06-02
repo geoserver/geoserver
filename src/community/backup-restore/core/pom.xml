@@ -15,7 +15,8 @@
   <name>GeoServer Config Backup And Restore Core Module</name>
 
   <properties>
-    <spring.batch.version>5.2.0</spring.batch.version>
+    <spring.batch.version>6.0.3</spring.batch.version>
+    <h2.version>2.3.232</h2.version>
   </properties>
 
   <dependencies>
@@ -45,6 +46,19 @@
       <groupId>org.springframework.batch</groupId>
       <artifactId>spring-batch-integration</artifactId>
       <version>${spring.batch.version}</version>
+    </dependency>
+
+    <!--
+      Embedded database backing the in-memory Spring Batch job repository (see
+      backup-batch-context.xml). Spring Batch 5 removed the Map-based in-memory repository, so an
+      embedded H2 seeded with the Batch metadata schema is the supported replacement. Runtime scope:
+      H2 is only referenced from Spring XML, never compiled against.
+    -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- GeoServer Dependencies -->

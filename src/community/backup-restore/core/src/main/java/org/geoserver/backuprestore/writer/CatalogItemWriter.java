@@ -26,9 +26,9 @@ import org.geoserver.catalog.impl.ResolvingProxy;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geotools.util.logging.Logging;
 import org.jspecify.annotations.NonNull;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.core.io.WritableResource;
 
 /**

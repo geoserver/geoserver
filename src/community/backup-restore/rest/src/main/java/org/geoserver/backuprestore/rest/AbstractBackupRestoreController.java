@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,9 +42,9 @@ import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameter;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.JobParameter;
+import org.springframework.batch.core.step.StepExecution;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -282,12 +281,9 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
                             }
 
                             writer.startNode("parameters");
-                            for (Entry param :
-                                    exec.getJobParameters().getParameters().entrySet()) {
-                                writer.startNode((String) param.getKey());
-                                writer.setValue(((JobParameter) param.getValue())
-                                        .getValue()
-                                        .toString());
+                            for (JobParameter<?> param : exec.getJobParameters()) {
+                                writer.startNode(param.name());
+                                writer.setValue(String.valueOf(param.value()));
                                 writer.endNode();
                             }
                             writer.endNode();

@@ -29,8 +29,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.util.logging.Logging;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 
 /**
  * Concrete Spring Batch {@link ItemProcessor}.

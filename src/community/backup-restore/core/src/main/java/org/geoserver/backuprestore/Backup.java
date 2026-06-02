@@ -32,22 +32,23 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.job.AbstractJob;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.InvalidJobParametersException;
+import org.springframework.batch.core.job.parameters.JobParameter;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
+import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.launch.JobRestartException;
 import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.launch.NoSuchJobExecutionException;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.listener.JobExecutionListener;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
@@ -434,11 +435,12 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                     backupExecution.setLiFilter(liFilter);
 
                     backupExecution.getOptions().add("OVERWRITE=" + overwrite);
-                    for (Entry jobParam : jobParameters.getParameters().entrySet()) {
-                        if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_TIME.equals(jobParam.getKey())) {
-                            backupExecution.getOptions().add(jobParam.getKey() + "=" + jobParam.getValue());
+                    for (JobParameter<?> jobParam : jobParameters) {
+                        String key = jobParam.name();
+                        if (!PARAM_OUTPUT_FILE_PATH.equals(key)
+                                && !PARAM_INPUT_FILE_PATH.equals(key)
+                                && !PARAM_TIME.equals(key)) {
+                            backupExecution.getOptions().add(key + "=" + jobParam.value());
                         }
                     }
 
@@ -451,7 +453,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         } catch (JobExecutionAlreadyRunningException
                 | JobRestartException
                 | JobInstanceAlreadyCompleteException
-                | JobParametersInvalidException e) {
+                | InvalidJobParametersException e) {
             throw new IOException("Could not start a new Backup Job Execution: ", e);
         } finally {
         }
@@ -536,11 +538,12 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                     restoreExecution.setSiFilter(siFilter);
                     restoreExecution.setLiFilter(liFilter);
 
-                    for (Entry jobParam : jobParameters.getParameters().entrySet()) {
-                        if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_TIME.equals(jobParam.getKey())) {
-                            restoreExecution.getOptions().add(jobParam.getKey() + "=" + jobParam.getValue());
+                    for (JobParameter<?> jobParam : jobParameters) {
+                        String key = jobParam.name();
+                        if (!PARAM_OUTPUT_FILE_PATH.equals(key)
+                                && !PARAM_INPUT_FILE_PATH.equals(key)
+                                && !PARAM_TIME.equals(key)) {
+                            restoreExecution.getOptions().add(key + "=" + jobParam.value());
                         }
                     }
 
@@ -553,7 +556,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         } catch (JobExecutionAlreadyRunningException
                 | JobRestartException
                 | JobInstanceAlreadyCompleteException
-                | JobParametersInvalidException e) {
+                | InvalidJobParametersException e) {
             throw new IOException("Could not start a new Restore Job Execution: ", e);
         }
     }
@@ -619,7 +622,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     /** Restarts a running Backup/Restore Execution */
     public Long restartExecution(Long executionId)
             throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException, NoSuchJobException,
-                    JobRestartException, JobParametersInvalidException {
+                    JobRestartException, InvalidJobParametersException {
         return jobOperator.restart(executionId);
     }
 

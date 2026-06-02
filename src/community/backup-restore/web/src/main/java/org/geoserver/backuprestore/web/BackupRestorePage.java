@@ -47,13 +47,13 @@ import org.geoserver.web.GeoServerUnlockablePage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.Icon;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.job.parameters.InvalidJobParametersException;
+import org.springframework.batch.core.launch.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
+import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.launch.JobRestartException;
 import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.launch.NoSuchJobExecutionException;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
 
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoServerSecuredPage
@@ -281,7 +281,7 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                             | JobInstanceAlreadyCompleteException
                             | NoSuchJobException
                             | JobRestartException
-                            | JobParametersInvalidException e) {
+                            | InvalidJobParametersException e) {
                         LOGGER.log(Level.WARNING, "", e);
                         getSession().error(e);
                         setResponsePage(BackupRestoreDataPage.class);

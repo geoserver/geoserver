@@ -18,7 +18,6 @@ import com.thoughtworks.xstream.mapper.Mapper;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.AbstractExecutionAdapter;
@@ -188,6 +186,29 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
                     public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                         return Collection.class.isAssignableFrom(type);
                     }
+
+                    @Override
+                    public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+                        // Render each warning as text. Warnings are Throwables, and reflectively serializing a
+                        // Throwable fails under JPMS on JDK 17+ ("java.base does not open java.lang"); writing the
+                        // message chain instead avoids that and is more readable.
+                        for (Object item : (Collection<?>) source) {
+                            writer.startNode(Level.WARNING.getName());
+                            if (item instanceof Throwable) {
+                                StringBuilder buf = new StringBuilder();
+                                for (Throwable t = (Throwable) item; t != null; t = t.getCause()) {
+                                    if (buf.length() > 0) {
+                                        buf.append('\n');
+                                    }
+                                    buf.append(t.getMessage() != null ? t.getMessage() : t.toString());
+                                }
+                                writer.setValue(buf.toString());
+                            } else {
+                                writer.setValue(String.valueOf(item));
+                            }
+                            writer.endNode();
+                        }
+                    }
                 });
 
         Class<? extends Resource> resourceAdaptorType =
@@ -203,6 +224,10 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         xStream.omitField(JobExecution.class, "jobId");
         xStream.omitField(JobExecution.class, "jobParameters");
         xStream.omitField(JobExecution.class, "executionContext");
+        // The job-level failure exceptions are a List<Throwable>; reflectively serializing a Throwable
+        // fails under JPMS on JDK 17+ ("java.base does not open java.lang"). The failure detail is already
+        // emitted per step (as text) by the stepExecutions converter, so omit the raw list here.
+        xStream.omitField(JobExecution.class, "failureExceptions");
 
         xStream.registerLocalConverter(
                 AbstractExecutionAdapter.class,
@@ -231,13 +256,16 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
                     @Override
                     public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-                        return CopyOnWriteArraySet.class.isAssignableFrom(type);
+                        // Spring Batch 6 changed JobExecution.stepExecutions from a CopyOnWriteArraySet to a
+                        // synchronized List; accept any Collection so the converter keeps handling the field
+                        // (otherwise XStream fails with "Explicit selected converter cannot handle item").
+                        return Collection.class.isAssignableFrom(type);
                     }
 
                     @Override
                     public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext ctx) {
-                        CopyOnWriteArraySet execs = (CopyOnWriteArraySet) obj;
-                        Iterator iterator = execs.iterator();
+                        Collection<?> execs = (Collection<?>) obj;
+                        Iterator<?> iterator = execs.iterator();
 
                         while (iterator.hasNext()) {
                             StepExecution exec = (StepExecution) iterator.next();
@@ -264,19 +292,21 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
                             if (exec.getStartTime() != null) {
                                 writer.startNode("startTime");
-                                writer.setValue(DateFormat.getInstance().format(exec.getStartTime()));
+                                // Spring Batch 6 returns java.time.LocalDateTime here (was java.util.Date);
+                                // its ISO-8601 toString() serializes cleanly (DateFormat cannot format it).
+                                writer.setValue(String.valueOf(exec.getStartTime()));
                                 writer.endNode();
                             }
 
                             if (exec.getEndTime() != null) {
                                 writer.startNode("endTime");
-                                writer.setValue(DateFormat.getInstance().format(exec.getEndTime()));
+                                writer.setValue(String.valueOf(exec.getEndTime()));
                                 writer.endNode();
                             }
 
                             if (exec.getLastUpdated() != null) {
                                 writer.startNode("lastUpdated");
-                                writer.setValue(DateFormat.getInstance().format(exec.getLastUpdated()));
+                                writer.setValue(String.valueOf(exec.getLastUpdated()));
                                 writer.endNode();
                             }
 

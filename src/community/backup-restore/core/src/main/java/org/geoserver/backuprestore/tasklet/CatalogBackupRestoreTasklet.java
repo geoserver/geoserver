@@ -8,8 +8,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +44,7 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.Filter;
 import org.geowebcache.config.XMLConfiguration;
+import org.geowebcache.storage.blobstore.file.FilePathUtils;
 import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.UnexpectedJobExecutionException;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -1037,10 +1038,15 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
             String layerId = layerInfo.getId();
             if (layerId == null) continue;
-            Resource sourceFile = gwcLayersDir.get(layerId + ".xml");
+            // GWC stores each tile-layer file under the file-system-safe form of the layer id
+            // (DefaultTileLayerCatalog uses FilePathUtils.filteredLayerName, e.g. ':' -> '_'). Using the
+            // raw id mismatches the on-disk name and, on Windows, makes File access throw
+            // InvalidPathException on the ':' characters. Resolve and stream via the Resource API.
+            String fileName = FilePathUtils.filteredLayerName(layerId) + ".xml";
+            Resource sourceFile = gwcLayersDir.get(fileName);
             if (Resources.exists(sourceFile)) {
-                try (FileInputStream fis = new FileInputStream(sourceFile.file())) {
-                    Resources.copy(fis, targetGwcLayersDir, layerId + ".xml");
+                try (InputStream is = sourceFile.in()) {
+                    Resources.copy(is, targetGwcLayersDir, fileName);
                 }
             }
         }

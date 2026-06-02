@@ -235,7 +235,7 @@ public class GeoServerApplication extends WebApplication
     protected void init() {
         // install webjars, eg. for wicketstuff select2
         WicketWebjars.install(this);
-            
+
         // enable GeoServer custom resource locators
         getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());

@@ -32,6 +32,15 @@
          <include>plexus-utils*.jar</include>
          <include>prettytime*.jar</include>
          <include>spring-batch*.jar</include>
+         <!-- Spring Batch 6 embedded H2 job repository -->
+         <include>h2-*.jar</include>
+         <!-- Spring Batch 6 observability (compile dependency of spring-batch-core) -->
+         <include>micrometer-observation-*.jar</include>
+         <include>micrometer-commons-*.jar</include>
+         <include>micrometer-core-*.jar</include>
+         <!-- spring-integration-core 7 reactive dependencies -->
+         <include>reactor-core-*.jar</include>
+         <include>reactive-streams-*.jar</include>
          <include>spring-integration-core*.jar</include>
          <include>spring-jms*.jar</include>
          <include>spring-messaging*.jar</include>

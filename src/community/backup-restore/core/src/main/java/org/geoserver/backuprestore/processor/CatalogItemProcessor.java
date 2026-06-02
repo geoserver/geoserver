@@ -451,6 +451,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
      * @return boolean indicating whether the resource is valid or not.
      */
     private boolean validateDataStore(DataStoreInfo resource, boolean isNew) throws Exception {
+        if (resource.getWorkspace() == null) {
+            // A store whose workspace reference could not be resolved (e.g. a partial / cross-catalog archive that
+            // carries a store for a workspace not present in the target) is invalid here: skip it rather than failing
+            // the whole step with an NPE on the missing workspace.
+            return false;
+        }
         final WorkspaceInfo ws =
                 this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
         if (ws == null) {
@@ -479,6 +485,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     private boolean validateHttpStore(HTTPStoreInfo resource, boolean isNew) throws Exception {
+        if (resource.getWorkspace() == null) {
+            // A store whose workspace reference could not be resolved (e.g. a partial / cross-catalog archive that
+            // carries a store for a workspace not present in the target) is invalid here: skip it rather than failing
+            // the whole step with an NPE on the missing workspace.
+            return false;
+        }
         final WorkspaceInfo ws =
                 this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
         if (ws == null) {
@@ -513,6 +525,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
      * @return boolean indicating whether the resource is valid or not.
      */
     private boolean validateCoverageStore(CoverageStoreInfo resource, boolean isNew) throws Exception {
+        if (resource.getWorkspace() == null) {
+            // A store whose workspace reference could not be resolved (e.g. a partial / cross-catalog archive that
+            // carries a store for a workspace not present in the target) is invalid here: skip it rather than failing
+            // the whole step with an NPE on the missing workspace.
+            return false;
+        }
         final WorkspaceInfo ws =
                 this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
         if (ws == null) {

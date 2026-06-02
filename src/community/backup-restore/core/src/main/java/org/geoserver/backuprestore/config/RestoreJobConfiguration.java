@@ -4,7 +4,8 @@
  */
 package org.geoserver.backuprestore.config;
 
-import java.io.IOException;
+import java.io.File;
+import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.processor.CatalogItemProcessor;
 import org.geoserver.backuprestore.reader.CatalogFileReader;
@@ -17,6 +18,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -35,8 +37,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -69,9 +71,7 @@ public class RestoreJobConfiguration {
     /** 10 minutes timeout for each restore chunk (matches the {@code chunkTimeoutPolicy} bean in the XML). */
     private static final long CHUNK_TIMEOUT_MS = 600000L;
 
-    /** Resource pattern resolver used to expand the {@code <name>.dat.*} wildcards into resource arrays. */
-    private final PathMatchingResourcePatternResolver resourcePatternResolver =
-            new PathMatchingResourcePatternResolver();
+    private static final Logger LOGGER = Logging.getLogger(RestoreJobConfiguration.class);
 
     /**
      * Completion policy bean reproducing {@code <bean id="chunkTimeoutPolicy" ...>}. Although in the XML it was a
@@ -95,17 +95,33 @@ public class RestoreJobConfiguration {
      * plain filesystem path, so it is turned into a {@code file:} URL before pattern matching.
      */
     private Resource[] resolveResources(String inputFilePath, String datFileGlob) {
-        try {
-            // input.file.path is already a "file:" URL string; append the glob and let the pattern resolver expand it,
-            // exactly as the former XML <property name="resources" value="#{...}/<dat>.*"/> did. Wrapping it in a
-            // java.io.File would fail to parse the "file:" scheme (InvalidPathException on the ':').
-            return resourcePatternResolver.getResources(inputFilePath + "/" + datFileGlob);
-        } catch (IOException e) {
-            throw new IllegalStateException(
-                    "Could not resolve restore input resources for pattern '" + datFileGlob + "' under "
-                            + inputFilePath,
-                    e);
+        // input.file.path is a "file:" URL string pointing at the extracted-archive directory. Resolve it to a real
+        // directory and list the matching "<name>.dat.*" fragments directly. Expanding the wildcard through a
+        // PathMatchingResourcePatternResolver is fragile across platforms: on Windows the value arrives as
+        // "file://D:/..." (the drive letter is then parsed as a URL host) or with backslashes, and the Ant matcher
+        // only understands forward slashes, so the pattern silently expands to ZERO resources - the restore then reads
+        // nothing and, when restoring into a catalog that already holds the objects, still appears to succeed.
+        String path = inputFilePath.replace('\\', '/');
+        if (path.startsWith("file:")) {
+            path = path.substring("file:".length());
         }
+        // Drop the leading slash(es) that precede a Windows drive letter ("/D:/..", "//D:/..", "///D:/.."); POSIX
+        // absolute paths ("/var/..") carry no drive letter and are left untouched.
+        path = path.replaceFirst("^/+(?=[A-Za-z]:)", "");
+
+        File dir = new File(path);
+        int star = datFileGlob.indexOf('*');
+        String prefix = star >= 0 ? datFileGlob.substring(0, star) : datFileGlob;
+        File[] matches = dir.listFiles((d, name) -> name.startsWith(prefix));
+        if (matches == null || matches.length == 0) {
+            LOGGER.warning("Restore input directory '" + dir + "' contained no files matching '" + datFileGlob + "'.");
+            return new Resource[0];
+        }
+        Resource[] resources = new Resource[matches.length];
+        for (int i = 0; i < matches.length; i++) {
+            resources[i] = new FileSystemResource(matches[i]);
+        }
+        return resources;
     }
 
     private <T> CatalogMultiResourceItemReader<T> readerWithSingleFragment(

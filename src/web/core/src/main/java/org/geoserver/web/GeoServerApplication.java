@@ -7,6 +7,7 @@ package org.geoserver.web;
 
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 
+import de.agilecoders.wicket.webjars.WicketWebjars;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -232,6 +233,9 @@ public class GeoServerApplication extends WebApplication
     @SuppressWarnings("deprecation")
     @Override
     protected void init() {
+        // install webjars, eg. for wicketstuff select2
+        WicketWebjars.install(this);
+            
         // enable GeoServer custom resource locators
         getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());

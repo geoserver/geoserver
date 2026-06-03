@@ -22,6 +22,8 @@ Here you'll be able to specify various parameters for the Backup / Restore proce
     4.  `Skip GeoWebCache`: Exclude the GWC catalog and tile-layer folders from the backup
     5.  `Parameterize Store Passwords`: Replace store passwords in the archive with parameterizable tokens instead of the encrypted values (see `BK_PARAM_PASSWORDS` under [Usage Via REST](usagerest.md))
     6.  `Preserve Catalog IDs (for migration)`: Keep catalog object ids and write cross-references by id, producing an archive suited to migrating into another, already-populated instance. Off by default (the portable, name-based archive). See [Migrating a catalog to another GeoServer instance](usecases.md#migrating-a-catalog-to-another-geoserver-instance)
+    7.  `Skip Security Settings`: Exclude the security configuration (users, groups, roles, services) from the backup. **Checked by default**, matching the `BK_SKIP_SECURITY` REST default. Uncheck to include security in the archive
+    8.  `Skip Global Settings`: Exclude the global settings from the backup. **Checked by default**, matching the `BK_SKIP_SETTINGS` REST default
 
 4.  `Backup Executions`: Report of running and previously run backups
 
@@ -31,11 +33,17 @@ Here you'll be able to specify various parameters for the Backup / Restore proce
     2.  `Skip Failing Resources`: If enabled and errors are found during the restore of resources, skip the resource and go ahead with the restore procedure
     3.  `Clean-Up Temp Resources`: Delete the temporary working folder at the end of the execution
     4.  `Skip GeoWebCache`: Exclude the GWC catalog and tile-layer folders from the restore
+    5.  `Skip Security Settings`: Do not restore the security configuration. **Checked by default**, matching the `BK_SKIP_SECURITY` REST default. Uncheck only when the archive contains a security folder you intend to restore
+    6.  `Skip Global Settings`: Do not restore the global settings. **Checked by default**, matching the `BK_SKIP_SETTINGS` REST default
+    7.  `Purge Existing Resources`: Delete incoming resources where possible before restoring (e.g. drop existing workspaces). **Checked by default**, matching the `BK_PURGE_RESOURCES` REST default. Uncheck to merge into the existing catalog without deleting
 
 6.  `Restore Executions`: Report of running and previously run restore
 
+!!! warning
+    `Skip Security Settings` is checked by default for a reason: restoring security configuration replaces the target's users, groups, roles and authentication settings. Only uncheck it when you understand the archive's security content and intend to overwrite the target's security. See the [partial / cross-instance restore notes](usecases.md#partial-and-cross-instance-restores).
+
 !!! note
-    A handful of further options (e.g. skipping security or global settings, password-token substitution on restore) are available only through the [REST API](usagerest.md), which exposes the full set of `BK_*` options.
+    The remaining `BK_*` options (e.g. password-token substitution, `exclude.file.path`) are available only through the [REST API](usagerest.md), which exposes the full option set.
 
 ## Performing a full backup via UI
 

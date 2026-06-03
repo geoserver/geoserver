@@ -684,19 +684,35 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                             case PARAM_PARAMETERIZE_PASSWDS:
                             case PARAM_SKIP_SETTINGS:
                             case PARAM_SKIP_SECURITY_SETTINGS:
+                            case PARAM_PURGE_RESOURCES:
                             case PARAM_CLEANUP_TEMP:
                             case PARAM_DRY_RUN_MODE:
                             case PARAM_BEST_EFFORT_MODE:
                             case PARAM_SKIP_GWC:
                             case PARAM_PRESERVE_IDS:
                                 if (paramsBuilder.toJobParameters().getString(k) == null) {
-                                    paramsBuilder.addString(k, "true");
+                                    paramsBuilder.addString(k, booleanOptionValue(param.getValue()));
                                 }
                         }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Resolves the value of a boolean job option supplied through the {@link Hints} API.
+     *
+     * <p>Historically the only way to pass a boolean option through {@code Hints} was to add the option key with the
+     * option <em>name</em> as its value (e.g. {@code OptionKey(BK_SKIP_GWC) -> "BK_SKIP_GWC"}); presence alone meant
+     * {@code true} and there was no way to express {@code false}. That made the default-{@code true} options (e.g.
+     * {@code BK_SKIP_SECURITY}) impossible to switch off from the UI. This helper keeps that legacy contract (any
+     * non-boolean value, including the option name, yields {@code "true"}) while additionally honoring an explicit
+     * {@code "true"}/{@code "false"} string, so callers that know the desired state can pass it directly.
+     */
+    private static String booleanOptionValue(Object rawValue) {
+        String value = String.valueOf(rawValue);
+        return "false".equalsIgnoreCase(value) ? "false" : "true";
     }
 
     public XStreamPersister createXStreamPersisterXML() {

@@ -279,6 +279,9 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("backupOptSkipGWC", new Model<Boolean>(false)));
         form.add(new CheckBox("backupOptParamPasswords", new Model<Boolean>(false)));
         form.add(new CheckBox("backupOptPreserveIds", new Model<Boolean>(false)));
+        // Default-true options: pre-checked to match the documented default (security / global settings excluded).
+        form.add(new CheckBox("backupOptSkipSecurity", new Model<Boolean>(true)));
+        form.add(new CheckBox("backupOptSkipSettings", new Model<Boolean>(true)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
         form.add(new AjaxSubmitLink("newBackupStart", form) {
             @Override
@@ -433,6 +436,17 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                     hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS), Backup.PARAM_PRESERVE_IDS));
                 }
 
+                // Default-true options: always send an explicit true/false so that un-checking actually disables the
+                // skip (these are excluded by default, so a missing parameter would otherwise keep skipping them).
+                Boolean backupOptSkipSecurity = ((CheckBox) form.get("backupOptSkipSecurity")).getModelObject();
+                hints.add(new Hints(
+                        new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS),
+                        Boolean.toString(backupOptSkipSecurity)));
+
+                Boolean backupOptSkipSettings = ((CheckBox) form.get("backupOptSkipSettings")).getModelObject();
+                hints.add(new Hints(
+                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS), Boolean.toString(backupOptSkipSettings)));
+
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 
                 return backupFacade
@@ -501,6 +515,10 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("restoreOptBestEffort", new Model<Boolean>(false)));
         form.add(new CheckBox("restoreOptCleanTemp", new Model<Boolean>(true)));
         form.add(new CheckBox("restoreOptSkipGWC", new Model<Boolean>(false)));
+        // Default-true options: pre-checked to match the documented defaults.
+        form.add(new CheckBox("restoreOptSkipSecurity", new Model<Boolean>(true)));
+        form.add(new CheckBox("restoreOptSkipSettings", new Model<Boolean>(true)));
+        form.add(new CheckBox("restoreOptPurgeResources", new Model<Boolean>(true)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
         form.add(new AjaxSubmitLink("newRestoreStart", form) {
             @Override
@@ -662,6 +680,20 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 if (restoreOptSkipGWC) {
                     hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_GWC), Backup.PARAM_SKIP_GWC));
                 }
+
+                // Default-true options: always send an explicit true/false so that un-checking takes effect.
+                Boolean restoreOptSkipSecurity = ((CheckBox) form.get("restoreOptSkipSecurity")).getModelObject();
+                hints.add(new Hints(
+                        new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS),
+                        Boolean.toString(restoreOptSkipSecurity)));
+
+                Boolean restoreOptSkipSettings = ((CheckBox) form.get("restoreOptSkipSettings")).getModelObject();
+                hints.add(new Hints(
+                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS), Boolean.toString(restoreOptSkipSettings)));
+
+                Boolean restoreOptPurgeResources = ((CheckBox) form.get("restoreOptPurgeResources")).getModelObject();
+                hints.add(new Hints(
+                        new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES), Boolean.toString(restoreOptPurgeResources)));
 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 

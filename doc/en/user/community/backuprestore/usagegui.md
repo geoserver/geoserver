@@ -18,6 +18,10 @@ Here you'll be able to specify various parameters for the Backup / Restore proce
 
     1.  `Overwrite Existing Archive`: When enabled the backup procedure will overwrite any previously existing archive
     2.  `Skip Failing Resources`: If enabled and errors are found during the backup of existing resources, skip the resource and go ahead with the backup procedure
+    3.  `Clean-Up Temp Resources`: Delete the temporary working folder at the end of the execution
+    4.  `Skip GeoWebCache`: Exclude the GWC catalog and tile-layer folders from the backup
+    5.  `Parameterize Store Passwords`: Replace store passwords in the archive with parameterizable tokens instead of the encrypted values (see `BK_PARAM_PASSWORDS` under [Usage Via REST](usagerest.md))
+    6.  `Preserve Catalog IDs (for migration)`: Keep catalog object ids and write cross-references by id, producing an archive suited to migrating into another, already-populated instance. Off by default (the portable, name-based archive). See [Migrating a catalog to another GeoServer instance](usecases.md#migrating-a-catalog-to-another-geoserver-instance)
 
 4.  `Backup Executions`: Report of running and previously run backups
 
@@ -25,8 +29,13 @@ Here you'll be able to specify various parameters for the Backup / Restore proce
 
     1.  `Dry Run`: Test the restore procedure using the provided archive but do not apply any changes to current configuration. Useful to test archives before actually performing a Restore
     2.  `Skip Failing Resources`: If enabled and errors are found during the restore of resources, skip the resource and go ahead with the restore procedure
+    3.  `Clean-Up Temp Resources`: Delete the temporary working folder at the end of the execution
+    4.  `Skip GeoWebCache`: Exclude the GWC catalog and tile-layer folders from the restore
 
 6.  `Restore Executions`: Report of running and previously run restore
+
+!!! note
+    A handful of further options (e.g. skipping security or global settings, password-token substitution on restore) are available only through the [REST API](usagerest.md), which exposes the full set of `BK_*` options.
 
 ## Performing a full backup via UI
 
@@ -44,11 +53,14 @@ It is possible to select the backup options by enabling the appropriate checkbox
 !!! note
     Please notice that while performing a backup or restore task, GeoServer won't allow users to access other sections by locking the catalog and configuration until the process has finished. Although it is always possible to stop or abandon a backup or restore procedure.
 
-At the end of the backup, the user will be redirected to an `Execution Summary` page
+While the job runs, the status shown next to the `Start` button updates automatically and reports the current progress as `<status> — step <done>/<total> (<current step>)`. At the end of the backup, the user will be redirected to an `Execution Summary` page
 
 ![](images/usagegui004.png)
 
 The same page can be accessed also later by clicking an execution link from the main page.
+
+!!! note
+    The `Execution Details` page refreshes itself automatically while the job is still running, so the step states and progress update without any action; a manual `refresh` link is also available. The page stops auto-refreshing once the job reaches a terminal state.
 
 !!! note
     Please notice that the list of executions is not persisted and therefore it will be reset after a GeoServer container **restart**.

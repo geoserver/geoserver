@@ -40,6 +40,18 @@
 	        <input id="backupOptCleanTemp" type="checkbox" wicket:id="backupOptCleanTemp" />
 	        <label for="backupOptCleanTempLabel"><wicket:message key="backupOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
 	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="backupOptSkipGWC" type="checkbox" wicket:id="backupOptSkipGWC" />
+	        <label for="backupOptSkipGWC"><wicket:message key="backupOptSkipGWCLabel">Skip GeoWebCache</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="backupOptParamPasswords" type="checkbox" wicket:id="backupOptParamPasswords" />
+	        <label for="backupOptParamPasswords"><wicket:message key="backupOptParamPasswordsLabel">Parameterize Store Passwords</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="backupOptPreserveIds" type="checkbox" wicket:id="backupOptPreserveIds" />
+	        <label for="backupOptPreserveIds"><wicket:message key="backupOptPreserveIdsLabel">Preserve Catalog IDs (for migration)</wicket:message></label>
+	      </div>
 	    </div>
 	</fieldset>
 	<div class="button-group selfclear">
@@ -82,6 +94,10 @@
 	      <div class="gs-list-item-class choiceItem">
 	        <input id="restoreOptCleanTemp" type="checkbox" wicket:id="restoreOptCleanTemp" />
 	        <label for="restoreOptCleanTempLabel"><wicket:message key="restoreOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="restoreOptSkipGWC" type="checkbox" wicket:id="restoreOptSkipGWC" />
+	        <label for="restoreOptSkipGWC"><wicket:message key="restoreOptSkipGWCLabel">Skip GeoWebCache</wicket:message></label>
 	      </div>
 	    </div>
 	</fieldset>

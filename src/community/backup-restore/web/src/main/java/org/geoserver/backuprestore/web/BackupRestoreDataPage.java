@@ -50,6 +50,7 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
 import org.springframework.batch.core.launch.NoSuchJobExecutionException;
+import org.springframework.batch.core.step.StepExecution;
 
 /**
  * First page of the backup wizard.
@@ -62,6 +63,44 @@ import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoServerUnlockablePage {
 
     static Logger LOGGER = Logging.getLogger(BackupRestoreDataPage.class);
+
+    /**
+     * Poll interval for the in-page job-progress refresh. The previous value (100&nbsp;ms) issued roughly ten AJAX
+     * requests per second against the running server for the whole duration of a backup / restore; two seconds is still
+     * responsive while being two orders of magnitude lighter.
+     */
+    private static final Duration PROGRESS_POLL_INTERVAL = Duration.ofSeconds(2);
+
+    /**
+     * Builds a human-readable progress line for the status label, e.g. {@code "STARTED — step 3/9
+     * (restoreLayerInfos)"}, from the coarse {@link org.springframework.batch.core.BatchStatus} plus the engine's
+     * executed/total step counts and the currently running step name. Falls back to {@code "Working"} when no execution
+     * is available yet.
+     */
+    private static String formatProgress(AbstractExecutionAdapter exec) {
+        if (exec == null) {
+            return "Working";
+        }
+        StringBuilder sb = new StringBuilder(String.valueOf(exec.getStatus()));
+        sb.append(" — step ").append(exec.getProgress());
+        String current = currentStepName(exec);
+        if (current != null) {
+            sb.append(" (").append(current).append(')');
+        }
+        return sb.toString();
+    }
+
+    /** Name of the step that is currently running, or {@code null} when none is in a running state. */
+    private static String currentStepName(AbstractExecutionAdapter exec) {
+        if (exec.getStepExecutions() != null) {
+            for (StepExecution se : exec.getStepExecutions()) {
+                if (se.getStatus() != null && se.getStatus().isRunning()) {
+                    return se.getStepName();
+                }
+            }
+        }
+        return null;
+    }
 
     WorkspaceModel workspace;
     DropDownChoice workspaceChoice;
@@ -237,6 +276,9 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("backupOptOverwirte", new Model<Boolean>(false)));
         form.add(new CheckBox("backupOptBestEffort", new Model<Boolean>(true)));
         form.add(new CheckBox("backupOptCleanTemp", new Model<Boolean>(true)));
+        form.add(new CheckBox("backupOptSkipGWC", new Model<Boolean>(false)));
+        form.add(new CheckBox("backupOptParamPasswords", new Model<Boolean>(false)));
+        form.add(new CheckBox("backupOptPreserveIds", new Model<Boolean>(false)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
         form.add(new AjaxSubmitLink("newBackupStart", form) {
             @Override
@@ -284,7 +326,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 }
 
                 cancel.setDefaultModelObject(jobid);
-                this.add(new AbstractAjaxTimerBehavior(Duration.ofMillis(100)) {
+                this.add(new AbstractAjaxTimerBehavior(PROGRESS_POLL_INTERVAL) {
                     @Override
                     protected void onTimer(AjaxRequestTarget target) {
                         Backup backupFacade = BackupRestoreWebUtils.backupFacade();
@@ -322,9 +364,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                             return;
                         }
 
-                        String msg = exec != null ? exec.getStatus().toString() : "Working";
-
-                        statusLabel.setDefaultModelObject(msg);
+                        statusLabel.setDefaultModelObject(formatProgress(exec));
                         target.add(statusLabel);
                     }
                     ;
@@ -375,6 +415,22 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
                 if (backupOptCleanTemp) {
                     hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
+                }
+
+                Boolean backupOptSkipGWC = ((CheckBox) form.get("backupOptSkipGWC")).getModelObject();
+                if (backupOptSkipGWC) {
+                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_GWC), Backup.PARAM_SKIP_GWC));
+                }
+
+                Boolean backupOptParamPasswords = ((CheckBox) form.get("backupOptParamPasswords")).getModelObject();
+                if (backupOptParamPasswords) {
+                    hints.add(new Hints(
+                            new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS), Backup.PARAM_PARAMETERIZE_PASSWDS));
+                }
+
+                Boolean backupOptPreserveIds = ((CheckBox) form.get("backupOptPreserveIds")).getModelObject();
+                if (backupOptPreserveIds) {
+                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS), Backup.PARAM_PRESERVE_IDS));
                 }
 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
@@ -444,6 +500,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("restoreOptDryRun", new Model<Boolean>(false)));
         form.add(new CheckBox("restoreOptBestEffort", new Model<Boolean>(false)));
         form.add(new CheckBox("restoreOptCleanTemp", new Model<Boolean>(true)));
+        form.add(new CheckBox("restoreOptSkipGWC", new Model<Boolean>(false)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
         form.add(new AjaxSubmitLink("newRestoreStart", form) {
             @Override
@@ -491,7 +548,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 }
 
                 cancel.setDefaultModelObject(jobid);
-                this.add(new AbstractAjaxTimerBehavior(Duration.ofMillis(100)) {
+                this.add(new AbstractAjaxTimerBehavior(PROGRESS_POLL_INTERVAL) {
                     @Override
                     protected void onTimer(AjaxRequestTarget target) {
                         Backup backupFacade = BackupRestoreWebUtils.backupFacade();
@@ -529,9 +586,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                             return;
                         }
 
-                        String msg = exec != null ? exec.getStatus().toString() : "Working";
-
-                        statusLabel.setDefaultModelObject(msg);
+                        statusLabel.setDefaultModelObject(formatProgress(exec));
                         target.add(statusLabel);
                     }
                     ;
@@ -601,6 +656,11 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
                 if (restoreOptCleanTemp) {
                     hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
+                }
+
+                Boolean restoreOptSkipGWC = ((CheckBox) form.get("restoreOptSkipGWC")).getModelObject();
+                if (restoreOptSkipGWC) {
+                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_GWC), Backup.PARAM_SKIP_GWC));
                 }
 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();

@@ -10,12 +10,14 @@ import static org.geoserver.backuprestore.web.BackupRestoreWebUtils.humanReadabl
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -186,6 +188,24 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
         details.setOutputMarkupId(true);
         details.setMarkupId("details");
         add(details);
+
+        // Live progress: while the job is still running, repaint the header (state / progress columns) and the error
+        // details every couple of seconds, then stop. This replaces the need to keep clicking the manual "refresh"
+        // link (which does a full page reload). The 2s cadence matches the data page and is light on the server.
+        if (bkp.isRunning()) {
+            final BackupRestoreExecutionsTable liveHeader = headerTable;
+            final TextArea<String> liveDetails = details;
+            add(new AbstractAjaxTimerBehavior(Duration.ofSeconds(2)) {
+                @Override
+                protected void onTimer(AjaxRequestTarget target) {
+                    target.add(liveHeader);
+                    target.add(liveDetails);
+                    if (!bkp.isRunning()) {
+                        stop(target);
+                    }
+                }
+            });
+        }
 
         String location = bkp.getArchiveFile().path();
         backupFile = new File(location);

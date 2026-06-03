@@ -96,6 +96,13 @@
       <artifactId>gt-jdbc-postgis</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- GeoPackage store backing the "foo" join fixture in BackupRestoreTestSupport (replaces the unmaintained
+         geodb-H2 store, which no longer works on the H2 2.x the Spring Batch migration pulls in). -->
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Other Dependencies -->
     <dependency>

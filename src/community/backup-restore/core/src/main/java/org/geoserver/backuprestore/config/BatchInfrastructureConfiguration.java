@@ -17,9 +17,11 @@ import org.springframework.batch.core.repository.support.JobRepositoryFactoryBea
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -60,11 +62,21 @@ public class BatchInfrastructureConfiguration {
      */
     @Bean
     public DataSource backupJobRepositoryDataSource() {
-        return new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .generateUniqueName(true)
-                .addScript("classpath:org/springframework/batch/core/schema-h2.sql")
-                .build();
+        // A uniquely-named in-memory H2, kept alive for the JVM lifetime with DB_CLOSE_DELAY=-1, then seeded with the
+        // standard Batch schema. Spring's EmbeddedDatabaseBuilder doesn't expose DB_CLOSE_DELAY and a bare in-memory H2
+        // drops its WHOLE schema when the last connection closes during an idle gap between jobs - which intermittently
+        // failed later jobs (and hung tests) with "Table BATCH_JOB_EXECUTION not found (this database is empty)".
+        DriverManagerDataSource dataSource = new DriverManagerDataSource(
+                "jdbc:h2:mem:backupJobRepository-"
+                        + java.util.UUID.randomUUID()
+                        + ";DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+                "sa",
+                "");
+        dataSource.setDriverClassName("org.h2.Driver");
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(new ClassPathResource("org/springframework/batch/core/schema-h2.sql"));
+        DatabasePopulatorUtils.execute(populator, dataSource);
+        return dataSource;
     }
 
     @Bean

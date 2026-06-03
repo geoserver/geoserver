@@ -440,12 +440,12 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 // skip (these are excluded by default, so a missing parameter would otherwise keep skipping them).
                 Boolean backupOptSkipSecurity = ((CheckBox) form.get("backupOptSkipSecurity")).getModelObject();
                 hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS),
+                        new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS, "*"),
                         Boolean.toString(backupOptSkipSecurity)));
 
                 Boolean backupOptSkipSettings = ((CheckBox) form.get("backupOptSkipSettings")).getModelObject();
                 hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS), Boolean.toString(backupOptSkipSettings)));
+                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"), Boolean.toString(backupOptSkipSettings)));
 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 
@@ -684,16 +684,17 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 // Default-true options: always send an explicit true/false so that un-checking takes effect.
                 Boolean restoreOptSkipSecurity = ((CheckBox) form.get("restoreOptSkipSecurity")).getModelObject();
                 hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS),
+                        new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS, "*"),
                         Boolean.toString(restoreOptSkipSecurity)));
 
                 Boolean restoreOptSkipSettings = ((CheckBox) form.get("restoreOptSkipSettings")).getModelObject();
                 hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS), Boolean.toString(restoreOptSkipSettings)));
+                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"), Boolean.toString(restoreOptSkipSettings)));
 
                 Boolean restoreOptPurgeResources = ((CheckBox) form.get("restoreOptPurgeResources")).getModelObject();
                 hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES), Boolean.toString(restoreOptPurgeResources)));
+                        new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES, "*"),
+                        Boolean.toString(restoreOptPurgeResources)));
 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 

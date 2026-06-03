@@ -187,6 +187,12 @@ public class BackupTest extends BackupRestoreTestSupport {
         public void testRunSpringBatchFilteredRestoreJob() throws Exception {
             Hints hints = new Hints(new HashMap<>(2));
             hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+            // Merge-semantics test: it restores into the pre-populated test catalog and asserts the FULL
+            // merged content (9 datastores, 35 styles). BK_PURGE_RESOURCES now defaults to true (a restore is
+            // destructive by design), which would build the restore catalog from the archive alone and drop the
+            // pre-existing resources. Pin it to false so this test keeps exercising the merge path it was written
+            // for; the destructive default is covered by PurgeRestoreTest and BackupOptionDefaultsTest.
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES, "*"), "false"));
 
             Filter filter = ECQL.toFilter("name = 'topp'");
             RestoreExecutionAdapter restoreExecution =
@@ -402,6 +408,12 @@ public class BackupTest extends BackupRestoreTestSupport {
             hints.add(new Hints(
                     new Hints.OptionKey(Backup.PARAM_PASSWORD_TOKENS, "*"), "${sf:sf.passwd.encryptedValue}=foo"));
 
+            // Merge-semantics test: it removes only the "sf" datastore, then restores and asserts the FULL merged
+            // catalog (9 datastores) — i.e. the surviving resources plus the restored "sf". BK_PURGE_RESOURCES now
+            // defaults to true (destructive restore from the archive alone); pin it to false so the merge path this
+            // test was written for is preserved. Destructive default coverage lives in PurgeRestoreTest.
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES, "*"), "false"));
+
             removeSfDatastore();
 
             RestoreExecutionAdapter restoreExecution =
@@ -505,6 +517,11 @@ public class BackupTest extends BackupRestoreTestSupport {
         public void testRunSpringBatchRestoreJob() throws Exception {
             Hints hints = new Hints(new HashMap<>(2));
             hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+            // Merge-semantics test: it restores into the pre-populated test catalog and asserts the FULL merged
+            // content (9 datastores, 50 feature types, 35 styles, ...). BK_PURGE_RESOURCES now defaults to true (a
+            // restore is destructive by design), which would build the restore catalog from the archive alone. Pin
+            // it to false so this test keeps exercising the merge path; PurgeRestoreTest covers the destructive one.
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES, "*"), "false"));
 
             RestoreExecutionAdapter restoreExecution =
                     backupFacade.runRestoreAsync(file("geoserver-full-backup.zip"), null, null, null, hints);

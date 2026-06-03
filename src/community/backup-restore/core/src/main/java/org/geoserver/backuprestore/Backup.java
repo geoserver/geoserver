@@ -715,6 +715,35 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         return "false".equalsIgnoreCase(value) ? "false" : "true";
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // Single source of truth for the boolean job options whose default is "true".
+    //
+    // These options used to be read ad-hoc in several steps (CatalogBackupRestoreTasklet,
+    // CatalogSecurityManagerTasklet, RestoreJobExecutionListener) with inconsistent defaults — the same option could be
+    // treated as "true" in one step and "false" in another within a single run. The helpers below make every step read
+    // the option identically, with the documented default of "true": security and global settings are excluded, and a
+    // restore purges pre-existing resources, unless the caller explicitly passes "false".
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /** Whether security settings are excluded from the backup/restore. Default {@code true} (excluded). */
+    public static boolean isSkipSecuritySettings(JobParameters params) {
+        return Boolean.parseBoolean(params.getString(PARAM_SKIP_SECURITY_SETTINGS, "true"));
+    }
+
+    /** Whether global settings are excluded from the backup/restore. Default {@code true} (excluded). */
+    public static boolean isSkipSettings(JobParameters params) {
+        return Boolean.parseBoolean(params.getString(PARAM_SKIP_SETTINGS, "true"));
+    }
+
+    /**
+     * Whether a restore purges pre-existing resources (e.g. drops existing workspaces) before restoring. Default
+     * {@code true} (purge) — a restore is destructive by design; pass {@code BK_PURGE_RESOURCES=false} to merge into
+     * the existing catalog instead.
+     */
+    public static boolean isPurgeResources(JobParameters params) {
+        return Boolean.parseBoolean(params.getString(PARAM_PURGE_RESOURCES, "true"));
+    }
+
     public XStreamPersister createXStreamPersisterXML() {
         return initXStreamPersister(new XStreamPersisterFactory().createXMLPersister());
     }

@@ -121,9 +121,7 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
     }
 
     private boolean getPurgeResources(JobParameters params) {
-        String value = params.getString(Backup.PARAM_PURGE_RESOURCES);
-        if (value == null) return false;
-        return Boolean.valueOf(value.trim());
+        return Backup.isPurgeResources(params);
     }
 
     /** Synchronizes catalogs content. */

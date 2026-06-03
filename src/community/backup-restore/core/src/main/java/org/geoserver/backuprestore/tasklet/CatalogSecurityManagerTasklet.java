@@ -42,10 +42,8 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
 
     @Override
     protected void initialize(StepExecution stepExecution) {
-        boolean skipSettings =
-                Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_SKIP_SETTINGS));
-        boolean skipSecurity =
-                Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_SKIP_SECURITY_SETTINGS));
+        boolean skipSettings = Backup.isSkipSettings(stepExecution.getJobParameters());
+        boolean skipSecurity = Backup.isSkipSecuritySettings(stepExecution.getJobParameters());
 
         this.skipSecuritySettings = skipSettings || skipSecurity || filterIsValid();
     }

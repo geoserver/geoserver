@@ -80,13 +80,11 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
     @Override
     protected void initialize(StepExecution stepExecution) {
-        this.skipSettings =
-                Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_SKIP_SETTINGS, "true"));
+        this.skipSettings = Backup.isSkipSettings(stepExecution.getJobParameters());
 
         this.skipGWC = Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_SKIP_GWC, "false"));
 
-        this.purge =
-                Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_PURGE_RESOURCES, "false"));
+        this.purge = Backup.isPurgeResources(stepExecution.getJobParameters());
     }
 
     @Override

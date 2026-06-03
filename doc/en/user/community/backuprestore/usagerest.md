@@ -44,7 +44,8 @@ Available options are:
 4.  `BK_SKIP_SETTINGS`: This will attempt to exclude global settings from the backup, as well as security settings. Default: `true`.
 5.  `BK_SKIP_GWC`: This option will avoid backup / restore the GWC catalog and folders. Default: `false`.
 6.  `BK_CLEANUP_TEMP`: This will attempt to delete temporary folder at the end of the execution. Default: `true`.
-7.  `exclude.file.path`: A `;` separated list of paths relative to the `GEOSERVER_DATA_DIR` (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`. WARNING: `security` and `workspaces` are treated differently. This option should be used only for custom external resources located under the `GEOSERVER_DATA_DIR`.
+7.  `BK_PRESERVE_IDS`: Keep every catalog object's internal id in the archive and write cross-references **by id** instead of by name. Default: `false`. By default the archive is *portable* — ids are stripped and objects reference each other by name — which is the right choice when restoring into a fresh, empty data directory. Set this to `true` when you intend to **migrate** the archive into another, already-populated GeoServer instance and need the original identities to be preserved (see [Migrating a catalog to another GeoServer instance](usecases.md#migrating-a-catalog-to-another-geoserver-instance)). The flag is a **backup-side** option only: the restore reads whichever of `<id>`/`<name>` each reference carries, so an id-based archive restores correctly with the default restore command — no matching option is required.
+8.  `exclude.file.path`: A `;` separated list of paths relative to the `GEOSERVER_DATA_DIR` (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`. WARNING: `security` and `workspaces` are treated differently. This option should be used only for custom external resources located under the `GEOSERVER_DATA_DIR`.
 
 Also an optional `Filter` can be passed to restrict the scope of the restore operation to a list of workspaces.
 
@@ -203,6 +204,9 @@ Available Options are:
 8.  `BK_CLEANUP_TEMP`: This will attempt to delete temporary folder at the end of the execution. Default: `true`.
 
 9.  `exclude.file.path`: A `;` separated list of paths relative to the `GEOSERVER_DATA_DIR` (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`. WARNING: `security` and `workspaces` are treated differently. This option should be used only for custom external resources located under the `GEOSERVER_DATA_DIR`.
+
+!!! note
+    There is no `BK_PRESERVE_IDS` option on the restore side. The restore automatically adapts to whatever the archive contains: a name-based (default) archive is matched against the target catalog by name, while an id-based archive (produced with `BK_PRESERVE_IDS=true` on the backup) is matched first by id and then by name. Restoring an id-based archive into the **same** instance is therefore idempotent — objects whose id already exists are skipped — and restoring it into a **different** instance preserves the original ids so cross-references and GWC tile layers re-link correctly. See [Migrating a catalog to another GeoServer instance](usecases.md#migrating-a-catalog-to-another-geoserver-instance).
 
 Also an optional `Filter` can be passed to restrict the scope of the restore operation to a list of workspaces.
 

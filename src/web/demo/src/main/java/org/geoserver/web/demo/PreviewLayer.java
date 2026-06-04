@@ -43,6 +43,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.util.logging.Logging;
+import org.geotools.wfs.v1_0.WFS;
 import org.locationtech.jts.geom.Envelope;
 
 /**
@@ -51,6 +52,9 @@ import org.locationtech.jts.geom.Envelope;
  */
 public class PreviewLayer {
     static final Logger LOGGER = Logging.getLogger(PreviewLayer.class);
+    private static final String WFS11_VERSION = "1.1.0";
+    private static final String GML3_NAMESPACE = "http://www.opengis.net/gml";
+    private static final String GML32_NAMESPACE = "http://www.opengis.net/gml/3.2";
 
     public enum PreviewLayerType {
         Raster,
@@ -153,7 +157,6 @@ public class PreviewLayer {
             request.setLayers(layers);
             request.setFormat("application/openlayers");
 
-            // in the case of groups we already know about the envelope and the target SRS
             if (groupInfo != null) {
                 ReferencedEnvelope bounds = groupInfo.getBounds();
                 request.setBbox(bounds);
@@ -170,9 +173,8 @@ public class PreviewLayer {
         return request;
     }
 
+    /** Returns an SRS identifier suitable for a preview request. */
     private static String lookupSRSFromBounds(ReferencedEnvelope bounds) {
-        // try first a method that retains the native authority code, otherwise fall back on
-        // GML2EncodingUtils, which prefers the EPSG authority
         CoordinateReferenceSystem crs = bounds.getCoordinateReferenceSystem();
         if (crs == null) return null;
         try {
@@ -200,12 +202,11 @@ public class PreviewLayer {
         return getBaseURL(service, false);
     }
 
+    /** Builds the absolute service URL, optionally forcing global services. */
     String getBaseURL(String service, boolean useGlobalRef) {
         String base = getBaseURL();
-
         String ws = getWorkspace();
         if (ws == null || useGlobalRef) {
-            // global reference
             return ResponseUtils.buildURL(base, service, null, URLType.SERVICE);
         } else {
             return ResponseUtils.buildURL(base, ws + "/" + service, null, URLType.SERVICE);
@@ -217,10 +218,10 @@ public class PreviewLayer {
         return ResponseUtils.baseURL(req);
     }
 
+    /** Builds the service path, optionally forcing global services. */
     String getPath(String service, boolean useGlobalRef) {
         String ws = getWorkspace();
         if (ws == null || useGlobalRef) {
-            // global reference
             return service;
         } else {
             return ws + "/" + service;
@@ -229,7 +230,6 @@ public class PreviewLayer {
 
     /** Given a request and a target format, builds the WMS request */
     public String getWmsLink() {
-        // build link with no customization
         return getWmsLink((r, m) -> {});
     }
 
@@ -251,7 +251,6 @@ public class PreviewLayer {
         params.put(
                 "styles",
                 !request.getStyles().isEmpty() ? request.getStyles().get(0).getName() : "");
-        // allow customization of parameters
         parameterCustomizer.accept(request, params);
         return ResponseUtils.buildURL(getBaseURL(), getPath("wms", false), params, URLType.SERVICE);
     }
@@ -275,46 +274,33 @@ public class PreviewLayer {
     public String getGmlLink(Map<String, GMLOutputParams> gmlParamsCache) {
         GMLOutputParams gmlParams = new GMLOutputParams();
 
-        if (layerInfo != null) {
-            if (layerInfo.getResource() instanceof FeatureTypeInfo) {
-                FeatureTypeInfo ftInfo = (FeatureTypeInfo) layerInfo.getResource();
-                if (ftInfo.getStore() != null) {
-                    Map<String, Serializable> connParams = ftInfo.getStore().getConnectionParameters();
-                    if (connParams != null) {
-                        String dbtype = (String) connParams.get("dbtype");
-                        // app-schema feature types need special treatment
-                        if ("app-schema".equals(dbtype)) {
-                            String mappingUrl = connParams.get("url").toString();
-                            if (gmlParamsCache != null && gmlParamsCache.containsKey(mappingUrl)) {
-                                // avoid looking up the GML version again
-                                gmlParams = gmlParamsCache.get(mappingUrl);
-                            } else {
-                                // use global OWS service to make sure all secondary namespaces
-                                // are accessible
-                                gmlParams.baseUrl = getBaseURL();
-                                // always use WFS 1.1.0 for app-schema layers
-                                gmlParams.wfsVersion =
-                                        org.geotools.wfs.v1_1.WFS.getInstance().getVersion();
-                                // determine GML version by inspecting the feature type and its
-                                // super types
-                                try {
-                                    gmlParams.gmlVersion = findGmlVersion(ftInfo);
-                                } catch (IOException e) {
-                                    LOGGER.log(Level.FINE, "Could not determine GML version, using default", e);
-                                    gmlParams.gmlVersion = null;
-                                }
-                                // store params in cache
-                                if (gmlParamsCache != null) {
-                                    gmlParamsCache.put(mappingUrl, gmlParams);
-                                }
+        if (layerInfo != null && layerInfo.getResource() instanceof FeatureTypeInfo) {
+            FeatureTypeInfo ftInfo = (FeatureTypeInfo) layerInfo.getResource();
+            if (ftInfo.getStore() != null) {
+                Map<String, Serializable> connParams = ftInfo.getStore().getConnectionParameters();
+                if (connParams != null) {
+                    String dbtype = (String) connParams.get("dbtype");
+                    if ("app-schema".equals(dbtype)) {
+                        String mappingUrl = connParams.get("url").toString();
+                        if (gmlParamsCache != null && gmlParamsCache.containsKey(mappingUrl)) {
+                            gmlParams = gmlParamsCache.get(mappingUrl);
+                        } else {
+                            gmlParams.baseUrl = getBaseURL();
+                            gmlParams.wfsVersion = WFS11_VERSION;
+                            try {
+                                gmlParams.gmlVersion = findGmlVersion(ftInfo);
+                            } catch (IOException e) {
+                                LOGGER.log(Level.FINE, "Could not determine GML version, using default", e);
+                                gmlParams.gmlVersion = null;
+                            }
+                            if (gmlParamsCache != null) {
+                                gmlParamsCache.put(mappingUrl, gmlParams);
                             }
                         }
-                        // TODO: do other data stores have any special needs?
                     }
                 }
             }
         }
-
         return buildWfsLink(gmlParams);
     }
 
@@ -345,10 +331,10 @@ public class PreviewLayer {
 
         if (isAbstractFeatureType(featureType)) {
             String gmlNamespace = featureType.getName().getNamespaceURI();
-            if (org.geotools.gml3.GML.NAMESPACE.equals(gmlNamespace)) {
+            if (GML3_NAMESPACE.equals(gmlNamespace)) {
                 // GML 3.1.1
                 return "gml3";
-            } else if (org.geotools.gml3.v3_2.GML.NAMESPACE.equals(gmlNamespace)) {
+            } else if (GML32_NAMESPACE.equals(gmlNamespace)) {
                 // GML 3.2
                 return GML32OutputFormat.FORMATS.get(0);
             } else {
@@ -373,7 +359,6 @@ public class PreviewLayer {
             List<String> disabledServices = DisabledServiceResourceFilter.disabledServices(layerInfo.getResource());
             return disabledServices.stream().noneMatch(d -> d.equalsIgnoreCase(serviceName));
         }
-        // layer group and backward compatibility
         return true;
     }
 
@@ -385,8 +370,7 @@ public class PreviewLayer {
         Name qName = type.getName();
         String localPart = qName.getLocalPart();
         String ns = qName.getNamespaceURI();
-        if ("AbstractFeatureType".equals(localPart)
-                && (org.geotools.gml3.GML.NAMESPACE.equals(ns) || org.geotools.gml3.v3_2.GML.NAMESPACE.equals(ns))) {
+        if ("AbstractFeatureType".equals(localPart) && (GML3_NAMESPACE.equals(ns) || GML32_NAMESPACE.equals(ns))) {
             return true;
         } else {
             return false;
@@ -397,6 +381,7 @@ public class PreviewLayer {
         return this.buildWfsLink(new GMLOutputParams());
     }
 
+    /** Builds a GetFeature link using the provided output parameters. */
     String buildWfsLink(GMLOutputParams gmlParams) {
         Map<String, String> params = new LinkedHashMap<>();
         params.put("service", "WFS");
@@ -410,17 +395,15 @@ public class PreviewLayer {
         return ResponseUtils.buildURL(gmlParams.baseUrl, getPath("ows", false), params, URLType.SERVICE);
     }
 
+    /** WFS/GML output parameters used while building preview links. */
     class GMLOutputParams {
         String wfsVersion;
         String gmlVersion;
         String baseUrl;
 
         public GMLOutputParams() {
-            // by default, use WFS 1.0.0
-            wfsVersion = org.geotools.wfs.v1_0.WFS.getInstance().getVersion();
-            // by default, infer GML version from WFS version
+            wfsVersion = WFS.getInstance().getVersion();
             gmlVersion = null;
-            // by default, use virtual ows services
             baseUrl = getBaseURL();
         }
     }

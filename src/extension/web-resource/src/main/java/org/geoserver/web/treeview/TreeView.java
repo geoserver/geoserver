@@ -492,9 +492,11 @@ public class TreeView<T> extends Panel {
                         if (newSelectedNodes.size()
                                 != selectedNodeModel.getObject().size()) {
                             setSelectedNodesInternal(newSelectedNodes, target);
-                            target.add(TreeExpandableNodeView.this);
                         }
                     }
+                    // Always refresh this node so children are rendered/cleared
+                    // when expand state changes (lazy rendering)
+                    target.add(TreeExpandableNodeView.this);
                 }
             };
             add(cbExpand);
@@ -509,8 +511,14 @@ public class TreeView<T> extends Panel {
             super.onBeforeRender();
             final RepeatingView children = (RepeatingView) get("children");
             children.removeAll();
-            for (TreeNode<T> child : getNode().getChildren()) {
-                children.add(createTreeNodeView(child.getUniqueId(), new Model<>(child)));
+            // Only render children if the node is expanded (lazy rendering).
+            // Previously all children were rendered unconditionally, causing
+            // OutOfMemoryError when large directory trees (e.g. tile cache
+            // blob stores) were present in the resource store.
+            if (Boolean.TRUE.equals(getNode().getExpanded().getObject())) {
+                for (TreeNode<T> child : getNode().getChildren()) {
+                    children.add(createTreeNodeView(child.getUniqueId(), new Model<>(child)));
+                }
             }
         }
 

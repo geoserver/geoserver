@@ -8,8 +8,8 @@ import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geotools.api.filter.Filter;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.ItemReader;
 import org.springframework.core.io.Resource;
 
 /**

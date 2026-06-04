@@ -6,13 +6,27 @@ package org.geoserver.test;
 
 import java.util.Optional;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 /** Testing for Coordinates formatting configurations on WFS GML 3.1 & 3.2 on complex features */
 public class CoordinatesFormattingTest extends StationsAppSchemaTestSupport {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Test
     public void testCoordinateFormatWfs11() throws Exception {

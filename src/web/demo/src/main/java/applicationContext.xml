@@ -17,6 +17,9 @@
   <bean id="previewHomePageContentProvider"
         class="org.geoserver.web.demo.PreviewHomePageContentProvider"/>
 
+  <bean id="commonPreviewSectionProvider"
+        class="org.geoserver.web.demo.CommonPreviewSectionProvider"/>
+
   <bean id="layerListDemo" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="layerListDemo"/>
     <property name="titleKey" value="MapPreviewPage.title"/>
@@ -42,6 +45,14 @@
     <property name="id" value="gml"/>
     <property name="titleKey" value="gml.title"/>
     <property name="order" value="20"/>
+    <property name="geoserver">
+      <ref bean="geoServer"/>
+    </property>
+  </bean>
+  <bean id="geoJSONPreview" class="org.geoserver.web.demo.GeoJSONFormatLink">
+    <property name="id" value="geojson"/>
+    <property name="titleKey" value="geojson.title"/>
+    <property name="order" value="25"/>
     <property name="geoserver">
       <ref bean="geoServer"/>
     </property>

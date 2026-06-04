@@ -15,7 +15,12 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.ows.xml.v1_0.OWS;
+import org.geoserver.test.DevModeEntityResolver;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.filter.v1_1.OGC;
+import org.geotools.util.NullEntityResolver;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -79,6 +84,16 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
                 "1",
                 "count(//ows:Operation[@name='GetDomain']/ows:Parameter[@name='PropertyName' and ows:Value = 'dc:title'])",
                 dom);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
     }
 
     @Test

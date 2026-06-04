@@ -5,6 +5,7 @@
 package org.geoserver.backuprestore.writer;
 
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
@@ -26,15 +27,21 @@ import org.geoserver.catalog.impl.ResolvingProxy;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geotools.util.logging.Logging;
 import org.jspecify.annotations.NonNull;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.core.io.WritableResource;
 
 /**
  * Concrete Spring Batch {@link ItemWriter}.
  *
  * <p>Writes unmarshalled items into the temporary {@link Catalog} in memory.
+ *
+ * <p>An existing catalog object is matched first by id (when the archive preserved ids, i.e. it was produced with
+ * {@code BK_PRESERVE_IDS}) and then by name. This way an id-based restore into the same instance is an idempotent
+ * no-op, while a migration into a foreign catalog (whose ids never collide) falls back to the name check and adds the
+ * object keeping its original id. When the archive carries no ids (the legacy default) the id lookup short-circuits to
+ * {@code null} and the behaviour is exactly the previous name-based one.
  *
  * @author Alessio Fabiani, GeoSolutions
  */
@@ -51,6 +58,14 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
         if (this.getXp() == null) {
             setXp(this.xstream.getXStream());
         }
+    }
+
+    /**
+     * Looks an object up by its (preserved) id, or returns {@code null} when the id is absent - i.e. a legacy
+     * id-stripped archive - so the caller transparently falls back to the name-based lookup.
+     */
+    private static <X> X findById(String id, Function<String, X> byId) {
+        return id != null ? byId.apply(id) : null;
     }
 
     @SuppressWarnings("unchecked")
@@ -88,8 +103,10 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
     private void write(LayerGroupInfo layerGroupInfo) {
         try {
-            getCatalog().add(layerGroupInfo);
-            getCatalog().save(getCatalog().getLayerGroup(layerGroupInfo.getId()));
+            if (findById(layerGroupInfo.getId(), getCatalog()::getLayerGroup) == null) {
+                getCatalog().add(layerGroupInfo);
+                getCatalog().save(getCatalog().getLayerGroup(layerGroupInfo.getId()));
+            }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Exception writting layer group : " + layerGroupInfo, e);
             if (getCurrentJobExecution() != null) {
@@ -99,26 +116,29 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(StyleInfo styleInfo) {
-        // Use workspace-aware lookup for workspace-specific styles
-        WorkspaceInfo ws = styleInfo.getWorkspace();
-        // Resolve workspace proxy to actual workspace so the XML is written with ID reference
-        // instead of name reference. This is critical for GeoServer to load the style correctly
-        // on restart (CatalogLoaderSanitizer.validate() compares workspace IDs).
-        if (ws != null) {
-            WorkspaceInfo resolvedWs = ResolvingProxy.resolve(getCatalog(), ws);
-            if (resolvedWs != null) {
-                // Unwrap ModificationProxy to access StyleInfoImpl directly,
-                // since styleInfo may be wrapped in a proxy during restore.
-                StyleInfo unwrapped = ModificationProxy.unwrap(styleInfo);
-                if (unwrapped instanceof StyleInfoImpl) {
-                    ((StyleInfoImpl) unwrapped).setWorkspace(resolvedWs);
+        StyleInfo source = findById(styleInfo.getId(), getCatalog()::getStyle);
+        if (source == null) {
+            // Use workspace-aware lookup for workspace-specific styles
+            WorkspaceInfo ws = styleInfo.getWorkspace();
+            // Resolve workspace proxy to actual workspace so the XML is written with ID reference
+            // instead of name reference. This is critical for GeoServer to load the style correctly
+            // on restart (CatalogLoaderSanitizer.validate() compares workspace IDs).
+            if (ws != null) {
+                WorkspaceInfo resolvedWs = ResolvingProxy.resolve(getCatalog(), ws);
+                if (resolvedWs != null) {
+                    // Unwrap ModificationProxy to access StyleInfoImpl directly,
+                    // since styleInfo may be wrapped in a proxy during restore.
+                    StyleInfo unwrapped = ModificationProxy.unwrap(styleInfo);
+                    if (unwrapped instanceof StyleInfoImpl) {
+                        ((StyleInfoImpl) unwrapped).setWorkspace(resolvedWs);
+                    }
+                    ws = resolvedWs;
                 }
-                ws = resolvedWs;
             }
+            source = (ws != null)
+                    ? getCatalog().getStyleByName(ws, styleInfo.getName())
+                    : getCatalog().getStyleByName(styleInfo.getName());
         }
-        StyleInfo source = (ws != null)
-                ? getCatalog().getStyleByName(ws, styleInfo.getName())
-                : getCatalog().getStyleByName(styleInfo.getName());
         if (source == null) {
             getCatalog().add(styleInfo);
             getCatalog().save(getCatalog().getStyle((styleInfo).getId()));
@@ -126,17 +146,20 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(LayerInfo layerInfo) {
-        if (layerInfo.getName() != null) {
-            LayerInfo source = getCatalog().getLayerByName(layerInfo.getName());
-            if (source == null) {
-                getCatalog().add(layerInfo);
-                getCatalog().save(getCatalog().getLayer(layerInfo.getId()));
-            }
+        LayerInfo source = findById(layerInfo.getId(), getCatalog()::getLayer);
+        if (source == null && layerInfo.getName() != null) {
+            source = getCatalog().getLayerByName(layerInfo.getName());
+        }
+        if (source == null && layerInfo.getName() != null) {
+            getCatalog().add(layerInfo);
+            getCatalog().save(getCatalog().getLayer(layerInfo.getId()));
         }
     }
 
     private void write(ResourceInfo resourceInfo) {
-        if (getCatalog().getResourceByName(resourceInfo.getName(), FeatureTypeInfo.class) == null
+        ResourceInfo source = findById(resourceInfo.getId(), id -> getCatalog().getResource(id, ResourceInfo.class));
+        if (source == null
+                && getCatalog().getResourceByName(resourceInfo.getName(), FeatureTypeInfo.class) == null
                 && getCatalog().getResourceByName(resourceInfo.getName(), CoverageInfo.class) == null) {
             Class<? extends ResourceInfo> clz = null;
             if (resourceInfo instanceof FeatureTypeInfo) {
@@ -150,7 +173,10 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(CoverageStoreInfo csInfo) {
-        CoverageStoreInfo source = getCatalog().getCoverageStoreByName((csInfo).getName());
+        CoverageStoreInfo source = findById(csInfo.getId(), getCatalog()::getCoverageStore);
+        if (source == null) {
+            source = getCatalog().getCoverageStoreByName((csInfo).getName());
+        }
         if (source == null) {
             getCatalog().add(csInfo);
             getCatalog().save(getCatalog().getCoverageStore((csInfo).getId()));
@@ -158,7 +184,10 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(DataStoreInfo dsInfo) {
-        DataStoreInfo source = getCatalog().getDataStoreByName(dsInfo.getName());
+        DataStoreInfo source = findById(dsInfo.getId(), getCatalog()::getDataStore);
+        if (source == null) {
+            source = getCatalog().getDataStoreByName(dsInfo.getName());
+        }
         if (source == null) {
             getCatalog().add(dsInfo);
             getCatalog().save(getCatalog().getDataStore(dsInfo.getId()));
@@ -166,7 +195,10 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(WMSStoreInfo wmsInfo) {
-        WMSStoreInfo source = getCatalog().getWMSStoreByName(wmsInfo.getName());
+        WMSStoreInfo source = findById(wmsInfo.getId(), getCatalog()::getWMSStore);
+        if (source == null) {
+            source = getCatalog().getWMSStoreByName(wmsInfo.getName());
+        }
         if (source == null) {
             getCatalog().add(wmsInfo);
             getCatalog().save(getCatalog().getWMSStore(wmsInfo.getId()));
@@ -174,7 +206,10 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(WMTSStoreInfo wmtsInfo) {
-        WMTSStoreInfo source = getCatalog().getWMTSStoreByName(wmtsInfo.getName());
+        WMTSStoreInfo source = findById(wmtsInfo.getId(), getCatalog()::getWMTSStore);
+        if (source == null) {
+            source = getCatalog().getWMTSStoreByName(wmtsInfo.getName());
+        }
         if (source == null) {
             getCatalog().add(wmtsInfo);
             getCatalog().save(getCatalog().getWMTSStore(wmtsInfo.getId()));
@@ -182,7 +217,10 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(NamespaceInfo nsInfo) {
-        NamespaceInfo source = getCatalog().getNamespaceByPrefix((nsInfo).getPrefix());
+        NamespaceInfo source = findById(nsInfo.getId(), getCatalog()::getNamespace);
+        if (source == null) {
+            source = getCatalog().getNamespaceByPrefix((nsInfo).getPrefix());
+        }
         if (source == null) {
             getCatalog().add(nsInfo);
             getCatalog().save(getCatalog().getNamespace((nsInfo).getId()));
@@ -190,7 +228,10 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     }
 
     private void write(WorkspaceInfo wsInfo) {
-        WorkspaceInfo source = getCatalog().getWorkspaceByName(wsInfo.getName());
+        WorkspaceInfo source = findById(wsInfo.getId(), getCatalog()::getWorkspace);
+        if (source == null) {
+            source = getCatalog().getWorkspaceByName(wsInfo.getName());
+        }
         if (source == null) {
             getCatalog().add(wsInfo);
             getCatalog().save(getCatalog().getWorkspace(wsInfo.getId()));

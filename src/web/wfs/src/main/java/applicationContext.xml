@@ -50,5 +50,7 @@
 
   <bean class="org.geoserver.wfs.web.WFSServiceDescriptionProvider">
   </bean>
+
+  <bean id="wfsPreviewSectionProvider" class="org.geoserver.wfs.web.WFSPreviewSectionProvider"/>
   
 </beans>

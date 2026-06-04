@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.batik.svggen.SVGGeneratorContext;
@@ -28,6 +27,7 @@ import org.geoserver.wms.map.MaxErrorEnforcer;
 import org.geoserver.wms.map.RenderExceptionStrategy;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 
 /**
@@ -186,9 +186,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
     private SVGGeneratorContext setupContext() throws FactoryConfigurationError, ParserConfigurationException {
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-        DocumentBuilder db = dbf.newDocumentBuilder();
+        DocumentBuilder db = XMLUtils.newDocumentBuilder();
 
         // Create an instance of org.w3c.dom.Document
         String svgNamespaceURI = "http://www.w3.org/2000/svg";

@@ -9,6 +9,7 @@ import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geoserver.web.util.WebUtils.toResourceName;
 
 import com.google.common.base.Stopwatch;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,9 +17,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.Localizer;
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -95,19 +97,19 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
             }
         }
 
-        ListView<BookmarkablePageLink> catalogLinks(String id) {
+        ListView<Link<Void>> catalogLinks(String id) {
 
-            LoadableDetachableModel<List<BookmarkablePageLink>> links = new LoadableDetachableModel<>() {
+            LoadableDetachableModel<List<Link<Void>>> links = new LoadableDetachableModel<>() {
                 @Override
-                protected List<BookmarkablePageLink> load() {
+                protected List<Link<Void>> load() {
                     GeoServerHomePage homePage = (GeoServerHomePage) LinksPanel.this.getPage();
                     return generateCatalogLinks(homePage);
                 }
             };
             return new ListView<>(id, links) {
                 @Override
-                protected void populateItem(ListItem<BookmarkablePageLink> item) {
-                    BookmarkablePageLink link = item.getModelObject();
+                protected void populateItem(ListItem<Link<Void>> item) {
+                    Link<Void> link = item.getModelObject();
                     item.add(link);
                 }
             };
@@ -119,18 +121,20 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
          * @param homePage
          * @return list of catalog links for administrator.
          */
-        List<BookmarkablePageLink> generateCatalogLinks(GeoServerHomePage homePage) {
+        List<Link<Void>> generateCatalogLinks(GeoServerHomePage homePage) {
             catalogCounts(homePage);
             PublishedInfo publishedInfo = homePage.getPublishedInfo();
             WorkspaceInfo workspaceInfo = homePage.getWorkspaceInfo();
 
-            List<BookmarkablePageLink> pageLinks = new ArrayList<>();
+            PageParameters homeReturnParams = snapshotHomeReturnParams(homePage);
+
+            List<Link<Void>> pageLinks = new ArrayList<>();
 
             Localizer localizer = getLocalizer();
 
             // LAYERS
             if (layerCount == 0 && storesCount > 0) {
-                BookmarkablePageLink addLayer = new BookmarkablePageLink<>("link", NewLayerPage.class);
+                Link<Void> addLayer = new HomeReturnPageLink("link", NewLayerPage.class, null, homeReturnParams);
                 addLayer.add(new Label("title", localizer.getString("addLayers", this)));
                 pageLinks.add(addLayer);
             } else if (layerCount == 1 && publishedInfo instanceof LayerInfo) {
@@ -143,15 +147,15 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
                                         .getStore()
                                         .getWorkspace()
                                         .getName());
-                BookmarkablePageLink layerEdit =
-                        new BookmarkablePageLink<>("link", ResourceConfigurationPage.class, editLayersParams);
+                Link<Void> layerEdit = new HomeReturnPageLink(
+                        "link", ResourceConfigurationPage.class, editLayersParams, homeReturnParams);
                 layerEdit.add(new Label("title", localizer.getString("layersEdit", this)));
                 pageLinks.add(layerEdit);
             }
             if (layerCount > 1
                     || (layerCount == 1 && (publishedInfo == null || publishedInfo instanceof LayerGroupInfo))) {
-                BookmarkablePageLink layersLink =
-                        new BookmarkablePageLink<>("link", LayerPage.class, homePage.getPageParameters());
+                Link<Void> layersLink =
+                        new HomeReturnPageLink("link", LayerPage.class, homePage.getPageParameters(), homeReturnParams);
                 layersLink.add(
                         new Label("title", new StringResourceModel("layersCount", this).setParameters(layerCount)));
                 pageLinks.add(layersLink);
@@ -163,8 +167,8 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
                 if (workspaceInfo != null) {
                     addGroupParams.add(LayerGroupEditPage.WORKSPACE, workspaceInfo.getName());
                 }
-                BookmarkablePageLink addGroup =
-                        new BookmarkablePageLink<>("link", LayerGroupEditPage.class, addGroupParams);
+                Link<Void> addGroup =
+                        new HomeReturnPageLink("link", LayerGroupEditPage.class, addGroupParams, homeReturnParams);
                 addGroup.add(new Label("title", localizer.getString("addGroups", this)));
                 addGroup.setEnabled(publishedInfo == null);
                 pageLinks.add(addGroup);
@@ -175,16 +179,16 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
                 if (workspaceInfo != null) {
                     editGroupParams.add(LayerGroupEditPage.WORKSPACE, workspaceInfo.getName());
                 }
-                BookmarkablePageLink groupEdit =
-                        new BookmarkablePageLink<>("link", LayerGroupEditPage.class, editGroupParams);
+                Link<Void> groupEdit =
+                        new HomeReturnPageLink("link", LayerGroupEditPage.class, editGroupParams, homeReturnParams);
                 groupEdit.add(new Label("title", localizer.getString("groupsEdit", this)));
 
                 pageLinks.add(groupEdit);
             }
 
             if (groupCount > 1 || (groupCount == 1 && publishedInfo == null)) {
-                BookmarkablePageLink groupsLink =
-                        new BookmarkablePageLink<>("link", LayerGroupPage.class, homePage.getPageParameters());
+                Link<Void> groupsLink = new HomeReturnPageLink(
+                        "link", LayerGroupPage.class, homePage.getPageParameters(), homeReturnParams);
                 groupsLink.add(
                         new Label("title", new StringResourceModel("groupsCount", this).setParameters(groupCount)));
                 pageLinks.add(groupsLink);
@@ -196,7 +200,8 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
                 if (storesCount == 0 && wsCount > 0) {
                     PageParameters storeParams = new PageParameters();
                     if (workspaceInfo != null) storeParams.add("workspace", workspaceInfo.getName());
-                    BookmarkablePageLink addStore = new BookmarkablePageLink<>("link", NewDataPage.class, storeParams);
+                    Link<Void> addStore =
+                            new HomeReturnPageLink("link", NewDataPage.class, storeParams, homeReturnParams);
                     addStore.add(new Label("title", localizer.getString("addStores", homePage)));
                     pageLinks.add(addStore);
                 } else if (publishedInfo != null && publishedInfo instanceof LayerInfo) {
@@ -208,16 +213,20 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
                     storeParams.add(
                             DataAccessEditPage.WS_NAME, store.getWorkspace().getName());
 
-                    BookmarkablePageLink editStore;
+                    Link<Void> editStore;
                     // edit layer if we are showing a layer info
                     if (store instanceof DataStoreInfo) {
-                        editStore = new BookmarkablePageLink<>("link", DataAccessEditPage.class, storeParams);
+                        editStore =
+                                new HomeReturnPageLink("link", DataAccessEditPage.class, storeParams, homeReturnParams);
                     } else if (store instanceof CoverageStoreInfo) {
-                        editStore = new BookmarkablePageLink<>("link", CoverageStoreEditPage.class, storeParams);
+                        editStore = new HomeReturnPageLink(
+                                "link", CoverageStoreEditPage.class, storeParams, homeReturnParams);
                     } else if (store instanceof WMSStoreInfo) {
-                        editStore = new BookmarkablePageLink<>("link", WMSStoreEditPage.class, storeParams);
+                        editStore =
+                                new HomeReturnPageLink("link", WMSStoreEditPage.class, storeParams, homeReturnParams);
                     } else if (store instanceof WMTSStoreInfo) {
-                        editStore = new BookmarkablePageLink<>("link", WMTSStoreEditPage.class, storeParams);
+                        editStore =
+                                new HomeReturnPageLink("link", WMTSStoreEditPage.class, storeParams, homeReturnParams);
                     } else {
                         editStore = null; // skip unknown store type
                     }
@@ -230,8 +239,8 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
 
             if (storesCount > 1
                     || (storesCount == 1 && (publishedInfo == null || publishedInfo instanceof LayerGroupInfo))) {
-                BookmarkablePageLink storesLink =
-                        new BookmarkablePageLink<>("link", StorePage.class, homePage.getPageParameters());
+                Link<Void> storesLink =
+                        new HomeReturnPageLink("link", StorePage.class, homePage.getPageParameters(), homeReturnParams);
                 storesLink.add(new Label(
                         "title", new StringResourceModel("storesCount", homePage).setParameters(storesCount)));
                 pageLinks.add(storesLink);
@@ -239,26 +248,71 @@ public class CatalogLinksHomePageContentProvider implements GeoServerHomePageCon
 
             // WORKSPACE
             if (wsCount == 0) {
-                BookmarkablePageLink addWorkspace = new BookmarkablePageLink<>("link", WorkspaceNewPage.class);
+                Link<Void> addWorkspace =
+                        new HomeReturnPageLink("link", WorkspaceNewPage.class, null, homeReturnParams);
                 addWorkspace.add(new Label("title", new StringResourceModel("addWorkspaces", homePage)));
                 pageLinks.add(addWorkspace);
             } else if (workspaceInfo != null) {
                 PageParameters params = new PageParameters();
                 params.add("workspace", workspaceInfo.getName());
 
-                BookmarkablePageLink editWorkspace =
-                        new BookmarkablePageLink<>("link", WorkspaceEditPage.class, params);
+                Link<Void> editWorkspace =
+                        new HomeReturnPageLink("link", WorkspaceEditPage.class, params, homeReturnParams);
                 editWorkspace.add(new Label("title", localizer.getString("workspaceEdit", homePage)));
                 pageLinks.add(editWorkspace);
             } else if (wsCount > 1 || (wsCount == 1 && workspaceInfo == null)) {
-                BookmarkablePageLink workspacesLink =
-                        new BookmarkablePageLink<>("link", WorkspacePage.class, homePage.getPageParameters());
+                Link<Void> workspacesLink = new HomeReturnPageLink(
+                        "link", WorkspacePage.class, homePage.getPageParameters(), homeReturnParams);
                 workspacesLink.add(
                         new Label("title", new StringResourceModel("workspaceCount", homePage).setParameters(wsCount)));
                 pageLinks.add(workspacesLink);
             }
 
             return pageLinks;
+        }
+
+        /**
+         * Copy of the home page URL parameters so cancel/save on a destination page can return to the same home context
+         * (see {@link GeoServerBasePage#doReturn()}).
+         */
+        private static PageParameters snapshotHomeReturnParams(GeoServerHomePage homePage) {
+            PageParameters hp = homePage.getPageParameters();
+            if (hp == null || hp.isEmpty()) {
+                return null;
+            }
+            return new PageParameters(hp);
+        }
+
+        /**
+         * Link that encodes {@link GeoServerHomePage} as the return destination in target page parameters, then
+         * navigates to the target page (same mechanism as {@link BreadcrumbNavigationPanel}). Uses Wicket {@link Link}
+         * listener navigation so {@link #onClick()} runs; a raw bookmarkable {@code href} would skip the server
+         * listener and would not attach the return destination.
+         */
+        private static final class HomeReturnPageLink extends Link<Void> {
+            @Serial
+            private static final long serialVersionUID = 1L;
+
+            private final Class<? extends Page> pageClass;
+            private final PageParameters targetParams;
+            private final PageParameters homeReturnParams;
+
+            HomeReturnPageLink(
+                    String wicketId,
+                    Class<? extends Page> pageClass,
+                    PageParameters targetParams,
+                    PageParameters homeReturnParams) {
+                super(wicketId);
+                this.pageClass = pageClass;
+                this.targetParams = targetParams != null ? new PageParameters(targetParams) : new PageParameters();
+                this.homeReturnParams = homeReturnParams;
+            }
+
+            @Override
+            public void onClick() {
+                GeoServerBasePage.addReturnDestination(targetParams, GeoServerHomePage.class, homeReturnParams);
+                setResponsePage(pageClass, targetParams);
+            }
         }
 
         private void catalogCounts(GeoServerHomePage homePage) {

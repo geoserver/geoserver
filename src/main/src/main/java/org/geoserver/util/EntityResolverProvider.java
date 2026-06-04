@@ -10,7 +10,9 @@ import java.util.HashSet;
 import java.util.Set;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.NullEntityResolver;
 import org.geotools.util.PreventLocalEntityResolver;
+import org.geotools.util.factory.Hints;
 import org.xml.sax.EntityResolver;
 
 /**
@@ -40,8 +42,16 @@ public class EntityResolverProvider {
      */
     private final AllowListEntityResolver ALLOWLIST_ENTITY_RESOLVER;
 
-    /** A entity resolver provider that always disables entity resolution */
-    public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER = new EntityResolverProvider(null);
+    /**
+     * Testing placeholder: an entity resolver provider that throws IllegalStateException if used, intended for use in
+     * test cases to ensure that {@link #setEntityResolver(EntityResolver)} is called prior to parsing.
+     */
+    public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER = new EntityResolverProvider();
+
+    /** Placeholder EntityResolverProvider used by {@code RESOLVE_DISABLED_PROVIDER}. */
+    protected EntityResolverProvider() {
+        this.ALLOWLIST_ENTITY_RESOLVER = new AllowListEntityResolver();
+    }
 
     public EntityResolverProvider(GeoServer geoServer) {
         this.ALLOWLIST_ENTITY_RESOLVER = new AllowListEntityResolver(geoServer);
@@ -50,12 +60,15 @@ public class EntityResolverProvider {
     /**
      * Provide default EntityResolver, used if global settings not provided explicit instructions.
      *
+     * <p>This method will also stage the provided EntityResolver to {@code GeoTools.init(hints)}.
+     *
      * <p>Primarily used to stage an EntityResolver for test cases or local development.
      *
-     * @param resolver Entity resolver
+     * @param resolver Entity resolver, if {@code} then {@code NullEntityResolver.INSTANCE} is used.
      */
     public static void setEntityResolver(EntityResolver resolver) {
-        entityResolver = resolver;
+        entityResolver = resolver != null ? resolver : NullEntityResolver.INSTANCE;
+        Hints.putSystemDefault(Hints.ENTITY_RESOLVER, entityResolver);
     }
 
     /**
@@ -74,7 +87,7 @@ public class EntityResolverProvider {
     public EntityResolver getEntityResolver() {
         if (Boolean.parseBoolean(GeoServerExtensions.getProperty(ENTITY_RESOLUTION_UNRESTRICTED))) {
             // XML parser is unrestricted, and can access any XSD location
-            return null;
+            return NullEntityResolver.INSTANCE;
         } else if (entityResolver != null) {
             // override provided (usually by a test case)
             return entityResolver;

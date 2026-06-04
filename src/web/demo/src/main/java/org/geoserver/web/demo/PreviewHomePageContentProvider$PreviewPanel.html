@@ -2,30 +2,32 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
+    <h3><wicket:message key="preview">preview</wicket:message></h3>
     <div class="gs-panel-PreviewHomePageContentProvider_PreviewPanel">
-        <div class="gs-form">
-            <div wicket:id="commonPreview" class="gs-form-group">
-                <label><wicket:message key="commonFormats">Common Formats</wicket:message></label>
-                <div class="linkBlock">
-                    <span wicket:id="commonFormats">
-                        <a class="text-nowrap"  target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
-                    </span>
+        <div class="preview-filter">
+            <input
+                    class="preview-filter-input"
+                    type="search"
+                    wicket:message="placeholder:PreviewHomePageContentProvider.filterPlaceholder" />
+        </div>
+        <div class="gs-form" wicket:id="sections">
+            <div wicket:id="section" class="gs-form-group preview-section">
+                <div class="preview-section-header">
+                    <label wicket:id="sectionTitle">Section</label>
+                    <button
+                            type="button"
+                            class="preview-more-toggle"
+                            aria-expanded="false"
+                            wicket:message="data-expand-label:PreviewHomePageContentProvider.expandSection;data-collapse-label:PreviewHomePageContentProvider.collapseSection;aria-label:PreviewHomePageContentProvider.expandSection;title:PreviewHomePageContentProvider.expandSection">
+                        <i class="gs-icon gs-icon-bullet-arrow-right"></i>
+                    </button>
                 </div>
-            </div>
-            <div wicket:id="mapPreview" class="gs-form-group">
-                <label><wicket:message key="mapFormats">Mapping Formats</wicket:message></label>
-                <div class="linkBlock">
-                    <span wicket:id="mapFormats">
-                        <a class="text-nowrap" target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
-                    </span>
-                </div>
-            </div>
-            <div wicket:id="vectorPreview" class="gs-form-group">
-                <label><wicket:message key="vectorFormats">Vector Formats</wicket:message></label>
-                <div class="linkBlock">
-                    <span wicket:id="vectorFormats">
-                        <a class="text-nowrap" target="_blank" href="#" wicket:id="theLink">theTitle</a>&#160;
-                    </span>
+                <div class="preview-section-content">
+                    <div class="preview-link-items">
+                        <div class="linkBlock" wicket:id="previewLink">
+                            <a class="text-nowrap" target="_blank" href="#" wicket:id="theLink">theTitle</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

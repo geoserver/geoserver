@@ -42,6 +42,7 @@ import org.geotools.api.filter.Filter;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.Version;
+import org.geotools.xml.XMLUtils;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -271,14 +272,13 @@ public class Ogr2OgrFormatTest {
 
     /** Utility method to print out a dom. */
     protected void print(Document dom) throws Exception {
-        TransformerFactory txFactory = TransformerFactory.newInstance();
+        TransformerFactory txFactory = XMLUtils.newTransformerFactory();
         try {
-            txFactory.setAttribute("{http://xml.apache.org/xalan}indent-number", Integer.valueOf(2));
+            txFactory.setAttribute("indent-number", 2);
         } catch (Exception e) {
             // some
         }
-
-        Transformer tx = txFactory.newTransformer();
+        Transformer tx = XMLUtils.newTransformer(txFactory);
         tx.setOutputProperty(OutputKeys.METHOD, "xml");
         tx.setOutputProperty(OutputKeys.INDENT, "yes");
 
@@ -299,14 +299,15 @@ public class Ogr2OgrFormatTest {
     /**
      * Parses a stream into a dom.
      *
-     * @param skipDTD If true, will skip loading and validating against the associated DTD
+     * @param input Input stream to parse into document
+     * @return dom
      */
     protected Document dom(InputStream input) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
         factory.setNamespaceAware(true);
         factory.setValidating(false);
 
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
         return builder.parse(input);
     }
 }

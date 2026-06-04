@@ -2,7 +2,7 @@
 
 ## Upgrading GeoServer 3.0.0 Guidance
 
-GeoServer 3.0.x is scheduled for release in April, 2026.
+GeoServer 3.0.x is scheduled for release in April/May 2026.
 
 The upgrade to GeoServer 3.0 is seamless maintaining the same data directory and Java 17 environment as used previously for GeoServer 2.28.
 
@@ -152,11 +152,11 @@ The general GeoServer upgrade process is as follows:
 
 5. Always check the upgrade guidance, as upgrading GeoServer may not be reversible, since:
 
-   - newer versions of GeoServer may make backwards-incompatible changes to the data directory
-     (when upgrading from 2.20 to 2.21 the logging library changed), or
-     
-   - Newer versions may change what extensions are provided
-     (as is the case when moving from 2.28 to 3.0 with the OIDC plugin replacing the Keycloak plugin).
+     - newer versions of GeoServer may make backwards-incompatible changes to the data directory
+       (when upgrading from 2.20 to 2.21 the logging library changed), or
+       
+     - Newer versions may change what extensions are provided
+       (as is the case when moving from 2.28 to 3.0 with the OIDC plugin replacing the Keycloak plugin).
 
 6.  Be sure to download and install each extension used by your prior installation.
 
@@ -264,7 +264,7 @@ If it has been a while since you have upgraded GeoServer be cautious when upgrad
       
             *Review the logs during startup, and test to ensure the application is working as expected.*
      
-        - Updating from GeoSerer 2.26.4 to GeoServer 2.27.3.
+        - Updating from GeoServer 2.26.4 to GeoServer 2.27.3.
           
             The application property `GEOSERVER_DATA_DIR_LOADER_ENABLED` is noted as an option if any deadlock occurs during startup due to an improvement in startup performance.
             

@@ -2300,7 +2300,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Override
     protected String getLogConfiguration() {
-        return "DEFAULT_LOGGING";
+        return "QUIET_LOGGING";
     }
 
     @Test

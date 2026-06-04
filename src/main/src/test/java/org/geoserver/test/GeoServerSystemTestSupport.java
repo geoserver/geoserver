@@ -128,9 +128,11 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.NameImpl;
-import org.geotools.util.PreventLocalEntityResolver;
+import org.geotools.util.NullEntityResolver;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Log4J2LoggerFactory;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.XSD;
 import org.jsoup.Jsoup;
 import org.junit.After;
@@ -218,65 +220,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * In IDEs during development GeoTools sources can be in the classpath of GeoServer tests, this resolver allows them
      * to be resolved while blocking the rest
+     *
+     * @deprecated Moved to DevModeEntityResolver.INSTANCE
      */
-    public static final EntityResolver RESOLVE_DISABLED_PROVIDER_DEVMODE = new PreventLocalEntityResolver() {
-        @Override
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(null, systemId) || isDataDirectory(systemId)) {
-                return null;
-            }
-
-            return super.resolveEntity(publicId, systemId);
-        }
-
-        @Override
-        public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
-                throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(baseURI, systemId) || isDataDirectory(systemId)) {
-                return null;
-            }
-
-            return super.resolveEntity(name, publicId, baseURI, systemId);
-        }
-
-        private boolean isLocalGeoToolsSchema(String baseURI, String systemId) {
-            if (systemId.startsWith("file:/")) {
-                return isLocalGeotoolsSchema(systemId);
-            } else if (!systemId.contains("://") && baseURI != null) {
-                // location relative to a baseURI
-                return isLocalGeotoolsSchema(baseURI);
-            }
-            return false;
-        }
-
-        private boolean isLocalGeotoolsSchema(String path) {
-            // Windows case insensitive filesystem work-around
-            path = path.toLowerCase();
-            // Match the GeoTools locations having schemas we resolve against
-            return path.matches(".*modules[\\\\/]extension[\\\\/]xsd[\\\\/].*\\.xsd")
-                    || path.matches(".*modules[\\\\/]ogc[\\\\/].*\\.xsd");
-        }
-
-        private boolean isDataDirectory(String systemId) {
-            if (applicationContext != null) {
-                GeoServerDataDirectory dd = applicationContext.getBean(GeoServerDataDirectory.class);
-                try {
-                    String path = dd.getRoot("workspaces").dir().getCanonicalPath();
-                    if (systemId.startsWith("file:")) systemId = systemId.substring(5);
-                    String canonicalSystemId = new File(systemId).getCanonicalPath();
-                    return canonicalSystemId.startsWith(path);
-                } catch (IOException e) {
-                    return false;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return "PreventLocalEntityResolver";
-        }
-    };
+    @Deprecated
+    public static final EntityResolver RESOLVE_DISABLED_PROVIDER_DEVMODE = DevModeEntityResolver.INSTANCE;
 
     @Override
     protected final void setUp(SystemTestData testData) throws Exception {
@@ -303,7 +251,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         Logging.ALL.setLoggerFactory("org.geotools.util.logging.Log4J2LoggerFactory");
         GeoServerResourceLoader loader = new GeoServerResourceLoader(testData.getDataDirectoryRoot());
         LoggingUtils.initLogging(loader, getLogConfiguration(), false, true, null);
-
+        if (isQuietTests()) {
+            Logging.getLogger("org.geoserver").setLevel(Level.SEVERE);
+            Logging.getLogger("org.vfny.geoserver").setLevel(Level.SEVERE);
+            Logging.getLogger("org.geotools").setLevel(Level.SEVERE);
+        }
         setUpTestData(testData);
 
         // put the mock http server in test mode
@@ -345,8 +297,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
             dispatcher = buildDispatcher();
 
-            // Allow resolution of XSDs from local file system
-            EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
+            // Connect DevModeEntityResolver
+            EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
 
             // Use GeoServer's ImageN ImagingListener
             GeoserverInitStartupListener.initImageNDefaultInstance();
@@ -1568,20 +1520,37 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
 
         if (skipDTD) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            try {
+                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            } catch (IllegalArgumentException notSupported) {
+                LOGGER.fine("Parser does not support ACCESS_EXTERNAL_SCHEMA: " + notSupported.getMessage());
+            }
+            try {
+                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            } catch (IllegalArgumentException notSupported) {
+                LOGGER.fine("Parser does not support ACCESS_EXTERNAL_SCHEMA: " + notSupported.getMessage());
+            }
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", true);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", true);
 
             factory.setNamespaceAware(true);
             factory.setValidating(false);
 
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            builder.setEntityResolver(new EmptyResolver());
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
+            builder.setEntityResolver(EmptyResolver.INSTANCE);
             Document dom = builder.parse(input);
 
             return dom;
         } else {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            Hints hints = new Hints(Hints.ENTITY_RESOLVER, NullEntityResolver.INSTANCE);
+
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory(hints);
             factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory, hints);
             return builder.parse(input);
         }
     }
@@ -2061,6 +2030,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @author Andrea Aime - TOPP
      */
     static class EmptyResolver implements org.xml.sax.EntityResolver {
+        public static final EmptyResolver INSTANCE = new EmptyResolver();
+
         @Override
         public InputSource resolveEntity(String publicId, String systemId)
                 throws org.xml.sax.SAXException, IOException {
@@ -2074,7 +2045,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     protected void checkValidationErorrs(Document dom, String schemaLocation) throws SAXException, IOException {
-        final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = factory.newSchema(new File(schemaLocation));
         checkValidationErrors(dom, schema);
     }
@@ -2315,9 +2286,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected void print(Document document, OutputStream output) {
         try {
-            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            TransformerFactory txFactory = XMLUtils.newTransformerFactory();
+            txFactory.setAttribute("indent-number", 2);
+
+            Transformer tx = XMLUtils.newTransformer(txFactory);
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
-            tx.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             tx.transform(new DOMSource(document), new StreamResult(output));
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -26,15 +26,15 @@ import java.util.Comparator;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geotools.util.logging.Logging;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStream;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.ResourceAware;
-import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.batch.item.file.MultiResourceItemReader;
-import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemStream;
+import org.springframework.batch.infrastructure.item.ItemStreamException;
+import org.springframework.batch.infrastructure.item.ParseException;
+import org.springframework.batch.infrastructure.item.ResourceAware;
+import org.springframework.batch.infrastructure.item.UnexpectedInputException;
+import org.springframework.batch.infrastructure.item.file.MultiResourceItemReader;
+import org.springframework.batch.infrastructure.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -81,7 +81,7 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
 
     /**
      * In strict mode the reader will throw an exception on
-     * {@link #open(org.springframework.batch.item.ExecutionContext)} if there are no resources to read.
+     * {@link #open(org.springframework.batch.infrastructure.item.ExecutionContext)} if there are no resources to read.
      *
      * @param strict false by default
      */

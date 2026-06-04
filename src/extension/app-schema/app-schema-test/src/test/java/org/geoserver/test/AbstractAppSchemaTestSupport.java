@@ -30,7 +30,6 @@ import java.util.TimeZone;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -60,6 +59,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.PreparedFilterToSQL;
 import org.geotools.jdbc.PreparedStatementSQLDialect;
 import org.geotools.jdbc.SQLDialect;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.resolver.SchemaCache;
 import org.geotools.xml.resolver.SchemaCatalog;
 import org.geotools.xml.resolver.SchemaResolver;
@@ -372,7 +372,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      */
     protected void prettyPrint(Document document, OutputStream output) {
         try {
-            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            Transformer tx = XMLUtils.newTransformer();
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
             tx.transform(new DOMSource(document), new StreamResult(output));
         } catch (Exception e) {
@@ -575,8 +575,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      * @return String representation of xml document
      */
     protected static String toString(Document document) throws TransformerException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
+        Transformer transformer = XMLUtils.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(document), new StreamResult(writer));

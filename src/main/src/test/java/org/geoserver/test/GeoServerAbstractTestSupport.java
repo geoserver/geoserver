@@ -73,6 +73,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.XSD;
 import org.kordamp.json.JSON;
 import org.kordamp.json.JSONSerializer;
@@ -815,25 +816,25 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     protected Document dom(InputStream input, boolean skipDTD)
             throws ParserConfigurationException, SAXException, IOException {
         if (skipDTD) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
             factory.setNamespaceAware(true);
             factory.setValidating(false);
 
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
             builder.setEntityResolver(new EmptyResolver());
             Document dom = builder.parse(input);
 
             return dom;
         } else {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
             factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
             return builder.parse(input);
         }
     }
 
     /**
-     * Resolves everything to an empty xml document, useful for skipping errors due to missing dtds and the like
+     * Resolves everything to an empty xml document, useful for skipping errors due to missing DTDs and the like
      *
      * @author Andrea Aime - TOPP
      */
@@ -851,7 +852,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     }
 
     protected void checkValidationErorrs(Document dom, String schemaLocation) throws SAXException, IOException {
-        final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = factory.newSchema(new File(schemaLocation));
         checkValidationErrors(dom, schema);
     }
@@ -956,14 +957,14 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
     /** Utility method to print out a dom. */
     protected void print(Document dom) throws Exception {
-        TransformerFactory txFactory = TransformerFactory.newInstance();
+        TransformerFactory txFactory = XMLUtils.newTransformerFactory();
         try {
-            txFactory.setAttribute("{http://xml.apache.org/xalan}indent-number", Integer.valueOf(2));
+            txFactory.setAttribute("indent-number", 2);
         } catch (Exception e) {
             // some
         }
 
-        Transformer tx = txFactory.newTransformer();
+        Transformer tx = XMLUtils.newTransformer(txFactory);
         tx.setOutputProperty(OutputKeys.METHOD, "xml");
         tx.setOutputProperty(OutputKeys.INDENT, "yes");
 

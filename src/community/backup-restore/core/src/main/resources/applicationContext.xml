@@ -69,6 +69,11 @@
 		<constructor-arg ref="backupFacade" />
 		<property name="timeout" value="600000"/>
 	</bean>
+	<!-- PROTOTYPE: pre-flight restore validation step (BK_FAIL_ON_INVALID) -->
+	<bean id="validateRestoreTasklet" class="org.geoserver.backuprestore.tasklet.ValidateRestoreTasklet">
+		<constructor-arg ref="backupFacade" />
+		<property name="timeout" value="600000"/>
+	</bean>
 
 	<!-- Main Restore Job listeners -->
 	<bean id="restoreJobExecutionListener" class="org.geoserver.backuprestore.listener.RestoreJobExecutionListener">

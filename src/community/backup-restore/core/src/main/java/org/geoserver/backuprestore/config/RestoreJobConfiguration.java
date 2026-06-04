@@ -566,6 +566,17 @@ public class RestoreJobConfiguration {
                 .build();
     }
 
+    @Bean
+    public Step validateRestoreCatalog(
+            @Qualifier("jobRepository") JobRepository jobRepository,
+            @Qualifier("transactionManager") PlatformTransactionManager transactionManager,
+            @Qualifier("validateRestoreTasklet") Tasklet validateRestoreTasklet) {
+        return new StepBuilder("validateRestoreCatalog", jobRepository)
+                .tasklet(validateRestoreTasklet, transactionManager)
+                .allowStartIfComplete(true)
+                .build();
+    }
+
     // -------------------------------------------------------------------------------------------------------------
     // The restoreJob assembling the eleven steps with the fail / stop(restart=next) / next(*->next) transitions
     // reproduced from the XML. finalizeRestore is terminal (no outgoing transition).
@@ -587,6 +598,7 @@ public class RestoreJobConfiguration {
             @Qualifier("restoreGeoServerInfos") Step restoreGeoServerInfos,
             @Qualifier("restoreGeoServerSecurityManager") Step restoreGeoServerSecurityManager,
             @Qualifier("genericTaskletsRestore") Step genericTaskletsRestore,
+            @Qualifier("validateRestoreCatalog") Step validateRestoreCatalog,
             @Qualifier("finalizeRestore") Step finalizeRestore) {
 
         return new JobBuilder("restoreJob", jobRepository)
@@ -679,8 +691,17 @@ public class RestoreJobConfiguration {
                 .fail()
                 .from(genericTaskletsRestore)
                 .on("STOPPED")
-                .stopAndRestart(finalizeRestore)
+                .stopAndRestart(validateRestoreCatalog)
                 .from(genericTaskletsRestore)
+                .on("*")
+                .to(validateRestoreCatalog)
+                .from(validateRestoreCatalog)
+                .on("FAILED")
+                .fail()
+                .from(validateRestoreCatalog)
+                .on("STOPPED")
+                .stopAndRestart(finalizeRestore)
+                .from(validateRestoreCatalog)
                 .on("*")
                 .to(finalizeRestore)
                 .end()

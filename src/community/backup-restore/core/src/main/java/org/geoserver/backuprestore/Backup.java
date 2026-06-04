@@ -116,6 +116,13 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
 
     public static final String PARAM_BEST_EFFORT_MODE = "BK_BEST_EFFORT";
 
+    /**
+     * PROTOTYPE: when {@code true}, a restore runs a pre-flight validation pass over the fully-assembled restore
+     * catalog and ABORTS (job FAILED, so the live reload is skipped) if any catalog object is invalid. Default
+     * {@code false} — the pass only logs and records the findings as warnings.
+     */
+    public static final String PARAM_FAIL_ON_INVALID = "BK_FAIL_ON_INVALID";
+
     /* Jobs Context Keys **/
     public static final String BACKUP_JOB_NAME = "backupJob";
 
@@ -718,6 +725,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                             case PARAM_SKIP_GWC:
                             case PARAM_PRESERVE_IDS:
                             case PARAM_MERGE_SECURITY:
+                            case PARAM_FAIL_ON_INVALID:
                                 if (paramsBuilder.toJobParameters().getString(k) == null) {
                                     paramsBuilder.addString(k, booleanOptionValue(param.getValue()));
                                 }

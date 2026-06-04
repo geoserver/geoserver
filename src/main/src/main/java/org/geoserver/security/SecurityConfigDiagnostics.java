@@ -7,6 +7,9 @@ package org.geoserver.security;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 /**
  * Collects the non-fatal problems found while loading the persisted security configuration, so that the security
@@ -22,6 +25,8 @@ import java.util.List;
  * <p>The registry is rebuilt on every {@link GeoServerSecurityManager#reload() reload}.
  */
 public class SecurityConfigDiagnostics {
+
+    private static final Logger LOGGER = Logging.getLogger(SecurityConfigDiagnostics.class);
 
     /** The kind of security component that was disabled. */
     public enum ComponentType {
@@ -76,10 +81,29 @@ public class SecurityConfigDiagnostics {
 
     public synchronized void addDisabledComponent(DisabledComponent component) {
         disabledComponents.add(component);
+        // CONFIG-level log so the migration is visible to operators running headless (no web UI to show the
+        // home-page notice). One line per component disabled while tolerating a legacy / uninstalled-plugin config.
+        LOGGER.log(
+                Level.CONFIG,
+                () -> String.format(
+                        "Security migration applied: disabled %s \"%s\"%s%s - %s",
+                        component.type(),
+                        component.name(),
+                        component.alias() != null ? " (config <" + component.alias() + ">)" : "",
+                        component.sourcePlugin() != null ? " from " + component.sourcePlugin() : "",
+                        component.reason()));
     }
 
     public synchronized void addAffectedChain(AffectedChain chain) {
         affectedChains.add(chain);
+        LOGGER.log(
+                Level.CONFIG,
+                () -> String.format(
+                        "Security migration applied: filter chain \"%s\" altered - removed %s%s%s",
+                        chain.chainName(),
+                        chain.removedFilters(),
+                        chain.lostAuthenticator() ? "; chain lost its authenticator" : "",
+                        chain.accessDenied() ? "; injected fail-closed access-denied filter" : ""));
     }
 
     /** Returns an immutable snapshot of the disabled components. */

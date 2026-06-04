@@ -689,7 +689,8 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
                 Boolean restoreOptSkipSettings = ((CheckBox) form.get("restoreOptSkipSettings")).getModelObject();
                 hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"), Boolean.toString(restoreOptSkipSettings)));
+                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"),
+                        Boolean.toString(restoreOptSkipSettings)));
 
                 Boolean restoreOptPurgeResources = ((CheckBox) form.get("restoreOptPurgeResources")).getModelObject();
                 hints.add(new Hints(

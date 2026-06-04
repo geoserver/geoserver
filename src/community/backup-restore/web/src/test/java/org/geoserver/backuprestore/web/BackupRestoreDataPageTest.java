@@ -48,6 +48,7 @@ public class BackupRestoreDataPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("restoreForm:restoreOptSkipSecurity", CheckBox.class);
         tester.assertComponent("restoreForm:restoreOptSkipSettings", CheckBox.class);
         tester.assertComponent("restoreForm:restoreOptPurgeResources", CheckBox.class);
+        tester.assertComponent("restoreForm:restoreOptMergeSecurity", CheckBox.class);
     }
 
     @Test
@@ -112,11 +113,11 @@ public class BackupRestoreDataPageTest extends GeoServerWicketTestSupport {
     /** Restore counterpart of {@link #testBackupOptionHintsAcceptExplicitBooleans} (adds the purge-resources flag). */
     @Test
     public void testRestoreOptionHintsAcceptExplicitBooleans() {
-        Hints allOn = BackupRestoreDataPage.buildRestoreHints(true, true, true, true, true, true, true);
+        Hints allOn = BackupRestoreDataPage.buildRestoreHints(true, true, true, true, true, true, true, true);
         assertNotNull(allOn);
         assertFalse(allOn.isEmpty());
 
-        Hints allOff = BackupRestoreDataPage.buildRestoreHints(false, false, false, false, false, false, false);
+        Hints allOff = BackupRestoreDataPage.buildRestoreHints(false, false, false, false, false, false, false, false);
         assertNotNull(allOff);
         assertFalse(allOff.isEmpty());
     }

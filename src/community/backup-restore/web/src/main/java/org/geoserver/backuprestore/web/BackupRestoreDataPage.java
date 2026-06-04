@@ -495,6 +495,9 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("restoreOptSkipSecurity", new Model<Boolean>(true)));
         form.add(new CheckBox("restoreOptSkipSettings", new Model<Boolean>(true)));
         form.add(new CheckBox("restoreOptPurgeResources", new Model<Boolean>(true)));
+        // Opt-in: merge the archive's users/groups/roles into the target's existing security services instead of
+        // replacing the whole security folder (migration-safe across instances with different master passwords).
+        form.add(new CheckBox("restoreOptMergeSecurity", new Model<Boolean>(false)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
         form.add(new AjaxSubmitLink("newRestoreStart", form) {
             @Override
@@ -638,6 +641,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 Boolean restoreOptSkipSecurity = ((CheckBox) form.get("restoreOptSkipSecurity")).getModelObject();
                 Boolean restoreOptSkipSettings = ((CheckBox) form.get("restoreOptSkipSettings")).getModelObject();
                 Boolean restoreOptPurgeResources = ((CheckBox) form.get("restoreOptPurgeResources")).getModelObject();
+                Boolean restoreOptMergeSecurity = ((CheckBox) form.get("restoreOptMergeSecurity")).getModelObject();
 
                 Hints hints = buildRestoreHints(
                         restoreOptDryRun,
@@ -646,7 +650,8 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         restoreOptSkipGWC,
                         restoreOptSkipSecurity,
                         restoreOptSkipSettings,
-                        restoreOptPurgeResources);
+                        restoreOptPurgeResources,
+                        restoreOptMergeSecurity);
 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 
@@ -778,8 +783,12 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
             boolean skipGWC,
             boolean skipSecurity,
             boolean skipSettings,
-            boolean purgeResources) {
+            boolean purgeResources,
+            boolean mergeSecurity) {
         Hints hints = new Hints(new HashMap(2));
+        if (mergeSecurity) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_MERGE_SECURITY), Backup.PARAM_MERGE_SECURITY));
+        }
         if (dryRun) {
             hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_DRY_RUN_MODE), Backup.PARAM_DRY_RUN_MODE));
         }

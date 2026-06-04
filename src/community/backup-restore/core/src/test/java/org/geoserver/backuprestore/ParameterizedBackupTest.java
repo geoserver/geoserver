@@ -48,7 +48,7 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
         assertNotNull(backupExecution);
 
         int cnt = 0;
-        while (cnt < 100 && (backupExecution.getStatus() != BatchStatus.COMPLETED || !backupExecution.isRunning())) {
+        while (cnt < 100 && (backupExecution.getStatus() != BatchStatus.COMPLETED || backupExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 

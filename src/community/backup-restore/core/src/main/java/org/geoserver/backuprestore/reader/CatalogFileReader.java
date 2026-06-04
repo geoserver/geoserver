@@ -47,12 +47,12 @@ import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.util.XStreamPersister;
 import org.geotools.util.logging.Logging;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.batch.item.xml.StaxEventItemReader;
-import org.springframework.batch.item.xml.stax.DefaultFragmentEventReader;
-import org.springframework.batch.item.xml.stax.FragmentEventReader;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.NonTransientResourceException;
+import org.springframework.batch.infrastructure.item.UnexpectedInputException;
+import org.springframework.batch.infrastructure.item.xml.StaxEventItemReader;
+import org.springframework.batch.infrastructure.item.xml.stax.DefaultFragmentEventReader;
+import org.springframework.batch.infrastructure.item.xml.stax.FragmentEventReader;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -103,7 +103,8 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
 
     /**
      * In strict mode the reader will throw an exception on
-     * {@link #open(org.springframework.batch.item.ExecutionContext)} if the input resource does not exist.
+     * {@link #open(org.springframework.batch.infrastructure.item.ExecutionContext)} if the input resource does not
+     * exist.
      *
      * @param strict false by default
      */

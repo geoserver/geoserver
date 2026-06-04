@@ -62,7 +62,7 @@ public class BackupController extends AbstractBackupRestoreController {
     }
 
     @GetMapping(
-            path = "backup{.+}",
+            path = "backup",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper backupGet(@RequestParam(name = "format", required = false) String format) {
 

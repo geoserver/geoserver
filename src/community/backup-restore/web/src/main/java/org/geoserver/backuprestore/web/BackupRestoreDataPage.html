@@ -9,6 +9,10 @@
 <body>
 <wicket:extend>
 
+   <div class="fieldset-margins info-link">
+     <p><wicket:message key="backupRestoreIntro">Backup and Restore saves or reloads the GeoServer catalog and configuration (it does not copy the underlying data). Set the archive file path, optionally narrow the scope with the Workspace / Store / Layer filters, choose the options below (hover each option for guidance on what it does and when to use it), then start the job and watch its progress. It is good practice to run a Restore as a Dry-Run first.</wicket:message></p>
+   </div>
+
    <div class="fieldset-margins">
     <fieldset>
       <legend><span><wicket:message key="backupResource">Archive File</wicket:message></span></legend>
@@ -30,15 +34,35 @@
 	    <div class="gs-unordered-list-class">
 	      <div class="gs-list-item-class choiceItem">
 	        <input id="backupOptOverwirte" type="checkbox" wicket:id="backupOptOverwirte" />
-	        <label for="backupOptOverwirteLabel"><wicket:message key="backupOptOverwirteLabel">Overwrite Existing Archive</wicket:message></label>
+	        <label for="backupOptOverwirte" wicket:message="title:backupOptOverwirteHint"><wicket:message key="backupOptOverwirteLabel">Overwrite Existing Archive</wicket:message></label>
 	      </div>
 	      <div class="gs-list-item-class choiceItem">
 	        <input id="backupOptBestEffort" type="checkbox" wicket:id="backupOptBestEffort" />
-	        <label for="backupOptBestEffortLabel"><wicket:message key="backupOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
+	        <label for="backupOptBestEffort" wicket:message="title:backupOptBestEffortHint"><wicket:message key="backupOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
 	      </div>
 	      <div class="gs-list-item-class choiceItem">
 	        <input id="backupOptCleanTemp" type="checkbox" wicket:id="backupOptCleanTemp" />
-	        <label for="backupOptCleanTempLabel"><wicket:message key="backupOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
+	        <label for="backupOptCleanTemp" wicket:message="title:backupOptCleanTempHint"><wicket:message key="backupOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="backupOptSkipGWC" type="checkbox" wicket:id="backupOptSkipGWC" />
+	        <label for="backupOptSkipGWC" wicket:message="title:backupOptSkipGWCHint"><wicket:message key="backupOptSkipGWCLabel">Skip GeoWebCache</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="backupOptParamPasswords" type="checkbox" wicket:id="backupOptParamPasswords" />
+	        <label for="backupOptParamPasswords" wicket:message="title:backupOptParamPasswordsHint"><wicket:message key="backupOptParamPasswordsLabel">Parameterize Store Passwords</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="backupOptPreserveIds" type="checkbox" wicket:id="backupOptPreserveIds" />
+	        <label for="backupOptPreserveIds" wicket:message="title:backupOptPreserveIdsHint"><wicket:message key="backupOptPreserveIdsLabel">Preserve Catalog IDs (for migration)</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="backupOptSkipSecurity" type="checkbox" wicket:id="backupOptSkipSecurity" />
+	        <label for="backupOptSkipSecurity" wicket:message="title:backupOptSkipSecurityHint"><wicket:message key="backupOptSkipSecurityLabel">Skip Security Settings</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="backupOptSkipSettings" type="checkbox" wicket:id="backupOptSkipSettings" />
+	        <label for="backupOptSkipSettings" wicket:message="title:backupOptSkipSettingsHint"><wicket:message key="backupOptSkipSettingsLabel">Skip Global Settings</wicket:message></label>
 	      </div>
 	    </div>
 	</fieldset>
@@ -73,15 +97,31 @@
 	    <div class="gs-unordered-list-class">
 	      <div class="gs-list-item-class choiceItem">
 	        <input id="restoreOptDryRun" type="checkbox" wicket:id="restoreOptDryRun" />
-	        <label for="restoreOptDryRunLabel"><wicket:message key="restoreOptDryRunLabel">Restore Dry-Run</wicket:message></label>
+	        <label for="restoreOptDryRun" wicket:message="title:restoreOptDryRunHint"><wicket:message key="restoreOptDryRunLabel">Restore Dry-Run</wicket:message></label>
 	      </div>
 	      <div class="gs-list-item-class choiceItem">
 	        <input id="restoreOptBestEffort" type="checkbox" wicket:id="restoreOptBestEffort" />
-	        <label for="restoreOptBestEffortLabel"><wicket:message key="restoreOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
+	        <label for="restoreOptBestEffort" wicket:message="title:restoreOptBestEffortHint"><wicket:message key="restoreOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
 	      </div>
 	      <div class="gs-list-item-class choiceItem">
 	        <input id="restoreOptCleanTemp" type="checkbox" wicket:id="restoreOptCleanTemp" />
-	        <label for="restoreOptCleanTempLabel"><wicket:message key="restoreOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
+	        <label for="restoreOptCleanTemp" wicket:message="title:restoreOptCleanTempHint"><wicket:message key="restoreOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="restoreOptSkipGWC" type="checkbox" wicket:id="restoreOptSkipGWC" />
+	        <label for="restoreOptSkipGWC" wicket:message="title:restoreOptSkipGWCHint"><wicket:message key="restoreOptSkipGWCLabel">Skip GeoWebCache</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="restoreOptSkipSecurity" type="checkbox" wicket:id="restoreOptSkipSecurity" />
+	        <label for="restoreOptSkipSecurity" wicket:message="title:restoreOptSkipSecurityHint"><wicket:message key="restoreOptSkipSecurityLabel">Skip Security Settings</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="restoreOptSkipSettings" type="checkbox" wicket:id="restoreOptSkipSettings" />
+	        <label for="restoreOptSkipSettings" wicket:message="title:restoreOptSkipSettingsHint"><wicket:message key="restoreOptSkipSettingsLabel">Skip Global Settings</wicket:message></label>
+	      </div>
+	      <div class="gs-list-item-class choiceItem">
+	        <input id="restoreOptPurgeResources" type="checkbox" wicket:id="restoreOptPurgeResources" />
+	        <label for="restoreOptPurgeResources" wicket:message="title:restoreOptPurgeResourcesHint"><wicket:message key="restoreOptPurgeResourcesLabel">Purge Existing Resources</wicket:message></label>
 	      </div>
 	    </div>
 	</fieldset>

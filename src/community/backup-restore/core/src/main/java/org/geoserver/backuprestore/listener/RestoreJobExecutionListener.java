@@ -19,9 +19,9 @@ import org.geoserver.platform.resource.Resources;
 import org.geotools.util.decorate.Wrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.listener.JobExecutionListener;
 
 /**
  * Implements a Spring Batch {@link JobExecutionListener}.
@@ -121,9 +121,7 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
     }
 
     private boolean getPurgeResources(JobParameters params) {
-        String value = params.getString(Backup.PARAM_PURGE_RESOURCES);
-        if (value == null) return false;
-        return Boolean.valueOf(value.trim());
+        return Backup.isPurgeResources(params);
     }
 
     /** Synchronizes catalogs content. */
@@ -148,12 +146,9 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
             LOGGER.fine("Running Executions IDs : " + executionId);
 
             if (jobExecution.getStatus() != BatchStatus.STOPPED) {
-                LOGGER.fine("Executions Step Summaries : "
-                        + backupFacade.getJobOperator().getStepExecutionSummaries(executionId));
-                LOGGER.fine("Executions Parameters : "
-                        + backupFacade.getJobOperator().getParameters(executionId));
-                LOGGER.fine(
-                        "Executions Summary : " + backupFacade.getJobOperator().getSummary(executionId));
+                LOGGER.fine("Executions Step Summaries : " + jobExecution.getStepExecutions());
+                LOGGER.fine("Executions Parameters : " + jobExecution.getJobParameters());
+                LOGGER.fine("Executions Summary : " + jobExecution);
 
                 if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
                     cleanUp();

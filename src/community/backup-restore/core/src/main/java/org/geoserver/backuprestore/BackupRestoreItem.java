@@ -186,12 +186,14 @@ public abstract class BackupRestoreItem<T> {
 
         this.xstream = xStreamPersisterFactory.createXMLPersister();
 
-        // BK_PRESERVE_IDS opt-in: when set, a backup keeps catalog ids and writes cross-references by id (an id-based
-        // archive that can be migrated into a foreign catalog); the default strips ids and references by name. On the
-        // restore side the reader auto-adapts - ReferenceConverter.unmarshal reads whichever of <id>/<name> is present
-        // and ResolvingProxy resolves by id first, name second - so no matching flag is required to restore.
+        // Id preservation (BK_PRESERVE_IDS) defaults to TRUE: a backup keeps catalog ids and writes cross-references by
+        // id, so the archive is a portable migration artifact that restores into another GeoServer with its identities
+        // (and, in turn, GWC tile-layer links) intact. Set BK_PRESERVE_IDS=false for the legacy name-based archive
+        // (ids stripped). On the restore side the reader auto-adapts - ReferenceConverter.unmarshal reads whichever of
+        // <id>/<name> is present and ResolvingProxy resolves by id first, name second - so no matching flag is required
+        // to restore either kind of archive.
         boolean preserveIds =
-                Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_PRESERVE_IDS, "false"));
+                Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_PRESERVE_IDS, "true"));
 
         if (backupFacade.getRestoreExecutions() != null
                 && !backupFacade.getRestoreExecutions().isEmpty()

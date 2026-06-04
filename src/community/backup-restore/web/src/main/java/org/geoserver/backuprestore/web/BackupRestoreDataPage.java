@@ -277,8 +277,9 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("backupOptCleanTemp", new Model<Boolean>(true)));
         form.add(new CheckBox("backupOptSkipGWC", new Model<Boolean>(false)));
         form.add(new CheckBox("backupOptParamPasswords", new Model<Boolean>(false)));
-        form.add(new CheckBox("backupOptPreserveIds", new Model<Boolean>(false)));
-        // Default-true options: pre-checked to match the documented default (security / global settings excluded).
+        // Default-true options: pre-checked to match the documented default.
+        // Preserve Catalog IDs defaults on so a backup is a portable migration artifact (identities + GWC links kept).
+        form.add(new CheckBox("backupOptPreserveIds", new Model<Boolean>(true)));
         form.add(new CheckBox("backupOptSkipSecurity", new Model<Boolean>(true)));
         form.add(new CheckBox("backupOptSkipSettings", new Model<Boolean>(true)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
@@ -756,10 +757,9 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
             hints.add(new Hints(
                     new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS), Backup.PARAM_PARAMETERIZE_PASSWDS));
         }
-        if (preserveIds) {
-            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS), Backup.PARAM_PRESERVE_IDS));
-        }
-        // Default-true options: always send an explicit true/false so that un-checking actually disables the skip.
+        // Default-true options: always send an explicit true/false so that un-checking actually disables the option
+        // (with the option absent the core would fall back to its default, which for preserve-ids is now true).
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS, "*"), Boolean.toString(preserveIds)));
         hints.add(new Hints(
                 new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS, "*"), Boolean.toString(skipSecurity)));
         hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"), Boolean.toString(skipSettings)));

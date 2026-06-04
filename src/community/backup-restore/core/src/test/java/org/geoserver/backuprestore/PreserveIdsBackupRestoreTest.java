@@ -25,9 +25,9 @@ import org.springframework.batch.core.BatchStatus;
 /**
  * Verifies the opt-in id-preserving backup mode ({@link Backup#PARAM_PRESERVE_IDS}).
  *
- * <p>A default backup strips catalog ids and writes cross-references by name; with {@code BK_PRESERVE_IDS} the archive
- * keeps every object's id and writes references by id. That is what lets a subset be migrated through a restore into a
- * different catalog with its identities (and, in turn, GWC tile-layer links) intact.
+ * <p>Id preservation now defaults to on: a backup keeps every object's id and writes cross-references by id, so the
+ * archive can be migrated through a restore into a different catalog with its identities (and, in turn, GWC tile-layer
+ * links) intact. Opting out with {@code BK_PRESERVE_IDS=false} restores the legacy name-based archive (ids stripped).
  */
 public class PreserveIdsBackupRestoreTest extends BackupRestoreTestSupport {
 
@@ -39,29 +39,33 @@ public class PreserveIdsBackupRestoreTest extends BackupRestoreTestSupport {
     }
 
     @Test
-    public void testDefaultBackupStripsIdsAndPreserveKeepsThem() throws Exception {
-        // default backup: object ids are stripped (legacy portable, name-based archive)
-        assertFalse(
-                "a default backup must strip object ids",
-                backupAndReadDat(false, "workspace.dat").contains("<id>"));
-
-        // BK_PRESERVE_IDS backup: object ids are kept, so the subset can be migrated id-for-id into another catalog
+    public void testIdPreservationIsOnByDefaultAndCanBeDisabled() throws Exception {
+        // ids are preserved by default now: a backup is a migration artifact, so identities (and GWC links) survive
         assertTrue(
-                "a BK_PRESERVE_IDS backup must keep object ids",
-                backupAndReadDat(true, "workspace.dat").contains("<id>"));
+                "a default backup must keep object ids",
+                backupAndReadDat(null, "workspace.dat").contains("<id>"));
+        assertTrue(
+                "an explicit BK_PRESERVE_IDS=true backup must keep object ids",
+                backupAndReadDat(Boolean.TRUE, "workspace.dat").contains("<id>"));
+
+        // opting out restores the legacy name-based archive (ids stripped, portable into an empty data directory)
+        assertFalse(
+                "BK_PRESERVE_IDS=false must strip object ids",
+                backupAndReadDat(Boolean.FALSE, "workspace.dat").contains("<id>"));
     }
 
     /**
-     * Runs a best-effort backup with or without BK_PRESERVE_IDS and returns the first matching {@code .dat} fragment.
+     * Runs a best-effort backup and returns the first matching {@code .dat} fragment. {@code preserveIds} of {@code
+     * null} leaves the option unset (exercising the default); {@code true}/{@code false} pass an explicit state.
      */
-    private String backupAndReadDat(boolean preserveIds, String datPrefix) throws Exception {
+    private String backupAndReadDat(Boolean preserveIds, String datPrefix) throws Exception {
         File backupZip = File.createTempFile("preserveIds-" + preserveIds + "-", ".zip");
         backupZip.deleteOnExit();
 
         Hints hints = new Hints(new HashMap<>(2));
         hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
-        if (preserveIds) {
-            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS), Backup.PARAM_PRESERVE_IDS));
+        if (preserveIds != null) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS, "*"), Boolean.toString(preserveIds)));
         }
 
         BackupExecutionAdapter exec =

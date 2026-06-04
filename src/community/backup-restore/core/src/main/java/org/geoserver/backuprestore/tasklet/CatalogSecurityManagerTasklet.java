@@ -7,6 +7,7 @@ package org.geoserver.backuprestore.tasklet;
 import java.io.IOException;
 import java.util.logging.Level;
 import org.geoserver.backuprestore.Backup;
+import org.geoserver.backuprestore.SecurityMerger;
 import org.geoserver.backuprestore.utils.BackupUtils;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -123,6 +124,54 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
             if (!Resources.exists(sourceSecurityResource.get("config.xml"))) {
                 LOGGER.warning("The backup archive contains no security configuration (no security/config.xml); "
                         + "skipping security restore and leaving the target's security settings untouched.");
+                return RepeatStatus.FINISHED;
+            }
+
+            // BK_MERGE_SECURITY: instead of replacing the target's whole security folder (which would carry the
+            // source-encrypted keystore, unreadable on a target with a different master password), merge the archive's
+            // users / groups / roles into the target's existing services, keeping the target's configuration, keystore
+            // and master password. This is the migration-safe path across instances.
+            if (Backup.isMergeSecurity(jobExecution.getJobParameters())) {
+                if (isDryRun()) {
+                    LOGGER.info("Dry-run: BK_MERGE_SECURITY restore would merge the archive's users/groups/roles into "
+                            + "the target's existing security services.");
+                    return RepeatStatus.FINISHED;
+                }
+                GeoServerSecurityManager sourceGssm = null;
+                try {
+                    sourceGssm = new GeoServerSecurityManager(
+                            new GeoServerDataDirectory(new GeoServerResourceLoader(sourceRestoreFolder.dir())));
+                    sourceGssm.setApplicationContext(Backup.getContext());
+                    sourceGssm.reload();
+
+                    GeoServerSecurityManager targetGssm = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+                    SecurityMerger merger = new SecurityMerger(targetGssm);
+                    merger.merge(sourceGssm);
+                    for (String warning : merger.getWarnings()) {
+                        LOGGER.warning("Security merge: " + warning);
+                    }
+                    targetGssm.reload();
+                    for (SecurityManagerListener listener :
+                            GeoServerExtensions.extensions(SecurityManagerListener.class)) {
+                        listener.handlePostChanged(targetGssm);
+                    }
+                    LOGGER.info("BK_MERGE_SECURITY restore added " + merger.getUsersAdded() + " users, "
+                            + merger.getGroupsAdded() + " groups and " + merger.getRolesAdded()
+                            + " roles into the target's existing security services.");
+                } catch (Exception e) {
+                    logValidationExceptions(
+                            (ValidationResult) null,
+                            new UnexpectedJobExecutionException(
+                                    "Exception occurred while merging GeoServer security settings!", e));
+                } finally {
+                    if (sourceGssm != null) {
+                        try {
+                            sourceGssm.destroy();
+                        } catch (Exception e) {
+                            LOGGER.log(Level.WARNING, "Source GeoServerSecurityManager destroy error!", e);
+                        }
+                    }
+                }
                 return RepeatStatus.FINISHED;
             }
 

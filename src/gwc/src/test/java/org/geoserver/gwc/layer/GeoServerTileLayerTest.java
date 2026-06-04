@@ -134,6 +134,7 @@ import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.ApplicationMime;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeType;
+import org.geowebcache.service.HttpErrorCodeException;
 import org.geowebcache.storage.StorageBroker;
 import org.junit.After;
 import org.junit.Before;
@@ -819,7 +820,8 @@ public class GeoServerTileLayerTest {
         try {
             layerInfoTileLayer.getTile(tile);
             fail("Expected exception, requested mime is invalid for the layer");
-        } catch (IllegalArgumentException e) {
+        } catch (HttpErrorCodeException e) {
+            assertEquals(400, e.getErrorCode());
             assertTrue(e.getMessage().contains("is not a supported format"));
         }
 

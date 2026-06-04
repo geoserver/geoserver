@@ -32,22 +32,20 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.job.AbstractJob;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.InvalidJobParametersException;
+import org.springframework.batch.core.job.parameters.JobParameter;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.launch.JobRestartException;
+import org.springframework.batch.core.listener.JobExecutionListener;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
@@ -102,6 +100,16 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
 
     public static final String PARAM_PARAMETERIZE_PASSWDS = "BK_PARAM_PASSWORDS";
 
+    /**
+     * When {@code true}, the backup keeps catalog object ids and writes cross-references by id, instead of stripping
+     * ids and referencing by name. The resulting archive can be restored / migrated into another catalog with the
+     * original identities preserved, which lets the restore re-link GWC tile layers (they key strictly by id) and skip
+     * objects that already exist by id rather than merging by name. The same flag must be passed on the matching
+     * restore so the reader expects id references. The default ({@code false}) keeps the legacy portable, name-based
+     * archive format and behaviour.
+     */
+    public static final String PARAM_PRESERVE_IDS = "BK_PRESERVE_IDS";
+
     public static final String RESTORE_CATALOG_KEY = "restore.catalog";
 
     private Authentication auth;
@@ -118,8 +126,6 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     XStreamPersisterFactory xpf;
 
     JobOperator jobOperator;
-
-    JobLauncher jobLauncher;
 
     JobRepository jobRepository;
 
@@ -160,11 +166,6 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         return jobOperator;
     }
 
-    /** @return the jobLauncher */
-    public JobLauncher getJobLauncher() {
-        return jobLauncher;
-    }
-
     /** @return the Backup job */
     public Job getBackupJob() {
         return backupJob;
@@ -190,7 +191,6 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         // load the context store here to avoid circular dependency on creation
         if (event instanceof ContextLoadedEvent) {
             this.jobOperator = (JobOperator) context.getBean("jobOperator");
-            this.jobLauncher = (JobLauncher) context.getBean("jobLauncherAsync");
             this.jobRepository = (JobRepository) context.getBean("jobRepository");
             this.backupJob = (Job) context.getBean(BACKUP_JOB_NAME);
             this.restoreJob = (Job) context.getBean(RESTORE_JOB_NAME);
@@ -200,11 +200,9 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     /** @return */
     public Set<Long> getBackupRunningExecutions() {
         synchronized (jobOperator) {
-            Set<Long> runningExecutions;
-            try {
-                runningExecutions = jobOperator.getRunningExecutions(BACKUP_JOB_NAME);
-            } catch (NoSuchJobException e) {
-                runningExecutions = new HashSet<>();
+            Set<Long> runningExecutions = new HashSet<>();
+            for (JobExecution execution : jobRepository.findRunningJobExecutions(BACKUP_JOB_NAME)) {
+                runningExecutions.add(execution.getId());
             }
             return runningExecutions;
         }
@@ -213,11 +211,9 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     /** @return */
     public Set<Long> getRestoreRunningExecutions() {
         synchronized (jobOperator) {
-            Set<Long> runningExecutions;
-            try {
-                runningExecutions = jobOperator.getRunningExecutions(RESTORE_JOB_NAME);
-            } catch (NoSuchJobException e) {
-                runningExecutions = new HashSet<>();
+            Set<Long> runningExecutions = new HashSet<>();
+            for (JobExecution execution : jobRepository.findRunningJobExecutions(RESTORE_JOB_NAME)) {
+                runningExecutions.add(execution.getId());
             }
             return runningExecutions;
         }
@@ -423,7 +419,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                     && getBackupRunningExecutions().isEmpty()) {
                 synchronized (jobOperator) {
                     // Start a new Job
-                    JobExecution jobExecution = jobLauncher.run(backupJob, jobParameters);
+                    JobExecution jobExecution = jobOperator.start(backupJob, jobParameters);
                     backupExecution = new BackupExecutionAdapter(jobExecution, totalNumberOfBackupSteps);
                     backupExecutions.put(backupExecution.getId(), backupExecution);
 
@@ -434,11 +430,12 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                     backupExecution.setLiFilter(liFilter);
 
                     backupExecution.getOptions().add("OVERWRITE=" + overwrite);
-                    for (Entry jobParam : jobParameters.getParameters().entrySet()) {
-                        if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_TIME.equals(jobParam.getKey())) {
-                            backupExecution.getOptions().add(jobParam.getKey() + "=" + jobParam.getValue());
+                    for (JobParameter<?> jobParam : jobParameters) {
+                        String key = jobParam.name();
+                        if (!PARAM_OUTPUT_FILE_PATH.equals(key)
+                                && !PARAM_INPUT_FILE_PATH.equals(key)
+                                && !PARAM_TIME.equals(key)) {
+                            backupExecution.getOptions().add(key + "=" + jobParam.value());
                         }
                     }
 
@@ -451,7 +448,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         } catch (JobExecutionAlreadyRunningException
                 | JobRestartException
                 | JobInstanceAlreadyCompleteException
-                | JobParametersInvalidException e) {
+                | InvalidJobParametersException e) {
             throw new IOException("Could not start a new Backup Job Execution: ", e);
         } finally {
         }
@@ -528,7 +525,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                     && getBackupRunningExecutions().isEmpty()) {
                 synchronized (jobOperator) {
                     // Start a new Job
-                    JobExecution jobExecution = jobLauncher.run(restoreJob, jobParameters);
+                    JobExecution jobExecution = jobOperator.start(restoreJob, jobParameters);
                     restoreExecution = new RestoreExecutionAdapter(jobExecution, totalNumberOfRestoreSteps);
                     restoreExecutions.put(restoreExecution.getId(), restoreExecution);
                     restoreExecution.setArchiveFile(archiveFile);
@@ -536,11 +533,12 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                     restoreExecution.setSiFilter(siFilter);
                     restoreExecution.setLiFilter(liFilter);
 
-                    for (Entry jobParam : jobParameters.getParameters().entrySet()) {
-                        if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_TIME.equals(jobParam.getKey())) {
-                            restoreExecution.getOptions().add(jobParam.getKey() + "=" + jobParam.getValue());
+                    for (JobParameter<?> jobParam : jobParameters) {
+                        String key = jobParam.name();
+                        if (!PARAM_OUTPUT_FILE_PATH.equals(key)
+                                && !PARAM_INPUT_FILE_PATH.equals(key)
+                                && !PARAM_TIME.equals(key)) {
+                            restoreExecution.getOptions().add(key + "=" + jobParam.value());
                         }
                     }
 
@@ -553,7 +551,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         } catch (JobExecutionAlreadyRunningException
                 | JobRestartException
                 | JobInstanceAlreadyCompleteException
-                | JobParametersInvalidException e) {
+                | InvalidJobParametersException e) {
             throw new IOException("Could not start a new Restore Job Execution: ", e);
         }
     }
@@ -581,18 +579,16 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     }
 
     /** Stop a running Backup/Restore Execution */
-    public void stopExecution(Long executionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
+    public void stopExecution(Long executionId) throws JobExecutionNotRunningException {
         LOGGER.info("Stopping execution id [" + executionId + "]");
 
-        JobExecution jobExecution = null;
+        JobExecution jobExecution = findJobExecution(executionId);
         try {
-            if (this.backupExecutions.get(executionId) != null) {
-                jobExecution = this.backupExecutions.get(executionId).getDelegate();
-            } else if (this.restoreExecutions.get(executionId) != null) {
-                jobExecution = this.restoreExecutions.get(executionId).getDelegate();
+            if (jobExecution != null) {
+                jobOperator.stop(jobExecution);
+            } else {
+                LOGGER.warning("No job execution found for id " + executionId + "; nothing to stop.");
             }
-
-            jobOperator.stop(executionId);
         } finally {
             if (jobExecution != null) {
                 final BatchStatus status = jobExecution.getStatus();
@@ -617,26 +613,26 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     }
 
     /** Restarts a running Backup/Restore Execution */
-    public Long restartExecution(Long executionId)
-            throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException, NoSuchJobException,
-                    JobRestartException, JobParametersInvalidException {
-        return jobOperator.restart(executionId);
+    public Long restartExecution(Long executionId) throws JobRestartException {
+        JobExecution jobExecution = findJobExecution(executionId);
+        if (jobExecution == null) {
+            LOGGER.warning("No job execution found for id " + executionId + "; cannot restart.");
+            return null;
+        }
+        return jobOperator.restart(jobExecution).getId();
     }
 
     /** Abort a running Backup/Restore Execution */
-    public void abandonExecution(Long executionId)
-            throws NoSuchJobExecutionException, JobExecutionAlreadyRunningException {
+    public void abandonExecution(Long executionId) throws JobExecutionAlreadyRunningException {
         LOGGER.info("Aborting execution id [" + executionId + "]");
 
-        JobExecution jobExecution = null;
+        JobExecution jobExecution = findJobExecution(executionId);
         try {
-            if (this.backupExecutions.get(executionId) != null) {
-                jobExecution = this.backupExecutions.get(executionId).getDelegate();
-            } else if (this.restoreExecutions.get(executionId) != null) {
-                jobExecution = this.restoreExecutions.get(executionId).getDelegate();
+            if (jobExecution != null) {
+                jobOperator.abandon(jobExecution);
+            } else {
+                LOGGER.warning("No job execution found for id " + executionId + "; nothing to abandon.");
             }
-
-            jobOperator.abandon(executionId);
         } finally {
             if (jobExecution != null) {
                 jobExecution.setStatus(BatchStatus.ABANDONED);
@@ -656,6 +652,25 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         }
     }
 
+    /**
+     * Resolves a {@link JobExecution} by id from the in-flight backup/restore maps, falling back to the job repository.
+     * Returns {@code null} when no execution exists for the id: the JDBC job repository throws rather than returning
+     * {@code null} for an unknown id, so that case is normalized to {@code null} here.
+     */
+    private JobExecution findJobExecution(Long executionId) {
+        if (this.backupExecutions.get(executionId) != null) {
+            return this.backupExecutions.get(executionId).getDelegate();
+        }
+        if (this.restoreExecutions.get(executionId) != null) {
+            return this.restoreExecutions.get(executionId).getDelegate();
+        }
+        try {
+            return jobRepository.getJobExecution(executionId);
+        } catch (org.springframework.dao.DataAccessException e) {
+            return null;
+        }
+    }
+
     /** */
     private void parseParams(final Hints params, JobParametersBuilder paramsBuilder) {
         if (params != null) {
@@ -671,18 +686,64 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                             case PARAM_PARAMETERIZE_PASSWDS:
                             case PARAM_SKIP_SETTINGS:
                             case PARAM_SKIP_SECURITY_SETTINGS:
+                            case PARAM_PURGE_RESOURCES:
                             case PARAM_CLEANUP_TEMP:
                             case PARAM_DRY_RUN_MODE:
                             case PARAM_BEST_EFFORT_MODE:
                             case PARAM_SKIP_GWC:
+                            case PARAM_PRESERVE_IDS:
                                 if (paramsBuilder.toJobParameters().getString(k) == null) {
-                                    paramsBuilder.addString(k, "true");
+                                    paramsBuilder.addString(k, booleanOptionValue(param.getValue()));
                                 }
                         }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Resolves the value of a boolean job option supplied through the {@link Hints} API.
+     *
+     * <p>Historically the only way to pass a boolean option through {@code Hints} was to add the option key with the
+     * option <em>name</em> as its value (e.g. {@code OptionKey(BK_SKIP_GWC) -> "BK_SKIP_GWC"}); presence alone meant
+     * {@code true} and there was no way to express {@code false}. That made the default-{@code true} options (e.g.
+     * {@code BK_SKIP_SECURITY}) impossible to switch off from the UI. This helper keeps that legacy contract (any
+     * non-boolean value, including the option name, yields {@code "true"}) while additionally honoring an explicit
+     * {@code "true"}/{@code "false"} string, so callers that know the desired state can pass it directly.
+     */
+    private static String booleanOptionValue(Object rawValue) {
+        String value = String.valueOf(rawValue);
+        return "false".equalsIgnoreCase(value) ? "false" : "true";
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Single source of truth for the boolean job options whose default is "true".
+    //
+    // These options used to be read ad-hoc in several steps (CatalogBackupRestoreTasklet,
+    // CatalogSecurityManagerTasklet, RestoreJobExecutionListener) with inconsistent defaults — the same option could be
+    // treated as "true" in one step and "false" in another within a single run. The helpers below make every step read
+    // the option identically, with the documented default of "true": security and global settings are excluded, and a
+    // restore purges pre-existing resources, unless the caller explicitly passes "false".
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /** Whether security settings are excluded from the backup/restore. Default {@code true} (excluded). */
+    public static boolean isSkipSecuritySettings(JobParameters params) {
+        return Boolean.parseBoolean(params.getString(PARAM_SKIP_SECURITY_SETTINGS, "true"));
+    }
+
+    /** Whether global settings are excluded from the backup/restore. Default {@code true} (excluded). */
+    public static boolean isSkipSettings(JobParameters params) {
+        return Boolean.parseBoolean(params.getString(PARAM_SKIP_SETTINGS, "true"));
+    }
+
+    /**
+     * Whether a restore purges pre-existing resources (e.g. drops existing workspaces) before restoring. Default
+     * {@code true} (purge) — a restore is destructive by design; pass {@code BK_PURGE_RESOURCES=false} to merge into
+     * the existing catalog instead.
+     */
+    public static boolean isPurgeResources(JobParameters params) {
+        return Boolean.parseBoolean(params.getString(PARAM_PURGE_RESOURCES, "true"));
     }
 
     public XStreamPersister createXStreamPersisterXML() {

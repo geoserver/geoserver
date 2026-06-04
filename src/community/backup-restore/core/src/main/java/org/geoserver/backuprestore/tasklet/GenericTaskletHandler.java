@@ -5,11 +5,11 @@
 package org.geoserver.backuprestore.tasklet;
 
 import org.geoserver.backuprestore.BackupRestoreItem;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.core.step.StepContribution;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 
 /**
  * Spring beans implementing this interface will be invoked during backup / restore jobs. Class

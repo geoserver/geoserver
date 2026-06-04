@@ -6,7 +6,7 @@
 package org.geoserver.wms;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -35,10 +35,10 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     WMSInterpolation interpolation = WMSInterpolation.Nearest;
 
     boolean getFeatureInfoMimeTypeCheckingEnabled;
-    Set<String> getFeatureInfoMimeTypes = new HashSet<>();
+    Set<String> getFeatureInfoMimeTypes = new LinkedHashSet<>();
 
     boolean getMapMimeTypeCheckingEnabled;
-    Set<String> getMapMimeTypes = new HashSet<>();
+    Set<String> getMapMimeTypes = new LinkedHashSet<>();
 
     boolean dynamicStylingDisabled;
 

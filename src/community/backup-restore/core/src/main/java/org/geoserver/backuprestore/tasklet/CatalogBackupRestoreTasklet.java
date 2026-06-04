@@ -1104,7 +1104,9 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             GeoserverXMLResourceProvider gwcConfigProvider =
                     (GeoserverXMLResourceProvider) GeoServerExtensions.bean("gwcXmlConfigResourceProvider");
             Resource targetGWCProviderRestoreDir = gwcConfigProvider.getConfigDirectory();
-            if (!filterIsValid()) {
+            // Only wipe + replace the target's GWC provider configuration on a full PURGE restore. On a merge
+            // (BK_PURGE_RESOURCES=false) or a filtered restore the target keeps its existing GWC configuration.
+            if (!filterIsValid() && purge) {
                 Files.delete(targetGWCProviderRestoreDir.dir());
 
                 // Restore GWC Providers Configurations
@@ -1151,8 +1153,10 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         final DefaultTileLayerCatalog gwcRestoreCatalog =
                 new DefaultTileLayerCatalog(resourceLoader, gwcXmlPersisterFactory);
         gwcRestoreCatalog.initialize();
-        // only delete gwc layers directory if its a full restore
-        if (!filterIsValid()) {
+        // Only wipe the target's gwc-layers on a full PURGE restore. On a merge (BK_PURGE_RESOURCES=false) or a
+        // filtered restore the target keeps its existing tile layers, so wiping them would drop the GWC config of
+        // every layer not present in the archive; restoreGWCTileLayersInfos below then merges the archive's on top.
+        if (!filterIsValid() && purge) {
             Resource gwcCatalogPersistenceLocation =
                     targetGWCProviderRestoreDir.parent().get(gwcCatalog.getPersistenceLocation());
             Files.delete(gwcCatalogPersistenceLocation.dir());
@@ -1236,7 +1240,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // holds only the restored subset, while the target keeps its other existing layers (merged into the live
         // catalog at finalize). Checking only the restore catalog therefore wrongly deleted the tile layers of every
         // layer outside the subset; consult the live catalog too so existing layers are never pruned.
-        final Catalog liveCatalog = backupFacade.getCatalog();
+        final Catalog liveCatalog = backupFacade.getGeoServer().getCatalog();
         for (String id : new java.util.HashSet<>(gwcCatalog.getLayerIds())) {
             boolean inRestore = getCatalog().getLayer(id) != null || getCatalog().getLayerGroup(id) != null;
             boolean inTarget = liveCatalog.getLayer(id) != null || liveCatalog.getLayerGroup(id) != null;

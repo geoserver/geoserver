@@ -159,6 +159,15 @@ public abstract class BackupRestoreItem<T> {
         this.filters = filters;
     }
 
+    /**
+     * Sets the backup-vs-restore flag ({@code false} = backup, {@code true} = restore). Normally derived in
+     * {@link #retrieveInterstepData} from the running job; exposed ({@code protected}) so unit tests can exercise the
+     * backup-only workspace-filter cascade without standing up a full Spring Batch step.
+     */
+    protected void setNew(boolean isNew) {
+        this.isNew = isNew;
+    }
+
     /** @return a boolean indicating that at least one filter has been defined */
     public boolean filterIsValid() {
         return (this.filters != null
@@ -324,6 +333,30 @@ public abstract class BackupRestoreItem<T> {
         if (!filterIsValid()) {
             return false;
         }
+
+        // Cascade the workspace filter (filters[0]) down to every workspace-bound resource ON BACKUP, so that a
+        // workspace filter yields a self-contained subset archive instead of leaking stores, resources, layers,
+        // styles and layergroups that belong to other workspaces (historically these honoured only the store/layer
+        // filters, or — for styles and layergroups — no filter at all). Global, workspace-less styles and layergroups
+        // are intentionally left untouched here: they are shared and are reconciled by the dependency-closure pass
+        // rather than dropped by the cascade.
+        //
+        // The cascade is scoped to backup (isNew == false): a restore replays whatever the archive already holds, and a
+        // restore-side filter keeps its long-standing workspace-step-only semantics, so existing restore behaviour is
+        // unchanged.
+        final Filter wsFilter = getFilters()[0];
+        if (!isNew() && resource != null && wsFilter != null) {
+            if (ws != null) {
+                if (!wsFilter.evaluate(ws)) {
+                    LOGGER.fine(() -> "Skipped resource outside the filtered workspace(s): " + resource);
+                    return true;
+                }
+            } else if (strict) {
+                LOGGER.fine(() -> "Skipped strict resource with no resolvable workspace: " + resource);
+                return true;
+            }
+        }
+
         if (resource == null || clazz == WorkspaceInfo.class) {
             if ((strict && ws == null) || (ws != null && getFilters()[0] != null && !getFilters()[0].evaluate(ws))) {
                 LOGGER.info("Skipped filtered workspace: " + ws);

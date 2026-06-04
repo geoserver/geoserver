@@ -33,12 +33,17 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
                 try {
                     // TODO: add option 'cleanUpGeoServerDataDir'
                     // TODO: purge/preserve GEOSERVER_DATA_DIR
+                    // The restore wrote through to the data dir as it ran: the restore catalog shares the live
+                    // ResourceLoader and copies the live catalog listeners (incl. GeoServerConfigPersister), so the
+                    // restored state is already persisted on disk. Dispose the in-memory state; the reload() below
+                    // re-reads it from disk. (A prior in-memory geoserver.reload(getCatalog()) here was redundant: it
+                    // was immediately superseded by that disk re-read.)
                     catalog.getResourcePool().dispose();
                     catalog.dispose();
                     geoserver.dispose();
-                    geoserver.reload(getCatalog());
                 } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Error occurred while trying to Reload the GeoServer Catalog: ", e);
+                    LOGGER.log(
+                            Level.WARNING, "Error occurred while disposing the GeoServer Catalog before reload: ", e);
                 }
             }
 

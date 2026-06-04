@@ -11,7 +11,7 @@ import org.springframework.batch.core.configuration.support.JobRegistrySmartInit
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.JobOperatorFactoryBean;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.batch.core.repository.support.JdbcJobRepositoryFactoryBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,7 +88,7 @@ public class BatchInfrastructureConfiguration {
             @Qualifier("backupJobRepositoryDataSource") DataSource dataSource,
             @Qualifier("transactionManager") PlatformTransactionManager transactionManager)
             throws Exception {
-        JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
+        JdbcJobRepositoryFactoryBean factory = new JdbcJobRepositoryFactoryBean();
         factory.setDataSource(dataSource);
         factory.setTransactionManager(transactionManager);
         // H2 does not support SERIALIZABLE create semantics well; READ_COMMITTED is sufficient here

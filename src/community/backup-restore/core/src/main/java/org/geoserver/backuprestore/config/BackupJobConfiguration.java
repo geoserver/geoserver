@@ -267,10 +267,11 @@ public class BackupJobConfiguration {
             ItemProcessor<T, T> processor,
             ItemWriter<T> writer) {
         return new StepBuilder(name, jobRepository)
-                .<T, T>chunk(COMMIT_INTERVAL, transactionManager)
+                .<T, T>chunk(COMMIT_INTERVAL)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
+                .transactionManager(transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }

@@ -638,6 +638,7 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
      * @see StoppableTasklet#stop()
      */
     @Override
+    @SuppressWarnings("removal") // StoppableTasklet.stop() is abstract in Batch 6.0; remove this override when it goes
     public void stop() {
         stopped = true;
     }

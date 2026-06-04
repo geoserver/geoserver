@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -293,6 +294,68 @@ public class BackupTest extends BackupRestoreTestSupport {
 
                 assertEquals(BatchStatus.STOPPED, backupExecution.getStatus());
             }
+        }
+
+        /** Job control on an unknown execution id is a safe no-op (Option A; NoSuchJobExecutionException retired). */
+        @Test
+        public void testJobControlUnknownExecution() throws Exception {
+            backupFacade.stopExecution(-1L);
+            backupFacade.abandonExecution(-1L);
+            assertNull(backupFacade.restartExecution(-1L));
+        }
+
+        @Test
+        public void testAbandonSpringBatchBackupJob() throws Exception {
+            BackupExecutionAdapter exec = stoppedBackup();
+            if (exec.getStatus() == BatchStatus.STOPPED) {
+                // exercises the migrated JobOperator.abandon(JobExecution)
+                backupFacade.abandonExecution(exec.getId());
+
+                int cnt = 0;
+                while (cnt < 100 && exec.getStatus() != BatchStatus.ABANDONED) {
+                    Thread.sleep(100);
+                    cnt++;
+                    if (exec.getStatus() == BatchStatus.FAILED) {
+                        break;
+                    }
+                }
+                assertEquals(BatchStatus.ABANDONED, exec.getStatus());
+            }
+        }
+
+        /**
+         * Drives a fresh best-effort backup to STARTED then STOPPED (mirrors {@link #testStopSpringBatchBackupJob()}),
+         * returning the stopped — or already-terminal — execution so abandon can run from a known state.
+         */
+        private BackupExecutionAdapter stoppedBackup() throws Exception {
+            Hints hints = new Hints(new HashMap<>(2));
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+            BackupExecutionAdapter exec = backupFacade.runBackupAsync(
+                    Files.asResource(File.createTempFile("testJobControl", ".zip")), true, null, null, null, hints);
+
+            int cnt = 0;
+            while (cnt < 100 && exec.getStatus() != BatchStatus.STARTED) {
+                Thread.sleep(10);
+                cnt++;
+                if (exec.getStatus() == BatchStatus.COMPLETED
+                        || exec.getStatus() == BatchStatus.FAILED
+                        || exec.getStatus() == BatchStatus.ABANDONED) {
+                    return exec;
+                }
+            }
+            if (exec.getStatus() != BatchStatus.STARTED) {
+                return exec;
+            }
+            backupFacade.stopExecution(exec.getId());
+            cnt = 0;
+            while (cnt < 100 && exec.getStatus() != BatchStatus.STOPPED) {
+                Thread.sleep(100);
+                cnt++;
+                if (exec.getStatus() == BatchStatus.FAILED || exec.getStatus() == BatchStatus.ABANDONED) {
+                    break;
+                }
+            }
+            return exec;
         }
 
         @Test

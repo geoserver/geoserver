@@ -49,7 +49,6 @@ import org.geotools.api.filter.Filter;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 import org.springframework.batch.core.step.StepExecution;
 
 /**
@@ -449,7 +448,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                             try {
                                 BackupRestoreWebUtils.backupFacade().stopExecution(jobid);
                                 setResponsePage(BackupRestoreDataPage.class);
-                            } catch (NoSuchJobExecutionException | JobExecutionNotRunningException e) {
+                            } catch (JobExecutionNotRunningException e) {
                                 LOGGER.log(Level.WARNING, "", e);
                             }
                         }
@@ -674,7 +673,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                             try {
                                 BackupRestoreWebUtils.backupFacade().stopExecution(jobid);
                                 setResponsePage(BackupRestoreDataPage.class);
-                            } catch (NoSuchJobExecutionException | JobExecutionNotRunningException e) {
+                            } catch (JobExecutionNotRunningException e) {
                                 LOGGER.log(Level.WARNING, "", e);
                             }
                         }

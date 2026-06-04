@@ -44,8 +44,6 @@ import org.springframework.batch.core.launch.JobExecutionNotRunningException;
 import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.JobRestartException;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 import org.springframework.batch.core.listener.JobExecutionListener;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.BeansException;
@@ -581,24 +579,16 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     }
 
     /** Stop a running Backup/Restore Execution */
-    public void stopExecution(Long executionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
+    public void stopExecution(Long executionId) throws JobExecutionNotRunningException {
         LOGGER.info("Stopping execution id [" + executionId + "]");
 
-        JobExecution jobExecution = null;
+        JobExecution jobExecution = findJobExecution(executionId);
         try {
-            if (this.backupExecutions.get(executionId) != null) {
-                jobExecution = this.backupExecutions.get(executionId).getDelegate();
-            } else if (this.restoreExecutions.get(executionId) != null) {
-                jobExecution = this.restoreExecutions.get(executionId).getDelegate();
+            if (jobExecution != null) {
+                jobOperator.stop(jobExecution);
+            } else {
+                LOGGER.warning("No job execution found for id " + executionId + "; nothing to stop.");
             }
-            if (jobExecution == null) {
-                jobExecution = jobRepository.getJobExecution(executionId);
-            }
-            if (jobExecution == null) {
-                throw new NoSuchJobExecutionException("No job execution found for id " + executionId);
-            }
-
-            jobOperator.stop(jobExecution);
         } finally {
             if (jobExecution != null) {
                 final BatchStatus status = jobExecution.getStatus();
@@ -623,36 +613,26 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     }
 
     /** Restarts a running Backup/Restore Execution */
-    public Long restartExecution(Long executionId)
-            throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException, NoSuchJobException,
-                    JobRestartException, InvalidJobParametersException {
-        JobExecution jobExecution = jobRepository.getJobExecution(executionId);
+    public Long restartExecution(Long executionId) throws JobRestartException {
+        JobExecution jobExecution = findJobExecution(executionId);
         if (jobExecution == null) {
-            throw new NoSuchJobExecutionException("No job execution found for id " + executionId);
+            LOGGER.warning("No job execution found for id " + executionId + "; cannot restart.");
+            return null;
         }
         return jobOperator.restart(jobExecution).getId();
     }
 
     /** Abort a running Backup/Restore Execution */
-    public void abandonExecution(Long executionId)
-            throws NoSuchJobExecutionException, JobExecutionAlreadyRunningException {
+    public void abandonExecution(Long executionId) throws JobExecutionAlreadyRunningException {
         LOGGER.info("Aborting execution id [" + executionId + "]");
 
-        JobExecution jobExecution = null;
+        JobExecution jobExecution = findJobExecution(executionId);
         try {
-            if (this.backupExecutions.get(executionId) != null) {
-                jobExecution = this.backupExecutions.get(executionId).getDelegate();
-            } else if (this.restoreExecutions.get(executionId) != null) {
-                jobExecution = this.restoreExecutions.get(executionId).getDelegate();
+            if (jobExecution != null) {
+                jobOperator.abandon(jobExecution);
+            } else {
+                LOGGER.warning("No job execution found for id " + executionId + "; nothing to abandon.");
             }
-            if (jobExecution == null) {
-                jobExecution = jobRepository.getJobExecution(executionId);
-            }
-            if (jobExecution == null) {
-                throw new NoSuchJobExecutionException("No job execution found for id " + executionId);
-            }
-
-            jobOperator.abandon(jobExecution);
         } finally {
             if (jobExecution != null) {
                 jobExecution.setStatus(BatchStatus.ABANDONED);
@@ -669,6 +649,25 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
             }
+        }
+    }
+
+    /**
+     * Resolves a {@link JobExecution} by id from the in-flight backup/restore maps, falling back to the job repository.
+     * Returns {@code null} when no execution exists for the id: the JDBC job repository throws rather than returning
+     * {@code null} for an unknown id, so that case is normalized to {@code null} here.
+     */
+    private JobExecution findJobExecution(Long executionId) {
+        if (this.backupExecutions.get(executionId) != null) {
+            return this.backupExecutions.get(executionId).getDelegate();
+        }
+        if (this.restoreExecutions.get(executionId) != null) {
+            return this.restoreExecutions.get(executionId).getDelegate();
+        }
+        try {
+            return jobRepository.getJobExecution(executionId);
+        } catch (org.springframework.dao.DataAccessException e) {
+            return null;
         }
     }
 

@@ -146,12 +146,9 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
             LOGGER.fine("Running Executions IDs : " + executionId);
 
             if (jobExecution.getStatus() != BatchStatus.STOPPED) {
-                LOGGER.fine("Executions Step Summaries : "
-                        + backupFacade.getJobOperator().getStepExecutionSummaries(executionId));
-                LOGGER.fine("Executions Parameters : "
-                        + backupFacade.getJobOperator().getParameters(executionId));
-                LOGGER.fine(
-                        "Executions Summary : " + backupFacade.getJobOperator().getSummary(executionId));
+                LOGGER.fine("Executions Step Summaries : " + jobExecution.getStepExecutions());
+                LOGGER.fine("Executions Parameters : " + jobExecution.getJobParameters());
+                LOGGER.fine("Executions Summary : " + jobExecution);
 
                 if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
                     cleanUp();

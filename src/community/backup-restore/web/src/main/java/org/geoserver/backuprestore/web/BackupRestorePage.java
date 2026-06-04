@@ -49,13 +49,9 @@ import org.geoserver.web.GeoServerUnlockablePage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.Icon;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.job.parameters.InvalidJobParametersException;
 import org.springframework.batch.core.launch.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
-import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.launch.JobRestartException;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoServerSecuredPage
@@ -258,7 +254,7 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                         backupFacade().stopExecution(bkp.getId());
 
                         setResponsePage(BackupRestoreDataPage.class);
-                    } catch (NoSuchJobExecutionException | JobExecutionNotRunningException e) {
+                    } catch (JobExecutionNotRunningException e) {
                         LOGGER.log(Level.WARNING, "", e);
                         getSession().error(e);
                         setResponsePage(BackupRestoreDataPage.class);
@@ -297,11 +293,7 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                         }
 
                         setResponsePage(BackupRestorePage.class, pp);
-                    } catch (NoSuchJobExecutionException
-                            | JobInstanceAlreadyCompleteException
-                            | NoSuchJobException
-                            | JobRestartException
-                            | InvalidJobParametersException e) {
+                    } catch (JobRestartException e) {
                         LOGGER.log(Level.WARNING, "", e);
                         getSession().error(e);
                         setResponsePage(BackupRestoreDataPage.class);
@@ -340,7 +332,7 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                         }
 
                         setResponsePage(BackupRestorePage.class, pp);
-                    } catch (NoSuchJobExecutionException | JobExecutionAlreadyRunningException e) {
+                    } catch (JobExecutionAlreadyRunningException e) {
                         error(e);
                         LOGGER.log(Level.WARNING, "", e);
                     }

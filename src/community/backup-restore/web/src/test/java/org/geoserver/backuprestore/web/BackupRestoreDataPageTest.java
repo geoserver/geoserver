@@ -5,10 +5,13 @@
 package org.geoserver.backuprestore.web;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geotools.util.factory.Hints;
 import org.junit.Test;
 
 /**
@@ -84,5 +87,35 @@ public class BackupRestoreDataPageTest extends GeoServerWicketTestSupport {
         assertTrue(
                 "Expected the Dry-Run tooltip to be rendered",
                 html.contains("Validate the archive and report what would happen"));
+    }
+
+    /**
+     * Locks the submit-time option marshalling that previously crashed: the default-true skip flags are passed as an
+     * explicit {@code Boolean.toString(...)} value, which a plain {@link Hints.OptionKey} rejects with an
+     * {@link IllegalArgumentException}. {@link BackupRestoreDataPage#buildBackupHints} must construct the key with the
+     * {@code "*"} wildcard. Exercising both {@code true} and {@code false} guards against a regression on either path.
+     */
+    @Test
+    public void testBackupOptionHintsAcceptExplicitBooleans() {
+        Hints allOn = BackupRestoreDataPage.buildBackupHints(true, true, true, true, true, true, true);
+        assertNotNull(allOn);
+        assertFalse(allOn.isEmpty());
+
+        // Even with every box unchecked, the default-true skip flags are still emitted (as explicit "false").
+        Hints allOff = BackupRestoreDataPage.buildBackupHints(false, false, false, false, false, false, false);
+        assertNotNull(allOff);
+        assertFalse(allOff.isEmpty());
+    }
+
+    /** Restore counterpart of {@link #testBackupOptionHintsAcceptExplicitBooleans} (adds the purge-resources flag). */
+    @Test
+    public void testRestoreOptionHintsAcceptExplicitBooleans() {
+        Hints allOn = BackupRestoreDataPage.buildRestoreHints(true, true, true, true, true, true, true);
+        assertNotNull(allOn);
+        assertFalse(allOn.isEmpty());
+
+        Hints allOff = BackupRestoreDataPage.buildRestoreHints(false, false, false, false, false, false, false);
+        assertNotNull(allOff);
+        assertFalse(allOff.isEmpty());
     }
 }

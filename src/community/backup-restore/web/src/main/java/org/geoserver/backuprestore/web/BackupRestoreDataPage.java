@@ -405,47 +405,23 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                             equal("resource.name", li.getResource().getName()));
                 }
 
-                Hints hints = new Hints(new HashMap(2));
-
                 Boolean backupOptOverwirte = ((CheckBox) form.get("backupOptOverwirte")).getModelObject();
                 Boolean backupOptBestEffort = ((CheckBox) form.get("backupOptBestEffort")).getModelObject();
                 Boolean backupOptCleanTemp = ((CheckBox) form.get("backupOptCleanTemp")).getModelObject();
-
-                if (backupOptBestEffort) {
-                    hints.add(new Hints(
-                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
-                }
-
-                if (backupOptCleanTemp) {
-                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
-                }
-
                 Boolean backupOptSkipGWC = ((CheckBox) form.get("backupOptSkipGWC")).getModelObject();
-                if (backupOptSkipGWC) {
-                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_GWC), Backup.PARAM_SKIP_GWC));
-                }
-
                 Boolean backupOptParamPasswords = ((CheckBox) form.get("backupOptParamPasswords")).getModelObject();
-                if (backupOptParamPasswords) {
-                    hints.add(new Hints(
-                            new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS), Backup.PARAM_PARAMETERIZE_PASSWDS));
-                }
-
                 Boolean backupOptPreserveIds = ((CheckBox) form.get("backupOptPreserveIds")).getModelObject();
-                if (backupOptPreserveIds) {
-                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS), Backup.PARAM_PRESERVE_IDS));
-                }
-
-                // Default-true options: always send an explicit true/false so that un-checking actually disables the
-                // skip (these are excluded by default, so a missing parameter would otherwise keep skipping them).
                 Boolean backupOptSkipSecurity = ((CheckBox) form.get("backupOptSkipSecurity")).getModelObject();
-                hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS, "*"),
-                        Boolean.toString(backupOptSkipSecurity)));
-
                 Boolean backupOptSkipSettings = ((CheckBox) form.get("backupOptSkipSettings")).getModelObject();
-                hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"), Boolean.toString(backupOptSkipSettings)));
+
+                Hints hints = buildBackupHints(
+                        backupOptBestEffort,
+                        backupOptCleanTemp,
+                        backupOptSkipGWC,
+                        backupOptParamPasswords,
+                        backupOptPreserveIds,
+                        backupOptSkipSecurity,
+                        backupOptSkipSettings);
 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 
@@ -655,47 +631,22 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                     liFilter = backupRestoreFileResource.liFilter;
                 }
 
-                Hints hints = new Hints(new HashMap(2));
-
                 Boolean restoreOptDryRun = ((CheckBox) form.get("restoreOptDryRun")).getModelObject();
-
-                if (restoreOptDryRun) {
-                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_DRY_RUN_MODE), Backup.PARAM_DRY_RUN_MODE));
-                }
-
                 Boolean restoreOptBestEffort = ((CheckBox) form.get("restoreOptBestEffort")).getModelObject();
-
-                if (restoreOptBestEffort) {
-                    hints.add(new Hints(
-                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
-                }
-
                 Boolean restoreOptCleanTemp = ((CheckBox) form.get("restoreOptCleanTemp")).getModelObject();
-
-                if (restoreOptCleanTemp) {
-                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
-                }
-
                 Boolean restoreOptSkipGWC = ((CheckBox) form.get("restoreOptSkipGWC")).getModelObject();
-                if (restoreOptSkipGWC) {
-                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_GWC), Backup.PARAM_SKIP_GWC));
-                }
-
-                // Default-true options: always send an explicit true/false so that un-checking takes effect.
                 Boolean restoreOptSkipSecurity = ((CheckBox) form.get("restoreOptSkipSecurity")).getModelObject();
-                hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS, "*"),
-                        Boolean.toString(restoreOptSkipSecurity)));
-
                 Boolean restoreOptSkipSettings = ((CheckBox) form.get("restoreOptSkipSettings")).getModelObject();
-                hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"),
-                        Boolean.toString(restoreOptSkipSettings)));
-
                 Boolean restoreOptPurgeResources = ((CheckBox) form.get("restoreOptPurgeResources")).getModelObject();
-                hints.add(new Hints(
-                        new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES, "*"),
-                        Boolean.toString(restoreOptPurgeResources)));
+
+                Hints hints = buildRestoreHints(
+                        restoreOptDryRun,
+                        restoreOptBestEffort,
+                        restoreOptCleanTemp,
+                        restoreOptSkipGWC,
+                        restoreOptSkipSecurity,
+                        restoreOptSkipSettings,
+                        restoreOptPurgeResources);
 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 
@@ -774,6 +725,80 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
             throw new Exception("Archive File is Mandatory, must exist and should not be a Directory or URI.");
         }
         return archiveFile;
+    }
+
+    /**
+     * Assembles the {@link Hints} for a backup run from the de-referenced option-checkbox values. Extracted from the
+     * form submit so the option marshalling is unit-testable without driving the page. The default-true skip flags
+     * ({@code skipSecurity}/{@code skipSettings}) must carry an explicit {@code true}/{@code false}, which requires the
+     * {@code "*"} wildcard {@link Hints.OptionKey}; a plain key throws {@link IllegalArgumentException} on
+     * construction.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    static Hints buildBackupHints(
+            boolean bestEffort,
+            boolean cleanTemp,
+            boolean skipGWC,
+            boolean parameterizePasswords,
+            boolean preserveIds,
+            boolean skipSecurity,
+            boolean skipSettings) {
+        Hints hints = new Hints(new HashMap(2));
+        if (bestEffort) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+        }
+        if (cleanTemp) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
+        }
+        if (skipGWC) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_GWC), Backup.PARAM_SKIP_GWC));
+        }
+        if (parameterizePasswords) {
+            hints.add(new Hints(
+                    new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS), Backup.PARAM_PARAMETERIZE_PASSWDS));
+        }
+        if (preserveIds) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS), Backup.PARAM_PRESERVE_IDS));
+        }
+        // Default-true options: always send an explicit true/false so that un-checking actually disables the skip.
+        hints.add(new Hints(
+                new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS, "*"), Boolean.toString(skipSecurity)));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"), Boolean.toString(skipSettings)));
+        return hints;
+    }
+
+    /**
+     * Assembles the {@link Hints} for a restore run from the de-referenced option-checkbox values. See
+     * {@link #buildBackupHints} for the {@code "*"} wildcard requirement on the default-true skip / purge flags.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    static Hints buildRestoreHints(
+            boolean dryRun,
+            boolean bestEffort,
+            boolean cleanTemp,
+            boolean skipGWC,
+            boolean skipSecurity,
+            boolean skipSettings,
+            boolean purgeResources) {
+        Hints hints = new Hints(new HashMap(2));
+        if (dryRun) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_DRY_RUN_MODE), Backup.PARAM_DRY_RUN_MODE));
+        }
+        if (bestEffort) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+        }
+        if (cleanTemp) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
+        }
+        if (skipGWC) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_GWC), Backup.PARAM_SKIP_GWC));
+        }
+        // Default-true options: always send an explicit true/false so that un-checking takes effect.
+        hints.add(new Hints(
+                new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS, "*"), Boolean.toString(skipSecurity)));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"), Boolean.toString(skipSettings)));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES, "*"), Boolean.toString(purgeResources)));
+        return hints;
     }
 
     protected void resetButtons(Form<?> form, AjaxRequestTarget target, String buttonId) {

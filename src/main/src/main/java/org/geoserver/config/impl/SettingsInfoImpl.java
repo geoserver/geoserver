@@ -5,7 +5,7 @@
  */
 package org.geoserver.config.impl;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import org.geoserver.catalog.MetadataMap;
@@ -40,7 +40,7 @@ public class SettingsInfoImpl implements SettingsInfo {
 
     protected MetadataMap metadata = new MetadataMap();
 
-    protected Map<Object, Object> clientProperties = new HashMap<>();
+    protected Map<Object, Object> clientProperties = new LinkedHashMap<>();
 
     private boolean localWorkspaceIncludesPrefix = false;
 

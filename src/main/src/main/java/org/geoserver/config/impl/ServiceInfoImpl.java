@@ -6,7 +6,7 @@
 package org.geoserver.config.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -72,7 +72,7 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected MetadataMap metadata = new MetadataMap();
 
-    protected Map<Object, Object> clientProperties = new HashMap<>();
+    protected Map<Object, Object> clientProperties = new LinkedHashMap<>();
 
     protected Locale defaultLocale;
 

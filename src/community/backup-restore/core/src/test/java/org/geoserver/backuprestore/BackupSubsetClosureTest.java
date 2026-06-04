@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.resource.Files;
 import org.geotools.api.filter.Filter;
@@ -38,8 +39,8 @@ import org.springframework.batch.core.BatchStatus;
  * workspace filter: {@code store.dat} carries the {@code sf} store but not the default-workspace {@code foo} store, and
  * {@code namespace.dat} carries only the {@code sf} namespace, not the sibling {@code cdf}/{@code cgf} ones.
  *
- * <p>Assertions match object {@code <name>}/prefixes rather than workspace <em>references</em>, so they hold whether the
- * archive writes cross-references by name or by id ({@code BK_PRESERVE_IDS}).
+ * <p>Assertions match object {@code <name>}/prefixes rather than workspace <em>references</em>, so they hold whether
+ * the archive writes cross-references by name or by id ({@code BK_PRESERVE_IDS}).
  */
 public class BackupSubsetClosureTest extends BackupRestoreTestSupport {
 
@@ -93,6 +94,36 @@ public class BackupSubsetClosureTest extends BackupRestoreTestSupport {
         // markers — neither string occurs anywhere in the sf namespace's prefix or URI.
         assertFalse("the 'cdf' namespace leaked into the sf subset", namespaceDat.contains("cdf"));
         assertFalse("the 'cgf' namespace leaked into the sf subset", namespaceDat.contains("cgf"));
+    }
+
+    @Test
+    public void testClosurePrunesUnreferencedGlobalStyleAndKeepsScopedStyle() throws Exception {
+        // a global style that nothing references; the dependency-closure must leave it out of the sf subset
+        StyleInfo orphan = catalog.getFactory().createStyle();
+        orphan.setName("orphan_global_subset");
+        orphan.setFilename("orphan.sld");
+        catalog.add(orphan);
+        try {
+            Filter wsFilter = ECQL.toFilter("name = 'sf'");
+            File backupZip = File.createTempFile("subset-closure-styles-", ".zip");
+            backupZip.deleteOnExit();
+            Hints hints = new Hints(new HashMap<>(2));
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+
+            BackupExecutionAdapter backupExecution =
+                    backupFacade.runBackupAsync(Files.asResource(backupZip), true, wsFilter, null, null, hints);
+            waitForCompletion(backupExecution);
+            assertEquals(BatchStatus.COMPLETED, backupExecution.getStatus());
+
+            String styleDat = readFirstEntry(backupZip, "style.dat");
+            assertFalse(
+                    "an unreferenced global style must be pruned from the subset by the dependency-closure",
+                    styleDat.contains("orphan_global_subset"));
+            assertTrue(
+                    "the workspace-scoped sf_style must be kept in the subset", styleDat.contains("sf_style"));
+        } finally {
+            catalog.remove(catalog.getStyleByName("orphan_global_subset"));
+        }
     }
 
     /** Reads the content of the first archive entry whose name starts with {@code namePrefix} (e.g. "store.dat"). */

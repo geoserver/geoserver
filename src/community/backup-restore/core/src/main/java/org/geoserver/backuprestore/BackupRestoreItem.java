@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -94,6 +95,12 @@ public abstract class BackupRestoreItem<T> {
     private XStreamPersisterFactory xStreamPersisterFactory;
 
     private Filter filters[];
+
+    /**
+     * Ids of the out-of-subset / global objects pulled in by the workspace-filter dependency-closure on backup (see
+     * {@link SubsetClosure}); {@code null} when no workspace filter is active or the closure was not computed.
+     */
+    private Set<String> closureIds;
 
     public static final String ENCRYPTED_FIELDS_KEY = "backupRestoreParameterizedFields";
 
@@ -280,6 +287,29 @@ public abstract class BackupRestoreItem<T> {
             this.filters[2] = null;
         }
 
+        // Compute the workspace-filter dependency-closure once per backup execution (cached on the execution adapter),
+        // so a filtered backup pulls in the transitive dependencies the subset references - cross-workspace layergroup
+        // members and their stores/resources/workspaces/namespaces, and the global styles the subset uses - and prunes
+        // the workspace-less styles/layergroups it does not. A restore (isNew) replays the archive verbatim.
+        this.closureIds = null;
+        if (!isNew
+                && this.filters[0] != null
+                && currentJobExecution instanceof BackupExecutionAdapter backupExecution) {
+            if (!backupExecution.isSubsetClosureComputed()) {
+                Set<String> closure = null;
+                try {
+                    closure = SubsetClosure.compute(getCatalog(), this.filters[0], this.filters[1], this.filters[2]);
+                } catch (RuntimeException e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Failed to compute the subset dependency-closure; keeping the plain workspace cascade",
+                            e);
+                }
+                backupExecution.setSubsetClosure(closure);
+            }
+            this.closureIds = backupExecution.getSubsetClosure();
+        }
+
         initialize(stepExecution);
     }
 
@@ -348,13 +378,24 @@ public abstract class BackupRestoreItem<T> {
         // unchanged.
         final Filter wsFilter = getFilters()[0];
         if (!isNew() && resource != null && wsFilter != null) {
+            // A dependency pulled in by the subset closure (a cross-workspace layergroup member, or a global style /
+            // layergroup the subset references) is kept regardless of its own workspace.
+            String resourceId = ((CatalogInfo) resource).getId();
+            if (closureIds != null && resourceId != null && closureIds.contains(resourceId)) {
+                return false;
+            }
             if (ws != null) {
                 if (!wsFilter.evaluate(ws)) {
                     LOGGER.fine(() -> "Skipped resource outside the filtered workspace(s): " + resource);
                     return true;
                 }
+                // the workspace matches: a subset object, still subject to the store/layer filters below
             } else if (strict) {
                 LOGGER.fine(() -> "Skipped strict resource with no resolvable workspace: " + resource);
+                return true;
+            } else if (closureIds != null) {
+                // a workspace-less (global) style or layergroup the subset does not reference: prune it
+                LOGGER.fine(() -> "Pruned unreferenced global resource from the filtered subset: " + resource);
                 return true;
             }
         }

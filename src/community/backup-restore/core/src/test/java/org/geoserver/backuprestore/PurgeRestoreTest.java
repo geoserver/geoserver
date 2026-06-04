@@ -69,7 +69,7 @@ public class PurgeRestoreTest extends BackupRestoreTestSupport {
     private void waitRestoreFinish(RestoreExecutionAdapter restoreExecution)
             throws InterruptedException, NoSuchJobExecutionException, JobExecutionNotRunningException {
         int cnt = 0;
-        while (cnt < 100 && (restoreExecution.getStatus() != BatchStatus.COMPLETED || !restoreExecution.isRunning())) {
+        while (cnt < 100 && (restoreExecution.getStatus() != BatchStatus.COMPLETED || restoreExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 

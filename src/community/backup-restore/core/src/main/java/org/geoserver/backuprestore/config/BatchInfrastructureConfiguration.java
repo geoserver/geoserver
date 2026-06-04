@@ -8,10 +8,8 @@ import javax.sql.DataSource;
 import org.geoserver.backuprestore.TolerantMapJobRegistry;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.support.JobRegistrySmartInitializingSingleton;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.JobOperatorFactoryBean;
-import org.springframework.batch.core.launch.support.TaskExecutorJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -121,20 +119,12 @@ public class BatchInfrastructureConfiguration {
         return singleton;
     }
 
-    /** Asynchronous job launcher ({@code TaskExecutorJobLauncher} replaces the removed {@code SimpleJobLauncher}). */
-    @Bean
-    public JobLauncher jobLauncherAsync(@Qualifier("jobRepository") JobRepository jobRepository) throws Exception {
-        SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
-        taskExecutor.setConcurrencyLimit(10);
-
-        TaskExecutorJobLauncher jobLauncher = new TaskExecutorJobLauncher();
-        jobLauncher.setJobRepository(jobRepository);
-        jobLauncher.setTaskExecutor(taskExecutor);
-        jobLauncher.afterPropertiesSet();
-        return jobLauncher;
-    }
-
-    /** Job operator for monitoring / stop / restart / abandon of running executions. */
+    /**
+     * Job operator for launching jobs (asynchronously, via its {@link SimpleAsyncTaskExecutor}) and for monitoring /
+     * stop / restart / abandon of running executions. In Spring Batch 6 {@code JobOperator} supersedes the removed
+     * {@code SimpleJobLauncher} / deprecated {@code JobLauncher}, so a single async operator replaces the previous
+     * separate {@code jobLauncherAsync} launcher bean.
+     */
     @Bean
     public JobOperator jobOperator(
             @Qualifier("jobRepository") JobRepository jobRepository,

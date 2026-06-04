@@ -42,7 +42,6 @@ import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
 import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.JobRestartException;
 import org.springframework.batch.core.launch.NoSuchJobException;
@@ -130,8 +129,6 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
 
     JobOperator jobOperator;
 
-    JobLauncher jobLauncher;
-
     JobRepository jobRepository;
 
     Job backupJob;
@@ -171,11 +168,6 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         return jobOperator;
     }
 
-    /** @return the jobLauncher */
-    public JobLauncher getJobLauncher() {
-        return jobLauncher;
-    }
-
     /** @return the Backup job */
     public Job getBackupJob() {
         return backupJob;
@@ -201,7 +193,6 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         // load the context store here to avoid circular dependency on creation
         if (event instanceof ContextLoadedEvent) {
             this.jobOperator = (JobOperator) context.getBean("jobOperator");
-            this.jobLauncher = (JobLauncher) context.getBean("jobLauncherAsync");
             this.jobRepository = (JobRepository) context.getBean("jobRepository");
             this.backupJob = (Job) context.getBean(BACKUP_JOB_NAME);
             this.restoreJob = (Job) context.getBean(RESTORE_JOB_NAME);
@@ -211,11 +202,9 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     /** @return */
     public Set<Long> getBackupRunningExecutions() {
         synchronized (jobOperator) {
-            Set<Long> runningExecutions;
-            try {
-                runningExecutions = jobOperator.getRunningExecutions(BACKUP_JOB_NAME);
-            } catch (NoSuchJobException e) {
-                runningExecutions = new HashSet<>();
+            Set<Long> runningExecutions = new HashSet<>();
+            for (JobExecution execution : jobRepository.findRunningJobExecutions(BACKUP_JOB_NAME)) {
+                runningExecutions.add(execution.getId());
             }
             return runningExecutions;
         }
@@ -224,11 +213,9 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     /** @return */
     public Set<Long> getRestoreRunningExecutions() {
         synchronized (jobOperator) {
-            Set<Long> runningExecutions;
-            try {
-                runningExecutions = jobOperator.getRunningExecutions(RESTORE_JOB_NAME);
-            } catch (NoSuchJobException e) {
-                runningExecutions = new HashSet<>();
+            Set<Long> runningExecutions = new HashSet<>();
+            for (JobExecution execution : jobRepository.findRunningJobExecutions(RESTORE_JOB_NAME)) {
+                runningExecutions.add(execution.getId());
             }
             return runningExecutions;
         }
@@ -434,7 +421,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                     && getBackupRunningExecutions().isEmpty()) {
                 synchronized (jobOperator) {
                     // Start a new Job
-                    JobExecution jobExecution = jobLauncher.run(backupJob, jobParameters);
+                    JobExecution jobExecution = jobOperator.start(backupJob, jobParameters);
                     backupExecution = new BackupExecutionAdapter(jobExecution, totalNumberOfBackupSteps);
                     backupExecutions.put(backupExecution.getId(), backupExecution);
 
@@ -540,7 +527,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                     && getBackupRunningExecutions().isEmpty()) {
                 synchronized (jobOperator) {
                     // Start a new Job
-                    JobExecution jobExecution = jobLauncher.run(restoreJob, jobParameters);
+                    JobExecution jobExecution = jobOperator.start(restoreJob, jobParameters);
                     restoreExecution = new RestoreExecutionAdapter(jobExecution, totalNumberOfRestoreSteps);
                     restoreExecutions.put(restoreExecution.getId(), restoreExecution);
                     restoreExecution.setArchiveFile(archiveFile);
@@ -604,8 +591,14 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
             } else if (this.restoreExecutions.get(executionId) != null) {
                 jobExecution = this.restoreExecutions.get(executionId).getDelegate();
             }
+            if (jobExecution == null) {
+                jobExecution = jobRepository.getJobExecution(executionId);
+            }
+            if (jobExecution == null) {
+                throw new NoSuchJobExecutionException("No job execution found for id " + executionId);
+            }
 
-            jobOperator.stop(executionId);
+            jobOperator.stop(jobExecution);
         } finally {
             if (jobExecution != null) {
                 final BatchStatus status = jobExecution.getStatus();
@@ -633,7 +626,11 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     public Long restartExecution(Long executionId)
             throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException, NoSuchJobException,
                     JobRestartException, InvalidJobParametersException {
-        return jobOperator.restart(executionId);
+        JobExecution jobExecution = jobRepository.getJobExecution(executionId);
+        if (jobExecution == null) {
+            throw new NoSuchJobExecutionException("No job execution found for id " + executionId);
+        }
+        return jobOperator.restart(jobExecution).getId();
     }
 
     /** Abort a running Backup/Restore Execution */
@@ -648,8 +645,14 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
             } else if (this.restoreExecutions.get(executionId) != null) {
                 jobExecution = this.restoreExecutions.get(executionId).getDelegate();
             }
+            if (jobExecution == null) {
+                jobExecution = jobRepository.getJobExecution(executionId);
+            }
+            if (jobExecution == null) {
+                throw new NoSuchJobExecutionException("No job execution found for id " + executionId);
+            }
 
-            jobOperator.abandon(executionId);
+            jobOperator.abandon(jobExecution);
         } finally {
             if (jobExecution != null) {
                 jobExecution.setStatus(BatchStatus.ABANDONED);

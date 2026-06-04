@@ -17,6 +17,10 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.validation.PasswordPolicyException;
+import org.geoserver.security.xml.XMLRoleService;
+import org.geoserver.security.xml.XMLRoleServiceConfig;
+import org.geoserver.security.xml.XMLUserGroupService;
+import org.geoserver.security.xml.XMLUserGroupServiceConfig;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -44,6 +48,7 @@ public class SecurityMerger {
     private int usersAdded;
     private int groupsAdded;
     private int rolesAdded;
+    private int servicesBootstrapped;
     private final List<String> warnings = new ArrayList<>();
 
     public SecurityMerger(GeoServerSecurityManager target) {
@@ -60,6 +65,10 @@ public class SecurityMerger {
 
     public int getRolesAdded() {
         return rolesAdded;
+    }
+
+    public int getServicesBootstrapped() {
+        return servicesBootstrapped;
     }
 
     public List<String> getWarnings() {
@@ -83,8 +92,11 @@ public class SecurityMerger {
         }
         GeoServerUserGroupService targetService = target.loadUserGroupService(name);
         if (targetService == null) {
-            warnings.add("user-group service '" + name + "' does not exist on the target; skipping its users/groups");
-            return;
+            targetService = bootstrapUserGroupService(name, sourceService);
+            if (targetService == null) {
+                warnings.add("could not create the missing user-group service '" + name + "'; skipping its data");
+                return;
+            }
         }
         if (!targetService.canCreateStore()) {
             warnings.add("user-group service '" + name + "' is read-only on the target (e.g. LDAP); skipping merge");
@@ -140,8 +152,11 @@ public class SecurityMerger {
         }
         GeoServerRoleService targetService = target.loadRoleService(name);
         if (targetService == null) {
-            warnings.add("role service '" + name + "' does not exist on the target; skipping its roles");
-            return;
+            targetService = bootstrapRoleService(name);
+            if (targetService == null) {
+                warnings.add("could not create the missing role service '" + name + "'; skipping its roles");
+                return;
+            }
         }
         if (!targetService.canCreateStore()) {
             warnings.add("role service '" + name + "' is read-only on the target; skipping merge");
@@ -181,5 +196,45 @@ public class SecurityMerger {
         }
         store.store();
         LOGGER.info(() -> "Merged role service '" + name + "': +" + rolesAdded + " roles (add-only)");
+    }
+
+    /** Creates an empty XML user-group service mirroring the source's password encoder/policy, then loads it. */
+    private GeoServerUserGroupService bootstrapUserGroupService(String name, GeoServerUserGroupService source) {
+        try {
+            XMLUserGroupServiceConfig config = new XMLUserGroupServiceConfig();
+            config.setName(name);
+            config.setClassName(XMLUserGroupService.class.getName());
+            config.setFileName("users.xml");
+            config.setValidating(true);
+            config.setCheckInterval(10000);
+            config.setPasswordEncoderName(source.getPasswordEncoderName());
+            config.setPasswordPolicyName(source.getPasswordValidatorName());
+            target.saveUserGroupService(config);
+            servicesBootstrapped++;
+            LOGGER.info(() -> "Bootstrapped missing user-group service '" + name + "' on the target before merging");
+            return target.loadUserGroupService(name);
+        } catch (Exception e) {
+            warnings.add("could not bootstrap user-group service '" + name + "': " + e.getMessage());
+            return null;
+        }
+    }
+
+    /** Creates an empty XML role service on the target, then loads it. */
+    private GeoServerRoleService bootstrapRoleService(String name) {
+        try {
+            XMLRoleServiceConfig config = new XMLRoleServiceConfig();
+            config.setName(name);
+            config.setClassName(XMLRoleService.class.getName());
+            config.setFileName("roles.xml");
+            config.setValidating(true);
+            config.setCheckInterval(10000);
+            target.saveRoleService(config);
+            servicesBootstrapped++;
+            LOGGER.info(() -> "Bootstrapped missing role service '" + name + "' on the target before merging");
+            return target.loadRoleService(name);
+        } catch (Exception e) {
+            warnings.add("could not bootstrap role service '" + name + "': " + e.getMessage());
+            return null;
+        }
     }
 }

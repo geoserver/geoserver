@@ -89,6 +89,14 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
      */
     public static final String PARAM_SOURCE_MASTER_PASSWORD = "BK_SOURCE_MASTER_PASSWORD";
 
+    /**
+     * The target instance's master password, required alongside {@link #PARAM_SOURCE_MASTER_PASSWORD} for a security
+     * REPLACE keystore re-encryption. GeoServer deliberately does not expose the running instance's master password to
+     * arbitrary code, so the caller must supply it; it must match the target's actual master password or the re-encrypt
+     * is rejected. Sensitive: handle as a transient parameter.
+     */
+    public static final String PARAM_TARGET_MASTER_PASSWORD = "BK_TARGET_MASTER_PASSWORD";
+
     static Logger LOGGER = Logging.getLogger(Backup.class);
 
     /* Job Parameters Keys **/
@@ -697,6 +705,7 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                             case PARAM_EXCLUDE_FILE_PATH:
                             case PARAM_PASSWORD_TOKENS:
                             case PARAM_SOURCE_MASTER_PASSWORD:
+                            case PARAM_TARGET_MASTER_PASSWORD:
                                 paramsBuilder.addString(k, (String) param.getValue());
                                 break;
                             case PARAM_PARAMETERIZE_PASSWDS:
@@ -778,6 +787,14 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
      */
     public static String getSourceMasterPassword(JobParameters params) {
         return params.getString(PARAM_SOURCE_MASTER_PASSWORD, null);
+    }
+
+    /**
+     * The target instance's master password supplied for a security REPLACE keystore re-encryption, or {@code null}
+     * when not provided. See {@link #PARAM_TARGET_MASTER_PASSWORD}.
+     */
+    public static String getTargetMasterPassword(JobParameters params) {
+        return params.getString(PARAM_TARGET_MASTER_PASSWORD, null);
     }
 
     public XStreamPersister createXStreamPersisterXML() {

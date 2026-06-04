@@ -17,6 +17,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.KeyStoreProvider;
 import org.geoserver.security.SecurityManagerListener;
 import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.UnexpectedJobExecutionException;
@@ -260,6 +261,22 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                                     "Exception occurred while storing GeoServer security and services settings!", e));
                 }
 
+                // BK_SOURCE_MASTER_PASSWORD + BK_TARGET_MASTER_PASSWORD: the copied keystore is encrypted with the
+                // source instance's master password and is unreadable on a target whose master password differs. When
+                // both are supplied, re-encrypt the keystore to the target's master password so the reload below can
+                // read it (and the migrated reversible user passwords stay decryptable). This - together with the
+                // verbatim copy of the rest of the security folder (filters, auth providers, master-password config,
+                // service/resource security) - is the full-security migration path; MERGE is the narrow users/roles
+                // alternative.
+                String sourceMasterPassword = Backup.getSourceMasterPassword(jobExecution.getJobParameters());
+                String targetMasterPassword = Backup.getTargetMasterPassword(jobExecution.getJobParameters());
+                if (sourceMasterPassword != null
+                        && !sourceMasterPassword.isEmpty()
+                        && targetMasterPassword != null
+                        && !targetMasterPassword.isEmpty()) {
+                    reencryptKeystore(sourceMasterPassword, targetMasterPassword);
+                }
+
                 // Reload Security Context
                 GeoServerSecurityManager securityContext = GeoServerExtensions.bean(GeoServerSecurityManager.class);
                 securityContext.reload();
@@ -316,6 +333,32 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
             }
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Could not compute the security-replace loss warning", e);
+        }
+    }
+
+    /**
+     * Re-encrypts the just-restored security keystore from the source instance's master password to the target's, so a
+     * REPLACE security restore is readable on a target whose master password differs (and the migrated reversible user
+     * passwords stay decryptable). {@code targetMasterPassword} must match the target's actual master password —
+     * GeoServer does not expose it to be read, so the caller supplies it; the keystore provider rejects the commit if
+     * it is wrong. Best-effort: a failure is logged as a validation exception.
+     */
+    private void reencryptKeystore(String sourceMasterPassword, String targetMasterPassword) throws Exception {
+        try {
+            GeoServerSecurityManager securityManager = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+            KeyStoreProvider keyStoreProvider = securityManager.getKeyStoreProvider();
+            keyStoreProvider.prepareForMasterPasswordChange(
+                    sourceMasterPassword.toCharArray(), targetMasterPassword.toCharArray());
+            keyStoreProvider.commitMasterPasswordChange();
+            keyStoreProvider.reloadKeyStore();
+            LOGGER.info("Re-encrypted the restored security keystore to the target's master password.");
+        } catch (Exception e) {
+            logValidationExceptions(
+                    (ValidationResult) null,
+                    new UnexpectedJobExecutionException(
+                            "Could not re-encrypt the restored security keystore with the target master password; "
+                                    + "verify BK_SOURCE_MASTER_PASSWORD and BK_TARGET_MASTER_PASSWORD.",
+                            e));
         }
     }
 

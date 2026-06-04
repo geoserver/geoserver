@@ -5,7 +5,7 @@
 package org.geoserver.backuprestore;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotSame;
 
 import java.lang.reflect.Method;
 import org.geoserver.platform.resource.Resource;
@@ -45,7 +45,7 @@ public class KeystoreReencryptTest extends GeoServerSystemTestSupport {
         ksp.reloadKeyStore();
 
         // the keystore is still in place and the whole security subsystem still loads from it
-        assertTrue(ksp.getResource().getType() != Resource.Type.UNDEFINED);
+        assertNotSame(Resource.Type.UNDEFINED, ksp.getResource().getType());
         secMgr.reload();
     }
 }

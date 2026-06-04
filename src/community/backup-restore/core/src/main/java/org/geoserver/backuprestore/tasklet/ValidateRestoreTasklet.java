@@ -80,21 +80,7 @@ public class ValidateRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
             ((CatalogImpl) catalog).setExtendedValidation(true);
         }
 
-        final List<String> problems = new ArrayList<>();
-        // isNew=false: every object is already present in the restore catalog (added + saved during the chunk steps),
-        // so referential checks resolve against the fully-assembled graph instead of false-failing on load order.
-        check(catalog.getWorkspaces(), w -> catalog.validate(w, false), WorkspaceInfo::getName, "workspace", problems);
-        check(catalog.getNamespaces(), n -> catalog.validate(n, false), NamespaceInfo::getPrefix, "namespace", problems);
-        check(catalog.getStores(StoreInfo.class), s -> catalog.validate(s, false), StoreInfo::getName, "store", problems);
-        check(
-                catalog.getResources(ResourceInfo.class),
-                r -> catalog.validate(r, false),
-                ResourceInfo::getName,
-                "resource",
-                problems);
-        check(catalog.getStyles(), st -> catalog.validate(st, false), StyleInfo::getName, "style", problems);
-        check(catalog.getLayers(), l -> catalog.validate(l, false), LayerInfo::getName, "layer", problems);
-        check(catalog.getLayerGroups(), lg -> catalog.validate(lg, false), LayerGroupInfo::getName, "layerGroup", problems);
+        final List<String> problems = collectProblems(catalog);
 
         if (problems.isEmpty()) {
             LOGGER.info("Restore pre-flight validation: the assembled catalog is valid.");
@@ -127,7 +113,35 @@ public class ValidateRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
         return RepeatStatus.FINISHED;
     }
 
-    private <T extends CatalogInfo> void check(
+    /**
+     * Validates every catalog object in the (fully-assembled) catalog and returns a human-readable description of each
+     * invalidity. Package-visible and static so it can be unit-tested against a hand-built catalog without a running
+     * restore job. {@code isNew=false}: the objects are already members of the catalog, so referential checks resolve
+     * against the complete graph instead of false-failing on load order.
+     */
+    static List<String> collectProblems(Catalog catalog) {
+        final List<String> problems = new ArrayList<>();
+        check(catalog.getWorkspaces(), w -> catalog.validate(w, false), WorkspaceInfo::getName, "workspace", problems);
+        check(catalog.getNamespaces(), n -> catalog.validate(n, false), NamespaceInfo::getPrefix, "namespace", problems);
+        check(catalog.getStores(StoreInfo.class), s -> catalog.validate(s, false), StoreInfo::getName, "store", problems);
+        check(
+                catalog.getResources(ResourceInfo.class),
+                r -> catalog.validate(r, false),
+                ResourceInfo::getName,
+                "resource",
+                problems);
+        check(catalog.getStyles(), st -> catalog.validate(st, false), StyleInfo::getName, "style", problems);
+        check(catalog.getLayers(), l -> catalog.validate(l, false), LayerInfo::getName, "layer", problems);
+        check(
+                catalog.getLayerGroups(),
+                lg -> catalog.validate(lg, false),
+                LayerGroupInfo::getName,
+                "layerGroup",
+                problems);
+        return problems;
+    }
+
+    private static <T extends CatalogInfo> void check(
             List<T> items,
             Function<T, ValidationResult> validator,
             Function<T, String> namer,

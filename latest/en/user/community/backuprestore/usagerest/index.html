@@ -30032,12 +30032,17 @@
 <ol>
 <li><code>BK_BEST_EFFORT</code>: Skip any failing resources and proceed with the backup procedure. Default: <code>false</code>.</li>
 <li><code>BK_PARAM_PASSWORDS</code>: Whether outgoing store passwords should be parameterized in the backup. With this option set all store passwords will be replaced with a token that looks like <code>\${workspaceName:storeName.passwd.encryptedValue}</code>. See also <code>BK_PASSWORD_TOKENS</code> for the Restore command.</li>
-<li><code>BK_SKIP_SECURITY</code>: This will exclude security settings from the backup. Default: <code>true</code>.</li>
+<li><code>BK_SKIP_SECURITY</code>: This will exclude security settings from the backup. Default: <code>true</code> (security is excluded). A workspace <code>Filter</code> also forces security to be skipped.</li>
 <li><code>BK_SKIP_SETTINGS</code>: This will attempt to exclude global settings from the backup, as well as security settings. Default: <code>true</code>.</li>
 <li><code>BK_SKIP_GWC</code>: This option will avoid backup / restore the GWC catalog and folders. Default: <code>false</code>.</li>
 <li><code>BK_CLEANUP_TEMP</code>: This will attempt to delete temporary folder at the end of the execution. Default: <code>true</code>.</li>
+<li><code>BK_PRESERVE_IDS</code>: Keep every catalog object's internal id in the archive and write cross-references <strong>by id</strong> instead of by name. Default: <code>false</code>. By default the archive is <em>portable</em> — ids are stripped and objects reference each other by name — which is the right choice when restoring into a fresh, empty data directory. Set this to <code>true</code> when you intend to <strong>migrate</strong> the archive into another, already-populated GeoServer instance and need the original identities to be preserved (see <a href="../usecases/#migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance</a>). The flag is a <strong>backup-side</strong> option only: the restore reads whichever of <code>&lt;id&gt;</code>/<code>&lt;name&gt;</code> each reference carries, so an id-based archive restores correctly with the default restore command — no matching option is required.</li>
 <li><code>exclude.file.path</code>: A <code>;</code> separated list of paths relative to the <code>GEOSERVER_DATA_DIR</code> (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: <code>[]</code>. WARNING: <code>security</code> and <code>workspaces</code> are treated differently. This option should be used only for custom external resources located under the <code>GEOSERVER_DATA_DIR</code>.</li>
 </ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>BK_SKIP_SECURITY</code> and <code>BK_SKIP_SETTINGS</code> default to <code>true</code>, so a backup <strong>excludes</strong> security and global settings unless you pass <code>=false</code>. To include them, set the option explicitly (the GeoServer UI exposes these as checkboxes).</p>
+</div>
 <p>Also an optional <code>Filter</code> can be passed to restrict the scope of the restore operation to a list of workspaces.</p>
 <p>For example:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
@@ -30147,13 +30152,13 @@
 </code></pre></div>
 </li>
 <li>
-<p><code>BK_SKIP_SECURITY</code>: This will exclude security settings from the restore. Default: <code>true</code>.</p>
+<p><code>BK_SKIP_SECURITY</code>: This will exclude security settings from the restore. Default: <code>true</code> (security is <strong>not</strong> restored). A workspace <code>Filter</code> also forces security to be skipped. Set <code>BK_SKIP_SECURITY=false</code> to restore the security configuration from the archive (this overwrites the target's users, groups, roles and authentication).</p>
 </li>
 <li>
-<p><code>BK_SKIP_SETTINGS</code>: This will attempt to exclude global settings from the backup, as well as security settings. Default: <code>true</code>.</p>
+<p><code>BK_SKIP_SETTINGS</code>: This will attempt to exclude global settings from the restore, as well as security settings. Default: <code>true</code>.</p>
 </li>
 <li>
-<p><code>BK_PURGE_RESOURCES</code>: If 'false' this parameter will avoid deleting incoming resources where possible. In particular, existing workspaces will not be deleted during the restore. Default: <code>true</code>.</p>
+<p><code>BK_PURGE_RESOURCES</code>: Whether the restore deletes pre-existing resources (e.g. drops existing workspaces) before restoring. Default: <code>true</code> — <strong>a restore is destructive by default</strong>. Set <code>BK_PURGE_RESOURCES=false</code> to merge the archive into the existing catalog without deleting anything.</p>
 </li>
 <li>
 <p><code>BK_SKIP_GWC</code>: This option will avoid backup / restore the GWC catalog and folders. Default: <code>false</code>.</p>
@@ -30165,6 +30170,14 @@
 <p><code>exclude.file.path</code>: A <code>;</code> separated list of paths relative to the <code>GEOSERVER_DATA_DIR</code> (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: <code>[]</code>. WARNING: <code>security</code> and <code>workspaces</code> are treated differently. This option should be used only for custom external resources located under the <code>GEOSERVER_DATA_DIR</code>.</p>
 </li>
 </ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A restore is <strong>destructive by default</strong>: with the default options it drops pre-existing resources (<code>BK_PURGE_RESOURCES=true</code>) and does not restore security or global settings (<code>BK_SKIP_SECURITY</code> / <code>BK_SKIP_SETTINGS</code> = <code>true</code>). To <strong>merge</strong> an archive into the current catalog without deleting anything, pass <code>BK_PURGE_RESOURCES=false</code>. Always run a <code>BK_DRY_RUN=true</code> first. The GeoServer UI exposes all three as checkboxes (pre-checked to these defaults).</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is no <code>BK_PRESERVE_IDS</code> option on the restore side. The restore automatically adapts to whatever the archive contains: a name-based (default) archive is matched against the target catalog by name, while an id-based archive (produced with <code>BK_PRESERVE_IDS=true</code> on the backup) is matched first by id and then by name. Restoring an id-based archive into the <strong>same</strong> instance is therefore idempotent — objects whose id already exists are skipped — and restoring it into a <strong>different</strong> instance preserves the original ids so cross-references and GWC tile layers re-link correctly. See <a href="../usecases/#migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance</a>.</p>
+</div>
 <p>Also an optional <code>Filter</code> can be passed to restrict the scope of the restore operation to a list of workspaces.</p>
 <p>For example:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>{

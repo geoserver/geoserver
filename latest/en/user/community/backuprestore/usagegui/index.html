@@ -29943,6 +29943,12 @@
 <ol>
 <li><code>Overwrite Existing Archive</code>: When enabled the backup procedure will overwrite any previously existing archive</li>
 <li><code>Skip Failing Resources</code>: If enabled and errors are found during the backup of existing resources, skip the resource and go ahead with the backup procedure</li>
+<li><code>Clean-Up Temp Resources</code>: Delete the temporary working folder at the end of the execution</li>
+<li><code>Skip GeoWebCache</code>: Exclude the GWC catalog and tile-layer folders from the backup</li>
+<li><code>Parameterize Store Passwords</code>: Replace store passwords in the archive with parameterizable tokens instead of the encrypted values (see <code>BK_PARAM_PASSWORDS</code> under <a href="../usagerest/">Usage Via REST</a>)</li>
+<li><code>Preserve Catalog IDs (for migration)</code>: Keep catalog object ids and write cross-references by id, producing an archive suited to migrating into another, already-populated instance. Off by default (the portable, name-based archive). See <a href="../usecases/#migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance</a></li>
+<li><code>Skip Security Settings</code>: Exclude the security configuration (users, groups, roles, services) from the backup. <strong>Checked by default</strong>, matching the <code>BK_SKIP_SECURITY</code> REST default. Uncheck to include security in the archive</li>
+<li><code>Skip Global Settings</code>: Exclude the global settings from the backup. <strong>Checked by default</strong>, matching the <code>BK_SKIP_SETTINGS</code> REST default</li>
 </ol>
 </li>
 <li>
@@ -29953,12 +29959,25 @@
 <ol>
 <li><code>Dry Run</code>: Test the restore procedure using the provided archive but do not apply any changes to current configuration. Useful to test archives before actually performing a Restore</li>
 <li><code>Skip Failing Resources</code>: If enabled and errors are found during the restore of resources, skip the resource and go ahead with the restore procedure</li>
+<li><code>Clean-Up Temp Resources</code>: Delete the temporary working folder at the end of the execution</li>
+<li><code>Skip GeoWebCache</code>: Exclude the GWC catalog and tile-layer folders from the restore</li>
+<li><code>Skip Security Settings</code>: Do not restore the security configuration. <strong>Checked by default</strong>, matching the <code>BK_SKIP_SECURITY</code> REST default. Uncheck only when the archive contains a security folder you intend to restore</li>
+<li><code>Skip Global Settings</code>: Do not restore the global settings. <strong>Checked by default</strong>, matching the <code>BK_SKIP_SETTINGS</code> REST default</li>
+<li><code>Purge Existing Resources</code>: Delete incoming resources where possible before restoring (e.g. drop existing workspaces). <strong>Checked by default</strong>, matching the <code>BK_PURGE_RESOURCES</code> REST default. Uncheck to merge into the existing catalog without deleting</li>
 </ol>
 </li>
 <li>
 <p><code>Restore Executions</code>: Report of running and previously run restore</p>
 </li>
 </ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code>Skip Security Settings</code> is checked by default for a reason: restoring security configuration replaces the target's users, groups, roles and authentication settings. Only uncheck it when you understand the archive's security content and intend to overwrite the target's security. See the <a href="../usecases/#partial-and-cross-instance-restores">partial / cross-instance restore notes</a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The remaining <code>BK_*</code> options (e.g. password-token substitution, <code>exclude.file.path</code>) are available only through the <a href="../usagerest/">REST API</a>, which exposes the full option set.</p>
+</div>
 <h2 id="performing-a-full-backup-via-ui">Performing a full backup via UI<a class="headerlink" href="#performing-a-full-backup-via-ui" title="Permanent link">&para;</a></h2>
 <p>In order to perform a full backup, provide the full path of the target <code>.zip</code> archive where to store the configuration data.</p>
 <div class="admonition note">
@@ -29972,9 +29991,13 @@
 <p class="admonition-title">Note</p>
 <p>Please notice that while performing a backup or restore task, GeoServer won't allow users to access other sections by locking the catalog and configuration until the process has finished. Although it is always possible to stop or abandon a backup or restore procedure.</p>
 </div>
-<p>At the end of the backup, the user will be redirected to an <code>Execution Summary</code> page</p>
+<p>While the job runs, the status shown next to the <code>Start</code> button updates automatically and reports the current progress as <code>&lt;status&gt; — step &lt;done&gt;/&lt;total&gt; (&lt;current step&gt;)</code>. At the end of the backup, the user will be redirected to an <code>Execution Summary</code> page</p>
 <p><img alt="" src="../images/usagegui004.png" /></p>
 <p>The same page can be accessed also later by clicking an execution link from the main page.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>Execution Details</code> page refreshes itself automatically while the job is still running, so the step states and progress update without any action; a manual <code>refresh</code> link is also available. The page stops auto-refreshing once the job reaches a terminal state.</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Please notice that the list of executions is not persisted and therefore it will be reset after a GeoServer container <strong>restart</strong>.</p>

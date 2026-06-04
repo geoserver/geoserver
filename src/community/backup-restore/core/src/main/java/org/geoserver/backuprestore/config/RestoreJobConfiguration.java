@@ -351,6 +351,10 @@ public class RestoreJobConfiguration {
     // restoreExecutionPromotionListener step listener, matching the XML.
     // -------------------------------------------------------------------------------------------------------------
 
+    // chunk(CompletionPolicy, txMgr) keeps the restore's TimeoutTerminationPolicy (one atomic chunk with a 10-minute
+    // safety timeout). The new ChunkOrientedStepBuilder.chunk(int) is fixed-size only, so there is no
+    // behaviour-preserving migration; suppress until the restore chunking strategy is revisited.
+    @SuppressWarnings("removal")
     private <T> Step chunkStep(
             String name,
             JobRepository jobRepository,

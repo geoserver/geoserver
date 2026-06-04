@@ -7,7 +7,6 @@ package org.geoserver.backuprestore.config;
 import javax.sql.DataSource;
 import org.geoserver.backuprestore.TolerantMapJobRegistry;
 import org.springframework.batch.core.configuration.JobRegistry;
-import org.springframework.batch.core.configuration.support.JobRegistrySmartInitializingSingleton;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.JobOperatorFactoryBean;
 import org.springframework.batch.core.repository.JobRepository;
@@ -101,22 +100,15 @@ public class BatchInfrastructureConfiguration {
      * {@link TolerantMapJobRegistry} (a {@code MapJobRegistry} that ignores duplicate registrations) is used instead of
      * the stock registry: in the full GeoServer assembly the backup/restore jobs are presented to the registry twice
      * and the strict registry would abort start-up with a {@code DuplicateJobException}.
+     *
+     * <p>In Spring Batch 6 a {@code MapJobRegistry} is itself a {@code SmartInitializingSingleton} that auto-registers
+     * every {@code Job} bean in the context, so no separate registrar bean is needed; its {@code register()} —
+     * overridden here to be tolerant — absorbs the assembly's duplicate registrations (the framework's own
+     * {@code afterSingletonsInstantiated} would otherwise re-throw them as an {@code IllegalStateException}).
      */
     @Bean
     public JobRegistry jobRegistry() {
         return new TolerantMapJobRegistry();
-    }
-
-    /**
-     * Auto-registers the {@code Job} beans by name into the job registry (replaces
-     * {@code JobRegistryBeanPostProcessor}).
-     */
-    @Bean
-    public JobRegistrySmartInitializingSingleton jobRegistrySmartInitializingSingleton(
-            @Qualifier("jobRegistry") JobRegistry jobRegistry) {
-        JobRegistrySmartInitializingSingleton singleton = new JobRegistrySmartInitializingSingleton();
-        singleton.setJobRegistry(jobRegistry);
-        return singleton;
     }
 
     /**

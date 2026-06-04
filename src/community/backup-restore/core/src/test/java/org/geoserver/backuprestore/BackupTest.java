@@ -46,6 +46,7 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.configuration.JobRegistry;
 
 /** @author Alessio Fabiani, GeoSolutions */
 @RunWith(Enclosed.class)
@@ -302,6 +303,19 @@ public class BackupTest extends BackupRestoreTestSupport {
             backupFacade.stopExecution(-1L);
             backupFacade.abandonExecution(-1L);
             assertNull(backupFacade.restartExecution(-1L));
+        }
+
+        /**
+         * The backup/restore jobs must be auto-registered in the {@link JobRegistry}: with the deprecated
+         * {@code JobRegistrySmartInitializingSingleton} removed, registration now relies on Spring Batch 6's
+         * {@code MapJobRegistry} auto-registration (via {@code TolerantMapJobRegistry}).
+         */
+        @Test
+        public void testJobsAreRegistered() {
+            JobRegistry registry = GeoServerExtensions.bean(JobRegistry.class);
+            assertNotNull(registry);
+            assertTrue(registry.getJobNames().contains(Backup.BACKUP_JOB_NAME));
+            assertTrue(registry.getJobNames().contains(Backup.RESTORE_JOB_NAME));
         }
 
         @Test

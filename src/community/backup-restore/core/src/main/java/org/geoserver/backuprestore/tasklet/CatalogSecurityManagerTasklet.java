@@ -183,9 +183,10 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                 testGssm.setApplicationContext(Backup.getContext());
                 testGssm.reload();
 
-                // TODO: Perform more validation tests here using "testGssm"
-
-                // TODO: Save detailed warnings and validation issues on the JobContext
+                // Warn about anything the verbatim replace will drop: a user-group / role service present on the
+                // target but absent from the archive is removed by the copy, which on a cross-instance restore would
+                // silently lose it (and any users/roles it holds).
+                warnAboutReplaceLosses(testGssm);
             } catch (Exception e) {
                 logValidationExceptions(
                         (ValidationResult) null,
@@ -290,6 +291,32 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
         }
 
         return RepeatStatus.FINISHED;
+    }
+
+    /**
+     * Logs a warning for every user-group / role service present on the target but absent from the archive: a verbatim
+     * security replace removes them, which on a cross-instance restore silently drops those services and their data.
+     */
+    private void warnAboutReplaceLosses(GeoServerSecurityManager archive) {
+        try {
+            GeoServerSecurityManager target = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+            java.util.SortedSet<String> archiveUserGroup = archive.listUserGroupServices();
+            for (String name : target.listUserGroupServices()) {
+                if (!archiveUserGroup.contains(name)) {
+                    LOGGER.warning("Security restore (replace): user-group service '" + name
+                            + "' exists on the target but not in the archive and will be removed.");
+                }
+            }
+            java.util.SortedSet<String> archiveRole = archive.listRoleServices();
+            for (String name : target.listRoleServices()) {
+                if (!archiveRole.contains(name)) {
+                    LOGGER.warning("Security restore (replace): role service '" + name
+                            + "' exists on the target but not in the archive and will be removed.");
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Could not compute the security-replace loss warning", e);
+        }
     }
 
     @Override

@@ -107,6 +107,28 @@ public class RestoreSnapshotRollbackTest {
         assertEquals(before, digest(dataDir));
     }
 
+    /** A root *.xml the restore introduces (absent in the snapshot) must be removed by the rollback. */
+    @Test
+    public void rollbackRemovesRootXmlCreatedByTheRestore() throws Exception {
+        File dataDir = newDataDir();
+        assertFalse(new File(dataDir, "wps.xml").exists());
+        String before = digest(dataDir);
+
+        File snapshot = RestoreJobExecutionListener.snapshotDataDirectory(dataDir);
+        try {
+            // The restore writes a brand-new root service descriptor.
+            write(new File(dataDir, "wps.xml"), "<wps/>");
+            RestoreJobExecutionListener.rollbackDataDirectory(dataDir, snapshot);
+        } finally {
+            FileUtils.deleteDirectory(snapshot);
+        }
+
+        assertFalse(
+                "rollback must remove a root *.xml that did not exist before the restore",
+                new File(dataDir, "wps.xml").exists());
+        assertEquals(before, digest(dataDir));
+    }
+
     /** A tracked subtree the restore wipes (e.g. on a purge restore) must be brought back by the rollback. */
     @Test
     public void rollbackRestoresSubtreesDeletedByTheRestore() throws Exception {

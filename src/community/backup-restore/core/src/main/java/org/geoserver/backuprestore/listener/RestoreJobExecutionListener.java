@@ -340,10 +340,12 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
     }
 
     /**
-     * Replaces each snapshotted subtree / root file over {@code baseDir} (delete-then-copy). A subtree present in the
-     * snapshot is restored verbatim; a subtree absent from the snapshot but present live (i.e. created by the restore)
-     * is removed. Package-visible and static so the on-disk rollback mechanics can be unit-tested without the live
-     * GeoServer / security singletons that the in-memory reload needs.
+     * Replaces each snapshotted subtree / root file over {@code baseDir} (delete-then-copy) so the tracked parts of the
+     * data directory are byte-identical to the snapshot. A subtree present in the snapshot is restored verbatim; a
+     * subtree absent from the snapshot but present live (i.e. created by the restore) is removed. Likewise a root
+     * {@code *.xml} present in the snapshot is overwritten back, and a root {@code *.xml} the restore introduced
+     * (absent from the snapshot) is deleted. Package-visible and static so the on-disk rollback mechanics can be
+     * unit-tested without the live GeoServer / security singletons that the in-memory reload needs.
      */
     static void rollbackDataDirectory(File baseDir, File snapshot) throws IOException {
         for (String subtree : SNAPSHOT_SUBTREES) {
@@ -360,13 +362,23 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                 FileUtils.deleteDirectory(live);
             }
         }
-        // Root global *.xml: overwrite each saved file back over the live one. (We do not delete extra root xml files
-        // the restore may have introduced; the catalog/global reload re-reads the authoritative ones.)
-        File[] savedRootXml =
-                snapshot.listFiles((FileFilter) f -> f.isFile() && f.getName().endsWith(".xml"));
+        // Root global *.xml: overwrite each saved file back over the live one, and remove any root *.xml the restore
+        // introduced that the snapshot did not have, so the data-dir root is byte-identical to the pre-restore state.
+        final FileFilter rootXmlFilter = f -> f.isFile() && f.getName().endsWith(".xml");
+        final java.util.Set<String> savedNames = new java.util.HashSet<>();
+        File[] savedRootXml = snapshot.listFiles(rootXmlFilter);
         if (savedRootXml != null) {
             for (File xml : savedRootXml) {
+                savedNames.add(xml.getName());
                 FileUtils.copyFile(xml, new File(baseDir, xml.getName()));
+            }
+        }
+        File[] liveRootXml = baseDir.listFiles(rootXmlFilter);
+        if (liveRootXml != null) {
+            for (File xml : liveRootXml) {
+                if (!savedNames.contains(xml.getName())) {
+                    FileUtils.deleteQuietly(xml);
+                }
             }
         }
     }

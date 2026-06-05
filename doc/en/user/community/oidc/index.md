@@ -13,6 +13,7 @@ The `oidc` module is a security module that accepts users (and roles) from exter
 - [Configuring with a Generic OIDC IDP](oauth2/generic.md)
 - [Configuring the roles source](role-config.md)
 - [Advanced Information](advanced.md)
+- [Migrating from the legacy OAuth2/OIDC plugins](migrating.md)
 
 </div>
 

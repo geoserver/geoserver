@@ -1,0 +1,6 @@
+<acmeCustomAuthentication>
+  <id>legacy-acme-0001</id>
+  <name>acme</name>
+  <className>com.acme.geoserver.security.AcmeAuthenticationFilter</className>
+  <endpoint>https://sso.acme.example/authenticate</endpoint>
+</acmeCustomAuthentication>

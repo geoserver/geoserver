@@ -869,6 +869,7 @@ nav:
         - en/user/community/oidc/oauth2/generic.md
         - en/user/community/oidc/role-config.md
         - en/user/community/oidc/advanced.md
+        - en/user/community/oidc/migrating.md
       - PMTiles DataStore:
         - en/user/community/pmtiles-store/index.md
         - en/user/community/pmtiles-store/installing.md

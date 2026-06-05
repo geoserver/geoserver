@@ -11,9 +11,9 @@ To install the OIDC module:
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download `sec-oidc` zip archive.
+    Follow the **Extensions** link and download the `sec-oidc` plugin archive.
 
-    - {{ snapshot }} example: [sec-oidc](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-sec-oidc-plugin.zip)
+    - {{ snapshot }} example: [sec-oidc](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-sec-oidc-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -24,26 +24,6 @@ To install the OIDC module:
 
 4.  Restart GeoServer.
 
-Community modules are not yet ready for distribution with GeoServer release.
-
-1.  To compile the OIDC module yourself download the src bundle for your GeoServer version and compile:
-
-    ``` bash
-    cd src/community
-    mvn install -PcommunityRelease -DskipTests
-    ```
-
-2.  And package (from the top level geoserver directory):
-
-    ``` bash
-    cd ../..
-    mvn -f src/community/pom.xml clean install -B -DskipTests -PcommunityRelease,assembly  -T2 -fae
-    ```
-
-3.  Place the JARs in `WEB-INF/lib`.
-
-4.  Restart GeoServer.
-
 ## Using with the GeoServer Docker Container
 
 This will run GeoServer on port 9999 and install the OIDC module.
@@ -51,10 +31,9 @@ This will run GeoServer on port 9999 and install the OIDC module.
 ```bash
 docker run -it -p 9999:8080 \
    --env INSTALL_EXTENSIONS=true \
-   --env STABLE_EXTENSIONS="ysld,h2" \
-   --env COMMUNITY_EXTENSIONS="sec-oidc-plugin" \
+   --env STABLE_EXTENSIONS="ysld,h2,sec-oidc" \
    --env PROXY_BASE_URL="http://localhost:9999/geoserver" \
-   docker.osgeo.org/geoserver:2.28.x
+   docker.osgeo.org/geoserver:3.0.x
 ```
 
 !!! note

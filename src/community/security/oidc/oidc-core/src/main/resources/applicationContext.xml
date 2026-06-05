@@ -77,4 +77,10 @@
 	-->
 	<bean id="geoServerOAuth2ClientRegistrationRegistry"
 		class="org.geoserver.security.oauth2.login.OAuth2ClientRegistrationRegistry"/>
+
+	<!-- Recognizes authentication filters / role services created by removed OAuth2/OIDC community plugins
+	     (openid-connect/azure, keycloak, google, github, geonode) in an old data directory, so they are cleanly
+	     disabled and reported for migration instead of relying only on the core generic fallback. -->
+	<bean id="legacyOAuth2SecurityProvider"
+		class="org.geoserver.security.oauth2.legacy.OidcLegacyAliasProvider"/>
 </beans>

@@ -327,6 +327,9 @@ The next step is to configure your Keycloak as the OIDC IDP for GeoServer. You w
     - In the "OpenID Discovery Document" type in "http://localhost:7777/realms/gs-realm/.well-known/openid-configuration"
     - Press "Discover" (this will download OIDC metadata from your keycloak client)
 
+    !!! note
+        If GeoServer itself runs in Docker, it cannot reach the IdP at `localhost`; enter `http://host.docker.internal:7777/realms/gs-realm/.well-known/openid-configuration` instead so the GeoServer container can resolve Keycloak (see [Docker networking](../installing.md)).
+
     ![](../img/keycloak-gs-filter2.png)
 
 #\. After you press the "Discovery" button, most of the information will be filled out for you
@@ -372,11 +375,14 @@ The service-account user (auto-created when the previous step is enabled, named 
 
 1. Still on the `gs-client` page, click the **Service account roles** tab (only visible after Step 1).
 2. Click **Assign role**. In the dialog filter, type `realm-management` and pick the appropriate realm's client → tick:
-    - `view-realm`
-    - `view-users`
-    - `view-clients`
-    - `query-groups`
+    - `view-realm` *(required)*
+    - `view-users` *(required)*
+    - `view-clients` *(required)*
+    - `query-groups` *(recommended — needed to resolve group-inherited roles; the headline use case for this role source)*
 3. Press **Assign**.
+
+!!! note
+    The three `view-*` roles are the minimum the connector requires (this is also what the filter's *Keycloak Admin API* sub-panel hint states). Add `query-groups` when you rely on **group-inherited** roles so Keycloak can enumerate the user's group memberships; it is harmless to grant in all cases.
 
 !!! tip
     For a one-shot setup, the same can be done from a shell using `kcadm.sh`:

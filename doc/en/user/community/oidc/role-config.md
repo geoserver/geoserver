@@ -141,7 +141,7 @@ The `Keycloak Admin API` role source is a Keycloak-specific alternative to the t
 The admin calls are authenticated via a separate access token obtained through the OAuth2 [client credentials](https://www.rfc-editor.org/rfc/rfc6749#section-4.4) grant against the **same** OIDC client used for user login. The OIDC client therefore needs to satisfy two extra Keycloak-side prerequisites:
 
 - **Service Accounts → Enabled** (`serviceAccountsEnabled=true`)
-- **Service Account Roles** must include the realm-management roles needed to read users, clients, groups and realm metadata — at minimum `view-realm`, `view-users`, `view-clients`, `query-groups`.
+- **Service Account Roles** must include the realm-management roles needed to read users, clients and realm metadata — at minimum `view-realm`, `view-users`, `view-clients` (the set the filter's *Keycloak Admin API* hint lists), plus `query-groups` when you need to resolve **group-inherited** roles.
 
 See [Configuring Keycloak Admin API as the role source](oauth2/keycloak.md#community_oidc_keycloak_admin_api) for the step-by-step Keycloak setup.
 

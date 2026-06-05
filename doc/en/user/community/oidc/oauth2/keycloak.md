@@ -372,11 +372,14 @@ The service-account user (auto-created when the previous step is enabled, named 
 
 1. Still on the `gs-client` page, click the **Service account roles** tab (only visible after Step 1).
 2. Click **Assign role**. In the dialog filter, type `realm-management` and pick the appropriate realm's client → tick:
-    - `view-realm`
-    - `view-users`
-    - `view-clients`
-    - `query-groups`
+    - `view-realm` *(required)*
+    - `view-users` *(required)*
+    - `view-clients` *(required)*
+    - `query-groups` *(recommended — needed to resolve group-inherited roles; the headline use case for this role source)*
 3. Press **Assign**.
+
+!!! note
+    The three `view-*` roles are the minimum the connector requires (this is also what the filter's *Keycloak Admin API* sub-panel hint states). Add `query-groups` when you rely on **group-inherited** roles so Keycloak can enumerate the user's group memberships; it is harmless to grant in all cases.
 
 !!! tip
     For a one-shot setup, the same can be done from a shell using `kcadm.sh`:

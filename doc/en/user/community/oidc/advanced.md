@@ -142,17 +142,18 @@ Reference:
 
 ## JSON Web Key set URI
 
-The `JSON Web Key set URI` provides the location of a document of public keys that can be used to check the signature of the provided accessToken.
+The `JSON Web Key Set URI` provides the location of a document of public keys that can be used to check the signature of the provided accessToken.
 
-Optional: It is no longer required to use `Check Token Endpoint URL` - if you leave that field blank you may rely only on the `JSON Web Key set URI` signature check. When use in this manner roles cannot be extracted from access token.
+Optional: It is no longer required to use the `User Info URI` - if you leave that field blank you may rely only on the `JSON Web Key Set URI` signature check. When used in this manner roles cannot be extracted from the access token.
 
-## Enforce Token Validation
+## Disable token signature validation
 
-`True` by default.
+This option (**Disable token signature validation**, field `disableSignatureValidation`) is **unchecked by default**, so GeoServer validates the token signature out of the box --- the secure default. Check it only to **disable** signature validation (for example against a development IDP whose keys you do not want to verify); leave it unchecked in production.
 
-Check this option to enforce the validation of the token signature.
+!!! note
+    This replaces the legacy `enforceTokenValidation` flag, whose polarity was the opposite (it defaulted to `true` and was checked to *enforce* validation). The new `disableSignatureValidation` flag is inverted: the unchecked default already enforces validation. See [Migrating from the legacy OAuth2/OIDC plugins](../migrating.md#geoserver-field-renames).
 
-Per the `RFC 7517` or this doc from `auth0`, the parameters does not include neither `public_key_use` (but use nor `key_id` (but `kid`)
+Per the `RFC 7517` or this doc from `auth0`, the parameters do not include either `public_key_use` (but `use`) nor `key_id` (but `kid`)
 
 The RFC specifies that kid is optional (`RFC 7517: JSON Web Key (JWK)`) Use of this member is `OPTIONAL`.
 
@@ -192,7 +193,7 @@ In this example we are going to
 
 1.  Retrieve SSL certificates from Google domains:
 
-    "Access Token URI" = <https://accounts.google.com/o/oauth2/token> therefore we need to trust `https://accounts.google.com` or (`accounts.google.com:443`) "Check Token Endpoint URL" = <https://www.googleapis.com/oauth2/v1/tokeninfo> therefore we need to trust `https://www.googleapis.com` or (`www.googleapis.com:443`)
+    "Access Token URI" = <https://accounts.google.com/o/oauth2/token> therefore we need to trust `https://accounts.google.com` or (`accounts.google.com:443`); "User Info URI" = <https://www.googleapis.com/oauth2/v1/tokeninfo> therefore we need to trust `https://www.googleapis.com` or (`www.googleapis.com:443`)
 
     !!! note
         You will need to get and trust certificates from every different HTTPS URL used on OAuth2 Endpoints.

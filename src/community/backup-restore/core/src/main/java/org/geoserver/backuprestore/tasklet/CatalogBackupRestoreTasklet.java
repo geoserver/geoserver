@@ -1242,7 +1242,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // layer outside the subset; consult the live catalog too so existing layers are never pruned.
         final Catalog liveCatalog = backupFacade.getGeoServer().getCatalog();
         for (String id : new java.util.HashSet<>(gwcCatalog.getLayerIds())) {
-            boolean inRestore = getCatalog().getLayer(id) != null || getCatalog().getLayerGroup(id) != null;
+            boolean inRestore =
+                    getCatalog().getLayer(id) != null || getCatalog().getLayerGroup(id) != null;
             boolean inTarget = liveCatalog.getLayer(id) != null || liveCatalog.getLayerGroup(id) != null;
             if (!inRestore && !inTarget) {
                 GeoServerTileLayerInfo info = gwcCatalog.getLayerById(id);

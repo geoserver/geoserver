@@ -86,8 +86,8 @@ public class GwcRestoreTest extends BackupRestoreTestSupport {
 
     /**
      * A partial (workspace-filtered) restore must NOT prune the tile layers of layers outside the filter. The restore
-     * catalog only holds the filtered subset, so the dangling-prune used to delete every other tile layer; it must
-     * also consult the live target catalog (which keeps those existing layers).
+     * catalog only holds the filtered subset, so the dangling-prune used to delete every other tile layer; it must also
+     * consult the live target catalog (which keeps those existing layers).
      */
     @Test
     public void testPartialRestoreKeepsExistingTileLayers() throws Exception {
@@ -142,8 +142,7 @@ public class GwcRestoreTest extends BackupRestoreTestSupport {
             full = backupFacade.runRestoreAsync(file("testGWC.zip"), null, null, null, params);
             waitForRestore(full);
             Assume.assumeTrue(
-                    "baseline full restore did not complete (env timing)",
-                    full.getStatus() == BatchStatus.COMPLETED);
+                    "baseline full restore did not complete (env timing)", full.getStatus() == BatchStatus.COMPLETED);
             TileLayerCatalog gwcCatalog = (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
             int baseline = gwcCatalog.getLayerNames().size();
             Assume.assumeTrue("baseline restore produced too few tile layers", baseline > 1);

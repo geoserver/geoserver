@@ -70,7 +70,8 @@ public class SubsetClosureTest extends BackupRestoreTestSupport {
             Set<String> closure = SubsetClosure.compute(catalog, sf(), null, null);
             assertFalse(
                     "a global style nothing in the subset references must be absent (so the cascade prunes it)",
-                    closure.contains(catalog.getStyleByName("orphan_global_closure").getId()));
+                    closure.contains(
+                            catalog.getStyleByName("orphan_global_closure").getId()));
         } finally {
             catalog.remove(catalog.getStyleByName("orphan_global_closure"));
         }
@@ -85,7 +86,11 @@ public class SubsetClosureTest extends BackupRestoreTestSupport {
                 .filter(l -> l.getResource() != null
                         && l.getResource().getStore() != null
                         && l.getResource().getStore().getWorkspace() != null
-                        && !"sf".equals(l.getResource().getStore().getWorkspace().getName()))
+                        && !"sf"
+                                .equals(l.getResource()
+                                        .getStore()
+                                        .getWorkspace()
+                                        .getName()))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("expected a non-sf layer in the test catalog"));
         WorkspaceInfo foreignWs = foreignLayer.getResource().getStore().getWorkspace();

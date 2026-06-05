@@ -56,7 +56,9 @@ public class BackupRestoreDataPageTest extends GeoServerWicketTestSupport {
         tester.startPage(BackupRestoreDataPage.class);
         tester.assertRenderedPage(BackupRestoreDataPage.class);
 
-        // These mirror the documented REST defaults (BK_SKIP_SECURITY / BK_SKIP_SETTINGS / BK_PURGE_RESOURCES = true).
+        // These mirror the documented REST defaults (BK_PRESERVE_IDS / BK_SKIP_SECURITY / BK_SKIP_SETTINGS /
+        // BK_PURGE_RESOURCES = true).
+        assertChecked("backupForm:backupOptPreserveIds");
         assertChecked("backupForm:backupOptSkipSecurity");
         assertChecked("backupForm:backupOptSkipSettings");
         assertChecked("restoreForm:restoreOptSkipSecurity");
@@ -83,7 +85,7 @@ public class BackupRestoreDataPageTest extends GeoServerWicketTestSupport {
         // A representative per-option tooltip (rendered as a title attribute via wicket:message)
         assertTrue(
                 "Expected the Preserve Catalog IDs tooltip to be rendered",
-                html.contains("migrate the archive into another"));
+                html.contains("portable migration artifact"));
         assertTrue(
                 "Expected the Dry-Run tooltip to be rendered",
                 html.contains("Validate the archive and report what would happen"));

@@ -44,7 +44,9 @@ public class ValidateRestoreTaskletTest {
 
         List<String> problems = ValidateRestoreTasklet.collectProblems(catalog);
         assertEquals("exactly the corrupted style should be reported, got: " + problems, 1, problems.size());
-        assertTrue("the report should identify the style, got: " + problems, problems.get(0).startsWith("style"));
+        assertTrue(
+                "the report should identify the style, got: " + problems,
+                problems.get(0).startsWith("style"));
     }
 
     private static void addValidContent(Catalog catalog) {

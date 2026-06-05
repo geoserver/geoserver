@@ -35,9 +35,9 @@ import org.springframework.batch.infrastructure.repeat.RepeatStatus;
  * <p>Runs as a dedicated step after the restore catalog has been fully assembled (all catalog chunk steps plus the
  * GeoServer global and security steps) but before {@code finalizeRestore} reloads the live instance. Because the whole
  * graph is present and cross-referenced at this point, a single {@link Catalog#validate} sweep gives a trustworthy
- * verdict on whether the restored configuration is valid — unlike the per-item validation in {@code CatalogItemProcessor},
- * which runs while the catalog is only partially assembled and was progressively defanged (filter gating, id gating,
- * log-only store helpers, extended validation disabled) to avoid false failures.
+ * verdict on whether the restored configuration is valid — unlike the per-item validation in
+ * {@code CatalogItemProcessor}, which runs while the catalog is only partially assembled and was progressively defanged
+ * (filter gating, id gating, log-only store helpers, extended validation disabled) to avoid false failures.
  *
  * <p>By default the pass only <b>reports</b> (logs a summary and records the findings as warnings on the execution).
  * With {@code BK_FAIL_ON_INVALID=true} it <b>aborts</b> the restore (step FAILED), so {@code finalizeRestore} — and
@@ -122,8 +122,18 @@ public class ValidateRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
     static List<String> collectProblems(Catalog catalog) {
         final List<String> problems = new ArrayList<>();
         check(catalog.getWorkspaces(), w -> catalog.validate(w, false), WorkspaceInfo::getName, "workspace", problems);
-        check(catalog.getNamespaces(), n -> catalog.validate(n, false), NamespaceInfo::getPrefix, "namespace", problems);
-        check(catalog.getStores(StoreInfo.class), s -> catalog.validate(s, false), StoreInfo::getName, "store", problems);
+        check(
+                catalog.getNamespaces(),
+                n -> catalog.validate(n, false),
+                NamespaceInfo::getPrefix,
+                "namespace",
+                problems);
+        check(
+                catalog.getStores(StoreInfo.class),
+                s -> catalog.validate(s, false),
+                StoreInfo::getName,
+                "store",
+                problems);
         check(
                 catalog.getResources(ResourceInfo.class),
                 r -> catalog.validate(r, false),

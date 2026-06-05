@@ -9,5 +9,6 @@ This section describes the GeoServer Backup and Restore plugin functionality and
 - [Usage Via GeoServer's REST API](usagerest.md)
 - [Backup and Restore Extension for the management of ImageMosaic indexers](extensions.md)
 - [Use Cases](usecases.md)
+- [What changed between 2.x and 3.x](migration.md)
 
 </div>

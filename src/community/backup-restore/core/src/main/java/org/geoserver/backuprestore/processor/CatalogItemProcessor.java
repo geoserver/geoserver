@@ -5,7 +5,6 @@
 package org.geoserver.backuprestore.processor;
 
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
@@ -228,7 +227,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         return getClazz().cast(style);
     }
 
-    private T process(LayerGroupInfo lg) {
+    private T process(LayerGroupInfo lg) throws Exception {
         ValidationResult result = null;
         try {
             WorkspaceInfo ws = resolveWorkspace(lg);
@@ -248,10 +247,14 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error occurred while trying to process a Resource!", e);
-            if (getCurrentJobExecution() != null) {
-                getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
-            }
+            LOGGER.warning("Could not validate the layer group "
+                    + lg
+                    + " due to the following issue: "
+                    + e.getLocalizedMessage());
+            // consistent with process(StyleInfo)/process(LayerInfo): drop the item, and abort (or warn in best-effort)
+            // instead of keeping a layer group that failed validation
+            logValidationExceptions(result, e);
+            return null;
         }
         return getClazz().cast(lg);
     }
@@ -354,11 +357,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             return null;
         }
 
-        /*
-         * if (!filterIsValid() && resource == null && !validateResource((ResourceInfo) resource,
-         * isNew())) { LOGGER.warning("Skipped invalid resource: " + resource);
-         * logValidationExceptions(resource, null); return null; }
-         */
+        // Resource (feature type / coverage) validity is checked by the pre-flight ValidateRestoreTasklet against the
+        // fully-assembled catalog; per-item validation here is intentionally skipped — running it mid-restore caused
+        // false failures (the referenced store may not be added yet) and false duplicate-name drops on a merge.
         return getClazz().cast(resource);
     }
 
@@ -576,61 +577,6 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         resource.setWorkspace(ws);
 
         return true;
-    }
-
-    /**
-     * Being sure the associated {@link StoreInfo} exists and is available on the GeoServer Catalog.
-     *
-     * @param {@link ResourceInfo} resource
-     * @return boolean indicating whether the resource is valid or not.
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private boolean validateResource(ResourceInfo resource, boolean isNew) {
-        try {
-            final StoreInfo store = resource.getStore();
-            final NamespaceInfo namespace = resource.getNamespace();
-
-            if (store == null) {
-                return logValidationExceptions((T) resource, null);
-            }
-
-            final Class storeClazz = (store instanceof DataStoreInfo ? DataStoreInfo.class : CoverageStoreInfo.class);
-            final StoreInfo ds = this.getCatalog().getStoreByName(store.getName(), storeClazz);
-
-            if (ds != null) {
-                resource.setStore(ds);
-            } else {
-                return logValidationExceptions((T) resource, null);
-            }
-
-            ResourceInfo existing = getCatalog().getResourceByStore(store, resource.getName(), ResourceInfo.class);
-            if (existing != null && !existing.getId().equals(resource.getId())) {
-                final String msg = "Resource named '"
-                        + resource.getName()
-                        + "' already exists in store: '"
-                        + store.getName()
-                        + "'";
-                return logValidationExceptions((T) resource, new RuntimeException(msg));
-            }
-
-            existing = getCatalog().getResourceByName(namespace, resource.getName(), ResourceInfo.class);
-            if (existing != null && !existing.getId().equals(resource.getId())) {
-                final String msg = "Resource named '"
-                        + resource.getName()
-                        + "' already exists in namespace: '"
-                        + namespace.getPrefix()
-                        + "'";
-                return logValidationExceptions((T) resource, new RuntimeException(msg));
-            }
-
-            return true;
-        } catch (Exception e) {
-            LOGGER.warning("Could not validate the resource "
-                    + resource
-                    + " due to the following issue: "
-                    + e.getLocalizedMessage());
-            return logValidationExceptions((T) resource, e);
-        }
     }
 
     private WorkspaceInfo resolveWorkspace(CatalogInfo item) {

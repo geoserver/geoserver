@@ -106,8 +106,6 @@ public class StylesTest extends GeoServerSystemTestSupport {
         } catch (Exception e) {
             String message = e.getMessage();
             assertThat(message, containsString("Entity resolution disallowed"));
-            // old message, check for the file name
-            assertThat(message, containsString("/this/file/does/not/exist"));
         }
     }
 

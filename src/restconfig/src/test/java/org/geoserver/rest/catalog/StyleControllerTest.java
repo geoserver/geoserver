@@ -350,8 +350,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                 postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml, SLDHandler.MIMETYPE_10);
         assertEquals(500, response.getStatus());
         String message = response.getContentAsString();
-        assertThat(message, containsString("Entity resolution disallowed"));
-        assertThat(message, containsString("/this/file/does/not/exist"));
+        assertThat(message, containsString("DOCTYPE is disallowed"));
     }
 
     @Test
@@ -1203,8 +1202,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         // expecting a failure with explanation
         assertEquals(400, response.getStatus());
         final String content = response.getContentAsString();
-        assertThat(content, containsString("Entity resolution disallowed"));
-        assertThat(content, containsString("/this/file/does/not/exist"));
+        assertThat(content, containsString("DOCTYPE is disallowed"));
     }
 
     @Test

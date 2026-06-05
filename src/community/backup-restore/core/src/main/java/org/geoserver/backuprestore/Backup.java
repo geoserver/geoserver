@@ -83,9 +83,9 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     public static final String PARAM_MERGE_SECURITY = "BK_MERGE_SECURITY";
 
     /**
-     * The source instance's master password. When supplied on a security REPLACE restore it lets the archive's
-     * keystore be re-encrypted to the target's master password (otherwise the source-encrypted keystore cannot be read
-     * on a target with a different master password). Sensitive: handle as a transient parameter.
+     * The source instance's master password. When supplied on a security REPLACE restore it lets the archive's keystore
+     * be re-encrypted to the target's master password (otherwise the source-encrypted keystore cannot be read on a
+     * target with a different master password). Sensitive: handle as a transient parameter.
      */
     public static final String PARAM_SOURCE_MASTER_PASSWORD = "BK_SOURCE_MASTER_PASSWORD";
 
@@ -782,8 +782,8 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     }
 
     /**
-     * The source instance's master password supplied for a security REPLACE restore, or {@code null} when not
-     * provided (the keystore is then copied verbatim). See {@link #PARAM_SOURCE_MASTER_PASSWORD}.
+     * The source instance's master password supplied for a security REPLACE restore, or {@code null} when not provided
+     * (the keystore is then copied verbatim). See {@link #PARAM_SOURCE_MASTER_PASSWORD}.
      */
     public static String getSourceMasterPassword(JobParameters params) {
         return params.getString(PARAM_SOURCE_MASTER_PASSWORD, null);

@@ -55,8 +55,8 @@ public class PreserveIdsBackupRestoreTest extends BackupRestoreTestSupport {
     }
 
     /**
-     * Runs a best-effort backup and returns the first matching {@code .dat} fragment. {@code preserveIds} of {@code
-     * null} leaves the option unset (exercising the default); {@code true}/{@code false} pass an explicit state.
+     * Runs a best-effort backup and returns the first matching {@code .dat} fragment. {@code preserveIds} of
+     * {@code null} leaves the option unset (exercising the default); {@code true}/{@code false} pass an explicit state.
      */
     private String backupAndReadDat(Boolean preserveIds, String datPrefix) throws Exception {
         File backupZip = File.createTempFile("preserveIds-" + preserveIds + "-", ".zip");

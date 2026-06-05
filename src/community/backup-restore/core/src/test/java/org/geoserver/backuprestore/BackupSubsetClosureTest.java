@@ -80,8 +80,7 @@ public class BackupSubsetClosureTest extends BackupRestoreTestSupport {
 
         // the workspace step honoured the filter (baseline that already worked) ...
         assertTrue("workspace.dat must carry the filtered 'sf' workspace", workspaceDat.contains("<name>sf</name>"));
-        assertFalse(
-                "workspace.dat must not carry the 'cdf' workspace", workspaceDat.contains("<name>cdf</name>"));
+        assertFalse("workspace.dat must not carry the 'cdf' workspace", workspaceDat.contains("<name>cdf</name>"));
 
         // ... the cascade now scopes the store step too — previously store.dat carried every workspace's stores,
         // including the default-workspace 'foo' GeoPackage store.
@@ -119,8 +118,7 @@ public class BackupSubsetClosureTest extends BackupRestoreTestSupport {
             assertFalse(
                     "an unreferenced global style must be pruned from the subset by the dependency-closure",
                     styleDat.contains("orphan_global_subset"));
-            assertTrue(
-                    "the workspace-scoped sf_style must be kept in the subset", styleDat.contains("sf_style"));
+            assertTrue("the workspace-scoped sf_style must be kept in the subset", styleDat.contains("sf_style"));
         } finally {
             catalog.remove(catalog.getStyleByName("orphan_global_subset"));
         }

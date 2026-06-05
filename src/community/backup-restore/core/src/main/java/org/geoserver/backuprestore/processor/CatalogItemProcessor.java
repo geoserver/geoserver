@@ -83,6 +83,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 .formatted(item, getCurrentJobExecution().getProgress()));
 
         if (item instanceof WorkspaceInfo info) return process(info);
+        if (item instanceof NamespaceInfo info) return process(info);
         if (item instanceof CoverageStoreInfo info) return process(info);
         if (item instanceof DataStoreInfo info) return process(info);
         if (item instanceof ResourceInfo info) return process(info);
@@ -410,6 +411,18 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         return getClazz().cast(item);
     }
 
+    private T process(NamespaceInfo ns) {
+        // A namespace is paired with its workspace (they share prefix/name); cascade the workspace filter so
+        // a filtered subset carries only the namespaces of the workspaces it actually includes, instead of
+        // every namespace in the catalog.
+        WorkspaceInfo ws = resolveWorkspace(ns);
+        if (filteredResource(getClazz().cast(ns), ws, true, NamespaceInfo.class)) {
+            LOGGER.log(Level.FINE, "Namespace filtered out: {0}", ns);
+            return null;
+        }
+        return getClazz().cast(ns);
+    }
+
     /**
      * Being sure the associated {@link NamespaceInfo} exists and is available on the GeoServer Catalog.
      *
@@ -629,6 +642,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             ws = info1.getWorkspace();
         } else if (item instanceof StyleInfo info) {
             ws = info.getWorkspace();
+        } else if (item instanceof NamespaceInfo nsInfo) {
+            // a namespace shares its prefix with the owning workspace's name
+            ws = getCatalog().getWorkspaceByName(nsInfo.getPrefix());
         } else {
             throw new IllegalArgumentException("Don't know how to extract workspace from " + item);
         }

@@ -277,8 +277,9 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("backupOptCleanTemp", new Model<Boolean>(true)));
         form.add(new CheckBox("backupOptSkipGWC", new Model<Boolean>(false)));
         form.add(new CheckBox("backupOptParamPasswords", new Model<Boolean>(false)));
-        form.add(new CheckBox("backupOptPreserveIds", new Model<Boolean>(false)));
-        // Default-true options: pre-checked to match the documented default (security / global settings excluded).
+        // Default-true options: pre-checked to match the documented default.
+        // Preserve Catalog IDs defaults on so a backup is a portable migration artifact (identities + GWC links kept).
+        form.add(new CheckBox("backupOptPreserveIds", new Model<Boolean>(true)));
         form.add(new CheckBox("backupOptSkipSecurity", new Model<Boolean>(true)));
         form.add(new CheckBox("backupOptSkipSettings", new Model<Boolean>(true)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
@@ -494,6 +495,9 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("restoreOptSkipSecurity", new Model<Boolean>(true)));
         form.add(new CheckBox("restoreOptSkipSettings", new Model<Boolean>(true)));
         form.add(new CheckBox("restoreOptPurgeResources", new Model<Boolean>(true)));
+        // Opt-in: merge the archive's users/groups/roles into the target's existing security services instead of
+        // replacing the whole security folder (migration-safe across instances with different master passwords).
+        form.add(new CheckBox("restoreOptMergeSecurity", new Model<Boolean>(false)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
         form.add(new AjaxSubmitLink("newRestoreStart", form) {
             @Override
@@ -637,6 +641,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 Boolean restoreOptSkipSecurity = ((CheckBox) form.get("restoreOptSkipSecurity")).getModelObject();
                 Boolean restoreOptSkipSettings = ((CheckBox) form.get("restoreOptSkipSettings")).getModelObject();
                 Boolean restoreOptPurgeResources = ((CheckBox) form.get("restoreOptPurgeResources")).getModelObject();
+                Boolean restoreOptMergeSecurity = ((CheckBox) form.get("restoreOptMergeSecurity")).getModelObject();
 
                 Hints hints = buildRestoreHints(
                         restoreOptDryRun,
@@ -645,7 +650,8 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         restoreOptSkipGWC,
                         restoreOptSkipSecurity,
                         restoreOptSkipSettings,
-                        restoreOptPurgeResources);
+                        restoreOptPurgeResources,
+                        restoreOptMergeSecurity);
 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 
@@ -756,10 +762,9 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
             hints.add(new Hints(
                     new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS), Backup.PARAM_PARAMETERIZE_PASSWDS));
         }
-        if (preserveIds) {
-            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS), Backup.PARAM_PRESERVE_IDS));
-        }
-        // Default-true options: always send an explicit true/false so that un-checking actually disables the skip.
+        // Default-true options: always send an explicit true/false so that un-checking actually disables the option
+        // (with the option absent the core would fall back to its default, which for preserve-ids is now true).
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PRESERVE_IDS, "*"), Boolean.toString(preserveIds)));
         hints.add(new Hints(
                 new Hints.OptionKey(Backup.PARAM_SKIP_SECURITY_SETTINGS, "*"), Boolean.toString(skipSecurity)));
         hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_SETTINGS, "*"), Boolean.toString(skipSettings)));
@@ -778,8 +783,12 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
             boolean skipGWC,
             boolean skipSecurity,
             boolean skipSettings,
-            boolean purgeResources) {
+            boolean purgeResources,
+            boolean mergeSecurity) {
         Hints hints = new Hints(new HashMap(2));
+        if (mergeSecurity) {
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_MERGE_SECURITY), Backup.PARAM_MERGE_SECURITY));
+        }
         if (dryRun) {
             hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_DRY_RUN_MODE), Backup.PARAM_DRY_RUN_MODE));
         }

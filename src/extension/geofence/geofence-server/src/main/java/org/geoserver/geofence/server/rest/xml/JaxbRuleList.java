@@ -9,7 +9,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
-import org.geoserver.geofence.core.model.Rule;
+import org.geofence.core.model.Rule;
 
 @XmlRootElement(name = "Rules")
 public class JaxbRuleList {

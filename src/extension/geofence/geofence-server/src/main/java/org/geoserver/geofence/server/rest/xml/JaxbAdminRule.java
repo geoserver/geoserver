@@ -7,9 +7,9 @@ package org.geoserver.geofence.server.rest.xml;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import org.geoserver.geofence.core.model.AdminRule;
-import org.geoserver.geofence.core.model.IPAddressRange;
-import org.geoserver.geofence.core.model.enums.AdminGrantType;
+import org.geofence.core.model.AdminRule;
+import org.geofence.core.model.IPAddressRange;
+import org.geofence.core.model.enums.AdminGrantType;
 
 @XmlRootElement(name = "AdminRule")
 public class JaxbAdminRule extends AbstractPayload {

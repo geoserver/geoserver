@@ -24,11 +24,11 @@
              <prop key="geofenceConfigurationManager.configuration.servicesUrl">http://localhost:9191/geofence/remoting/RuleReader</prop>
              <prop key="remoteReaderService.serviceUrl">http://localhost:9191/geofence/remoting/RuleReader</prop>
           </props>
-        </property> 
+        </property>
     </bean>
 
     <bean id="remoteReaderService"
           class="org.mockito.Mockito" factory-method="mock">
-        <constructor-arg value="org.geoserver.geofence.services.RuleReaderService"/>
+        <constructor-arg value="org.geofence.core.services.RuleReaderService"/>
     </bean>
 </beans>

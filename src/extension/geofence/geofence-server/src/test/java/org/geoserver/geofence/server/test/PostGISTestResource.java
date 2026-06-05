@@ -11,8 +11,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import org.geotools.api.data.DataStore;
+import org.geotools.api.data.DataStoreFinder;
 import org.geotools.jdbc.JDBCDataStoreFactory;
-import org.geotools.util.factory.GeoTools;
 import org.junit.rules.ExternalResource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -73,9 +73,7 @@ public class PostGISTestResource extends ExternalResource {
             params.put(JDBCDataStoreFactory.PASSWD.key, password);
             params.put(JDBCDataStoreFactory.EXPOSE_PK.key, true);
 
-            JDBCDataStoreFactory factory = new JDBCDataStoreFactory();
-            factory.setBaseDirectory(GeoTools.getDefaultHints());
-            dataStore = factory.createDataStore(params);
+            dataStore = DataStoreFinder.getDataStore(params);
         }
         return dataStore;
     }

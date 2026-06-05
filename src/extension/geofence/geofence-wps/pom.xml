@@ -74,7 +74,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver.geofence</groupId>
+      <groupId>org.geofence</groupId>
       <artifactId>geofence-model</artifactId>
       <version>${gf.version}</version>
       <scope>test</scope>

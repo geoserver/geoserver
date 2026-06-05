@@ -11,13 +11,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.AuthUser;
+import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.cache.RuleCacheLoaderFactory.NamePw;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
 import org.geoserver.geofence.containers.ContainerLimitResolver;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.AuthUser;
-import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
 
 /**

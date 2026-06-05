@@ -11,7 +11,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.geofence.spi.UserResolver;
+import org.geofence.core.services.spi.UserResolver;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityService;
@@ -89,7 +89,7 @@ public class InternalUserResolver implements UserResolver {
         this.securityManager = securityManager;
     }
 
-    @Override
+    //    @Override
     public boolean existsUser(String username) {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Getting Roles for User [" + username + "]");
@@ -151,7 +151,7 @@ public class InternalUserResolver implements UserResolver {
         return false;
     }
 
-    @Override
+    //    @Override
     public boolean existsRole(String rolename) {
         try {
             if (logger.isLoggable(Level.FINE)) {

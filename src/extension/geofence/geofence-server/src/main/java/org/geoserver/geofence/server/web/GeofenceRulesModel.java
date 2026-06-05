@@ -15,15 +15,15 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.geoserver.geofence.core.model.IPAddressRange;
-import org.geoserver.geofence.core.model.LayerDetails;
-import org.geoserver.geofence.core.model.Rule;
-import org.geoserver.geofence.core.model.RuleLimits;
-import org.geoserver.geofence.core.model.enums.CatalogMode;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.core.model.enums.SpatialFilterType;
-import org.geoserver.geofence.services.RuleAdminService;
-import org.geoserver.geofence.services.dto.ShortRule;
+import org.geofence.core.model.IPAddressRange;
+import org.geofence.core.model.LayerDetails;
+import org.geofence.core.model.Rule;
+import org.geofence.core.model.RuleLimits;
+import org.geofence.core.model.enums.CatalogMode;
+import org.geofence.core.model.enums.GrantType;
+import org.geofence.core.model.enums.SpatialFilterType;
+import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -255,7 +255,8 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         RuleLimits ruleLimits = rule.getRuleLimits();
         if (ruleLimits == null) {
             ruleLimits = new RuleLimits();
-            ruleLimits.setRule(rule);
+            // TODO: check why setRule is protected
+            //            ruleLimits.setRule(rule);
         }
         ruleLimits.setAllowedArea(allowedArea);
         ruleLimits.setSpatialFilterType(spatialFilterType);

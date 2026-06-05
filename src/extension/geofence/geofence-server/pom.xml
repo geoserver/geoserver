@@ -83,7 +83,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver.geofence</groupId>
+      <groupId>org.geofence</groupId>
       <artifactId>geofence-services-impl</artifactId>
       <version>${gf.version}</version>
       <exclusions>
@@ -109,7 +109,7 @@
       <exclusions>
         <exclusion>
           <artifactId>geofence-model</artifactId>
-          <groupId>org.geoserver.geofence</groupId>
+          <groupId>org.geofence</groupId>
         </exclusion>
       </exclusions>
     </dependency>

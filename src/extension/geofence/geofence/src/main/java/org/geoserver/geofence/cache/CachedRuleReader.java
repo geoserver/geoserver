@@ -8,12 +8,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.geofence.cache.RuleCacheLoaderFactory.NamePw;
-import org.geoserver.geofence.services.RuleReaderService;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.AuthUser;
-import org.geoserver.geofence.services.dto.RuleFilter;
-import org.geoserver.geofence.services.dto.ShortRule;
+import org.geofence.core.services.RuleReaderService;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.RuleFilter;
+import org.geofence.core.services.dto.ShortRule;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -69,13 +67,13 @@ public class CachedRuleReader implements RuleReaderService {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public AuthUser authorize(String username, String password) {
-        try {
-            return cacheManager.getUserCache().get(new NamePw(username, password));
-        } catch (ExecutionException ex) {
-            LOGGER.warning(ex.getMessage());
-            return null;
-        }
-    }
+    //    @Override
+    //    public AuthUser authorize(String username, String password) {
+    //        try {
+    //            return cacheManager.getUserCache().get(new NamePw(username, password));
+    //        } catch (ExecutionException ex) {
+    //            LOGGER.warning(ex.getMessage());
+    //            return null;
+    //        }
+    //    }
 }

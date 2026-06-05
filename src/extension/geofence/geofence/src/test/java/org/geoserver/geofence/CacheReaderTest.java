@@ -13,6 +13,10 @@ import com.google.common.base.Ticker;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geofence.core.services.AuthorizationService;
+import org.geofence.core.services.RuleReaderService;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.cache.CachedRuleReader;
@@ -21,9 +25,6 @@ import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
 import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
 import org.geoserver.geofence.containers.DefaultContainerAccessResolver;
-import org.geoserver.geofence.services.RuleReaderService;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
 import org.junit.Assume;
 import org.junit.Before;
@@ -43,6 +44,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
     private GeoFencePropertyPlaceholderConfigurer configurer;
 
     private RuleReaderService realReader;
+    private AuthorizationService authorizationService;
 
     @Before
     public void onInitCachedReader() {
@@ -51,6 +53,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
                 new UrlResource(Objects.requireNonNull(this.getClass().getResource("/test-cache-config.properties"))));
 
         realReader = applicationContext.getBean("remoteReaderService", RuleReaderService.class);
+        authorizationService = applicationContext.getBean("authorizationService", AuthorizationService.class);
 
         ticker = new CustomTicker();
 
@@ -74,7 +77,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
         cachedRuleReader = new CachedRuleReader(cacheManager);
 
-        cacheManager.setRuleServiceLoaderFactory(new RuleCacheLoaderFactory(realReader));
+        cacheManager.setRuleServiceLoaderFactory(new RuleCacheLoaderFactory(realReader, authorizationService));
         cacheManager.setContainerAccessCacheLoaderFactory(
                 new ContainerAccessCacheLoaderFactory(new DefaultContainerAccessResolver(cachedRuleReader)));
         cacheManager.init();

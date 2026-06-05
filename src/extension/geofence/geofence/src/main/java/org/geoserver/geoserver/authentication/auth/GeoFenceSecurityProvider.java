@@ -5,8 +5,9 @@
 package org.geoserver.geoserver.authentication.auth;
 
 import java.util.logging.Logger;
+import org.geofence.core.services.AuthorizationService;
+import org.geofence.core.services.RuleReaderService;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
@@ -22,6 +23,8 @@ public class GeoFenceSecurityProvider extends GeoServerSecurityProvider implemen
 
     private RuleReaderService ruleReaderService;
 
+    private AuthorizationService authorizationService;
+
     private GeoServerSecurityManager securityManager;
 
     public GeoFenceSecurityProvider() {}
@@ -35,11 +38,16 @@ public class GeoFenceSecurityProvider extends GeoServerSecurityProvider implemen
     public GeoFenceAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
         GeoFenceAuthenticationProvider authProv = new GeoFenceAuthenticationProvider();
         authProv.setRuleReaderService(ruleReaderService);
+        authProv.setAuthorizationService(authorizationService);
         return authProv;
     }
 
     public void setRuleReaderService(RuleReaderService ruleReaderService) {
         this.ruleReaderService = ruleReaderService;
+    }
+
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     public void setSecurityManager(GeoServerSecurityManager securityManager) {

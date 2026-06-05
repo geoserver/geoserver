@@ -10,8 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.geofence.services.RuleReaderService;
-import org.geoserver.geofence.services.dto.AuthUser;
+import org.geofence.core.services.AuthorizationService;
+import org.geofence.core.services.RuleReaderService;
+import org.geofence.core.services.dto.AuthUser;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -35,6 +36,7 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
     // protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     private RuleReaderService ruleReaderService;
+    private AuthorizationService authorizationService;
 
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
@@ -61,7 +63,7 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
             AuthUser authUser = null;
             final String username = SecurityUtils.getUsername(inTok.getPrincipal());
             try {
-                authUser = ruleReaderService.authorize(
+                authUser = authorizationService.authorize(
                         username, inTok.getCredentials().toString());
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error in authenticating with GeoFence", e);
@@ -97,5 +99,9 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
 
     public void setRuleReaderService(RuleReaderService ruleReaderService) {
         this.ruleReaderService = ruleReaderService;
+    }
+
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 }

@@ -10,8 +10,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.logging.Level;
+import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
 

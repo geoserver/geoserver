@@ -41,12 +41,12 @@
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver.geofence</groupId>
+      <groupId>org.geofence</groupId>
       <artifactId>geofence-services-api</artifactId>
       <version>${gf.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.geofence</groupId>
+      <groupId>org.geofence</groupId>
       <artifactId>geofence-model</artifactId>
       <version>${gf.version}</version>
     </dependency>
@@ -67,11 +67,11 @@
       <artifactId>guava</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>jakarta.servlet</groupId>-->
+    <!--      <artifactId>jakarta.servlet-api</artifactId>-->
+    <!--      <scope>provided</scope>-->
+    <!--    </dependency>-->
 
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
@@ -87,7 +87,7 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
     </dependency>
-    
+
     <!-- test dependencies -->
     <dependency>
       <groupId>org.apache.wicket</groupId>
@@ -101,7 +101,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
     <resources>
       <resource>
@@ -131,7 +131,7 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <profiles>
     <profile>
       <id>gs-test-dependences</id>
@@ -154,7 +154,7 @@
             </exclusion>
           </exclusions>
         </dependency>
-    
+
         <dependency>
           <groupId>org.geoserver.web</groupId>
           <artifactId>gs-web-core</artifactId>
@@ -162,7 +162,7 @@
           <classifier>tests</classifier>
           <scope>test</scope>
         </dependency>
-    
+
         <dependency>
           <groupId>org.geoserver</groupId>
           <artifactId>gs-restconfig</artifactId>

@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.geoserver.geofence.core.model.LayerAttribute;
-import org.geoserver.geofence.core.model.enums.AccessType;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.CatalogModeDTO;
+import org.geofence.core.model.LayerAttribute;
+import org.geofence.core.model.enums.AccessType;
+import org.geofence.core.model.enums.GrantType;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.CatalogModeDTO;
 import org.locationtech.jts.geom.Geometry;
 
 /** @author "etj (Emanuele Tajariol @ GeoSolutions)" */

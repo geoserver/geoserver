@@ -5,16 +5,16 @@
 package org.geoserver.geofence.server.integration;
 
 import java.util.Set;
+import org.geofence.core.model.LayerAttribute;
+import org.geofence.core.model.LayerDetails;
+import org.geofence.core.model.Rule;
+import org.geofence.core.model.RuleLimits;
+import org.geofence.core.model.enums.CatalogMode;
+import org.geofence.core.model.enums.GrantType;
+import org.geofence.core.model.enums.LayerType;
+import org.geofence.core.model.enums.SpatialFilterType;
+import org.geofence.core.services.RuleAdminService;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.geofence.core.model.LayerAttribute;
-import org.geoserver.geofence.core.model.LayerDetails;
-import org.geoserver.geofence.core.model.Rule;
-import org.geoserver.geofence.core.model.RuleLimits;
-import org.geoserver.geofence.core.model.enums.CatalogMode;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.core.model.enums.LayerType;
-import org.geoserver.geofence.core.model.enums.SpatialFilterType;
-import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Before;
 import org.locationtech.jts.geom.MultiPolygon;

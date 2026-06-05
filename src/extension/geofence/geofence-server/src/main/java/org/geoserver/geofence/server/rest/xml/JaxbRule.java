@@ -11,14 +11,14 @@ import java.sql.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import org.geoserver.geofence.core.model.IPAddressRange;
-import org.geoserver.geofence.core.model.Rule;
-import org.geoserver.geofence.core.model.RuleLimits;
-import org.geoserver.geofence.core.model.enums.AccessType;
-import org.geoserver.geofence.core.model.enums.CatalogMode;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.core.model.enums.LayerType;
-import org.geoserver.geofence.core.model.enums.SpatialFilterType;
+import org.geofence.core.model.IPAddressRange;
+import org.geofence.core.model.Rule;
+import org.geofence.core.model.RuleLimits;
+import org.geofence.core.model.enums.AccessType;
+import org.geofence.core.model.enums.CatalogMode;
+import org.geofence.core.model.enums.GrantType;
+import org.geofence.core.model.enums.LayerType;
+import org.geofence.core.model.enums.SpatialFilterType;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -106,7 +106,7 @@ public class JaxbRule extends AbstractPayload {
 
         public LayerAttribute() {}
 
-        public LayerAttribute(org.geoserver.geofence.core.model.LayerAttribute att) {
+        public LayerAttribute(org.geofence.core.model.LayerAttribute att) {
             this.name = att.getName();
             this.dataType = att.getDatatype();
             this.accessType = att.getAccess().toString();
@@ -139,9 +139,8 @@ public class JaxbRule extends AbstractPayload {
             this.accessType = accessType;
         }
 
-        public org.geoserver.geofence.core.model.LayerAttribute toLayerAttribute() {
-            org.geoserver.geofence.core.model.LayerAttribute att =
-                    new org.geoserver.geofence.core.model.LayerAttribute();
+        public org.geofence.core.model.LayerAttribute toLayerAttribute() {
+            org.geofence.core.model.LayerAttribute att = new org.geofence.core.model.LayerAttribute();
             if (convertAny(accessType) != null) {
                 att.setAccess(AccessType.valueOf(accessType.toUpperCase()));
             }
@@ -258,9 +257,8 @@ public class JaxbRule extends AbstractPayload {
             this.layerAttributes = layerAttributes;
         }
 
-        public org.geoserver.geofence.core.model.LayerDetails toLayerDetails(
-                org.geoserver.geofence.core.model.LayerDetails details) {
-            details = new org.geoserver.geofence.core.model.LayerDetails();
+        public org.geofence.core.model.LayerDetails toLayerDetails(org.geofence.core.model.LayerDetails details) {
+            details = new org.geofence.core.model.LayerDetails();
             if (convertAny(layerType) != null) {
                 details.setType(LayerType.valueOf(layerType.toUpperCase()));
             }
@@ -285,7 +283,7 @@ public class JaxbRule extends AbstractPayload {
             }
             if (layerAttributes != null) {
                 for (LayerAttribute att : layerAttributes) {
-                    Iterator<org.geoserver.geofence.core.model.LayerAttribute> it =
+                    Iterator<org.geofence.core.model.LayerAttribute> it =
                             details.getAttributes().iterator();
                     while (it.hasNext()) {
                         if (it.next().getName().equals(att.getName())) {
@@ -376,7 +374,7 @@ public class JaxbRule extends AbstractPayload {
             }
         }
         if (rule.getLayerDetails() != null) {
-            org.geoserver.geofence.core.model.LayerDetails otherDetails = rule.getLayerDetails();
+            org.geofence.core.model.LayerDetails otherDetails = rule.getLayerDetails();
             layerDetails = new LayerDetails();
             layerDetails.setAllowedArea(otherDetails.getArea());
             layerDetails.getAllowedStyles().addAll(otherDetails.getAllowedStyles());
@@ -397,7 +395,7 @@ public class JaxbRule extends AbstractPayload {
             layerDetails.setDefaultStyle(otherDetails.getDefaultStyle());
             if (otherDetails.getType() != null)
                 layerDetails.setLayerType(otherDetails.getType().toString());
-            for (org.geoserver.geofence.core.model.LayerAttribute att : otherDetails.getAttributes()) {
+            for (org.geofence.core.model.LayerAttribute att : otherDetails.getAttributes()) {
                 layerDetails.getAttributes().add(new LayerAttribute(att));
             }
         }

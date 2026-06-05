@@ -9,10 +9,11 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.geofence.services.RuleReaderService;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.AuthUser;
-import org.geoserver.geofence.services.dto.RuleFilter;
+import org.geofence.core.services.AuthorizationService;
+import org.geofence.core.services.RuleReaderService;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.AuthUser;
+import org.geofence.core.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -25,9 +26,11 @@ public class RuleCacheLoaderFactory {
     static final Logger LOGGER = Logging.getLogger(RuleCacheLoaderFactory.class);
 
     private RuleReaderService realRuleReaderService;
+    private AuthorizationService authorizationService;
 
-    public RuleCacheLoaderFactory(RuleReaderService realRuleReaderService) {
+    public RuleCacheLoaderFactory(RuleReaderService realRuleReaderService, AuthorizationService authorizationService) {
         this.realRuleReaderService = realRuleReaderService;
+        this.authorizationService = authorizationService;
     }
 
     public RuleLoader createRuleLoader() {
@@ -109,7 +112,7 @@ public class RuleCacheLoaderFactory {
         @Override
         public AuthUser load(NamePw user) throws NoAuthException {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading user '" + user.getName() + "'");
-            AuthUser auth = realRuleReaderService.authorize(user.getName(), user.getPw());
+            AuthUser auth = authorizationService.authorize(user.getName(), user.getPw());
             if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
             return auth;
         }
@@ -119,7 +122,7 @@ public class RuleCacheLoaderFactory {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading user '" + user.getName() + "'");
 
             // this is a sync implementation
-            AuthUser auth = realRuleReaderService.authorize(user.getName(), user.getPw());
+            AuthUser auth = authorizationService.authorize(user.getName(), user.getPw());
             if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
             return Futures.immediateFuture(auth);
 

@@ -327,6 +327,9 @@ The next step is to configure your Keycloak as the OIDC IDP for GeoServer. You w
     - In the "OpenID Discovery Document" type in "http://localhost:7777/realms/gs-realm/.well-known/openid-configuration"
     - Press "Discover" (this will download OIDC metadata from your keycloak client)
 
+    !!! note
+        If GeoServer itself runs in Docker, it cannot reach the IdP at `localhost`; enter `http://host.docker.internal:7777/realms/gs-realm/.well-known/openid-configuration` instead so the GeoServer container can resolve Keycloak (see [Docker networking](../installing.md)).
+
     ![](../img/keycloak-gs-filter2.png)
 
 #\. After you press the "Discovery" button, most of the information will be filled out for you

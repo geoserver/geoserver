@@ -4,8 +4,10 @@
  */
 package org.geoserver.backuprestore;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
@@ -13,6 +15,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.data.test.CiteTestData;
 import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -75,6 +78,34 @@ public class SubsetClosureTest extends BackupRestoreTestSupport {
         } finally {
             catalog.remove(catalog.getStyleByName("orphan_global_closure"));
         }
+    }
+
+    /**
+     * The MOST IMPORTANT closure path: an in-subset layer that paints with a GLOBAL (workspace-less) style. The layer
+     * is kept by the workspace cascade, but its global default style lives outside any workspace, so the cascade would
+     * prune it unless the closure force-includes it. This exercises the {@code LayerInfo -> getDefaultStyle()} ->
+     * global {@code StyleInfo} branch of {@code directDependencies}, distinct from the global-style-via-layergroup path
+     * already covered above. The standard sf layers paint with the global {@code "Default"} vector style.
+     */
+    @Test
+    public void testInScopeLayerPullsItsGlobalDefaultStyle() throws Exception {
+        LayerInfo sfLayer = catalog.getLayerByName("sf:PrimitiveGeoFeature");
+        assertNotNull(sfLayer);
+        StyleInfo globalDefault = sfLayer.getDefaultStyle();
+        assertNotNull("the sf layer is expected to carry a default style", globalDefault);
+        // sanity: it really is the shared, workspace-less "Default" vector style, not an sf-scoped one
+        assertNull("the layer's default style must be a global, workspace-less style", globalDefault.getWorkspace());
+        assertEquals(CiteTestData.DEFAULT_VECTOR_STYLE, globalDefault.getName());
+
+        Set<String> closure = SubsetClosure.compute(catalog, sf(), null, null);
+
+        assertTrue(
+                "the global default style of an in-subset layer must be force-included so the cascade does not prune it",
+                closure.contains(globalDefault.getId()));
+        // and it is reachable through the layer alone: the in-subset layer's own workspace stays cascade-kept, never
+        // forced, which proves the style id arrived via the layer -> default-style edge rather than via a layergroup
+        WorkspaceInfo sf = catalog.getWorkspaceByName("sf");
+        assertFalse("the in-subset workspace is kept by the cascade, not forced", closure.contains(sf.getId()));
     }
 
     @Test

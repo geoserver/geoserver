@@ -117,9 +117,10 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     public static final String PARAM_BEST_EFFORT_MODE = "BK_BEST_EFFORT";
 
     /**
-     * PROTOTYPE: when {@code true}, a restore runs a pre-flight validation pass over the fully-assembled restore
-     * catalog and ABORTS (job FAILED, so the live reload is skipped) if any catalog object is invalid. Default
-     * {@code false} — the pass only logs and records the findings as warnings.
+     * When {@code true}, a restore runs a pre-flight validation pass over the fully-assembled restore catalog and
+     * ABORTS (job FAILED, the live reload is skipped, and the data directory is rolled back to its pre-restore state by
+     * {@link org.geoserver.backuprestore.listener.RestoreJobExecutionListener}) if any catalog object is invalid.
+     * Default {@code false} — the pass only logs and records the findings as warnings.
      */
     public static final String PARAM_FAIL_ON_INVALID = "BK_FAIL_ON_INVALID";
 
@@ -131,12 +132,12 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     public static final String PARAM_PARAMETERIZE_PASSWDS = "BK_PARAM_PASSWORDS";
 
     /**
-     * When {@code true}, the backup keeps catalog object ids and writes cross-references by id, instead of stripping
-     * ids and referencing by name. The resulting archive can be restored / migrated into another catalog with the
-     * original identities preserved, which lets the restore re-link GWC tile layers (they key strictly by id) and skip
-     * objects that already exist by id rather than merging by name. The same flag must be passed on the matching
-     * restore so the reader expects id references. The default ({@code false}) keeps the legacy portable, name-based
-     * archive format and behaviour.
+     * When {@code true} (the runtime default), the backup keeps catalog object ids and writes cross-references by id,
+     * instead of stripping ids and referencing by name. The resulting archive can be restored / migrated into another
+     * catalog with the original identities preserved, which lets the restore re-link GWC tile layers (they key strictly
+     * by id) and skip objects that already exist by id rather than merging by name. The restore auto-adapts: it reads
+     * whichever of id / name each cross-reference in the archive actually carries, so no matching flag has to be passed
+     * on the restore. Pass {@code false} to produce the legacy portable, name-based archive format instead.
      */
     public static final String PARAM_PRESERVE_IDS = "BK_PRESERVE_IDS";
 

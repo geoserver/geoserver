@@ -304,4 +304,54 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
     </properties>
   </rule>
 
+  <rule name="AvoidHashSetInInfoImpl"
+        language="java"
+        message="Do not use HashSet in *InfoImpl config classes; use LinkedHashSet to preserve iteration order for deterministic XML serialization."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Config model classes (*InfoImpl) should use LinkedHashSet instead of HashSet for Set fields.
+      HashSet has non-deterministic iteration order, which causes spurious diffs when XStreamPersister
+      re-serializes configuration files. LinkedHashSet preserves insertion order, ensuring stable output.
+      This rule only flags HashSet in field declarations (initializers and assignments); transient usages
+      in return statements or local variables are not flagged.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //FieldDeclaration
+                [ancestor::ClassDeclaration[ends-with(@SimpleName, 'InfoImpl')]]
+                //ConstructorCall[pmd-java:typeIsExactly("java.util.HashSet")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="AvoidHashMapInInfoImpl"
+        language="java"
+        message="Do not use HashMap in *InfoImpl config classes; use LinkedHashMap to preserve iteration order for deterministic XML serialization."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Config model classes (*InfoImpl) should use LinkedHashMap instead of HashMap for Map fields.
+      HashMap has non-deterministic iteration order, which causes spurious diffs when XStreamPersister
+      re-serializes configuration files. LinkedHashMap preserves insertion order, ensuring stable output.
+      This rule only flags HashMap in field declarations (initializers and assignments); transient usages
+      in return statements or local variables are not flagged.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //FieldDeclaration
+                [ancestor::ClassDeclaration[ends-with(@SimpleName, 'InfoImpl')]]
+                //ConstructorCall[pmd-java:typeIsExactly("java.util.HashMap")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
 </ruleset>

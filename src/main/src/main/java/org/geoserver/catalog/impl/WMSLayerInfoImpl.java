@@ -9,8 +9,8 @@ import com.google.common.base.Objects;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -292,7 +292,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         return allAvailableRemoteStyles;
     }
 
-    private Map<String, String> vendorParameters = new HashMap<>();
+    private Map<String, String> vendorParameters = new LinkedHashMap<>();
 
     // This is only called by OWS with a null which should be fine
     @Override
@@ -304,7 +304,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public void setVendorParameters(Map<String, String> vendorParameters) {
         if (vendorParameters != null) {
             this.vendorParameters = vendorParameters;
-        } else this.vendorParameters = new HashMap<>();
+        } else this.vendorParameters = new LinkedHashMap<>();
     }
 
     @Override

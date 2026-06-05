@@ -43,10 +43,12 @@ import org.springframework.batch.infrastructure.repeat.RepeatStatus;
  * With {@code BK_FAIL_ON_INVALID=true} it <b>aborts</b> the restore (step FAILED), so {@code finalizeRestore} — and
  * therefore the live in-memory reload — is skipped.
  *
- * <p>KNOWN LIMITATION (prototype): the catalog writer commits each item to disk as the chunk steps run (the restore
- * catalog carries {@code GeoServerConfigPersister}), so aborting here does not roll back what was already written to
- * the data directory; it only prevents the in-memory reload. A fully transactional "validate before any write" mode
- * would additionally need to defer the persister / writer until this pass succeeds (or stage into a scratch dir).
+ * <p>ON-DISK ROLLBACK: the catalog writer commits each item to disk as the chunk steps run (the restore catalog carries
+ * {@code GeoServerConfigPersister}), so aborting here does not, by itself, roll back what was already written to the
+ * data directory; it only prevents the in-memory reload. When this step is enabled (so is {@code BK_FAIL_ON_INVALID}) —
+ * or when the restore is a Dry-Run — {@link org.geoserver.backuprestore.listener.RestoreJobExecutionListener} snapshots
+ * the affected data-directory subtrees before the job and restores them from that snapshot in {@code afterJob} on any
+ * non-COMPLETED (or Dry-Run) outcome, which makes the abort here trustworthy on disk as well as in memory.
  */
 public class ValidateRestoreTasklet extends AbstractCatalogBackupRestoreTasklet {
 

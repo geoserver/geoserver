@@ -30,7 +30,7 @@ import org.springframework.batch.core.step.StepExecution;
 import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 
 /**
- * PROTOTYPE: pre-flight restore validation pass.
+ * Pre-flight restore validation pass.
  *
  * <p>Runs as a dedicated step after the restore catalog has been fully assembled (all catalog chunk steps plus the
  * GeoServer global and security steps) but before {@code finalizeRestore} reloads the live instance. Because the whole

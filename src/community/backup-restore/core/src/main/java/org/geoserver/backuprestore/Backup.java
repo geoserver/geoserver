@@ -117,9 +117,10 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     public static final String PARAM_BEST_EFFORT_MODE = "BK_BEST_EFFORT";
 
     /**
-     * PROTOTYPE: when {@code true}, a restore runs a pre-flight validation pass over the fully-assembled restore
-     * catalog and ABORTS (job FAILED, so the live reload is skipped) if any catalog object is invalid. Default
-     * {@code false} — the pass only logs and records the findings as warnings.
+     * When {@code true}, a restore runs a pre-flight validation pass over the fully-assembled restore catalog and
+     * ABORTS (job FAILED, the live reload is skipped, and the data directory is rolled back to its pre-restore state by
+     * {@link org.geoserver.backuprestore.listener.RestoreJobExecutionListener}) if any catalog object is invalid.
+     * Default {@code false} — the pass only logs and records the findings as warnings.
      */
     public static final String PARAM_FAIL_ON_INVALID = "BK_FAIL_ON_INVALID";
 

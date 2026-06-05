@@ -6,7 +6,7 @@
 package org.geoserver.wfs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
 
-    protected Map<Version, GMLInfo> gml = new HashMap<>();
+    protected Map<Version, GMLInfo> gml = new LinkedHashMap<>();
     protected ServiceLevel serviceLevel = ServiceLevel.COMPLETE;
     protected int maxFeatures = Integer.MAX_VALUE;
     protected boolean featureBounding = true;

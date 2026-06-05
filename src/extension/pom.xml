@@ -206,6 +206,13 @@
     </profile>
 
     <profile>
+      <id>sec-oidc</id>
+      <modules>
+        <module>sec-oidc</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>inspire</id>
       <modules>
         <module>inspire</module>
@@ -483,6 +490,7 @@
         <module>querylayer</module>
         <module>monitor</module>
         <module>security</module>
+        <module>sec-oidc</module>
         <module>inspire</module>
         <module>css</module>
         <module>csw</module>
@@ -542,6 +550,7 @@
         <module>querylayer</module>
         <module>monitor</module>
         <module>security</module>
+        <module>sec-oidc</module>
         <module>inspire</module>
         <module>css</module>
         <module>csw</module>

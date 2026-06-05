@@ -106,12 +106,12 @@ With the GeoServer 3 refactoring, this configuration is no longer required. The 
 ```
 ### OAuth and Keycloak and migrate to new OIDC plugin
 
-GeoServer 3 marks the end-of-life for several popular community plugins - which all have a single replacement in the [OIDC plugin](https://docs.geoserver.org/main/en/user/community/oidc/) module.
+GeoServer 3 marks the end-of-life for several popular community plugins - which all have a single replacement in the [OIDC plugin](https://docs.geoserver.org/main/en/user/extensions/oidc/) module.
 
-* If you previously used Keycloak support, there are setup instructions for [configuring with Keycloak](https://docs.geoserver.org/main/en/user/community/oidc/oauth2/keycloak/).
-* If you previously used an OAuth2 integration, you can find individual setup instructions for [Google](https://docs.geoserver.org/main/en/user/community/oidc/oauth2/google/), [Azure](https://docs.geoserver.org/main/en/user/community/oidc/oauth2/azure/), and [GitHub](https://docs.geoserver.org/main/en/user/community/oidc/oauth2/azure/).
+* If you previously used Keycloak support, there are setup instructions for [configuring with Keycloak](https://docs.geoserver.org/main/en/user/extensions/oidc/oauth2/keycloak/).
+* If you previously used an OAuth2 integration, you can find individual setup instructions for [Google](https://docs.geoserver.org/main/en/user/extensions/oidc/oauth2/google/), [Azure](https://docs.geoserver.org/main/en/user/extensions/oidc/oauth2/azure/), and [GitHub](https://docs.geoserver.org/main/en/user/extensions/oidc/oauth2/azure/).
 
-For more information, and installation instructions, use the user guide [OAuth2 OpenID Connect](https://docs.geoserver.org/main/en/user/community/oidc/) page. 
+For more information, and installation instructions, use the user guide [OAuth2 OpenID Connect](https://docs.geoserver.org/main/en/user/extensions/oidc/) page. 
 
 ## How to upgrade
 

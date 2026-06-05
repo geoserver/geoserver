@@ -4,6 +4,19 @@ GeoServer 3.0 replaced the separate Spring Security 5 era authentication plugins
 
 This page explains what happens when such a data directory is opened by GeoServer 3.x, and how to migrate each legacy authentication filter to the new connector.
 
+## Before you migrate: keep a non-OAuth admin login
+
+!!! warning
+    If an OAuth2/OIDC filter is the **only** authentication filter on your `web` and/or `rest` chains, upgrading can lock you out: GeoServer 3.x disables the unresolvable filter and, because the chain is then left with no authenticator, injects a [fail-closed deny filter](#removing-the-filter-never-exposes-protected-resources-fail-closed) that returns `403` for that chain. Likewise, if the Keycloak **role service** supplied your administrator roles, it is disabled on upgrade and the active role service falls back to the built-in `default` one, which may not grant those roles.
+
+Before opening the data directory with GeoServer 3.x, make sure you have a working username/password login that does **not** depend on OAuth:
+
+1. Keep (or add) an **XML user/group service** --- the built-in `default` one is fine --- containing a user with the **ADMIN** role.
+2. Keep a `basic` authentication filter on the **`rest`** chain and a `form` (and/or `basic`) authentication filter on the **`web`** chain, *alongside* the OAuth filter, so a password login still works once the OAuth filter is gone. The built-in **root** account (the master password) authenticates through those filters regardless of the role service, so it remains a reliable recovery login.
+3. Confirm you can actually log in with that username/password (not just through the IdP) **before** upgrading.
+
+With a password login in place, a disabled OAuth filter or role service becomes a recoverable migration step rather than a lockout: sign in with the password account, then follow the [migration procedure](#migration-procedure) to reconfigure the new connector.
+
 ## Reusing a GeoServer 2.x data directory
 
 GeoServer 3.x **does not fail to start** when it finds security filters or role services created by a removed or uninstalled plugin. Instead it degrades gracefully:
@@ -40,7 +53,7 @@ WARN [geoserver.security] - Disabled security filter(s) [keycloak-oidc] were rem
 !!! note
     Tolerance is generic and lives in GeoServer core, so even a vanilla GeoServer without the OpenID Connect module will start and disable the unknown filters --- it just reports them with a generic message instead of naming the originating plugin.
 
-### Fail-closed behaviour
+### Removing the filter never exposes protected resources (fail-closed)
 
 Removing a disabled authentication filter from a chain never *grants* access:
 

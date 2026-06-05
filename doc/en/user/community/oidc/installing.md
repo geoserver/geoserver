@@ -24,26 +24,6 @@ To install the OIDC module:
 
 4.  Restart GeoServer.
 
-Community modules are not yet ready for distribution with GeoServer release.
-
-1.  To compile the OIDC module yourself download the src bundle for your GeoServer version and compile:
-
-    ``` bash
-    cd src/community
-    mvn install -PcommunityRelease -DskipTests
-    ```
-
-2.  And package (from the top level geoserver directory):
-
-    ``` bash
-    cd ../..
-    mvn -f src/community/pom.xml clean install -B -DskipTests -PcommunityRelease,assembly  -T2 -fae
-    ```
-
-3.  Place the JARs in `WEB-INF/lib`.
-
-4.  Restart GeoServer.
-
 ## Using with the GeoServer Docker Container
 
 This will run GeoServer on port 9999 and install the OIDC module.
@@ -54,7 +34,7 @@ docker run -it -p 9999:8080 \
    --env STABLE_EXTENSIONS="ysld,h2" \
    --env COMMUNITY_EXTENSIONS="sec-oidc-plugin" \
    --env PROXY_BASE_URL="http://localhost:9999/geoserver" \
-   docker.osgeo.org/geoserver:2.28.x
+   docker.osgeo.org/geoserver:3.0.x
 ```
 
 !!! note

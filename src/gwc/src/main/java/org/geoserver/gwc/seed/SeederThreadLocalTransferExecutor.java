@@ -6,6 +6,7 @@ package org.geoserver.gwc.seed;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geowebcache.seed.SeederThreadPoolExecutor;
 
@@ -21,8 +22,20 @@ import org.geowebcache.seed.SeederThreadPoolExecutor;
  */
 public class SeederThreadLocalTransferExecutor extends SeederThreadPoolExecutor {
 
-    public SeederThreadLocalTransferExecutor(int corePoolSize, int maxPoolSize) {
-        super(corePoolSize, maxPoolSize);
+    /**
+     * Creates the seeder thread pool using configuration from the given {@link GWCConfigPersister}. Pool sizes are read
+     * from gwc-gs.xml and can be overridden by system properties / environment variables.
+     *
+     * @param configPersister provides the GeoServer GWC configuration (gwc-gs.xml)
+     */
+    public SeederThreadLocalTransferExecutor(GWCConfigPersister configPersister) {
+        super(
+                configPersister.getConfig().getSeederCorePoolSize() != null
+                        ? configPersister.getConfig().getSeederCorePoolSize()
+                        : DEFAULT_CORE_POOL_SIZE,
+                configPersister.getConfig().getSeederMaxPoolSize() != null
+                        ? configPersister.getConfig().getSeederMaxPoolSize()
+                        : DEFAULT_MAX_POOL_SIZE);
     }
 
     /** Copied from {@link org.geoserver.wms.ThreadLocalTransferExecutor} */

@@ -52,6 +52,12 @@ public class GWCConfig implements Cloneable, Serializable {
     /** Number of threads available for concurrent encoding/saving of tiles within a meta-tile */
     private Integer metaTilingThreads;
 
+    /** Core pool size for the seeder thread pool. Defaults to 16 if not set. */
+    private Integer seederCorePoolSize;
+
+    /** Maximum pool size for the seeder thread pool. Defaults to 32 if not set. */
+    private Integer seederMaxPoolSize;
+
     /** Default gutter size in pixels */
     private int gutter;
 
@@ -308,6 +314,22 @@ public class GWCConfig implements Cloneable, Serializable {
         this.metaTilingThreads = metaTilingThreads;
     }
 
+    public Integer getSeederCorePoolSize() {
+        return seederCorePoolSize;
+    }
+
+    public void setSeederCorePoolSize(Integer seederCorePoolSize) {
+        this.seederCorePoolSize = seederCorePoolSize;
+    }
+
+    public Integer getSeederMaxPoolSize() {
+        return seederMaxPoolSize;
+    }
+
+    public void setSeederMaxPoolSize(Integer seederMaxPoolSize) {
+        this.seederMaxPoolSize = seederMaxPoolSize;
+    }
+
     public int getGutter() {
         return gutter;
     }
@@ -364,6 +386,8 @@ public class GWCConfig implements Cloneable, Serializable {
                 && metaTilingX == gwcConfig.metaTilingX
                 && metaTilingY == gwcConfig.metaTilingY
                 && Objects.equals(metaTilingThreads, gwcConfig.metaTilingThreads)
+                && Objects.equals(seederCorePoolSize, gwcConfig.seederCorePoolSize)
+                && Objects.equals(seederMaxPoolSize, gwcConfig.seederMaxPoolSize)
                 && gutter == gwcConfig.gutter
                 && Objects.equals(version, gwcConfig.version)
                 && Objects.equals(WMTSEnabled, gwcConfig.WMTSEnabled)
@@ -390,6 +414,8 @@ public class GWCConfig implements Cloneable, Serializable {
                 metaTilingX,
                 metaTilingY,
                 metaTilingThreads,
+                seederCorePoolSize,
+                seederMaxPoolSize,
                 gutter,
                 defaultCachingGridSetIds,
                 defaultCoverageCacheFormats,

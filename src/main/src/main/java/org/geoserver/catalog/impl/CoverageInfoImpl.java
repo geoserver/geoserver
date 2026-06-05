@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
@@ -55,7 +55,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     protected List<String> responseSRS = new ArrayList<>();
 
-    protected Map<String, Serializable> parameters = new HashMap<>();
+    protected Map<String, Serializable> parameters = new LinkedHashMap<>();
 
     protected String nativeCoverageName;
 

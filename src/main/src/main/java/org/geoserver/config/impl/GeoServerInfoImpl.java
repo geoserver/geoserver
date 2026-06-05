@@ -5,7 +5,7 @@
  */
 package org.geoserver.config.impl;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,7 +35,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected MetadataMap metadata = new MetadataMap();
 
-    protected Map<Object, Object> clientProperties = new HashMap<>();
+    protected Map<Object, Object> clientProperties = new LinkedHashMap<>();
 
     protected long updateSequence;
 

@@ -180,4 +180,9 @@
         <cpe>cpe:2.3:a:geotools:geotools</cpe>
         <cve>CVE-2025-30220</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[OpenLayers.js bundles Prototype 1.4.0, not 1.7.3. CVE-2020-27511 affects stripTags/unescapeHTML introduced in 1.7.3; those functions are absent in this bundle.]]></notes>
+        <filePath regex="true">.*[/\\]OpenLayers\.js$</filePath>
+        <cve>CVE-2020-27511</cve>
+    </suppress>
 </suppressions>

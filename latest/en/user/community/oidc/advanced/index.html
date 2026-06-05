@@ -14,7 +14,7 @@
         <link rel="prev" href="../role-config/">
       
       
-        <link rel="next" href="../../pmtiles-store/">
+        <link rel="next" href="../migrating/">
       
       
         
@@ -24234,6 +24234,8 @@
       
         
       
+        
+      
     
     
     
@@ -24643,10 +24645,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#enforce-token-validation" class="md-nav__link">
+  <a href="#disable-token-signature-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Enforce Token Validation
+        Disable token signature validation
       
     </span>
   </a>
@@ -24690,6 +24692,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from the legacy OAuth2/OIDC plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -30007,10 +30037,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#enforce-token-validation" class="md-nav__link">
+  <a href="#disable-token-signature-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Enforce Token Validation
+        Disable token signature validation
       
     </span>
   </a>
@@ -30212,12 +30242,15 @@
 <li><a href="https://datatracker.ietf.org/doc/html/rfc7636">rfc7636 Proof Key for Code Exchange by OAuth Public Clients</a></li>
 </ul>
 <h2 id="json-web-key-set-uri">JSON Web Key set URI<a class="headerlink" href="#json-web-key-set-uri" title="Permanent link">&para;</a></h2>
-<p>The <code>JSON Web Key set URI</code> provides the location of a document of public keys that can be used to check the signature of the provided accessToken.</p>
-<p>Optional: It is no longer required to use <code>Check Token Endpoint URL</code> - if you leave that field blank you may rely only on the <code>JSON Web Key set URI</code> signature check. When use in this manner roles cannot be extracted from access token.</p>
-<h2 id="enforce-token-validation">Enforce Token Validation<a class="headerlink" href="#enforce-token-validation" title="Permanent link">&para;</a></h2>
-<p><code>True</code> by default.</p>
-<p>Check this option to enforce the validation of the token signature.</p>
-<p>Per the <code>RFC 7517</code> or this doc from <code>auth0</code>, the parameters does not include neither <code>public_key_use</code> (but use nor <code>key_id</code> (but <code>kid</code>)</p>
+<p>The <code>JSON Web Key Set URI</code> provides the location of a document of public keys that can be used to check the signature of the provided accessToken.</p>
+<p>Optional: It is no longer required to use the <code>User Info URI</code> - if you leave that field blank you may rely only on the <code>JSON Web Key Set URI</code> signature check. When used in this manner roles cannot be extracted from the access token.</p>
+<h2 id="disable-token-signature-validation">Disable token signature validation<a class="headerlink" href="#disable-token-signature-validation" title="Permanent link">&para;</a></h2>
+<p>This option (<strong>Disable token signature validation</strong>, field <code>disableSignatureValidation</code>) is <strong>unchecked by default</strong>, so GeoServer validates the token signature out of the box --- the secure default. Check it only to <strong>disable</strong> signature validation (for example against a development IDP whose keys you do not want to verify); leave it unchecked in production.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This replaces the legacy <code>enforceTokenValidation</code> flag, whose polarity was the opposite (it defaulted to <code>true</code> and was checked to <em>enforce</em> validation). The new <code>disableSignatureValidation</code> flag is inverted: the unchecked default already enforces validation. See <a href="../migrating.md#geoserver-field-renames">Migrating from the legacy OAuth2/OIDC plugins</a>.</p>
+</div>
+<p>Per the <code>RFC 7517</code> or this doc from <code>auth0</code>, the parameters do not include either <code>public_key_use</code> (but <code>use</code>) nor <code>key_id</code> (but <code>kid</code>)</p>
 <p>The RFC specifies that kid is optional (<code>RFC 7517: JSON Web Key (JWK)</code>) Use of this member is <code>OPTIONAL</code>.</p>
 <p>Reference:</p>
 <ul>
@@ -30244,7 +30277,7 @@
 <ol>
 <li>
 <p>Retrieve SSL certificates from Google domains:</p>
-<p>"Access Token URI" = <a href="https://accounts.google.com/o/oauth2/token">https://accounts.google.com/o/oauth2/token</a> therefore we need to trust <code>https://accounts.google.com</code> or (<code>accounts.google.com:443</code>) "Check Token Endpoint URL" = <a href="https://www.googleapis.com/oauth2/v1/tokeninfo">https://www.googleapis.com/oauth2/v1/tokeninfo</a> therefore we need to trust <code>https://www.googleapis.com</code> or (<code>www.googleapis.com:443</code>)</p>
+<p>"Access Token URI" = <a href="https://accounts.google.com/o/oauth2/token">https://accounts.google.com/o/oauth2/token</a> therefore we need to trust <code>https://accounts.google.com</code> or (<code>accounts.google.com:443</code>); "User Info URI" = <a href="https://www.googleapis.com/oauth2/v1/tokeninfo">https://www.googleapis.com/oauth2/v1/tokeninfo</a> therefore we need to trust <code>https://www.googleapis.com</code> or (<code>www.googleapis.com:443</code>)</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>You will need to get and trust certificates from every different HTTPS URL used on OAuth2 Endpoints.</p>
@@ -30394,13 +30427,13 @@
         
         
           
-          <a href="../../pmtiles-store/" class="md-footer__link md-footer__link--next" aria-label="Next: PMTiles DataStore">
+          <a href="../migrating/" class="md-footer__link md-footer__link--next" aria-label="Next: Migrating from the legacy OAuth2/OIDC plugins">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                PMTiles DataStore
+                Migrating from the legacy OAuth2/OIDC plugins
               </div>
             </div>
             <div class="md-footer__button md-icon">

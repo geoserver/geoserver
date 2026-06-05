@@ -24234,6 +24234,8 @@
       
         
       
+        
+      
     
     
     
@@ -24583,6 +24585,34 @@
     
   
     Advanced Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from the legacy OAuth2/OIDC plugins
   
 
     
@@ -29885,9 +29915,9 @@
 </li>
 <li>
 <p>Visit the <a href="https://geoserver.org/download">website download</a> page, change the <strong>Development</strong> tab, and locate the nightly release that corresponds to the GeoServer you are running.</p>
-<p>Follow the <strong>Community Modules</strong> link and download <code>sec-oidc</code> zip archive.</p>
+<p>Follow the <strong>Extensions</strong> link and download the <code>sec-oidc</code> plugin archive.</p>
 <ul>
-<li>3.0-SNAPSHOT example: <a href="https://build.geoserver.org/geoserver/main/community-latest/geoserver-3.0-SNAPSHOT-sec-oidc-plugin.zip">sec-oidc</a></li>
+<li>3.0-SNAPSHOT example: <a href="https://build.geoserver.org/geoserver/main/ext-latest/geoserver-3.0-SNAPSHOT-sec-oidc-plugin.zip">sec-oidc</a></li>
 </ul>
 <p>The website lists active nightly builds to provide feedback to developers, you may also <a href="https://build.geoserver.org/geoserver/">browse</a> for earlier branches.</p>
 </li>
@@ -29902,35 +29932,13 @@
 <p>Restart GeoServer.</p>
 </li>
 </ol>
-<p>Community modules are not yet ready for distribution with GeoServer release.</p>
-<ol>
-<li>
-<p>To compile the OIDC module yourself download the src bundle for your GeoServer version and compile:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>src/community
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mvn<span class="w"> </span>install<span class="w"> </span>-PcommunityRelease<span class="w"> </span>-DskipTests
-</code></pre></div>
-</li>
-<li>
-<p>And package (from the top level geoserver directory):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">cd</span><span class="w"> </span>../..
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>mvn<span class="w"> </span>-f<span class="w"> </span>src/community/pom.xml<span class="w"> </span>clean<span class="w"> </span>install<span class="w"> </span>-B<span class="w"> </span>-DskipTests<span class="w"> </span>-PcommunityRelease,assembly<span class="w">  </span>-T2<span class="w"> </span>-fae
-</code></pre></div>
-</li>
-<li>
-<p>Place the JARs in <code>WEB-INF/lib</code>.</p>
-</li>
-<li>
-<p>Restart GeoServer.</p>
-</li>
-</ol>
 <h2 id="using-with-the-geoserver-docker-container">Using with the GeoServer Docker Container<a class="headerlink" href="#using-with-the-geoserver-docker-container" title="Permanent link">&para;</a></h2>
 <p>This will run GeoServer on port 9999 and install the OIDC module.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>-p<span class="w"> </span><span class="m">9999</span>:8080<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">INSTALL_EXTENSIONS</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">STABLE_EXTENSIONS</span><span class="o">=</span><span class="s2">&quot;ysld,h2&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">COMMUNITY_EXTENSIONS</span><span class="o">=</span><span class="s2">&quot;sec-oidc-plugin&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">PROXY_BASE_URL</span><span class="o">=</span><span class="s2">&quot;http://localhost:9999/geoserver&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">   </span>docker.osgeo.org/geoserver:2.28.x
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>-p<span class="w"> </span><span class="m">9999</span>:8080<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">INSTALL_EXTENSIONS</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">STABLE_EXTENSIONS</span><span class="o">=</span><span class="s2">&quot;ysld,h2,sec-oidc&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">PROXY_BASE_URL</span><span class="o">=</span><span class="s2">&quot;http://localhost:9999/geoserver&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">   </span>docker.osgeo.org/geoserver:3.0.x
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -29940,7 +29948,7 @@
 <ol>
 <li>
 <p>Add this to your <code>/etc/hosts</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="m">127</span>.0.0.1<span class="w">       </span>host.docker.internal
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="m">127</span>.0.0.1<span class="w">       </span>host.docker.internal
 </code></pre></div>
 </li>
 <li>

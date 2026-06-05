@@ -24234,6 +24234,8 @@
       
         
       
+        
+      
     
     
     
@@ -24722,6 +24724,34 @@
     
   
     Advanced Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from the legacy OAuth2/OIDC plugins
   
 
     
@@ -30289,7 +30319,7 @@
 <p>The admin calls are authenticated via a separate access token obtained through the OAuth2 <a href="https://www.rfc-editor.org/rfc/rfc6749#section-4.4">client credentials</a> grant against the <strong>same</strong> OIDC client used for user login. The OIDC client therefore needs to satisfy two extra Keycloak-side prerequisites:</p>
 <ul>
 <li><strong>Service Accounts → Enabled</strong> (<code>serviceAccountsEnabled=true</code>)</li>
-<li><strong>Service Account Roles</strong> must include the realm-management roles needed to read users, clients, groups and realm metadata — at minimum <code>view-realm</code>, <code>view-users</code>, <code>view-clients</code>, <code>query-groups</code>.</li>
+<li><strong>Service Account Roles</strong> must include the realm-management roles needed to read users, clients and realm metadata — at minimum <code>view-realm</code>, <code>view-users</code>, <code>view-clients</code> (the set the filter's <em>Keycloak Admin API</em> hint lists), plus <code>query-groups</code> when you need to resolve <strong>group-inherited</strong> roles.</li>
 </ul>
 <p>See <a href="../oauth2/keycloak/#community_oidc_keycloak_admin_api">Configuring Keycloak Admin API as the role source</a> for the step-by-step Keycloak setup.</p>
 <p><img alt="" src="../img/keycloak-api-role-source.png" /></p>

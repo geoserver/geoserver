@@ -24234,6 +24234,8 @@
       
         
       
+        
+      
     
     
     
@@ -24600,6 +24602,34 @@
     
   
     Advanced Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migrating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from the legacy OAuth2/OIDC plugins
   
 
     
@@ -30225,6 +30255,10 @@
 <li>In the "OpenID Discovery Document" type in "http://localhost:7777/realms/gs-realm/.well-known/openid-configuration"</li>
 <li>Press "Discover" (this will download OIDC metadata from your keycloak client)</li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If GeoServer itself runs in Docker, it cannot reach the IdP at <code>localhost</code>; enter <code>http://host.docker.internal:7777/realms/gs-realm/.well-known/openid-configuration</code> instead so the GeoServer container can resolve Keycloak (see <a href="../../installing/">Docker networking</a>).</p>
+</div>
 <p><img alt="" src="../../img/keycloak-gs-filter2.png" /></p>
 </li>
 </ol>
@@ -30263,14 +30297,18 @@
 <ol>
 <li>Still on the <code>gs-client</code> page, click the <strong>Service account roles</strong> tab (only visible after Step 1).</li>
 <li>Click <strong>Assign role</strong>. In the dialog filter, type <code>realm-management</code> and pick the appropriate realm's client → tick:<ul>
-<li><code>view-realm</code></li>
-<li><code>view-users</code></li>
-<li><code>view-clients</code></li>
-<li><code>query-groups</code></li>
+<li><code>view-realm</code> <em>(required)</em></li>
+<li><code>view-users</code> <em>(required)</em></li>
+<li><code>view-clients</code> <em>(required)</em></li>
+<li><code>query-groups</code> <em>(recommended — needed to resolve group-inherited roles; the headline use case for this role source)</em></li>
 </ul>
 </li>
 <li>Press <strong>Assign</strong>.</li>
 </ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The three <code>view-*</code> roles are the minimum the connector requires (this is also what the filter's <em>Keycloak Admin API</em> sub-panel hint states). Add <code>query-groups</code> when you rely on <strong>group-inherited</strong> roles so Keycloak can enumerate the user's group memberships; it is harmless to grant in all cases.</p>
+</div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>For a one-shot setup, the same can be done from a shell using <code>kcadm.sh</code>:</p>

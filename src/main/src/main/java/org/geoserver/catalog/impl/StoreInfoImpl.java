@@ -8,8 +8,8 @@ package org.geoserver.catalog.impl;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.MetadataMap;
@@ -35,7 +35,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected transient Catalog catalog;
 
-    protected Map<String, Serializable> connectionParameters = new HashMap<>();
+    protected Map<String, Serializable> connectionParameters = new LinkedHashMap<>();
 
     protected MetadataMap metadata = new MetadataMap();
 

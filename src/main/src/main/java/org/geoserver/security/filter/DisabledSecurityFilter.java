@@ -21,7 +21,7 @@ import java.io.IOException;
  */
 public class DisabledSecurityFilter extends GeoServerSecurityFilter implements GeoServerAuthenticationFilter {
 
-    static final String DENY_MESSAGE =
+    public static final String DENY_MESSAGE =
             "Access denied: this request matched a security filter chain whose authentication filter is "
                     + "disabled because it could not be loaded. An administrator must reconfigure or remove "
                     + "the offending security filter.";

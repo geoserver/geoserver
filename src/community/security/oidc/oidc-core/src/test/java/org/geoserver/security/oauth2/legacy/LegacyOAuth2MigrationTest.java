@@ -110,4 +110,46 @@ public class LegacyOAuth2MigrationTest extends GeoServerSystemTestSupport {
                 .getFilterNames()
                 .contains("oidc"));
     }
+
+    /**
+     * A data directory whose active role service was the now-removed Keycloak role service must not silently swap users
+     * to the default roles: the placeholder is recognized (alias + originating plugin), recorded in the diagnostics
+     * with the lost-roles consequence spelled out, and the security subsystem falls back to the default role service.
+     */
+    @Test
+    public void testLegacyKeycloakRoleServiceRecognizedDisabledAndReported() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+
+        // a 2.28.x data directory whose role service was provided by the now-removed gs-sec-keycloak plugin
+        install("keycloak-roleservice.xml", "security/role/keycloakRoles/config.xml");
+
+        // make it the active role service, exactly as the old data directory would have it
+        SecurityManagerConfig config = secMgr.loadSecurityConfig();
+        config.setRoleServiceName("keycloakRoles");
+        secMgr.saveSecurityConfig(config);
+
+        // reload() is the startup code path; it must NOT throw despite the unresolvable role service
+        secMgr.reload();
+
+        // (a) the disabled role service is reported with the precise keycloak alias / source plugin
+        DisabledComponent roleService = byName(secMgr, "keycloakRoles");
+        assertNotNull("the legacy keycloak role service should be reported as disabled", roleService);
+        assertEquals(SecurityConfigDiagnostics.ComponentType.ROLE_SERVICE, roleService.type());
+        assertEquals("keycloakRoleService", roleService.alias());
+        assertTrue(
+                "source plugin should identify keycloak, was: " + roleService.sourcePlugin(),
+                roleService.sourcePlugin().toLowerCase().contains("keycloak"));
+
+        // (b) the active role service fell back to the default one (roles still resolve, GeoServer still starts)
+        assertEquals("default", secMgr.getActiveRoleService().getName());
+
+        // (c) the message makes the consequence explicit: the operator is told roles are lost until reconfiguration
+        String reason = roleService.reason().toLowerCase();
+        assertTrue(
+                "the reason should mention the fallback to the default role service: " + roleService.reason(),
+                reason.contains("default role service"));
+        assertTrue(
+                "the reason should warn that role assignments are lost: " + roleService.reason(),
+                reason.contains("lost"));
+    }
 }

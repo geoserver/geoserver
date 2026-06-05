@@ -39,6 +39,12 @@ public class SecurityConfigDiagnostics {
     /**
      * A security component that could not be loaded and was therefore disabled.
      *
+     * <p>The {@code name}, {@code alias}, {@code sourcePlugin} and {@code reason} values originate (directly or
+     * indirectly) from persisted, possibly attacker-controlled configuration in the data directory and are echoed both
+     * to the server log and to the web home page. They are therefore {@link SecurityConfigDiagnostics#sanitize(String)
+     * sanitized} at construction time so a crafted folder name or {@code className} cannot inject forged log lines (CR
+     * / LF / control characters) nor smuggle markup downstream.
+     *
      * @param type the kind of component
      * @param name the persisted name of the component (the data directory folder name)
      * @param alias the XStream alias / root XML element of the persisted config, when known
@@ -49,7 +55,53 @@ public class SecurityConfigDiagnostics {
     public record DisabledComponent(ComponentType type, String name, String alias, String sourcePlugin, String reason)
             implements Serializable {
         private static final long serialVersionUID = 1L;
+
+        public DisabledComponent {
+            // sanitize at the construction boundary so every consumer (the CONFIG-level log below and the home-page
+            // notice) gets the cleaned value: these strings are derived from untrusted on-disk configuration. The
+            // identifier fields are short and capped tightly; the reason is internally composed human text (it may
+            // legitimately be a couple of sentences) so it is only stripped of injection characters, with any
+            // attacker-controlled token embedded in it already capped at the composing site.
+            name = sanitize(name);
+            alias = sanitize(alias);
+            sourcePlugin = sanitize(sourcePlugin);
+            reason = stripControlChars(reason, MAX_REASON_LENGTH);
+        }
     }
+
+    /**
+     * Defends against log-forging / injection from untrusted persisted configuration: strips CR, LF and other control
+     * characters (which could otherwise forge additional log lines), collapses runs of whitespace into a single space,
+     * trims, and caps the length (to {@link #MAX_VALUE_LENGTH}) so a pathological value cannot bloat a log line or the
+     * home-page notice. Intended for the short identifier fields (folder name, alias, plugin hint). {@code null} in,
+     * {@code null} out.
+     */
+    static String sanitize(String value) {
+        return stripControlChars(value, MAX_VALUE_LENGTH);
+    }
+
+    /**
+     * Strips control characters and collapses whitespace as {@link #sanitize(String)} does, but caps to the given
+     * length. Used both for the short identifier fields and, with a larger bound, for the composed reason text.
+     */
+    private static String stripControlChars(String value, int maxLength) {
+        if (value == null) {
+            return null;
+        }
+        // replace any ISO control character (CR, LF, TAB, NUL, ...) with a space, then collapse whitespace runs
+        String cleaned =
+                value.replaceAll("\\p{Cntrl}", " ").replaceAll("\\s+", " ").trim();
+        if (cleaned.length() > maxLength) {
+            cleaned = cleaned.substring(0, maxLength) + "…";
+        }
+        return cleaned;
+    }
+
+    /** Upper bound on the length of a sanitized short identifier (folder name, alias, or plugin hint). */
+    private static final int MAX_VALUE_LENGTH = 200;
+
+    /** Upper bound on the length of a composed reason message (longer: it may span a couple of sentences). */
+    private static final int MAX_REASON_LENGTH = 500;
 
     /**
      * A filter chain that was altered because one or more of its filters were disabled.

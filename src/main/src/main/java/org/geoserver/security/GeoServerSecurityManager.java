@@ -641,6 +641,15 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
 
         if (roleService == null) {
+            // the configured role service is a legacy placeholder (left by an uninstalled plugin) or can no longer be
+            // loaded: record and surface it (home page + logs) BEFORE falling back to the default, so the silent role
+            // change does not go unnoticed. Skip when the configured service already is the default fallback.
+            if (roleServiceName != null && !"default".equals(roleServiceName)) {
+                SecurityConfigDiagnostics.DisabledComponent disabled = classifyRoleService(roleServiceName);
+                if (disabled != null) {
+                    configDiagnostics.addDisabledComponent(disabled);
+                }
+            }
             try {
                 roleService = loadRoleService("default");
             } catch (Exception e) {
@@ -860,7 +869,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                     name,
                     sniffRootElement(name),
                     null,
-                    "Filter class is not available: " + className);
+                    // className comes from untrusted on-disk config; cap it before it goes into the reason text
+                    "Filter class is not available: " + SecurityConfigDiagnostics.sanitize(className));
         }
         return null;
     }
@@ -880,26 +890,120 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return false;
     }
 
+    /**
+     * Returns {@code true} if a registered {@link GeoServerSecurityProvider} can create a role service for the given
+     * class name, i.e. the role service is actually loadable. Mirrors {@link RoleServiceHelper#load(String)}
+     * resolution.
+     */
+    private boolean hasMatchingRoleServiceProvider(String className) {
+        for (GeoServerSecurityProvider provider : lookupSecurityProviders()) {
+            Class<? extends GeoServerRoleService> roleServiceClass = provider.getRoleServiceClass();
+            if (roleServiceClass != null && roleServiceClass.getName().equals(className)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Classifies the configured role service the way {@link #classifyFilter(String)} classifies a filter: returns a
+     * {@link SecurityConfigDiagnostics.DisabledComponent} describing why the named role service is unusable — because
+     * it is a legacy placeholder left by an uninstalled plugin, or because its configuration class can no longer be
+     * resolved — or {@code null} if the role service is healthy.
+     *
+     * <p>Unlike a disabled authentication filter (which fails closed), the security subsystem keeps working by falling
+     * back to the {@code default} role service; the reason therefore spells out the consequence of that fallback (the
+     * role assignments contributed by the missing service are lost) so the operator understands why users may suddenly
+     * have different or no roles.
+     */
+    private SecurityConfigDiagnostics.DisabledComponent classifyRoleService(String name) {
+        SecurityNamedServiceConfig config;
+        try {
+            config = roleServiceHelper.loadConfigAsBase(name, true);
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Role service '" + name + "' configuration could not be read and will be disabled",
+                    e);
+            return new SecurityConfigDiagnostics.DisabledComponent(
+                    SecurityConfigDiagnostics.ComponentType.ROLE_SERVICE,
+                    name,
+                    sniffRootElement(role(), name),
+                    null,
+                    roleServiceFallbackReason(name, null));
+        }
+        if (config == null) {
+            // the configured role service no longer exists on disk: still report the fallback so the change is visible
+            return new SecurityConfigDiagnostics.DisabledComponent(
+                    SecurityConfigDiagnostics.ComponentType.ROLE_SERVICE,
+                    name,
+                    null,
+                    null,
+                    roleServiceFallbackReason(name, null));
+        }
+        if (config instanceof DisabledSecurityComponentConfig legacy) {
+            return new SecurityConfigDiagnostics.DisabledComponent(
+                    SecurityConfigDiagnostics.ComponentType.ROLE_SERVICE,
+                    name,
+                    legacy.getOriginalAlias(),
+                    legacy.getSourcePlugin(),
+                    roleServiceFallbackReason(name, legacy.getSourcePlugin()));
+        }
+        String className = config.getClassName();
+        if (className == null) {
+            return null;
+        }
+        if (!hasMatchingRoleServiceProvider(className)) {
+            return new SecurityConfigDiagnostics.DisabledComponent(
+                    SecurityConfigDiagnostics.ComponentType.ROLE_SERVICE,
+                    name,
+                    sniffRootElement(role(), name),
+                    null,
+                    // className comes from untrusted on-disk config; cap it before it goes into the reason text
+                    roleServiceFallbackReason(name, null) + " The role service class is not available: "
+                            + SecurityConfigDiagnostics.sanitize(className) + ".");
+        }
+        return null;
+    }
+
+    /**
+     * Builds the operator-facing message for a role service that was disabled and replaced by the default one, making
+     * the consequence (lost role assignments) explicit.
+     */
+    private static String roleServiceFallbackReason(String name, String sourcePlugin) {
+        String origin = sourcePlugin != null ? sourcePlugin : "a security plugin that is no longer installed";
+        return "Role service '"
+                + name
+                + "' from "
+                + origin
+                + " could not be loaded; falling back to the default role service. Role assignments from "
+                + origin
+                + " are lost — users may have different or no roles until you reconfigure it.";
+    }
+
     private boolean hasSecurityInterceptor(RequestFilterChain chain) {
         return chain instanceof VariableFilterChain variableChain
                 && StringUtils.hasLength(variableChain.getInterceptorName());
     }
 
-    /** Records a disabled legacy security component (one backed by a placeholder configuration). */
-    void recordDisabledLegacyComponent(
-            SecurityConfigDiagnostics.ComponentType type, String name, DisabledSecurityComponentConfig legacy) {
-        configDiagnostics.addDisabledComponent(new SecurityConfigDiagnostics.DisabledComponent(
-                type,
-                name,
-                legacy.getOriginalAlias(),
-                legacy.getSourcePlugin(),
-                "Created by the no longer installed plugin " + legacy.getSourcePlugin() + "."));
-    }
-
     /** Returns the root XML element name of a persisted filter configuration, or {@code null}. */
     private String sniffRootElement(String name) {
         try {
-            Resource resource = filterRoot().get(name).get(CONFIG_FILENAME);
+            return sniffRootElement(filterRoot(), name);
+        } catch (IOException e) {
+            LOGGER.log(Level.FINE, "Could not resolve filter root for config " + name, e);
+            return null;
+        }
+    }
+
+    /**
+     * Returns the root XML element name of a persisted {@code config.xml} located under {@code root/name/}, or
+     * {@code null} if it cannot be determined. Used to recover the original XStream alias of a component whose
+     * configuration class can no longer be resolved.
+     */
+    private String sniffRootElement(Resource root, String name) {
+        try {
+            Resource resource = root.get(name).get(CONFIG_FILENAME);
             if (resource.getType() == Type.UNDEFINED) {
                 return null;
             }
@@ -3064,10 +3168,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 return null;
             }
 
-            if (config instanceof DisabledSecurityComponentConfig legacy) {
-                // placeholder for a role service created by a plugin that is no longer installed:
-                // record it and report no service so the caller falls back to the default one
-                recordDisabledLegacyComponent(SecurityConfigDiagnostics.ComponentType.ROLE_SERVICE, name, legacy);
+            if (config instanceof DisabledSecurityComponentConfig) {
+                // placeholder for a role service created by a plugin that is no longer installed: report no service so
+                // the caller falls back to the default one. The diagnostics entry (with the fallback consequence
+                // spelled out) is recorded centrally by init() via classifyRoleService(), not here, so it is emitted
+                // exactly once per configuration load and not on every loadRoleService() call.
                 return null;
             }
 

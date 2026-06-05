@@ -10,15 +10,22 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
+import org.geoserver.config.util.XStreamUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.SecurityConfigDiagnostics.DisabledComponent;
 import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.security.filter.DisabledSecurityFilter;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Verifies the <em>core</em> generic tolerance: a persisted security filter whose configuration cannot be loaded (for
@@ -127,5 +134,66 @@ public class LegacySecurityConfigTest extends GeoServerSecurityTestSupport {
                 .anyMatch(a -> GeoServerSecurityFilterChain.WEB_CHAIN_NAME.equals(a.chainName())
                         && a.lostAuthenticator()
                         && !a.accessDenied()));
+    }
+
+    /** Route dispatched requests through the real security filter chain so the fail-closed deny filter is exercised. */
+    @Override
+    protected List<Filter> getFilters() {
+        return Arrays.asList(applicationContext.getBean(GeoServerSecurityFilterChainProxy.class));
+    }
+
+    /**
+     * End-to-end fail-closed behaviour: a previously protected chain whose only authentication filter was created by an
+     * uninstalled plugin loses that filter on startup and, having no security interceptor to otherwise enforce access,
+     * has the {@link DisabledSecurityFilter} injected. An actual HTTP request matching that chain must then be denied
+     * with {@code 403 Forbidden} carrying {@link DisabledSecurityFilter#DENY_MESSAGE}, rather than silently passing
+     * through an open chain.
+     */
+    @Test
+    public void testRequestToChainThatLostAuthenticatorIsDeniedWith403() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+
+        // the foreign filter created by a plugin this GeoServer no longer has
+        install("foreign-filter.xml", "security/filter/acme/config.xml");
+
+        // a previously protected chain whose ONLY authentication filter is that foreign one, and which has no security
+        // interceptor of its own (a constant chain): exactly the situation in which the strip must fail closed
+        SecurityManagerConfig config = secMgr.loadSecurityConfig();
+        ConstantFilterChain protectedChain = new ConstantFilterChain("/acmeprotected/**");
+        protectedChain.setName("acmeProtected");
+        protectedChain.getFilterNames().add("acme");
+        // ahead of the catch-all chains so this specific pattern is the one that matches the request
+        config.getFilterChain().getRequestChains().add(0, protectedChain);
+
+        // persist the config directly, the way the old plugin would have written it: saveSecurityConfig() would reject
+        // a chain referencing an unresolvable filter, but an old data directory on disk has no such guard
+        XStreamUtils.xStreamPersist(
+                secMgr.security().get(GeoServerSecurityManager.CONFIG_FILENAME), config, secMgr.globalPersister());
+
+        // reload() runs the startup code path: it disables the foreign filter, strips it from the chain and, because
+        // the
+        // chain is now authenticator-less and interceptor-less, injects the fail-closed deny filter
+        secMgr.reload();
+
+        // sanity: the diagnostics record the chain as access-denied
+        assertTrue(
+                "the protected chain should be recorded as fail-closed (access denied)",
+                secMgr.getConfigDiagnostics().getAffectedChains().stream()
+                        .anyMatch(a ->
+                                "acmeProtected".equals(a.chainName()) && a.lostAuthenticator() && a.accessDenied()));
+
+        // drive a real request at the protected path through the security filter chain
+        MockHttpServletRequest request = createRequest("/acmeprotected/whatever");
+        request.setMethod("GET");
+        MockHttpServletResponse response = dispatch(request);
+
+        assertEquals(
+                "a request to the chain that lost its authenticator must be denied",
+                HttpServletResponse.SC_FORBIDDEN,
+                response.getStatus());
+        assertNotNull("a deny message should be present", response.getErrorMessage());
+        assertTrue(
+                "the 403 should carry the disabled-filter deny message, was: " + response.getErrorMessage(),
+                response.getErrorMessage().contains(DisabledSecurityFilter.DENY_MESSAGE));
     }
 }

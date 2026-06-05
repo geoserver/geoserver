@@ -47,14 +47,12 @@ The backup and restore extension should perform a double check once restored the
 
 ## Migrating a catalog to another GeoServer instance
 
-The default backup archive is **portable**: catalog object ids are stripped and objects reference each other by name. This is the right format when the archive is restored into a fresh, empty data directory — the restore re-creates everything and assigns new ids.
+Since GeoServer 3.0 the default backup archive is **migration-ready**: it keeps every catalog object's id and writes all cross-references by id (`BK_PRESERVE_IDS=true`, the default). This is what you want when the archive will be **merged** into another, already-populated instance — a migration, a consolidation of several servers, or a promotion from staging to production — because it preserves the original identities:
 
-When the goal is instead to **merge** the contents of one instance into another, already-populated instance (a migration, a consolidation of several servers, or a promotion from staging to production), the name-based format has two limitations:
+- A restore matches incoming objects **by id** first (then by name), so each object keeps its identity instead of being conflated with a target object that merely shares a name.
+- GeoWebCache keys its tile-layer configurations strictly by the **published id** of the layer/layer group (there is no name fallback), so preserving ids is what lets the cached tile layers re-link on the target.
 
-- A restore matches incoming objects against the target **by name**, so an object that happens to share a name with an existing one is treated as the same object.
-- GeoWebCache keys its tile-layer configurations strictly by the **published id** of the layer/layer group (there is no name fallback), so name-based archives cannot reliably re-link the cached tile layers.
-
-To preserve the original identities, take the backup with the `BK_PRESERVE_IDS` option (see [Backup options](usagerest.md)):
+Because this is the default, a migration backup needs no special option:
 
 ```json
 {
@@ -62,19 +60,32 @@ To preserve the original identities, take the backup with the `BK_PRESERVE_IDS` 
       "archiveFile":"/home/sg/BackupAndRestore/migration.zip",
       "overwrite":true,
       "options":{
-        "option": ["BK_PRESERVE_IDS=true"]
       }
    }
 }
 ```
 
-The resulting archive keeps every object's id and writes all cross-references by id. Restoring it requires **no special option** — the restore detects the ids and matches accordingly:
+Restoring it requires **no special option** either — the restore detects the ids and matches accordingly:
 
 - Restoring into the **same** instance is idempotent: objects whose id already exists are skipped instead of being duplicated or merged by name.
 - Restoring into a **different** instance preserves the original ids (their ids never collide with the target's, so each object is added keeping its preset id), which lets cross-references between objects and the GWC tile layers re-link correctly.
 
+If you instead want the legacy **portable, name-based** archive — catalog ids stripped and regenerated on restore, the right choice when restoring into a fresh, empty data directory — turn the option off with `BK_PRESERVE_IDS=false`:
+
+```json
+{
+   "backup":{
+      "archiveFile":"/home/sg/BackupAndRestore/portable.zip",
+      "overwrite":true,
+      "options":{
+        "option": ["BK_PRESERVE_IDS=false"]
+      }
+   }
+}
+```
+
 !!! note
-    `BK_PRESERVE_IDS` is currently a REST / programmatic option only; it is not exposed in the Web UI. The default (`false`) keeps the legacy portable, name-based archive format.
+    `BK_PRESERVE_IDS` is exposed in the Web UI as the **Preserve Catalog IDs (for migration to another instance)** backup checkbox (checked by default) as well as the `BK_PRESERVE_IDS` REST option. It is a backup-side option only; the restore adapts automatically to whatever the archive contains. See [What changed between 2.x and 3.x](migration.md).
 
 ## Partial and cross-instance restores
 
@@ -89,4 +100,4 @@ Restoring a workspace-filtered archive, or an archive produced on a different in
 - **Stale GWC tile layers are pruned.** After a (non-dry-run) restore, tile-layer configurations whose published id no longer resolves to a catalog layer or layer group are removed, cleaning up the dangling tile layers that accumulate when a partial restore does not wipe the `gwc-layers` directory.
 
 !!! note
-    As noted under [Saving/restoring only specific workspaces](usagegui.md), a backup archive that contains only a subset of workspaces cannot be used to restore the missing ones. To migrate or consolidate a full catalog, back up the whole catalog (optionally with `BK_PRESERVE_IDS=true`) and restore the workspaces you need.
+    As noted under [Saving/restoring only specific workspaces](usagegui.md), a backup archive that contains only a subset of workspaces cannot be used to restore the missing ones. To migrate or consolidate a full catalog, back up the whole catalog (the default archive already preserves ids for migration) and restore the workspaces you need.

@@ -21,7 +21,7 @@ Here you'll be able to specify various parameters for the Backup / Restore proce
     3.  `Clean-Up Temp Resources`: Delete the temporary working folder at the end of the execution
     4.  `Skip GeoWebCache`: Exclude the GWC catalog and tile-layer folders from the backup
     5.  `Parameterize Store Passwords`: Replace store passwords in the archive with parameterizable tokens instead of the encrypted values (see `BK_PARAM_PASSWORDS` under [Usage Via REST](usagerest.md))
-    6.  `Preserve Catalog IDs (for migration)`: Keep catalog object ids and write cross-references by id, producing an archive suited to migrating into another, already-populated instance. Off by default (the portable, name-based archive). See [Migrating a catalog to another GeoServer instance](usecases.md#migrating-a-catalog-to-another-geoserver-instance)
+    6.  `Preserve Catalog IDs (for migration to another instance)`: Keep catalog object ids and write cross-references by id, producing a portable migration archive that restores into another GeoServer with the original object identities — and their GWC tile-layer links — preserved. **On by default.** Turn it off only to produce a legacy name-based archive whose ids are regenerated on restore. See [Migrating a catalog to another GeoServer instance](usecases.md#migrating-a-catalog-to-another-geoserver-instance)
     7.  `Skip Security Settings`: Exclude the security configuration (users, groups, roles, services) from the backup. **Checked by default**, matching the `BK_SKIP_SECURITY` REST default. Uncheck to include security in the archive
     8.  `Skip Global Settings`: Exclude the global settings from the backup. **Checked by default**, matching the `BK_SKIP_SETTINGS` REST default
 
@@ -36,6 +36,7 @@ Here you'll be able to specify various parameters for the Backup / Restore proce
     5.  `Skip Security Settings`: Do not restore the security configuration. **Checked by default**, matching the `BK_SKIP_SECURITY` REST default. Uncheck only when the archive contains a security folder you intend to restore
     6.  `Skip Global Settings`: Do not restore the global settings. **Checked by default**, matching the `BK_SKIP_SETTINGS` REST default
     7.  `Purge Existing Resources`: Delete incoming resources where possible before restoring (e.g. drop existing workspaces). **Checked by default**, matching the `BK_PURGE_RESOURCES` REST default. Uncheck to merge into the existing catalog without deleting
+    8.  `Merge Security (cross-instance migration)`: Merge the archive's users, groups and roles into this instance's existing security services instead of replacing the whole security configuration. Keeps this instance's configuration, keystore and master password — use it to migrate users/roles from another GeoServer whose master password differs. **Unchecked by default** (replace mode). New users keep their archived (digest) passwords; reversible passwords must be reset afterwards. This option applies only when security is actually restored — that is, when `Skip Security Settings` is unchecked. See the REST option [`BK_MERGE_SECURITY`](usagerest.md)
 
 6.  `Restore Executions`: Report of running and previously run restore
 
@@ -43,7 +44,7 @@ Here you'll be able to specify various parameters for the Backup / Restore proce
     `Skip Security Settings` is checked by default for a reason: restoring security configuration replaces the target's users, groups, roles and authentication settings. Only uncheck it when you understand the archive's security content and intend to overwrite the target's security. See the [partial / cross-instance restore notes](usecases.md#partial-and-cross-instance-restores).
 
 !!! note
-    The remaining `BK_*` options (e.g. password-token substitution, `exclude.file.path`) are available only through the [REST API](usagerest.md), which exposes the full option set.
+    The remaining `BK_*` options — password-token substitution, `exclude.file.path`, the pre-flight validation gate (`BK_FAIL_ON_INVALID`) and security keystore re-encryption (`BK_SOURCE_MASTER_PASSWORD` / `BK_TARGET_MASTER_PASSWORD`) — are available only through the [REST API](usagerest.md), which exposes the full option set.
 
 ## Performing a full backup via UI
 

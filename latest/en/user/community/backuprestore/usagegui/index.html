@@ -20788,6 +20788,8 @@
       
         
       
+        
+      
     
     
     
@@ -21064,6 +21066,34 @@
     
   
     Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What changed between 2.x and 3.x
   
 
     
@@ -29946,7 +29976,7 @@
 <li><code>Clean-Up Temp Resources</code>: Delete the temporary working folder at the end of the execution</li>
 <li><code>Skip GeoWebCache</code>: Exclude the GWC catalog and tile-layer folders from the backup</li>
 <li><code>Parameterize Store Passwords</code>: Replace store passwords in the archive with parameterizable tokens instead of the encrypted values (see <code>BK_PARAM_PASSWORDS</code> under <a href="../usagerest/">Usage Via REST</a>)</li>
-<li><code>Preserve Catalog IDs (for migration)</code>: Keep catalog object ids and write cross-references by id, producing an archive suited to migrating into another, already-populated instance. Off by default (the portable, name-based archive). See <a href="../usecases/#migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance</a></li>
+<li><code>Preserve Catalog IDs (for migration to another instance)</code>: Keep catalog object ids and write cross-references by id, producing a portable migration archive that restores into another GeoServer with the original object identities — and their GWC tile-layer links — preserved. <strong>On by default.</strong> Turn it off only to produce a legacy name-based archive whose ids are regenerated on restore. See <a href="../usecases/#migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance</a></li>
 <li><code>Skip Security Settings</code>: Exclude the security configuration (users, groups, roles, services) from the backup. <strong>Checked by default</strong>, matching the <code>BK_SKIP_SECURITY</code> REST default. Uncheck to include security in the archive</li>
 <li><code>Skip Global Settings</code>: Exclude the global settings from the backup. <strong>Checked by default</strong>, matching the <code>BK_SKIP_SETTINGS</code> REST default</li>
 </ol>
@@ -29964,6 +29994,7 @@
 <li><code>Skip Security Settings</code>: Do not restore the security configuration. <strong>Checked by default</strong>, matching the <code>BK_SKIP_SECURITY</code> REST default. Uncheck only when the archive contains a security folder you intend to restore</li>
 <li><code>Skip Global Settings</code>: Do not restore the global settings. <strong>Checked by default</strong>, matching the <code>BK_SKIP_SETTINGS</code> REST default</li>
 <li><code>Purge Existing Resources</code>: Delete incoming resources where possible before restoring (e.g. drop existing workspaces). <strong>Checked by default</strong>, matching the <code>BK_PURGE_RESOURCES</code> REST default. Uncheck to merge into the existing catalog without deleting</li>
+<li><code>Merge Security (cross-instance migration)</code>: Merge the archive's users, groups and roles into this instance's existing security services instead of replacing the whole security configuration. Keeps this instance's configuration, keystore and master password — use it to migrate users/roles from another GeoServer whose master password differs. <strong>Unchecked by default</strong> (replace mode). New users keep their archived (digest) passwords; reversible passwords must be reset afterwards. This option applies only when security is actually restored — that is, when <code>Skip Security Settings</code> is unchecked. See the REST option <a href="../usagerest/"><code>BK_MERGE_SECURITY</code></a></li>
 </ol>
 </li>
 <li>
@@ -29976,7 +30007,7 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The remaining <code>BK_*</code> options (e.g. password-token substitution, <code>exclude.file.path</code>) are available only through the <a href="../usagerest/">REST API</a>, which exposes the full option set.</p>
+<p>The remaining <code>BK_*</code> options — password-token substitution, <code>exclude.file.path</code>, the pre-flight validation gate (<code>BK_FAIL_ON_INVALID</code>) and security keystore re-encryption (<code>BK_SOURCE_MASTER_PASSWORD</code> / <code>BK_TARGET_MASTER_PASSWORD</code>) — are available only through the <a href="../usagerest/">REST API</a>, which exposes the full option set.</p>
 </div>
 <h2 id="performing-a-full-backup-via-ui">Performing a full backup via UI<a class="headerlink" href="#performing-a-full-backup-via-ui" title="Permanent link">&para;</a></h2>
 <p>In order to perform a full backup, provide the full path of the target <code>.zip</code> archive where to store the configuration data.</p>

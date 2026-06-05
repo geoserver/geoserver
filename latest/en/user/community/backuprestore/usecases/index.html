@@ -14,7 +14,7 @@
         <link rel="prev" href="../extensions/">
       
       
-        <link rel="next" href="../../cog/">
+        <link rel="next" href="../migration/">
       
       
         
@@ -20788,6 +20788,8 @@
       
         
       
+        
+      
     
     
     
@@ -21099,6 +21101,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What changed between 2.x and 3.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -30007,31 +30037,40 @@
 <li>In case the datastore is accessible but the index does not exist, the plugin will create an empty mosaic on the catalog instead of failing.</li>
 </ol>
 <h2 id="migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance<a class="headerlink" href="#migrating-a-catalog-to-another-geoserver-instance" title="Permanent link">&para;</a></h2>
-<p>The default backup archive is <strong>portable</strong>: catalog object ids are stripped and objects reference each other by name. This is the right format when the archive is restored into a fresh, empty data directory — the restore re-creates everything and assigns new ids.</p>
-<p>When the goal is instead to <strong>merge</strong> the contents of one instance into another, already-populated instance (a migration, a consolidation of several servers, or a promotion from staging to production), the name-based format has two limitations:</p>
+<p>Since GeoServer 3.0 the default backup archive is <strong>migration-ready</strong>: it keeps every catalog object's id and writes all cross-references by id (<code>BK_PRESERVE_IDS=true</code>, the default). This is what you want when the archive will be <strong>merged</strong> into another, already-populated instance — a migration, a consolidation of several servers, or a promotion from staging to production — because it preserves the original identities:</p>
 <ul>
-<li>A restore matches incoming objects against the target <strong>by name</strong>, so an object that happens to share a name with an existing one is treated as the same object.</li>
-<li>GeoWebCache keys its tile-layer configurations strictly by the <strong>published id</strong> of the layer/layer group (there is no name fallback), so name-based archives cannot reliably re-link the cached tile layers.</li>
+<li>A restore matches incoming objects <strong>by id</strong> first (then by name), so each object keeps its identity instead of being conflated with a target object that merely shares a name.</li>
+<li>GeoWebCache keys its tile-layer configurations strictly by the <strong>published id</strong> of the layer/layer group (there is no name fallback), so preserving ids is what lets the cached tile layers re-link on the target.</li>
 </ul>
-<p>To preserve the original identities, take the backup with the <code>BK_PRESERVE_IDS</code> option (see <a href="../usagerest/">Backup options</a>):</p>
+<p>Because this is the default, a migration backup needs no special option:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="nt">&quot;backup&quot;</span><span class="p">:{</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/home/sg/BackupAndRestore/migration.zip&quot;</span><span class="p">,</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_PRESERVE_IDS=true&quot;</span><span class="p">]</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="p">}</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">   </span><span class="p">}</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">}</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">   </span><span class="p">}</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
 </code></pre></div>
-<p>The resulting archive keeps every object's id and writes all cross-references by id. Restoring it requires <strong>no special option</strong> — the restore detects the ids and matches accordingly:</p>
+<p>Restoring it requires <strong>no special option</strong> either — the restore detects the ids and matches accordingly:</p>
 <ul>
 <li>Restoring into the <strong>same</strong> instance is idempotent: objects whose id already exists are skipped instead of being duplicated or merged by name.</li>
 <li>Restoring into a <strong>different</strong> instance preserves the original ids (their ids never collide with the target's, so each object is added keeping its preset id), which lets cross-references between objects and the GWC tile layers re-link correctly.</li>
 </ul>
+<p>If you instead want the legacy <strong>portable, name-based</strong> archive — catalog ids stripped and regenerated on restore, the right choice when restoring into a fresh, empty data directory — turn the option off with <code>BK_PRESERVE_IDS=false</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">   </span><span class="nt">&quot;backup&quot;</span><span class="p">:{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/home/sg/BackupAndRestore/portable.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_PRESERVE_IDS=false&quot;</span><span class="p">]</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">      </span><span class="p">}</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">   </span><span class="p">}</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">}</span>
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>BK_PRESERVE_IDS</code> is currently a REST / programmatic option only; it is not exposed in the Web UI. The default (<code>false</code>) keeps the legacy portable, name-based archive format.</p>
+<p><code>BK_PRESERVE_IDS</code> is exposed in the Web UI as the <strong>Preserve Catalog IDs (for migration to another instance)</strong> backup checkbox (checked by default) as well as the <code>BK_PRESERVE_IDS</code> REST option. It is a backup-side option only; the restore adapts automatically to whatever the archive contains. See <a href="../migration/">What changed between 2.x and 3.x</a>.</p>
 </div>
 <h2 id="partial-and-cross-instance-restores">Partial and cross-instance restores<a class="headerlink" href="#partial-and-cross-instance-restores" title="Permanent link">&para;</a></h2>
 <p>Restoring a workspace-filtered archive, or an archive produced on a different instance, only ever covers part of the target catalog. The extension is resilient to the dangling and missing references that such partial archives carry:</p>
@@ -30051,7 +30090,7 @@
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>As noted under <a href="../usagegui/">Saving/restoring only specific workspaces</a>, a backup archive that contains only a subset of workspaces cannot be used to restore the missing ones. To migrate or consolidate a full catalog, back up the whole catalog (optionally with <code>BK_PRESERVE_IDS=true</code>) and restore the workspaces you need.</p>
+<p>As noted under <a href="../usagegui/">Saving/restoring only specific workspaces</a>, a backup archive that contains only a subset of workspaces cannot be used to restore the missing ones. To migrate or consolidate a full catalog, back up the whole catalog (the default archive already preserves ids for migration) and restore the workspaces you need.</p>
 </div>
 
 
@@ -30107,13 +30146,13 @@
         
         
           
-          <a href="../../cog/" class="md-footer__link md-footer__link--next" aria-label="Next: COG (Cloud Optimized GeoTIFF) Documentation">
+          <a href="../migration/" class="md-footer__link md-footer__link--next" aria-label="Next: What changed between 2.x and 3.x">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                COG (Cloud Optimized GeoTIFF) Documentation
+                What changed between 2.x and 3.x
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -20788,6 +20788,8 @@
       
         
       
+        
+      
     
     
     
@@ -21086,6 +21088,34 @@
     
   
     Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What changed between 2.x and 3.x
   
 
     
@@ -30036,7 +30066,7 @@
 <li><code>BK_SKIP_SETTINGS</code>: This will attempt to exclude global settings from the backup, as well as security settings. Default: <code>true</code>.</li>
 <li><code>BK_SKIP_GWC</code>: This option will avoid backup / restore the GWC catalog and folders. Default: <code>false</code>.</li>
 <li><code>BK_CLEANUP_TEMP</code>: This will attempt to delete temporary folder at the end of the execution. Default: <code>true</code>.</li>
-<li><code>BK_PRESERVE_IDS</code>: Keep every catalog object's internal id in the archive and write cross-references <strong>by id</strong> instead of by name. Default: <code>false</code>. By default the archive is <em>portable</em> — ids are stripped and objects reference each other by name — which is the right choice when restoring into a fresh, empty data directory. Set this to <code>true</code> when you intend to <strong>migrate</strong> the archive into another, already-populated GeoServer instance and need the original identities to be preserved (see <a href="../usecases/#migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance</a>). The flag is a <strong>backup-side</strong> option only: the restore reads whichever of <code>&lt;id&gt;</code>/<code>&lt;name&gt;</code> each reference carries, so an id-based archive restores correctly with the default restore command — no matching option is required.</li>
+<li><code>BK_PRESERVE_IDS</code>: Keep every catalog object's internal id in the archive and write cross-references <strong>by id</strong> instead of by name. Default: <code>true</code>. By default the archive is a portable <strong>migration artifact</strong>: it preserves the original object identities, so it restores into another, already-populated GeoServer with cross-references and GWC tile-layer links intact (see <a href="../usecases/#migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance</a>). Set this to <code>false</code> to produce the legacy <em>name-based</em> archive — ids are stripped and regenerated on restore — which is only needed when restoring into a fresh, empty data directory. The flag is a <strong>backup-side</strong> option only: the restore reads whichever of <code>&lt;id&gt;</code>/<code>&lt;name&gt;</code> each reference carries, so an archive restores correctly with the default restore command — no matching option is required. (Changed in 3.0 — see <a href="../migration/">What changed between 2.x and 3.x</a>.)</li>
 <li><code>exclude.file.path</code>: A <code>;</code> separated list of paths relative to the <code>GEOSERVER_DATA_DIR</code> (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: <code>[]</code>. WARNING: <code>security</code> and <code>workspaces</code> are treated differently. This option should be used only for custom external resources located under the <code>GEOSERVER_DATA_DIR</code>.</li>
 </ol>
 <div class="admonition note">
@@ -30141,7 +30171,7 @@
 <p>Available Options are:</p>
 <ol>
 <li>
-<p><code>BK_DRY_RUN</code>: Only test the archive do not persist the restored configuration. Default: <code>false</code>.</p>
+<p><code>BK_DRY_RUN</code>: Only test the archive, do not persist the restored configuration. Default: <code>false</code>. Since 3.x a dry-run <strong>snapshots and rolls back</strong> the affected data-directory subtrees, so it leaves the data directory untouched even though the restore otherwise writes incrementally (see <a href="../migration/#transactional-dry-run-and-fail-on-invalid">What changed</a>).</p>
 </li>
 <li>
 <p><code>BK_BEST_EFFORT</code>: Skip any failing resources and proceed with the restore procedure. Default: <code>false</code>.</p>
@@ -30165,6 +30195,15 @@
 </li>
 <li>
 <p><code>BK_CLEANUP_TEMP</code>: This will attempt to delete temporary folder at the end of the execution. Default: <code>true</code>.</p>
+</li>
+<li>
+<p><code>BK_MERGE_SECURITY</code>: When <code>true</code>, <strong>merge</strong> the archive's users, groups and roles into the target's existing security services instead of replacing the whole <code>security</code> folder. The target keeps its own configuration, keystore and master password, so this works even when the source and target master passwords differ. New principals keep their archived (digest) passwords; reversible passwords must be reset on the target afterwards. Default: <code>false</code> (replace mode). Has effect only when security is actually restored, i.e. <code>BK_SKIP_SECURITY=false</code>. New in 3.0.</p>
+</li>
+<li>
+<p><code>BK_SOURCE_MASTER_PASSWORD</code> / <code>BK_TARGET_MASTER_PASSWORD</code>: Supplied together on a security <strong>replace</strong> restore (<code>BK_SKIP_SECURITY=false</code>, <code>BK_MERGE_SECURITY=false</code>) to re-encrypt the archive's keystore from the source's master password to the target's — without them a keystore encrypted under a different source master password cannot be read on the target. <code>BK_TARGET_MASTER_PASSWORD</code> must match the target instance's actual master password or the re-encryption is rejected. Both are <strong>sensitive</strong>: pass them as transient parameters, never store them in scripts or logs. New in 3.0.</p>
+</li>
+<li>
+<p><code>BK_FAIL_ON_INVALID</code>: When <code>true</code>, the restore runs a <strong>pre-flight validation pass</strong> over the fully-assembled restore catalog and <strong>aborts</strong> (the job is marked <code>FAILED</code>, the live configuration reload is skipped, and the data directory is rolled back to its pre-restore state) if any catalog object is invalid. Default: <code>false</code> — the pass still runs but only logs the problems and records them as execution warnings. Combine with <code>BK_DRY_RUN=true</code> to validate an archive non-destructively before committing to a real restore. New in 3.0.</p>
 </li>
 <li>
 <p><code>exclude.file.path</code>: A <code>;</code> separated list of paths relative to the <code>GEOSERVER_DATA_DIR</code> (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: <code>[]</code>. WARNING: <code>security</code> and <code>workspaces</code> are treated differently. This option should be used only for custom external resources located under the <code>GEOSERVER_DATA_DIR</code>.</p>

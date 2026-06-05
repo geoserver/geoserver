@@ -338,10 +338,10 @@ public abstract class BackupRestoreItem<T> {
             } else {
                 throw e;
             }
-        }
-
-        if (!isBestEffort()) {
             getCurrentJobExecution().addFailureExceptions(List.of(validationException));
+        } else {
+            // best-effort: record the problem as a warning instead of swallowing it silently
+            getCurrentJobExecution().addWarningExceptions(List.of(validationException));
         }
         return false;
     }

@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mvc="http://www.springframework.org/schema/mvc" 
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
@@ -14,7 +14,8 @@
   -->
 
 	<context:component-scan base-package="org.geoserver.geofence.rest"/>
-	
+    <context:component-scan base-package="org.geofence"/>
+
     <bean id="geofence-configurer" class="org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer">
         <constructor-arg ref="dataDirectory"/>
 
@@ -71,10 +72,9 @@
 
     </bean>
 
-    <!--<bean id="remoteReaderService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
+    <bean id="remoteReaderService" class="org.geoserver.geofence.util.RestRuleReaderService">
         <property name="serviceUrl" value="${servicesUrl}"/>
-        <property name="serviceInterface" value="org.geoserver.geofence.services.RuleReaderService"/>
-    </bean>-->
+    </bean>
 
     <bean id="defaultContainerAccessResolver" class="org.geoserver.geofence.containers.DefaultContainerAccessResolver">
         <property name="ruleReaderService" ref="${ruleReaderFrontend}" />
@@ -86,7 +86,7 @@
 
     <bean id="geofenceCacheManager" class="org.geoserver.geofence.cache.CacheManager" >
         <constructor-arg index="0" ref="geofenceConfigurationManager"/>
-        
+
         <property name="ruleServiceLoaderFactory">
             <bean class="org.geoserver.geofence.cache.RuleCacheLoaderFactory">
                 <constructor-arg ref="${ruleReaderBackend}"/>
@@ -105,19 +105,19 @@
             <constructor-arg index="1" ref="rawCatalog" />
             <constructor-arg index="2" ref="geofenceConfigurationManager" />
             <constructor-arg index="3" >
-                <!-- Resolver without cache --> 
+                <!-- Resolver without cache -->
                 <!-- We may want to use the DefaultContainerAccessResolver instead of the cached one for testing purposes -->
-                <!--                
+                <!--
                 <bean class="org.geoserver.geofence.containers.DefaultContainerAccessResolver">
                     <constructor-arg ref="${ruleReaderFrontend}"/>
-                </bean>-->                
+                </bean>-->
                 <!-- Resolver with cache -->
                 <bean class="org.geoserver.geofence.containers.CachedContainerAccessResolver">
                     <constructor-arg ref="geofenceCacheManager"/>
-                </bean>                                
+                </bean>
             </constructor-arg>
             <constructor-arg index="4" ref="geoFenceWpsHelper" />
-            
+
             <property name="groupsCache" ref="layerGroupContainmentCache"/>
     </bean>
 
@@ -157,7 +157,7 @@
         <property name="descriptionKey" value="GeoFenceAuthProviderPanel.description"/>
     </bean>
 
-    <bean id="geoFenceXStreamInitializer" 
+    <bean id="geoFenceXStreamInitializer"
           class="org.geoserver.geoserver.xstream.GeoFenceXStreamPersisterInitializer"
           lazy-init="false">
     </bean>
@@ -174,5 +174,5 @@
 
     <bean id="geoFenceChainStatusHolder" class="org.geoserver.geofence.wpscommon.ChainStatusHolder">
     </bean>
-    
+
 </beans>

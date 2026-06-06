@@ -222,6 +222,30 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
                 stepExecutions(execution).getJSONObject(0).getJSONObject("parameters").get("wsFilter"));
     }
 
+    @Test
+    public void testAbandonBackupDoesNotError() throws Exception {
+        Resource tmpDir = BackupUtils.tmpDir();
+        String archiveFilePath = Paths.path(tmpDir.path(), "geoserver-backup.zip");
+
+        String json = "{\"backup\": {"
+                + "   \"archiveFile\": \""
+                + archiveFilePath
+                + "\", "
+                + "   \"overwrite\": true,"
+                + "   \"options\": { \"option\": [\"BK_BEST_EFFORT=false\"] }"
+                + "  }"
+                + "}";
+
+        JSONObject backup = postNewBackup(json);
+        long id = backup.getJSONObject("execution").getLong("id");
+
+        // Aborting an execution must not fail with a 500 even if the job is still running: Spring Batch cannot abandon
+        // a running execution, so abandonExecution stops it first and then records it ABANDONED. Before the fix, DELETE
+        // on a still-running execution surfaced JobExecutionAlreadyRunningException as HTTP 500.
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH + "/br/backup/" + id);
+        assertEquals(200, response.getStatus());
+    }
+
     @After
     public void waitForRunningExecutions() throws InterruptedException {
         // A test that fails before its own wait loop can leave an async backup/restore execution running; the backup

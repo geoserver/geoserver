@@ -123,7 +123,9 @@ public class BackupController extends AbstractBackupRestoreController {
             path = "backup/{backupId:.+}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper backupDelete(
-            @RequestParam(name = "format", required = false) String format, @PathVariable String backupId)
+            @RequestParam(name = "format", required = false) String format,
+            @RequestParam(name = "force", required = false, defaultValue = "false") boolean force,
+            @PathVariable String backupId)
             throws IOException {
 
         final String executionId = getExecutionIdFilter(backupId);
@@ -132,7 +134,8 @@ public class BackupController extends AbstractBackupRestoreController {
         if (lookup != null) {
             if (lookup instanceof BackupExecutionAdapter adapter) {
                 try {
-                    getBackupFacade().abandonExecution(Long.valueOf(executionId));
+                    // force=true escalates a wedged execution to a break-glass configuration-lock release.
+                    getBackupFacade().abandonExecution(Long.valueOf(executionId), force);
                 } catch (Exception e) {
                     throw new IOException(e);
                 }

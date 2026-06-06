@@ -43,6 +43,13 @@ public class GeoServerConfigurationLock {
 
     private static final ThreadLocal<LockType> currentLock = new ThreadLocal<>();
 
+    /**
+     * The thread currently holding the write lock, or {@code null} when none does. Recorded so the write lock can be
+     * force-released - by interrupting its owner - when that thread becomes wedged (see
+     * {@link #tryForceReleaseWriteLock()}). Only ever written while the write lock is held, so a plain volatile suffices.
+     */
+    private static volatile Thread writeOwner;
+
     public static enum LockType {
         READ,
         WRITE
@@ -97,6 +104,9 @@ public class GeoServerConfigurationLock {
 
         lock.lock();
         currentLock.set(type);
+        if (LockType.WRITE == type) {
+            writeOwner = Thread.currentThread();
+        }
 
         if (LOGGER.isLoggable(LEVEL)) {
             LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId() + " got the lock in mode " + type);
@@ -156,6 +166,9 @@ public class GeoServerConfigurationLock {
         } finally {
             if (res) {
                 currentLock.set(type);
+                if (LockType.WRITE == type) {
+                    writeOwner = Thread.currentThread();
+                }
             }
         }
 
@@ -220,8 +233,41 @@ public class GeoServerConfigurationLock {
                     || (LockType.WRITE == type && currThreadReentrantWriteLockCount == 0);
             if (canUnset) {
                 currentLock.set(null);
+                if (LockType.WRITE == type) {
+                    writeOwner = null;
+                }
             }
         }
+    }
+
+    /**
+     * Break-glass recovery for a write lock held by a wedged thread.
+     *
+     * <p>The configuration lock is a {@link ReentrantReadWriteLock}: it can only be released by the very thread that
+     * acquired it, so no other thread can {@code unlock()} it. If a thread (for example a Spring Batch backup/restore
+     * job thread) becomes wedged while holding the write lock, every other configuration operation - GUI and REST
+     * alike - is blocked indefinitely with no recovery short of a JVM restart.
+     *
+     * <p>This method interrupts the thread that currently owns the write lock so that, if it is parked or blocked at an
+     * interruptible point, it unwinds and releases the lock through its own normal code path (e.g. a job's
+     * {@code afterJob} listener) - on its owning thread, preserving the lock's ownership invariant rather than forcing
+     * the monitor open from the outside. It is therefore best-effort: a thread wedged at a non-interruptible point (a
+     * tight CPU loop, or non-interruptible I/O) cannot be freed this way and still requires a restart.
+     *
+     * @return {@code true} if a write-lock owner thread was found and interrupted; {@code false} if the write lock is
+     *     not currently held, its owner is unknown, or the calling thread is itself the owner
+     */
+    public boolean tryForceReleaseWriteLock() {
+        Thread owner = writeOwner;
+        if (owner == null || !readWriteLock.isWriteLocked() || owner == Thread.currentThread()) {
+            return false;
+        }
+        LOGGER.warning("Force-releasing the GeoServer configuration write lock by interrupting its owning thread '"
+                + owner.getName()
+                + "'. This is a break-glass recovery for a wedged write-lock holder; if that thread is not at an "
+                + "interruptible point a JVM restart may still be required.");
+        owner.interrupt();
+        return true;
     }
 
     public boolean isEnabled() {

@@ -68,19 +68,19 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
         }
 
         if (backupExecution.getStatus() == BatchStatus.COMPLETED) {
-            // unzip the completed backup
-            Scanner scanner;
+            // unzip the completed backup. Read the entry while the ZipFile is still open: a try-with-resources here
+            // previously closed it (and the entry stream) before the scanner ran, so it always read nothing.
+            String storeContent;
             try (ZipFile backup = new ZipFile(parameterizedBackup)) {
                 ZipEntry entry = backup.getEntry("store.dat.1");
-
-                scanner = new Scanner(backup.getInputStream(entry), StandardCharsets.UTF_8);
+                try (Scanner scanner =
+                        new Scanner(backup.getInputStream(entry), StandardCharsets.UTF_8).useDelimiter("\\A")) {
+                    storeContent = scanner.hasNext() ? scanner.next() : "";
+                }
             }
-            boolean hasExpectedValue = false;
-            while (scanner.hasNextLine() && !hasExpectedValue) {
-                String line = scanner.nextLine();
-                hasExpectedValue = line.contains("encryptedValue");
-            }
-            assertTrue("Expected the store output to contain tokenized password", hasExpectedValue);
+            assertTrue(
+                    "Expected the parameterized store output to contain a tokenized password, was:\n" + storeContent,
+                    storeContent.contains("tokenizedPassword"));
         }
     }
 }

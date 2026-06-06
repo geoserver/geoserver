@@ -15,9 +15,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.junit.After;
 import org.junit.Before;
@@ -245,5 +248,60 @@ public class GeoServerConfigurationLockTest {
             lock.unlock();
             assertNull(lock.getCurrentLock());
         }
+    }
+
+    @Test(timeout = 5000)
+    public void testForceReleaseWriteLock_interruptsWedgedOwner() throws InterruptedException {
+        assertFalse(lock.isWriteLocked());
+
+        CountDownLatch acquired = new CountDownLatch(1);
+        CountDownLatch released = new CountDownLatch(1);
+        AtomicBoolean wasInterrupted = new AtomicBoolean(false);
+
+        Thread owner = new Thread(
+                () -> {
+                    lock.lock(WRITE);
+                    try {
+                        acquired.countDown();
+                        // simulate a job thread wedged at an interruptible point while holding the write lock
+                        Thread.sleep(60_000);
+                    } catch (InterruptedException e) {
+                        wasInterrupted.set(true);
+                    } finally {
+                        lock.unlock();
+                        released.countDown();
+                    }
+                },
+                "wedged-write-owner");
+        owner.start();
+
+        assertTrue("owner thread did not acquire the write lock", acquired.await(2, TimeUnit.SECONDS));
+        assertTrue(lock.isWriteLocked());
+
+        // a different thread (this test thread) can force the wedged owner to release by interrupting it
+        assertTrue("expected an owner thread to interrupt", lock.tryForceReleaseWriteLock());
+
+        assertTrue("owner did not release the lock after being interrupted", released.await(2, TimeUnit.SECONDS));
+        assertTrue("owner should have been interrupted", wasInterrupted.get());
+        assertFalse(lock.isWriteLocked());
+        owner.join(1000);
+    }
+
+    @Test(timeout = 1000)
+    public void testForceReleaseWriteLock_falseWhenNotWriteLocked() {
+        assertFalse(lock.isWriteLocked());
+        assertFalse("nothing to force-release when no write lock is held", lock.tryForceReleaseWriteLock());
+    }
+
+    @Test(timeout = 1000)
+    public void testForceReleaseWriteLock_falseWhenHeldByCurrentThread() {
+        lock.lock(WRITE);
+        try {
+            assertFalse("must not interrupt the calling thread", lock.tryForceReleaseWriteLock());
+            assertEquals(WRITE, lock.getCurrentLock());
+        } finally {
+            lock.unlock();
+        }
+        assertFalse(lock.isWriteLocked());
     }
 }

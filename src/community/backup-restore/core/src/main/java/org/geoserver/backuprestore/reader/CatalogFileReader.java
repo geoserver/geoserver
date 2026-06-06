@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -278,7 +279,23 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Result result = new StreamResult(os);
         t.transform(source, result);
-        return this.getXp().fromXML(new ByteArrayInputStream(os.toByteArray()));
+        String xml = stripDynamicProxyMarkers(os.toString(StandardCharsets.UTF_8));
+        return this.getXp().fromXML(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    /**
+     * Removes XStream {@code class="dynamic-proxy"} type markers stamped on catalog reference elements whose value was
+     * an unresolved {@link org.geoserver.catalog.impl.ResolvingProxy} at backup time - e.g. a layer whose
+     * {@code <defaultStyle>} points at a missing/dangling style is written to the archive as {@code <defaultStyle
+     * class="dynamic-proxy"><id>ws:style</id></defaultStyle>}. The marker records the proxy runtime type around the
+     * {@code <id>}/{@code <name>} body, but on read GeoServer's {@code ReferenceConverter} only accepts the declared
+     * reference type and would otherwise fail the whole restore step with "Explicit selected converter cannot handle
+     * type". Stripping the marker lets the field resolve to its declared type so the id/name reference is read back
+     * into a ResolvingProxy. Safe for catalog XML: the marker only ever wraps such references there, and the reference
+     * body it leaves behind is unchanged.
+     */
+    static String stripDynamicProxyMarkers(String xml) {
+        return xml.replace(" class=\"dynamic-proxy\"", "");
     }
 
     /*

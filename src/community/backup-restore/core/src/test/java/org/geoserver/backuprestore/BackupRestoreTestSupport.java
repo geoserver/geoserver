@@ -315,8 +315,11 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         peDatastore.setWorkspace(catalog.getDefaultWorkspace());
 
         Map pedsParams = peDatastore.getConnectionParameters();
-        pedsParams.put("dbtype", "h2");
-        pedsParams.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo_pe");
+        // Use a store type whose factory exposes 'passwd' as a password parameter (h2 here resolves to no encrypted
+        // fields), so the password-parameterization backup - which only tokenizes fields the security manager reports
+        // as encrypted - actually has a field to tokenize.
+        pedsParams.put("dbtype", "geopkg");
+        pedsParams.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo_pe.gpkg");
         pedsParams.put("passwd", "foo");
         catalog.add(peDatastore);
 

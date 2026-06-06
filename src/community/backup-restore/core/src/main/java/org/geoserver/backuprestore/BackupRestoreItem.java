@@ -240,7 +240,11 @@ public abstract class BackupRestoreItem<T> {
             if (!isNew) {
                 this.xp.registerLocalConverter(
                         StoreInfoImpl.class, "connectionParameters", this.createParameterizingMapConverter(xstream));
-                this.xp.registerConverter(this.createStoreConverter(xstream));
+                // Register above the StoreInfoConverter that XStreamPersister installs at PRIORITY_NORMAL so this
+                // wrapper (which records the encrypted fields to tokenize) is the one selected for stores. Equal
+                // priorities are an unreliable tie-break across XStream versions, which silently disabled password
+                // parameterization (passwords were written verbatim instead of tokenized).
+                this.xp.registerConverter(this.createStoreConverter(xstream), XStream.PRIORITY_VERY_HIGH);
             } else {
                 String concatenatedPasswordTokens = jobParameters.getString(Backup.PARAM_PASSWORD_TOKENS);
                 Map<String, String> passwordTokens = parseConcatenatedPasswordTokens(concatenatedPasswordTokens);

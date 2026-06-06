@@ -591,12 +591,54 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     public void afterJob(JobExecution jobExecution) {
         // Release locks on GeoServer Configuration:
         try {
-            List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-            for (BackupRestoreCallback callback : callbacks) {
-                callback.onEndRequest();
-            }
+            releaseConfigurationLocks();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
+        }
+
+        // Refresh the live catalog from the restored data directory, after the configuration lock is released.
+        reloadCatalogAfterRestore(jobExecution);
+    }
+
+    /**
+     * Releases the GeoServer configuration lock acquired for the current backup/restore request through the registered
+     * {@link BackupRestoreCallback}s. Idempotent per thread: a callback whose lock has already been released is a no-op
+     * (see {@link BackupRestoreConfigurationLockCallback}).
+     */
+    public void releaseConfigurationLocks() {
+        List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+        for (BackupRestoreCallback callback : callbacks) {
+            callback.onEndRequest();
+        }
+    }
+
+    /**
+     * Reloads the live GeoServer catalog from the restored data directory after a successful restore.
+     *
+     * <p>Runs from {@link #afterJob(JobExecution)} on the job thread, <em>after</em> the configuration lock has been
+     * released. {@code GeoServer.reload()} drives the parallel data-directory loader, whose worker threads acquire the
+     * configuration lock; reloading earlier (e.g. from the in-job finalize step, which runs on a separate executor
+     * thread while the job thread still holds the write lock) deadlocks against that lock until it times out (~10
+     * minutes), leaving the job {@code STOPPED}. Only a successfully completed, non-dry-run restore needs this: the
+     * restore writes through to the data directory via a separate restore catalog, so the live in-memory catalog is
+     * stale until reloaded.
+     */
+    private void reloadCatalogAfterRestore(JobExecution jobExecution) {
+        JobParameters params = jobExecution.getJobParameters();
+        boolean isRestore = RESTORE_JOB_NAME.equals(params.getString(PARAM_JOB_NAME));
+        boolean dryRun = Boolean.parseBoolean(params.getString(PARAM_DRY_RUN_MODE, "false"));
+        if (!isRestore || dryRun || jobExecution.getStatus() != BatchStatus.COMPLETED) {
+            return;
+        }
+        try {
+            GeoServer geoserver = getGeoServer();
+            Catalog catalog = geoserver.getCatalog();
+            catalog.getResourcePool().dispose();
+            catalog.dispose();
+            geoserver.dispose();
+            geoserver.reload();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error reloading the GeoServer catalog after restore: ", e);
         }
     }
 

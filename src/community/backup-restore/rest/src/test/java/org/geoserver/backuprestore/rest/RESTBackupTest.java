@@ -27,7 +27,9 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.DefaultResourceAccessManager;
+import org.junit.After;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
 import org.kordamp.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -160,18 +162,21 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
 
         assertEquals("COMPLETED", execution.getString("status"));
 
-        Scanner scanner;
+        String storeContent;
         try (ZipFile backupZip = new ZipFile(new File(archiveFilePath))) {
             ZipEntry entry = backupZip.getEntry("store.dat.1");
-
-            scanner = new Scanner(backupZip.getInputStream(entry), StandardCharsets.UTF_8);
+            // Read the entry while the ZipFile is still open: a prior try-with-resources closed the ZipFile (and thus
+            // the entry stream) before the scanner ran, so it always read nothing.
+            try (Scanner scanner =
+                    new Scanner(backupZip.getInputStream(entry), StandardCharsets.UTF_8).useDelimiter("\\A")) {
+                storeContent = scanner.hasNext() ? scanner.next() : "";
+            }
         }
-        boolean hasExpectedValue = false;
-        while (scanner.hasNextLine() && !hasExpectedValue) {
-            String line = scanner.next();
-            hasExpectedValue = line.contains("encryptedValue");
-        }
-        assertTrue("Expected the store output to contain tokenized password", hasExpectedValue);
+        // A parameterized backup (BK_PARAM_PASSWORDS=true) replaces store passwords with ${...} tokens written inside
+        // <tokenizedPassword> elements (see BackupRestoreItem.createParameterizingMapConverter).
+        assertTrue(
+                "Expected the parameterized store output to contain a tokenized password, was:\n" + storeContent,
+                storeContent.contains("tokenizedPassword"));
     }
 
     @Test
@@ -196,15 +201,6 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         JSONObject execution =
                 readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
-        assertEquals(
-                "name IN ('topp','geosolutions-it')",
-                execution
-                        .getJSONObject("stepExecutions")
-                        .getJSONArray("step")
-                        .getJSONObject(0)
-                        .getJSONObject("parameters")
-                        .get("wsFilter"));
-
         assertTrue("STARTED".equals(execution.getString("status")) || "STARTING".equals(execution.getString("status")));
 
         int cnt = 0;
@@ -218,6 +214,39 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         }
 
         assertEquals("COMPLETED", execution.getString("status"));
+
+        // The wsFilter job parameter is propagated onto the step executions. Read the step list defensively: when it
+        // has a single element Jettison serializes it as an object rather than a 1-element array.
+        assertEquals(
+                "name IN ('topp','geosolutions-it')",
+                stepExecutions(execution).getJSONObject(0).getJSONObject("parameters").get("wsFilter"));
+    }
+
+    @After
+    public void waitForRunningExecutions() throws InterruptedException {
+        // A test that fails before its own wait loop can leave an async backup/restore execution running; the backup
+        // facade refuses to start a new job while one is running, which would cascade-fail the following tests. Let any
+        // in-flight execution finish so each test starts from a clean slate.
+        int cnt = 0;
+        while (cnt++ < 100
+                && (!backupFacade.getBackupRunningExecutions().isEmpty()
+                        || !backupFacade.getRestoreRunningExecutions().isEmpty())) {
+            Thread.sleep(100);
+        }
+    }
+
+    /**
+     * Returns the {@code stepExecutions/step} list as a {@link JSONArray}, wrapping the single object Jettison emits
+     * when the list has exactly one element (a 1-element collection is serialized as an object, not a 1-element array).
+     */
+    static JSONArray stepExecutions(JSONObject execution) {
+        Object steps = execution.getJSONObject("stepExecutions").get("step");
+        if (steps instanceof JSONArray) {
+            return (JSONArray) steps;
+        }
+        JSONArray array = new JSONArray();
+        array.add(steps);
+        return array;
     }
 
     JSONObject postNewBackup(String body) throws Exception {

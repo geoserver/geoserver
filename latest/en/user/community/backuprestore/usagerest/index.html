@@ -14,7 +14,7 @@
         <link rel="prev" href="../usagegui/">
       
       
-        <link rel="next" href="../extensions/">
+        <link rel="next" href="../options/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Usage Via GeoServer's REST API - Documentation</title>
+        <title>Usage via GeoServer's REST API - Documentation</title>
       
     
     
@@ -167,7 +167,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Usage Via GeoServer's REST API
+              Usage via GeoServer's REST API
             
           </span>
         </div>
@@ -20790,6 +20790,8 @@
       
         
       
+        
+      
     
     
     
@@ -20812,7 +20814,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
     
@@ -20834,7 +20836,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
           </label>
@@ -20884,7 +20886,7 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's User Interface
+    Usage via the web interface
   
 
     
@@ -20921,7 +20923,7 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's REST API
+    Usage via GeoServer's REST API
   
 
     
@@ -20939,7 +20941,7 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's REST API
+    Usage via GeoServer's REST API
   
 
     
@@ -20965,22 +20967,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#usage-example" class="md-nav__link">
+  <a href="#resources" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Usage Example
+        Resources
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Usage Example">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request body
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#initiate-a-backup" class="md-nav__link">
+  <a href="#start-a-full-backup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Initiate a Backup
+        Start a full backup
       
     </span>
   </a>
@@ -20988,10 +21012,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#query-status-of-backup-executions" class="md-nav__link">
+  <a href="#poll-the-status-of-an-execution" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Query status of Backup executions
+        Poll the status of an execution
       
     </span>
   </a>
@@ -20999,10 +21023,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cancel-a-backup" class="md-nav__link">
+  <a href="#download-the-archive" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cancel a Backup
+        Download the archive
       
     </span>
   </a>
@@ -21010,10 +21034,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#initiate-a-restore" class="md-nav__link">
+  <a href="#start-a-restore" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Initiate a Restore
+        Start a restore
       
     </span>
   </a>
@@ -21021,10 +21045,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cancel-a-restore" class="md-nav__link">
+  <a href="#dry-run-and-fail-on-invalid-restore" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cancel a Restore
+        Dry-run and fail-on-invalid restore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtered-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtered backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-instance-security-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-instance security migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameterized-store-passwords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameterized store passwords
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancel-or-abort-a-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cancel or abort a job
       
     </span>
   </a>
@@ -21033,6 +21101,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
   
 </li>
       
@@ -21052,6 +21131,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup and Restore options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../extensions/" class="md-nav__link">
         
   
@@ -21059,7 +21166,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Extension for the management of ImageMosaic indexers
+    ImageMosaic indexer extension
   
 
     
@@ -21087,7 +21194,7 @@
   <span class="md-ellipsis">
     
   
-    Use Cases
+    Use cases
   
 
     
@@ -29933,22 +30040,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#usage-example" class="md-nav__link">
+  <a href="#resources" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Usage Example
+        Resources
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Usage Example">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request body
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#initiate-a-backup" class="md-nav__link">
+  <a href="#start-a-full-backup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Initiate a Backup
+        Start a full backup
       
     </span>
   </a>
@@ -29956,10 +30085,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#query-status-of-backup-executions" class="md-nav__link">
+  <a href="#poll-the-status-of-an-execution" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Query status of Backup executions
+        Poll the status of an execution
       
     </span>
   </a>
@@ -29967,10 +30096,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cancel-a-backup" class="md-nav__link">
+  <a href="#download-the-archive" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cancel a Backup
+        Download the archive
       
     </span>
   </a>
@@ -29978,10 +30107,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#initiate-a-restore" class="md-nav__link">
+  <a href="#start-a-restore" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Initiate a Restore
+        Start a restore
       
     </span>
   </a>
@@ -29989,10 +30118,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cancel-a-restore" class="md-nav__link">
+  <a href="#dry-run-and-fail-on-invalid-restore" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cancel a Restore
+        Dry-run and fail-on-invalid restore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtered-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtered backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-instance-security-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-instance security migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameterized-store-passwords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameterized store passwords
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancel-or-abort-a-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cancel or abort a job
       
     </span>
   </a>
@@ -30001,6 +30174,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
   
 </li>
       
@@ -30029,386 +30213,328 @@
   
 
 
-<h1 id="usage-via-geoservers-rest-api">Usage Via GeoServer's REST API<a class="headerlink" href="#usage-via-geoservers-rest-api" title="Permanent link">&para;</a></h1>
-<p>The Backup and Restore REST API consists of a few resources meant to be used in an asynchronous fashion:</p>
+<h1 id="usage-via-geoservers-rest-api">Usage via GeoServer's REST API<a class="headerlink" href="#usage-via-geoservers-rest-api" title="Permanent link">&para;</a></h1>
+<p>The Backup and Restore REST API exposes a small set of resources, used asynchronously: you start a backup or restore with a <code>POST</code>, then poll the returned execution with a <code>GET</code> until it reaches a terminal state. The same engine, options and filters used by the <a href="../usagegui/">user interface</a> are available here, plus a few REST-only options (see <a href="../options/">all options</a>).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Backup and Restore is a GeoServer <strong>community module</strong>. It is experimental and comes with weaker guarantees than official extensions: APIs and behaviour may change between releases. Always run a <code>BK_DRY_RUN=true</code> restore first, and keep a known-good archive before restoring into a live instance.</p>
+</div>
+<p>Backup and Restore saves or reloads the GeoServer <strong>catalog and configuration</strong> (workspaces, stores, layers, styles, layer groups, GeoWebCache configuration, services, and global and security settings). It does <strong>not</strong> copy the underlying data — only the configuration that references it.</p>
+<h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
+<p>The REST base path is <code>/rest/br</code>. Both representations (<code>.json</code> and <code>.xml</code>) are supported; the examples below use JSON.</p>
 <table>
 <thead>
 <tr>
 <th>Resource</th>
 <th>Method</th>
-<th>Parameters and Notes</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>/rest/br/backup/</td>
-<td>POST</td>
-<td>Post a JSON/XML document with the backup parameters, see below</td>
+<td><code>/rest/br/backup</code></td>
+<td><code>GET</code></td>
+<td>List all backup executions known to the running instance.</td>
 </tr>
 <tr>
-<td>/rest/br/backup/backupId</td>
-<td>GET</td>
-<td>Returns a json/xml representation of the backup operation. See below</td>
+<td><code>/rest/br/backup</code></td>
+<td><code>POST</code></td>
+<td>Start a new backup. Body is a JSON/XML document with the backup configuration (see below). Returns <code>201 Created</code>.</td>
 </tr>
 <tr>
-<td>/rest/br/backup/backupId</td>
-<td>DELETE</td>
-<td>Cancels the backup operation</td>
+<td><code>/rest/br/backup/{id}.{json\|xml}</code></td>
+<td><code>GET</code></td>
+<td>Status of backup execution <code>{id}</code>, including per-step progress.</td>
 </tr>
 <tr>
-<td>/rest/br/restore</td>
-<td>POST</td>
-<td>Post a JSON/XML document with the restore parameters, see below</td>
+<td><code>/rest/br/backup/{id}.zip</code></td>
+<td><code>GET</code></td>
+<td>Download the generated archive for execution <code>{id}</code>.</td>
 </tr>
 <tr>
-<td>/rest/br/restore/restoreId</td>
-<td>GET</td>
-<td>Returns a json/xml representation of the backup operation, see below</td>
+<td><code>/rest/br/backup/{id}</code></td>
+<td><code>DELETE</code></td>
+<td>Cancel backup execution <code>{id}</code>. Add <code>?force=true</code> to escalate a wedged job (see <a href="#cancel-or-abort-a-job">Cancel or abort a job</a>).</td>
 </tr>
 <tr>
-<td>/rest/br/restore/restoreId</td>
-<td>DELETE</td>
-<td>Cancels the restore operation</td>
+<td><code>/rest/br/restore</code></td>
+<td><code>GET</code></td>
+<td>List all restore executions known to the running instance.</td>
+</tr>
+<tr>
+<td><code>/rest/br/restore</code></td>
+<td><code>POST</code></td>
+<td>Start a new restore from a server-side archive. Body is a JSON/XML document with the restore configuration (see below). Returns <code>201 Created</code>.</td>
+</tr>
+<tr>
+<td><code>/rest/br/restore/{id}.{json\|xml}</code></td>
+<td><code>GET</code></td>
+<td>Status of restore execution <code>{id}</code>, including per-step progress.</td>
+</tr>
+<tr>
+<td><code>/rest/br/restore/{id}</code></td>
+<td><code>DELETE</code></td>
+<td>Cancel restore execution <code>{id}</code>. Add <code>?force=true</code> to escalate a wedged job.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="usage-example">Usage Example<a class="headerlink" href="#usage-example" title="Permanent link">&para;</a></h2>
-<p>We are going to use the command line tool cURL to send HTTP REST requests to GeoServer.</p>
-<p>The <code>/rest/br/backup/</code> and <code>/rest/br/restore</code> endpoints accept an optional format suffix that allows the Backup / Restore archive to be streamed to / from the client instead of being written on / read from the file system.</p>
-<h3 id="initiate-a-backup">Initiate a Backup<a class="headerlink" href="#initiate-a-backup" title="Permanent link">&para;</a></h3>
-<p>Prepare a file containing with a JSON object representing the Backup procedure configuration.</p>
-<p><code>backup_post.json</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">   </span><span class="nt">&quot;backup&quot;</span><span class="p">:{</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/home/sg/BackupAndRestore/test_rest_1.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="p">}</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">   </span><span class="p">}</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">}</span>
-</code></pre></div>
-<p>In this case we did not specify any options in the backup configuration so default values will be used.</p>
-<p>Available options are:</p>
-<ol>
-<li><code>BK_BEST_EFFORT</code>: Skip any failing resources and proceed with the backup procedure. Default: <code>false</code>.</li>
-<li><code>BK_PARAM_PASSWORDS</code>: Whether outgoing store passwords should be parameterized in the backup. With this option set all store passwords will be replaced with a token that looks like <code>\${workspaceName:storeName.passwd.encryptedValue}</code>. See also <code>BK_PASSWORD_TOKENS</code> for the Restore command.</li>
-<li><code>BK_SKIP_SECURITY</code>: This will exclude security settings from the backup. Default: <code>true</code> (security is excluded). A workspace <code>Filter</code> also forces security to be skipped.</li>
-<li><code>BK_SKIP_SETTINGS</code>: This will attempt to exclude global settings from the backup, as well as security settings. Default: <code>true</code>.</li>
-<li><code>BK_SKIP_GWC</code>: This option will avoid backup / restore the GWC catalog and folders. Default: <code>false</code>.</li>
-<li><code>BK_CLEANUP_TEMP</code>: This will attempt to delete temporary folder at the end of the execution. Default: <code>true</code>.</li>
-<li><code>BK_PRESERVE_IDS</code>: Keep every catalog object's internal id in the archive and write cross-references <strong>by id</strong> instead of by name. Default: <code>true</code>. By default the archive is a portable <strong>migration artifact</strong>: it preserves the original object identities, so it restores into another, already-populated GeoServer with cross-references and GWC tile-layer links intact (see <a href="../usecases/#migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance</a>). Set this to <code>false</code> to produce the legacy <em>name-based</em> archive — ids are stripped and regenerated on restore — which is only needed when restoring into a fresh, empty data directory. The flag is a <strong>backup-side</strong> option only: the restore reads whichever of <code>&lt;id&gt;</code>/<code>&lt;name&gt;</code> each reference carries, so an archive restores correctly with the default restore command — no matching option is required. (Changed in 3.0 — see <a href="../migration/">What changed between 2.x and 3.x</a>.)</li>
-<li><code>exclude.file.path</code>: A <code>;</code> separated list of paths relative to the <code>GEOSERVER_DATA_DIR</code> (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: <code>[]</code>. WARNING: <code>security</code> and <code>workspaces</code> are treated differently. This option should be used only for custom external resources located under the <code>GEOSERVER_DATA_DIR</code>.</li>
-</ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>BK_SKIP_SECURITY</code> and <code>BK_SKIP_SETTINGS</code> default to <code>true</code>, so a backup <strong>excludes</strong> security and global settings unless you pass <code>=false</code>. To include them, set the option explicitly (the GeoServer UI exposes these as checkboxes).</p>
+<p>The execution list is held <strong>in memory</strong> and is reset when GeoServer restarts. Download archives and note any execution detail you need before restarting the container.</p>
 </div>
-<p>Also an optional <code>Filter</code> can be passed to restrict the scope of the restore operation to a list of workspaces.</p>
-<p>For example:</p>
+<h2 id="request-body">Request body<a class="headerlink" href="#request-body" title="Permanent link">&para;</a></h2>
+<p>A backup or restore is described by a single JSON object whose root key is <code>backup</code> or <code>restore</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&quot;backup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/backup1.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_SKIP_SECURITY=false&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;BK_PARAM_PASSWORDS=true&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">&quot;wsFilter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name IN (&#39;topp&#39;,&#39;sf&#39;)&quot;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Applies to</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>archiveFile</code></td>
+<td>both</td>
+<td>Absolute path, <strong>on the server</strong>, of the <code>.zip</code> archive to write (backup) or read (restore). See the note on server-side paths below.</td>
+</tr>
+<tr>
+<td><code>overwrite</code></td>
+<td>backup</td>
+<td>When <code>true</code>, replace an existing archive at <code>archiveFile</code>.</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td>both</td>
+<td>Object with an <code>option</code> array of <code>BK_KEY=value</code> strings. See <a href="../options/">all options</a>.</td>
+</tr>
+<tr>
+<td><code>wsFilter</code> / <code>siFilter</code> / <code>liFilter</code></td>
+<td>both</td>
+<td>Optional ECQL strings scoping the job to specific workspaces / stores / layers. See <a href="#filtered-backup">Filtered backup</a>.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The restore reads the archive from a <strong>server-side path</strong>: <code>archiveFile</code> must point to a <code>.zip</code> that the GeoServer process can read on its own file system. There is <strong>no</strong> client-side or multipart upload — copy the archive to a location GeoServer can reach, then reference its absolute path. (To move an archive between machines, download it with the <code>.zip</code> endpoint and place it on the target server.)</p>
+</div>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<p>The examples use the command-line tool cURL against a GeoServer running at <code>http://localhost:8080/geoserver</code>, authenticating as the default <code>admin</code> user. Adjust the base URL, credentials and archive paths for your environment.</p>
+<h3 id="start-a-full-backup">Start a full backup<a class="headerlink" href="#start-a-full-backup" title="Permanent link">&para;</a></h3>
+<p>Write the configuration to a file:</p>
+<p><code>backup_post.json</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="nt">&quot;backup&quot;</span><span class="p">:{</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/home/sg/BackupAndRestore/test_rest_1.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_BEST_EFFORT=true&quot;</span><span class="p">]</span><span class="w"> </span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nt">&quot;filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name IN (&#39;topp&#39;,&#39;geosolutions-it&#39;)&quot;</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">   </span><span class="p">}</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">}</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;backup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/backup1.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">}</span>
 </code></pre></div>
-<p>Backup procedure will be initiated.</p>
-<p>Here is a sample response:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 01 Aug 2016 14:35:44 GMT</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">Location</span><span class="o">:</span> <span class="l">http://mygeoserver/geoserver/rest/br/backup/1</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="na">Server</span><span class="o">:</span> <span class="l">Noelios-Restlet-Engine/1.0..8</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+<p>With no options specified, the defaults apply (see <a href="../options/">all options</a>). Post it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>-X<span class="w"> </span>POST<span class="w"> </span>-d<span class="w"> </span>@backup_post.json<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="s2">&quot;http://localhost:8080/geoserver/rest/br/backup&quot;</span>
 </code></pre></div>
+<p>GeoServer answers <code>201 Created</code> and returns the new execution. Note its <code>id</code> (here, <code>0</code>) — you will use it to poll status and download the archive:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">   </span><span class="nt">&quot;backup&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">      </span><span class="nt">&quot;totalNumberOfSteps&quot;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">      </span><span class="nt">&quot;execution&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">         </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">         </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">         </span><span class="nt">&quot;stepExecutions&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">            </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="s2">&quot;java.util.concurrent.CopyOnWriteArraySet&quot;</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">         </span><span class="p">},</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">         </span><span class="nt">&quot;status&quot;</span><span class="p">:[</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">            </span><span class="s2">&quot;STARTED&quot;</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">         </span><span class="p">],</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">         </span><span class="nt">&quot;startTime&quot;</span><span class="p">:</span><span class="s2">&quot;2016-08-01 14:35:44.802 UTC&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">         </span><span class="nt">&quot;createTime&quot;</span><span class="p">:</span><span class="s2">&quot;2016-08-01 14:35:44.798 UTC&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">         </span><span class="nt">&quot;lastUpdated&quot;</span><span class="p">:</span><span class="s2">&quot;2016-08-01 14:35:44.803 UTC&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">         </span><span class="nt">&quot;exitStatus&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">            </span><span class="nt">&quot;exitCode&quot;</span><span class="p">:</span><span class="s2">&quot;UNKNOWN&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">            </span><span class="nt">&quot;exitDescription&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">         </span><span class="p">},</span>
-<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">         </span><span class="nt">&quot;progress&quot;</span><span class="p">:</span><span class="s2">&quot;1\/9&quot;</span>
-<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">         </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="s2">&quot;synchList&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">         </span><span class="nt">&quot;option&quot;</span><span class="p">:[</span>
-<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">            </span><span class="s2">&quot;OVERWRITE=true&quot;</span>
-<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">         </span><span class="p">]</span>
-<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">      </span><span class="nt">&quot;warningsList&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="w">         </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="s2">&quot;synchList&quot;</span>
-<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="w">         </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="s2">&quot;resource&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="w">         </span><span class="nt">&quot;$&quot;</span><span class="p">:</span><span class="s2">&quot;\/home\/sg\/BackupAndRestore\/test_rest_1.zip&quot;</span>
-<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="w">      </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="kc">true</span>
-<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="w">   </span><span class="p">}</span>
-<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="p">}</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;backup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">&quot;execution&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;STARTED&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">      </span><span class="nt">&quot;progress&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1/8&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/backup1.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">      </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;OVERWRITE=true&quot;</span><span class="p">]</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">      </span><span class="p">}</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="p">}</span>
 </code></pre></div>
-<p>At the end of the backup procedure you'll be able to download the generated archive to your local file system by making an HTTP GET request to the same endpoint, using the <strong>backup ID</strong> as above and adding the <code>.zip</code> at the end.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>-u<span class="w"> </span><span class="s2">&quot;admin:geoserver&quot;</span><span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>GET<span class="w">  </span><span class="s2">&quot;http://mygeoserver/geoserver/rest/br/backup/1.zip&quot;</span><span class="w"> </span>-o<span class="w"> </span><span class="m">1</span>.zip
+<h3 id="poll-the-status-of-an-execution">Poll the status of an execution<a class="headerlink" href="#poll-the-status-of-an-execution" title="Permanent link">&para;</a></h3>
+<p>Request the execution by id, adding the <code>.json</code> (or <code>.xml</code>) suffix:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="s2">&quot;http://localhost:8080/geoserver/rest/br/backup/0.json&quot;</span>
 </code></pre></div>
-<p><img alt="" src="../images/usagerest001.png" /></p>
-<h3 id="query-status-of-backup-executions">Query status of Backup executions<a class="headerlink" href="#query-status-of-backup-executions" title="Permanent link">&para;</a></h3>
-<p>Status of the operation can be queried making an HTTP GET request to the location listed in the response.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>http://mygeoserver/geoserver/rest/br/backup/$ID.{json/xml}
+<p>The response reports the overall <code>status</code> and <code>progress</code> plus the list of steps, each with its own status, exit code and timings. A completed backup looks like:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;backup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&quot;execution&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">      </span><span class="nt">&quot;progress&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8/8&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">      </span><span class="nt">&quot;startTime&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-06-06T10:21:14.802&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">      </span><span class="nt">&quot;endTime&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-06-06T10:21:25.356&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">      </span><span class="nt">&quot;exitStatus&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">        </span><span class="nt">&quot;exitCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">        </span><span class="nt">&quot;exitDescription&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">      </span><span class="p">},</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">      </span><span class="nt">&quot;stepExecutions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">        </span><span class="nt">&quot;step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">          </span><span class="p">{</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;backupWorkspacesAndLayers&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">            </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">            </span><span class="nt">&quot;exitStatus&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;exitCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;exitDescription&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">            </span><span class="nt">&quot;readCount&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">            </span><span class="nt">&quot;writeCount&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">            </span><span class="nt">&quot;failureExceptions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">          </span><span class="p">}</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">        </span><span class="p">]</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">      </span><span class="p">},</span>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/backup1.zip&quot;</span>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="p">}</span>
 </code></pre></div>
-<p>Replace <code>$ID</code> with the <strong>ID</strong> of the backup operation you'd like to inspect.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>-u<span class="w"> </span><span class="s2">&quot;admin:geoserver&quot;</span><span class="w"> </span>http://mygeoserver/geoserver/rest/br/backup/1.json
+<p>The <code>status</code> is one of <code>STARTING</code>, <code>STARTED</code>, <code>STOPPING</code>, <code>STOPPED</code>, <code>COMPLETED</code>, <code>FAILED</code> or <code>ABANDONED</code>. Keep polling while it is <code>STARTING</code> or <code>STARTED</code>. The <code>failureExceptions</code> of a failed step carries the message chain and stack trace for troubleshooting.</p>
+<h3 id="download-the-archive">Download the archive<a class="headerlink" href="#download-the-archive" title="Permanent link">&para;</a></h3>
+<p>Once the backup is <code>COMPLETED</code>, download the generated <code>.zip</code> by requesting the same resource with a <code>.zip</code> suffix:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="s2">&quot;http://localhost:8080/geoserver/rest/br/backup/0.zip&quot;</span><span class="w"> </span>-o<span class="w"> </span>backup.zip
 </code></pre></div>
-<p>or</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>curl<span class="w"> </span>-u<span class="w"> </span><span class="s2">&quot;admin:geoserver&quot;</span><span class="w"> </span>http://mygeoserver/geoserver/rest/br/backup/1.xml
-</code></pre></div>
-<p>GeoServer will respond with the status of the backup job corresponding to that ID</p>
-<p><img alt="" src="../images/usagerest002.png" /></p>
-<p><img alt="" src="../images/usagerest003.png" /></p>
-<p>Here you are able to see the status of all the steps involved in the backup procedure with creation time, start time, end time, exit status etc.</p>
-<h3 id="cancel-a-backup">Cancel a Backup<a class="headerlink" href="#cancel-a-backup" title="Permanent link">&para;</a></h3>
-<p>Cancel an in progress Backup by sending an HTTP DELETE request with the ID of the task</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>-XDELETE<span class="w"> </span>-u<span class="w"> </span><span class="s2">&quot;admin:geoserver&quot;</span><span class="w"> </span>http://mygeoserver/geoserver/rest/br/backup/<span class="nv">$ID</span>
-</code></pre></div>
-<p>Replace <code>$ID</code> with the <strong>ID</strong> of the backup operation you'd like to cancel.</p>
-<h3 id="initiate-a-restore">Initiate a Restore<a class="headerlink" href="#initiate-a-restore" title="Permanent link">&para;</a></h3>
-<p>Prepare a file with a JSON object representing the Restore procedure configuration</p>
+<h3 id="start-a-restore">Start a restore<a class="headerlink" href="#start-a-restore" title="Permanent link">&para;</a></h3>
+<p>Restore from a <code>.zip</code> already present on the server's file system. Write the configuration:</p>
 <p><code>restore_post.json</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">   </span><span class="nt">&quot;restore&quot;</span><span class="p">:{</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/home/sg/BackupAndRestore/test_rest_1.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">      </span><span class="p">}</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">   </span><span class="p">}</span>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">&quot;restore&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/backup1.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p">}</span>
 </code></pre></div>
-<p>In this case we did not specify any options in the restore configuration so default values will be used.</p>
-<p>Available Options are:</p>
-<ol>
-<li>
-<p><code>BK_DRY_RUN</code>: Only test the archive, do not persist the restored configuration. Default: <code>false</code>. Since 3.x a dry-run <strong>snapshots and rolls back</strong> the affected data-directory subtrees, so it leaves the data directory untouched even though the restore otherwise writes incrementally (see <a href="../migration/#transactional-dry-run-and-fail-on-invalid">What changed</a>).</p>
-</li>
-<li>
-<p><code>BK_BEST_EFFORT</code>: Skip any failing resources and proceed with the restore procedure. Default: <code>false</code>.</p>
-</li>
-<li>
-<p><code>BK_PASSWORD_TOKENS</code>: A comma separated list of equal sign separated key/values to be replaced in data store passwords in an incoming backup. For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValue}=foo,${workspace:store2.passwd.encryptedValue}=bar
+<p>Post it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>-X<span class="w"> </span>POST<span class="w"> </span>-d<span class="w"> </span>@restore_post.json<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="s2">&quot;http://localhost:8080/geoserver/rest/br/restore&quot;</span>
 </code></pre></div>
-</li>
-<li>
-<p><code>BK_SKIP_SECURITY</code>: This will exclude security settings from the restore. Default: <code>true</code> (security is <strong>not</strong> restored). A workspace <code>Filter</code> also forces security to be skipped. Set <code>BK_SKIP_SECURITY=false</code> to restore the security configuration from the archive (this overwrites the target's users, groups, roles and authentication).</p>
-</li>
-<li>
-<p><code>BK_SKIP_SETTINGS</code>: This will attempt to exclude global settings from the restore, as well as security settings. Default: <code>true</code>.</p>
-</li>
-<li>
-<p><code>BK_PURGE_RESOURCES</code>: Whether the restore deletes pre-existing resources (e.g. drops existing workspaces) before restoring. Default: <code>true</code> — <strong>a restore is destructive by default</strong>. Set <code>BK_PURGE_RESOURCES=false</code> to merge the archive into the existing catalog without deleting anything.</p>
-</li>
-<li>
-<p><code>BK_SKIP_GWC</code>: This option will avoid backup / restore the GWC catalog and folders. Default: <code>false</code>.</p>
-</li>
-<li>
-<p><code>BK_CLEANUP_TEMP</code>: This will attempt to delete temporary folder at the end of the execution. Default: <code>true</code>.</p>
-</li>
-<li>
-<p><code>BK_MERGE_SECURITY</code>: When <code>true</code>, <strong>merge</strong> the archive's users, groups and roles into the target's existing security services instead of replacing the whole <code>security</code> folder. The target keeps its own configuration, keystore and master password, so this works even when the source and target master passwords differ. New principals keep their archived (digest) passwords; reversible passwords must be reset on the target afterwards. Default: <code>false</code> (replace mode). Has effect only when security is actually restored, i.e. <code>BK_SKIP_SECURITY=false</code>. New in 3.0.</p>
-</li>
-<li>
-<p><code>BK_SOURCE_MASTER_PASSWORD</code> / <code>BK_TARGET_MASTER_PASSWORD</code>: Supplied together on a security <strong>replace</strong> restore (<code>BK_SKIP_SECURITY=false</code>, <code>BK_MERGE_SECURITY=false</code>) to re-encrypt the archive's keystore from the source's master password to the target's — without them a keystore encrypted under a different source master password cannot be read on the target. <code>BK_TARGET_MASTER_PASSWORD</code> must match the target instance's actual master password or the re-encryption is rejected. Both are <strong>sensitive</strong>: pass them as transient parameters, never store them in scripts or logs. New in 3.0.</p>
-</li>
-<li>
-<p><code>BK_FAIL_ON_INVALID</code>: When <code>true</code>, the restore runs a <strong>pre-flight validation pass</strong> over the fully-assembled restore catalog and <strong>aborts</strong> (the job is marked <code>FAILED</code>, the live configuration reload is skipped, and the data directory is rolled back to its pre-restore state) if any catalog object is invalid. Default: <code>false</code> — the pass still runs but only logs the problems and records them as execution warnings. Combine with <code>BK_DRY_RUN=true</code> to validate an archive non-destructively before committing to a real restore. New in 3.0.</p>
-</li>
-<li>
-<p><code>exclude.file.path</code>: A <code>;</code> separated list of paths relative to the <code>GEOSERVER_DATA_DIR</code> (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: <code>[]</code>. WARNING: <code>security</code> and <code>workspaces</code> are treated differently. This option should be used only for custom external resources located under the <code>GEOSERVER_DATA_DIR</code>.</p>
-</li>
-</ol>
+<p>As with a backup, GeoServer returns <code>201 Created</code> and an execution with an <code>id</code>; poll <code>/rest/br/restore/{id}.json</code> until it reaches a terminal state.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>A restore is <strong>destructive by default</strong>: with the default options it drops pre-existing resources (<code>BK_PURGE_RESOURCES=true</code>) and does not restore security or global settings (<code>BK_SKIP_SECURITY</code> / <code>BK_SKIP_SETTINGS</code> = <code>true</code>). To <strong>merge</strong> an archive into the current catalog without deleting anything, pass <code>BK_PURGE_RESOURCES=false</code>. Always run a <code>BK_DRY_RUN=true</code> first. The GeoServer UI exposes all three as checkboxes (pre-checked to these defaults).</p>
+<p>With the default options a restore is <strong>destructive</strong>: it purges pre-existing resources (<code>BK_PURGE_RESOURCES=true</code>) before restoring. Validate first with a dry run, and pass <code>BK_PURGE_RESOURCES=false</code> to merge into the current catalog without deleting. See <a href="../options/">all options</a>.</p>
 </div>
+<h3 id="dry-run-and-fail-on-invalid-restore">Dry-run and fail-on-invalid restore<a class="headerlink" href="#dry-run-and-fail-on-invalid-restore" title="Permanent link">&para;</a></h3>
+<p>Validate an archive without changing anything: a dry run assembles the restore catalog and rolls back the data directory when it finishes. Combine it with <code>BK_FAIL_ON_INVALID=true</code> to make the validation pass fail the job on the first invalid object instead of only recording warnings:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">&quot;restore&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/backup1.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">      </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_DRY_RUN=true&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;BK_FAIL_ON_INVALID=true&quot;</span><span class="p">]</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span>-X<span class="w"> </span>POST<span class="w"> </span>-d<span class="w"> </span>@restore_dryrun.json<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="s2">&quot;http://localhost:8080/geoserver/rest/br/restore&quot;</span>
+</code></pre></div>
+<p>A failing dry run ends with <code>status</code> <code>FAILED</code>; inspect the <code>failureExceptions</code> on the offending step. See <a href="../migration/#transactional-dry-run-and-fail-on-invalid">Transactional dry-run and fail-on-invalid</a>.</p>
+<h3 id="filtered-backup">Filtered backup<a class="headerlink" href="#filtered-backup" title="Permanent link">&para;</a></h3>
+<p>Scope a backup (or restore) to selected workspaces, stores or layers with the <code>wsFilter</code>, <code>siFilter</code> and <code>liFilter</code> ECQL strings. To back up only the <code>topp</code> and <code>sf</code> workspaces:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">{</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">&quot;backup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/subset.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="nt">&quot;wsFilter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name IN (&#39;topp&#39;,&#39;sf&#39;)&quot;</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span>-X<span class="w"> </span>POST<span class="w"> </span>-d<span class="w"> </span>@backup_filtered.json<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="s2">&quot;http://localhost:8080/geoserver/rest/br/backup&quot;</span>
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>There is no <code>BK_PRESERVE_IDS</code> option on the restore side. The restore automatically adapts to whatever the archive contains: a name-based (default) archive is matched against the target catalog by name, while an id-based archive (produced with <code>BK_PRESERVE_IDS=true</code> on the backup) is matched first by id and then by name. Restoring an id-based archive into the <strong>same</strong> instance is therefore idempotent — objects whose id already exists are skipped — and restoring it into a <strong>different</strong> instance preserves the original ids so cross-references and GWC tile layers re-link correctly. See <a href="../usecases/#migrating-a-catalog-to-another-geoserver-instance">Migrating a catalog to another GeoServer instance</a>.</p>
+<p>A workspace-filtered archive omits the global and security configuration, so it cannot be used to restore the workspaces it does <strong>not</strong> contain. To migrate or consolidate a full catalog, back up the whole catalog and restore the workspaces you need. See <a href="../options/#scoping-filters">the filter reference</a>.</p>
 </div>
-<p>Also an optional <code>Filter</code> can be passed to restrict the scope of the restore operation to a list of workspaces.</p>
-<p>For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>{
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>   &quot;restore&quot;:{
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>      &quot;archiveFile&quot;:&quot;/home/sg/BackupAndRestore/test_rest_1.zip&quot;,
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>      &quot;options&quot;:{
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>        &quot;option&quot;: [&quot;BK_DRY_RUN=true&quot;] 
-<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>      },
-<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>&quot;filter&quot;: &quot;name IN (&#39;topp&#39;,&#39;geosolutions-it&#39;)&quot;
-<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>   }
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>}
+<h3 id="cross-instance-security-migration">Cross-instance security migration<a class="headerlink" href="#cross-instance-security-migration" title="Permanent link">&para;</a></h3>
+<p>By default a backup excludes security and a restore does not apply it (<code>BK_SKIP_SECURITY=true</code> on both). To carry users, groups and roles to another instance, include security in the backup and <strong>merge</strong> it on restore. Merge mode adds the archive's principals to the target's existing security services, keeping the target's own configuration, keystore and master password — so it works even when the two master passwords differ.</p>
+<p>Back up with security included:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">{</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nt">&quot;backup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/with-security.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">      </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_SKIP_SECURITY=false&quot;</span><span class="p">]</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="p">}</span>
 </code></pre></div>
-<p>If <code>archiveFile</code> is specified, the archive specified on that path of the remote file system will be used to initiate the restore procedure. Otherwise the archive needs to be uploaded from your local system.</p>
-<p>Then make a POST HTTP request to GeoServer's REST interface endpoint for the restore procedure</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>curl<span class="w"> </span>-u<span class="w"> </span><span class="s2">&quot;admin:geoserver&quot;</span><span class="w"> </span>-i<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>--data<span class="w"> </span>@restore_post.json<span class="w"> </span>http://mygeoserver/geoserver/rest/br/restore/
-</code></pre></div>
-<p>Restore procedure will be initiated.</p>
-<p>Here is a sample response:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 01 Aug 2016 15:07:29 GMT</span>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="na">Location</span><span class="o">:</span> <span class="l">http://mygeoserver/geoserver/rest/br/restore/2</span>
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="na">Server</span><span class="o">:</span> <span class="l">Noelios-Restlet-Engine/1.0..8</span>
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
-</code></pre></div>
+<p>Restore it into the target, merging security:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">   </span><span class="nt">&quot;restore&quot;</span><span class="p">:{</span>
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">      </span><span class="nt">&quot;totalNumberOfSteps&quot;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">      </span><span class="nt">&quot;execution&quot;</span><span class="p">:{</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">         </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">         </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">         </span><span class="nt">&quot;stepExecutions&quot;</span><span class="p">:{</span>
-<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">            </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="s2">&quot;java.util.concurrent.CopyOnWriteArraySet&quot;</span>
-<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">         </span><span class="p">},</span>
-<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">         </span><span class="nt">&quot;status&quot;</span><span class="p">:[</span>
-<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">            </span><span class="s2">&quot;STARTED&quot;</span>
-<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">         </span><span class="p">],</span>
-<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">         </span><span class="nt">&quot;startTime&quot;</span><span class="p">:</span><span class="s2">&quot;2016-08-01 15:07:29.398 UTC&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">         </span><span class="nt">&quot;createTime&quot;</span><span class="p">:</span><span class="s2">&quot;2016-08-01 15:07:29.393 UTC&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">         </span><span class="nt">&quot;lastUpdated&quot;</span><span class="p">:</span><span class="s2">&quot;2016-08-01 15:07:29.398 UTC&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">         </span><span class="nt">&quot;exitStatus&quot;</span><span class="p">:{</span>
-<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">            </span><span class="nt">&quot;exitCode&quot;</span><span class="p">:</span><span class="s2">&quot;UNKNOWN&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">            </span><span class="nt">&quot;exitDescription&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span>
-<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">         </span><span class="p">},</span>
-<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">         </span><span class="nt">&quot;progress&quot;</span><span class="p">:</span><span class="s2">&quot;0\/9&quot;</span>
-<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w">         </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="s2">&quot;synchList&quot;</span>
-<a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="w">      </span><span class="nt">&quot;warningsList&quot;</span><span class="p">:{</span>
-<a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="w">         </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="s2">&quot;synchList&quot;</span>
-<a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:{</span>
-<a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w">         </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="s2">&quot;resource&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w">         </span><span class="nt">&quot;$&quot;</span><span class="p">:</span><span class="s2">&quot;\/home\/sg\/BackupAndRestore\/test_rest_1.zip&quot;</span>
-<a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a><span class="w">      </span><span class="p">}</span>
-<a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a><span class="w">   </span><span class="p">}</span>
-<a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a><span class="p">}</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;restore&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/with-security.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">      </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_SKIP_SECURITY=false&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;BK_MERGE_SECURITY=true&quot;</span><span class="p">]</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="p">}</span>
 </code></pre></div>
-<p><img alt="" src="../images/usagerest004.png" /></p>
-<p>To upload the archive from our local system instead, omit the archiveFile parameter in the JSON object and pass the <code>--upload-file</code> parameter to cURL:</p>
-<p><code>restore_post.json</code>:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New principals keep their archived (digest) passwords; reversible passwords must be reset on the target afterwards. To instead <strong>replace</strong> the target's whole security folder from an archive encrypted under a different master password, use the REST-only <code>BK_SOURCE_MASTER_PASSWORD</code> / <code>BK_TARGET_MASTER_PASSWORD</code> parameters described in <a href="../options/#master-password-parameters">all options</a>.</p>
+</div>
+<h3 id="parameterized-store-passwords">Parameterized store passwords<a class="headerlink" href="#parameterized-store-passwords" title="Permanent link">&para;</a></h3>
+<p>To produce an archive whose store passwords are substitutable tokens instead of encrypted values — useful when the target uses different database credentials — back up with <code>BK_PARAM_PASSWORDS=true</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="p">{</span>
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">   </span><span class="nt">&quot;restore&quot;</span><span class="p">:{</span>
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">   </span><span class="p">}</span>
-<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="p">}</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span><span class="nt">&quot;backup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/parameterized.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">      </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_PARAM_PASSWORDS=true&quot;</span><span class="p">]</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="p">}</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>curl<span class="w"> </span>-u<span class="w"> </span><span class="s2">&quot;admin:geoserver&quot;</span><span class="w"> </span>-i<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span>--upload-file<span class="w"> </span><span class="s2">&quot;archive_to_restore.zip&quot;</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>--data<span class="w"> </span>@restore_post.json<span class="w"> </span>http://localhost:8081/geoserver/rest/br/restore/
+<p>Each store password is written as a token such as <code>${workspaceName:storeName.passwd.encryptedValue}</code>. On restore, supply the replacements with <code>BK_PASSWORD_TOKENS</code>, a comma-separated list of <code>token=value</code> pairs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p">{</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="nt">&quot;restore&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">    </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/backups/geoserver/parameterized.zip&quot;</span><span class="p">,</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">      </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">        </span><span class="s2">&quot;BK_PASSWORD_TOKENS=${ws:store1.passwd.encryptedValue}=secret1,${ws:store2.passwd.encryptedValue}=secret2&quot;</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">      </span><span class="p">]</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="p">}</span>
 </code></pre></div>
-<p>Local <code>archive_to_restore.zip</code> archive will be uploaded and used by the restore procedure.</p>
-<p><img alt="" src="../images/usagerest005.png" /></p>
-<p>Query for status of Restore operations</p>
-<p><code>http://mygeoserver/geoser/restore/$ID.{json/xml}</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>{
-<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>   &quot;restore&quot;:{
-<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>      &quot;execution&quot;:{
-<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>         &quot;hash&quot;:2,
-<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>         &quot;key&quot;:{
-<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>            &quot;@class&quot;:&quot;long&quot;,
-<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>            &quot;$&quot;:&quot;2&quot;
-<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>         },
-<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>         &quot;val&quot;:{
-<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>            &quot;@class&quot;:&quot;restore&quot;,
-<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>            &quot;totalNumberOfSteps&quot;:9,
-<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>            &quot;execution&quot;:{
-<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>               &quot;id&quot;:2,
-<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>               &quot;version&quot;:2,
-<a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>               &quot;stepExecutions&quot;:{
-<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>                  &quot;@class&quot;:&quot;java.util.concurrent.CopyOnWriteArraySet&quot;,
-<a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a>                  &quot;step&quot;:[
-<a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>                     {
-<a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>                        &quot;name&quot;:&quot;restoreNamespaceInfos&quot;,
-<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a>                        &quot;status&quot;:&quot;COMPLETED&quot;,
-<a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a>                        &quot;exitStatus&quot;:{
-<a id="__codelineno-17-22" name="__codelineno-17-22" href="#__codelineno-17-22"></a>                           &quot;exitCode&quot;:&quot;COMPLETED&quot;,
-<a id="__codelineno-17-23" name="__codelineno-17-23" href="#__codelineno-17-23"></a>                           &quot;exitDescription&quot;:&quot;&quot;
-<a id="__codelineno-17-24" name="__codelineno-17-24" href="#__codelineno-17-24"></a>                        },
-<a id="__codelineno-17-25" name="__codelineno-17-25" href="#__codelineno-17-25"></a>                        &quot;startTime&quot;:&quot;8\/1\/16 3:07 PM&quot;,
-<a id="__codelineno-17-26" name="__codelineno-17-26" href="#__codelineno-17-26"></a>                        &quot;endTime&quot;:&quot;8\/1\/16 3:07 PM&quot;,
-<a id="__codelineno-17-27" name="__codelineno-17-27" href="#__codelineno-17-27"></a>                        &quot;lastUpdated&quot;:&quot;8\/1\/16 3:07 PM&quot;,
-<a id="__codelineno-17-28" name="__codelineno-17-28" href="#__codelineno-17-28"></a>                        &quot;parameters&quot;:{
-<a id="__codelineno-17-29" name="__codelineno-17-29" href="#__codelineno-17-29"></a>                           &quot;input.file.path&quot;:&quot;file:\/\/\/opt\/tomcat-geoserver-2.9.x\/temp\/tmpbbe2388a-f26d-4f26-a20f-88c653d88aec&quot;,
-<a id="__codelineno-17-30" name="__codelineno-17-30" href="#__codelineno-17-30"></a>                           &quot;time&quot;:1470064049392
-<a id="__codelineno-17-31" name="__codelineno-17-31" href="#__codelineno-17-31"></a>                        },
-<a id="__codelineno-17-32" name="__codelineno-17-32" href="#__codelineno-17-32"></a>                        &quot;readCount&quot;:1,
-<a id="__codelineno-17-33" name="__codelineno-17-33" href="#__codelineno-17-33"></a>                        &quot;writeCount&quot;:1,
-<a id="__codelineno-17-34" name="__codelineno-17-34" href="#__codelineno-17-34"></a>                        &quot;failureExceptions&quot;:&quot;&quot;
-<a id="__codelineno-17-35" name="__codelineno-17-35" href="#__codelineno-17-35"></a>                     },
-<a id="__codelineno-17-36" name="__codelineno-17-36" href="#__codelineno-17-36"></a>                    ...
-<a id="__codelineno-17-37" name="__codelineno-17-37" href="#__codelineno-17-37"></a>                     {
-<a id="__codelineno-17-38" name="__codelineno-17-38" href="#__codelineno-17-38"></a>                        &quot;name&quot;:&quot;restoreGeoServerSecurityManager&quot;,
-<a id="__codelineno-17-39" name="__codelineno-17-39" href="#__codelineno-17-39"></a>                        &quot;status&quot;:&quot;COMPLETED&quot;,
-<a id="__codelineno-17-40" name="__codelineno-17-40" href="#__codelineno-17-40"></a>                        &quot;exitStatus&quot;:{
-<a id="__codelineno-17-41" name="__codelineno-17-41" href="#__codelineno-17-41"></a>                           &quot;exitCode&quot;:&quot;COMPLETED&quot;,
-<a id="__codelineno-17-42" name="__codelineno-17-42" href="#__codelineno-17-42"></a>                           &quot;exitDescription&quot;:&quot;&quot;
-<a id="__codelineno-17-43" name="__codelineno-17-43" href="#__codelineno-17-43"></a>                        },
-<a id="__codelineno-17-44" name="__codelineno-17-44" href="#__codelineno-17-44"></a>                        &quot;startTime&quot;:&quot;8\/1\/16 3:07 PM&quot;,
-<a id="__codelineno-17-45" name="__codelineno-17-45" href="#__codelineno-17-45"></a>                        &quot;endTime&quot;:&quot;8\/1\/16 3:07 PM&quot;,
-<a id="__codelineno-17-46" name="__codelineno-17-46" href="#__codelineno-17-46"></a>                        &quot;lastUpdated&quot;:&quot;8\/1\/16 3:07 PM&quot;,
-<a id="__codelineno-17-47" name="__codelineno-17-47" href="#__codelineno-17-47"></a>                        &quot;parameters&quot;:{
-<a id="__codelineno-17-48" name="__codelineno-17-48" href="#__codelineno-17-48"></a>                           &quot;input.file.path&quot;:&quot;file:\/\/\/opt\/tomcat-geoserver-2.9.x\/temp\/tmpbbe2388a-f26d-4f26-a20f-88c653d88aec&quot;,
-<a id="__codelineno-17-49" name="__codelineno-17-49" href="#__codelineno-17-49"></a>                           &quot;time&quot;:1470064049392
-<a id="__codelineno-17-50" name="__codelineno-17-50" href="#__codelineno-17-50"></a>                        },
-<a id="__codelineno-17-51" name="__codelineno-17-51" href="#__codelineno-17-51"></a>                        &quot;readCount&quot;:0,
-<a id="__codelineno-17-52" name="__codelineno-17-52" href="#__codelineno-17-52"></a>                        &quot;writeCount&quot;:0,
-<a id="__codelineno-17-53" name="__codelineno-17-53" href="#__codelineno-17-53"></a>                        &quot;failureExceptions&quot;:&quot;&quot;
-<a id="__codelineno-17-54" name="__codelineno-17-54" href="#__codelineno-17-54"></a>                     }
-<a id="__codelineno-17-55" name="__codelineno-17-55" href="#__codelineno-17-55"></a>                  ]
-<a id="__codelineno-17-56" name="__codelineno-17-56" href="#__codelineno-17-56"></a>               },
-<a id="__codelineno-17-57" name="__codelineno-17-57" href="#__codelineno-17-57"></a>               &quot;status&quot;:&quot;COMPLETED&quot;,
-<a id="__codelineno-17-58" name="__codelineno-17-58" href="#__codelineno-17-58"></a>               &quot;startTime&quot;:&quot;2016-08-01 15:07:29.398 UTC&quot;,
-<a id="__codelineno-17-59" name="__codelineno-17-59" href="#__codelineno-17-59"></a>               &quot;createTime&quot;:&quot;2016-08-01 15:07:29.393 UTC&quot;,
-<a id="__codelineno-17-60" name="__codelineno-17-60" href="#__codelineno-17-60"></a>               &quot;endTime&quot;:&quot;2016-08-01 15:07:30.356 UTC&quot;,
-<a id="__codelineno-17-61" name="__codelineno-17-61" href="#__codelineno-17-61"></a>               &quot;lastUpdated&quot;:&quot;2016-08-01 15:07:30.772 UTC&quot;,
-<a id="__codelineno-17-62" name="__codelineno-17-62" href="#__codelineno-17-62"></a>               &quot;exitStatus&quot;:{
-<a id="__codelineno-17-63" name="__codelineno-17-63" href="#__codelineno-17-63"></a>                  &quot;exitCode&quot;:&quot;COMPLETED&quot;,
-<a id="__codelineno-17-64" name="__codelineno-17-64" href="#__codelineno-17-64"></a>                  &quot;exitDescription&quot;:&quot;&quot;
-<a id="__codelineno-17-65" name="__codelineno-17-65" href="#__codelineno-17-65"></a>               },
-<a id="__codelineno-17-66" name="__codelineno-17-66" href="#__codelineno-17-66"></a>               &quot;progress&quot;:&quot;9\/9&quot;
-<a id="__codelineno-17-67" name="__codelineno-17-67" href="#__codelineno-17-67"></a>            },
-<a id="__codelineno-17-68" name="__codelineno-17-68" href="#__codelineno-17-68"></a>            &quot;options&quot;:{
-<a id="__codelineno-17-69" name="__codelineno-17-69" href="#__codelineno-17-69"></a>               &quot;@class&quot;:&quot;synchList&quot;
-<a id="__codelineno-17-70" name="__codelineno-17-70" href="#__codelineno-17-70"></a>            },
-<a id="__codelineno-17-71" name="__codelineno-17-71" href="#__codelineno-17-71"></a>            &quot;warningsList&quot;:{
-<a id="__codelineno-17-72" name="__codelineno-17-72" href="#__codelineno-17-72"></a>               &quot;@class&quot;:&quot;synchList&quot;
-<a id="__codelineno-17-73" name="__codelineno-17-73" href="#__codelineno-17-73"></a>            },
-<a id="__codelineno-17-74" name="__codelineno-17-74" href="#__codelineno-17-74"></a>            &quot;archiveFile&quot;:{
-<a id="__codelineno-17-75" name="__codelineno-17-75" href="#__codelineno-17-75"></a>               &quot;@class&quot;:&quot;resource&quot;,
-<a id="__codelineno-17-76" name="__codelineno-17-76" href="#__codelineno-17-76"></a>               &quot;$&quot;:&quot;\/home\/sg\/BackupAndRestore\/test_rest_1.zip&quot;
-<a id="__codelineno-17-77" name="__codelineno-17-77" href="#__codelineno-17-77"></a>            }
-<a id="__codelineno-17-78" name="__codelineno-17-78" href="#__codelineno-17-78"></a>         }
-<a id="__codelineno-17-79" name="__codelineno-17-79" href="#__codelineno-17-79"></a>      }
-<a id="__codelineno-17-80" name="__codelineno-17-80" href="#__codelineno-17-80"></a>      ...
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Pass the substituted passwords as transient parameters; never commit them to scripts or logs.</p>
+</div>
+<h3 id="cancel-or-abort-a-job">Cancel or abort a job<a class="headerlink" href="#cancel-or-abort-a-job" title="Permanent link">&para;</a></h3>
+<p>Cancel a running backup or restore by sending a <code>DELETE</code> with its id:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="s2">&quot;http://localhost:8080/geoserver/rest/br/restore/0&quot;</span>
 </code></pre></div>
-<p>Here you are able to see the status of all the steps involved in the restore procedure with creation time, start time, end time, exit status etc.</p>
-<h3 id="cancel-a-restore">Cancel a Restore<a class="headerlink" href="#cancel-a-restore" title="Permanent link">&para;</a></h3>
-<p>Cancel an in-progress Restore by sending an HTTP DELETE request:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>-XDELETE<span class="w"> </span>-u<span class="w"> </span><span class="s2">&quot;admin:geoserver&quot;</span><span class="w"> </span>http://mygeoserver/geoserver/rest/br/restore/<span class="nv">$ID</span>
+<p>The job is asked to stop cooperatively at the next step boundary.</p>
+<p>If a job has wedged and is holding the GeoServer configuration write-lock — blocking the rest of the UI and API — an administrator can escalate with <code>?force=true</code>. This is a <strong>break-glass, last-resort</strong> action: it interrupts the stuck job and forcibly releases the configuration lock.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span><span class="s2">&quot;http://localhost:8080/geoserver/rest/br/restore/0?force=true&quot;</span>
 </code></pre></div>
-<p>Replace <code>$ID</code> with the <strong>ID</strong> of the restore operation you'd like to cancel.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Use <code>?force=true</code> only when a job is genuinely stuck and the configuration lock will not release on its own. Forcibly releasing the lock mid-write can leave the data directory in an inconsistent state — have a backup ready.</p>
+</div>
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../options/">Backup and Restore options</a> — the full <code>BK_*</code> option reference and the ECQL filters.</li>
+<li><a href="../usagegui/">Usage via the user interface</a> — the same operations from the GeoServer web UI.</li>
+<li><a href="../usecases/">Use cases</a> — migration, partial restores and ImageMosaic scenarios.</li>
+</ul>
 
 
 
@@ -30446,7 +30572,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../usagegui/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Usage Via GeoServer&#39;s User Interface">
+          <a href="../usagegui/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Usage via the web interface">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30456,20 +30582,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Usage Via GeoServer's User Interface
+                Usage via the web interface
               </div>
             </div>
           </a>
         
         
           
-          <a href="../extensions/" class="md-footer__link md-footer__link--next" aria-label="Next: Backup and Restore Extension for the management of ImageMosaic indexers">
+          <a href="../options/" class="md-footer__link md-footer__link--next" aria-label="Next: Backup and Restore options">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Backup and Restore Extension for the management of ImageMosaic indexers
+                Backup and Restore options
               </div>
             </div>
             <div class="md-footer__button md-icon">

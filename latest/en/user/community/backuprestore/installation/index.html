@@ -20790,6 +20790,8 @@
       
         
       
+        
+      
     
     
     
@@ -20812,7 +20814,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
     
@@ -20834,7 +20836,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
           </label>
@@ -20909,10 +20911,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#manual-install" class="md-nav__link">
+  <a href="#verification" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Manual Install
+        Verification
       
     </span>
   </a>
@@ -20942,7 +20944,7 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's User Interface
+    Usage via the web interface
   
 
     
@@ -20970,7 +20972,35 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's REST API
+    Usage via GeoServer's REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup and Restore options
   
 
     
@@ -20998,7 +21028,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Extension for the management of ImageMosaic indexers
+    ImageMosaic indexer extension
   
 
     
@@ -21026,7 +21056,7 @@
   <span class="md-ellipsis">
     
   
-    Use Cases
+    Use cases
   
 
     
@@ -29872,10 +29902,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#manual-install" class="md-nav__link">
+  <a href="#verification" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Manual Install
+        Verification
       
     </span>
   </a>
@@ -29908,34 +29938,33 @@
 
 
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
-<h2 id="manual-install">Manual Install<a class="headerlink" href="#manual-install" title="Permanent link">&para;</a></h2>
-<p>To download and install the required extensions by hand:</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The module build must match your exact GeoServer version. A mismatched build will fail to load. Log in and check <strong>About &amp; Status &gt; About GeoServer &gt; Build Information</strong> to determine the exact version in use.</p>
+</div>
 <ol>
 <li>
-<p>Download the geoserver-3.0.0-backup-restore-plugin.zip from:</p>
-<ul>
-<li><a href="https://build.geoserver.org/geoserver/main/community-latest/">Community Builds</a> (GeoServer WebSite)</li>
-</ul>
-<p>It is important to download the version that matches the GeoServer you are running.</p>
+<p>Visit the <a href="https://geoserver.org/download/">download page</a>, switch to the <strong>Development</strong> tab, and locate the nightly build matching your GeoServer version.</p>
 </li>
 <li>
-<p>Stop the GeoServer application.</p>
-</li>
-<li>
-<p>Navigate into the <strong><code>webapps/geoserver/WEB-INF/lib</code></strong> folder.</p>
-<p>These files make up the running GeoServer application.</p>
-</li>
-<li>
-<p>Unzip the contents of the zip file into the <strong><code>lib</code></strong> folder.</p>
-</li>
-<li>
-<p>Restart the Application Server.</p>
-</li>
-<li>
-<p>Login to the Web Administration application. Select <strong>Data</strong> from the navigation menu. Click <strong>Backup and Restore</strong> and ensure the page is rendered correctly and without errors.</p>
+<p>Follow the <strong>Community Modules</strong> link and download <code>geoserver-3.0.0-backup-restore-plugin.zip</code>.</p>
 </li>
 </ol>
-<p>Backup and Restore plugin can be used both via user interface and via HTTP REST interface. For more details please see the next sections.</p>
+<p>The website lists active nightly builds to provide feedback to developers. You may also <a href="https://build.geoserver.org/geoserver/main/community-latest/">browse the build server</a> for the latest <code>main</code> community builds, or other branches under <a href="https://build.geoserver.org/geoserver/">https://build.geoserver.org/geoserver/</a>.</p>
+<ol>
+<li>
+<p>Stop GeoServer.</p>
+</li>
+<li>
+<p>Extract the contents of the archive into <code>WEB-INF/lib</code> of your GeoServer installation.</p>
+</li>
+<li>
+<p>Restart GeoServer.</p>
+</li>
+</ol>
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<p>After restart, log in to the web admin interface and confirm that <strong>Backup and Restore</strong> appears under the <strong>Data</strong> section of the navigation menu. Open it and check that the page renders without errors.</p>
+<p>The module can be driven from both the web interface and the REST API — see <a href="../usagegui/">usage via the web interface</a> and <a href="../usagerest/">usage via the REST API</a>.</p>
 
 
 
@@ -29976,7 +30005,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Backup and Restore Documentation">
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Backup and restore">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -29986,20 +30015,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Backup and Restore Documentation
+                Backup and restore
               </div>
             </div>
           </a>
         
         
           
-          <a href="../usagegui/" class="md-footer__link md-footer__link--next" aria-label="Next: Usage Via GeoServer&#39;s User Interface">
+          <a href="../usagegui/" class="md-footer__link md-footer__link--next" aria-label="Next: Usage via the web interface">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Usage Via GeoServer's User Interface
+                Usage via the web interface
               </div>
             </div>
             <div class="md-footer__button md-icon">

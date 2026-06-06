@@ -25,7 +25,7 @@
     
     
       
-        <title>Backup and Restore Documentation - Documentation</title>
+        <title>Backup and restore - Documentation</title>
       
     
     
@@ -132,7 +132,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#backup-and-restore-documentation" class="md-skip">
+        <a href="#backup-and-restore" class="md-skip">
           Skip to content
         </a>
       
@@ -167,7 +167,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Backup and Restore Documentation
+              Backup and restore
             
           </span>
         </div>
@@ -20790,6 +20790,8 @@
       
         
       
+        
+      
     
     
     
@@ -20812,7 +20814,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
     
@@ -20834,7 +20836,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
           </label>
@@ -20884,7 +20886,7 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's User Interface
+    Usage via the web interface
   
 
     
@@ -20912,7 +20914,35 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's REST API
+    Usage via GeoServer's REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup and Restore options
   
 
     
@@ -20940,7 +20970,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Extension for the management of ImageMosaic indexers
+    ImageMosaic indexer extension
   
 
     
@@ -20968,7 +20998,7 @@
   <span class="md-ellipsis">
     
   
-    Use Cases
+    Use cases
   
 
     
@@ -29830,18 +29860,32 @@
   
 
 
-<h1 id="backup-and-restore-documentation">Backup and Restore Documentation<a class="headerlink" href="#backup-and-restore-documentation" title="Permanent link">&para;</a></h1>
-<p>This section describes the GeoServer Backup and Restore plugin functionality and APIs.</p>
+<h1 id="backup-and-restore">Backup and restore<a class="headerlink" href="#backup-and-restore" title="Permanent link">&para;</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Backup and Restore is a community module. It is usable, but does not have the same support guarantees as official extensions.</p>
+</div>
+<p>The Backup and Restore module saves and reloads a GeoServer <strong>catalog and configuration</strong> — workspaces, stores, layers, styles, layer groups, GeoWebCache tile layers and (optionally) security — to and from a portable archive. It does <strong>not</strong> copy the underlying data: file-based and database-backed stores keep serving from their original locations, and the archive captures how GeoServer is configured to reach them.</p>
+<p>Core capabilities:</p>
+<ul>
+<li><strong>Full or filtered backups</strong> — archive the whole catalog, or a workspace subset that is made self-contained through dependency-closure resolution.</li>
+<li><strong>Cross-instance migration</strong> — id-preserving archives let a catalog move into another, already-populated GeoServer with stable identities and re-linkable tile layers.</li>
+<li><strong>Security migration</strong> — opt-in merge or replace of users, groups and roles, including keystore re-encryption across master passwords.</li>
+<li><strong>Validation and dry-run</strong> — validate an archive non-destructively before committing, and optionally abort on the first invalid object.</li>
+<li><strong>REST API and UI</strong> — drive and monitor jobs from the web admin interface or from automation.</li>
+</ul>
 <div class="grid cards">
 <ul>
 <li><a href="installation/">Installation</a></li>
-<li><a href="usagegui/">Usage Via GeoServer's User Interface</a></li>
-<li><a href="usagerest/">Usage Via GeoServer's REST API</a></li>
-<li><a href="extensions/">Backup and Restore Extension for the management of ImageMosaic indexers</a></li>
-<li><a href="usecases/">Use Cases</a></li>
+<li><a href="usagegui/">Usage via the web interface</a></li>
+<li><a href="usagerest/">Usage via the REST API</a></li>
+<li><a href="options/">Options reference</a></li>
+<li><a href="usecases/">Use cases</a></li>
 <li><a href="migration/">What changed between 2.x and 3.x</a></li>
+<li><a href="extensions/">ImageMosaic indexer extension</a></li>
 </ul>
 </div>
+<p>For the differences between the 2.x and 3.x modules — engine, defaults and behaviour changes — see <a href="migration/">what changed between 2.x and 3.x</a>.</p>
 
 
 

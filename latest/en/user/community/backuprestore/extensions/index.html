@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/community/backuprestore/extensions/">
       
       
-        <link rel="prev" href="../usagerest/">
+        <link rel="prev" href="../options/">
       
       
         <link rel="next" href="../usecases/">
@@ -25,7 +25,7 @@
     
     
       
-        <title>Backup and Restore Extension for the management of ImageMosaic indexers - Documentation</title>
+        <title>ImageMosaic indexer extension - Documentation</title>
       
     
     
@@ -132,7 +132,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#backup-and-restore-extension-for-the-management-of-imagemosaic-indexers" class="md-skip">
+        <a href="#imagemosaic-indexer-extension" class="md-skip">
           Skip to content
         </a>
       
@@ -167,7 +167,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Backup and Restore Extension for the management of ImageMosaic indexers
+              ImageMosaic indexer extension
             
           </span>
         </div>
@@ -20790,6 +20790,8 @@
       
         
       
+        
+      
     
     
     
@@ -20812,7 +20814,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
     
@@ -20834,7 +20836,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
           </label>
@@ -20884,7 +20886,7 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's User Interface
+    Usage via the web interface
   
 
     
@@ -20912,7 +20914,35 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's REST API
+    Usage via GeoServer's REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup and Restore options
   
 
     
@@ -20949,7 +20979,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Extension for the management of ImageMosaic indexers
+    ImageMosaic indexer extension
   
 
     
@@ -20967,7 +20997,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Extension for the management of ImageMosaic indexers
+    ImageMosaic indexer extension
   
 
     
@@ -21004,10 +21034,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#technical-details" class="md-nav__link">
+  <a href="#extension-points" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Technical Details
+        Extension points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#behaviour-for-imagemosaic-indexers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behaviour for ImageMosaic indexers
       
     </span>
   </a>
@@ -21037,7 +21078,7 @@
   <span class="md-ellipsis">
     
   
-    Use Cases
+    Use cases
   
 
     
@@ -29894,10 +29935,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#technical-details" class="md-nav__link">
+  <a href="#extension-points" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Technical Details
+        Extension points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#behaviour-for-imagemosaic-indexers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behaviour for ImageMosaic indexers
       
     </span>
   </a>
@@ -29929,51 +29981,62 @@
   
 
 
-<h1 id="backup-and-restore-extension-for-the-management-of-imagemosaic-indexers">Backup and Restore Extension for the management of ImageMosaic indexers<a class="headerlink" href="#backup-and-restore-extension-for-the-management-of-imagemosaic-indexers" title="Permanent link">&para;</a></h1>
+<h1 id="imagemosaic-indexer-extension">ImageMosaic indexer extension<a class="headerlink" href="#imagemosaic-indexer-extension" title="Permanent link">&para;</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Backup and Restore is a community module. It is usable, but does not have the same support guarantees as official extensions.</p>
+</div>
 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
-<p><em>ImageMosaics CoverageStores</em> make use of several <code>.properties</code> files instructing the reader on how to create the mosaic index.</p>
-<p>What we want to achieve is to allow the GeoServer Backup &amp; Restore module to <em>inject</em> environment properties on indexers allowing the ImageMosaic to be automatically ported among different environments.</p>
-<h2 id="technical-details">Technical Details<a class="headerlink" href="#technical-details" title="Permanent link">&para;</a></h2>
-<p>The GeoServer Backup &amp; Restore module actually provides an extension point on reading / writing allowing GeoServer to handle additional resources related to a particular <code>ResourceInfo</code>.</p>
-<p>The interfaces :
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">CatalogAdditionalResourcesWriter</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<p><em>ImageMosaic coverage stores</em> rely on several <code>.properties</code> files that tell the reader how to build the mosaic index. This extension point lets the Backup and Restore module <strong>inject environment properties</strong> into those indexers, so an ImageMosaic can be ported automatically between environments. The end-user side of this is described in <a href="../usecases/#imagemosaic-indexer-parameterization">the ImageMosaic indexer use cases</a>.</p>
+<h2 id="extension-points">Extension points<a class="headerlink" href="#extension-points" title="Permanent link">&para;</a></h2>
+<p>The module exposes a read/write extension point for handling additional resources attached to a catalog item (typically a <code>ResourceInfo</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">CatalogAdditionalResourcesWriter</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">canHandle</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">item</span><span class="p">);</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">canHandle</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">item</span><span class="p">);</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">writeAdditionalResources</span><span class="p">(</span><span class="n">Backup</span><span class="w"> </span><span class="n">backupFacade</span><span class="p">,</span><span class="w"> </span><span class="n">Resource</span><span class="w"> </span><span class="n">base</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">item</span><span class="p">)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">                </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="p">;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">writeAdditionalResources</span><span class="p">(</span><span class="n">Backup</span><span class="w"> </span><span class="n">backupFacade</span><span class="p">,</span><span class="w"> </span><span class="n">Resource</span><span class="w"> </span><span class="n">base</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="p">;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">}</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">CatalogAdditionalResourcesReader</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">CatalogAdditionalResourcesReader</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">canHandle</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">item</span><span class="p">);</span>
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">canHandle</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">item</span><span class="p">);</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">readAdditionalResources</span><span class="p">(</span><span class="n">Backup</span><span class="w"> </span><span class="n">backupFacade</span><span class="p">,</span><span class="w"> </span><span class="n">Resource</span><span class="w"> </span><span class="n">base</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">item</span><span class="p">)</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">                </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="p">;</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">    </span><span class="p">}</span>
-</code></pre></div></p>
-<p>Is invoked by the <code>CatalogFileWriter</code> (when doing a Backup) and the <code>CatalogItemWriter</code> (when doing a Restore) after a successful write of the resource configuration on the, respectively, target backup folder and in-memory catalog.</p>
-<p>The idea is the following one <em>allowing the CatalogItemWriter to</em>:</p>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">readAdditionalResources</span><span class="p">(</span><span class="n">Backup</span><span class="w"> </span><span class="n">backupFacade</span><span class="p">,</span><span class="w"> </span><span class="n">Resource</span><span class="w"> </span><span class="n">base</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="p">;</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="p">}</span>
+</code></pre></div>
+<p>Implementations are contributed as GeoServer extension beans and discovered through <code>GeoServerExtensions</code>. The module dispatches to every registered handler whose <code>canHandle(item)</code> returns <code>true</code>:</p>
+<ul>
+<li>On <strong>backup</strong>, the abstract <code>CatalogWriter.firePostWrite(...)</code> runs every <code>CatalogAdditionalResourcesWriter</code> after the item's configuration has been written. It is invoked from <code>CatalogFileWriter</code>, which writes catalog items as flat XML files to the archive folder.</li>
+<li>On <strong>restore</strong>, the abstract <code>CatalogReader.firePostRead(...)</code> runs every <code>CatalogAdditionalResourcesReader</code> after the item has been read back. It is invoked from <code>CatalogFileReader</code>, which reads catalog items from the archive into the in-memory restore catalog.</li>
+</ul>
+<p>Two writers ship with the module: <code>StyleInfoAdditionalResourceWriter</code> (style sidecar files) and <code>ResourceInfoAdditionalResourceWriter</code> (Freemarker templates and schema mappings).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>CatalogItemWriter</code> and <code>CatalogItemReader</code> (used when persisting directly to or from the live catalog) do <strong>not</strong> invoke this extension point. The additional-resource SPI fires only on the file-based path — <code>CatalogFileWriter</code> / <code>CatalogFileReader</code> — which is the one used for archive backup and restore.</p>
+</div>
+<h2 id="behaviour-for-imagemosaic-indexers">Behaviour for ImageMosaic indexers<a class="headerlink" href="#behaviour-for-imagemosaic-indexers" title="Permanent link">&para;</a></h2>
+<p>The goal is to let the additional-resource handlers:</p>
 <ol>
-<li>Restore the ImageMosaic Indexer Properties injecting environment properties</li>
-<li>Check if the Mosaic index physically exist and if not create an empty one</li>
+<li>restore the ImageMosaic indexer <code>.properties</code>, injecting environment properties from the matching <code>.template</code>; and</li>
+<li>check whether the mosaic index physically exists and, if not, create an empty one.</li>
 </ol>
-<p>In order to do that we envisage the following technical approach</p>
-<p>On a <strong>BACKUP</strong> operation</p>
+<p>On a <strong>backup</strong> operation:</p>
 <ol>
-<li>The Additional Resource Writer checks if the <code>ResourceInfo</code> is an ImageMosaic Coverage Store.</li>
-<li>The Additional Resource Writer looks for <code>*.template</code> files on the ImageMosaic index directory. It must store them into the zip archive by reading the path from the Coverage Store.</li>
-<li>The Additional Resource Writer stores the <code>*.template</code> along with the <code>*.properties</code> files on the target backup folder. Same as above.</li>
+<li>The additional-resource writer checks that the item is an ImageMosaic coverage store.</li>
+<li>It looks for <code>*.template</code> files in the ImageMosaic index directory (read from the coverage store).</li>
+<li>It stores the <code>*.template</code> files alongside the <code>*.properties</code> files in the target backup folder.</li>
 </ol>
-<p>On a <strong>RESTORE</strong> operation</p>
+<p>On a <strong>restore</strong> operation:</p>
 <ol>
-<li>The Additional Resource Reader checks if the <code>ResourceInfo</code> is an ImageMosaic Coverage Store.</li>
-<li>The Additional Resource Reader looks for <code>*.template</code> files on the ImageMosaic index directory. It will try to restore them by using the path read from the Coverage Store configuration.</li>
-<li>The Additional Resource Reader overwrites the <code>*.properties</code> files by resolving all the environment properties declared on the templates.</li>
-<li>The Additional Resource Reader checks if the empty mosaic must be created or not.</li>
+<li>The additional-resource reader checks that the item is an ImageMosaic coverage store.</li>
+<li>It looks for the <code>*.template</code> files and restores them to the path read from the coverage store configuration.</li>
+<li>It overwrites the <code>*.properties</code> files by resolving the environment properties declared in the templates.</li>
+<li>It checks whether an empty mosaic needs to be created.</li>
 </ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The engine was reworked for GeoServer 3.x: it runs on Spring Batch 6 / Spring 7, and the job graphs are defined in Java <code>@Configuration</code> (<code>BackupJobConfiguration</code>, <code>RestoreJobConfiguration</code>, <code>BatchInfrastructureConfiguration</code>) rather than <code>applicationContext.xml</code>. Custom steps, tasklets, readers, processors and writers should be wired the same way. See the developer note in <a href="../migration/#for-developers-and-extension-authors">what changed between 2.x and 3.x</a>.</p>
+</div>
 
 
 
@@ -30011,7 +30074,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../usagerest/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Usage Via GeoServer&#39;s REST API">
+          <a href="../options/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Backup and Restore options">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30021,20 +30084,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Usage Via GeoServer's REST API
+                Backup and Restore options
               </div>
             </div>
           </a>
         
         
           
-          <a href="../usecases/" class="md-footer__link md-footer__link--next" aria-label="Next: Use Cases">
+          <a href="../usecases/" class="md-footer__link md-footer__link--next" aria-label="Next: Use cases">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Use Cases
+                Use cases
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -20790,6 +20790,8 @@
       
         
       
+        
+      
     
     
     
@@ -20812,7 +20814,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
     
@@ -20834,7 +20836,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Backup and Restore Documentation
+    Backup and Restore
   
 
           </label>
@@ -20884,7 +20886,7 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's User Interface
+    Usage via the web interface
   
 
     
@@ -20912,7 +20914,35 @@
   <span class="md-ellipsis">
     
   
-    Usage Via GeoServer's REST API
+    Usage via GeoServer's REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup and Restore options
   
 
     
@@ -20940,7 +20970,7 @@
   <span class="md-ellipsis">
     
   
-    Backup and Restore Extension for the management of ImageMosaic indexers
+    ImageMosaic indexer extension
   
 
     
@@ -20968,7 +20998,7 @@
   <span class="md-ellipsis">
     
   
-    Use Cases
+    Use cases
   
 
     
@@ -21126,10 +21156,43 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cancelling-and-recovering-a-running-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cancelling and recovering a running job
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reliable-backup-password-parameterization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reliable backup password parameterization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rest-api-and-archive-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
         REST API and archive compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking changes
       
     </span>
   </a>
@@ -30037,10 +30100,43 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cancelling-and-recovering-a-running-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cancelling and recovering a running job
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reliable-backup-password-parameterization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reliable backup password parameterization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rest-api-and-archive-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
         REST API and archive compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking changes
       
     </span>
   </a>
@@ -30133,6 +30229,16 @@ scripted backups.</p>
 <td>Dry-run / fail-on-invalid</td>
 <td>wrote to disk incrementally (only the reload was skipped)</td>
 <td>snapshot + rollback leave the data directory untouched</td>
+</tr>
+<tr>
+<td>Cancelling a running job</td>
+<td>could return HTTP 500</td>
+<td>clean cancel (UI or <code>DELETE</code>); write-lock force-release as break-glass</td>
+</tr>
+<tr>
+<td>Backup password parameterization</td>
+<td>unreliable</td>
+<td><code>BK_PARAM_PASSWORDS</code> reliably tokenizes store passwords</td>
 </tr>
 </tbody>
 </table>
@@ -30228,14 +30334,43 @@ it still wrote the catalog to disk along the way, so it was not truly non-destru
 <p>The practical effect: a <code>BK_DRY_RUN=true</code> restore now leaves the data directory exactly as it was —
 making it a safe way to validate an archive — and a failed or <code>BK_FAIL_ON_INVALID</code>-aborted restore no
 longer leaves the target half-written.</p>
+<h2 id="cancelling-and-recovering-a-running-job">Cancelling and recovering a running job<a class="headerlink" href="#cancelling-and-recovering-a-running-job" title="Permanent link">&para;</a></h2>
+<p>A running backup or restore can now be cancelled cleanly, from the web interface or with
+<code>DELETE /rest/br/backup/{id}</code> / <code>DELETE /rest/br/restore/{id}</code>. In 2.x cancelling an in-progress job
+could return an HTTP 500; in 3.x the job stops in a well-defined state and the endpoint responds
+without error.</p>
+<p>If a job becomes wedged while it still holds the GeoServer configuration write-lock — blocking other
+configuration changes — an administrator can force the lock to be released:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>DELETE /rest/br/restore/{id}?force=true
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code>force=true</code> is a <strong>break-glass</strong> mechanism for an administrator. It interrupts the lock owner to
+recover a stuck instance and should be used only when a job is genuinely wedged.</p>
+</div>
+<h2 id="reliable-backup-password-parameterization">Reliable backup password parameterization<a class="headerlink" href="#reliable-backup-password-parameterization" title="Permanent link">&para;</a></h2>
+<p>A backup can replace store passwords with tokens so the archive does not carry plaintext secrets,
+re-supplied at restore time. In 3.x <code>BK_PARAM_PASSWORDS=true</code> reliably tokenizes store passwords
+during backup; a tie-break in converter priority that previously let some passwords slip through
+untokenized has been fixed.</p>
 <h2 id="rest-api-and-archive-compatibility">REST API and archive compatibility<a class="headerlink" href="#rest-api-and-archive-compatibility" title="Permanent link">&para;</a></h2>
 <p>The REST endpoints (<code>/rest/br/backup</code>, <code>/rest/br/restore</code>) and the JSON/XML response shape are
 unchanged from 2.x, so existing clients and scripts continue to work without modification. Archives
 written by 3.x restore into 3.x; the practical difference from a 2.x archive is the id-preserving
 default described above.</p>
+<h2 id="breaking-changes">Breaking changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Batch jobs are now defined in Java <code>@Configuration</code>.</strong> The custom XML <code>&lt;batch:job&gt;</code> and
+  <code>applicationContext.xml</code> batch definitions from 2.x are gone. Extensions that contributed steps,
+  tasklets, readers, processors or writers through XML must be rewired in Java (see <em>For developers
+  and extension authors</em> below).</li>
+<li><strong><code>BK_PRESERVE_IDS</code> now defaults to <code>true</code>.</strong> Scripted backups that assume name-based,
+  id-stripped archives must set <code>BK_PRESERVE_IDS=false</code> explicitly (see
+  <a href="#bk_preserve_ids-now-defaults-to-true-the-one-to-watch">the section above</a>).</li>
+</ul>
 <h2 id="for-developers-and-extension-authors">For developers and extension authors<a class="headerlink" href="#for-developers-and-extension-authors" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The engine now runs on <strong>Spring Batch 6.0.3 / Spring 7</strong> (GeoServer 3's JDK 17 baseline applies).</li>
+<li>The engine now runs on <strong>Spring Batch 6.0.x / Spring 7</strong> (GeoServer 3's JDK 17 baseline applies).</li>
 <li>The backup and restore <strong>job graphs are defined in Java <code>@Configuration</code></strong>
   (<code>BackupJobConfiguration</code>, <code>RestoreJobConfiguration</code>, <code>BatchInfrastructureConfiguration</code>) instead
   of the old <code>applicationContext.xml</code> <code>&lt;batch:job&gt;</code> definitions. Custom steps, tasklets, readers,
@@ -30278,7 +30413,7 @@ default described above.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../usecases/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Use Cases">
+          <a href="../usecases/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Use cases">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30288,7 +30423,7 @@ default described above.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Use Cases
+                Use cases
               </div>
             </div>
           </a>

@@ -100,12 +100,12 @@ public class RestoreController extends AbstractBackupRestoreController {
             if (lookup instanceof RestoreExecutionAdapter adapter) {
                 if (isArchiveDownload(restoreId, format, request)) {
                     try {
-                        // get your file as InputStream
+                        // stream the archive file to the response; try-with-resources closes the input stream
                         File file = adapter.getArchiveFile().file();
-                        InputStream is = new FileInputStream(file);
-                        // copy it to response's OutputStream
-                        org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
-                        response.flushBuffer();
+                        try (InputStream is = new FileInputStream(file)) {
+                            org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+                            response.flushBuffer();
+                        }
                     } catch (IOException ex) {
                         LOGGER.log(Level.INFO, "Error writing file to output stream.", ex);
                         throw new RuntimeException("IOError writing file to output stream");

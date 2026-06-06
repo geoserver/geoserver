@@ -295,24 +295,7 @@ Transfer-Encoding: chunked
 
 ![](images/usagerest004.png)
 
-To upload the archive from our local system instead, omit the archiveFile parameter in the JSON object and pass the `--upload-file` parameter to cURL:
-
-`restore_post.json`:
-
-```json
-{
-   "restore":{
-      "options":{
-      },
-   }
-}
-```
-
-```bash
-curl -u "admin:geoserver" -i -H "Content-Type: application/json" --upload-file "archive_to_restore.zip" -X POST --data @restore_post.json http://localhost:8081/geoserver/rest/br/restore/
-```
-
-Local `archive_to_restore.zip` archive will be uploaded and used by the restore procedure.
+The `archiveFile` must be a path on the server that is readable by the GeoServer process: the REST API restores from a server-side archive and does not accept a client-side (multipart) file upload. Copy the archive to a location GeoServer can read, then reference its absolute path in the `archiveFile` field as shown above.
 
 ![](images/usagerest005.png)
 

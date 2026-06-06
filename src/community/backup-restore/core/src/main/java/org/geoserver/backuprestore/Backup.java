@@ -709,10 +709,10 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
      * Aborts a backup/restore execution.
      *
      * <p>Spring Batch refuses to abandon a still-running execution, so a running job is first asked to
-     * {@link #stopExecution(Long) stop} and given a short grace period to wind down. Only the job thread can release the
-     * configuration lock it acquired in {@link #beforeJob(JobExecution)} - a {@link GeoServerConfigurationLock} is a
-     * reentrant lock, releasable solely by its owning thread - and it does so in {@link #afterJob(JobExecution)} as it
-     * terminates. Driving the job to a terminal state is therefore what actually frees the lock, not any callback
+     * {@link #stopExecution(Long) stop} and given a short grace period to wind down. Only the job thread can release
+     * the configuration lock it acquired in {@link #beforeJob(JobExecution)} - a {@link GeoServerConfigurationLock} is
+     * a reentrant lock, releasable solely by its owning thread - and it does so in {@link #afterJob(JobExecution)} as
+     * it terminates. Driving the job to a terminal state is therefore what actually frees the lock, not any callback
      * invoked from this (request) thread.
      *
      * <p>When {@code force} is set and the job is still running after the grace period - i.e. wedged while (for a
@@ -750,9 +750,9 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     }
 
     /**
-     * Asks a running execution to stop and waits up to {@link #STOP_GRACE_MILLIS} for it to reach a terminal state. When
-     * {@code force} is set and the job is still running afterwards, interrupts the configuration write-lock owner thread
-     * to force the lock open (break glass).
+     * Asks a running execution to stop and waits up to {@link #STOP_GRACE_MILLIS} for it to reach a terminal state.
+     * When {@code force} is set and the job is still running afterwards, interrupts the configuration write-lock owner
+     * thread to force the lock open (break glass).
      */
     private void stopAndAwaitTermination(JobExecution jobExecution, boolean force) {
         try {

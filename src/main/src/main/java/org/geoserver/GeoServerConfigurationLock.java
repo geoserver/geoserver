@@ -46,7 +46,8 @@ public class GeoServerConfigurationLock {
     /**
      * The thread currently holding the write lock, or {@code null} when none does. Recorded so the write lock can be
      * force-released - by interrupting its owner - when that thread becomes wedged (see
-     * {@link #tryForceReleaseWriteLock()}). Only ever written while the write lock is held, so a plain volatile suffices.
+     * {@link #tryForceReleaseWriteLock()}). Only ever written while the write lock is held, so a plain volatile
+     * suffices.
      */
     private static volatile Thread writeOwner;
 
@@ -245,8 +246,8 @@ public class GeoServerConfigurationLock {
      *
      * <p>The configuration lock is a {@link ReentrantReadWriteLock}: it can only be released by the very thread that
      * acquired it, so no other thread can {@code unlock()} it. If a thread (for example a Spring Batch backup/restore
-     * job thread) becomes wedged while holding the write lock, every other configuration operation - GUI and REST
-     * alike - is blocked indefinitely with no recovery short of a JVM restart.
+     * job thread) becomes wedged while holding the write lock, every other configuration operation - GUI and REST alike
+     * - is blocked indefinitely with no recovery short of a JVM restart.
      *
      * <p>This method interrupts the thread that currently owns the write lock so that, if it is parked or blocked at an
      * interruptible point, it unwinds and releases the lock through its own normal code path (e.g. a job's

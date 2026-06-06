@@ -262,7 +262,10 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         // has a single element Jettison serializes it as an object rather than a 1-element array.
         assertEquals(
                 "name IN ('topp','geosolutions-it')",
-                stepExecutions(execution).getJSONObject(0).getJSONObject("parameters").get("wsFilter"));
+                stepExecutions(execution)
+                        .getJSONObject(0)
+                        .getJSONObject("parameters")
+                        .get("wsFilter"));
     }
 
     @Test

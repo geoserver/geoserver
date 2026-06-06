@@ -5,6 +5,7 @@
 package org.geoserver.backuprestore.rest;
 
 import com.thoughtworks.xstream.XStream;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
@@ -90,13 +91,14 @@ public class BackupController extends AbstractBackupRestoreController {
     public RestWrapper backupGet(
             @RequestParam(name = "format", required = false) String format,
             @PathVariable String backupId,
+            HttpServletRequest request,
             HttpServletResponse response) {
 
         Object lookup = lookupBackupExecutionsContext(getExecutionIdFilter(backupId), true, false);
 
         if (lookup != null) {
             if (lookup instanceof BackupExecutionAdapter adapter) {
-                if (backupId.endsWith(".zip")) {
+                if (isArchiveDownload(backupId, format, request)) {
                     try {
                         // get your file as InputStream
                         File file = adapter.getArchiveFile().file();

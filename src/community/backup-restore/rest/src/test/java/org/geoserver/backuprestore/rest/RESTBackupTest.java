@@ -76,6 +76,49 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
     }
 
     @Test
+    public void testBackupZipStreamingDownload() throws Exception {
+        Resource tmpDir = BackupUtils.tmpDir();
+        String archiveFilePath = Paths.path(tmpDir.path(), "geoserver-backup.zip");
+
+        String json = "{\"backup\": {"
+                + "   \"archiveFile\": \""
+                + archiveFilePath
+                + "\", "
+                + "   \"overwrite\": true,"
+                + "   \"options\": { \"option\": [\"BK_BEST_EFFORT=false\"] }"
+                + "  }"
+                + "}";
+
+        JSONObject backup = postNewBackup(json);
+        JSONObject execution =
+                readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
+
+        int cnt = 0;
+        while (cnt < 100
+                && ("STARTED".equals(execution.getString("status"))
+                        || "STARTING".equals(execution.getString("status")))) {
+            execution = readExecutionStatus(execution.getLong("id"));
+            Thread.sleep(100);
+            cnt++;
+        }
+        assertEquals("COMPLETED", execution.getString("status"));
+
+        // GET .../br/backup/{id}.zip streams the produced archive bytes (BackupController copies the file to the
+        // servlet output stream via IOUtils.copy). Assert it is served and is a real ZIP - local-file-header magic
+        // "PK\003\004" - confirming the streaming download path, not a JSON status payload.
+        long id = execution.getLong("id");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/br/backup/" + id + ".zip");
+        assertEquals(200, response.getStatus());
+        byte[] body = response.getContentAsByteArray();
+        assertTrue("expected a non-empty zip body, was " + body.length + " bytes", body.length > 4);
+        assertEquals('P', body[0]);
+        assertEquals('K', body[1]);
+        assertEquals(3, body[2]);
+        assertEquals(4, body[3]);
+    }
+
+    @Test
     public void testBackupWithProtectedReources() throws Exception {
         // setup security, AggregateGeoFeature allowed to everybody, PrimitiveGeoFeature to military
         // only

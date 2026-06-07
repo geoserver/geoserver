@@ -29984,7 +29984,7 @@
 </ul>
 <p>If your data has no native CRS information, the only option is to specify/force an EPSG code.</p>
 <h2 id="increasing-comparison-tolerance">Increasing Comparison Tolerance<a class="headerlink" href="#increasing-comparison-tolerance" title="Permanent link">&para;</a></h2>
-<p>Decimal numbers comparisons are made using a comparison tolerance. This means, as an instance, that an ellipsoid's semi_major axis equals a candidate EPSG's ellipsoid semi_major axis only if their difference is within that tolerance. Default value is 10\^-9 although it can be changed by setting a COMPARISON_TOLERANCE Java System property to your container's JVM to specify a different value.</p>
+<p>Decimal numbers comparisons are made using a comparison tolerance. This means, as an instance, that an ellipsoid's semi_major axis equals a candidate EPSG's ellipsoid semi_major axis only if their difference is within that tolerance. Default value is 10^-9 although it can be changed by setting a COMPARISON_TOLERANCE Java System property to your container's JVM to specify a different value.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The default value should be changed only if you are aware of use cases which require a wider tolerance. Don't change it unless really needed (See the following example).</p>

@@ -29,4 +29,4 @@ Instead, one can use Common Query Language (CQL), which allows one to specify th
 
     http://localhost:8080/geoserver/wms/kml?layers=topp:states&CQL_FILTER=LAND_KM+BETWEEN+100000+AND+150000
 
-This query will return all the states in the US with areas between 100,000 and 150,000 km\^2.
+This query will return all the states in the US with areas between 100,000 and 150,000 km^2.

@@ -25,7 +25,6 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.web.data.layer.NewLayerPage;
 import org.geotools.http.HTTPClient;
 import org.geotools.http.HTTPClientFinder;
-import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.xml.WMSSchema;
 import org.geotools.xml.DocumentFactory;
@@ -126,7 +125,9 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                 }
                 Map<String, Object> hints = new HashMap<>();
                 hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
+                // do not be strict about element ordering
                 hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
+                hints.put(DocumentFactory.DISABLE_EXTERNAL_ENTITIES, Boolean.FALSE);
                 EntityResolverProvider provider = getCatalog().getResourcePool().getEntityResolverProvider();
                 if (provider != null) {
                     EntityResolver entityResolver = provider.getEntityResolver();
@@ -134,10 +135,9 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                         hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
                     }
                 }
-
                 WebMapServer server = new WebMapServer(new URL(url), client, hints);
                 server.getCapabilities();
-            } catch (IOException | ServiceException e) {
+            } catch (Exception e) {
                 IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure")
                         .addKey("WMSCapabilitiesValidator.connectionFailure")
                         .setVariable("error", e.getMessage());

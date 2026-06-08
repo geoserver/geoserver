@@ -1885,14 +1885,15 @@ public class ResourcePool {
         hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
         if (entityResolver != null) {
             hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
-            //            if (entityResolver instanceof EntityResolver3 entityResolver3) {
-            //                String access = entityResolver3.getAccess();
-            //                if (access.equals("all") || access.contains("file")) {
-            //                    // trusted location
-            //                    hints.put(DocumentFactory.ENABLE_DTD, Boolean.TRUE);
-            //                    hints.put(DocumentFactory.DISABLE_EXTERNAL_ENTITIES, Boolean.FALSE);
-            //                }
-            //            }
+            if (entityResolver.getClass().getSimpleName().equals("DevModeEntityResolver")) {
+                hints.put(DocumentFactory.ENABLE_DTD, Boolean.TRUE);
+                hints.put(DocumentFactory.DISABLE_EXTERNAL_ENTITIES, Boolean.FALSE);
+            }
+        }
+        if (System.getProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "")
+                .equalsIgnoreCase("true")) {
+            hints.put(DocumentFactory.ENABLE_DTD, Boolean.TRUE);
+            hints.put(DocumentFactory.DISABLE_EXTERNAL_ENTITIES, Boolean.FALSE);
         }
         WebMapServer wms;
         if (StringUtils.isNotEmpty(expandedStore.getHeaderName())

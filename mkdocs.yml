@@ -762,11 +762,12 @@ nav:
         - en/user/community/opensearch-eo/STAC.md
         - en/user/community/opensearch-eo/templates.md
         - en/user/community/opensearch-eo/upgrading.md
-      - Backup and Restore Documentation:
+      - Backup and Restore:
         - en/user/community/backuprestore/index.md
         - en/user/community/backuprestore/installation.md
         - en/user/community/backuprestore/usagegui.md
         - en/user/community/backuprestore/usagerest.md
+        - en/user/community/backuprestore/options.md
         - en/user/community/backuprestore/extensions.md
         - en/user/community/backuprestore/usecases.md
         - en/user/community/backuprestore/migration.md

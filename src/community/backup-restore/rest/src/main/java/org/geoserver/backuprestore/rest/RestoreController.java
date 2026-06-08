@@ -5,6 +5,7 @@
 package org.geoserver.backuprestore.rest;
 
 import com.thoughtworks.xstream.XStream;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
@@ -90,20 +91,21 @@ public class RestoreController extends AbstractBackupRestoreController {
     public RestWrapper restoreGet(
             @RequestParam(name = "format", required = false) String format,
             @PathVariable String restoreId,
+            HttpServletRequest request,
             HttpServletResponse response) {
 
         Object lookup = lookupRestoreExecutionsContext(getExecutionIdFilter(restoreId), true, false);
 
         if (lookup != null) {
             if (lookup instanceof RestoreExecutionAdapter adapter) {
-                if (restoreId.endsWith(".zip")) {
+                if (isArchiveDownload(restoreId, format, request)) {
                     try {
-                        // get your file as InputStream
+                        // stream the archive file to the response; try-with-resources closes the input stream
                         File file = adapter.getArchiveFile().file();
-                        InputStream is = new FileInputStream(file);
-                        // copy it to response's OutputStream
-                        org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
-                        response.flushBuffer();
+                        try (InputStream is = new FileInputStream(file)) {
+                            org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+                            response.flushBuffer();
+                        }
                     } catch (IOException ex) {
                         LOGGER.log(Level.INFO, "Error writing file to output stream.", ex);
                         throw new RuntimeException("IOError writing file to output stream");
@@ -123,7 +125,9 @@ public class RestoreController extends AbstractBackupRestoreController {
             path = "restore/{restoreId:.+}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper restoreDelete(
-            @RequestParam(name = "format", required = false) String format, @PathVariable String restoreId)
+            @RequestParam(name = "format", required = false) String format,
+            @RequestParam(name = "force", required = false, defaultValue = "false") boolean force,
+            @PathVariable String restoreId)
             throws IOException {
 
         final String executionId = getExecutionIdFilter(restoreId);
@@ -132,7 +136,8 @@ public class RestoreController extends AbstractBackupRestoreController {
         if (lookup != null) {
             if (lookup instanceof RestoreExecutionAdapter adapter) {
                 try {
-                    getBackupFacade().abandonExecution(Long.valueOf(executionId));
+                    // force=true escalates a wedged execution to a break-glass configuration-lock release.
+                    getBackupFacade().abandonExecution(Long.valueOf(executionId), force);
                 } catch (Exception e) {
                     throw new IOException(e);
                 }

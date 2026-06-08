@@ -657,50 +657,6 @@
          <lastmod>2026-06-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/advanced/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/configuring/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/installing/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/migrating/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/role-config/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/oauth2/azure/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/oauth2/generic/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/oauth2/github/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/oauth2/google/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/oidc/oauth2/keycloak/</loc>
-         <lastmod>2026-06-08</lastmod>
-    </url>
-    <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/community/opensearch-eo/</loc>
          <lastmod>2026-06-08</lastmod>
     </url>
@@ -1674,6 +1630,50 @@
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/netcdf-out/nc4/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/advanced/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/configuring/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/installing/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/migrating/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/role-config/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/oauth2/azure/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/oauth2/generic/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/oauth2/github/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/oauth2/google/</loc>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/latest/en/user/extensions/oidc/oauth2/keycloak/</loc>
          <lastmod>2026-06-08</lastmod>
     </url>
     <url>

@@ -130,6 +130,9 @@
     <marlin.version>0.9.4.8</marlin.version>
     <mf.version>2.5-SNAPSHOT</mf.version>
     <mockito.version>5.23.0</mockito.version>
+    <!-- nimbus-jose-jwt is a transitive of spring-security-oauth2-jose; managed here so direct
+         consumers (sec-oidc) inherit the same version Spring Security expects (do not pin it lower). -->
+    <nimbus-jose-jwt.version>10.4</nimbus-jose-jwt.version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
     <pmd.version>7.23.0</pmd.version>
     <poi.version>5.4.0</poi.version>
@@ -705,6 +708,11 @@
         <groupId>org.springframework.security.oauth</groupId>
         <artifactId>spring-security-oauth2</artifactId>
         <version>${spring.security.oauth2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nimbusds</groupId>
+        <artifactId>nimbus-jose-jwt</artifactId>
+        <version>${nimbus-jose-jwt.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jasypt</groupId>

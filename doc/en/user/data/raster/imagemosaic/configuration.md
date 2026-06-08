@@ -22,7 +22,7 @@ If you already have these files generated, GeoServer will respect them and not g
 Within each store there are multiple configuration files that determine how the mosaic is rendered.
 
 !!! note
-    The property file syntax uses a few reserved chars that need escaping in order to be used for keys or values. For example, the `#` character is used to comment out lines, in order to use it in values it needs to be escaped, like this: `\#`. The same applies to the `=` character, which is used to separate the property name from its value: it should be specified as `\=`. Finally, if there is a need to use the ` itself, it will have to be escaped as well: `.
+    The property file syntax uses a few reserved chars that need escaping in order to be used for keys or values. For example, the `#` character is used to comment out lines, in order to use it in values it needs to be escaped, like this: `\#`. The same applies to the `=` character, which is used to separate the property name from its value: it should be specified as `\=`. Finally, if there is a need to use the `` ` `` itself, it will have to be escaped as well: `` \` ``.
 
 ### Primary configuration file
 

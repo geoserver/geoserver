@@ -67,6 +67,6 @@ public class SLDXmlRequestReaderTest extends WMSTestSupport {
         MockHttpServletResponse response = super.postAsServletResponse(path, body);
         assertEquals(200, response.getStatus());
         super.assertContentType("application/vnd.ogc.se_xml", response);
-        assertThat(response.getContentAsString(), containsString("Entity resolution disallowed for file"));
+        assertThat(response.getContentAsString(), containsString("DOCTYPE is disallowed"));
     }
 }

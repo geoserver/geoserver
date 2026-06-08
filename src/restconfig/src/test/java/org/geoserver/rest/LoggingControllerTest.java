@@ -85,7 +85,7 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetLoggingAsHTML() throws Exception {
-        getAsDOM(RestBaseController.ROOT_PATH + "/logging.html", 200);
+        getAsDOM(RestBaseController.ROOT_PATH + "/logging.html", false, 200);
     }
 
     @Test

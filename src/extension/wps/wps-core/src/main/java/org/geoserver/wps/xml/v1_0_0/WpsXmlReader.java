@@ -42,7 +42,10 @@ public class WpsXmlReader extends XmlRequestReader {
         Parser parser = new Parser(configuration);
         parser.setValidating(true);
         parser.setEntityResolver(resolverProvider.getEntityResolver());
-
+        if (System.getProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "")
+                .equalsIgnoreCase("true")) {
+            parser.setAllowDTD(true);
+        }
         Object parsed;
         try {
             parsed = parser.parse(reader);

@@ -7,7 +7,6 @@ package org.geoserver.wfs;
 import static org.junit.Assert.assertTrue;
 
 import org.geoserver.util.EntityResolverProvider;
-import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Test;
 
 public class ExternalEntitiesTest extends WFSTestSupport {
@@ -50,18 +49,18 @@ public class ExternalEntitiesTest extends WFSTestSupport {
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
         String output = string(post("wfs", WFS_2_0_0_REQUEST));
         // the server tried to read a file on local file system
-        assertTrue(output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        assertTrue(
+                "not compliant to GetFeature element",
+                output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
 
         // disable entity parsing
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
         output = string(post("wfs", WFS_2_0_0_REQUEST));
-        assertTrue(output.indexOf("Request parsing failed") > -1);
-        assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue("DOCTYPE is disallowed", output.indexOf("DOCTYPE is disallowed") > -1);
 
         // set default (entity parsing disabled);
         System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
         output = string(post("wfs", WFS_2_0_0_REQUEST));
-        assertTrue(output.indexOf("Request parsing failed") > -1);
-        assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue("DOCTYPE is disallowed", output.indexOf("DOCTYPE is disallowed") > -1);
     }
 }

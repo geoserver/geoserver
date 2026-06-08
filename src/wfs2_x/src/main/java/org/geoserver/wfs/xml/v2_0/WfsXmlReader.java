@@ -45,6 +45,10 @@ public class WfsXmlReader extends XmlRequestReader {
         parser.setEntityResolver(entityResolverProvider.getEntityResolver());
         // set entity expansion limit
         parser.setEntityExpansionLimit(WFSXmlUtils.getEntityExpansionLimitConfiguration());
+        if (System.getProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "")
+                .equalsIgnoreCase("true")) {
+            parser.setAllowDTD(true);
+        }
         WFSInfo wfs = wfs();
 
         WFSXmlUtils.initRequestParser(parser, wfs, gs, kvp);

@@ -7,6 +7,8 @@ on:
       - 'mkdocs.yml'
       - 'requirements.txt'
       - '.github/workflows/docs.yml'
+      - '**/src/main/resources/GeoServerApplication_*.properties'
+      - '!**/src/main/resources/GeoServerApplication_fr.properties'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -67,6 +69,15 @@ jobs:
         # Run each extension and community module through a startup test
         cd build/assembly_test
         mvn -B -ntp clean install
+    - name: Upload surefire reports on failure
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: surefire-reports-assembly
+        path: |
+          **/target/surefire-reports/*.xml
+          **/target/surefire-reports/*.txt
+        retention-days: 1
     - name: Remove SNAPSHOT jars from repository
       if: always()
       run: |

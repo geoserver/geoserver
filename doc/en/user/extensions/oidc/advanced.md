@@ -1,6 +1,6 @@
 # Advanced Information
 
-## Troubleshooting {: #community_oidc_troubleshooting }
+## Troubleshooting {: #oidc_troubleshooting }
 
 There are a lot of little problems that can occur - here are some troubleshooting tips.
 
@@ -17,8 +17,8 @@ Common mistakes:
 - Not putting the user roles in the IDP's ID Token, Access Token, or userinfo
 - Setting the wrong "JSON path" to find the roles in the ID Token, Access Token, or userinfo
 - Not putting in a "Role Conversion" that maps your IDPs role name to GeoServer's role name (especially "ROLE_ADMINISTRATOR")
-- Not setting `PROXY_BASE_URL` correctly in Docker or container deployments, causing the Redirect URI to resolve to an internal hostname that the user's browser cannot reach. See [Redirect Base URI](configuring.md#community_oidc_redirect_base_uri).
-- After logout, being unexpectedly signed out of all applications that share the same IDP --- this is the expected default behavior. See [Logout Behavior](configuring.md#community_oidc_logout_behavior).
+- Not setting `PROXY_BASE_URL` correctly in Docker or container deployments, causing the Redirect URI to resolve to an internal hostname that the user's browser cannot reach. See [Redirect Base URI](configuring.md#oidc_redirect_base_uri).
+- After logout, being unexpectedly signed out of all applications that share the same IDP --- this is the expected default behavior. See [Logout Behavior](configuring.md#oidc_logout_behavior).
 
 If you are still having issues, you might need to attach a Java debugger to GeoServer. The standard OIDC process is as follows:
 

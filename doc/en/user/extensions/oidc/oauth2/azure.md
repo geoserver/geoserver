@@ -13,7 +13,7 @@ We will use Microsoft Entra (Microsoft Azure) for login and either the Azure/Ent
 3.  Give the application a name ("gs-azure-app"), set it to the MultiTenant. Use the Redirect URI shown in the GeoServer filter configuration as the "Web" Redirect URI --- it has the form `http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__microsoft` where `<filterName>` is the name of the GeoServer OIDC filter (e.g. `gs-azure-app__microsoft`). Press "Register".
 
     !!! tip
-        The exact redirect URI that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form --- copy it verbatim. In production, use that value instead of `localhost`. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri).
+        The exact redirect URI that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form --- copy it verbatim. In production, use that value instead of `localhost`. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. See [Redirect Base URI](../configuring.md#oidc_redirect_base_uri).
     
         ![](../img/azure_create_app2.png)
 
@@ -160,7 +160,7 @@ You will need:
 
 ## Notes
 
-See [troubleshooting](../advanced.md#community_oidc_troubleshooting).
+See [troubleshooting](../advanced.md#oidc_troubleshooting).
 
 1.  Typical MS ID Token. Note that the roles have been put in the "roles" claim.
 

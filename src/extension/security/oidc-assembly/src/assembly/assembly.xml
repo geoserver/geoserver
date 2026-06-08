@@ -1,0 +1,35 @@
+<assembly>
+  <id>sec-oidc-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <!--
+        Bundle ONLY the OIDC-specific runtime jars that core GeoServer does not already ship in
+        WEB-INF/lib (same philosophy as the cas plugin). This list must equal the delta of
+        `mvn -Poidc dependency:list` over a vanilla webapp build; if a dependency is added or a
+        transitive changes, update it here. Anything already provided by GeoServer (gs-main,
+        spring-core/context, spring-security-core/web/config, jackson, json-lib, httpclient5, ...)
+        must NOT be listed, to avoid shipping duplicate/conflicting jars.
+      -->
+      <includes>
+        <include>gs-sec-oidc-core-*.jar</include>
+        <include>gs-sec-oidc-web-*.jar</include>
+        <include>spring-security-oauth2-*.jar</include>
+        <include>oauth2-oidc-sdk-*.jar</include>
+        <include>nimbus-jose-jwt-*.jar</include>
+        <include>content-type-*.jar</include>
+        <include>lang-tag-*.jar</include>
+        <include>jcip-annotations-*.jar</include>
+        <include>json-path-*.jar</include>
+        <include>json-smart-*.jar</include>
+        <include>accessors-smart-*.jar</include>
+        <include>asm-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

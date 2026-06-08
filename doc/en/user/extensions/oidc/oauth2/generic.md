@@ -28,7 +28,7 @@ When registering GeoServer as a client or application with your IDP, you will ne
 
   Copy this value exactly into your IDP's "Valid redirect URIs" or "Callback URL" setting. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs; many IDPs also accept a wildcard like `.../web/login/oauth2/code/*` for convenience.
 
-- **Post-Logout Redirect URI:** If your IDP supports single logout, also register the **After-Logout Redirect URI** shown in the GeoServer configuration. See [Logout Behavior](../configuring.md#community_oidc_logout_behavior).
+- **Post-Logout Redirect URI:** If your IDP supports single logout, also register the **After-Logout Redirect URI** shown in the GeoServer configuration. See [Logout Behavior](../configuring.md#oidc_logout_behavior).
 
 !!! tip
     Create the GeoServer OIDC filter first (even with placeholder values), so that the computed Redirect URI is visible. Then copy it into your IDP's configuration.
@@ -65,7 +65,7 @@ If your IDP exposes a `.well-known/openid-configuration` endpoint, this is the q
 
 4.  In another browser (or incognito window), try to login using your new OIDC.
 
-### Manual Configuration (without Discovery) {: #community_oidc_manual_config }
+### Manual Configuration (without Discovery) {: #oidc_manual_config }
 
 If your OIDC provider does not expose a `.well-known/openid-configuration` discovery document (or it is behind a firewall), you can fill in the provider settings manually. You will need the following URIs from your IDP administrator:
 
@@ -109,8 +109,8 @@ To configure manually:
 
 #### Redirect URI mismatch
 
-:   The most common configuration error is a mismatch between the Redirect URI that GeoServer sends and the one registered with your IDP. Copy the exact value from the read-only **Redirect URI** field in the GeoServer filter form into your IDP's client configuration. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri) for how this value is calculated.
+:   The most common configuration error is a mismatch between the Redirect URI that GeoServer sends and the one registered with your IDP. Copy the exact value from the read-only **Redirect URI** field in the GeoServer filter form into your IDP's client configuration. See [Redirect Base URI](../configuring.md#oidc_redirect_base_uri) for how this value is calculated.
 
 ## Notes
 
-See [troubleshooting](../advanced.md#community_oidc_troubleshooting).
+See [troubleshooting](../advanced.md#oidc_troubleshooting).

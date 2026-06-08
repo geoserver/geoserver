@@ -22,7 +22,7 @@ The first thing to do is to configure the OAuth2 Provider and obtain `Client ID`
     - Press "Register application"
 
     !!! tip
-        The exact callback URL that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form --- copy it verbatim. In production, use that value instead of `localhost`. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri).
+        The exact callback URL that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form --- copy it verbatim. In production, use that value instead of `localhost`. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. See [Redirect Base URI](../configuring.md#oidc_redirect_base_uri).
     
         ![](../img/github-oauth2-app.png)
 
@@ -74,7 +74,7 @@ The next step is to configure your Google application as the OIDC IDP for GeoSer
 
 ## Notes
 
-See [troubleshooting](../advanced.md#community_oidc_troubleshooting).
+See [troubleshooting](../advanced.md#oidc_troubleshooting).
 
 1.  When you login, your username will be a number. For privacy reasons, GitHub does not usually include the email address of the user!
 

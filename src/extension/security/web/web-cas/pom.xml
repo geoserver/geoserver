@@ -21,6 +21,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-sec-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
     </dependency>

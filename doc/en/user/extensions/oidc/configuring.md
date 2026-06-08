@@ -15,7 +15,7 @@ For more details, here are detailed examples for different OIDC server types:
 - [MS Azure and Entra](oauth2/azure.md)
 - [Generic OpenID Connect](oauth2/generic.md)
 
-## Common Login Settings {: #community_oidc_common_settings }
+## Common Login Settings {: #oidc_common_settings }
 
 When creating or editing an OIDC filter, the top of the configuration form contains settings that apply to all providers.
 
@@ -29,13 +29,13 @@ The following table describes each field:
 |----|----|----|
 | Name | A unique name for this filter (e.g. `keycloak-oidc`). | Used internally and in the filter chain configuration. |
 | Provider | Select the OAuth2 / OpenID Connect provider type from the dropdown. | Choose **OpenID Connect Provider** for generic OIDC IDPs, or a specific provider (Google, GitHub, Microsoft) to pre-fill well-known endpoints. |
-| Redirect Base URI | The public base URL of your GeoServer instance, ending with the context path (e.g. `https://geoserver.example.com/geoserver`). | Automatically resolved --- see [Redirect Base URI](#community_oidc_redirect_base_uri) below. |
-| After-Logout Redirect URI | The URI the user is sent to after the IDP completes a logout. | Must be registered with the IDP as a permitted redirect URI. See [Logout Behavior](#community_oidc_logout_behavior). |
+| Redirect Base URI | The public base URL of your GeoServer instance, ending with the context path (e.g. `https://geoserver.example.com/geoserver`). | Automatically resolved --- see [Redirect Base URI](#oidc_redirect_base_uri) below. |
+| After-Logout Redirect URI | The URI the user is sent to after the IDP completes a logout. | Must be registered with the IDP as a permitted redirect URI. See [Logout Behavior](#oidc_logout_behavior). |
 | Redirect URI | The full OAuth2 callback URL that GeoServer uses to receive the authorization code from the IDP. | **Read-only.** Automatically calculated from the Redirect Base URI. Copy this value when registering GeoServer with your IDP. |
 | Skip GeoServer login dialog | When checked and only one provider is active, unauthenticated users are redirected directly to the IDP login page. | Bypasses the GeoServer login form entirely. Use with caution --- local administrator login will no longer be available through the web UI. |
 | Enable Resource Server (Bearer JWT) | When checked, the same filter also accepts machine-to-machine requests using an `Authorization: Bearer <JWT>` header. | Enabled by default. Disable if you only need browser-based interactive login. |
 
-### Redirect Base URI {: #community_oidc_redirect_base_uri }
+### Redirect Base URI {: #oidc_redirect_base_uri }
 
 The Redirect Base URI determines the public-facing URL that your IDP will redirect users back to after authentication. GeoServer resolves this value automatically using the following priority order:
 
@@ -73,7 +73,7 @@ This is the callback URL that must be registered with your IDP as a permitted re
 !!! note "Per-filter scoped registration ID"
     The Redirect URI includes the GeoServer filter name as a prefix (e.g. `keycloak-prod__oidc`) so that several OIDC filters of the same provider type can coexist without colliding on their callback endpoints. Each filter registers with the IDP under its own redirect URI. Many IDPs accept a wildcard such as `https://geoserver.example.com/geoserver/web/login/oauth2/code/*` for convenience.
 
-### Multiple OIDC filters {: #community_oidc_multiple_filters }
+### Multiple OIDC filters {: #oidc_multiple_filters }
 
 GeoServer can run several OAuth2 / OpenID Connect filters at the same time --- for example one filter per identity provider (Keycloak, Auth0, custom Entra), each with its own client credentials and scopes. Each filter is configured independently in **Security -> Authentication -> Filters** and bound to the relevant request chain (typically `web/**`).
 
@@ -82,7 +82,7 @@ When two or more OIDC filters are bound to the same chain, the GeoServer user dr
 !!! tip "No restart needed when adding a filter"
     Saving a new OIDC filter through the UI registers the matching login button on the next page render --- no container restart required. The button is removed automatically when the filter is deleted or disabled.
 
-### Logout Behavior {: #community_oidc_logout_behavior }
+### Logout Behavior {: #oidc_logout_behavior }
 
 When a user clicks **Log out** in GeoServer, two things can happen depending on how the **After-Logout Redirect URI** is configured:
 

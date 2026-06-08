@@ -17,7 +17,7 @@ The `oidc` module allows for providing user roles with the standard GeoServer ro
 | Access Token | The [Access Token](https://en.wikipedia.org/wiki/Access_token) is a OAUTH2 token that is also present in OIDC. Typically, one should not be looking inside the Access Token, however, if your provider's access token is a JWT, then you can use it extract claims. This is not the recommended method of getting roles, but is provided as an option. |
 | UserInfo | The OIDC [specification](https://openid.net/developers/specs/) provides a [UserInfo endpoint](https://connect2id.com/products/server/docs/api/userinfo) that accepts an Access Token and returns a JSON document with claims about the user. This is recommended only if the ID Token doesn't contain the claims to get roles from. |
 | Microsoft Graph | [Microsoft Graph](https://learn.microsoft.com/en-us/graph/overview) is a Microsoft product for use with their cloud IDP. Only use this if you are using a Microsoft product like Microsoft Entra ID (formerly Azure AD). |
-| Keycloak Admin API | Server-side fetch of the logged-in user's role assignments via Keycloak's [Admin REST API](https://www.keycloak.org/docs-api/latest/rest-api/index.html). Use this when you need to surface roles assigned to the user **through groups** (not just direct realm-role assignments) or when composite-role expansion needs to happen server-side. Only valid against a Keycloak IDP. See [Configuring with Keycloak](oauth2/keycloak.md#community_oidc_keycloak_admin_api) for the prerequisite Keycloak-side setup. |
+| Keycloak Admin API | Server-side fetch of the logged-in user's role assignments via Keycloak's [Admin REST API](https://www.keycloak.org/docs-api/latest/rest-api/index.html). Use this when you need to surface roles assigned to the user **through groups** (not just direct realm-role assignments) or when composite-role expansion needs to happen server-side. Only valid against a Keycloak IDP. See [Configuring with Keycloak](oauth2/keycloak.md#oidc_keycloak_admin_api) for the prerequisite Keycloak-side setup. |
 
 ## Role Configuration Overview
 
@@ -130,7 +130,7 @@ You can specify multiple translations separated by the "`;`" character.
 
 If you turn on the "`Only allow External Roles that are explicitly named above`", then roles that are not mentioned in the Role Converter Map will **not** be in the set of GeoServer roles. For example, in the example ID Token, the user has role "geoserverAdmin" and "geonetworkAdmin". If this is not turned on, then the user will have the GeoServer roles "ROLE_ADMINISTRATOR" (translated from "geoserverAdmin") as well as "geonetworkAdmin". If it is turned on, then they will only have the "ROLE_ADMINISTRATOR" (translated from "geoserverAdmin") role.
 
-## Configuring Roles from the Keycloak Admin REST API {: #community_oidc_keycloak_admin_api_role_source }
+## Configuring Roles from the Keycloak Admin REST API {: #oidc_keycloak_admin_api_role_source }
 
 The `Keycloak Admin API` role source is a Keycloak-specific alternative to the token-claim-based sources. Instead of reading roles from the ID Token / Access Token / UserInfo response, GeoServer calls Keycloak's [Admin REST API](https://www.keycloak.org/docs-api/latest/rest-api/index.html) at login time to fetch the user's role assignments:
 
@@ -143,7 +143,7 @@ The admin calls are authenticated via a separate access token obtained through t
 - **Service Accounts → Enabled** (`serviceAccountsEnabled=true`)
 - **Service Account Roles** must include the realm-management roles needed to read users, clients and realm metadata — at minimum `view-realm`, `view-users`, `view-clients` (the set the filter's *Keycloak Admin API* hint lists), plus `query-groups` when you need to resolve **group-inherited** roles.
 
-See [Configuring Keycloak Admin API as the role source](oauth2/keycloak.md#community_oidc_keycloak_admin_api) for the step-by-step Keycloak setup.
+See [Configuring Keycloak Admin API as the role source](oauth2/keycloak.md#oidc_keycloak_admin_api) for the step-by-step Keycloak setup.
 
 ![](img/keycloak-api-role-source.png)
 
@@ -173,7 +173,7 @@ Stick with the ID Token / Access Token source if:
 - Your roles are already in the token claim (typical) — it's faster and avoids the extra admin-API round-trip per login.
 - Your IDP isn't Keycloak (the admin endpoints are Keycloak-specific).
 
-## User Profile Properties {: #community_oidc_user_profile_properties }
+## User Profile Properties {: #oidc_user_profile_properties }
 
 In addition to roles, the OIDC module populates the GeoServer user profile properties (`first_name`, `last_name`, `preferred_username`, `email`) on the authenticated principal. Downstream components that honour [User Details Display Settings](../../security/usergrouprole/index.md) --- including the top-right logged-in-user label and any code that reads `GeoServerUser.getProperties()` --- will then show profile data instead of the raw IDP subject identifier.
 

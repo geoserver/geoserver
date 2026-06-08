@@ -52,7 +52,7 @@ docker run --name geoserver_keycloak -p 7777:8080 \
 7.  Set the "Root URL" and "Home URL" as "http://localhost:8080". Set the "Valid post logout redirect URIs" and "Valid redirect URIs" as "http://localhost:8080/*". Then press "Save".
 
     !!! tip
-        The exact redirect URI that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form (e.g. `http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__oidc`, where `<filterName>` is the name of the GeoServer OIDC filter). The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. In production, you may want to register only the specific URIs you actually use rather than a wildcard; in that case register one entry per filter you intend to deploy. See [Redirect Base URI](../configuring.md#community_oidc_redirect_base_uri).
+        The exact redirect URI that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form (e.g. `http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__oidc`, where `<filterName>` is the name of the GeoServer OIDC filter). The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. In production, you may want to register only the specific URIs you actually use rather than a wildcard; in that case register one entry per filter you intend to deploy. See [Redirect Base URI](../configuring.md#oidc_redirect_base_uri).
     
         ![](../img/keycloak-create-client4.png)
 
@@ -355,7 +355,7 @@ One the same page, we will configure the Role source:
 
 **NOTE:** You can also change the above to get the role from the ID Token, Access Token, or userinfo.
 
-### Configure Role Source — Keycloak Admin API (server-side fetch) {: #community_oidc_keycloak_admin_api }
+### Configure Role Source — Keycloak Admin API (server-side fetch) {: #oidc_keycloak_admin_api }
 
 As an alternative to reading roles from a token claim, the OIDC plugin can fetch the user's role assignments directly from Keycloak's Admin REST API at login time. This is the recommended source when:
 
@@ -450,7 +450,7 @@ If you see `Non-2xx from .../admin/realms/.../users?...: 403`, the service-accou
 
 ## Testing
 
-See [troubleshooting](../advanced.md#community_oidc_troubleshooting).
+See [troubleshooting](../advanced.md#oidc_troubleshooting).
 
 1.  log out of GeoServer (or open an incognito tab)
 

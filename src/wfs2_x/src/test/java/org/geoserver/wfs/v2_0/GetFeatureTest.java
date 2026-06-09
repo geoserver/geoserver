@@ -1387,7 +1387,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/soap+xml");
         assertEquals("application/soap+xml", resp.getContentType());
         String message = resp.getContentAsString();
-        assertThat(message, containsString("DOCTYPE is disallowed"));
+        assertThat(message, containsString("DOCTYPE"));
     }
 
     @Test

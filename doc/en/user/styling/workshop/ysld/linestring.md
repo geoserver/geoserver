@@ -483,7 +483,7 @@ This section explores the use of rules with filters and scale restrictions.
         x-followLine: true
     ```
 
-    The `\#` character is the comment character in YAML, so we have to quote strings that contain it like colours and in this expression.
+    The `#` character is the comment character in YAML, so we have to quote strings that contain it like colours and in this expression.
 
     2.  The property **stroke-width** has been used to make our line thicker in order to provide a backdrop for our label.
 

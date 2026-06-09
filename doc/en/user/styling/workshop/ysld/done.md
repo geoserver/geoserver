@@ -398,7 +398,7 @@ Answer for [Challenge Classification](linestring.md#ysld.line.q1):
 
     1.  SLD Mark and ExternalGraphic provide an opportunity for dynamic symbolization.
 
-    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``\${ }`` as shown:
+    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``${ }`` as shown:
 
     ```yaml
     - point:

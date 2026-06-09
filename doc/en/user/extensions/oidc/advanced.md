@@ -33,7 +33,7 @@ If you are still having issues, you might need to attach a Java debugger to GeoS
 
 2.  User logs into the IDP (if this is problematic, consult your IDP's administrator)
 
-3.  The user is then redirected back to GeoServer (the Redirect URI) with an attached `?code=\...`. GeoServer will make a web request to the IDP to hand this "code" in for the Access/ID Token.
+3.  The user is then redirected back to GeoServer (the Redirect URI) with an attached `?code=...`. GeoServer will make a web request to the IDP to hand this "code" in for the Access/ID Token.
 
     - You should see this request in the Browser Network Logs (see your Browsers DevTools)
     - In the debugger, you can put a breakpoint in `GeoServerOauth2AccessTokenResponseClient#getTokenResponse()` to see this exchange

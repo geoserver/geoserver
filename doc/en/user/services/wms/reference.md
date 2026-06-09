@@ -309,7 +309,7 @@ GeoServer supports a number of output formats for the `DescribeLayer` response. 
 | TEXT | `output_format=text/xml` | Same as default. |
 | GML 2 | `output_format=application/vnd.ogc.wms_xml` | The default format. |
 | JSON | `output_format=application/json` | Simple JSON representation. |
-| JSONP | `output_format=text/javascript` | Return JSONP in the form: paddingOutput(\...jsonp\...). See [WMS vendor parameters](vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](global.md)). |
+| JSONP | `output_format=text/javascript` | Return JSONP in the form: paddingOutput(...jsonp...). See [WMS vendor parameters](vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](global.md)). |
 
 An example request in XML (default) format on a layer is: :
 
@@ -377,4 +377,4 @@ Formats in which WMS can report exceptions. The supported values for exceptions 
 | BLANK | `EXCEPTIONS=application/vnd.ogc.se_blank` | Generates a blank image |
 | PARTIALMAP | `EXCEPTIONS=application/vnd.gs.wms_partial` | This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the [WMS Configuration Limits](configuration.md#request-limits) to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the `timeout` [vendor parameter](vendor.md). |
 | JSON | `EXCEPTIONS=application/json` | Simple JSON representation. |
-| JSONP | `EXCEPTIONS=text/javascript` | Return JSONP in the form: paddingOutput(\...jsonp\...). See [WMS vendor parameters](vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](global.md)). |
+| JSONP | `EXCEPTIONS=text/javascript` | Return JSONP in the form: paddingOutput(...jsonp...). See [WMS vendor parameters](vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](global.md)). |

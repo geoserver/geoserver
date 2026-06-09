@@ -816,12 +816,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- commons-lang 2 is still used in GeoServer modules -->
-      <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
-      </dependency>
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>

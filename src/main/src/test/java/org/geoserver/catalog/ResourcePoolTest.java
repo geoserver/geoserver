@@ -678,7 +678,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         final ResourcePool rp = getCatalog().getResourcePool();
         try {
             rp.getDataStore(ds);
-            fail("Store creation should have failed to to XXE attack");
+            fail("Store creation should have failed to to DTD use for XXE attack");
         } catch (Exception e) {
             String message = e.getMessage();
             assertThat("DOCTYPE is disallowed", message, containsString("DOCTYPE"));

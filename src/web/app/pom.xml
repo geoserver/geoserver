@@ -304,6 +304,7 @@
         <configuration>
           <webApp>
             <contextPath>/geoserver</contextPath>
+            <war>${project.build.directory}/geoserver.war</war>
           </webApp>
           <httpConnector>
             <port>${jetty.port}</port>

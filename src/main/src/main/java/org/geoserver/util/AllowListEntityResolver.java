@@ -24,7 +24,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.EntityResolver3;
 import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.util.Requests;
-import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -213,8 +212,21 @@ public class AllowListEntityResolver implements EntityResolver3, Serializable {
                 LOGGER.finest("resolveEntity internal: " + uri);
                 return null;
             }
-            // check if absolute systemId is an allowed URI file reference
-            if (this.geoServerLib != null && this.geoServerLib.contains("src/main/target") && uri.startsWith(this.geoServerLib)) {
+            // check if absolute systemId is an allowed URI file reference when running in IDE
+            if (this.geoServerLib != null
+                    && this.geoServerLib.contains("src/main/target")
+                    && uri.startsWith(this.geoServerLib)) {
+                LOGGER.finest("resolveEntity development: " + uri);
+                return null;
+            }
+            // check if jar:file in maven repository when running in IDE
+            if (uri.startsWith("jar:file:/") && uri.contains(".m2/repository/org/geotools/xsd")) {
+                LOGGER.finest("resolveEntity development: " + uri);
+                return null;
+            }
+            if (this.geoServerLib != null
+                    && this.geoServerLib.contains("src/main/target")
+                    && uri.startsWith(this.geoServerLib)) {
                 LOGGER.finest("resolveEntity development: " + uri);
                 return null;
             }

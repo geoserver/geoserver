@@ -30176,7 +30176,7 @@
 <p>User logs into the IDP (if this is problematic, consult your IDP's administrator)</p>
 </li>
 <li>
-<p>The user is then redirected back to GeoServer (the Redirect URI) with an attached <code>?code=\...</code>. GeoServer will make a web request to the IDP to hand this "code" in for the Access/ID Token.</p>
+<p>The user is then redirected back to GeoServer (the Redirect URI) with an attached <code>?code=...</code>. GeoServer will make a web request to the IDP to hand this "code" in for the Access/ID Token.</p>
 <ul>
 <li>You should see this request in the Browser Network Logs (see your Browsers DevTools)</li>
 <li>In the debugger, you can put a breakpoint in <code>GeoServerOauth2AccessTokenResponseClient#getTokenResponse()</code> to see this exchange</li>

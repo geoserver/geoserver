@@ -30714,7 +30714,7 @@
 </li>
 <li>
 <p>GeoServer recognizes this limitation of SLD Mark and ExternalGraphic and provides an opportunity for dynamic symbolization.</p>
-<p>This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with <code>\${ }</code> as shown:</p>
+<p>This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with <code>${ }</code> as shown:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="o">*</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">   </span><span class="n">mark</span><span class="p">:</span><span class="w"> </span><span class="nf">symbol</span><span class="p">(</span>
 <a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">     </span><span class="s2">&quot;${if_then_else(equalTo(FEATURECLA,&#39;Admin-0 capital&#39;),&#39;star&#39;,&#39;circle&#39;)}&quot;</span>

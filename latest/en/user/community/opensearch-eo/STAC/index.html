@@ -30018,8 +30018,8 @@
 </ul>
 <p>Specifically for the JSON output:</p>
 <ul>
-<li><code>\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/collections.json</code> is the <a href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/collections.json">collections template</a></li>
-<li><code>\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/items.json</code> is the <a href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/items.json">items template</a></li>
+<li><code>$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/collections.json</code> is the <a href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/collections.json">collections template</a></li>
+<li><code>$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/items.json</code> is the <a href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/items.json">items template</a></li>
 </ul>
 <p>The JSON templates in the case of STAC also drive database querying, the exposed STAC properties are back-mapped into database properties by interpreting the template. It is advised to keep property mapping as simple as possible to allow usage of native SQL queries and indexes while accessing the database through the STAC API.</p>
 <p>For both items and collections, collection specific templates can also be provided, which would contain directives and mappings unique to that collection. A collection specific template can be placed in the same templates directory as above, using the naming convention <code>items-&lt;COLLECTION_ID&gt;.json</code> or <code>collections-&lt;COLLECTION_ID&gt;.json</code>, where <code>&lt;COLLECTION_ID&gt;</code> is the collection identifier. For example, if the collection is named <code>SENTINEL2</code>:</p>

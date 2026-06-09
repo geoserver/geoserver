@@ -34,10 +34,10 @@ The context contains the following properties that may be used in the expression
 
 ## Configuring a cascaded stored query layer
 
-In order to create a cascaded stored query layer the administrator invokes the Create new layer page. When an [External Web Feature Server](wfs.md) is selected, the usual list of tables and views available for publication appears, a link **Configure Cascaded Stored Query\...** also appears:
+In order to create a cascaded stored query layer the administrator invokes the Create new layer page. When an [External Web Feature Server](wfs.md) is selected, the usual list of tables and views available for publication appears, a link **Configure Cascaded Stored Query...** also appears:
 
 ![](images/csqaddnew.png)
 
-Selecting the **Configure Cascaded Stored Query\...** link opens a new page where the parameter mapping is set up. By default all parameters are set up as **No mapping**.
+Selecting the **Configure Cascaded Stored Query...** link opens a new page where the parameter mapping is set up. By default all parameters are set up as **No mapping**.
 
 ![](images/csqconfigure.png)

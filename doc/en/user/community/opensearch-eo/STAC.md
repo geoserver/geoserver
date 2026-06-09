@@ -38,8 +38,8 @@ All built-in templates are copied over to the data directory for customization, 
 
 Specifically for the JSON output:
 
-- `\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/collections.json` is the [collections template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/collections.json)
-- `\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/items.json` is the [items template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/items.json)
+- `$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/collections.json` is the [collections template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/collections.json)
+- `$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/items.json` is the [items template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/items.json)
 
 The JSON templates in the case of STAC also drive database querying, the exposed STAC properties are back-mapped into database properties by interpreting the template. It is advised to keep property mapping as simple as possible to allow usage of native SQL queries and indexes while accessing the database through the STAC API.
 

@@ -280,7 +280,7 @@ Batches can be created and edited from here as well, however the configuration m
 
 #### Import/Export
 
-It is also possible to import/export entire configurations to XML, for example to transfer them from one geoserver to another. The import button is on the configurations page, while the export button is on the page of a specific configuration. The user is responsible for making sure that the configuration is compatible with the other geoserver (available task extensions, attribute values,\...).
+It is also possible to import/export entire configurations to XML, for example to transfer them from one geoserver to another. The import button is on the configurations page, while the export button is on the page of a specific configuration. The user is responsible for making sure that the configuration is compatible with the other geoserver (available task extensions, attribute values,...).
 
 ### Batches
 
@@ -405,7 +405,7 @@ When we now create a new configuration based on this template we choose a source
 ![](img/template-db-workflow-config.png)  
 *workflow config*
 
-After clicking apply, the configuration is being initialized (the layer is created locally)\...
+After clicking apply, the configuration is being initialized (the layer is created locally)...
 
 ![](img/template-db-workflow-initializing.png)  
 *initializing...*

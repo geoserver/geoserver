@@ -4,11 +4,11 @@ Starting with GeoServer 2.6.0, You can define a new raster layer as a Coverage V
 
 ## Creating a Coverage View
 
-In order to create a Coverage View the administrator invokes the **Create new layer** page. When a Coverage store is selected, the usual list of coverages available for publication appears. A link **Configure new Coverage view\...** also appears:
+In order to create a Coverage View the administrator invokes the **Create new layer** page. When a Coverage store is selected, the usual list of coverages available for publication appears. A link **Configure new Coverage view...** also appears:
 
 ![](images/coverageviewnewlayer.png)
 
-Selecting the **Configure new Coverage view\...** link opens a new page where you can configure the coverage view.
+Selecting the **Configure new Coverage view...** link opens a new page where you can configure the coverage view.
 
 ## Band select mode
 
@@ -24,7 +24,7 @@ The upper text box allows to specify the name to be assigned to this coverage vi
 
 ![](images/coverageviewname.png)
 
-Next step is defining the output bands to be put in the coverage view. It is possible to specify which input coverage bands need to be put on the view by selecting them from the **Composing coverages/bands\...**.
+Next step is defining the output bands to be put in the coverage view. It is possible to specify which input coverage bands need to be put on the view by selecting them from the **Composing coverages/bands...**.
 
 ![](images/coverageviewselectbands.png)
 
@@ -40,7 +40,7 @@ Scrolling down to the end of the page, is it possible to see the bands composing
 
 ![](images/coverageviewbandsdetails.png)
 
-At any moment, the Coverage View can be refined and updated by selecting the **Edit Coverage view\...** link available before the Coverage Bands details section.
+At any moment, the Coverage View can be refined and updated by selecting the **Edit Coverage view...** link available before the Coverage Bands details section.
 
 ![](images/coveragevieweditlink.png)
 

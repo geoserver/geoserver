@@ -58,7 +58,7 @@ When App-Schema Joining is active, filters operating on nested attributes (i.e. 
 There are, however, a few limitations in the current implementation:
 
 1.  Joining support must not have been explicitly disabled and all its pre-conditions must be met (see above)
-2.  Only binary comparison operators (e.g. `PropertyIsEqualTo`, `PropertyIsGreaterThan`, etc\...), `PropertyIsLike` and `PropertyIsNull` filters are translated to SQL
+2.  Only binary comparison operators (e.g. `PropertyIsEqualTo`, `PropertyIsGreaterThan`, etc...), `PropertyIsLike` and `PropertyIsNull` filters are translated to SQL
 3.  Filters involving conditional polymorphic mappings are evaluated in memory
 4.  Filters comparing two or more different nested attributes are evaluated in memory
 5.  Filters matching multiple nested attribute mappings are evaluated in memory

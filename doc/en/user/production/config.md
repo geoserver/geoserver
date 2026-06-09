@@ -116,7 +116,7 @@ The GeoServer administration console provides a trusted GeoServer Administrator 
 In this workflow the Administration Console is used to adapt the application to the operational environment:
 
 - [Proxy Base URL](../configuration/globalsettings.md#proxy_base)
-- \... and many more [Global Settings](../configuration/globalsettings.md).
+- ... and many more [Global Settings](../configuration/globalsettings.md).
 
 Management of a web service using an administration console is a more common practice when running GeoServer as a windows web service.
 
@@ -127,7 +127,7 @@ In situations where GeoServer is operating in an environment provided by a Syste
 - `PROXY_BASE_URL`
 - `GEOSERVER_LOG_LOCATION`
 - `GEOSERVER_CONSOLE_DISABLED`
-- \... and many more [Application Properties](../configuration/properties/index.md)
+- ... and many more [Application Properties](../configuration/properties/index.md)
 
 This approach removes some functionality from the Administration Console and REST API.
 

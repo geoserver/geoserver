@@ -908,7 +908,7 @@
       <dependency>
         <groupId>com.github.oshi</groupId>
         <artifactId>oshi-core</artifactId>
-        <version>6.8.2</version>
+        <version>7.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>

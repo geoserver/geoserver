@@ -571,7 +571,7 @@ public class StoredQueryTest extends WFS20TestSupport {
                 + "</wfs:CreateStoredQuery>";
         Document dom = postAsDOM("wfs", xml);
         String message = checkOws11Exception(dom, "2.0.0", "OperationProcessingFailed", "CreateStoredQuery");
-        assertThat(message, containsString("Entity resolution disallowed"));
+        assertThat(message, containsString("DOCTYPE is disallowed"));
     }
 
     @Test

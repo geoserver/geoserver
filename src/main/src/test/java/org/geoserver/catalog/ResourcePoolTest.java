@@ -122,6 +122,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.ows.ServiceException;
+import org.geotools.ows.wms.WebMapServer;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.util.SoftValueHashMap;
@@ -630,13 +631,14 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
         WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
         ((WMSStoreInfoImpl) info).setId(UUID.randomUUID().toString());
-        URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
+        URL url = getClass().getResource("1.1.1Capabilities-xxe.xml");
         info.setCapabilitiesURL(url.toExternalForm());
         info.setEnabled(true);
         // the connection pooling client does not support file references, disable it
         info.setUseConnectionPooling(false);
         try {
-            rp.getWebMapServer(info);
+            WebMapServer wms = rp.getWebMapServer(info);
+            wms.getCapabilities();
             fail("WebMapServer instantiation should fail");
         } catch (IOException e) {
             assertThat(e.getCause(), instanceOf(ServiceException.class));
@@ -679,8 +681,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             fail("Store creation should have failed to to XXE attack");
         } catch (Exception e) {
             String message = e.getMessage();
-            assertThat(message, containsString("Entity resolution disallowed"));
-            assertThat(message, containsString("file:///file/not/there"));
+            assertThat("DOCTYPE is disallowed", message, containsString("DOCTYPE"));
         }
     }
 
@@ -692,8 +693,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             fail("Should have failed with a parse error");
         } catch (Exception e) {
             String message = e.getMessage();
-            assertThat(message, containsString("Entity resolution disallowed"));
-            assertThat(message, containsString("/this/file/does/not/exist"));
+            assertThat("DOCTYPE is disallowed", message, containsString("DOCTYPE"));
         }
     }
 
@@ -1346,7 +1346,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
         WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
         info.setName("TestAutoDisableWMSStore");
-        URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
+        URL url = getClass().getResource("1.1.1Capabilities-xxe.xml");
         info.setCapabilitiesURL(url.toExternalForm());
         info.setEnabled(true);
         info.setDisableOnConnFailure(true);
@@ -1370,7 +1370,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
         WMTSStoreInfo info = getCatalog().getFactory().createWebMapTileServer();
         info.setName("TestAutoDisableWMTSStore");
-        URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
+        URL url = getClass().getResource("1.1.1Capabilities-xxe.xml");
         info.setCapabilitiesURL(url.toExternalForm());
         info.setEnabled(true);
         info.setDisableOnConnFailure(true);

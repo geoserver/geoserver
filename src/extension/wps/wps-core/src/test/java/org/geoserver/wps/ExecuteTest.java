@@ -56,6 +56,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessState;
 import org.geoserver.wps.executor.ProcessStatusTracker;
@@ -74,7 +75,6 @@ import org.geotools.ows.v1_1.OWSConfiguration;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.xsd.Parser;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -161,12 +161,17 @@ public class ExecuteTest extends WPSTestSupport {
                 </wps:Execute>""";
         // System.out.println(xml);
 
-        Document d = postAsDOM("wps", xml);
-        checkValidationErrors(d);
-        // print(d);
+        try {
+            System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+            Document d = postAsDOM("wps", xml, null, true);
+            checkValidationErrors(d);
+            // print(d);
 
-        String text = xp.evaluate("//ows:ExceptionText", d);
-        assertTrue(text.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+            String text = xp.evaluate("//ows:ExceptionText", d);
+            assertTrue(text.contains("request is most probably not compliant to Execute element"));
+        } finally {
+            System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        }
     }
 
     @Test

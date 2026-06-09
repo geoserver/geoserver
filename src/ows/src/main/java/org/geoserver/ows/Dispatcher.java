@@ -1849,8 +1849,8 @@ public class Dispatcher extends AbstractController {
                 && !(current instanceof ClientStreamAbortedException)
                 && !isSecurityException(current)
                 && !(current instanceof HttpErrorCodeException)) {
-            if (current instanceof SAXException exception) {
-                current = exception.getException();
+            if (current.getClass() == SAXException.class) {
+                current = ((SAXException) current).getException();
             } else {
                 current = current.getCause();
             }
@@ -1897,7 +1897,7 @@ public class Dispatcher extends AbstractController {
                     t = null;
                 }
             } catch (IOException e) {
-                // means the resposne was already commited something
+                // means the response was already commited something
                 logger.log(Level.FINER, "", t);
             }
         } else {
@@ -1926,19 +1926,21 @@ public class Dispatcher extends AbstractController {
                 // Log Exceptions dealing with "Invalid" to INFO
                 level = Level.INFO;
             }
-
             logger.log(level, "", t);
 
             if (cause == null) {
                 // did not fine a "special" exception, create a service exception by default
-                cause = new ServiceException(t);
+                cause = new ServiceException("", t);
             }
-
-            // at this point we're sure it'a service exception
+            // at this point we're sure cause is a service exception
             ServiceException se = (ServiceException) cause;
             if (cause != t) {
-                // copy the message, code + locator, but set cause equal to root
-                se = new ServiceException(se.getMessage(), t, se.getCode(), se.getLocator());
+                if (cause instanceof ServiceException serviceException) {
+                    se = serviceException;
+                } else {
+                    // copy the message, code + locator, but set cause equal to root
+                    se = new ServiceException(se.getMessage(), t, se.getCode(), se.getLocator());
+                }
             }
 
             handleServiceException(se, service, request);

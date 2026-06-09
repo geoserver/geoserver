@@ -61,7 +61,6 @@ import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.PixelTranslation;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.wcs.WCSConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -446,7 +445,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         Document dom = postAsDOM("wcs", xml);
         String error = xpath.evaluate("//ServiceException", dom);
-        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue("DOCTYPE is disallowed", error.contains("DOCTYPE"));
 
         xml =
                 """
@@ -465,7 +464,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         dom = postAsDOM("wcs", xml);
         error = xpath.evaluate("//ServiceException", dom);
-        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue("DOCTYPE is disallowed", error.contains("DOCTYPE"));
     }
 
     @Test

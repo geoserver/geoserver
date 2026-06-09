@@ -620,13 +620,13 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         // the parser will throw a MalformedURLException when it finds an entity
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
         response = getAsString(url);
-        assertTrue(response.indexOf("Entity resolution disallowed") > -1);
+        assertTrue(response.indexOf("Error while getting SLD") > -1);
 
         // if entities evaluation is disabled
         // the parser will throw a MalformedURLException when it finds an entity
         System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
         response = getAsString(url);
-        assertTrue(response.indexOf("Entity resolution disallowed") > -1);
+        assertTrue(response.indexOf("Error while getting SLD") > -1);
     }
 
     private void testMaxDimensions(String timelayer, int maxDimensions, boolean expectException) throws Exception {

@@ -104,7 +104,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         assertEquals("COMPLETED", execution.getString("status"));
 
         // GET .../br/backup/{id}.zip streams the produced archive bytes (BackupController copies the file to the
-        // servlet output stream via IOUtils.copy). Assert it is served and is a real ZIP - local-file-header magic
+        // servlet output stream via IOTestUtils.copy). Assert it is served and is a real ZIP - local-file-header magic
         // "PK\003\004" - confirming the streaming download path, not a JSON status payload.
         long id = execution.getLong("id");
         MockHttpServletResponse response =

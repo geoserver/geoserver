@@ -24,6 +24,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.EntityResolver3;
 import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.util.Requests;
+import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -212,6 +213,11 @@ public class AllowListEntityResolver implements EntityResolver3, Serializable {
                 LOGGER.finest("resolveEntity internal: " + uri);
                 return null;
             }
+            // check if absolute systemId is an allowed URI file reference
+            if (this.geoServerLib != null && this.geoServerLib.contains("src/main/target") && uri.startsWith(this.geoServerLib)) {
+                LOGGER.finest("resolveEntity development: " + uri);
+                return null;
+            }
             // Allow select external locations
             if (ALLOWED_URIS.matcher(uri).matches()) {
                 LOGGER.finest("resolveEntity allowed: " + uri);
@@ -257,6 +263,7 @@ public class AllowListEntityResolver implements EntityResolver3, Serializable {
         //  IN vfs:/path/to/geoserver.war/WEB-INF/lib/gs-main-2.28.0.jar/DEFAULT_LOGGING.xml
         // OUT vfs:/path/to/geoserver.war/WEB-INF/lib/
         // other web servers should behave similarly to Jetty and Tomcat but have not been tested
+        // When using mvn jetty:run the url is file:/path/to/src/main/target/classes
         String url = getClass().getResource("/DEFAULT_LOGGING.xml").toString();
         url = url.substring(0, url.lastIndexOf('/'));
         return url.substring(0, url.lastIndexOf('/') + 1);

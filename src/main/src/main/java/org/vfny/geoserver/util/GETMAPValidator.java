@@ -91,7 +91,7 @@ public class GETMAPValidator {
      * validate a GETMAP against the schema
      *
      * @param xml input stream representing the GETMAP file
-     * @param SchemaUrl location of the schemas. Normally use ".../capabilities/sld/StyleLayerDescriptor.xsd"
+     * @param SchemaUrl location of the schemas. Normally use "../capabilities/sld/StyleLayerDescriptor.xsd"
      * @return list of SAXExceptions (0 if the file's okay)
      */
     public List<SAXException> validateGETMAP(InputSource xml, URL SchemaUrl) {

@@ -445,7 +445,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         Document dom = postAsDOM("wcs", xml);
         String error = xpath.evaluate("//ServiceException", dom);
-        assertTrue(error.contains("DOCTYPE is disallowed"));
+        assertTrue("DOCTYPE is disallowed", error.contains("DOCTYPE"));
 
         xml =
                 """
@@ -464,7 +464,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         dom = postAsDOM("wcs", xml);
         error = xpath.evaluate("//ServiceException", dom);
-        assertTrue(error.contains("DOCTYPE is disallowed"));
+        assertTrue("DOCTYPE is disallowed", error.contains("DOCTYPE"));
     }
 
     @Test

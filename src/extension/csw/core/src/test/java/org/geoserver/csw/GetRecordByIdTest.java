@@ -76,7 +76,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
             fail("Should have failed with an entity expansion disallowed exception");
         } catch (ServiceException e) {
             Throwable cause = e.getCause();
-            assertTrue(cause.getMessage().contains("DOCTYPE is disallowed"));
+            assertTrue("DOCTYPE is disallowed", cause.getMessage().contains("DOCTYPE"));
         }
     }
 

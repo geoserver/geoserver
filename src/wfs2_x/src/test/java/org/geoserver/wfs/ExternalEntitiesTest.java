@@ -56,11 +56,13 @@ public class ExternalEntitiesTest extends WFSTestSupport {
         // disable entity parsing
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
         output = string(post("wfs", WFS_2_0_0_REQUEST));
-        assertTrue("DOCTYPE is disallowed", output.indexOf("DOCTYPE is disallowed") > -1);
+        // just searching for DOCTYPE keyword as SAXException message is Locale dependent
+        assertTrue("DOCTYPE is disallowed", output.contains("DOCTYPE"));
 
         // set default (entity parsing disabled);
         System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
         output = string(post("wfs", WFS_2_0_0_REQUEST));
-        assertTrue("DOCTYPE is disallowed", output.indexOf("DOCTYPE is disallowed") > -1);
+        // just searching for DOCTYPE keyword as SAXException message is Locale dependent
+        assertTrue("DOCTYPE is disallowed", output.contains("DOCTYPE"));
     }
 }

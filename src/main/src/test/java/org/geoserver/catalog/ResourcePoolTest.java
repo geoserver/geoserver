@@ -681,7 +681,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             fail("Store creation should have failed to to XXE attack");
         } catch (Exception e) {
             String message = e.getMessage();
-            assertThat(message, containsString("DOCTYPE is disallowed"));
+            assertThat("DOCTYPE is disallowed", message, containsString("DOCTYPE"));
         }
     }
 
@@ -693,7 +693,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             fail("Should have failed with a parse error");
         } catch (Exception e) {
             String message = e.getMessage();
-            assertThat(message, containsString("DOCTYPE is disallowed"));
+            assertThat("DOCTYPE is disallowed", message, containsString("DOCTYPE"));
         }
     }
 

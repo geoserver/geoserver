@@ -89,7 +89,8 @@ public class GeoserverDataDirectoryTest extends GeoServerSystemTestSupport {
             fail("Should have failed with a parse error");
         } catch (Exception e) {
             String message = e.getMessage();
-            assertThat(message, containsString("DOCTYPE is disallowed"));
+
+            assertThat("DOCTYPE is disallowed", message, containsString("DOCTYPE"));
         }
     }
 }

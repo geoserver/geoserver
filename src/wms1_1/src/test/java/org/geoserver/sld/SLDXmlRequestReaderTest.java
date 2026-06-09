@@ -9,6 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -18,6 +19,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 /** Test suite for {@link SLDXmlRequestReader} */
 public class SLDXmlRequestReaderTest extends WMSTestSupport {
@@ -67,6 +69,7 @@ public class SLDXmlRequestReaderTest extends WMSTestSupport {
         MockHttpServletResponse response = super.postAsServletResponse(path, body);
         assertEquals(200, response.getStatus());
         super.assertContentType("application/vnd.ogc.se_xml", response);
-        assertThat("DOCTYPE is disallowed", response.getContentAsString(), containsString("DOCTYPE"));
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertThat(checkLegacyException(dom, null, null), containsString("DOCTYPE"));
     }
 }

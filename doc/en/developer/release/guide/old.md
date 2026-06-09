@@ -52,23 +52,23 @@ Run the [geoserver-release](http://hudson.opengeo.org/hudson/job/geoserver-relea
 
 ### BRANCH
 
-The branch to release from, "2.2.x", "2.1.x", etc\... This must be a stable branch. Releases are not performed from the main development branch.
+The branch to release from, "2.2.x", "2.1.x", etc... This must be a stable branch. Releases are not performed from the main development branch.
 
 ### REV
 
-The Git revision number to release from. eg, "24ae10fe662c\....". If left blank the latest revision (ie HEAD) on the `BRANCH` being released is used.
+The Git revision number to release from. eg, "24ae10fe662c....". If left blank the latest revision (ie HEAD) on the `BRANCH` being released is used.
 
 ### VERSION
 
-The version/name of the release to build, "2.1.4", "2.2", etc\...
+The version/name of the release to build, "2.1.4", "2.2", etc...
 
 ### GT_VERSION
 
-The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form `<branch>@<revision>`. For example "main@36ba65jg53\.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
+The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form `<branch>@<revision>`. For example "main@36ba65jg53.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
 
 ### GWC_VERSION
 
-The GeoWebCache version to include in the release. This may be specified as a version number such as "1.3-RC3". Alternatively the version may be specified as a Git revision of the form `<branch>@<revision>` such as "master@1b3243jb\...". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
+The GeoWebCache version to include in the release. This may be specified as a version number such as "1.3-RC3". Alternatively the version may be specified as a Git revision of the form `<branch>@<revision>` such as "master@1b3243jb...". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
 
 ### GIT_USER
 

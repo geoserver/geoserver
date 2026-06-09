@@ -615,7 +615,7 @@ The key properties **mark** and **label** are required to label Point locations.
 
 3.  GeoServer recognizes this limitation of SLD Mark and ExternalGraphic and provides an opportunity for dynamic symbolization.
 
-    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with `\${ }` as shown:
+    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with `${ }` as shown:
 
     ``` css
     * {

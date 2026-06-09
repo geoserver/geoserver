@@ -8,7 +8,7 @@ Once the SOLR documents have been updated with a centroid column, and it has bee
 
 ![](images/optimize_ft1.png)
 
-\... (other fields omitted)
+... (other fields omitted)
 
 ![](images/optimize_ft2.png)
 

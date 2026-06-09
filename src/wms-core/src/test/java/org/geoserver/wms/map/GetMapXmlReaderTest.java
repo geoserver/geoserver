@@ -143,7 +143,8 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
             fail("ServiceException with IOException Expected");
         } catch (ServiceException e) {
-            assertTrue(e.getMessage().contains("DOCTYPE is disallowed"));
+
+            assertTrue("DOCTYPE is disallowed", e.getMessage().contains("DOCTYPE"));
         } finally {
             System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
             EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);

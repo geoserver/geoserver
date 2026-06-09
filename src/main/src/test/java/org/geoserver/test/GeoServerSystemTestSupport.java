@@ -163,6 +163,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.ext.EntityResolver2;
 
 /**
  * Base test class for GeoServer system tests that require a fully configured spring context and work off a real data
@@ -2044,7 +2045,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *
      * @author Andrea Aime - TOPP
      */
-    public static class EmptyResolver implements org.xml.sax.EntityResolver {
+    public static class EmptyResolver implements EntityResolver2 {
         public static final EmptyResolver INSTANCE = new EmptyResolver();
 
         @Override
@@ -2056,6 +2057,27 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             source.setSystemId(systemId);
 
             return source;
+        }
+
+        @Override
+        public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
+            return null;
+        }
+
+        @Override
+        public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
+                throws SAXException, IOException {
+            StringReader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            InputSource source = new InputSource(reader);
+            source.setPublicId(publicId);
+            source.setSystemId(systemId);
+
+            return source;
+        }
+
+        @Override
+        public String toString() {
+            return "EmptyResolver";
         }
     }
 

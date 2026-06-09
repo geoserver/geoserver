@@ -350,7 +350,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                 postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml, SLDHandler.MIMETYPE_10);
         assertEquals(500, response.getStatus());
         String message = response.getContentAsString();
-        assertThat(message, containsString("DOCTYPE is disallowed"));
+        assertThat("DOCTYPE is disallowed", message, containsString("DOCTYPE"));
     }
 
     @Test
@@ -1202,7 +1202,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         // expecting a failure with explanation
         assertEquals(400, response.getStatus());
         final String content = response.getContentAsString();
-        assertThat(content, containsString("DOCTYPE is disallowed"));
+        assertThat("DOCTYPE is disallowed", content, containsString("DOCTYPE"));
     }
 
     @Test

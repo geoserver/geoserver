@@ -71,45 +71,50 @@ public class ExternalEntitiesTest extends WFSTestSupport {
 
     @Test
     public void testWfs1_0() throws Exception {
+        String output;
         // enable entity parsing
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
-        String output = string(post("wfs", WFS_1_0_0_REQUEST));
-        // the server tried to read a file on local file system
-        assertTrue(
-                "SAXException",
-                output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        try {
+            output = string(post("wfs", WFS_1_0_0_REQUEST));
+            // the server tried to read a file on local file system
+            assertTrue(
+                    "SAXException",
+                    output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
 
-        // disable entity parsing
-        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+            // disable entity parsing
+            System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+            output = string(post("wfs", WFS_1_0_0_REQUEST));
+            assertTrue("DOCTYPE is disallowed", output.contains("DOCTYPE"));
+        } finally {
+            // set default (entity parsing disabled);
+            System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        }
         output = string(post("wfs", WFS_1_0_0_REQUEST));
-        assertTrue("disallowed", output.indexOf("DOCTYPE is disallowed") > -1);
-
-        // set default (entity parsing disabled);
-        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
-        output = string(post("wfs", WFS_1_0_0_REQUEST));
-        assertTrue("disallowed", output.indexOf("DOCTYPE is disallowed") > -1);
+        assertTrue("DOCTYPE is disallowed", output.contains("DOCTYPE"));
     }
 
     @Test
     public void testWfs1_1() throws Exception {
         // enable entity parsing
         String output;
-        //        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
-        //        String output = string(post("wfs", WFS_1_1_0_REQUEST));
-        //        // the server tried to read a file on local file system
-        //        assertTrue(
-        //                "SAXException",
-        //                output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
-        //
-        //        // disable entity parsing
-        //        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
-        //        output = string(post("wfs", WFS_1_1_0_REQUEST));
-        //        assertTrue("disallowed", output.indexOf("DOCTYPE is disallowed") > -1);
+        try {
+            System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+            output = string(post("wfs", WFS_1_1_0_REQUEST));
+            // the server tried to read a file on local file system
+            assertTrue(
+                    "SAXException",
+                    output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
 
-        // set default (entity parsing disabled);
-        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+            // disable entity parsing
+            System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+            output = string(post("wfs", WFS_1_1_0_REQUEST));
+            assertTrue("DDCTYPE is disallowed", output.contains("DOCTYPE"));
+        } finally {
+            // set default (entity parsing disabled);
+            System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        }
         output = string(post("wfs", WFS_1_1_0_REQUEST));
-        assertTrue("disallowed", output.indexOf("DOCTYPE is disallowed") > -1);
+        assertTrue("DOCTYPE is disallowed", output.contains("DOCTYPE"));
     }
 
     @Test

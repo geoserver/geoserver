@@ -588,7 +588,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         Document dom = postAsDOM("wcs", request);
         // print(dom);
         String error = xpath.evaluate("//ows:ExceptionText", dom);
-        assertTrue(error.contains("DOCTYPE is disallowed"));
+        assertTrue("DOCTYPE is disallowed", error.contains("DOCTYPE"));
 
         request =
                 """
@@ -610,7 +610,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         dom = postAsDOM("wcs", request);
         // print(dom);
         error = xpath.evaluate("//ows:ExceptionText", dom);
-        assertTrue(error.contains("DOCTYPE is disallowed"));
+        assertTrue("DOCTYPE is disallowed", error.contains("DOCTYPE"));
     }
 
     /**

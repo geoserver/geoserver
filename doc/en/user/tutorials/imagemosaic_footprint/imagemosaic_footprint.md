@@ -37,7 +37,7 @@ And the associated granules are:
 - ortho_1-1_1n_s_la087_2010_1.tif
 - ortho_2-2_1n_s_la075_2010_1.tif
 - ortho_1-1_1n_s_la103_2010_1.tif
-- and so on \...
+- and so on ...
 
 The associated **footprints.properties** file must be like this:
 

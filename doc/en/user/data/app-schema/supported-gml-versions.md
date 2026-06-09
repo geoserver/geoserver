@@ -62,7 +62,7 @@ GML 3.2.1 requires that all geometries have a `gml:id`. While GeoServer will hap
 
 In this example, `getId()` returns the `gml:id` of the containing feature, so each geometry will have a unique `gml:id` formed by appending the `gml:id` of the containing feature to the string `"shape."`.
 
-If a multigeometry (such as a `MultiPoint` or `MultiSurface`) is assigned a `gml:id` of (for example) `parentid`, to permit GML 3.2.1 schema-validity, each geometry that the multigeometry contains will be automatically assigned a `gml:id` of the form `parentid.1`, `parentid.2`, \... in order.
+If a multigeometry (such as a `MultiPoint` or `MultiSurface`) is assigned a `gml:id` of (for example) `parentid`, to permit GML 3.2.1 schema-validity, each geometry that the multigeometry contains will be automatically assigned a `gml:id` of the form `parentid.1`, `parentid.2`, ... in order.
 
 ## GML 3.3
 

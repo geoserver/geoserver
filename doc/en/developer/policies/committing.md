@@ -59,7 +59,7 @@ The process of obtaining core commit access is far less mechanical than the one 
 
 The way this is typically done is through continuous code review of patches. After a developer has submitted enough patches that have been met with a positive response, and those patches require little modifications, the developer will be nominated for core commit access.
 
-There is no magic number of patches that make the criteria, it is based mostly on the nature of the patches, how in depth they are, etc\... Basically it boils down to the developer being able to show that they understand the code base well enough to not seriously break anything.
+There is no magic number of patches that make the criteria, it is based mostly on the nature of the patches, how in depth they are, etc... Basically it boils down to the developer being able to show that they understand the code base well enough to not seriously break anything.
 
 ## Commit Guidelines
 
@@ -100,6 +100,6 @@ There is not much in the way of strict commit policies when it comes to committi
 
 4.  **Ensure code is properly formatted**
 
-    Ensure that the IDE or editor used to edit source files is setup with proper formatting rules. This means spaces instead of tabs, 100 character line break, etc\...
+    Ensure that the IDE or editor used to edit source files is setup with proper formatting rules. This means spaces instead of tabs, 100 character line break, etc...
 
     If using Eclipse ensure you have configured it with the [template and formatter](http://docs.geotools.org/latest/developer/conventions/code/style.md#use-of-formatting-tools) used for GeoTools.

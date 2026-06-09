@@ -120,7 +120,7 @@ First, got to the styles page and click on **Add a new style** link to start a n
 
 - Name the new style anything you'd like, such as `csstutorial`
 - Choose `CSS` as the format
-- In the **Generate a default style** dropdown choose `Polygon` and click on **Generate\...**
+- In the **Generate a default style** dropdown choose `Polygon` and click on **Generate...**
 
 ![](images/tutorial_new_style.png)
 

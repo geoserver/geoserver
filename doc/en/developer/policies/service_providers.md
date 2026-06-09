@@ -30,7 +30,7 @@ Experienced providers: work on GeoServer when hired by customers but are not alw
 - `coding` work on java code, bug fix, signed code contribution agreement
 - `documentation` contributions to user guide or similar
 - `translation` helped out translation of application or user guide
-- `outreach` public presentations of geoserver at foss4g and regional events, public writing such as blog posts, podcast etc\...
+- `outreach` public presentations of geoserver at foss4g and regional events, public writing such as blog posts, podcast etc...
 - `training` link to your geoserver training page
 - `services` link to your geoserver consulting or services page
 - `product` link to a geoserver based product

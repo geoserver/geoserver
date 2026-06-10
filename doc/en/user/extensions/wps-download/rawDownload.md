@@ -488,7 +488,7 @@ The following example shows a DSM layer being configured to specify EPSG:5778 as
 This section will only show up if:
 
 - The wps-download module has been deployed in GeoServer
-- The underlying data is single-band and datatype is at least 16 bit. (i.e.: no Byte datatype, no RGB images, \...)
+- The underlying data is single-band and datatype is at least 16 bit. (i.e.: no Byte datatype, no RGB images, ...)
 
 ### WPS Download - Vertical resampling
 

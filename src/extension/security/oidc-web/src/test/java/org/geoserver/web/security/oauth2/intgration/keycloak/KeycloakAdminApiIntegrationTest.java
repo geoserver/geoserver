@@ -69,8 +69,16 @@ public class KeycloakAdminApiIntegrationTest {
         Assume.assumeTrue("Docker not available — skipping", dockerAvailable);
 
         // Start a vanilla Keycloak — no realm-import, no fixtures. dasniko's container sets admin/admin via env vars.
-        keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.0").withCustomCommand("--log-level=INFO");
-        keycloak.start();
+        try {
+            keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.0").withCustomCommand("--log-level=INFO");
+            keycloak.start();
+        } catch (Exception e) {
+            // Docker is present but the container could not START (e.g. the build agent CPU lacks x86-64-v2 for the
+            // Keycloak image, a blocked image pull, or resource limits). Skip rather than fail the build, matching
+            // KeyCloakIntegrationTestSupport; genuine provisioning regressions below are still reported.
+            Assume.assumeTrue("Skipping Keycloak Admin API test: container failed to start - " + e.getMessage(), false);
+            return; // unreachable: assumeTrue(false) throws AssumptionViolatedException
+        }
         serverUrl = keycloak.getAuthServerUrl();
 
         provisionRealmViaAdminAPI();

@@ -175,7 +175,7 @@ This setting can be overridden by system property, see [Advanced log configurati
 
 These settings enable the logging of the requested URL, and optionally request headers and the POST requests' contents, for all requests sent to GeoServer.
 
-- **Enable Request Logging**: Select to enable logging of incoming requests, this will include the operation (`GET`, `POST`, etc\...) and the URL requested.
+- **Enable Request Logging**: Select to enable logging of incoming requests, this will include the operation (`GET`, `POST`, etc...) and the URL requested.
 - **Log Request Bodies**: Select to enable logging the body of the incoming request. Text content will be logged, or the number of bytes for binary content, based on the setting Number of characters to log for incoming requests setting below.
 - **Number of characters to log for incoming POST requests**: In more verbose logging levels, GeoServer will log the body of incoming requests. It will only log the initial part of the request though, since it has to store (buffer) everything that gets logged for use in the parts of GeoServer that use it normally. This setting sets the size of this buffer, in characters. A setting of **0** will disable logging the body of the request.
 - **Log Request Headers**: Select to enable logging of request header information.

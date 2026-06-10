@@ -71,50 +71,58 @@ public class ExternalEntitiesTest extends WFSTestSupport {
 
     @Test
     public void testWfs1_0() throws Exception {
-        String output;
-        // enable entity parsing
+        Document dom;
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
         try {
-            output = string(post("wfs", WFS_1_0_0_REQUEST));
-            // the server tried to read a file on local file system
+            // enable entity parsing: server tries to read file on local file system
+            dom = postAsDOM("wfs", WFS_1_0_0_REQUEST);
             assertTrue(
                     "SAXException",
-                    output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+                    checkLegacyException(dom, null, null)
+                            .contains("xml request is most probably not compliant to GetFeature element"));
 
-            // disable entity parsing
+            // disable entity parsing: DOCTYPE must be rejected
             System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
-            output = string(post("wfs", WFS_1_0_0_REQUEST));
-            assertTrue("DOCTYPE is disallowed", output.contains("DOCTYPE"));
+            dom = postAsDOM("wfs", WFS_1_0_0_REQUEST);
+            assertTrue(checkLegacyException(dom, null, null).contains("DOCTYPE"));
         } finally {
-            // set default (entity parsing disabled);
             System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
         }
-        output = string(post("wfs", WFS_1_0_0_REQUEST));
-        assertTrue("DOCTYPE is disallowed", output.contains("DOCTYPE"));
+        // default (entity parsing disabled): DOCTYPE must be rejected
+        dom = postAsDOM("wfs", WFS_1_0_0_REQUEST);
+        assertTrue(checkLegacyException(dom, null, null).contains("DOCTYPE"));
     }
 
     @Test
     public void testWfs1_1() throws Exception {
-        // enable entity parsing
-        String output;
+        Document dom;
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
         try {
-            System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
-            output = string(post("wfs", WFS_1_1_0_REQUEST));
-            // the server tried to read a file on local file system
+            // enable entity parsing: server tries to read file on local file system
+            dom = postAsDOM("wfs", WFS_1_1_0_REQUEST);
             assertTrue(
                     "SAXException",
-                    output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+                    dom.getElementsByTagName("ows:ExceptionText")
+                            .item(0)
+                            .getTextContent()
+                            .contains("xml request is most probably not compliant to GetFeature element"));
 
-            // disable entity parsing
+            // disable entity parsing: DOCTYPE must be rejected
             System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
-            output = string(post("wfs", WFS_1_1_0_REQUEST));
-            assertTrue("DDCTYPE is disallowed", output.contains("DOCTYPE"));
+            dom = postAsDOM("wfs", WFS_1_1_0_REQUEST);
+            assertTrue(dom.getElementsByTagName("ows:ExceptionText")
+                    .item(0)
+                    .getTextContent()
+                    .contains("DOCTYPE"));
         } finally {
-            // set default (entity parsing disabled);
             System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
         }
-        output = string(post("wfs", WFS_1_1_0_REQUEST));
-        assertTrue("DOCTYPE is disallowed", output.contains("DOCTYPE"));
+        // default (entity parsing disabled): DOCTYPE must be rejected
+        dom = postAsDOM("wfs", WFS_1_1_0_REQUEST);
+        assertTrue(dom.getElementsByTagName("ows:ExceptionText")
+                .item(0)
+                .getTextContent()
+                .contains("DOCTYPE"));
     }
 
     @Test

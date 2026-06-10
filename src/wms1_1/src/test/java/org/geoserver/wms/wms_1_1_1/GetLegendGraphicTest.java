@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -424,10 +425,10 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                         + "&SLD_BODY=";
         String sld = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), StandardCharsets.UTF_8);
         MockHttpServletResponse response = getAsServletResponse(base + URLEncoder.encode(sld, UTF_8.name()));
-        // should fail with an error message pointing at entity resolution
+        // should fail with a WMS ServiceException pointing at entity resolution
         assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
-        final String content = response.getContentAsString();
-        assertThat(content, containsString("DOCTYPE is disallowed"));
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertThat(checkLegacyException(dom, null, null), containsString("DOCTYPE"));
     }
 
     @Test

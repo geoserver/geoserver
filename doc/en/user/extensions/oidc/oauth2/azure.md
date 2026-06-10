@@ -124,7 +124,7 @@ We need to setup Azure so GeoServer can access the MSGraph and get the roles/gro
 
     ![](../img/azure_gs_msgraph4.png)
 
-5.  On the "API permissions" screen, press "Grant admin consent for \..."
+5.  On the "API permissions" screen, press "Grant admin consent for ..."
 
     - This will pop-up a confirmation - press "Yes"
 

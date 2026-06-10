@@ -31,7 +31,7 @@ To keep the result XSD compliant, the parameters `dateStamp.Date` and `contact.C
 
 The `lapply` function can be used to apply expressions to items of lists, which can be handy with multidimensional fields.
 
-The `typeOf` function (exclusive to CSW-ISO module) returns the type of the catalog item that is being processed (`LayerGroupInfo`, `FeatureTypeInfo`, `CoverageInfo`,\...), which can be handy if you for example need to handle vector layers differently to raster layers.
+The `typeOf` function (exclusive to CSW-ISO module) returns the type of the catalog item that is being processed (`LayerGroupInfo`, `FeatureTypeInfo`, `CoverageInfo`,...), which can be handy if you for example need to handle vector layers differently to raster layers.
 
 For more information on the ISO Metadata standard, please see the [OGC Implementation Specification 07-045](http://www.opengeospatial.org/standards/specifications/catalog).
 

@@ -128,7 +128,7 @@ The filter is more complex if it has to match all linear geometry types. In this
 </Rule>
 ```
 
-This filter is read as `geometryType(geom) in ("LineString", "LinearRing", "MultiLineString")`. Filter functions in Filter 1.0 have a fixed number of arguments, so there is a series of `in` functions whose names correspond to the number of arguments they accept: `in2`, `in3`, \..., `in10`.
+This filter is read as `geometryType(geom) in ("LineString", "LinearRing", "MultiLineString")`. Filter functions in Filter 1.0 have a fixed number of arguments, so there is a series of `in` functions whose names correspond to the number of arguments they accept: `in2`, `in3`, ..., `in10`.
 
 ### dimension function
 

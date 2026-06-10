@@ -14,7 +14,7 @@ If your data has no native CRS information, the only option is to specify/force 
 
 ## Increasing Comparison Tolerance
 
-Decimal numbers comparisons are made using a comparison tolerance. This means, as an instance, that an ellipsoid's semi_major axis equals a candidate EPSG's ellipsoid semi_major axis only if their difference is within that tolerance. Default value is 10\^-9 although it can be changed by setting a COMPARISON_TOLERANCE Java System property to your container's JVM to specify a different value.
+Decimal numbers comparisons are made using a comparison tolerance. This means, as an instance, that an ellipsoid's semi_major axis equals a candidate EPSG's ellipsoid semi_major axis only if their difference is within that tolerance. Default value is 10^-9 although it can be changed by setting a COMPARISON_TOLERANCE Java System property to your container's JVM to specify a different value.
 
 !!! warning
     The default value should be changed only if you are aware of use cases which require a wider tolerance. Don't change it unless really needed (See the following example).

@@ -30,7 +30,7 @@ The `<property>` is a string denoting the property name, while the `<value>` can
 | Text       | Text value. If value is ambiguous, use single quotes.     |
 | Color      | Hexadecimal color of the form `'#RRGGBB'`.  |
 | Tuple      | A list of values in brackets. e.g. `[0, 1]` |
-| Expression | CQL expression surrounded by `\${ }`          |
+| Expression | CQL expression surrounded by `${ }`          |
 
 ### Mappings and lists
 

@@ -133,7 +133,7 @@ The `extended` attribute specifies whether the color map gradient uses 256 (8-bi
 
 #### CQL Expressions {: #sld_reference_rastersymbolizer_colormap_cql }
 
-All of the ColorMapEntry attributes (color, quantity, label and opacity) can be defined using `cql expressions`, with the \${\...expression\...} syntax.
+All of the ColorMapEntry attributes (color, quantity, label and opacity) can be defined using `cql expressions`, with the \${...expression...} syntax.
 
 CQL expressions are useful to make the color map dynamic, using values taken from the client:
 

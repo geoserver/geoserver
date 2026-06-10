@@ -21,7 +21,6 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
-import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -77,7 +76,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
             fail("Should have failed with an entity expansion disallowed exception");
         } catch (ServiceException e) {
             Throwable cause = e.getCause();
-            assertTrue(cause.getMessage().contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+            assertTrue("DOCTYPE is disallowed", cause.getMessage().contains("DOCTYPE"));
         }
     }
 

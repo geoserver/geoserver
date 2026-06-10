@@ -71,44 +71,58 @@ public class ExternalEntitiesTest extends WFSTestSupport {
 
     @Test
     public void testWfs1_0() throws Exception {
-        // enable entity parsing
+        Document dom;
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
-        String output = string(post("wfs", WFS_1_0_0_REQUEST));
-        // the server tried to read a file on local file system
-        assertTrue(
-                "SAXException",
-                output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        try {
+            // enable entity parsing: server tries to read file on local file system
+            dom = postAsDOM("wfs", WFS_1_0_0_REQUEST);
+            assertTrue(
+                    "SAXException",
+                    checkLegacyException(dom, null, null)
+                            .contains("xml request is most probably not compliant to GetFeature element"));
 
-        // disable entity parsing
-        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
-        output = string(post("wfs", WFS_1_0_0_REQUEST));
-        assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
-
-        // set default (entity parsing disabled);
-        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
-        output = string(post("wfs", WFS_1_0_0_REQUEST));
-        assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
+            // disable entity parsing: DOCTYPE must be rejected
+            System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+            dom = postAsDOM("wfs", WFS_1_0_0_REQUEST);
+            assertTrue(checkLegacyException(dom, null, null).contains("DOCTYPE"));
+        } finally {
+            System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        }
+        // default (entity parsing disabled): DOCTYPE must be rejected
+        dom = postAsDOM("wfs", WFS_1_0_0_REQUEST);
+        assertTrue(checkLegacyException(dom, null, null).contains("DOCTYPE"));
     }
 
     @Test
     public void testWfs1_1() throws Exception {
-        // enable entity parsing
+        Document dom;
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
-        String output = string(post("wfs", WFS_1_1_0_REQUEST));
-        // the server tried to read a file on local file system
-        assertTrue(
-                "SAXException",
-                output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        try {
+            // enable entity parsing: server tries to read file on local file system
+            dom = postAsDOM("wfs", WFS_1_1_0_REQUEST);
+            assertTrue(
+                    "SAXException",
+                    dom.getElementsByTagName("ows:ExceptionText")
+                            .item(0)
+                            .getTextContent()
+                            .contains("xml request is most probably not compliant to GetFeature element"));
 
-        // disable entity parsing
-        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
-        output = string(post("wfs", WFS_1_1_0_REQUEST));
-        assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
-
-        // set default (entity parsing disabled);
-        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
-        output = string(post("wfs", WFS_1_1_0_REQUEST));
-        assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
+            // disable entity parsing: DOCTYPE must be rejected
+            System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+            dom = postAsDOM("wfs", WFS_1_1_0_REQUEST);
+            assertTrue(dom.getElementsByTagName("ows:ExceptionText")
+                    .item(0)
+                    .getTextContent()
+                    .contains("DOCTYPE"));
+        } finally {
+            System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        }
+        // default (entity parsing disabled): DOCTYPE must be rejected
+        dom = postAsDOM("wfs", WFS_1_1_0_REQUEST);
+        assertTrue(dom.getElementsByTagName("ows:ExceptionText")
+                .item(0)
+                .getTextContent()
+                .contains("DOCTYPE"));
     }
 
     @Test
@@ -127,7 +141,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
                 + getLayerId(MockData.FIFTEEN)
                 + "&FILTER="
                 + filter;
-        Document doc = getAsDOM(request);
+        Document doc = getAsDOM(request, false);
         XpathEngine xp = XMLUnit.newXpathEngine();
         String errorMessage = xp.evaluate("//ogc:ServiceException", doc);
         // print(doc);

@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -63,10 +64,10 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.step.StepExecution;
 import org.springframework.util.Assert;
 
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
@@ -94,6 +95,12 @@ public abstract class BackupRestoreItem<T> {
     private XStreamPersisterFactory xStreamPersisterFactory;
 
     private Filter filters[];
+
+    /**
+     * Ids of the out-of-subset / global objects pulled in by the workspace-filter dependency-closure on backup (see
+     * {@link SubsetClosure}); {@code null} when no workspace filter is active or the closure was not computed.
+     */
+    private Set<String> closureIds;
 
     public static final String ENCRYPTED_FIELDS_KEY = "backupRestoreParameterizedFields";
 
@@ -159,6 +166,15 @@ public abstract class BackupRestoreItem<T> {
         this.filters = filters;
     }
 
+    /**
+     * Sets the backup-vs-restore flag ({@code false} = backup, {@code true} = restore). Normally derived in
+     * {@link #retrieveInterstepData} from the running job; exposed ({@code protected}) so unit tests can exercise the
+     * backup-only workspace-filter cascade without standing up a full Spring Batch step.
+     */
+    protected void setNew(boolean isNew) {
+        this.isNew = isNew;
+    }
+
     /** @return a boolean indicating that at least one filter has been defined */
     public boolean filterIsValid() {
         return (this.filters != null
@@ -177,6 +193,15 @@ public abstract class BackupRestoreItem<T> {
 
         this.xstream = xStreamPersisterFactory.createXMLPersister();
 
+        // Id preservation (BK_PRESERVE_IDS) defaults to TRUE: a backup keeps catalog ids and writes cross-references by
+        // id, so the archive is a portable migration artifact that restores into another GeoServer with its identities
+        // (and, in turn, GWC tile-layer links) intact. Set BK_PRESERVE_IDS=false for the legacy name-based archive
+        // (ids stripped). On the restore side the reader auto-adapts - ReferenceConverter.unmarshal reads whichever of
+        // <id>/<name> is present and ResolvingProxy resolves by id first, name second - so no matching flag is required
+        // to restore either kind of archive.
+        boolean preserveIds =
+                Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_PRESERVE_IDS, "true"));
+
         if (backupFacade.getRestoreExecutions() != null
                 && !backupFacade.getRestoreExecutions().isEmpty()
                 && backupFacade.getRestoreExecutions().containsKey(jobExecution.getId())) {
@@ -186,7 +211,9 @@ public abstract class BackupRestoreItem<T> {
         } else {
             this.currentJobExecution = backupFacade.getBackupExecutions().get(jobExecution.getId());
             this.catalog = backupFacade.getCatalog();
-            this.xstream.setExcludeIds();
+            if (!preserveIds) {
+                this.xstream.setExcludeIds();
+            }
             this.isNew = false;
         }
 
@@ -194,7 +221,9 @@ public abstract class BackupRestoreItem<T> {
 
         // Set Catalog
         this.xstream.setCatalog(this.catalog);
-        this.xstream.setReferenceByName(true);
+        // On a backup, write references by id only when preserving ids; restores keep the legacy value (the reader
+        // ignores it - referenceByName only gates marshalling).
+        this.xstream.setReferenceByName(isNew || !preserveIds);
         this.xp = this.xstream.getXStream();
 
         Assert.notNull(this.xp, "xStream persister should not be NULL");
@@ -211,7 +240,11 @@ public abstract class BackupRestoreItem<T> {
             if (!isNew) {
                 this.xp.registerLocalConverter(
                         StoreInfoImpl.class, "connectionParameters", this.createParameterizingMapConverter(xstream));
-                this.xp.registerConverter(this.createStoreConverter(xstream));
+                // Register above the StoreInfoConverter that XStreamPersister installs at PRIORITY_NORMAL so this
+                // wrapper (which records the encrypted fields to tokenize) is the one selected for stores. Equal
+                // priorities are an unreliable tie-break across XStream versions, which silently disabled password
+                // parameterization (passwords were written verbatim instead of tokenized).
+                this.xp.registerConverter(this.createStoreConverter(xstream), XStream.PRIORITY_VERY_HIGH);
             } else {
                 String concatenatedPasswordTokens = jobParameters.getString(Backup.PARAM_PASSWORD_TOKENS);
                 Map<String, String> passwordTokens = parseConcatenatedPasswordTokens(concatenatedPasswordTokens);
@@ -258,6 +291,29 @@ public abstract class BackupRestoreItem<T> {
             this.filters[2] = null;
         }
 
+        // Compute the workspace-filter dependency-closure once per backup execution (cached on the execution adapter),
+        // so a filtered backup pulls in the transitive dependencies the subset references - cross-workspace layergroup
+        // members and their stores/resources/workspaces/namespaces, and the global styles the subset uses - and prunes
+        // the workspace-less styles/layergroups it does not. A restore (isNew) replays the archive verbatim.
+        this.closureIds = null;
+        if (!isNew
+                && this.filters[0] != null
+                && currentJobExecution instanceof BackupExecutionAdapter backupExecution) {
+            if (!backupExecution.isSubsetClosureComputed()) {
+                Set<String> closure = null;
+                try {
+                    closure = SubsetClosure.compute(getCatalog(), this.filters[0], this.filters[1], this.filters[2]);
+                } catch (RuntimeException e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Failed to compute the subset dependency-closure; keeping the plain workspace cascade",
+                            e);
+                }
+                backupExecution.setSubsetClosure(closure);
+            }
+            this.closureIds = backupExecution.getSubsetClosure();
+        }
+
         initialize(stepExecution);
     }
 
@@ -286,10 +342,10 @@ public abstract class BackupRestoreItem<T> {
             } else {
                 throw e;
             }
-        }
-
-        if (!isBestEffort()) {
             getCurrentJobExecution().addFailureExceptions(List.of(validationException));
+        } else {
+            // best-effort: record the problem as a warning instead of swallowing it silently
+            getCurrentJobExecution().addWarningExceptions(List.of(validationException));
         }
         return false;
     }
@@ -313,7 +369,51 @@ public abstract class BackupRestoreItem<T> {
         if (!filterIsValid()) {
             return false;
         }
+
+        // Cascade the workspace filter (filters[0]) down to every workspace-bound resource ON BACKUP, so that a
+        // workspace filter yields a self-contained subset archive instead of leaking stores, resources, layers,
+        // styles and layergroups that belong to other workspaces (historically these honoured only the store/layer
+        // filters, or — for styles and layergroups — no filter at all). Global, workspace-less styles and layergroups
+        // are intentionally left untouched here: they are shared and are reconciled by the dependency-closure pass
+        // rather than dropped by the cascade.
+        //
+        // The cascade is scoped to backup (isNew == false): a restore replays whatever the archive already holds, and a
+        // restore-side filter keeps its long-standing workspace-step-only semantics, so existing restore behaviour is
+        // unchanged.
+        final Filter wsFilter = getFilters()[0];
+        if (!isNew() && resource != null && wsFilter != null) {
+            // A dependency pulled in by the subset closure (a cross-workspace layergroup member, or a global style /
+            // layergroup the subset references) is kept regardless of its own workspace.
+            String resourceId = ((CatalogInfo) resource).getId();
+            if (closureIds != null && resourceId != null && closureIds.contains(resourceId)) {
+                return false;
+            }
+            if (ws != null) {
+                if (!wsFilter.evaluate(ws)) {
+                    LOGGER.fine(() -> "Skipped resource outside the filtered workspace(s): " + resource);
+                    return true;
+                }
+                // the workspace matches: a subset object, still subject to the store/layer filters below
+            } else if (strict) {
+                LOGGER.fine(() -> "Skipped strict resource with no resolvable workspace: " + resource);
+                return true;
+            } else if (closureIds != null) {
+                // a workspace-less (global) style or layergroup the subset does not reference: prune it
+                LOGGER.fine(() -> "Pruned unreferenced global resource from the filtered subset: " + resource);
+                return true;
+            }
+        }
+
         if (resource == null || clazz == WorkspaceInfo.class) {
+            // A workspace pulled in by the subset closure (the home workspace of a cross-workspace layergroup member)
+            // is a forced dependency: keep it even though it falls outside the filter, otherwise the member's
+            // store/resource/layer — which the closure DID drag in — would have no workspace to resolve against on
+            // restore and the whole member would be silently lost. The workspace arrives here through the two-arg
+            // filteredResource(WorkspaceInfo, boolean) overload as the `ws` argument with a null `resource`, so the
+            // closure block above (guarded on `resource != null`) never saw it; check its own id explicitly.
+            if (!isNew() && ws != null && closureIds != null && closureIds.contains(ws.getId())) {
+                return false;
+            }
             if ((strict && ws == null) || (ws != null && getFilters()[0] != null && !getFilters()[0].evaluate(ws))) {
                 LOGGER.info("Skipped filtered workspace: " + ws);
                 return true;

@@ -22,6 +22,8 @@ For more information see [Configuration Considerations](../../production/config.
 | serviceStrategy<br>[/production/config](../../production/config.md), default PARTIAL-BUFFER2 | x               | x             | x            |
 | GEOSERVER_CONSOLE_DISABLED<br>[/production/config](../../production/config.md)        | x               |               |              |
 | GWC_DISKQUOTA_DISABLED                                                           | x               | x             | x            |
+| GWC_SEEDER_CORE_POOL_SIZE<br>Core thread pool size for seeding tasks (default 16). See [Seeding](../../geowebcache/seeding.md#seeder-thread-pool-size). | x               |               | x            |
+| GWC_SEEDER_MAX_POOL_SIZE<br>Maximum thread pool size for seeding tasks (default 32). See [Seeding](../../geowebcache/seeding.md#seeder-thread-pool-size). | x               |               | x            |
 | geoserver.login.autocomplete<br>[/production/config](../../production/config.md), default on. | x               |               | x            |
 | CONFIGURATION_TRYLOCK_TIMEOUT<br>Delay for REST API and Web Administration configuration changes (default 30000 MS) | x               | x             | x            |
 | COMPARISON_TOLERANCE<br>Referencing tolerance when matching PRJ to EPSG code (default 0.00000001) | x               | x             | x            |

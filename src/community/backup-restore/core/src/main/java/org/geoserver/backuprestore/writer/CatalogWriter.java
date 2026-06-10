@@ -12,11 +12,11 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemStreamWriter;
-import org.springframework.batch.item.file.ResourceAwareItemWriterItemStream;
-import org.springframework.batch.item.util.ExecutionContextUserSupport;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemReader;
+import org.springframework.batch.infrastructure.item.ItemStreamWriter;
+import org.springframework.batch.infrastructure.item.file.ResourceAwareItemWriterItemStream;
+import org.springframework.batch.infrastructure.item.util.ExecutionContextUserSupport;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
@@ -46,7 +46,7 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
     /**
      * No-op.
      *
-     * @see org.springframework.batch.item.ItemStream#close()
+     * @see org.springframework.batch.infrastructure.item.ItemStream#close()
      */
     @Override
     public void close() {}
@@ -54,7 +54,7 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
     /**
      * No-op.
      *
-     * @see org.springframework.batch.item.ItemStream#open(ExecutionContext)
+     * @see org.springframework.batch.infrastructure.item.ItemStream#open(ExecutionContext)
      */
     @Override
     public void open(ExecutionContext executionContext) {}
@@ -62,7 +62,7 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
     /**
      * Return empty {@link ExecutionContext}.
      *
-     * @see org.springframework.batch.item.ItemStream#update(ExecutionContext)
+     * @see org.springframework.batch.infrastructure.item.ItemStream#update(ExecutionContext)
      */
     @Override
     public void update(ExecutionContext executionContext) {}

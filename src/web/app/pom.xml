@@ -304,6 +304,7 @@
         <configuration>
           <webApp>
             <contextPath>/geoserver</contextPath>
+            <war>${project.build.directory}/geoserver.war</war>
           </webApp>
           <httpConnector>
             <port>${jetty.port}</port>
@@ -1252,7 +1253,7 @@
       <id>oidc</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community.security</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-sec-oidc-web</artifactId>
           <version>${project.version}</version>
         </dependency>

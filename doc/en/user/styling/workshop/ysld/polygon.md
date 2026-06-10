@@ -620,7 +620,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
 
 5.  This YSLD makes use of a **define** to avoid repeating the **stroke-color** and **stroke-width** information multiple times.
 
-    As an example the `\${mapcolor9 = '2'}` rule, combined with the `define:` results in the following collection of properties:
+    As an example the `${mapcolor9 = '2'}` rule, combined with the `define:` results in the following collection of properties:
 
     ``` yaml
     - filter: ${mapcolor9 = '2'}

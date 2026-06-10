@@ -8,8 +8,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -44,12 +44,13 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.Filter;
 import org.geowebcache.config.XMLConfiguration;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.UnexpectedJobExecutionException;
+import org.geowebcache.storage.blobstore.file.FilePathUtils;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.UnexpectedJobExecutionException;
 import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.core.step.StepContribution;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.util.Assert;
 
@@ -79,13 +80,11 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
     @Override
     protected void initialize(StepExecution stepExecution) {
-        this.skipSettings =
-                Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_SKIP_SETTINGS, "true"));
+        this.skipSettings = Backup.isSkipSettings(stepExecution.getJobParameters());
 
         this.skipGWC = Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_SKIP_GWC, "false"));
 
-        this.purge =
-                Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_PURGE_RESOURCES, "false"));
+        this.purge = Backup.isPurgeResources(stepExecution.getJobParameters());
     }
 
     @Override
@@ -306,8 +305,14 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         SettingsInfo newSettings = null;
         LoggingInfo newLoggingInfo = null;
         try {
-            newGeoServerInfo = (GeoServerInfo) doRead(sourceRestoreFolder, "global.xml");
-            newLoggingInfo = (LoggingInfo) doRead(sourceRestoreFolder, "logging.xml");
+            // A backup taken with the default BK_SKIP_SETTINGS=true carries no global.xml/logging.xml; read them
+            // back only when present, so such an archive restores cleanly instead of failing this step.
+            if (Resources.exists(sourceRestoreFolder.get("global.xml"))) {
+                newGeoServerInfo = (GeoServerInfo) doRead(sourceRestoreFolder, "global.xml");
+            }
+            if (Resources.exists(sourceRestoreFolder.get("logging.xml"))) {
+                newLoggingInfo = (LoggingInfo) doRead(sourceRestoreFolder, "logging.xml");
+            }
         } catch (Exception e) {
             logValidationExceptions(
                     (ValidationResult) null,
@@ -395,7 +400,9 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         final boolean purgeResources = purge;
         final boolean filterIsValid = filterIsValid();
 
-        if (!skipSettings && !filterIsValid) {
+        // newGeoServerInfo is null when the archive carries no global.xml (e.g. taken with BK_SKIP_SETTINGS=true);
+        // skip the globals restore in that case rather than wiping the target's existing global settings.
+        if (!skipSettings && !filterIsValid && newGeoServerInfo != null) {
             restoreGlobals(geoserver, dd, sourceRestoreFolder, newGeoServerInfo, newLoggingInfo);
         }
 
@@ -522,11 +529,15 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             GeoServerInfo newGeoServerInfo,
             LoggingInfo newLoggingInfo)
             throws Exception {
-        // Restore GeoServer Global Info
-        doWrite(newGeoServerInfo, td.get(Paths.BASE), "global.xml");
+        // Restore GeoServer Global Info (absent when the archive carries no settings)
+        if (newGeoServerInfo != null) {
+            doWrite(newGeoServerInfo, td.get(Paths.BASE), "global.xml");
+        }
 
         // Restore GeoServer Global Logging Settings
-        doWrite(newLoggingInfo, td.get(Paths.BASE), "logging.xml");
+        if (newLoggingInfo != null) {
+            doWrite(newLoggingInfo, td.get(Paths.BASE), "logging.xml");
+        }
 
         // Restore GeoServer Global Services
         restoreGlobalServices(sourceRestoreFolder, td);
@@ -1037,10 +1048,15 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
             String layerId = layerInfo.getId();
             if (layerId == null) continue;
-            Resource sourceFile = gwcLayersDir.get(layerId + ".xml");
+            // GWC stores each tile-layer file under the file-system-safe form of the layer id
+            // (DefaultTileLayerCatalog uses FilePathUtils.filteredLayerName, e.g. ':' -> '_'). Using the
+            // raw id mismatches the on-disk name and, on Windows, makes File access throw
+            // InvalidPathException on the ':' characters. Resolve and stream via the Resource API.
+            String fileName = FilePathUtils.filteredLayerName(layerId) + ".xml";
+            Resource sourceFile = gwcLayersDir.get(fileName);
             if (Resources.exists(sourceFile)) {
-                try (FileInputStream fis = new FileInputStream(sourceFile.file())) {
-                    Resources.copy(fis, targetGwcLayersDir, layerId + ".xml");
+                try (InputStream is = sourceFile.in()) {
+                    Resources.copy(is, targetGwcLayersDir, fileName);
                 }
             }
         }
@@ -1100,7 +1116,9 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             GeoserverXMLResourceProvider gwcConfigProvider =
                     (GeoserverXMLResourceProvider) GeoServerExtensions.bean("gwcXmlConfigResourceProvider");
             Resource targetGWCProviderRestoreDir = gwcConfigProvider.getConfigDirectory();
-            if (!filterIsValid()) {
+            // Only wipe + replace the target's GWC provider configuration on a full PURGE restore. On a merge
+            // (BK_PURGE_RESOURCES=false) or a filtered restore the target keeps its existing GWC configuration.
+            if (!filterIsValid() && purge) {
                 Files.delete(targetGWCProviderRestoreDir.dir());
 
                 // Restore GWC Providers Configurations
@@ -1147,14 +1165,23 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         final DefaultTileLayerCatalog gwcRestoreCatalog =
                 new DefaultTileLayerCatalog(resourceLoader, gwcXmlPersisterFactory);
         gwcRestoreCatalog.initialize();
-        // only delete gwc layers directory if its a full restore
-        if (!filterIsValid()) {
+        // Only wipe the target's gwc-layers on a full PURGE restore. On a merge (BK_PURGE_RESOURCES=false) or a
+        // filtered restore the target keeps its existing tile layers, so wiping them would drop the GWC config of
+        // every layer not present in the archive; restoreGWCTileLayersInfos below then merges the archive's on top.
+        if (!filterIsValid() && purge) {
             Resource gwcCatalogPersistenceLocation =
                     targetGWCProviderRestoreDir.parent().get(gwcCatalog.getPersistenceLocation());
             Files.delete(gwcCatalogPersistenceLocation.dir());
         }
         // restore tile layers
         restoreGWCTileLayersInfos(gwcCatalog, layersByName, gwcRestoreCatalog);
+
+        // Prune stale/dangling tile layers whose published id no longer resolves to a catalog layer or layer group.
+        // This matters for partial restores, where the gwc-layers directory is not wiped, so configs for layers that
+        // are absent in the target accumulate (GWC keys tile layers strictly by published id, with no name fallback).
+        if (!isDryRun()) {
+            pruneDanglingGwcTileLayers(gwcCatalog);
+        }
     }
 
     /** */
@@ -1210,6 +1237,34 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 // - Warning or Exception
                 throw new IllegalArgumentException(
                         "TileLayer with same name already exists: " + layerName + ": <" + layerID + ">");
+            }
+        }
+    }
+
+    /**
+     * Removes tile-layer configurations whose published id no longer resolves to a catalog layer or layer group. GWC
+     * keys tile layers strictly by published id, so such entries are dangling — e.g. after a partial restore that did
+     * not wipe the gwc-layers directory, or after the referenced layer/group was removed.
+     */
+    private void pruneDanglingGwcTileLayers(TileLayerCatalog gwcCatalog) {
+        // A tile layer is dangling only when its published id resolves in NEITHER the restored catalog NOR the live
+        // target catalog. During a restore getCatalog() is the restore catalog, which on a partial / merge restore
+        // holds only the restored subset, while the target keeps its other existing layers (merged into the live
+        // catalog at finalize). Checking only the restore catalog therefore wrongly deleted the tile layers of every
+        // layer outside the subset; consult the live catalog too so existing layers are never pruned.
+        final Catalog liveCatalog = backupFacade.getGeoServer().getCatalog();
+        for (String id : new java.util.HashSet<>(gwcCatalog.getLayerIds())) {
+            boolean inRestore =
+                    getCatalog().getLayer(id) != null || getCatalog().getLayerGroup(id) != null;
+            boolean inTarget = liveCatalog.getLayer(id) != null || liveCatalog.getLayerGroup(id) != null;
+            if (!inRestore && !inTarget) {
+                GeoServerTileLayerInfo info = gwcCatalog.getLayerById(id);
+                LOGGER.warning("Pruning stale GWC tile layer '"
+                        + (info != null ? info.getName() : id)
+                        + "' (id="
+                        + id
+                        + "): no matching catalog layer or layer group.");
+                gwcCatalog.delete(id);
             }
         }
     }

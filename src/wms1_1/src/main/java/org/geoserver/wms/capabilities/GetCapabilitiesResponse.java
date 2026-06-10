@@ -142,7 +142,9 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
                  */
                 SAXParserFactory spf = XMLUtils.newSAXParserFactory();
                 spf.setNamespaceAware(true); // xslt _needs_ namespace aware input source
+                XMLUtils.supportDTD(spf, true, null);
                 SAXParser sp = XMLUtils.newSAXParser(spf);
+                XMLUtils.supportDTD(sp, true, null);
                 XMLReader rawCapsReader = sp.getXMLReader();
 
                 rawCapsReader.setEntityResolver(new EntityResolver3() {

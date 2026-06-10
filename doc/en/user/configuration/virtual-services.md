@@ -281,7 +281,7 @@ A workspace can be made isolated by checking the **Isolated Workspace** checkbox
 
 *Making a workspace isolated*
 
-An isolated workspace will be able to reuse an XML namespace already used by another workspace, but its resources (layers, styles, etc \...) can only be retrieved when using that workspace virtual services and will only show up in those virtual services capabilities documents.
+An isolated workspace will be able to reuse an XML namespace already used by another workspace, but its resources (layers, styles, etc ...) can only be retrieved when using that workspace virtual services and will only show up in those virtual services capabilities documents.
 
 It is only possible to create two or more workspaces with the same XML namespace in GeoServer if only one of them is non isolated, i.e. isolated workspaces have no restrictions in namespaces usage but two non isolated workspaces can't use the same namespace.
 
@@ -316,4 +316,4 @@ In the example above st2 is the isolated workspace. Consider the following WFS G
 
 The first request is targeting WFS global service and requesting layer2, this request will use layer2 contained by workspace st1. The second request is targeting st2 workspace WFS virtual service, layer2 belonging to workspace st2 will be used. Request three and four will use layer2 belonging to workspace, respectively, st1 and st2. The last two requests will fail saying that the feature type was not found, isolated workspaces content is not visible globally.
 
-**The rule of thumb is that resources (layers, styles, etc \...) belonging to an isolated workspace can only be retrieved when using that workspaces virtual services and will only show up in those virtual services capabilities documents.**
+**The rule of thumb is that resources (layers, styles, etc ...) belonging to an isolated workspace can only be retrieved when using that workspaces virtual services and will only show up in those virtual services capabilities documents.**

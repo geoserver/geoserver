@@ -8,8 +8,10 @@ package org.geoserver.security;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerExtensions;
@@ -106,6 +108,42 @@ public abstract class GeoServerSecurityProvider {
                 xp.getXStream().registerLocalConverter(entry.getKey(), fieldName, encrypter);
             }
         }
+    }
+
+    /**
+     * Returns the legacy XStream aliases this provider's plugin supersedes, so an old data directory created by a now
+     * removed or uninstalled predecessor plugin can still be read: the persisted components are deserialized into
+     * disabled placeholders and reported for migration instead of failing GeoServer startup. The default is empty.
+     */
+    public List<LegacySecurityAlias> getLegacyAliases() {
+        return Collections.emptyList();
+    }
+
+    /** Finds the {@link LegacySecurityAlias} contributed for the given persisted class name, across all providers. */
+    public static Optional<LegacySecurityAlias> findLegacyAlias(String className) {
+        if (className == null) {
+            return Optional.empty();
+        }
+        for (GeoServerSecurityProvider provider : GeoServerExtensions.extensions(GeoServerSecurityProvider.class)) {
+            for (LegacySecurityAlias alias : provider.getLegacyAliases()) {
+                if (className.equals(alias.className())) {
+                    return Optional.of(alias);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    /** The original alias contributed for the given persisted class name, or {@code null} if none. */
+    public static String legacyAlias(String className) {
+        return findLegacyAlias(className).map(LegacySecurityAlias::alias).orElse(null);
+    }
+
+    /** A human readable source plugin for the given persisted class name, or a generic fallback. */
+    public static String legacySourcePlugin(String className) {
+        return findLegacyAlias(className)
+                .map(LegacySecurityAlias::sourcePlugin)
+                .orElse("a security plugin that is no longer installed");
     }
 
     /**

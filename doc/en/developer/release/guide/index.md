@@ -379,7 +379,7 @@ Publish Jira markdown release notes to GitHub tag:
 
 4.  Navigate to GitHub tags <https://github.com/geoserver/geoserver/tags>
 
-    Locate the new tag from the list, and use **\... \--\> Create release**
+    Locate the new tag from the list, and use **... --> Create release**
 
     - Release title: `GeoServer 2.29.0`
     - Write: Paste the markdown from Jira release notes editor

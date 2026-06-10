@@ -80,7 +80,7 @@ This would create a situation where the `attribute` value, if equal to `value1` 
 
 The `mode` argument is optional, and can be either `linear`, `cosine`, or `cubic`. It defines the interpolation algorithm to use, and defaults to `linear`.
 
-The `method` argument is optional, and can be either `numeric` or `color`. It determines whether `entry1`, `entry2`, \... are numbers or colors, and defaults to `numeric`.
+The `method` argument is optional, and can be either `numeric` or `color`. It determines whether `entry1`, `entry2`, ... are numbers or colors, and defaults to `numeric`.
 
 There is no equivalent to this function in vector styling. The closest to this in raster styling is the color ramp.
 

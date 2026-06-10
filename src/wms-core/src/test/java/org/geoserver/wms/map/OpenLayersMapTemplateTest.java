@@ -61,8 +61,10 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
         DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory();
         dbf.setValidating(false);
         dbf.setExpandEntityReferences(false);
+        XMLUtils.supportDTD(dbf, true, null);
 
         DocumentBuilder docBuilder = XMLUtils.newDocumentBuilder(dbf);
+
         docBuilder.setEntityResolver((publicId, systemId) -> {
             StringReader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             InputSource source = new InputSource(reader);

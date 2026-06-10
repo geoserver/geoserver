@@ -78,6 +78,15 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Pull base Docker image with retry
+        run: |
+          for i in 1 2 3; do
+            docker pull tomcat:11.0-jdk${{ matrix.java-version }}-temurin-jammy && break
+            echo "Docker pull attempt $i failed, retrying in 10s..."
+            sleep $((i * 10))
+            if [ "$i" = "3" ]; then echo "All pull attempts failed" && exit 1; fi
+          done
+
       - name: Build acceptance/geoserver:${{ matrix.suite }} docker image
         working-directory: build/acceptance
         run: make build-geoserver-image java-version=${{ matrix.java-version }}

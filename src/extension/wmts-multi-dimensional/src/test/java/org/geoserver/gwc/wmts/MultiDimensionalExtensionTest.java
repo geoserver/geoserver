@@ -200,6 +200,27 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
+    public void testDescribeDomainsNegativeExpandLimit() throws Exception {
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&expandLimit=-1"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME));
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response, "text/xml", HttpStatus.BAD_REQUEST);
+        assertEquals("InvalidParameterValue", xpath.evaluate("//ows:Exception/@exceptionCode", result));
+        assertEquals("expandLimit", xpath.evaluate("//ows:Exception/@locator", result));
+    }
+
+    @Test
+    public void testGetDomainValuesNegativeLimit() throws Exception {
+        String queryRequest =
+                "request=GetDomainValues&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&domain=elevation&limit=-1"
+                        .formatted(getLayerId(RASTER_ELEVATION_TIME));
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response, "text/xml", HttpStatus.BAD_REQUEST);
+        assertEquals("InvalidParameterValue", xpath.evaluate("//ows:Exception/@exceptionCode", result));
+        assertEquals("limit", xpath.evaluate("//ows:Exception/@locator", result));
+    }
+
+    @Test
     public void testVectorDescribeDomainsOperation() throws Exception {
         // perform the get describe domains operation request
         String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"

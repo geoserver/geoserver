@@ -105,7 +105,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetContactAsHTML() throws Exception {
-        getAsDOM(RestBaseController.ROOT_PATH + "/settings/contact.html", false, 200);
+        getAsDOM(RestBaseController.ROOT_PATH + "/settings/contact.html", true, 200);
     }
 
     @Test
@@ -299,7 +299,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetGlobalAsHTML() throws Exception {
-        getAsDOM(RestBaseController.ROOT_PATH + "/settings.html", false, 200);
+        getAsDOM(RestBaseController.ROOT_PATH + "/settings.html", true, 200);
     }
 
     @Test
@@ -384,7 +384,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetLocalAsHTML() throws Exception {
-        getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.html", false, 200);
+        getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.html", true, 200);
     }
 
     @Test

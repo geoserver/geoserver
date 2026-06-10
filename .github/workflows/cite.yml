@@ -86,12 +86,12 @@ jobs:
 
       - name: Pull teamengine and other required images
         working-directory: build/cite
-        continue-on-error: true
         run: |
           for i in 1 2 3; do
             make pull suite=${{ matrix.suite }} && break
             echo "Docker pull attempt $i failed, retrying in 10s..."
-            sleep 10
+            sleep $((i * 10))
+            if [ "$i" = "3" ]; then echo "All pull attempts failed" && exit 1; fi
           done
 
       - name: Pull base Docker image with retry
@@ -99,7 +99,8 @@ jobs:
           for i in 1 2 3; do
             docker pull tomcat:11.0-jdk${{ matrix.java-version }}-temurin-jammy && break
             echo "Docker pull attempt $i failed, retrying in 10s..."
-            sleep 10
+            sleep $((i * 10))
+            if [ "$i" = "3" ]; then echo "All pull attempts failed" && exit 1; fi
           done
 
       - name: Build ogccite/geoserver:${{ matrix.suite }} docker image

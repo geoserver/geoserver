@@ -61,7 +61,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetAsVersionsHTML() throws Exception {
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM(BASEPATH + "/about/version", false);
+        Document dom = getAsDOM(BASEPATH + "/about/version");
 
         checkHTMLModel(dom);
     }
@@ -69,7 +69,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetAsManifestsHTML() throws Exception {
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM(BASEPATH + "/about/manifest?manifest=freemarker.*", false);
+        Document dom = getAsDOM(BASEPATH + "/about/manifest?manifest=freemarker.*");
 
         checkHTMLModel(dom);
     }
@@ -96,10 +96,10 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         System.setProperty("badString", "\u0007\u0008\u001b[46m");
 
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM(BASEPATH + "/about/status", false);
+        Document dom = getAsDOM(BASEPATH + "/about/status", true);
         checkHTMLModel(dom);
 
-        Document dom2 = getAsDOM(BASEPATH + "/about/status.html", false);
+        Document dom2 = getAsDOM(BASEPATH + "/about/status.html", true);
         checkHTMLModel(dom2);
     }
 

@@ -1248,7 +1248,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @return A result of the request parsed into a dom.
      */
     protected Document getAsDOM(final String path) throws Exception {
-        return getAsDOM(path, !path.endsWith("html"));
+        return getAsDOM(path, true);
     }
 
     /**
@@ -1259,20 +1259,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @return A result of the request parsed into a dom.
      */
     protected Document getAsDOM(final String path, int statusCode) throws Exception {
-        return getAsDOM(path, !path.endsWith("html"), statusCode);
+        return getAsDOM(path, true, statusCode);
     }
 
     /**
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param skipDTD if true, will avoid loading and validating against the response document schema or DTD
+     * @param useEmptyDTD if true, will avoid loading and validating against the response document schema or DTD
      * @param statusCode Expected status code
      * @return A result of the request parsed into a dom.
      */
-    protected Document getAsDOM(final String path, boolean skipDTD, int statusCode) throws Exception {
+    protected Document getAsDOM(final String path, boolean useEmptyDTD, int statusCode) throws Exception {
         try (InputStream responseContent = get(path, statusCode)) {
-            return dom(responseContent, skipDTD);
+            return dom(responseContent, useEmptyDTD);
         }
     }
 
@@ -1285,7 +1285,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @return A result of the request parsed into a dom.
      */
     protected Document getAsDOM(final String path, String encoding) throws Exception {
-        return getAsDOM(path, !path.endsWith("html"), encoding);
+        return getAsDOM(path, true, encoding);
     }
 
     /**
@@ -1399,16 +1399,13 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
-     * <p>When working with {@code html} content use {@code skipDTD=true} to false, to avoid failure due to presense of
-     * DOCTTYPE declaration in html output.
-     *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param skipDTD if true, will avoid loading and validating against the response document schema or DTD
+     * @param useEmptyDTD if true, will avoid loading and validating against the response document schema or DTD
      * @return A result of the request parsed into a dom.
      */
-    protected Document getAsDOM(final String path, final boolean skipDTD) throws Exception {
+    protected Document getAsDOM(final String path, final boolean useEmptyDTD) throws Exception {
         try (InputStream responseContent = get(path)) {
-            return dom(responseContent, skipDTD);
+            return dom(responseContent, useEmptyDTD);
         }
     }
 
@@ -1416,12 +1413,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param skipDTD if true, will avoid loading and validating against the response document schema or DTD
+     * @param useEmptyDTD if true, will avoid loading and validating against the response document schema or DTD
      * @param encoding Overide for the encoding of the document.
      * @return A result of the request parsed into a dom.
      */
-    protected Document getAsDOM(final String path, final boolean skipDTD, String encoding) throws Exception {
-        return dom(get(path, encoding), skipDTD, encoding);
+    protected Document getAsDOM(final String path, final boolean useEmptyDTD, String encoding) throws Exception {
+        return dom(get(path, encoding), useEmptyDTD, encoding);
     }
 
     /**
@@ -1490,9 +1487,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param path The porition of the request after the context ( no query string ), example: 'wms'.
      * @return An input stream which is the result of the request.
      */
-    protected Document postAsDOM(String path, String xml, List<Exception> validationErrors, boolean skipDTD)
+    protected Document postAsDOM(String path, String xml, List<Exception> validationErrors, boolean useEmptyDTD)
             throws Exception {
-        return dom(post(path, xml), skipDTD);
+        return dom(post(path, xml), useEmptyDTD);
     }
 
     protected String getAsString(String path) throws Exception {
@@ -1529,32 +1526,32 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Parses a stream into a dom using default charset encoding.
      *
-     * @param skipDTD If true, will provide empty xml document for DTD references
+     * @param useEmptyDTD If true, will provide empty xml document for DTD references
      */
-    protected Document dom(InputStream input, boolean skipDTD)
+    protected Document dom(InputStream input, boolean useEmptyDTD)
             throws ParserConfigurationException, SAXException, IOException {
-        return dom(input, skipDTD, null);
+        return dom(input, useEmptyDTD, null);
     }
 
     /**
-     * Parse input stream into document, be sure to use {@code skipDTD} when content includes DOCTYPE to substitute in
-     * an empty xml document.
+     * Parse input stream into document, be sure to use {@code useEmptyDTD} when content includes DOCTYPE to substitute
+     * in an empty xml document.
      *
-     * @param stream Inputsteam
-     * @param skipDTD {@code true} to intercept external entity references with empty xml document.
+     * @param stream InputStream
+     * @param useEmptyDTD {@code true} to intercept external entity references with empty xml document.
      * @param encoding stream encoding, or {@code null} for default Charset encoding.
-     * @return
+     * @return Document
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException
      */
-    protected Document dom(InputStream stream, boolean skipDTD, String encoding)
+    protected Document dom(InputStream stream, boolean useEmptyDTD, String encoding)
             throws ParserConfigurationException, SAXException, IOException {
 
         InputSource input = new InputSource(stream);
         input.setEncoding(encoding != null ? encoding : Charset.defaultCharset().name());
 
-        if (skipDTD) {
+        if (useEmptyDTD) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // NOPMD AvoidDocumentBuilderFactory
             factory.setNamespaceAware(true);
             factory.setValidating(false);

@@ -1266,13 +1266,13 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param useEmptyDTD if true, will avoid loading and validating against the response document schema or DTD
+     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema or DTD
      * @param statusCode Expected status code
      * @return A result of the request parsed into a dom.
      */
-    protected Document getAsDOM(final String path, boolean useEmptyDTD, int statusCode) throws Exception {
+    protected Document getAsDOM(final String path, boolean offlineResourceResolution, int statusCode) throws Exception {
         try (InputStream responseContent = get(path, statusCode)) {
-            return dom(responseContent, useEmptyDTD);
+            return dom(responseContent, offlineResourceResolution);
         }
     }
 
@@ -1400,12 +1400,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param useEmptyDTD if true, will avoid loading and validating against the response document schema or DTD
+     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema or DTD
      * @return A result of the request parsed into a dom.
      */
-    protected Document getAsDOM(final String path, final boolean useEmptyDTD) throws Exception {
+    protected Document getAsDOM(final String path, final boolean offlineResourceResolution) throws Exception {
         try (InputStream responseContent = get(path)) {
-            return dom(responseContent, useEmptyDTD);
+            return dom(responseContent, offlineResourceResolution);
         }
     }
 
@@ -1413,12 +1413,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param useEmptyDTD if true, will avoid loading and validating against the response document schema or DTD
+     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema or DTD
      * @param encoding Overide for the encoding of the document.
      * @return A result of the request parsed into a dom.
      */
-    protected Document getAsDOM(final String path, final boolean useEmptyDTD, String encoding) throws Exception {
-        return dom(get(path, encoding), useEmptyDTD, encoding);
+    protected Document getAsDOM(final String path, final boolean offlineResourceResolution, String encoding) throws Exception {
+        return dom(get(path, encoding), offlineResourceResolution, encoding);
     }
 
     /**
@@ -1487,9 +1487,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param path The porition of the request after the context ( no query string ), example: 'wms'.
      * @return An input stream which is the result of the request.
      */
-    protected Document postAsDOM(String path, String xml, List<Exception> validationErrors, boolean useEmptyDTD)
+    protected Document postAsDOM(String path, String xml, List<Exception> validationErrors, boolean offlineResourceResolution)
             throws Exception {
-        return dom(post(path, xml), useEmptyDTD);
+        return dom(post(path, xml), offlineResourceResolution);
     }
 
     protected String getAsString(String path) throws Exception {
@@ -1526,32 +1526,32 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Parses a stream into a dom using default charset encoding.
      *
-     * @param useEmptyDTD If true, will provide empty xml document for DTD references
+     * @param offlineResourceResolution If true, will provide empty xml document for DTD references
      */
-    protected Document dom(InputStream input, boolean useEmptyDTD)
+    protected Document dom(InputStream input, boolean offlineResourceResolution)
             throws ParserConfigurationException, SAXException, IOException {
-        return dom(input, useEmptyDTD, null);
+        return dom(input, offlineResourceResolution, null);
     }
 
     /**
-     * Parse input stream into document, be sure to use {@code useEmptyDTD} when content includes DOCTYPE to substitute
+     * Parse input stream into document, be sure to use {@code offlineResourceResolution} when content includes DOCTYPE to substitute
      * in an empty xml document.
      *
      * @param stream InputStream
-     * @param useEmptyDTD {@code true} to intercept external entity references with empty xml document.
+     * @param offlineResourceResolution {@code true} to intercept external entity references with empty xml document.
      * @param encoding stream encoding, or {@code null} for default Charset encoding.
      * @return Document
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException
      */
-    protected Document dom(InputStream stream, boolean useEmptyDTD, String encoding)
+    protected Document dom(InputStream stream, boolean offlineResourceResolution, String encoding)
             throws ParserConfigurationException, SAXException, IOException {
 
         InputSource input = new InputSource(stream);
         input.setEncoding(encoding != null ? encoding : Charset.defaultCharset().name());
 
-        if (useEmptyDTD) {
+        if (offlineResourceResolution) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // NOPMD AvoidDocumentBuilderFactory
             factory.setNamespaceAware(true);
             factory.setValidating(false);

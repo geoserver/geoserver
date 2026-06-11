@@ -11,7 +11,6 @@ The following community modules have indicated a wish to graduate. In each case 
 
 <div class="grid cards" markdown>
 
-- [OAuth2 OpenID Connect](oidc/index.md)
 - [OpenSearch for EO](opensearch-eo/index.md)
 
 </div>

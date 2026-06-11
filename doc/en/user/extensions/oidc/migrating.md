@@ -2,7 +2,7 @@
 
 GeoServer 3.0 replaced the separate Spring Security 5 era authentication plugins with a single [OpenID Connect / OAuth2 connector](index.md). The old filters and the Keycloak role service no longer exist, so their persisted configuration in a data directory created by GeoServer 2.x can no longer be loaded.
 
-This page explains what happens when such a data directory is opened by GeoServer 3.x, and how to migrate each legacy authentication filter to the new connector.
+This page explains what happens when GeoServer 2.x data directory is opened by GeoServer 3.x, and how to migrate each legacy authentication filter to the new connector.
 
 ## Before you migrate: keep a non-OAuth admin login
 

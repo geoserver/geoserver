@@ -52,22 +52,39 @@ Use the **layer** selector in the side panel on the left of the welcome page to 
 
 The **workspace** selector, along with the page contact information and web services, are updated to match the layer selected.
 
-## Server Overview (Administrators)
+## Administration
 
-When logged in with administrative credentials a configuration overview is provided, along with any information or warning notifications.
+When logged in with administrative credentials a configuration overview is provided, access to common actions, along with any information or warning notifications.
 
-![](images/welcome-admin.png)
+![](images/global-admin.png)
 
-*Welcome Administrator Feedback*
+*Global Administration*
 
-Click **Layers summary** link to navigate to the [Layers page](../data/webadmin/layers.md), press [Add layers](../data/webadmin/layers.md#data_webadmin_layers_add_a_layer) to create a new layer.
+For global context:
 
-Click **Stores summary** link to navigate to the [Stores page](../data/webadmin/stores.md), press [Add stores](../data/webadmin/stores.md#data_webadmin_stores_add_a_store) to create a new store.
+* Click **Layers** link to navigate to the [Layers page](../data/webadmin/layers.md). If no layers are available the option to [Add layers](../data/webadmin/layers.md#data_webadmin_layers_add_a_layer) to create a new layer.
 
-Click **Workspaces summary** link to navigate to the [Workspaces page](../data/webadmin/workspaces.md), press [Add workspaces](../data/webadmin/workspaces.md#data_webadmin_workspaces_add_workspace) to create a new workspace.
+* Click **Stores** link to navigate to the [Stores page](../data/webadmin/stores.md). If no stores are available press [Add stores](../data/webadmin/stores.md#data_webadmin_stores_add_a_store) to create a new store.
 
-### Information and Warnings
+* Click **Workspaces** link to navigate to the [Workspaces page](../data/webadmin/workspaces.md). If no workspace is available, press [Add workspaces](../data/webadmin/workspaces.md#data_webadmin_workspaces_add_workspace) to create a new workspace.
 
-GeoServer status information messages provide feedback on normal operation.
+For information and warnings:
 
-Warnings describe configuration issues to be addressed, often with a short-cut to the configuration page used to address the issue.
+* GeoServer status information messages provide feedback on normal operation.
+* Warnings describe configuration issues to be addressed, often with a short-cut to the configuration page used to address the issue.
+
+![](images/workspace-admin.png)
+
+*Workspace Administration*
+
+For workspace context:
+
+* Click **Edit Workspace** link to navigate to [Workspace editor](../data/webadmin/workspaces.md#data_webadmin_workspaces_edit).
+
+![](images/layer-admin.png)
+
+*Layer Administration*
+
+For workspace context:
+
+* Click **Edit Layer** link to navigate to [Layer editor](../data/webadmin/layers.md#data_webadmin_layers_edit_data).

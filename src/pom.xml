@@ -94,7 +94,7 @@
     <!-- ================================ -->
     <!-- Project version management       -->
     <!-- ================================ -->
-    <gt.version>35-SNAPSHOT</gt.version>
+    <gt.version>35.0</gt.version>
     <gwc.version>2.0-SNAPSHOT</gwc.version>
     <spring.version>7.0.8</spring.version>
     <spring.security.version>7.0.5</spring.security.version>

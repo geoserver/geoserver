@@ -30239,7 +30239,7 @@
 
 <h1 id="migrating-from-the-legacy-oauth2oidc-plugins">Migrating from the legacy OAuth2/OIDC plugins<a class="headerlink" href="#migrating-from-the-legacy-oauth2oidc-plugins" title="Permanent link">&para;</a></h1>
 <p>GeoServer 3.0 replaced the separate Spring Security 5 era authentication plugins with a single <a href="../">OpenID Connect / OAuth2 connector</a>. The old filters and the Keycloak role service no longer exist, so their persisted configuration in a data directory created by GeoServer 2.x can no longer be loaded.</p>
-<p>This page explains what happens when such a data directory is opened by GeoServer 3.x, and how to migrate each legacy authentication filter to the new connector.</p>
+<p>This page explains what happens when GeoServer 2.x data directory is opened by GeoServer 3.x, and how to migrate each legacy authentication filter to the new connector.</p>
 <h2 id="before-you-migrate-keep-a-non-oauth-admin-login">Before you migrate: keep a non-OAuth admin login<a class="headerlink" href="#before-you-migrate-keep-a-non-oauth-admin-login" title="Permanent link">&para;</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>

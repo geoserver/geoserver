@@ -29842,21 +29842,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#welcome" class="md-nav__link">
+  <a href="#geoserver" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Welcome
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#about-status" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        About &amp; Status
+        GeoServer
       
     </span>
   </a>
@@ -29886,10 +29875,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#settings" class="md-nav__link">
+  <a href="#server" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Settings
+        Server
       
     </span>
   </a>
@@ -29897,10 +29886,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tile-caching" class="md-nav__link">
+  <a href="#tile-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Tile Caching
+        Tile Cache
       
     </span>
   </a>
@@ -29919,32 +29908,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#demos" class="md-nav__link">
+  <a href="#utilities" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Demos
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tools" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tools
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#extensions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Extensions
+        Utilities
       
     </span>
   </a>
@@ -29964,10 +29931,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#navigation" class="md-nav__link">
+  <a href="#search" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Navigation
+        Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#navigation-menu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Navigation Menu
       
     </span>
   </a>
@@ -29990,6 +29979,17 @@
     <span class="md-ellipsis">
       
         Choosing the UI language
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extensions
       
     </span>
   </a>
@@ -30041,35 +30041,31 @@
 <p>The Web administration interface is a web-based tool for configuring all aspects of GeoServer, from adding data to changing service settings. In a default GeoServer installation, this interface is accessed via a web browser at <code>http://localhost:8080/geoserver/web</code>. However, this URL may vary depending on your local installation.</p>
 <p><img alt="" src="images/web-admin.png" /></p>
 <p><em>Web admin interface</em></p>
-<p>The following sections detail the menu options available in GeoServer. <strong>Unless otherwise specified, you will need to be logged in with administrative credentials to see the complete list of pages.</strong></p>
-<h2 id="welcome">Welcome<a class="headerlink" href="#welcome" title="Permanent link">&para;</a></h2>
+<p>The following sections detail the top-level navigation menu options available in GeoServer. <strong>Unless otherwise specified, you will need to be logged in with administrative credentials to see the complete list of pages.</strong></p>
+<h2 id="geoserver">GeoServer<a class="headerlink" href="#geoserver" title="Permanent link">&para;</a></h2>
+<p>The GeoServer menu allows visitors to find and access information and web services.
+<strong>You do not need to be logged into GeoServer to access the GeoServer menu.</strong></p>
 <ul>
-<li>The <a href="welcome/">Welcome</a> page lists the web services published by GeoServer.</li>
-</ul>
+<li>
+<p>The <a href="welcome/">Welcome</a> page lists the web services published by GeoServer.</p>
+<p>Changing the context to a <strong>Workspace</strong> adjusts the welcome page to show the web services available the workspace.</p>
+<p>Changing the content to a <strong>Layer</strong> adjust to show information about the Layer, along with download links, and web
+  services available for interaction.</p>
 <p>When logged in with administrative credentials a configuration overview is provided, along with any information or warning notifications.</p>
-<h2 id="about-status">About &amp; Status<a class="headerlink" href="#about-status" title="Permanent link">&para;</a></h2>
-<p>The <strong>About &amp; Status</strong> section provides access to GeoServer diagnostic and configuration tools, and can be particularly useful for debugging.</p>
-<ul>
-<li>
-<p>The <a href="../configuration/status/">Status</a> page shows a summary of server configuration parameters and run-time status.</p>
 </li>
 <li>
-<p>The <a href="../configuration/logging/">GeoServer Logs</a> page shows the GeoServer log output. This is useful for determining errors without having to leave the browser.</p>
+<p>The <a href="../data/webadmin/browselayers/">Browse Layers</a> page provides links to layer previews in different output formats, including the frequently used OpenLayers and KML formats. This page helps to visually verify and explore the configuration of a particular layer.</p>
 </li>
 <li>
-<p>The <a href="../configuration/contact/">Contact Information</a> page sets the public contact information available in the Capabilities document of the WMS server.</p>
+<p>The <a href="../configuration/demos/">Demos</a> section contains links to example WMS, WCS, and WFS requests for GeoServer as well as a listing all SRS info known to GeoServer. In addition, there is a reprojection console for converting coordinates between spatial reference systems, and a request builder for WCS requests.</p>
 </li>
 <li>
 <p>The <a href="about/">About GeoServer Page</a> section provides links to the GeoServer documentation, homepage and bug tracker.</p>
 </li>
 </ul>
-<p><strong>You do not need to be logged into GeoServer to access this page.</strong></p>
 <h2 id="data">Data<a class="headerlink" href="#data" title="Permanent link">&para;</a></h2>
-<p>The <a href="../data/">Data management</a> section contains configuration options for all the different data-related settings.</p>
-<ul>
-<li>The <a href="../data/webadmin/browselayers/">Browse Layers</a> page provides links to layer previews in different output formats, including the frequently used OpenLayers and KML formats. This page helps to visually verify and explore the configuration of a particular layer.</li>
-</ul>
-<p><strong>You do not need to be logged into GeoServer to access Browse Layers.</strong></p>
+<p>The <a href="../data/">Data management</a> menu contains configuration options for all the different data-related settings.
+<strong>These pages are shown to administrators, and users that have workspace or layer admin permissions.</strong></p>
 <ul>
 <li>
 <p>The <a href="../data/webadmin/workspaces/">Workspaces</a> page displays a list of workspaces, with the ability to add, edit, and delete. Also shows which workspace is the default for the server.</p>
@@ -30088,27 +30084,30 @@
 </li>
 </ul>
 <p>In each of these pages that contain a table, there are three different ways to locate an object: sorting, searching, and paging. To alphabetically sort a data type, click on the column header. For simple searching, enter the search criteria in the search box and hit Enter. And to page through the entries (25 at a time), use the arrow buttons located on the bottom and top of the table.</p>
-<p><strong>These pages are shown to administrators, and users that have workspace or layer admin permissions.</strong></p>
 <h2 id="services">Services<a class="headerlink" href="#services" title="Permanent link">&para;</a></h2>
 <p>The <a href="../services/">Services</a> section is for configuring the services published by GeoServer.</p>
 <ul>
-<li>The <a href="../services/wcs/webadmin/">Web Coverage Service (WCS)</a> page manages metadata, resource limits, and SRS availability for WCS.</li>
-<li>The <a href="../services/wfs/webadmin/">Web Feature Service (WFS)</a> page manages metadata, feature publishing, service level options, and data-specific output for WFS.</li>
-<li>The <a href="../services/wms/webadmin/">Web Map Service (WMS)</a> page manages metadata, resource limits, SRS availability, and other data-specific output for WMS.</li>
-<li>The <a href="../services/wps/administration/">Web Processing Service (WPS)</a> page manages metadata and resource limits for WPS.</li>
+<li>The <a href="../services/wms/webadmin/">Mapping</a> page manages metadata, resource limits, SRS availability, and other data-specific output for WMS services.</li>
+<li>The <a href="../services/wfs/webadmin/">Vectors</a> page manages metadata, feature publishing, service level options, and data-specific output for WFS and OGCAPI-Features services.</li>
+<li>The <a href="../services/wcs/webadmin/">Rasters</a> page manages metadata, resource limits, and SRS availability for raster and imagery services including WCS.</li>
+<li>The <a href="../services/wmts/webadmin/">Tiling</a> page manages visualized geospatial data as cached tile sets for WMTS.</li>
+<li>The <a href="../services/wps/administration/">Process</a> page manages metadata and resource limits for WPS.</li>
 </ul>
-<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h2>
-<p>The <strong>Settings</strong> section contains configuration settings that apply to the entire server.</p>
+<h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">&para;</a></h2>
+<p>The <strong>Server</strong> section configuration settings that apply to the entire server, along with diagnostic and configuration tools, and can be particularly useful when troubleshooting.</p>
 <ul>
+<li>The <a href="../configuration/contact/">Contact Information</a> page sets the public contact information available in the Capabilities document of the WMS server.</li>
+<li>The <a href="../configuration/status/">Server Status</a> page shows a summary of server configuration parameters and run-time status.</li>
+<li>The <a href="../configuration/logging/">Logs</a> page shows the GeoServer log output. This is useful for determining errors without having to leave the browser.</li>
 <li>The <a href="../configuration/globalsettings/">Global Settings</a> page configures messaging, logging, character and proxy settings for the entire server.</li>
 <li>The <a href="../configuration/image_processing/">Image Processing</a> page configures several image processing parameters, used by both WMS and WCS operations.</li>
-<li>The <a href="../configuration/raster_access/">Coverage Access</a> page configures settings related to loading and publishing coverages.</li>
+<li>The <a href="../configuration/raster_access/">Raster Access</a> page configures settings related to loading and publishing coverages.</li>
 </ul>
-<h2 id="tile-caching">Tile Caching<a class="headerlink" href="#tile-caching" title="Permanent link">&para;</a></h2>
+<h2 id="tile-cache">Tile Cache<a class="headerlink" href="#tile-cache" title="Permanent link">&para;</a></h2>
 <p>The <strong>Tile Caching</strong> section configures the embedded <a href="../geowebcache/">GeoWebCache</a>.</p>
 <ul>
 <li>The <a href="../geowebcache/webadmin/layers/">Tile Layers</a> page shows which layers in GeoServer are also available as tiled (cached)layers, with the ability to add, edit, and delete.</li>
-<li>The <a href="../geowebcache/webadmin/defaults/">Caching Defaults</a> page sets the global options for the caching service.</li>
+<li>The <a href="../geowebcache/webadmin/defaults/">Tile Cache Settings</a> page sets the global options for the caching service.</li>
 <li>The <a href="../geowebcache/webadmin/gridsets/">Gridsets</a> page shows all available gridsets for the tile caches, with the ability to add, edit, and delete.</li>
 <li>The <a href="../geowebcache/webadmin/diskquotas/">Disk Quota</a> page sets the options for tile cache management on disk, including strategies to reduce file size when necessary.</li>
 <li>The <a href="../geowebcache/webadmin/blobstores/">BlobStores</a> pages manages the different blobstores (tile cache sources) known to the embedded GeoWebCache.</li>
@@ -30121,24 +30120,40 @@
 <li>The <a href="../security/webadmin/passwords/">Passwords</a> page manages the password policies for users and the root account.</li>
 <li>The <a href="../security/webadmin/ugr/">Users, Groups, Roles</a> page manages the users, groups, and roles, and how they are all associated with each other. Passwords for user accounts can be changed here.</li>
 <li>The <a href="../security/webadmin/data/">Data</a> page manages the data-level security options, allowing workspaces and layers to be restricted by role.</li>
+<li>The <a href="../security/urlchecks/">URL Checks</a> page allows administrators to limit the machines GeoServer can interact with.</li>
+<li>The <a href="../security/csp/">Content Security Policy</a> page allows administrators to control HTTP CSP response headers.</li>
+<li>The <a href="../production/container/#production_container.enable_cors">CORS</a> page allows administrators to control the Cross Origin Request Headers.</li>
 <li>The <a href="../security/webadmin/services/">Services</a> page manages the service-level security options, allowing services and operations to be restricted by role.</li>
 </ul>
-<h2 id="demos">Demos<a class="headerlink" href="#demos" title="Permanent link">&para;</a></h2>
-<p>The <a href="../configuration/demos/">Demos</a> section contains links to example WMS, WCS, and WFS requests for GeoServer as well as a listing all SRS info known to GeoServer. In addition, there is a reprojection console for converting coordinates between spatial reference systems, and a request builder for WCS requests.</p>
-<p><strong>You do not need to be logged into GeoServer to access these pages.</strong></p>
-<h2 id="tools">Tools<a class="headerlink" href="#tools" title="Permanent link">&para;</a></h2>
-<p>The <a href="../configuration/tools/">Tools</a> section contains administrative tools.</p>
+<h2 id="utilities">Utilities<a class="headerlink" href="#utilities" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The <a href="../configuration/tools/resource/">Web Resource</a> tool provides management of data directory icons, fonts, and configuration files.</li>
+<li>
+<p>The <a href="../configuration/tools/">Tools</a> section contains administrative tools.</p>
+</li>
+<li>
+<p>The <a href="../configuration/tools/resource/">Web Resource</a> tool provides management of data directory icons, fonts, and configuration files.</p>
+</li>
 <li>The <a href="../configuration/tools/bulk/">Catalog Bulk Load Tool</a> can bulk copy configuration for testing</li>
 </ul>
-<h2 id="extensions">Extensions<a class="headerlink" href="#extensions" title="Permanent link">&para;</a></h2>
-<p><a href="../extensions/">GeoServer extensions</a> can add functionality and extra options to the web interface. Details can be found in the section for each extension.</p>
 <h2 id="user-interface">User interface<a class="headerlink" href="#user-interface" title="Permanent link">&para;</a></h2>
-<h3 id="navigation">Navigation<a class="headerlink" href="#navigation" title="Permanent link">&para;</a></h3>
-<p>A navigation menu is provided along the left-hand-side of the screen listing configuration pages.</p>
+<h3 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h3>
+<p>Using the left hand side search field to find published information. Autocomplete results are shown as you type, and results are listed in a tree which can be navigated below.</p>
+<p><img alt="" src="images/search.png" /></p>
+<p><em>Search</em></p>
+<h3 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h3>
+<p>Clicking on a search item establishes the context which is shown as breadcrumbs along the top of the page. A drop-down context menu provides quick access to actions that can be performed by the current user.</p>
+<p><img alt="" src="images/context.png" /></p>
+<p><em>Context Menu</em></p>
+<p>Page content adjusts to the current context. As an example the welcome page adjusts to showing the layer tile and description, along with preview links, sample data downloads, metadata and data links configured.</p>
+<p><img alt="" src="images/context-page.png" /></p>
+<p><em>Context Page</em></p>
+<h3 id="navigation-menu">Navigation Menu<a class="headerlink" href="#navigation-menu" title="Permanent link">&para;</a></h3>
+<p>A top-level navigation menu is provided listing configuration pages.</p>
 <p><img alt="" src="images/menu.png" /></p>
-<p><em>Application Menu</em></p>
+<p><em>Navigation Menu</em></p>
+<p>When working with a narrow display this menu is repositioned as a drop-down menu.</p>
+<p><img alt="" src="images/menu-narrow.png" width="50%" /><br />
+<em>Navigation Menu on Narrow Display</em></p>
 <p>To return to the main <a href="welcome/">Welcome</a> page click on the GeoServer logo at the top of the navigation menu.</p>
 <h3 id="user-login">User login<a class="headerlink" href="#user-login" title="Permanent link">&para;</a></h3>
 <p>The upper right of the web administration interface provides options to <a href="../gettingstarted/web-admin-quickstart/#logging_in">login</a>.</p>
@@ -30152,6 +30167,8 @@
 <p><img alt="" src="images/language-fr.png" /></p>
 <p><em>Language Chooser fr</em></p>
 <p>The language choice is saved in the session, as well as in a cookie, to retain the language choice across user sessions.</p>
+<h3 id="extensions">Extensions<a class="headerlink" href="#extensions" title="Permanent link">&para;</a></h3>
+<p><a href="../extensions/">GeoServer extensions</a> can add functionality and extra options to the web interface. Details can be found in the section for each extension.</p>
 <h3 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h3>
 <p>Please see:</p>
 <ul>

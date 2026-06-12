@@ -139,10 +139,10 @@ When creating the first release candidate of a series, there are some extra step
         git pull
         git status
 
-2.  Create the new stable branch and push it to GitHub; for example, if the main development branch is `2.28-SNAPSHOT` and the remote for the official GeoServer is called `geoserver`:
+2.  Create the new stable branch and push it to GitHub; for example, if the main development branch is `3.0.0-SNAPSHOT` and the remote for the official GeoServer is called `geoserver`:
 
-        git checkout -b 2.28.x
-        git push geoserver 2.28.x
+        git checkout -b 3.0.x
+        git push geoserver 3.0.x
 
 3.  Enable [GitHub branch protection](https://github.com/geoserver/geoserver/settings/branches) for the new stable branch: tick "Protect this branch" (only) and press "Save changes".
 
@@ -152,70 +152,27 @@ When creating the first release candidate of a series, there are some extra step
 
         git checkout main
 
-5.  Update the version in all pom.xml files; for example, if changing the main development branch from `2.28-SNAPSHOT` to `2.29-SNAPSHOT`.
+5.  Update the version in all pom.xml files; for example, if changing the main development branch from `3.0.0-SNAPSHOT` to `3.1.0-SNAPSHOT`.
 
-    Edit **`build/rename.xml`** to update GeoServer, GeoTools and GeoWebCache version numbers:
-
-    ```xml
-    <property name="current" value="2.28"/>
-    <property name="release" value="2.29"/>
-    ..
-    <replacefilter token="34-SNAPSHOT" value="35-SNAPSHOT"/>
-    <replacefilter token="1.28-SNAPSHOT" value="1.29-SNAPSHOT"/>
-    ```
-
-    And then run:
+    Run **`build/rename.xml`**, passing the current and next GeoServer versions along with the corresponding GeoTools and GeoWebCache version bumps:
 
     ```shell
-    ant -f build/rename.xml 
+    ant -f build/rename.xml \
+        -Dcurrent=3.0.0 -Drelease=3.1.0 \
+        -Dgt.current=35 -Dgt.release=36 \
+        -Dgwc.current=2.0 -Dgwc.release=2.1
     ```
 
-!!! note
+    This updates all `pom.xml` files, the Windows installer configs, release artifact descriptors, and `doc/version.py` in one step.
 
-    `sed` behaves differently on Linux vs. Mac OS X. If running on OS X, the `-i` should be followed by `'' -e` for each of these `sed` commands.
+6.  Commit the changes and push to the main development branch on GitHub:
 
-Update release artifact paths and labels, for example, if changing the main development branch from `2.28-SNAPSHOT` to `2.29-SNAPSHOT`:
-
-    sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' src/release/bin.xml
-    sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' src/release/installer/win/GeoServerEXE.nsi
-    sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' src/release/installer/win/wrapper.conf
-
-!!! note
-
-    These can be written as a single `sed` command with multiple files.
-
-Update GeoTools dependency; for example if changing from `28-SNAPSHOT` to `29-SNAPSHOT`:
-
-    sed -i 's/34-SNAPSHOT/35-SNAPSHOT/g' src/pom.xml
-
-Update GeoWebCache dependency; for example if changing from `1.28-SNAPSHOT` to `1.29-SNAPSHOT`:
-
-    sed -i 's/1.28-SNAPSHOT/1.29-SNAPSHOT/g' src/pom.xml
-
-Manually update hardcoded versions in configuration files:
-
-- `doc/en/developer/source/conf.py`
-- `doc/en/docguide/source/conf.py`
-- `doc/en/user/source/conf.py`
-
-6.  Add the new version to the documentation index (`doc/en/index.html`) just after line 105, e.g.:
-
-    ```xml
-    <tr>
-    <td><strong><a href="https://geoserver.org/release/2.29.x/">2.29.x</a></strong></td>
-    <td><a href="2.29.x/en/user/">User Manual</a></td>
-    <td><a href="2.29.x/en/developer/">Developer Manual</a></td>
-    </tr>
-    ```
-
-7.  Commit the changes and push to the main development branch on GitHub:
-
-        git commit -am "Updated version to 2.29-SNAPSHOT, updated GeoTools dependency to 35-SNAPSHOT, updated GeoWebCache dependency to 1.29-SNAPSHOT, and related changes"
+        git commit -am "Updated version to 3.1.0-SNAPSHOT, updated GeoTools dependency to 36-SNAPSHOT, updated GeoWebCache dependency to 2.1-SNAPSHOT"
         git push geoserver main
 
-8.  Create the new RC version in [Jira](https://osgeo-org.atlassian.net/projects/GEOS) for issues on the main development branch; for example, if the main development branch is now `2.29-SNAPSHOT`, create a Jira version `2.29.0` for the first release of the `2.29.x` series
+7.  Create the new RC version in [Jira](https://osgeo-org.atlassian.net/projects/GEOS) for issues on the main development branch; for example, if the main development branch is now `3.1.0-SNAPSHOT`, create a Jira version `3.1.0` for the first release of the `3.1.x` series
 
-9.  Update the main, nightly and live-docs jobs on build.geoserver.org:
+8.  Update the main, nightly and live-docs jobs on build.geoserver.org:
 
     1.  Disable the maintenance jobs, and remove them from the geoserver view.
 
@@ -241,17 +198,15 @@ Manually update hardcoded versions in configuration files:
     4.  Update the **Dashboard \> Manage Jenkins \> System** global properties environmental variable used by the `geoserver-main-nightly` docker build step to have correct name for publishing `main` branch.
 
         - Name: `GEOSERVER_MAIN_DOCKER_NAME`
-        - Value: `2.29-SNAPSHOT`
+        - Value: `3.1.0-SNAPSHOT`
 
-10. Update the MAIN variable in Docker [release.sh](https://github.com/geoserver/docker/blob/master/build/release.sh#L6) to the new main branch 2.29.
+9.  Update the MAIN variable in Docker [release.sh](https://github.com/geoserver/docker/blob/master/build/release.sh#L6) to the new main branch version.
 
-11. Announce on the developer group that the new stable branch has been created.
+10. Announce on the developer group that the new stable branch has been created.
 
-12. Switch to the new branch and update the documentation links, replacing `docs.geoserver.org/latest` with `docs.geoserver.org/2.29.x` (for example):
+11. Switch to the new stable branch and update the documentation links, replacing `docs.geoserver.org/latest` with `docs.geoserver.org/3.0.x` (for example):
 
     - `README.md`
-    - `doc/en/developer/source/conf.py`
-    - `doc/en/user/source/conf.py`
 
 ## Build the Release
 

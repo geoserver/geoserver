@@ -130,10 +130,27 @@ git reset --hard HEAD
 git checkout $branch
 git pull origin $branch
 
-# check to see if a release branch already exists
+# check to see if a release branch already exists locally
 if [ `git branch --list $tag.x | wc -l` == 1 ]; then
-  echo "branch $tag.x exists, deleting it"
+  echo "branch $tag.x exists locally, deleting it"
   git branch -D $tag.x
+fi
+
+# delete remote release branch if it exists (restart safety)
+# guard: only delete if the branch is still a fresh release branch (≤2 commits ahead
+# of $branch), not a grown stable patch branch with accumulated emergency releases
+if git ls-remote --exit-code --heads origin $tag.x > /dev/null 2>&1; then
+  git fetch origin $tag.x:$tag.x --no-tags
+  ahead=$(git rev-list --count origin/$branch..origin/$tag.x 2>/dev/null || echo 0)
+  if [ "$ahead" -le 2 ]; then
+    echo "branch $tag.x exists on origin (fresh, $ahead commits ahead), deleting it"
+    git push origin --delete $tag.x
+    git branch -D $tag.x 2>/dev/null || true
+  else
+    echo "branch $tag.x exists on origin with $ahead commits ahead of $branch — looks like a stable patch branch, not deleting"
+    echo "If you really want to restart, delete branch $tag.x manually first"
+    exit 1
+  fi
 fi
 
 # checkout the branch to release from

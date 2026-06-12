@@ -29967,10 +29967,10 @@
 <li>
 <p>Download:</p>
 <ul>
-<li>3.0.0 <a href="https://sourceforge.net/projects/geoserver/files/GeoServer/3.0.0/extensions/geoserver-3.0.0-ysld-plugin.zip">geoserver-3.0.0-ysld-plugin.zip</a></li>
-<li>3.0-SNAPSHOT <a href="https://build.geoserver.org/geoserver/main/ext-latest/geoserver-3.0-SNAPSHOT-ysld-plugin.zip">geoserver-3.0-SNAPSHOT-ysld-plugin.zip</a></li>
+<li>3.1.0 <a href="https://sourceforge.net/projects/geoserver/files/GeoServer/3.1.0/extensions/geoserver-3.1.0-ysld-plugin.zip">geoserver-3.1.0-ysld-plugin.zip</a></li>
+<li>3.1-SNAPSHOT <a href="https://build.geoserver.org/geoserver/main/ext-latest/geoserver-3.1-SNAPSHOT-ysld-plugin.zip">geoserver-3.1-SNAPSHOT-ysld-plugin.zip</a></li>
 </ul>
-<p>Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example 3.0.0 above).</p>
+<p>Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example 3.1.0 above).</p>
 </li>
 <li>
 <p>Extract the contents of the archive into the <strong><code>WEB-INF/lib</code></strong> directory in GeoServer. Make sure you do not create any sub-directories during the extraction process.</p>
@@ -29986,7 +29986,7 @@
 <ol>
 <li>
 <p>The Docker image supports the use of YSLD extension</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker pull docker.osgeo.org/geoserver:3.0.x
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker pull docker.osgeo.org/geoserver:3.1.x
 </code></pre></div>
 </li>
 <li>
@@ -29994,7 +29994,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker run -it -p 8080:8080 \
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    --env INSTALL_EXTENSIONS=true \
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    --env STABLE_EXTENSIONS=&quot;ysld&quot; \
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    docker.osgeo.org/geoserver:3.0.x
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    docker.osgeo.org/geoserver:3.1.x
 </code></pre></div>
 </li>
 </ol>

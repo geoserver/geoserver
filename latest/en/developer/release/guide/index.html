@@ -30643,9 +30643,9 @@ git status
 </code></pre></div>
 </li>
 <li>
-<p>Create the new stable branch and push it to GitHub; for example, if the main development branch is <code>2.28-SNAPSHOT</code> and the remote for the official GeoServer is called <code>geoserver</code>:</p>
-<div class="highlight"><pre><span></span><code>git checkout -b 2.28.x
-git push geoserver 2.28.x
+<p>Create the new stable branch and push it to GitHub; for example, if the main development branch is <code>3.0.0-SNAPSHOT</code> and the remote for the official GeoServer is called <code>geoserver</code>:</p>
+<div class="highlight"><pre><span></span><code>git checkout -b 3.0.x
+git push geoserver 3.0.x
 </code></pre></div>
 </li>
 <li>
@@ -30658,62 +30658,23 @@ git push geoserver 2.28.x
 </code></pre></div>
 </li>
 <li>
-<p>Update the version in all pom.xml files; for example, if changing the main development branch from <code>2.28-SNAPSHOT</code> to <code>2.29-SNAPSHOT</code>.</p>
-<p>Edit <strong><code>build/rename.xml</code></strong> to update GeoServer, GeoTools and GeoWebCache version numbers:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;current&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;2.28&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;release&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;2.29&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>..
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nt">&lt;replacefilter</span><span class="w"> </span><span class="na">token=</span><span class="s">&quot;34-SNAPSHOT&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;35-SNAPSHOT&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nt">&lt;replacefilter</span><span class="w"> </span><span class="na">token=</span><span class="s">&quot;1.28-SNAPSHOT&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;1.29-SNAPSHOT&quot;</span><span class="nt">/&gt;</span>
+<p>Update the version in all pom.xml files; for example, if changing the main development branch from <code>3.0.0-SNAPSHOT</code> to <code>3.1.0-SNAPSHOT</code>.</p>
+<p>Run <strong><code>build/rename.xml</code></strong>, passing the current and next GeoServer versions along with the corresponding GeoTools and GeoWebCache version bumps:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ant<span class="w"> </span>-f<span class="w"> </span>build/rename.xml<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span>-Dcurrent<span class="o">=</span><span class="m">3</span>.0.0<span class="w"> </span>-Drelease<span class="o">=</span><span class="m">3</span>.1.0<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span>-Dgt.current<span class="o">=</span><span class="m">35</span><span class="w"> </span>-Dgt.release<span class="o">=</span><span class="m">36</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span>-Dgwc.current<span class="o">=</span><span class="m">2</span>.0<span class="w"> </span>-Dgwc.release<span class="o">=</span><span class="m">2</span>.1
 </code></pre></div>
-<p>And then run:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ant<span class="w"> </span>-f<span class="w"> </span>build/rename.xml<span class="w"> </span>
-</code></pre></div>
-</li>
-</ol>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code>sed</code> behaves differently on Linux vs. Mac OS X. If running on OS X, the <code>-i</code> should be followed by <code>'' -e</code> for each of these <code>sed</code> commands.</p>
-</div>
-<p>Update release artifact paths and labels, for example, if changing the main development branch from <code>2.28-SNAPSHOT</code> to <code>2.29-SNAPSHOT</code>:</p>
-<div class="highlight"><pre><span></span><code>sed -i &#39;s/2.28-SNAPSHOT/2.29-SNAPSHOT/g&#39; src/release/bin.xml
-sed -i &#39;s/2.28-SNAPSHOT/2.29-SNAPSHOT/g&#39; src/release/installer/win/GeoServerEXE.nsi
-sed -i &#39;s/2.28-SNAPSHOT/2.29-SNAPSHOT/g&#39; src/release/installer/win/wrapper.conf
-</code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>These can be written as a single <code>sed</code> command with multiple files.</p>
-</div>
-<p>Update GeoTools dependency; for example if changing from <code>28-SNAPSHOT</code> to <code>29-SNAPSHOT</code>:</p>
-<div class="highlight"><pre><span></span><code>sed -i &#39;s/34-SNAPSHOT/35-SNAPSHOT/g&#39; src/pom.xml
-</code></pre></div>
-<p>Update GeoWebCache dependency; for example if changing from <code>1.28-SNAPSHOT</code> to <code>1.29-SNAPSHOT</code>:</p>
-<div class="highlight"><pre><span></span><code>sed -i &#39;s/1.28-SNAPSHOT/1.29-SNAPSHOT/g&#39; src/pom.xml
-</code></pre></div>
-<p>Manually update hardcoded versions in configuration files:</p>
-<ul>
-<li><code>doc/en/developer/source/conf.py</code></li>
-<li><code>doc/en/docguide/source/conf.py</code></li>
-<li>
-<p><code>doc/en/user/source/conf.py</code></p>
-</li>
-<li>
-<p>Add the new version to the documentation index (<code>doc/en/index.html</code>) just after line 105, e.g.:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;tr&gt;</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">&lt;td&gt;&lt;strong&gt;&lt;a</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;https://geoserver.org/release/2.29.x/&quot;</span><span class="nt">&gt;</span>2.29.x<span class="nt">&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nt">&lt;td&gt;&lt;a</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;2.29.x/en/user/&quot;</span><span class="nt">&gt;</span>User<span class="w"> </span>Manual<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nt">&lt;td&gt;&lt;a</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;2.29.x/en/developer/&quot;</span><span class="nt">&gt;</span>Developer<span class="w"> </span>Manual<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nt">&lt;/tr&gt;</span>
-</code></pre></div>
+<p>This updates all <code>pom.xml</code> files, the Windows installer configs, release artifact descriptors, and <code>doc/version.py</code> in one step.</p>
 </li>
 <li>
 <p>Commit the changes and push to the main development branch on GitHub:</p>
-<div class="highlight"><pre><span></span><code>git commit -am &quot;Updated version to 2.29-SNAPSHOT, updated GeoTools dependency to 35-SNAPSHOT, updated GeoWebCache dependency to 1.29-SNAPSHOT, and related changes&quot;
+<div class="highlight"><pre><span></span><code>git commit -am &quot;Updated version to 3.1.0-SNAPSHOT, updated GeoTools dependency to 36-SNAPSHOT, updated GeoWebCache dependency to 2.1-SNAPSHOT&quot;
 git push geoserver main
 </code></pre></div>
 </li>
 <li>
-<p>Create the new RC version in <a href="https://osgeo-org.atlassian.net/projects/GEOS">Jira</a> for issues on the main development branch; for example, if the main development branch is now <code>2.29-SNAPSHOT</code>, create a Jira version <code>2.29.0</code> for the first release of the <code>2.29.x</code> series</p>
+<p>Create the new RC version in <a href="https://osgeo-org.atlassian.net/projects/GEOS">Jira</a> for issues on the main development branch; for example, if the main development branch is now <code>3.1.0-SNAPSHOT</code>, create a Jira version <code>3.1.0</code> for the first release of the <code>3.1.x</code> series</p>
 </li>
 <li>
 <p>Update the main, nightly and live-docs jobs on build.geoserver.org:</p>
@@ -30744,26 +30705,24 @@ LINK=maintain
 <p>Update the <strong>Dashboard &gt; Manage Jenkins &gt; System</strong> global properties environmental variable used by the <code>geoserver-main-nightly</code> docker build step to have correct name for publishing <code>main</code> branch.</p>
 <ul>
 <li>Name: <code>GEOSERVER_MAIN_DOCKER_NAME</code></li>
-<li>Value: <code>2.29-SNAPSHOT</code></li>
+<li>Value: <code>3.1.0-SNAPSHOT</code></li>
 </ul>
 </li>
 </ol>
 </li>
 <li>
-<p>Update the MAIN variable in Docker <a href="https://github.com/geoserver/docker/blob/master/build/release.sh#L6">release.sh</a> to the new main branch 2.29.</p>
+<p>Update the MAIN variable in Docker <a href="https://github.com/geoserver/docker/blob/master/build/release.sh#L6">release.sh</a> to the new main branch version.</p>
 </li>
 <li>
 <p>Announce on the developer group that the new stable branch has been created.</p>
 </li>
 <li>
-<p>Switch to the new branch and update the documentation links, replacing <code>docs.geoserver.org/latest</code> with <code>docs.geoserver.org/2.29.x</code> (for example):</p>
+<p>Switch to the new stable branch and update the documentation links, replacing <code>docs.geoserver.org/latest</code> with <code>docs.geoserver.org/3.0.x</code> (for example):</p>
 <ul>
 <li><code>README.md</code></li>
-<li><code>doc/en/developer/source/conf.py</code></li>
-<li><code>doc/en/user/source/conf.py</code></li>
 </ul>
 </li>
-</ul>
+</ol>
 <h2 id="build-the-release">Build the Release<a class="headerlink" href="#build-the-release" title="Permanent link">&para;</a></h2>
 <p>Run the <code>geoserver-release</code> job in Jenkins:</p>
 <ul>
@@ -30828,31 +30787,31 @@ LINK=maintain
 </ul>
 <p>Change the heading to <code>Release notes</code>, and apply the change with <strong>Done</strong>.</p>
 <p>Use <strong>Copy to clipboard</strong> to obtain the markdown, similar to the following:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a># Release notes
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>### Bug
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>[GEOS-10264](https://osgeo-org.atlassian.net/browse/GEOS-10264) Address startup warning File option not set for appender [geoserverlogfile]
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>[GEOS-10263](https://osgeo-org.atlassian.net/browse/GEOS-10263) WPSRequestBuilderTest assumes that JTS:area is the first process in the list
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>[GEOS-10255](https://osgeo-org.atlassian.net/browse/GEOS-10255) i18n user interface inconsistent layout with br tags used for layout
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>[GEOS-10245](https://osgeo-org.atlassian.net/browse/GEOS-10245) jdbcconfig: prefixedName filter field not updated
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>[GEOS-9950](https://osgeo-org.atlassian.net/browse/GEOS-9950) MapPreviewPage logs unable to find property: format.wfs.text/csv continuously
-<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>
-<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>### Improvement
-<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>
-<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>[GEOS-10246](https://osgeo-org.atlassian.net/browse/GEOS-10246) jdbcconfig: performance slow-down from unnecessary transactions
-<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>
-<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>### New Feature
-<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>
-<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>[GEOS-10223](https://osgeo-org.atlassian.net/browse/GEOS-10223) Support MBTiles in OGC Tiles API
-<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>
-<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>### Task
-<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>
-<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>[GEOS-10247](https://osgeo-org.atlassian.net/browse/GEOS-10247) Reuse of service documentation references for workspace, metadata and default language
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a># Release notes
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>### Bug
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>[GEOS-10264](https://osgeo-org.atlassian.net/browse/GEOS-10264) Address startup warning File option not set for appender [geoserverlogfile]
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>[GEOS-10263](https://osgeo-org.atlassian.net/browse/GEOS-10263) WPSRequestBuilderTest assumes that JTS:area is the first process in the list
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>[GEOS-10255](https://osgeo-org.atlassian.net/browse/GEOS-10255) i18n user interface inconsistent layout with br tags used for layout
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>[GEOS-10245](https://osgeo-org.atlassian.net/browse/GEOS-10245) jdbcconfig: prefixedName filter field not updated
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>[GEOS-9950](https://osgeo-org.atlassian.net/browse/GEOS-9950) MapPreviewPage logs unable to find property: format.wfs.text/csv continuously
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>### Improvement
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>[GEOS-10246](https://osgeo-org.atlassian.net/browse/GEOS-10246) jdbcconfig: performance slow-down from unnecessary transactions
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>### New Feature
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>[GEOS-10223](https://osgeo-org.atlassian.net/browse/GEOS-10223) Support MBTiles in OGC Tiles API
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>### Task
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>[GEOS-10247](https://osgeo-org.atlassian.net/browse/GEOS-10247) Reuse of service documentation references for workspace, metadata and default language
 </code></pre></div>
 </li>
 <li>
@@ -30874,37 +30833,37 @@ LINK=maintain
 </div>
 <p>Post an announcement on both the Discourse User and Developer groups announcing the release. The message should be relatively short. You can base it on the blog post headings which often indicate new features to highlight.</p>
 <p>The following is an example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Subject: GeoServer 2.5.1 Released
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>The GeoServer team is happy to announce the release of GeoServer 2.5.1.
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>The release is available for download from:
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>https://geoserver.org/release/2.29.0/
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>GeoServer 2.29.0 is the next stable release of GeoServer and is recommended for production deployment.
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>This release comes with some exciting new features. The new and noteworthy include:
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>* By popular request Top/Bottom labels when configuring layer group order
-<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>* You can now identify GeoServer “nodes” in a cluster by configuring a label and color in the UI. Documentation and example in the user guide.
-<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>* Have you ever run GeoServer and not quite gotten your file permissions correct? GeoServer now has better logging when it cannot your data directory and is required to “fall back” to the embedded data directory during start up.
-<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>* We have a new GRIB community module (community modules are not in the release until they pass a    QA check, but great to see new development taking shape)
-<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>* Documentation on the jp2kak extension now in the user guide
-<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>* Additional documentation for the image mosaic in the user guide with tutorials covering the plugin, raster time-series, time and elevation and footprint management.
-<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>* WCS 2.0 support continues to improve with DescribeCoverage now supporting null values
-<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>* Central Authentication Service (CAS) authentication has received a lot of QA this release and is now available in the GeoServer 2.5.x series.
-<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>* This release is made in conjunction with GeoTools 34.0
-<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>
-<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>Along with many other improvements and bug fixes:
-<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>
-<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>* https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&amp;version=10164
-<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>
-<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>Thanks to Andrea and Jody (GeoSolutions and Boundless) for publishing this release. A very special thanks to all those who contributed bug fixes, new
-<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>features, bug reports, and testing to this release.
-<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>
-<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>--
-<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a>The GeoServer Team
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Subject: GeoServer 2.5.1 Released
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>The GeoServer team is happy to announce the release of GeoServer 2.5.1.
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>The release is available for download from:
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>https://geoserver.org/release/2.29.0/
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>GeoServer 2.29.0 is the next stable release of GeoServer and is recommended for production deployment.
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>This release comes with some exciting new features. The new and noteworthy include:
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>* By popular request Top/Bottom labels when configuring layer group order
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>* You can now identify GeoServer “nodes” in a cluster by configuring a label and color in the UI. Documentation and example in the user guide.
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>* Have you ever run GeoServer and not quite gotten your file permissions correct? GeoServer now has better logging when it cannot your data directory and is required to “fall back” to the embedded data directory during start up.
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>* We have a new GRIB community module (community modules are not in the release until they pass a    QA check, but great to see new development taking shape)
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>* Documentation on the jp2kak extension now in the user guide
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>* Additional documentation for the image mosaic in the user guide with tutorials covering the plugin, raster time-series, time and elevation and footprint management.
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>* WCS 2.0 support continues to improve with DescribeCoverage now supporting null values
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>* Central Authentication Service (CAS) authentication has received a lot of QA this release and is now available in the GeoServer 2.5.x series.
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>* This release is made in conjunction with GeoTools 34.0
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>Along with many other improvements and bug fixes:
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>* https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&amp;version=10164
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>Thanks to Andrea and Jody (GeoSolutions and Boundless) for publishing this release. A very special thanks to all those who contributed bug fixes, new
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>features, bug reports, and testing to this release.
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>--
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>The GeoServer Team
 </code></pre></div>
 <h3 id="osgeo-announcement">OSGeo Announcement<a class="headerlink" href="#osgeo-announcement" title="Permanent link">&para;</a></h3>
 <p>For major releases OSGeo asks that a news item be submitted:</p>

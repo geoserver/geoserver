@@ -30012,13 +30012,13 @@
 </li>
 <li>
 <p>Download the container:</p>
-<p>These instructions are for GeoServer 3.0-SNAPSHOT which is provided as a <a href="https://geoserver.org/release/main">Nightly</a> release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker pull docker.osgeo.org/geoserver:3.0.x
+<p>These instructions are for GeoServer 3.1-SNAPSHOT which is provided as a <a href="https://geoserver.org/release/main">Nightly</a> release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker pull docker.osgeo.org/geoserver:3.1.x
 </code></pre></div>
 </li>
 <li>
 <p>Run the container</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker run -it -p 8080:8080 docker.osgeo.org/geoserver:3.0.x
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker run -it -p 8080:8080 docker.osgeo.org/geoserver:3.1.x
 </code></pre></div>
 </li>
 <li>
@@ -30043,14 +30043,14 @@
 </li>
 <li>
 <p>Download the container</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker pull docker.osgeo.org/geoserver:3.0.x
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker pull docker.osgeo.org/geoserver:3.1.x
 </code></pre></div>
 </li>
 <li>
 <p>Run the container</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>docker run -it -p 8080:8080 \
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data \
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  docker.osgeo.org/geoserver:3.0.x
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  docker.osgeo.org/geoserver:3.1.x
 </code></pre></div>
 </li>
 <li>
@@ -30068,7 +30068,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docker run -it -p 8080:8080 \
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  --env INSTALL_EXTENSIONS=true \
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  --env STABLE_EXTENSIONS=&quot;ysld,ogcapi-features&quot; \
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  docker.osgeo.org/geoserver:3.0.x
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  docker.osgeo.org/geoserver:3.1.x
 </code></pre></div>
 <p>This will download and install the <a href="../../styling/ysld/">YSLD</a> and <a href="../../services/features/">OGCAPI - Features</a> extension.</p>
 <p>Here is a list of available extensions (taken from the <a href="https://build.geoserver.org/geoserver/main/ext-latest/">build server</a>):</p>
@@ -30180,12 +30180,12 @@
 </table>
 <h2 id="testing-geoserver-community-modules">Testing GeoServer Community modules<a class="headerlink" href="#testing-geoserver-community-modules" title="Permanent link">&para;</a></h2>
 <p>Working with a Nightly build is a good way to test community modules and provide feedback to developers working on new functionality.</p>
-<p>To work with community modules you must be using the GeoServer 3.0.x nightly build that matches the community module build:</p>
+<p>To work with community modules you must be using the GeoServer 3.1.x nightly build that matches the community module build:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docker run -it -p 8080:8080 \
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  --env INSTALL_EXTENSIONS=true \
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  --env STABLE_EXTENSIONS=&quot;ysld,h2&quot; \
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  --env COMMUNITY_EXTENSIONS=&quot;ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles&quot; \
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  docker.osgeo.org/geoserver:3.0.x
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  docker.osgeo.org/geoserver:3.1.x
 </code></pre></div>
 <p>For the current list see GeoServer <a href="https://build.geoserver.org/geoserver/main/community-latest/">build server</a>.</p>
 <table>

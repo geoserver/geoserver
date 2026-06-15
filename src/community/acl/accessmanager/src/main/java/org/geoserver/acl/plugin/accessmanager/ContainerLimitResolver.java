@@ -281,9 +281,9 @@ class ContainerLimitResolver {
             AccessInfo resAccessInfo,
             List<AccessInfo> groupsAccessInfo,
             ListMultimap<RestrictionType, ProcessingResult> multiMap) {
-        Geometry resIntersectArea = GeometryUtils.toJTS(resAccessInfo.getIntersectArea());
-        Geometry resClipArea = GeometryUtils.toJTS(resAccessInfo.getClipArea());
-        CatalogMode catalogMode = resAccessInfo.getCatalogMode();
+        Geometry resIntersectArea = GeometryUtils.toJTS(resAccessInfo.intersectArea());
+        Geometry resClipArea = GeometryUtils.toJTS(resAccessInfo.clipArea());
+        CatalogMode catalogMode = resAccessInfo.catalogMode();
         boolean groupOnIntersect = false;
         boolean groupOnClip = false;
         boolean lessRestrictive = groupSummaries != null;
@@ -292,9 +292,9 @@ class ContainerLimitResolver {
         if (groupsAccessInfo != null && !groupsAccessInfo.isEmpty()) {
             for (int i = 0; i < groupsAccessInfo.size(); i++) {
                 AccessInfo accessInfo = groupsAccessInfo.get(i);
-                catalogMode = CatalogMode.stricter(catalogMode, accessInfo.getCatalogMode());
-                org.geolatte.geom.Geometry<?> allowedArea = accessInfo.getIntersectArea();
-                org.geolatte.geom.Geometry<?> clipAllowedArea = accessInfo.getClipArea();
+                catalogMode = CatalogMode.stricter(catalogMode, accessInfo.catalogMode());
+                org.geolatte.geom.Geometry<?> allowedArea = accessInfo.intersectArea();
+                org.geolatte.geom.Geometry<?> clipAllowedArea = accessInfo.clipArea();
                 if (!groupOnIntersect) groupOnIntersect = allowedArea != null;
                 if (!groupOnClip) groupOnClip = clipAllowedArea != null;
                 Geometry area = GeometryUtils.toJTS(allowedArea);
@@ -373,27 +373,8 @@ class ContainerLimitResolver {
             ListMultimap<String, AccessInfo> groupAccessInfoByRole) {
 
         for (LayerGroupInfo group : groupList) {
-            if (!isUserAllowed(group)) {
-                addAccessInfoByRole(groupAccessInfoByRole, user.getAuthorities(), group);
-            }
+            addAccessInfoByRole(groupAccessInfoByRole, user.getAuthorities(), group);
         }
-    }
-
-    // if this query result in allowing the user no need to go on with the
-    // limit enlargement/restriction for this group.
-    private boolean isUserAllowed(LayerGroupInfo layerGroup) {
-        String workspaceName = workspaceName(layerGroup);
-        String layerGroupName = layerGroup.getName();
-
-        AccessRequest request = AuthorizationRequestBuilder.data()
-                .user(authentication)
-                .request(Dispatcher.REQUEST.get())
-                .workspace(workspaceName)
-                .layer(layerGroupName)
-                .build();
-        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        LOGGER.fine("User allowed for the entire layer group. No limit processing is needed.");
-        return isAllow(accessInfo) && accessInfo.getIntersectArea() == null && accessInfo.getClipArea() == null;
     }
 
     private String workspaceName(LayerGroupInfo layerGroup) {
@@ -418,12 +399,8 @@ class ContainerLimitResolver {
         }
     }
 
-    private boolean isAllow(AccessInfo accessInfo) {
-        return accessInfo != null && accessInfo.getGrant().equals(GrantType.ALLOW);
-    }
-
     private boolean isDeny(AccessInfo accessInfo) {
-        return accessInfo != null && accessInfo.getGrant().equals(GrantType.DENY);
+        return accessInfo != null && accessInfo.grant().equals(GrantType.DENY);
     }
 
     /** Data class meant to return a result for the whole limit resolution. */

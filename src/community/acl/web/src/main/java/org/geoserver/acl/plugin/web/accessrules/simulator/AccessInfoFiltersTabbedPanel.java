@@ -82,12 +82,12 @@ public class AccessInfoFiltersTabbedPanel extends Panel {
 
     private void initVisibility() {
         AccessInfo access = model().getObject();
-        wktareaTab.setEnabled(notEmpty(access.getIntersectArea()));
-        clipareaTab.setEnabled(notEmpty(access.getClipArea()));
-        cqlreadTab.setEnabled(notEmpty(access.getCqlFilterRead()));
-        cqlwriteTab.setEnabled(notEmpty(access.getCqlFilterWrite()));
-        stylesTab.setEnabled(notEmpty(access.getDefaultStyle()) || notEmpty(access.getAllowedStyles()));
-        attributesTab.setEnabled(notEmpty(access.getAttributes()));
+        wktareaTab.setEnabled(notEmpty(access.intersectArea()));
+        clipareaTab.setEnabled(notEmpty(access.clipArea()));
+        cqlreadTab.setEnabled(notEmpty(access.cqlFilterRead()));
+        cqlwriteTab.setEnabled(notEmpty(access.cqlFilterWrite()));
+        stylesTab.setEnabled(notEmpty(access.defaultStyle()) || notEmpty(access.allowedStyles()));
+        attributesTab.setEnabled(notEmpty(access.attributes()));
 
         selectFirstEnabled(wktareaTab, clipareaTab, cqlreadTab, cqlwriteTab, stylesTab, attributesTab);
     }
@@ -167,8 +167,8 @@ public class AccessInfoFiltersTabbedPanel extends Panel {
 
     private Component attributesLabel(final String id, final AccessType type) {
         IModel<List<LayerAttribute>> model = model().bind("attributes");
-        SerializablePredicate<LayerAttribute> filter = att -> att.getAccess() == type;
-        return new CollectionLabel<>(id, model, LayerAttribute::getName, filter);
+        SerializablePredicate<LayerAttribute> filter = att -> att.access() == type;
+        return new CollectionLabel<>(id, model, LayerAttribute::name, filter);
     }
 
     private static class CollectionLabel<T> extends Label {

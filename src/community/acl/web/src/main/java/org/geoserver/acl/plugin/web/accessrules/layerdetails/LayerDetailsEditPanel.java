@@ -174,21 +174,21 @@ public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetail
     }
 
     void onGrantTypeChangeEvent(GrantTypeChangeEvent event) {
-        handleVisibility(event.getTarget());
+        handleVisibility(event.target());
     }
 
     void onWorkspaceChangeEvent(WorkspaceChangeEvent event) {
-        handleVisibility(event.getTarget());
+        handleVisibility(event.target());
     }
 
     void onLayerChangeEvent(LayerChangeEvent event) {
-        handleVisibility(event.getTarget());
+        handleVisibility(event.target());
     }
 
     private void onPublishedInfoChangeEvent(PublishedInfoChangeEvent event) {
         log.info("layerTypeLabel: " + layerType.getDefaultModelObject());
-        event.getTarget().add(layerType);
-        event.getTarget().add(layerAttributes);
+        event.target().add(layerType);
+        event.target().add(layerAttributes);
     }
 
     private void handleVisibility(AjaxRequestTarget target) {
@@ -231,7 +231,7 @@ public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetail
                     boolean visible = editModel.canHaveStyles();
                     if (visible != stylesContainer.isVisible()) {
                         stylesContainer.setVisible(visible);
-                        e.getTarget().add(stylesContainer);
+                        e.target().add(stylesContainer);
                     }
                 }
             }
@@ -286,7 +286,7 @@ public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetail
         if (!supportsCQL) {
             filtertabset.getModel().setObject(wktareaTab.getModelObject());
         }
-        e.getTarget().add(filtersContainer);
+        e.target().add(filtersContainer);
     }
 
     private FormComponent<String> defaultStyle() {
@@ -369,7 +369,7 @@ public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetail
             if (event.getPayload() instanceof PublishedInfoChangeEvent) {
                 PublishedInfoChangeEvent e = ((PublishedInfoChangeEvent) event.getPayload());
                 super.intersect.setEnabled(editModel.getLayerType() != LayerType.RASTER);
-                e.getTarget().add(this);
+                e.target().add(this);
             }
         }
 

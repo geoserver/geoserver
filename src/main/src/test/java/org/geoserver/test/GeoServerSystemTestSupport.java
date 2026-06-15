@@ -1266,7 +1266,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema or DTD
+     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema
+     *     or DTD
      * @param statusCode Expected status code
      * @return A result of the request parsed into a dom.
      */
@@ -1400,7 +1401,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema or DTD
+     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema
+     *     or DTD
      * @return A result of the request parsed into a dom.
      */
     protected Document getAsDOM(final String path, final boolean offlineResourceResolution) throws Exception {
@@ -1413,11 +1415,13 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema or DTD
+     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema
+     *     or DTD
      * @param encoding Overide for the encoding of the document.
      * @return A result of the request parsed into a dom.
      */
-    protected Document getAsDOM(final String path, final boolean offlineResourceResolution, String encoding) throws Exception {
+    protected Document getAsDOM(final String path, final boolean offlineResourceResolution, String encoding)
+            throws Exception {
         return dom(get(path, encoding), offlineResourceResolution, encoding);
     }
 
@@ -1487,7 +1491,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param path The porition of the request after the context ( no query string ), example: 'wms'.
      * @return An input stream which is the result of the request.
      */
-    protected Document postAsDOM(String path, String xml, List<Exception> validationErrors, boolean offlineResourceResolution)
+    protected Document postAsDOM(
+            String path, String xml, List<Exception> validationErrors, boolean offlineResourceResolution)
             throws Exception {
         return dom(post(path, xml), offlineResourceResolution);
     }
@@ -1534,8 +1539,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Parse input stream into document, be sure to use {@code offlineResourceResolution} when content includes DOCTYPE to substitute
-     * in an empty xml document.
+     * Parse input stream into document, be sure to use {@code offlineResourceResolution} when content includes DOCTYPE
+     * to substitute in an empty xml document.
      *
      * @param stream InputStream
      * @param offlineResourceResolution {@code true} to intercept external entity references with empty xml document.

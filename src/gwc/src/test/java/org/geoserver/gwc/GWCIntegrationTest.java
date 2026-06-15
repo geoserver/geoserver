@@ -640,6 +640,10 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
         assertNotNull(tileLayer);
+
+        // Ensure clean cache state regardless of test execution order
+        gwc.truncate(qualifiedName);
+
         boolean directWMSIntegrationEndpoint = true;
         String request = TEST_WORKSPACE_NAME
                 + "/"

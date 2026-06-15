@@ -13,7 +13,7 @@ package org.geoserver.gsr.model.feature;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.gsr.Utils;
 import org.geoserver.gsr.model.GSRModel;
 import org.geoserver.gsr.model.geometry.*;

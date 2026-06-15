@@ -109,7 +109,7 @@ One of the duties of the [GeoServer Project Steering Committee](psc.md) is to vo
 
 A: Generally you will make a GSIP when you want something major done in GeoServer and need feedback from others. GSIPs are needed for things that will have an impact on other community members, and thus should be talked about.
 
-GSIPs are not intended to be a way to get feedback on experimental work. There are alternate mechanisms for this such as creating an R&D page on the wiki, svn branches and spikes, etc\... Often once the idea is formalized through experimentation it can be turned in to an official GSIP.
+GSIPs are not intended to be a way to get feedback on experimental work. There are alternate mechanisms for this such as creating an R&D page on the wiki, svn branches and spikes, etc... Often once the idea is formalized through experimentation it can be turned in to an official GSIP.
 
 ### Q. Who can comment on a GSIP?
 

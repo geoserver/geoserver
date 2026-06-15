@@ -34,7 +34,7 @@ As an example, the password `geoserver` is digested to `digest1:YgaweuS60t+mJNob
 [Password-based encryption](http://www.javamex.com/tutorials/cryptography/password_based_encryption.shtml) (PBE) normally employs a user-supplied password to generate an encryption key. This scheme is reversible. A random salt described in the previous section is used.
 
 !!! note
-    The system never uses passwords specified by users because these passwords tend to be weak. Passwords used for encryption are generated using a secure random generator and stored in the GeoServer key store. The number of possible passwords is 2\^260 .
+    The system never uses passwords specified by users because these passwords tend to be weak. Passwords used for encryption are generated using a secure random generator and stored in the GeoServer key store. The number of possible passwords is 2^260 .
 
 GeoServer supports two forms of PBE. **Weak PBE** (the GeoServer default) uses a basic encryption method that is relatively easy to crack. The encryption key is derived from the password using [MD5](http://en.wikipedia.org/wiki/Message_Digest_Algorithm_5) 1000 times iteratively. The encryption algorithm itself is [DES](http://en.wikipedia.org/wiki/Data_Encryption_Standard) (Data Encryption Standard). DES has an effective key length of 56 bits, which is not really a challenge for computer systems in these days.
 

@@ -73,4 +73,4 @@ You can also add format options (`format_options=param1:value1;param2:value2;...
 | min_row | First row number (from the gridset) to use.<br>default: use request bbox to determine which tiles to produce |
 | max_row | Last row number (from the gridset) to use.<br>default: use request bbox to determine which tiles to produce |
 | gridset | Name of the gridset (from GWC GridSetBroker) to uses.<br>default: find based on request SRS |
-| flipy | Do NOT set.<br>default: TRUE (required for GeoPackage - `The tile coordinate (0,0) always refers to the tile in the upper left corner of the tile matrix\...`) |
+| flipy | Do NOT set.<br>default: TRUE (required for GeoPackage - `The tile coordinate (0,0) always refers to the tile in the upper left corner of the tile matrix...`) |

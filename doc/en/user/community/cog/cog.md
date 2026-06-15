@@ -93,13 +93,13 @@ A single S3 Asynchronous Client will be used for the same region and alias (url 
 
 | Environment Variable | Description |
 |----|----|
-| `IIO_\$ALIAS\$_AWS_CORE_POOL_SIZE` | The core pool size for the S3 Client (Default 50) |
-| `IIO_\$ALIAS\$_AWS_MAX_POOL_SIZE` | The maximum number of thread to allow in the pool for the S3 Client (Default 128) |
-| `IIO_\$ALIAS\$_AWS_KEEP_ALIVE_TIME` | The Keep alive time (in seconds), representing maximum time that excess idle threads will wait for new tasks before terminating. (Default 10) |
-| `IIO_\$ALIAS\$_AWS_USER` | Default user (access key ID) for AWS basic authentication credentials |
-| `IIO_\$ALIAS\$_AWS_PASSWORD` | Default password (secret access key) for AWS basic authentication credentials |
-| `IIO_\$ALIAS\$_AWS_REGION` | Default AWS region |
-| `IIO_\$ALIAS\$_AWS_ENDPOINT` | Endpoint to Amazon service or any other S3-compatible service run by a third-party |
+| `IIO_$ALIAS$_AWS_CORE_POOL_SIZE` | The core pool size for the S3 Client (Default 50) |
+| `IIO_$ALIAS$_AWS_MAX_POOL_SIZE` | The maximum number of thread to allow in the pool for the S3 Client (Default 128) |
+| `IIO_$ALIAS$_AWS_KEEP_ALIVE_TIME` | The Keep alive time (in seconds), representing maximum time that excess idle threads will wait for new tasks before terminating. (Default 10) |
+| `IIO_$ALIAS$_AWS_USER` | Default user (access key ID) for AWS basic authentication credentials |
+| `IIO_$ALIAS$_AWS_PASSWORD` | Default password (secret access key) for AWS basic authentication credentials |
+| `IIO_$ALIAS$_AWS_REGION` | Default AWS region |
+| `IIO_$ALIAS$_AWS_ENDPOINT` | Endpoint to Amazon service or any other S3-compatible service run by a third-party |
 
 ## Google Cloud storage configuration
 

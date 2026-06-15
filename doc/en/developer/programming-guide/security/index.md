@@ -6,7 +6,7 @@ This section provides an overview of the GeoServer security subsystem API.
 
 The `GeoServerSecurityManager` class is the main facade for the security subsystem. It plays a similar role to that of the `GeoServer` and `Catalog` interfaces for the configuration and catalog subsystems respectively. Some of the duties of this class include:
 
-- Access to security services such as user group and role services, authentication providers, etc\...
+- Access to security services such as user group and role services, authentication providers, etc...
 - Manage the lifecycle of security services
 - CRUD operations for security service configurations
 - Access to various singleton classes such as `ResourceAccessManager`, `KeyStoreProvider`, `AuthenticationCache`, `GeoServerSecurityFilterChain`, etc..
@@ -130,7 +130,7 @@ Security filters are maintained in the [filter chain](#auth_filter_chain) which 
 
 ### Password Policy
 
-`PasswordPolicy` is the interface for validating user passwords, applying constraints such as password length, character mix, etc\...
+`PasswordPolicy` is the interface for validating user passwords, applying constraints such as password length, character mix, etc...
 
 ### RootPasswordProvider
 

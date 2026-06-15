@@ -33,8 +33,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -114,7 +114,7 @@ public class LoggingFilterTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("POST");
 
-        String generatedString = RandomStringUtils.randomAlphabetic(10);
+        String generatedString = RandomStringUtils.insecure().nextAlphabetic(10);
         request.setContentType(MediaType.TEXT_PLAIN_VALUE);
         request.setContent(generatedString.getBytes(StandardCharsets.UTF_8));
 
@@ -216,7 +216,7 @@ public class LoggingFilterTest {
             throws IOException, ServletException {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("POST");
-        String generatedString = RandomStringUtils.randomAlphabetic(10);
+        String generatedString = RandomStringUtils.insecure().nextAlphabetic(10);
         request.setContentType(MediaType.TEXT_PLAIN_VALUE);
         request.setContent(generatedString.getBytes(StandardCharsets.UTF_8));
         MockHttpServletResponse response = new MockHttpServletResponse();

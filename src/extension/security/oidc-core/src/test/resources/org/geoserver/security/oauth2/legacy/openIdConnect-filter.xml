@@ -1,0 +1,13 @@
+<openIdConnectAuthentication>
+  <id>legacy-oidc-0001</id>
+  <name>oidc</name>
+  <className>org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter</className>
+  <cliendId>geoserver-client</cliendId>
+  <clientSecret>s3cr3t</clientSecret>
+  <accessTokenUri>https://idp.example.org/realms/gs/protocol/openid-connect/token</accessTokenUri>
+  <userAuthorizationUri>https://idp.example.org/realms/gs/protocol/openid-connect/auth</userAuthorizationUri>
+  <scopes>openid,email,profile</scopes>
+  <principalKey>email</principalKey>
+  <roleSource>IdToken</roleSource>
+  <tokenRolesClaim>roles</tokenRolesClaim>
+</openIdConnectAuthentication>

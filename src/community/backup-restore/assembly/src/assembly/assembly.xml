@@ -13,35 +13,29 @@
          <include>gs-backup-restore-extension*.jar</include>
          <include>gs-backup-restore-core*.jar</include>
          <include>gs-backup-restore-rest*.jar</include>
-         <include>com.ibm.jbatch-tck-spi*.jar</include>
-         <include>commons-beanutils*.jar</include>
+         <!-- Module libraries not provided by the base GeoServer WAR -->
          <include>commons-exec*.jar</include>
          <include>commons-lang3*.jar</include>
          <include>commons-vfs2*.jar</include>
-         <include>commons-net*.jar</include>
-         <include>hamcrest*.jar</include>
-         <include>hatbox*.jar</include>
-         <include>gt-jdbc*.jar</include>
-         <include>com.ibm.jbatch*.jar</include>
-         <include>javax.batch-api*.jar</include>
-         <include>javax.inject*.jar</include>
-         <include>javax.json*.jar</include>
-         <include>javax.servlet-api*.jar</include>
-         <include>json-path*.jar</include>
-         <include>json-smart*.jar</include>
-         <include>plexus-utils*.jar</include>
          <include>prettytime*.jar</include>
-         <include>spring-batch*.jar</include>
-         <include>spring-integration-core*.jar</include>
-         <include>spring-jms*.jar</include>
-         <include>spring-messaging*.jar</include>
-         <include>spring-orm*.jar</include>
-         <include>spring-oxm*.jar</include>
-         <include>spring-retry*.jar</include>
-         <include>spring-security-saml2-core*.jar</include>
-         <include>spring-test*.jar</include>
          <include>jdom*.jar</include>
-      </includes>      
+         <!-- Spring Batch 6 runtime (job engine) -->
+         <include>spring-batch-core*.jar</include>
+         <include>spring-batch-infrastructure*.jar</include>
+         <include>spring-batch-integration*.jar</include>
+         <!-- Spring Batch 6 embedded H2 job repository -->
+         <include>h2-*.jar</include>
+         <!-- Spring Batch 6 observability (compile dependency of spring-batch-core) -->
+         <include>micrometer-observation-*.jar</include>
+         <include>micrometer-commons-*.jar</include>
+         <include>micrometer-core-*.jar</include>
+         <!-- spring-integration-core 7 and its reactive dependencies -->
+         <include>spring-integration-core*.jar</include>
+         <include>spring-messaging*.jar</include>
+         <include>spring-retry*.jar</include>
+         <include>reactor-core-*.jar</include>
+         <include>reactive-streams-*.jar</include>
+      </includes>
       <excludes>
       </excludes>
     </fileSet>

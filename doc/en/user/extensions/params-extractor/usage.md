@@ -93,7 +93,7 @@ An advanced rule is defined by three mandatory attributes and four optional ones
 | `Match` | Regex match expression with groups, for example \^(?:/[\^/]*){3}(/([\^/]+)).*\$ selects the URL base path third element | Yes |
 | `Activation` | If defined this rule will only be applied to URLs that match this regex expression | No |
 | `Parameter` | The name of the parameter produced by this rule | Yes |
-| `Transform` | Expression that defines the value of the parameter, use \$1 \... \$n as placeholders for groups defined in the match expression | Yes |
+| `Transform` | Expression that defines the value of the parameter, use \$1 ... \$n as placeholders for groups defined in the match expression | Yes |
 | `Remove` | The match expression group to be removed from URL, by default 1 | No |
 | `Combine` | Defines how to combine parameter existing value (\$1 existing value, \$2 new value), by default the value is overridden | No |
 | `Repeat` | If defined, Combine is applied not only once, but for every layer included in the LAYERS parameter, this allows filling parameters that require a value for each layer (e.g. STYLES or CQL_FILTER) | No |

@@ -773,7 +773,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                         "//wps:ExecuteResponse/wps:Status/wps:ProcessFailed"
                                 + "/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()",
                         d);
-        assertThat(message, containsString("Entity resolution disallowed"));
+        assertThat("DOCTYPE is disallowed", message, containsString("DOCTYPE"));
     }
 
     @Test

@@ -67,7 +67,7 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
         global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
         getGeoServer().save(global);
 
-        Document caps = getAsDOM("wms?service=WMS&request=GetCapabilities&version=1.1.1");
+        Document caps = getAsDOM("wms?service=WMS&request=GetCapabilities&version=1.1.1", true);
 
         assertEquals("WMT_MS_Capabilities", caps.getDocumentElement().getTagName());
         // we misconfigured all the layers in the server, so there should be no named layers now.

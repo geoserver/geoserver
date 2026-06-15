@@ -1,55 +1,61 @@
-# Backup and Restore Extension for the management of ImageMosaic indexers
+# ImageMosaic indexer extension
+
+!!! warning
+    Backup and Restore is a community module. It is usable, but does not have the same support guarantees as official extensions.
 
 ## Introduction
 
-*ImageMosaics CoverageStores* make use of several `.properties` files instructing the reader on how to create the mosaic index.
+*ImageMosaic coverage stores* rely on several `.properties` files that tell the reader how to build the mosaic index. This extension point lets the Backup and Restore module **inject environment properties** into those indexers, so an ImageMosaic can be ported automatically between environments. The end-user side of this is described in [the ImageMosaic indexer use cases](usecases.md#imagemosaic-indexer-parameterization).
 
-What we want to achieve is to allow the GeoServer Backup & Restore module to *inject* environment properties on indexers allowing the ImageMosaic to be automatically ported among different environments.
+## Extension points
 
-## Technical Details
+The module exposes a read/write extension point for handling additional resources attached to a catalog item (typically a `ResourceInfo`):
 
-The GeoServer Backup & Restore module actually provides an extension point on reading / writing allowing GeoServer to handle additional resources related to a particular `ResourceInfo`.
-
-The interfaces :
 ```java
+public interface CatalogAdditionalResourcesWriter<T> {
 
-    public interface CatalogAdditionalResourcesWriter<T> {
+    boolean canHandle(Object item);
 
-        public boolean canHandle(Object item);
+    void writeAdditionalResources(Backup backupFacade, Resource base, T item) throws IOException;
+}
 
-        public void writeAdditionalResources(Backup backupFacade, Resource base, T item)
-                throws IOException;
+public interface CatalogAdditionalResourcesReader<T> {
 
-    }
+    boolean canHandle(Object item);
 
-    public interface CatalogAdditionalResourcesReader<T> {
-
-        public boolean canHandle(Object item);
-
-        public void readAdditionalResources(Backup backupFacade, Resource base, T item)
-                throws IOException;
-
-    }
+    void readAdditionalResources(Backup backupFacade, Resource base, T item) throws IOException;
+}
 ```
 
-Is invoked by the `CatalogFileWriter` (when doing a Backup) and the `CatalogItemWriter` (when doing a Restore) after a successful write of the resource configuration on the, respectively, target backup folder and in-memory catalog.
+Implementations are contributed as GeoServer extension beans and discovered through `GeoServerExtensions`. The module dispatches to every registered handler whose `canHandle(item)` returns `true`:
 
-The idea is the following one *allowing the CatalogItemWriter to*:
+- On **backup**, the abstract `CatalogWriter.firePostWrite(...)` runs every `CatalogAdditionalResourcesWriter` after the item's configuration has been written. It is invoked from `CatalogFileWriter`, which writes catalog items as flat XML files to the archive folder.
+- On **restore**, the abstract `CatalogReader.firePostRead(...)` runs every `CatalogAdditionalResourcesReader` after the item has been read back. It is invoked from `CatalogFileReader`, which reads catalog items from the archive into the in-memory restore catalog.
 
-1.  Restore the ImageMosaic Indexer Properties injecting environment properties
-2.  Check if the Mosaic index physically exist and if not create an empty one
+Two writers ship with the module: `StyleInfoAdditionalResourceWriter` (style sidecar files) and `ResourceInfoAdditionalResourceWriter` (Freemarker templates and schema mappings).
 
-In order to do that we envisage the following technical approach
+!!! note
+    The `CatalogItemWriter` and `CatalogItemReader` (used when persisting directly to or from the live catalog) do **not** invoke this extension point. The additional-resource SPI fires only on the file-based path — `CatalogFileWriter` / `CatalogFileReader` — which is the one used for archive backup and restore.
 
-On a **BACKUP** operation
+## Behaviour for ImageMosaic indexers
 
-1.  The Additional Resource Writer checks if the `ResourceInfo` is an ImageMosaic Coverage Store.
-2.  The Additional Resource Writer looks for `*.template` files on the ImageMosaic index directory. It must store them into the zip archive by reading the path from the Coverage Store.
-3.  The Additional Resource Writer stores the `*.template` along with the `*.properties` files on the target backup folder. Same as above.
+The goal is to let the additional-resource handlers:
 
-On a **RESTORE** operation
+1. restore the ImageMosaic indexer `.properties`, injecting environment properties from the matching `.template`; and
+2. check whether the mosaic index physically exists and, if not, create an empty one.
 
-1.  The Additional Resource Reader checks if the `ResourceInfo` is an ImageMosaic Coverage Store.
-2.  The Additional Resource Reader looks for `*.template` files on the ImageMosaic index directory. It will try to restore them by using the path read from the Coverage Store configuration.
-3.  The Additional Resource Reader overwrites the `*.properties` files by resolving all the environment properties declared on the templates.
-4.  The Additional Resource Reader checks if the empty mosaic must be created or not.
+On a **backup** operation:
+
+1. The additional-resource writer checks that the item is an ImageMosaic coverage store.
+2. It looks for `*.template` files in the ImageMosaic index directory (read from the coverage store).
+3. It stores the `*.template` files alongside the `*.properties` files in the target backup folder.
+
+On a **restore** operation:
+
+1. The additional-resource reader checks that the item is an ImageMosaic coverage store.
+2. It looks for the `*.template` files and restores them to the path read from the coverage store configuration.
+3. It overwrites the `*.properties` files by resolving the environment properties declared in the templates.
+4. It checks whether an empty mosaic needs to be created.
+
+!!! note
+    The engine was reworked for GeoServer 3.x: it runs on Spring Batch 6 / Spring 7, and the job graphs are defined in Java `@Configuration` (`BackupJobConfiguration`, `RestoreJobConfiguration`, `BatchInfrastructureConfiguration`) rather than `applicationContext.xml`. Custom steps, tasklets, readers, processors and writers should be wired the same way. See the developer note in [what changed between 2.x and 3.x](migration.md#for-developers-and-extension-authors).

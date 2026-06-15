@@ -73,7 +73,7 @@ To review how this layer has been published:
 
     *Native SRS for topp:states*
 
-3.  Locate **Declared SRS** and click on **EPSG:WGS 84\...** link to see the definition used to publish this content.
+3.  Locate **Declared SRS** and click on **EPSG:WGS 84...** link to see the definition used to publish this content.
 
     This is the internal definition of `EPSG:4326` as shown in the SRSList above, which also describes the data in `x/y` order matching our data. This definition provides slightly more readable names along with additional `AUTHORITY` information that may be helpful to client applications.
 

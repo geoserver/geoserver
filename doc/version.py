@@ -44,7 +44,7 @@ def _guess_is_snapshot(branch):
     return False
 
 
-def _guess_version(branch, default='3.0'):
+def _guess_version(branch, default='3.1'):
     if branch == 'main':
         return default
 
@@ -63,21 +63,21 @@ def _guess_version(branch, default='3.0'):
     return default
 
 
-def _guess_release(branch, version, default='3.0.0'):
+def _guess_release(branch, version, default='3.1.0'):
     # Numeric release tag exact (3.1.2)
     if re.match(r'^\d+\.\d+\.\d+$', branch):
         return branch
 
-    # branch major.minor format: 3.0 -> 3.0.0
+    # branch major.minor format: 3.1 -> 3.1.0
     if re.match(r'^\d+\.\d+$', branch):
         return branch + '.0'
 
-    # branch major.minor.x format: 3.0.x -> 3.0.0
+    # branch major.minor.x format: 3.1.x -> 3.1.0
     m = re.match(r'^(\d+\.\d+)\.x$', branch)
     if m:
         return m.group(1) + '.0'
 
-    # snapshot branches: 3.0-SNAPSHOT -> 3.0.0
+    # snapshot branches: 3.1-SNAPSHOT -> 3.1.0
     m = re.match(r'^(\d+\.\d+)-snapshot$', branch, re.IGNORECASE)
     if m:
         return m.group(1) + '.0'
@@ -109,13 +109,13 @@ def define_env(env):
             is_snapshot = True
             is_release = False
 
-    version = _guess_version(branch, default='3.0')
+    version = _guess_version(branch, default='3.1')
 
     # release for build artifacts is exact tag on true release branch, else derived or default
     if is_release and release_branch:
         release = branch
     else:
-        release = _guess_release(branch, version, default='3.0.0')
+        release = _guess_release(branch, version, default='3.1.0')
 
     snapshot = f"{version}-SNAPSHOT"
 
@@ -129,8 +129,8 @@ def define_env(env):
     env.variables['snapshot'] = snapshot
 
     # Branch used for nightly build URLs
-    # Nightlies are served from the active branch (main, 3.0.x, 2.28.x, etc), not only main.
-    # If we are on a snapshot branch (like 3.0-SNAPSHOT) fallback to main.
+    # Nightlies are served from the active branch (main, 3.1.x, 2.28.x, etc), not only main.
+    # If we are on a snapshot branch (like 3.1-SNAPSHOT) fallback to main.
     if branch.lower().endswith('-snapshot'):
         build_branch = 'main'
     else:

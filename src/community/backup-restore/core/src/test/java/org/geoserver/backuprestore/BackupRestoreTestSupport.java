@@ -174,16 +174,20 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
         setupHTTPStores();
 
-        // set up an H2 datastore for the purpose of doing joins
-        // run all the tests against a store that can do native paging (h2) and one that
-        // can't (property)
+        // set up a GeoPackage datastore for the purpose of doing joins
+        // run all the tests against a store that can do native paging (geopkg) and one that
+        // can't (property).
+        // NOTE: this used to be an H2 store, but the geodb-based H2 spatial dialect is unmaintained and no
+        // longer round-trips its schemas on the H2 2.x the Spring Batch migration pulls in (createSchema
+        // succeeds but the spatial metadata is then unreadable). GeoPackage is the modern, self-contained
+        // equivalent and likewise supports native paging.
         DataStoreInfo ds = catalog.getFactory().createDataStore();
         ds.setName("foo");
         ds.setWorkspace(catalog.getDefaultWorkspace());
 
         Map params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo");
+        params.put("dbtype", "geopkg");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo.gpkg");
         catalog.add(ds);
 
         FeatureSource fs1 = getFeatureSource(SystemTestData.FORESTS);
@@ -262,16 +266,18 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, null);
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(timeFeatureType);
+        // GeoPackage binds DATETIME columns to java.sql.Timestamp (a java.util.Date subclass); a bare
+        // java.util.Date fails GeoPkgDialect.setValue's cast, so wrap the parsed values.
         fb.add("one");
-        fb.add(dateFormat.parseObject("2006-04-04 22:00:00"));
+        fb.add(new java.sql.Timestamp(dateFormat.parse("2006-04-04 22:00:00").getTime()));
         features.add(fb.buildFeature(null));
 
         fb.add("two");
-        fb.add(dateFormat.parseObject("2006-05-05 20:00:00"));
+        fb.add(new java.sql.Timestamp(dateFormat.parse("2006-05-05 20:00:00").getTime()));
         features.add(fb.buildFeature(null));
 
         fb.add("three");
-        fb.add(dateFormat.parseObject("2006-06-28 18:00:00"));
+        fb.add(new java.sql.Timestamp(dateFormat.parse("2006-06-28 18:00:00").getTime()));
         features.add(fb.buildFeature(null));
 
         fs = (FeatureStore) store.getFeatureSource("TimeFeature");
@@ -309,8 +315,11 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         peDatastore.setWorkspace(catalog.getDefaultWorkspace());
 
         Map pedsParams = peDatastore.getConnectionParameters();
-        pedsParams.put("dbtype", "h2");
-        pedsParams.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo_pe");
+        // Use a store type whose factory exposes 'passwd' as a password parameter (h2 here resolves to no encrypted
+        // fields), so the password-parameterization backup - which only tokenizes fields the security manager reports
+        // as encrypted - actually has a field to tokenize.
+        pedsParams.put("dbtype", "geopkg");
+        pedsParams.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo_pe.gpkg");
         pedsParams.put("passwd", "foo");
         catalog.add(peDatastore);
 

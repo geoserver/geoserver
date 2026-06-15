@@ -167,3 +167,4 @@ jobs:
         with:
           name: cite-${{ matrix.suite }}-java-${{ matrix.java-version }}-logs
           path: build/cite/logs/
+          retention-days: 1

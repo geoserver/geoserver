@@ -105,6 +105,7 @@ jobs:
         with:
           name: failed-test-files-java-${{ matrix.java-version }}
           path: ${{ env.GEOSERVER_ACCEPTANCE_FAILED_TESTS_DIR }}
+          retention-days: 1
 
       - name: Print GeoServer full version
         if: always()

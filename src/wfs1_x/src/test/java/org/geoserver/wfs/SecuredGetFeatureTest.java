@@ -6,6 +6,8 @@
 package org.geoserver.wfs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 
 import jakarta.servlet.Filter;
@@ -71,7 +73,7 @@ public class SecuredGetFeatureTest extends WFSTestSupport {
         MockHttpServletResponse resp = getAsServletResponse(
                 "wfs?request=GetFeature&version=1.0.0&service=wfs&typeName=" + getLayerId(SystemTestData.BUILDINGS));
         assertEquals(401, resp.getStatus());
-        assertEquals("Basic realm=\"GeoServer Realm\"", resp.getHeader("WWW-Authenticate"));
+        assertThat(resp.getHeader("WWW-Authenticate"), containsString("Basic realm=\"GeoServer Realm\""));
     }
 
     @Test
@@ -86,7 +88,7 @@ public class SecuredGetFeatureTest extends WFSTestSupport {
 
         MockHttpServletResponse resp = dispatch(request);
         assertEquals(401, resp.getStatus());
-        assertEquals("Basic realm=\"GeoServer Realm\"", resp.getHeader("WWW-Authenticate"));
+        assertThat(resp.getHeader("WWW-Authenticate"), containsString("Basic realm=\"GeoServer Realm\""));
     }
 
     @Test

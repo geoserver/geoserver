@@ -31,6 +31,9 @@ updates:
         versions: [ "[2.43.0,)" ]
       - dependency-name: "com.puppycrawl.tools:checkstyle"
         versions: [ "[13.0.0,)" ]
+      # JUnit 6 dropped junit-vintage-engine; all GeoServer tests are JUnit 4.
+      - dependency-name: "org.junit:junit-bom"
+        versions: [ "[6.0.0,)" ]
 
   - package-ecosystem: 'github-actions'
     directory: '/'

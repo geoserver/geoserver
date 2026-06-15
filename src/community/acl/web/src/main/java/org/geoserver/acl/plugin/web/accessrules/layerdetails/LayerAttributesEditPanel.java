@@ -113,7 +113,7 @@ class LayerAttributesEditPanel extends FormComponentPanel<List<MutableLayerAttri
     public @Override void onEvent(IEvent<?> event) {
         Object payload = event.getPayload();
         if (payload instanceof PublishedInfoChangeEvent changeEvent) {
-            AjaxRequestTarget target = changeEvent.getTarget();
+            AjaxRequestTarget target = changeEvent.target();
             handleVisibility(target);
             //            table.modelChanged();
             //            target.add(this);

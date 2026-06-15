@@ -85,7 +85,7 @@ public class AdminRuleEditPageTest extends AclWicketTestSupport {
         tester.assertRenderedPage(AdminRulesACLPage.class);
 
         MutableAdminRule modelObject = pageModel.getModel().getObject();
-        assertEquals(userRule.getId(), modelObject.getId());
+        assertEquals(userRule.id(), modelObject.getId());
         assertEquals(1, modelObject.getPriority());
         assertEquals("ROLE_EDITOR", modelObject.getRoleName());
         assertEquals("John", modelObject.getUserName());

@@ -100,7 +100,7 @@
     <spring.security.version>7.0.5</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring.ldap.version>4.0.3</spring.ldap.version>
-    <spring-integration.version>7.0.4</spring-integration.version>
+    <spring-integration.version>7.1.0</spring-integration.version>
     <wicket.version>10.9.1</wicket.version>
     <!-- WicketStuff provides additional components and extensions for the Wicket framework,
     such as select2 integration, which is used in GeoServer's admin interface.

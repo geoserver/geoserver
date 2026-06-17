@@ -218,6 +218,23 @@ public class LayerGroupContainmentCacheTest {
     }
 
     @Test
+    public void testContainersIncludingSingle() throws Exception {
+        FeatureTypeInfo lakes = getResource(MockData.LAKES);
+        // default: the SINGLE-mode nature group is not reported as a container
+        assertThat(
+                cc.getContainerGroupsFor(lakes).stream()
+                        .map(LayerGroupSummary::prefixedName)
+                        .collect(Collectors.toSet()),
+                equalTo(set(CONTAINER_GROUP)));
+        // includeSingle=true: the SINGLE-mode nature group is reported too
+        assertThat(
+                cc.getContainerGroupsFor(lakes, true).stream()
+                        .map(LayerGroupSummary::prefixedName)
+                        .collect(Collectors.toSet()),
+                equalTo(set(nature.prefixedName(), CONTAINER_GROUP)));
+    }
+
+    @Test
     public void testAddLayerToNature() throws Exception {
         LayerInfo neatline = catalog.getLayerByName(getLayerId(MockData.MAP_NEATLINE));
         nature.getLayers().add(neatline);

@@ -79,10 +79,7 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.security.AccessLimits;
-import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.DataAccessLimits;
-import org.geoserver.security.WMSAccessLimits;
-import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geoserver.util.HTTPWarningAppender;
@@ -102,7 +99,6 @@ import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -2146,64 +2142,19 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (layerInfos == null || layerInfos.isEmpty()) {
             throw new ServiceException("Could not find layer " + layerName, "LayerNotDefined");
         }
-        if (boundingBox != null) {
-            for (LayerInfo layerInfo : layerInfos) {
-                // Unwrap potential proxy instances, so the instanceof SecuredLayerInfo check works.
-                if (layerInfo instanceof Proxy) {
-                    layerInfo = ProxyUtils.unwrap(
-                            layerInfo, Proxy.getInvocationHandler(layerInfo).getClass());
-                }
-
-                if (layerInfo instanceof SecuredLayerInfo securedLayerInfo) {
-                    // test layer bbox limits
-                    WrapperPolicy policy = securedLayerInfo.getWrapperPolicy();
-                    AccessLimits limits = policy.getLimits();
-
-                    if (limits instanceof DataAccessLimits accessLimits1) {
-                        // ensure we are all using the same CRS
-                        CoordinateReferenceSystem dataCrs =
-                                layerInfo.getResource().getCRS();
-                        if (boundingBox.getCoordinateReferenceSystem() != null
-                                && !CRS.equalsIgnoreMetadata(dataCrs, boundingBox.getCoordinateReferenceSystem())) {
-                            try {
-                                boundingBox = boundingBox.transform(dataCrs, true);
-                            } catch (Exception e) {
-                                // bboxes not compatible? deny access for all certainty.
-                                boundingBox = null;
-                            }
-                        }
-                        Envelope limitBox = new ReferencedEnvelope(ReferencedEnvelope.EVERYTHING, dataCrs);
-
-                        Filter filter = accessLimits1.getReadFilter();
-                        if (filter != null) {
-                            // extract filter envelope from filter
-                            Envelope box = (Envelope) filter.accept(ExtractBoundsFilterVisitor.BOUNDS_VISITOR, null);
-                            if (box != null) {
-                                limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
-                            }
-                        }
-                        if (limits instanceof CoverageAccessLimits accessLimits) {
-                            if (accessLimits.getRasterFilter() != null) {
-                                Envelope box = accessLimits.getRasterFilter().getEnvelopeInternal();
-                                if (box != null) {
-                                    limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
-                                }
-                            }
-                        }
-                        if (limits instanceof WMSAccessLimits accessLimits) {
-                            if (accessLimits.getRasterFilter() != null) {
-                                Envelope box = accessLimits.getRasterFilter().getEnvelopeInternal();
-                                if (box != null) {
-                                    limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
-                                }
-                            }
-                        }
-
-                        if (!limitBox.covers(ReferencedEnvelope.EVERYTHING)
-                                && (boundingBox == null || !limitBox.contains(boundingBox))) {
-                            throw new SecurityException("Access denied to bounding box on layer " + layerName);
-                        }
-                    }
+        // HIDE+EXCLUDE layers are already gone: secured catalog returns null above.
+        // For non-HIDE modes (e.g. CHALLENGE), still deny if readFilter is EXCLUDE; any other
+        // filter is a spatial/attribute restriction that the rendering pipeline handles by producing
+        // empty tiles - no need for a bbox check here.
+        for (LayerInfo layerInfo : layerInfos) {
+            if (layerInfo instanceof Proxy) {
+                layerInfo = ProxyUtils.unwrap(
+                        layerInfo, Proxy.getInvocationHandler(layerInfo).getClass());
+            }
+            if (layerInfo instanceof SecuredLayerInfo securedLayerInfo) {
+                AccessLimits limits = securedLayerInfo.getWrapperPolicy().getLimits();
+                if (limits instanceof DataAccessLimits dal && Filter.EXCLUDE.equals(dal.getReadFilter())) {
+                    throw new SecurityException("Access denied to layer " + layerName);
                 }
             }
         }

@@ -150,4 +150,14 @@
     <constructor-arg ref="gwcGridSetBroker"/>
   </bean>
 
+  <!-- GWC security parameter filter -->
+
+  <bean id="gwcIgnorableParameterRegistry"
+        class="org.geoserver.gwc.security.IgnorableParameterRegistry"/>
+
+  <bean id="gwcAccessLimitsKeyBuilder"
+        class="org.geoserver.gwc.security.AccessLimitsKeyBuilder">
+    <constructor-arg ref="gwcIgnorableParameterRegistry"/>
+  </bean>
+
 </beans>

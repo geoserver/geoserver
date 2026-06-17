@@ -126,8 +126,17 @@ public class LayerGroupContainmentCache implements ApplicationListener<ContextRe
         }
     }
 
-    /** Returns all groups containing directly or indirectly containing the resource */
+    /** Returns all groups containing directly or indirectly the resource, excluding {@link Mode#SINGLE} ones. */
     public Collection<LayerGroupSummary> getContainerGroupsFor(ResourceInfo resource) {
+        return getContainerGroupsFor(resource, false);
+    }
+
+    /**
+     * Returns all groups containing directly or indirectly the resource. {@link Mode#SINGLE} containers are excluded
+     * from security rule evaluation, but tile caching keys group tiles by their members' access limits regardless of
+     * mode, so callers invalidating those tiles pass {@code includeSingle = true}.
+     */
+    public Collection<LayerGroupSummary> getContainerGroupsFor(ResourceInfo resource, boolean includeSingle) {
         String id = resource.getId();
         Set<LayerGroupSummary> groups = resourceContainmentCache.get(id);
         if (groups == null) {
@@ -135,7 +144,7 @@ public class LayerGroupContainmentCache implements ApplicationListener<ContextRe
         }
         Set<LayerGroupSummary> result = new HashSet<>();
         for (LayerGroupSummary lg : groups) {
-            collectContainers(lg, result);
+            collectContainers(lg, result, includeSingle);
         }
         return result;
     }
@@ -156,19 +165,19 @@ public class LayerGroupContainmentCache implements ApplicationListener<ContextRe
 
         Set<LayerGroupSummary> result = new HashSet<>();
         for (LayerGroupSummary container : summary.getContainerGroups()) {
-            collectContainers(container, result);
+            collectContainers(container, result, false);
         }
         return result;
     }
 
     /** Recursively collects the group and all its containers in the <data>groups</data> collection */
-    private void collectContainers(LayerGroupSummary lg, Set<LayerGroupSummary> groups) {
+    private void collectContainers(LayerGroupSummary lg, Set<LayerGroupSummary> groups, boolean includeSingle) {
         if (!groups.contains(lg)) {
-            if (lg.getMode() != LayerGroupInfo.Mode.SINGLE) {
+            if (includeSingle || lg.getMode() != LayerGroupInfo.Mode.SINGLE) {
                 groups.add(lg);
             }
             for (LayerGroupSummary container : lg.containerGroups) {
-                collectContainers(container, groups);
+                collectContainers(container, groups, includeSingle);
             }
         }
     }

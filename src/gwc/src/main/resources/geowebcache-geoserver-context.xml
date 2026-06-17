@@ -160,4 +160,12 @@
     <constructor-arg ref="gwcIgnorableParameterRegistry"/>
   </bean>
 
+  <bean id="gwcSecurityCacheInvalidator"
+        class="org.geoserver.gwc.security.SecurityCacheInvalidator">
+    <constructor-arg ref="gwcStorageBroker"/>
+    <constructor-arg ref="gwcTLDispatcher"/>
+    <constructor-arg ref="rawCatalog"/>
+    <constructor-arg ref="layerGroupContainmentCache"/>
+  </bean>
+
 </beans>

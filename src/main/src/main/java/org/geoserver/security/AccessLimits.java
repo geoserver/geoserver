@@ -31,6 +31,9 @@ public class AccessLimits implements Serializable, Cloneable {
      * {@link ResourceAccessManager} implementations supporting tag-based invalidation may populate this with opaque
      * tags, that can then be used to drop tile caches affected by security rule changes. Deliberately excluded from
      * {@link #equals} and {@link #hashCode}: tags are invalidation metadata, not part of the content fingerprint.
+     *
+     * <p><strong>A tag must not contain a comma</strong>: tags are stored as a single comma-separated value in the tile
+     * cache, so a comma in a tag breaks targeted invalidation. Comma-bearing tags are rejected.
      */
     private Set<String> securityTags;
 

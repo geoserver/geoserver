@@ -8,6 +8,8 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Throwables.throwIfUnchecked;
+import static org.geoserver.gwc.security.SecurityParameterFilter.ACCESS_LIMITS_KEY;
+import static org.geoserver.gwc.security.SecurityParameterFilter.SECURITY_TAGS_KEY;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
@@ -31,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
@@ -57,12 +60,17 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
+import org.geoserver.gwc.security.AccessLimitsKeyBuilder;
+import org.geoserver.gwc.security.SecurityParameterFilter;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RequestInfo;
+import org.geoserver.security.AccessLimits;
+import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.util.DimensionWarning;
 import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.GetLegendGraphicRequest;
@@ -123,6 +131,8 @@ import org.geowebcache.util.GWCVars;
 import org.geowebcache.util.ServletUtils;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.vfny.geoserver.util.ResponseUtils;
 
 /** GeoServer {@link TileLayer} implementation. Delegates to {@link GeoServerTileLayerInfo} for layer configuration. */
@@ -137,6 +147,10 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
     public static final ThreadLocal<WebMap> WEB_MAP = new ThreadLocal<>();
     public static final ThreadLocal<Set<DimensionWarning>> DIMENSION_WARNINGS = new ThreadLocal<>();
+
+    // synthetic, stateless filters for tiling security integration (constant to avoid repeated allocation)
+    private static final SecurityParameterFilter ACCESS_LIMITS_FILTER = new SecurityParameterFilter(ACCESS_LIMITS_KEY);
+    private static final SecurityParameterFilter SECURITY_TAGS_FILTER = new SecurityParameterFilter(SECURITY_TAGS_KEY);
 
     private String configErrorMessage;
 
@@ -281,13 +295,119 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         return configErrorMessage;
     }
 
-    @Override
-    public List<ParameterFilter> getParameterFilters() {
-        return new ArrayList<>(info.getParameterFilters());
+    private static boolean isSecurityEnabled() {
+        return GWC.get().getConfig().isSecurityEnabled();
     }
 
+    @Override
+    public List<ParameterFilter> getParameterFilters() {
+        List<ParameterFilter> filters = new ArrayList<>(info.getParameterFilters());
+        if (isSecurityEnabled()) {
+            if (filters.stream().noneMatch(f -> ACCESS_LIMITS_KEY.equals(f.getKey()))) {
+                filters.add(ACCESS_LIMITS_FILTER);
+            }
+            if (filters.stream().noneMatch(f -> SECURITY_TAGS_KEY.equals(f.getKey()))) {
+                filters.add(SECURITY_TAGS_FILTER);
+            }
+        }
+        return filters;
+    }
+
+    @Override
+    public Map<String, String> getModifiableParameters(Map<String, ?> map, String encoding)
+            throws GeoWebCacheException {
+        if (!isSecurityEnabled()) {
+            return super.getModifiableParameters(map, encoding);
+        }
+        // never let a client-supplied security parameter influence the cache key; GWC matches filter
+        // keys case-insensitively, so a forged "access_limits_key" would survive a case-sensitive removal
+        Map<String, Object> sanitized = new HashMap<>();
+        for (Map.Entry<String, ?> e : map.entrySet()) {
+            String k = e.getKey();
+            if (!ACCESS_LIMITS_KEY.equalsIgnoreCase(k) && !SECURITY_TAGS_KEY.equalsIgnoreCase(k)) {
+                sanitized.put(k, e.getValue());
+            }
+        }
+
+        SecurityKey security = computeSecurityKey(getPublishedInfo());
+        if (security != null) {
+            sanitized.put(ACCESS_LIMITS_KEY, security.key());
+            if (security.tags() != null) {
+                sanitized.put(SECURITY_TAGS_KEY, security.tags());
+            }
+        }
+        Map<String, String> result = super.getModifiableParameters(sanitized, encoding);
+        // when unrestricted, strip security params to preserve the pre-existing parametersId
+        if (security == null && !result.isEmpty()) {
+            Map<String, String> clean = new HashMap<>(result);
+            boolean changed = clean.remove(ACCESS_LIMITS_KEY) != null;
+            changed |= clean.remove(SECURITY_TAGS_KEY) != null;
+            if (changed) return clean.isEmpty() ? Collections.emptyMap() : clean;
+        }
+        return result;
+    }
+
+    private record SecurityKey(String key, String tags) {}
+
+    /**
+     * Returns the security cache key and tags for the current user and the given layer or group, or {@code null} for
+     * unrestricted access or when the security infrastructure is unavailable.
+     */
+    private static SecurityKey computeSecurityKey(PublishedInfo published) {
+        AccessLimitsKeyBuilder keyBuilder = GeoServerExtensions.bean(AccessLimitsKeyBuilder.class);
+        SecureCatalogImpl secureCatalog = GeoServerExtensions.bean(SecureCatalogImpl.class);
+        if (keyBuilder == null || secureCatalog == null) {
+            // security infrastructure absent: fall back to the unrestricted cache, but leave a trace - this
+            // silently serves every user from the same cache entry, an easy misconfiguration to miss
+            LOGGER.fine(() -> "GWC security: no cache key computed for " + published.prefixedName()
+                    + ", AccessLimitsKeyBuilder/SecureCatalogImpl bean missing");
+            return null;
+        }
+        ResourceAccessManager ram = secureCatalog.getResourceAccessManager();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String key;
+        String tags;
+        if (published instanceof LayerInfo layer) {
+            AccessLimits limits = ram.getAccessLimits(auth, layer);
+            key = keyBuilder.buildKey(limits);
+            tags = tagsFrom(limits);
+        } else if (published instanceof LayerGroupInfo group) {
+            List<LayerInfo> layers = group.layers();
+            List<String> names = layers.stream().map(LayerInfo::prefixedName).toList();
+            List<AccessLimits> limits = layers.stream()
+                    .map(l -> (AccessLimits) ram.getAccessLimits(auth, l))
+                    .toList();
+            key = keyBuilder.buildLayerGroupKey(names, limits);
+            Set<String> allTags = new TreeSet<>();
+            limits.forEach(l -> collectTags(l, allTags));
+            tags = allTags.isEmpty() ? null : String.join(",", allTags);
+        } else {
+            return null;
+        }
+        // tags are only meaningful alongside a key (used for targeted invalidation of restricted caches);
+        // a null key means unrestricted, so the request hits the normal cache and tags are irrelevant
+        if (key == null) return null;
+        if (key.isEmpty()) {
+            throw new IllegalStateException("AccessLimitsKeyBuilder returned an empty security key");
+        }
+        return new SecurityKey(key, tags);
+    }
+
+    private static String tagsFrom(AccessLimits limits) {
+        Set<String> tags = new TreeSet<>();
+        collectTags(limits, tags);
+        return tags.isEmpty() ? null : String.join(",", tags);
+    }
+
+    private static void collectTags(AccessLimits limits, Set<String> out) {
+        // tags are validated comma-free at the API boundary (AccessLimits.setSecurityTags)
+        if (limits != null && limits.getSecurityTags() != null) out.addAll(limits.getSecurityTags());
+    }
+
+    /** Reset parameter filter values to their defaults ({@code null}) */
     public void resetParameterFilters() {
-        super.defaultParameterFilterValues = null; // reset default values
+        super.defaultParameterFilterValues = null;
     }
 
     /**

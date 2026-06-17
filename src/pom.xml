@@ -109,7 +109,7 @@
     <!-- ================================ -->
     <!-- Dependency version management    -->
     <!-- ================================ -->
-    <ant.version>1.10.11</ant.version>
+    <ant.version>1.10.17</ant.version>
     <apacheds.version>2.0.0.AM27</apacheds.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>

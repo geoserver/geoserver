@@ -186,7 +186,10 @@ public class GeoServerTileLayerTest {
     public void tearDown() throws Exception {
         GWC.set(null, null);
         Dispatcher.REQUEST.remove();
-        GeoServerExtensionsHelper.clear();
+        // tests that set a context via setApplicationContext close it in their own
+        // try-with-resources; reset to null (not just clear caches) so the closed
+        // context is not referenced by later test methods
+        GeoServerExtensionsHelper.init(null);
     }
 
     @Before

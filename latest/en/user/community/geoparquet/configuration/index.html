@@ -22539,6 +22539,34 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#s3-compatible-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3-Compatible Services
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S3-Compatible Services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Configuration:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#legacy-uri-based-authentication-deprecated" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -22559,6 +22587,17 @@
     <span class="md-ellipsis">
       
         Hive Partitioning Support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#duckdb-resource-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DuckDB Resource Limits
       
     </span>
   </a>
@@ -30319,6 +30358,34 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#s3-compatible-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3-Compatible Services
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S3-Compatible Services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Configuration:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#legacy-uri-based-authentication-deprecated" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30339,6 +30406,17 @@
     <span class="md-ellipsis">
       
         Hive Partitioning Support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#duckdb-resource-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DuckDB Resource Limits
       
     </span>
   </a>
@@ -30570,6 +30648,26 @@
 <td>No</td>
 <td>AWS profile name to load credentials from \~/.aws/credentials</td>
 </tr>
+<tr>
+<td><strong>S3 Endpoint</strong></td>
+<td>No</td>
+<td>Custom S3 or S3-compatible service endpoint. Connection parameter: <code>endpoint</code></td>
+</tr>
+<tr>
+<td><strong>S3 URL Style</strong></td>
+<td>No</td>
+<td>S3 addressing style to use, such as <code>path</code> for path-style access to S3-compatible services. Connection parameter: <code>url_style</code></td>
+</tr>
+<tr>
+<td><strong>DuckDB memory limit for the store, for example '1GB'</strong></td>
+<td>No</td>
+<td>DuckDB memory limit applied to this store. Connection parameter: <code>memory_limit</code></td>
+</tr>
+<tr>
+<td><strong>DuckDB maximum number of execution threads for the store</strong></td>
+<td>No</td>
+<td>Maximum number of DuckDB execution threads for this store. Must be greater than zero when provided. Connection parameter: <code>threads</code></td>
+</tr>
 </tbody>
 </table>
 <h2 id="uri-examples">URI Examples<a class="headerlink" href="#uri-examples" title="Permanent link">&para;</a></h2>
@@ -30633,6 +30731,13 @@
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="na">region</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">eu-west-1</span>
 </code></pre></div>
 <p>You can specify which profile to use with the <strong>AWS Profile</strong> parameter. If not specified, the default profile or the profile set via the <code>AWS_PROFILE</code> environment variable will be used.</p>
+<h3 id="s3-compatible-services">S3-Compatible Services<a class="headerlink" href="#s3-compatible-services" title="Permanent link">&para;</a></h3>
+<p>For S3-compatible object stores such as MinIO or Ceph, set <strong>S3 Endpoint</strong> (<code>endpoint</code>) to the service endpoint and, when required by the service, set <strong>S3 URL Style</strong> (<code>url_style</code>) to <code>path</code>.</p>
+<h4 id="example-configuration_1">Example Configuration:<a class="headerlink" href="#example-configuration_1" title="Permanent link">&para;</a></h4>
+<p><strong>GeoParquet URI</strong>: <code>s3://my-bucket/data/countries.parquet</code></p>
+<p><strong>Use AWS Credential Chain</strong>: ✓ (checked)</p>
+<p><strong>S3 Endpoint</strong>: <code>http://minio.example.com:9000</code></p>
+<p><strong>S3 URL Style</strong>: <code>path</code></p>
 <h3 id="legacy-uri-based-authentication-deprecated">Legacy URI-Based Authentication (Deprecated)<a class="headerlink" href="#legacy-uri-based-authentication-deprecated" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -30661,6 +30766,13 @@
 <li><strong>1, 2, 3, etc.</strong>: Use only the specified number of partition levels</li>
 </ul>
 <p><strong>Example:</strong> With <code>max depth = 2</code> on the data above, GeoServer would create feature types like <code>year_2023_month_01</code> and <code>year_2023_month_02</code>, ignoring the day-level partitioning.</p>
+<h2 id="duckdb-resource-limits">DuckDB Resource Limits<a class="headerlink" href="#duckdb-resource-limits" title="Permanent link">&para;</a></h2>
+<p>GeoParquet stores are backed by DuckDB. The following optional parameters can be used to limit DuckDB resource usage for a specific store:</p>
+<ul>
+<li><strong><code>memory_limit</code></strong>: Sets DuckDB's memory limit for this store, for example <code>1GB</code>, <code>512MB</code>, or another value accepted by DuckDB.</li>
+<li><strong><code>threads</code></strong>: Sets the maximum number of DuckDB execution threads for this store. The value must be greater than zero.</li>
+</ul>
+<p>Leave these parameters empty to use DuckDB's defaults.</p>
 <h2 id="publishing-layers">Publishing Layers<a class="headerlink" href="#publishing-layers" title="Permanent link">&para;</a></h2>
 <p>After creating and saving a GeoParquet data store:</p>
 <ol>
@@ -30753,6 +30865,7 @@
 <li>Use glob patterns to limit the files being accessed</li>
 <li>Leverage Hive partitioning to reduce data scanned</li>
 <li>Consider adjusting the <code>max_hive_depth</code> parameter</li>
+<li>Consider setting <code>memory_limit</code> and <code>threads</code> to bound DuckDB resource usage for the store</li>
 <li>For S3, ensure GeoServer is deployed in the same AWS region as the data</li>
 <li>Consider caching frequently accessed data locally</li>
 </ul>

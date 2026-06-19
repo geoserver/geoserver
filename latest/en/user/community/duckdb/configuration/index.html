@@ -21865,6 +21865,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#resource-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#security-model" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -29979,6 +29990,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#resource-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#security-model" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30063,6 +30085,14 @@
 <td>Enables read-only mode for the store. Default is <code>true</code>. Set to <code>false</code> to allow write operations.</td>
 </tr>
 <tr>
+<td><code>memory_limit</code></td>
+<td>DuckDB memory limit for the store, for example <code>1GB</code> or <code>512MB</code>. Leave empty to use DuckDB's default.</td>
+</tr>
+<tr>
+<td><code>threads</code></td>
+<td>DuckDB maximum number of execution threads for the store. Must be greater than zero when provided. Leave empty to use DuckDB's default.</td>
+</tr>
+<tr>
 <td><code>simplification</code></td>
 <td>Enables SQL-side geometry simplification when rendering or query hints request it. Default is <code>true</code>.</td>
 </tr>
@@ -30086,7 +30116,11 @@
 <li><code>memory</code> and <code>database</code> are mutually exclusive.</li>
 <li>If <code>memory=false</code>, <code>database</code> is required.</li>
 <li>If <code>memory=true</code>, <code>database</code> must not be provided.</li>
+<li>If <code>threads</code> is provided, it must be greater than zero.</li>
 </ul>
+<h2 id="resource-limits">Resource Limits<a class="headerlink" href="#resource-limits" title="Permanent link">&para;</a></h2>
+<p>DuckDB accepts per-store resource limits through the <code>memory_limit</code> and <code>threads</code> connection parameters. GeoServer applies these settings when opening the DuckDB store.</p>
+<p>Use <code>memory_limit</code> to cap memory used by DuckDB for the store, and <code>threads</code> to cap the number of DuckDB execution threads. Leave either value empty to keep DuckDB's default behavior.</p>
 <h2 id="security-model">Security Model<a class="headerlink" href="#security-model" title="Permanent link">&para;</a></h2>
 <p>The DuckDB datastore in GeoServer uses a guarded execution policy from GeoTools:</p>
 <ul>

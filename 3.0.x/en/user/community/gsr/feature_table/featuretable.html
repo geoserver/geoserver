@@ -1,0 +1,113 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Intro to PopupTemplate - 4.8</title>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.8/"></script>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/layers/FeatureLayer",
+      "esri/views/MapView",
+      "dojo/domReady!"
+    ], function(
+      Map,
+      FeatureLayer,
+      MapView
+    ) {
+
+      // Create the map
+      var map = new Map({
+        basemap: "osm"
+      });
+
+      // Create the MapView
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        extent: { // autocasts as new Extent()
+            xmin: -74.255591362951,
+            ymin: 40.4961153956091,
+            xmax: -73.7000090634675,
+            ymax: 40.915532775817,
+            spatialReference: 4326
+        },
+      });
+
+      /*************************************************************
+       * The PopupTemplate content is the text that appears inside the
+       * popup. {fieldName} can be used to reference the value of an
+       * attribute of the selected feature. HTML elements can be used
+       * to provide structure and styles within the content. The
+       * fieldInfos property is an array of objects (each object representing
+       * a field) that is use to format number fields and customize field
+       * aliases in the popup and legend.
+       **************************************************************/
+
+      var template = { // autocasts as new PopupTemplate()
+        title: "Boroughs in NY",
+        content: [{
+          // It is also possible to set the fieldInfos outside of the content
+          // directly in the popupTemplate. If no fieldInfos is specifically set
+          // in the content, it defaults to whatever may be set within the popupTemplate.
+          type: "fields",
+          fieldInfos: [{
+            fieldName: "boro_name",
+            label: "Borough Name",
+            visible: true
+          }, {
+            fieldName: "shape_area",
+            label: "Borough Area",
+            visible: true,
+            format: {
+              digitSeparator: true,
+              places: 0
+            }
+          }, {
+            fieldName: "shape_leng",
+            label: "Borough Length",
+            visible: true,
+            format: {
+              digitSeparator: true,
+              places: 0
+            }
+          }]
+        }]
+      };
+
+      // Reference the popupTemplate instance in the
+      // popupTemplate property of FeatureLayer
+      var featureLayer = new FeatureLayer({
+        url: "http://localhost:8080/geoserver/gsr/services/cite/FeatureServer/0",
+        outFields: ["*"],
+        popupTemplate: template
+      });
+      map.add(featureLayer);
+    });
+    require(["esri/config"], function (esriConfig) {
+            esriConfig.request.corsEnabledServers.push("localhost:8080");
+        });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>
+
+<!-- Esri®, ArcGIS® and ArcGIS Online®  are trademarks, registered trademarks, or service marks of Esri in the United States, the European Community, or certain other jurisdictions. Other companies and products mentioned may be trademarks of their respective owners.-->

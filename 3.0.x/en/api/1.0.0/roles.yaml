@@ -1,0 +1,457 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Roles
+  description: Organisation of security roles
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest/security
+
+paths:
+  /roles:
+    get:
+      operationId: rolesDefaultGet
+      tags:
+       - "Roles"
+      summary: Query all roles
+      description: Query all roles in the default role service.
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Roles"
+  /roles/user/{user}:
+    get:
+      operationId: rolesDefaultUserGet
+      tags:
+       - "Roles"
+      summary: Query all roles for user
+      description: Query all roles for the user in the default role service.
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      parameters:
+        - name: user
+          description: the name of the user
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Roles"
+  /roles/group/{group}:
+    get:
+      operationId: rolesDefaultGroupGet
+      tags:
+       - "Roles"
+      summary: Query all roles for group
+      description: Query all roles for the group in the default role service.
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      parameters:
+        - name: group
+          description: the name of the group
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Roles"
+  /roles/service/{serviceName}/roles/:
+    get:
+      operationId: rolesGet
+      tags:
+       - "Roles"
+      summary: Query all roles
+      description: Query all roles in a particular role service.
+      produces:
+        - text/html
+        - application/xml
+        - application/json        
+      parameters:
+        - name: serviceName
+          description: the name of the role role service
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Roles"   
+  /roles/service/{serviceName}/user/{user}:
+    get:
+      operationId: rolesUserGet
+      tags:
+       - "Roles"
+      summary: Query all roles for user
+      description: Query all roles for the user in a particular role service.
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      parameters:
+        - name: serviceName
+          description: the name of the role role service
+          in: path
+          required: true
+          type: string
+        - name: user
+          description: the name of the user
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Roles"
+  /roles/service/{serviceName}/group/{group}:
+    get:
+      operationId: rolesGroupGet
+      tags:
+       - "Roles"
+      summary: Query all roles for group
+      description: Query all roles for the group in a particular role service.
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      parameters:
+        - name: serviceName
+          description: the name of the role role service
+          in: path
+          required: true
+          type: string
+        - name: group
+          description: the name of the group
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Roles"
+  /roles/role/{role}:
+    post:
+      operationId: roleDefaultPost
+      tags:
+       - "Roles"
+      summary: Add a role
+      description: Add a role in the default role service.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string          
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: roleDefaultDelete
+      tags:
+       - "Roles"
+      summary: Delete a role
+      description: Delete a role in the default role service.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:  
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /roles/role/{role}/user/{user}:
+    post:
+      operationId: roleDefaultUserPost
+      tags:
+       - "Roles"
+      summary: Associate a role with a user
+      description: Associate an existing role in the default role service with a user.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+        - name: user
+          description: the name of the user
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: roleDefaultUserDelete
+      tags:
+       - "Roles"
+      summary: Disassociate a role from a user
+      description: Disassociate a role in the default role service with a user.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:  
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+        - name: user
+          description: the name of the user
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /roles/role/{role}/group/{group}:
+    post:
+      operationId: roleDefaultGroupPost
+      tags:
+       - "Roles"
+      summary: Associate a role with a group
+      description: Associate an existing role in the default role service with a group.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+        - name: group
+          description: the name of the group
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: roleDefaultGroupDelete
+      tags:
+       - "Roles"
+      summary: Disassociate a role from a group
+      description: Disassociate a role in the default role service with a group.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:  
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+        - name: group
+          description: the name of the group
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /service/{serviceName}/role/{role}:
+    post:
+      operationId: rolePost
+      tags:
+       - "Roles"
+      summary: Add a role
+      description: Add a role in a particular role service.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: serviceName
+          description: the name of the role service
+          in: path
+          required: true
+          type: string    
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: roleDelete
+      tags:
+       - "Roles"
+      summary: Delete a role
+      description: Delete a role in a particular role service.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: serviceName
+          description: the name of the role service
+          in: path
+          required: true
+          type: string
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /service/{serviceName}/roles/role/{role}/user/{user}:
+    post:
+      operationId: roleUserPost
+      tags:
+       - "Roles"
+      summary: Associate a role with a user
+      description: Associate an existing role in a particular role service with a user.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: serviceName
+          description: the name of the role service
+          in: path
+          required: true
+          type: string
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+        - name: user
+          description: the name of the user
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: roleUserDelete
+      tags:
+       - "Roles"
+      summary: Disassociate a role from a user
+      description: Disassociate a role in a particular role service with a user.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:  
+        - name: serviceName
+          description: the name of the role service
+          in: path
+          required: true
+          type: string
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+        - name: user
+          description: the name of the user
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /service/{serviceName}/roles/role/{role}/group/{group}:
+    post:
+      operationId: roleGroupPost
+      tags:
+       - "Roles"
+      summary: Associate a role with a group
+      description: Associate an existing role in a particular role service with a group.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: serviceName
+          description: the name of the role service
+          in: path
+          required: true
+          type: string
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+        - name: group
+          description: the name of the group
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: roleGroupDelete
+      tags:
+       - "Roles"
+      summary: Disassociate a role from a group
+      description: Disassociate a role in a particular role service with a group.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:  
+        - name: serviceName
+          description: the name of the role service
+          in: path
+          required: true
+          type: string
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+        - name: group
+          description: the name of the group
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+
+definitions:
+    Roles:
+       title: roles
+       xml: 
+         name: roles
+       type: array
+       items:
+          $ref: "#/definitions/Role"
+    Role:
+       title: role
+       xml: 
+         name: role
+       type: string
+

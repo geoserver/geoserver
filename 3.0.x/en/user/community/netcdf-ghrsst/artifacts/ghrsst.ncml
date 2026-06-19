@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncml:netcdf xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="/path/to/original/ghrsst.nc">
+  <ncml:dimension name="time" length="1" isUnlimited="true" />
+  <ncml:dimension name="lat" length="3200" />
+  <ncml:dimension name="lon" length="7200" />
+  <ncml:attribute name="Conventions" value="CF-1.6, Unidata Observation Dataset v1.0" />
+  <ncml:attribute name="Metadata_Conventions" value="Unidata Dataset Discovery v1.0" />
+  <ncml:attribute name="acknowledgment" value="Please acknowledge the use of these data with the following statement: These data is provided by FAKEORG" />
+  <ncml:attribute name="cdm_data_type" value="grid" />
+  <ncml:attribute name="comment" value="SSTs are an arithmetic mean of the SSTs of contributing pixels." />
+  <ncml:attribute name="creator_email" value="ops@fakeorg.int" />
+  <ncml:attribute name="creator_name" value="FAKEORG/TSS-GSI-Web-Services" />
+  <ncml:attribute name="creator_url" value="https://www.fakeorg.int" />
+  <ncml:attribute name="date_created" value="20171017T095853Z" />
+  <ncml:attribute name="easternmost_longitude" type="float" value="179.95" />
+  <ncml:attribute name="file_quality_level" type="int" value="2" />
+  <ncml:attribute name="gds_version_id" value="02.0" />
+  <ncml:attribute name="geospatial_lat_resolution" type="float" value="0.05" />
+  <ncml:attribute name="geospatial_lat_units" value="degrees_north" />
+  <ncml:attribute name="geospatial_lon_resolution" type="float" value="0.05" />
+  <ncml:attribute name="geospatial_lon_units" value="degrees_east" />
+  <ncml:attribute name="history" value="Created by the L2P-to-L3U conversion FAKEORG Image Processing and Presentation tool." />
+  <ncml:attribute name="id" value="EUM-SLSTR-L3U-v1.0" />
+  <ncml:attribute name="institution" value="FAKEORG" />
+  <ncml:attribute name="keywords" value="Oceans &gt; Ocean Temperature &gt; Sea Surface Temperature" />
+  <ncml:attribute name="keywords_vocabulary" value="NASA Global Change Master Directory (GCMD) Science Keywords" />
+  <ncml:attribute name="license" value="Copernicus Programme free, full and open data policy" />
+  <ncml:attribute name="metadata_link" value="https://navigator.fakeorg.int/xxxxxx" />
+  <ncml:attribute name="naming_authority" value="int.fakeorg" />
+  <ncml:attribute name="netcdf_version_id" value="4.3.0" />
+  <ncml:attribute name="northernmost_latitude" type="float" value="79.95" />
+  <ncml:attribute name="platform" value="Sentinel3A" />
+  <ncml:attribute name="processing_level" value="L3U" />
+  <ncml:attribute name="product_version" value="1.0" />
+  <ncml:attribute name="project" value="FAKEORG Visualization service" />
+  <ncml:attribute name="publisher_email" value="ops@fakeorg.int" />
+  <ncml:attribute name="publisher_name" value="The FAKEORG Web Services Team" />
+  <ncml:attribute name="publisher_url" value="http://www.fakeorg.int" />
+  <ncml:attribute name="references" value="Data convention: GHRSST Data Specification (GDS) v2.0. Algorithms: ACSPO-VIIRS ATBD (NOAA/NESDIS/STAR)" />
+  <ncml:attribute name="sensor" value="SLSTR" />
+  <ncml:attribute name="source" value="IPF-SL-2 06.12" />
+  <ncml:attribute name="southernmost_latitude" type="float" value="-79.95" />
+  <ncml:attribute name="spatial_resolution" value="0.050 degree" />
+  <ncml:attribute name="standard_name_vocabulary" value="CF Standard Name Table (v26, 08 November 2013)" />
+  <ncml:attribute name="start_time" value="20170522T082849Z" />
+  <ncml:attribute name="stop_time" value="20170522T100948Z" />
+  <ncml:attribute name="summary" value="Sea surface temperature retrievals produced by FAKEORG from Sentinel3 SLSTR sensor and gridded over a 0.05 deg rectangular grid" />
+  <ncml:attribute name="time_coverage_end" value="20170522T100948Z" />
+  <ncml:attribute name="time_coverage_start" value="20170522T082849Z" />
+  <ncml:attribute name="title" value="FAKEORG L3U SST" />
+  <ncml:attribute name="westernmost_longitude" type="float" value="-179.95" />
+  <ncml:variable name="time" shape="time" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="-2147483647" />
+    <ncml:attribute name="axis" value="T" />
+    <ncml:attribute name="calendar" value="gregorian" />
+    <ncml:attribute name="comment" value="A typical reference time for data" />
+    <ncml:attribute name="long_name" value="reference time of sst file" />
+    <ncml:attribute name="standard_name" value="time" />
+    <ncml:attribute name="units" value="seconds since 1981-01-01 00:00:00" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1048576" />
+  </ncml:variable>
+  <ncml:variable name="lat" shape="lat" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="9.96921E36" />
+    <ncml:attribute name="axis" value="Y" />
+    <ncml:attribute name="comment" value="Latitudes for locating data" />
+    <ncml:attribute name="long_name" value="latitude" />
+    <ncml:attribute name="standard_name" value="latitude" />
+    <ncml:attribute name="units" value="degrees_north" />
+    <ncml:attribute name="valid_max" type="float" value="90.0" />
+    <ncml:attribute name="valid_min" type="float" value="-90.0" />
+  </ncml:variable>
+  <ncml:variable name="lon" shape="lon" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="9.96921E36" />
+    <ncml:attribute name="axis" value="X" />
+    <ncml:attribute name="comment" value="Longitudes for locating data" />
+    <ncml:attribute name="long_name" value="longitude" />
+    <ncml:attribute name="standard_name" value="longitude" />
+    <ncml:attribute name="units" value="degrees_east" />
+    <ncml:attribute name="valid_max" type="float" value="180.0" />
+    <ncml:attribute name="valid_min" type="float" value="-180.0" />
+  </ncml:variable>
+  <ncml:variable name="pixels_per_bin" shape="time lat lon" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="0" />
+    <ncml:attribute name="long_name" value="number of sea_surface_temperature pixels per bin" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 800 1800" />
+  </ncml:variable>
+  <ncml:variable name="sea_surface_temperature" shape="time lat lon" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="9.96921E36" />
+    <ncml:attribute name="binning_method" value="mean" />
+    <ncml:attribute name="comment" value="Marine skin surface temperature" />
+    <ncml:attribute name="coordinates" value="lon lat" />
+    <ncml:attribute name="depth" value="10 micrometres" />
+    <ncml:attribute name="long_name" value="sea surface skin temperature" />
+    <ncml:attribute name="standard_name" value="sea_surface_skin_temperature" />
+    <ncml:attribute name="units" value="kelvin" />
+    <ncml:attribute name="valid_max" type="float" value="318.15" />
+    <ncml:attribute name="valid_min" type="float" value="270.15" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 640 1440" />
+  </ncml:variable>
+  <ncml:variable name="sst_dtime" shape="time lat lon" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="-2147483647" />
+    <ncml:attribute name="comment" value="time plus sst_dtime gives seconds since 1981-01-01 00:00:00 UTC" />
+    <ncml:attribute name="coordinates" value="lon lat" />
+    <ncml:attribute name="long_name" value="time difference from reference time" />
+    <ncml:attribute name="units" value="second" />
+    <ncml:attribute name="valid_max" type="int" value="2147483645" />
+    <ncml:attribute name="valid_min" type="int" value="-2147483645" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 640 1440" />
+  </ncml:variable>
+  <ncml:variable name="quality_level" shape="time lat lon" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="-128" />
+    <ncml:attribute name="comment" value="Based on l2p_flags" />
+    <ncml:attribute name="coordinates" value="lon lat" />
+    <ncml:attribute name="flag_meanings" value="invalid not_used not_used cloudy probably_clear clear" />
+    <ncml:attribute name="flag_values" type="byte" value="0 1 2 3 4 5" />
+    <ncml:attribute name="long_name" value="quality level of SST pixel" />
+    <ncml:attribute name="valid_max" type="byte" value="5" />
+    <ncml:attribute name="valid_min" type="byte" value="0" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 1067 2400" />
+  </ncml:variable>
+  <ncml:variable name="wind_speed" shape="time lat lon" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="9.96921E36" />
+    <ncml:attribute name="comment" value="Typically represents surface winds (10 meters above the sea surface)" />
+    <ncml:attribute name="coordinates" value="lon lat" />
+    <ncml:attribute name="height" value="10m" />
+    <ncml:attribute name="long_name" value="wind speed" />
+    <ncml:attribute name="source" value="Wind speed from ECMWF data" />
+    <ncml:attribute name="standard_name" value="wind_speed" />
+    <ncml:attribute name="units" value="m s-1" />
+    <ncml:attribute name="valid_max" type="float" value="50.8" />
+    <ncml:attribute name="valid_min" type="float" value="0.0" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 640 1440" />
+  </ncml:variable>
+  <ncml:variable name="wind_speed_dtime_from_sst" shape="time lat lon" type="float">
+    <ncml:attribute name="comment" value="Difference in hours between wind speed and SST" />
+    <ncml:attribute name="coordinates" value="lon lat" />
+    <ncml:attribute name="long_name" value="Time difference of wind speed from SST measurement" />
+    <ncml:attribute name="units" value="hour" />
+    <ncml:attribute name="valid_max" type="float" value="12.7" />
+    <ncml:attribute name="valid_min" type="float" value="-12.7" />
+    <ncml:attribute name="_FillValue" type="float" value="9.96921E36" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 640 1440" />
+  </ncml:variable>
+  <ncml:variable name="sea_ice_fraction" shape="time lat lon" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="9.96921E36" />
+    <ncml:attribute name="comment" value="Fractional sea ice cover" />
+    <ncml:attribute name="coordinates" value="lon lat" />
+    <ncml:attribute name="long_name" value="Fractional sea ice contamination in a pixel" />
+    <ncml:attribute name="source" value="ECMWF" />
+    <ncml:attribute name="standard_name" value="sea_ice_area_fraction" />
+    <ncml:attribute name="units" value="1" />
+    <ncml:attribute name="valid_max" type="float" value="1.0" />
+    <ncml:attribute name="valid_min" type="float" value="0.0" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 640 1440" />
+  </ncml:variable>
+  <ncml:variable name="sea_ice_fraction_dtime_from_sst" shape="time lat lon" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="9.96921E36" />
+    <ncml:attribute name="comment" value="Difference in hours between sea ice fraction and SST" />
+    <ncml:attribute name="coordinates" value="lon lat" />
+    <ncml:attribute name="long_name" value="Time difference between sea ice fraction data from SST measurement" />
+    <ncml:attribute name="units" value="hour" />
+    <ncml:attribute name="valid_max" type="float" value="12.7" />
+    <ncml:attribute name="valid_min" type="float" value="-12.7" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 640 1440" />
+  </ncml:variable>
+  <ncml:variable name="sses_bias" shape="time lat lon" type="float">
+    <ncml:attribute name="_FillValue" type="float" value="9.96921E36" />
+    <ncml:attribute name="comment" value="Estimated based on buoys measurements" />
+    <ncml:attribute name="coordinates" value="lon lat" />
+    <ncml:attribute name="long_name" value="SSES bias estimate" />
+    <ncml:attribute name="units" value="kelvin" />
+    <ncml:attribute name="valid_max" type="float" value="1.27" />
+    <ncml:attribute name="valid_min" type="float" value="-1.27" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 640 1440" />
+  </ncml:variable>
+  <ncml:variable name="sses_standard_deviation" shape="time lat lon" type="float">
+    <ncml:attribute name="valid_max" type="float" value="2.54" />
+    <ncml:attribute name="valid_min" type="float" value="0.0" />
+    <ncml:attribute name="_FillValue" type="float" value="9.96921E36" />
+    <ncml:attribute name="comment" value="Estimated based on buoys measurements" />
+    <ncml:attribute name="coordinates" value="lon lat" />
+    <ncml:attribute name="long_name" value="SSES standard deviation estimate" />
+    <ncml:attribute name="units" value="kelvin" />
+    <ncml:attribute name="_ChunkSizes" type="int" value="1 640 1440" />
+  </ncml:variable>
+</ncml:netcdf>

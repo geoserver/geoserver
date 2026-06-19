@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:wfs="http://www.opengis.net/wfs" numberOfFeatures="30"
+	xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd
+	urn:cgi:xmlns:CGI:GeoSciML:2.0 http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd">
+	<gml:featureMember>
+		<gsml:MappedFeature gml:id="mf.1">
+			<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitLabel">-Chs - Sheoak Gully Boninite</gml:name>
+			<gsml:specification>
+				<gsml:GeologicUnit gml:id="gu.25699">
+					<gml:description>Olivine basalt, tuff, microgabbro, minor sedimentary rocks</gml:description>
+					<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitCode">-Py</gml:name>
+					<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitName">Yaugher Volcanic Group</gml:name>
+					<gml:name codeSpace="urn:cgi:classifierScheme:GSV:MappedFeatureReference">gu.25699</gml:name>
+					<gsml:composition>
+						<!-- cp.167775491936278844 -->
+						<gsml:CompositionPart>
+							<gsml:role codeSpace="urn:cgi:classifierScheme:GSV:CompositionpartRole">sole component</gsml:role>
+							<gsml:proportion>
+								<gsml:CGI_TermValue>							    
+									<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Proportion">major</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:proportion>
+						</gsml:CompositionPart>
+					</gsml:composition>
+					<gsml:geologicHistory>	
+					    <!-- ge.26931120 -->			    
+						<gsml:GeologicEvent>						    
+							<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitId">gu.25699</gml:name>
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>	
+											<gsml:value
+												codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">Oligocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value
+												codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">Paleocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventEnvironment>
+								<gsml:CGI_TermValue>
+									<gsml:value>fluvial</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventEnvironment>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value>channelled stream flow</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+						</gsml:GeologicEvent>
+					</gsml:geologicHistory>
+				</gsml:GeologicUnit>
+			</gsml:specification>
+		</gsml:MappedFeature>
+	</gml:featureMember>
+	<gml:featureMember>
+		<gsml:MappedFeature gml:id="mf.2">
+			<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitLabel">-Chs - Sheoak Gully Boninite</gml:name>
+			<gsml:specification>
+				<gsml:GeologicUnit gml:id="gu.25678">
+					<gml:description>Olivine basalt, tuff, microgabbro, minor sedimentary rocks</gml:description>
+					<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitCode">-Py</gml:name>
+					<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitName">Yaugher Volcanic Group</gml:name>
+					<gml:name codeSpace="urn:cgi:classifierScheme:GSV:MappedFeatureReference">gu.25678</gml:name>
+					<!-- Multiple composition part values (non feature) -->
+					<gsml:composition>
+						<!-- cp.167775491936278812 -->
+						<gsml:CompositionPart>
+							<gsml:role codeSpace="urn:cgi:classifierScheme:GSV:CompositionpartRole">interbedded component</gsml:role>
+							<gsml:proportion>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Proportion">significant</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:proportion>
+						</gsml:CompositionPart>
+					</gsml:composition>
+					<gsml:composition>
+						<!-- cp.167775491936278856 -->
+						<gsml:CompositionPart>
+							<gsml:role codeSpace="urn:cgi:classifierScheme:GSV:CompositionpartRole">interbedded component</gsml:role>
+							<gsml:proportion>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Proportion">minor</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:proportion>
+						</gsml:CompositionPart>
+					</gsml:composition>
+					<!-- Multiple geologic history values -->
+					<gsml:geologicHistory>
+						<gsml:GeologicEvent>	
+						    <!-- ge.26930473 -->					    
+							<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitId">gu.25678</gml:name>
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value
+												codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">Holocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value
+												codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">Pleistocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventEnvironment>
+								<gsml:CGI_TermValue>
+								    <gsml:value>swamp/marsh/bog</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventEnvironment>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value>detrital deposition still water</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+						</gsml:GeologicEvent>
+					</gsml:geologicHistory>
+					<gsml:geologicHistory>
+						<gsml:GeologicEvent>	
+						    <!-- ge.26930960 -->					    
+							<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitId">gu.25678</gml:name>
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value
+												codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">Pliocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value
+												codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">Miocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<!-- Multiple event environment values -->
+							<gsml:eventEnvironment>
+								<gsml:CGI_TermValue>
+									<gsml:value>marine</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventEnvironment>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value>water [process]</gsml:value>			
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+						</gsml:GeologicEvent>
+					</gsml:geologicHistory>
+					<gsml:geologicHistory>
+						<gsml:GeologicEvent>	
+						    <!-- ge.26932959 -->					    
+							<gml:name codeSpace="urn:cgi:classifierScheme:GSV:GeologicalUnitId">gu.25678</gml:name>
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value
+												codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">LowerOrdovician</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value
+												codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">LowerOrdovician</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<!-- Multiple event environment values -->
+							<gsml:eventEnvironment>
+								<gsml:CGI_TermValue>
+									<gsml:value>submarine fan</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventEnvironment>
+							<gsml:eventEnvironment>
+								<gsml:CGI_TermValue>
+									<gsml:value>hemipelagic</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventEnvironment>
+							<!-- Multiple event process values -->
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value>turbidity current</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value>water [process]</gsml:value>	
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+						</gsml:GeologicEvent>
+					</gsml:geologicHistory>
+				</gsml:GeologicUnit>
+			</gsml:specification>
+		</gsml:MappedFeature>
+	</gml:featureMember>
+</wfs:FeatureCollection>

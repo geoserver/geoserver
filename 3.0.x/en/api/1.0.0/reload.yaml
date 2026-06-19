@@ -1,0 +1,84 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Reset/Reload
+  description: Reset/Reload clears internal caches and reloads configuation from disk
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+  /reset:
+    get:
+      operationId: getReset
+      tags:
+       - "Reload"
+      description: Invalid. Use PUT or POST to reset the caches.
+      responses:
+        405:
+          description: Method Not Allowed
+    put:
+      operationId: putReset
+      tags:
+       - "Reload"
+      summary: Reset all authentication, store, raster, and schema caches. 
+      description: Resets all authentication, store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
+      responses:
+        200:
+          description: OK
+    post:
+      operationId: postReset
+      tags:
+       - "Reload"
+      summary: Reset all authentication, store, raster, and schema caches. 
+      description: Resets all authentication, store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteReset
+      tags:
+       - "Reload"
+      description: Invalid. Use PUT or POST to reset the caches.
+      responses:
+        405:
+          description: Method Not Allowed
+  /reload:
+    get:
+      operationId: getReload
+      tags:
+       - "Reload"
+      description: Invalid. Use PUT or POST to reload the catalog and configuation.
+      responses:
+        405:
+          description: Method Not Allowed
+    put:
+      operationId: putReload
+      tags:
+       - "Reload"
+      summary: Reload the configuration from disk, and reset all caches.
+      description: Reloads the GeoServer catalog and configuration from disk. This operation is used in cases where an external tool has modified the on-disk configuration. This operation will also force GeoServer to drop any internal caches and reconnect to all data stores.
+      responses:
+        200:
+          description: OK
+    post:
+      operationId: postReload
+      tags:
+       - "Reload"
+      summary: Reload the configuration from disk, and reset all caches.
+      description: Reloads the GeoServer catalog and configuration from disk. This operation is used in cases where an external tool has modified the on-disk configuration. This operation will also force GeoServer to drop any internal caches and reconnect to all data stores.
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteReload
+      tags:
+       - "Reload"
+      description: Invalid. Use PUT or POST to reload the catalog and configuation.
+      responses:
+        405:
+          description: Method Not Allowed

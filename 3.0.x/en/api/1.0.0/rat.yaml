@@ -1,0 +1,133 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Raster Attribute Table extension
+  description: The Raster Attribute Table extension allows to explore a raster PAM Dataset, and if
+    that contains a Raster Attribute table in any bad, to create styles out of it.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+  /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/pam:
+    get:
+      operationId: getPAMDataset
+      summary: Retrieve the PAM dataset eventually available in the coverage.
+      description: Retrieve the PAM dataset eventually available in the coverage, with the same XML syntax found in GDAL aux.xml files.
+      tags:
+        - RasterAttributeTable
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage datastore
+          required: true
+          type: string
+        - name: coverage
+          in: path
+          description: The name of the coverage
+          required: true
+          type: string
+      produces:
+        - application/xml
+      responses:
+        200:
+          description: OK
+        404:
+          description: No PAM dataset found
+    post:
+      operationId: createStyleFromRAT
+      summary: Create a new style from a PAM band Raster Attribute Table
+      description: Creates a new Proxy Base Extension rule.
+      tags:
+        - RasterAttributeTable
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage datastore
+          required: true
+          type: string
+        - name: coverage
+          in: path
+          description: The name of the coverage
+          required: true
+          type: string
+        - name: band
+          type: integer
+          in: query
+          required: true
+          description: The band index where the RAT is to be found (zero based)
+        - name: classification
+          type: string
+          in: query
+          required: true
+          description: The RAT column to use for classification
+        - name: styleName
+          type: string
+          in: query
+          required: false
+          description: The name of the generated style
+          default: "{coverageName}_b{band}_{classification}"
+      responses:
+        201:
+          description: Created
+          schema:
+            type: string
+          headers:
+            Location:
+              description: URL where the newly created rule can be found
+              type: string
+        303:
+          description: See Other
+          schema:
+            type: string
+          headers:
+            Location:
+              description: URL where the updated style can be found
+              type: string
+        404:
+          description: No PAM dataset found
+        400:
+          description: Invalid parameters used (e.g., band or classification not found)
+  /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/pam/reload:
+    post:
+      operationId: reloadPAMDataset
+      summary: Reloads/recomputes the PAM dataset
+      description: The PAM is often cached, this operation forces the source to reload it, eventually recomputing it, if for example it's a mosaic with a summary PAM dataset obtained from all its sources
+      tags:
+        - RasterAttributeTable
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage datastore
+          required: true
+          type: string
+        - name: coverage
+          in: path
+          description: The name of the coverage
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: No PAM dataset found
+          

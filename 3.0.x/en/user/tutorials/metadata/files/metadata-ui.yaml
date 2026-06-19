@@ -1,0 +1,400 @@
+attributes:
+  - key: metadata-identifier
+    fieldType: UUID
+  - key: data-identifier
+    fieldType: UUID
+  - key: metadata-language-code
+    fieldType: DROPDOWN
+    values:
+      - dut
+      - eng
+      - fre
+      - ger
+  - key: metadata-language
+    fieldType: DERIVED
+    derivedFrom: metadata-language-code
+    values:
+      - Nederlands
+      - Engels
+      - Frans
+      - Duits
+  - key: data-language-code
+    fieldType: DROPDOWN
+    values:
+      - dut
+      - eng
+      - fre
+      - ger
+  - key: data-language
+    fieldType: DERIVED
+    derivedFrom: data-language-code
+    values:
+      - Nederlands
+      - Engels
+      - Frans
+      - Duits
+  - key: data-date
+    fieldType: COMPLEX
+    typename: data-identification-date
+    occurrence: REPEAT
+  - key: data-valid-date
+    fieldType: COMPLEX
+    typename: date-range
+  - key: parent-identifier
+    fieldType: TEXT
+  - key: alternate-title
+    fieldType: TEXT
+  - key: edition
+    fieldType: TEXT
+  - key: purpose
+    fieldType: TEXT_AREA
+  - key: topic-category
+    fieldType: DROPDOWN
+    occurrence: REPEAT
+    values:
+      - farming
+      - biota
+      - boundaries
+      - climatologyMeteorologyAtmosphere
+      - economy
+      - elevation
+      - environment
+      - geoscientificInformation
+      - health
+      - imageryBaseMapsEarthCover
+      - intelligenceMilitary
+      - inlandWaters
+      - location
+      - oceans
+      - planningCadastre
+      - society
+      - structure
+      - transportation
+      - utilitiesCommunication
+  - key: status
+    fieldType: DROPDOWN
+    values:
+      - completed
+      - historicalArchive
+      - obsolete
+      - onGoing
+      - planned
+      - required
+      - underDevelopment
+  - key: update-frequency
+    fieldType: DROPDOWN
+    values:
+      - continual
+      - daily
+      - weekly
+      - fortnightly
+      - monthly
+      - quarterly
+      - biannually
+      - annually
+      - asNeeded
+      - irregular
+      - notPlanned
+      - unknown 
+  - key: reference-system-code
+    fieldType: REQUIREBOX
+    occurrence: REPEAT
+  - key: reference-system-code-label
+    fieldType: DERIVED
+    derivedFrom: reference-system-code
+    occurrence: REPEAT
+  - key: reference-system-code-ref
+    fieldType: DERIVED
+    derivedFrom: reference-system-code
+    occurrence: REPEAT
+  - key: resolution-equivalent-scale
+    fieldType: NUMBER
+    condition: equalTo(typeOf("."), 'FeatureTypeInfo')
+  - key: graphic-overview-url
+    fieldType: TEXT
+  - key: supplemental-information
+    fieldType: TEXT_AREA
+  - key: metadata-contact
+    fieldType: COMPLEX
+    typename: responsible-party
+    occurrence: REPEAT
+  - key: data-contact
+    fieldType: COMPLEX
+    typename: responsible-party
+    occurrence: REPEAT
+  - key: distributor
+    fieldType: COMPLEX
+    typename: responsible-party
+    occurrence: REPEAT
+  - key: transfer-option
+    fieldType: COMPLEX
+    typename: transfer-option
+    occurrence: REPEAT
+  - key: rc-rc-use-limitation
+    fieldType: TEXT_AREA
+    occurrence: REPEAT
+  - key: rc-lim-access-constraint
+    fieldType: DROPDOWN
+    values:
+      - copyright
+      - patent
+      - patentPending
+      - trademark
+      - license
+      - intellectualPropertyRights
+      - restricted
+      - otherRestrictions
+  - key: rc-lim-other-constraint-label
+    fieldType: DROPDOWN
+    values:
+      - geen beperkingen
+      - Openbare toegang beperkt volgens artikel 13(1)(a) van de INSPIRE Richtlijn
+      - Openbare toegang beperkt volgens artikel 13(1)(b) van de INSPIRE Richtlijn
+      - Openbare toegang beperkt volgens artikel 13(1)(c) van de INSPIRE Richtlijn
+      - Openbare toegang beperkt volgens artikel 13(1)(d) van de INSPIRE Richtlijn
+      - Openbare toegang beperkt volgens artikel 13(1)(e) van de INSPIRE Richtlijn
+      - Openbare toegang beperkt volgens artikel 13(1)(f) van de INSPIRE Richtlijn
+      - Openbare toegang beperkt volgens artikel 13(1)(g) van de INSPIRE Richtlijn
+      - Openbare toegang beperkt volgens artikel 13(1)(h) van de INSPIRE Richtlijn
+    occurrence: REPEAT
+  - key: rc-lim-other-constraint-ref
+    fieldType: DERIVED
+    derivedFrom: rc-lim-other-constraint-label
+    values:
+      - 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations'
+      - 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1a'
+      - 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1b'
+      - 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1c'
+      - 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1d'
+      - 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1e'
+      - 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1f'
+      - 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1g'
+      - 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1h'
+    occurrence: REPEAT
+  - key: rc-con-use-constraint
+    fieldType: DROPDOWN
+    values:
+      - copyright
+      - patent
+      - patentPending
+      - trademark
+      - license
+      - intellectualPropertyRights
+      - restricted
+      - otherRestrictions
+  - key: rc-con-other-constraint
+    fieldType: COMPLEX
+    typename: rc-con-other-constraint
+    occurrence: REPEAT
+  - key: data-quality-conformance
+    fieldType: COMPLEX
+    typename: conformance
+  - key: lineage-statement
+    fieldType: TEXT_AREA
+  - key: lineage-source
+    fieldType: TEXT_AREA
+  - key: specific-usage
+    fieldType: COMPLEX
+    typename: specific-usage
+    occurrence: REPEAT
+  - key: data-quality-process-step
+    fieldType: COMPLEX
+    typename: process-step
+    occurrence: REPEAT
+  - key: keyword-inspire-theme-label
+    fieldType: REQUIREBOX
+    occurrence: REPEAT
+  - key: keyword-inspire-theme-ref
+    fieldType: DERIVED
+    derivedFrom: keyword-inspire-theme-label
+    occurrence: REPEAT
+  - key: keyword-gemet-concept
+    fieldType: REQUIREBOX
+    occurrence: REPEAT
+  - key: keyword-free
+    fieldType: TEXT
+    occurrence: REPEAT
+  - key: keyword-custom-thesaurus
+    fieldType: COMPLEX
+    typename: keyword-custom-thesaurus
+    occurrence: REPEAT
+  - key: feature-catalog
+    fieldType: COMPLEX
+    typename: feature-catalog
+
+csvImports:
+  - keyword-inspire-theme.csv
+  - keyword-gemet-concept.csv
+  - reference-systems-epsg.csv    
+
+types:
+  - typename: contactinfo
+    attributes:
+      - key: delivery-point
+        fieldType: TEXT
+      - key: postal-code
+        fieldType: TEXT
+      - key: city
+        fieldType: TEXT
+      - key: country
+        fieldType: TEXT
+      - key: telephone
+        fieldType: TEXT
+      - key: email
+        fieldType: TEXT
+      - key: website
+        fieldType: TEXT
+  - typename: responsible-party
+    attributes:
+      - key: organisation
+        fieldType: TEXT
+      - key: contactinfo
+        fieldType: COMPLEX
+        typename: contactinfo
+      - key: role
+        fieldType: DROPDOWN
+        values:
+          - resourceProvider
+          - custodian
+          - owner
+          - user
+          - distributor
+          - originator
+          - pointOfContact
+          - principalInvestigator
+          - processor
+          - publisher
+          - author
+  - typename: data-identification-date
+    attributes:
+      - key: date
+        fieldType: DATE
+      - key: date-type
+        fieldType: DROPDOWN
+        values:
+          - creation
+          - publication
+          - revision
+  - typename: conformance
+    attributes:
+      - key: specification-ref
+        fieldType: TEXT
+      - key: title-label
+        fieldType: TEXT
+      - key: title-ref
+        fieldType: TEXT
+      - key: date
+        fieldType: DATE
+      - key: date-type
+        fieldType: DROPDOWN
+        values:
+          - creation
+          - publication
+          - revision
+      - key: explanation
+        fieldType: TEXT
+      - key: pass
+        fieldType: DROPDOWN
+        values:
+          - true
+          - false
+  - typename: date-range
+    attributes:
+      - key: start-date
+        fieldType: DATE
+      - key: end-date
+        fieldType: DATE
+  - typename: process-step
+    attributes:
+      - key: description
+        fieldType: TEXT_AREA
+      - key: rationale
+        fieldType: TEXT_AREA
+      - key: datetime
+        fieldType: DATETIME
+      - key: processor
+        fieldType: COMPLEX
+        typename: responsible-party
+        occurrence: REPEAT
+  - typename: transfer-option
+    attributes:
+      - key: linkage
+        fieldType: TEXT
+      - key: protocol
+        fieldType: DROPDOWN
+        values:
+          - 'WWW:DOWNLOAD-1.0-http--download'
+          - 'WWW:DOWNLOAD-1.0-ftp--download'
+          - 'LINK download-store'
+          - 'WWW:LINK-1.0-http--atom'
+          - 'WWW:LINK-1.0-http--link'
+          - 'WWW:LINK-1.0-http--related'
+      - key: transfer-name
+        fieldType: TEXT
+      - key: transfer-description
+        fieldType: TEXT
+      - key: transfer-function
+        fieldType: DROPDOWN
+        values:
+          - download
+          - information
+          - offlineAccess
+          - order
+          - search
+  - typename: keyword-custom-thesaurus
+    attributes:
+      - key: keyword
+        fieldType: COMPLEX
+        typename: keyword
+        occurrence: REPEAT
+      - key: thesaurus-title-label
+        fieldType: TEXT
+      - key: thesaurus-title-ref
+        fieldType: TEXT
+      - key: thesaurus-citation-ref
+        fieldType: TEXT
+      - key: thesaurus-vocabulary
+        fieldType: TEXT
+      - key: thesaurus-date
+        fieldType: DATE
+      - key: thesaurus-date-type
+        fieldType: DROPDOWN
+        values:
+          - creation
+          - publication
+          - revision
+  - typename: keyword
+    attributes:
+      - key: keyword-label
+        fieldType: TEXT
+      - key: keyword-ref
+        fieldType: TEXT
+  - typename: feature-catalog
+    attributes:
+      - key: feature-catalog-identifier
+        fieldType: UUID
+      - key: feature-type
+        fieldType: COMPLEX
+        typename: feature-type
+  - typename: feature-type
+    attributes:
+      - key: feature-type-definition
+        fieldType: TEXT_AREA
+      - key: feature-attribute
+        fieldType: COMPLEX
+        typename: featureAttribute
+        occurrence: REPEAT
+  - typename: rc-con-other-constraint
+    attributes:
+      - key: other-constraint-ref
+        fieldType: TEXT
+      - key: other-constraint-label
+        fieldType: TEXT_AREA
+  - typename: specific-usage
+    attributes:
+      - key: usage
+        fieldType: TEXT_AREA
+      - key: user-contact
+        fieldType: COMPLEX
+        typename: responsible-party
+        occurrence: REPEAT

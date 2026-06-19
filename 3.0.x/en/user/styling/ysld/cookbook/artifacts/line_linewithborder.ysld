@@ -1,0 +1,16 @@
+title: 'YSLD Cook Book: Line with border'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - line:
+        stroke-color: '#333333'
+        stroke-width: 5
+        stroke-linecap: round
+- name: name
+  rules:
+  - symbolizers:
+    - line:
+        stroke-color: '#6699FF'
+        stroke-width: 3
+        stroke-linecap: round

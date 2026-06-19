@@ -1,0 +1,734 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Security
+  description: The Security area shows access rules and other configuration for the security subsystem
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+
+  /rest/security/masterpw:
+
+    get:
+      operationId: getMasterPW
+      tags:
+       - "Security"
+      summary: Get keystore password
+      description: |
+        Displays the keystore password. HTTPS is strongly suggested, otherwise password will be sent in plain text. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/MasterPW"
+          examples:
+            application/xml: |
+              <?xml version="1.0" encoding="UTF-8"?>
+              <masterPassword>
+                <oldMasterPassword>geoserver</oldMasterPassword>
+              </masterPassword>
+            
+            application/json: |
+              {"oldMasterPassword":"GeoServer"}
+            
+
+    post:
+      operationId: postMasterPW
+      tags:
+       - "Security"
+      description: Invalid. Use PUT to change keystore password.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putMasterPW
+      tags:
+       - "Security"
+      summary: Update keystore password
+      description: Changes keystore password. Must supply current keystore password. HTTPS is strongly suggested, otherwise password will be sent in plain text.
+      parameters:
+        - name: MasterPWBody
+          description: The old and new keystore password information to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateMasterPW"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+        422:
+          description: Unprocessable Entity. This error code will show when the current keystore password supplied is incorrect, or if the new keystore password is rejected by the password policy.
+
+    delete:
+      operationId: deleteMasterPW
+      tags:
+       - "Security"
+      description: Invalid. Use PUT to change keystore password.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /rest/security/self/password:
+
+    get:
+      operationId: getSelfPassword
+      tags:
+       - "Security"
+      description: Invalid. Use PUT to change password.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    post:
+      operationId: postSelfPassword
+      tags:
+       - "Security"
+      description: Invalid. Use PUT to change password
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putSelfPassword
+      tags:
+       - "Security"
+      summary: Update password
+      description: Updates the password for the account used to issue the request.
+      parameters:
+        - name: SelfPasswordBody
+          description: The catalog mode information to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/SelfPassword"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+        422: 
+          description: Bad password
+
+    delete:
+      operationId: deleteSelfPassword
+      tags:
+       - "Security"
+      description: Invalid. Use PUT to change password.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /rest/security/acl/catalog:
+
+    get:
+      operationId: getCatalogMode
+      tags:
+       - "Security"
+      description: Gets the catalog mode, which specifies how GeoServer will advertise secured layers and behave when a secured layer is accessed without the necessary privileges.
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/CatalogMode"
+          examples:
+            application/xml: |
+              <?xml version="1.0" encoding="UTF-8"?>
+              <catalog>
+                <mode>HIDE</mode>
+              </catalog>
+            
+            application/json: |
+              {"mode":"HIDE"}
+            
+    post:
+      operationId: postCatalogMode
+      tags:
+       - "Security"
+      description: Invalid. Use PUT to change catalog mode.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      tags:
+       - "Security"
+      summary: Update catalog mode
+      description: Changes catalog mode. The mode must be one of HIDE, MIXED, or CHALLENGE.
+      parameters:
+        - name: CatalogModeBody
+          description: The catalog mode information to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/CatalogMode"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+        422:
+          description: Unprocessable Entity. This error code will show when an invalid catalog mode is specified.
+
+    delete:
+      operationId: deleteCatalogMode
+      tags:
+       - "Security"
+      description: Invalid. Use PUT to change catalog mode.
+      responses:
+        405:
+          description: Method Not Allowed
+
+  /rest/security/acl/catalog/reload:
+    get:
+      operationId: getReload
+      tags:
+       - "Reload"
+      description: Invalid. Use PUT or POST to reload the catalog and configuation.
+      responses:
+        405:
+          description: Method Not Allowed
+    put:
+      operationId: putReload
+      tags:
+       - "Reload"
+      summary: Reload the configuration from disk, and reset all caches.
+      description: Reloads the GeoServer Security Manager catalog and configuration from disk. This operation is used in cases where an external tool has modified the on-disk configuration.
+      responses:
+        200:
+          description: OK
+    post:
+      operationId: postReload
+      tags:
+       - "Reload"
+      summary: Reload the configuration from disk, and reset all caches.
+      description: Reloads the GeoServer Security Manager catalog and configuration from disk. This operation is used in cases where an external tool has modified the on-disk configuration.
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteReload
+      tags:
+       - "Reload"
+      description: Invalid. Use PUT or POST to reload the catalog and configuation.
+      responses:
+        405:
+          description: Method Not Allowed
+
+  /rest/security/acl/layers:
+
+    get:
+      operationId: getACLLayers
+      tags:
+       - "Security"
+      summary: Get layer rules
+      description: Displays the current layer-based security rules.
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ACLLayers"
+          examples:
+            application/xml: |
+              <?xml version="1.0" encoding="UTF-8"?>
+              <rules>
+                <rule resource="*.*.w">GROUP_ADMIN,ADMIN</rule>
+                <rule resource="*.*.r">*</rule>
+              </rules>
+            
+            application/json: |
+              {"*.*.w":"GROUP_ADMIN,ADMIN","*.*.r":"*"}
+            
+
+    post:
+      operationId: postACLLayers
+      tags:
+       - "Security"
+      summary: Add layer rule(s)
+      description: |
+        Adds one or more new layer-based rules to the list of security rules.
+      parameters:
+        - name: ACLLayersBody
+          description: The new rules to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ACLLayers"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+        409:
+          description: |
+            Conflict. Adding an already-added rule. Use PUT to edit the rule in this case. All rule additions are aborted.
+
+    put:
+      operationId: putACLLayers
+      tags:
+       - "Security"
+      summary: Edit layer rule(s)
+      description: Edits one or more layer-based rules in the list of security rules.
+      parameters:
+        - name: ACLLayersBody
+          description: The altered rules to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ACLLayers"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
+
+    delete:
+      operationId: deleteACLLayers
+      tags:
+       - "Security"
+      summary: Delete layer rule(s)
+      description: |
+        Deletes one or more layer-based rules in the list of security rules.
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not found. Attempting to delete a non-existent rule.
+
+
+  /rest/security/acl/layers/{rule}:
+    parameters:
+      - $ref: "#/parameters/Rule"
+
+    get:
+      operationId: getACLLayer
+      tags:
+       - "Security"
+      description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
+      responses:
+        405:
+          description: Method not allowed
+
+    post:
+      operationId: postACLLayer
+      tags:
+       - "Security"
+      description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
+      responses:
+        405:
+          description: Method not allowed.
+
+    put:
+      operationId: putACLLayer
+      tags:
+       - "Security"
+      description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
+      responses:
+        405:
+          description: Method not allowed.
+
+    delete:
+      operationId: deleteACLLayer
+      tags:
+       - "Security"
+      summary: Delete layer rule.
+      description: |
+        Deletes specific layer-based rule(s). The {rule} must specified in the last part of the URL and of the form \<workspace\>.\<layer\>.[r|w|a]
+      responses:
+        200:
+          description: OK
+
+
+  /rest/security/acl/services:
+
+    get:
+      operationId: getACLServices
+      tags:
+       - "Security"
+      summary: Get service rules
+      description: Displays the current service-based security rules.
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ACLServices"
+          examples:
+            application/xml: |
+              <?xml version="1.0" encoding="UTF-8"?>
+              <rules>
+                <rule resource="*.*">*</rule>
+              </rules>
+            
+            application/json: |
+              {"*.*":"*"}
+            
+
+    post:
+      operationId: postACLServices
+      tags:
+       - "Security"
+      summary: Add service rule(s)
+      description: Adds one or more new service-based rules to the list of security rules.
+      parameters:
+        - name: ACLServicesBody
+          description: The new rules to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ACLServices"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict. Adding an already-added rule. Use PUT to edit the rule in this case. All rule additions are aborted.
+
+    put:
+      operationId: putACLServices
+      tags:
+       - "Security"
+      summary: Edit service rule(s)
+      description: Edits one or more service-based rules in the list of security rules.
+      parameters:
+        - name: ACLServicesBody
+          description: The altered rules to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ACLServices"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
+
+    delete:
+      operationId: deleteACLServices
+      tags:
+       - "Security"
+      summary: Delete service rule(s)
+      description: Deletes one or more service-based rules in the list of security rules.
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not found. Attempting to delete a non-existent rule.
+
+
+  /rest/security/acl/services/{rule}:
+    parameters:
+      - $ref: "#/parameters/Rule"
+      
+    get:
+      operationId: getACLService
+      tags:
+       - "Security"
+      description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
+      responses:
+        405:
+          description: Method not allowed.
+
+    post:
+      operationId: postACLService
+      tags:
+       - "Security"
+      description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
+      responses:
+        405:
+          description: Method not allowed.
+
+    put:
+      operationId: putACLService
+      tags:
+       - "Security"
+      description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
+      responses:
+        405:
+          description: Method not allowed.
+
+    delete:
+      operationId: deleteACLService
+      tags:
+       - "Security"
+      summary: Delete service rule.
+      description: |
+        Deletes specific service-based rule(s). The {rule} must be specified as the last part of the URL and must be of the form \<service\>.\<operation\>
+      responses:
+        200:
+          description: OK
+
+
+  /rest/security/acl/rest:
+
+    get:
+      operationId: getACLRESTRules
+      tags:
+       - "Security"
+      summary: Get REST rules
+      description: Displays the current REST access rules.
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ACLREST"
+          examples:
+            application/xml: |
+              <rules>
+                <rule resource="/**:GET">ADMIN</rule>
+                <rule resource="/**:POST,DELETE,PUT">ADMIN</rule>
+              </rules>
+            
+            application/json: |
+              {"/**:GET":"ADMIN","/**:POST,DELETE,PUT":"ADMIN"}
+
+    post:
+      operationId: postACLRESTRules
+      tags:
+       - "Security"
+      summary: Add REST access rule(s)
+      description: Adds one or more new REST access rules.
+      parameters:
+        - name: ACLRESTBody
+          description: The new rules to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ACLREST"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict. Adding an already-added rule. Use PUT to edit the rule in this case. All rule additions are aborted.
+
+    put:
+      operationId: putACLRESTRules
+      tags:
+       - "Security"
+      summary: Edit REST access rule(s)
+      description: Edits one or more REST access rules.
+      parameters:
+        - name: ACLRESTBody
+          description: The altered rules to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ACLREST"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
+
+    delete:
+      operationId: deleteACLRESTRules
+      tags:
+       - "Security"
+      summary: Delete REST access rule(s)
+      description: Deletes one or more service-based rules.
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not found. Attempting to delete a non-existent rule.
+
+  /rest/security/acl/rest/{rule}:
+    parameters:
+      - name: rule
+        type: string
+        in: path
+        required: true
+        description: |
+          The REST rule, specified as \<URL Ant pattern\>;\<comma separated list of HTTP methods\>. Examples are
+          
+          - /**;GET
+          - /**;POST,DELETE,PUT
+
+    get:
+      operationId: getACLRESTRule
+      tags:
+       - "Security"
+      description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
+      responses:
+        200:
+          description: OK
+
+    post:
+      operationId: postACLRESTRule
+      tags:
+       - "Security"
+      description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
+      responses:
+        200:
+          description: OK
+
+    put:
+      operationId: putACLRESTRule
+      tags:
+       - "Security"
+      description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
+      responses:
+        200:
+          description: OK
+
+    delete:
+      operationId: deleteACLRESTRule
+      tags:
+       - "Security"
+      summary: Delete REST access rule
+      description: |
+        Deletes specific REST access rule(s). The {rule} must specified as the last part of the URL and must be of the form \<URL Ant pattern\>:\<comma separated list of HTTP methods\>
+      responses:
+        200:
+          description: OK
+
+parameters:
+  Rule:
+    name: rule
+    in: path
+    required: true
+    type: string
+    description: |
+      The specified rule, as the last part in the URI, e.g. /security/acl/layers/\*.\*.r 
+
+definitions:
+
+  MasterPW:
+    title: masterPassword
+    type: object
+    properties:
+      oldMasterPassword:
+        type: string
+        description: Current keystore password
+
+  UpdateMasterPW:
+    title: masterPassword
+    type: object
+    xml:
+      name: masterPassword
+    properties:
+      oldMasterPassword:
+        type: string
+        description: Current keystore password
+        example: oldPassword
+      newMasterPassword:
+        type: string
+        description: New keystore password
+        example: newPassword
+
+  CatalogMode:
+    title: catalog
+    xml:
+      name: catalog
+    type: object
+    properties:
+      mode:
+        type: string
+        enum:
+        - HIDE
+        - MIXED
+        - CHALLENGE
+
+  SelfPassword:
+    title: userPassword
+    type: object
+    xml:
+      name: userPassword
+    properties:
+      newPassword:
+        type: string
+        description: New password
+        example: newPassword
+
+  ACLLayers:
+    title: rules
+    xml:
+      name: rules    
+    type: object
+    properties:
+      rule:
+        type: object
+        properties:
+          '@resource':
+            type: string
+            description: |
+              Security pattern of the form <workspace>.<layer>.[r|w|a]
+          text:
+            type: string
+            description: Comma-separated list of roles
+
+  ACLServices:
+    title: rules
+    xml:
+      name: rules
+    type: object
+    properties:
+      rule:
+        type: object
+        properties:
+          '@resource':
+            type: string
+            description: |
+              Security pattern of the form \<service\>.\<operation\>
+          text:
+            type: string
+            description: Comma-separated list of roles
+
+  ACLREST:
+    title: rules
+    xml:
+      name: rules    
+    type: object
+    properties:
+      rule:
+        type: object
+        properties:
+          '@resource':
+            type: string
+            description: |
+              Security pattern of the form \<URL Ant pattern\>:\<comma separated list of HTTP methods\>
+          text:
+            type: string
+            description: Comma-separated list of roles

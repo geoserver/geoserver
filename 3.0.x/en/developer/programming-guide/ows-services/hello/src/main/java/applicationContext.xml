@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <!-- Spring will reference the instance of the HelloWorld class
+            by the id name "helloService" -->
+    <bean id="helloService" class="HelloWorld"/>
+
+    <!-- This creates a Service descriptor, which allows the org.geoserver.ows.Dispatcher
+        to locate it. -->
+    <bean id="helloService-1.0.0" class="org.geoserver.platform.Service">
+    
+        <!-- used to reference the service in the URL -->
+        <constructor-arg index="0" value="hello"/>
+
+        <!-- our actual service POJO defined previously -->
+        <constructor-arg index="1" ref="helloService"/>
+
+        <!-- a version number for this service -->
+        <constructor-arg index="2" value="1.0.0"/>
+            
+        <!-- a list of functions for this service -->
+        <constructor-arg index="3">
+            <list>
+                <value>sayHello</value>
+            </list>
+        </constructor-arg>
+        
+    </bean>
+</beans>

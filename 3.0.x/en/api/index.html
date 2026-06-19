@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GeoServer API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+  <link rel="stylesheet" type="text/css" href="../../stylesheets/geoserver-brand.css" />
+  <style>
+    html {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
+    }
+    
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fafafa;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* --- Dark mode body --- */
+    html.dark-mode,
+    html.dark-mode body {
+      background: #1a1a1a;
+      color: #e0e0e0;
+    }
+    
+    /* Documentation switcher styles - integrated into Swagger UI topbar */
+    /* Reset Swagger UI inherited styles to prevent interference */
+    .swagger-ui .topbar-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      gap: 1rem;
+    }
+    
+    .md-doc-switcher-integrated {
+      position: relative;
+      z-index: 3;
+      /* Reset any inherited Swagger UI styles */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+      font-size: 16px !important;
+      line-height: normal !important;
+    }
+    
+    .md-doc-switcher-integrated * {
+      box-sizing: border-box !important;
+    }
+    
+    .md-doc-switcher-integrated__button {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      color: var(--gs-brand-primary) !important;
+      font-size: 1.17rem !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      line-height: 1.2 !important;
+      white-space: nowrap !important;
+      transition: opacity 0.2s ease !important;
+      font-family: inherit !important;
+    }
+
+    html.dark-mode .md-doc-switcher-integrated__button {
+      color: var(--gs-brand-primary-light) !important;
+    }
+    
+    .md-doc-switcher-integrated__button:hover {
+      opacity: 0.85 !important;
+    }
+    
+    .md-doc-switcher-integrated__button:focus {
+      outline: 2px solid var(--gs-brand-primary) !important;
+      outline-offset: 2px !important;
+      border-radius: 2px !important;
+    }
+    
+    .md-doc-switcher-integrated__text {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.4rem !important;
+    }
+    
+    .md-doc-switcher-integrated__prefix {
+      font-weight: 700 !important;
+    }
+    
+    .md-doc-switcher-integrated__label {
+      font-weight: 400 !important;
+    }
+    
+    .md-doc-switcher-integrated__icon {
+      width: 1.2rem !important;
+      height: 1.2rem !important;
+      opacity: 0.7 !important;
+      transition: transform 0.2s ease !important;
+      flex-shrink: 0 !important;
+    }
+    
+    .md-doc-switcher-integrated:hover .md-doc-switcher-integrated__icon {
+      transform: rotate(180deg) !important;
+    }
+    
+    .md-doc-switcher-integrated__dropdown {
+      position: absolute !important;
+      top: calc(100% + 0.5rem) !important;
+      left: 0 !important;
+      min-width: 280px !important;
+      background: white !important;
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 0.25rem !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      transform: translateY(-0.5rem) !important;
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s !important;
+      z-index: 1001 !important;
+      pointer-events: none !important;
+      white-space: nowrap !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    html.dark-mode .md-doc-switcher-integrated__dropdown {
+      background: #2d2d2d !important;
+      border-color: #444 !important;
+    }
+    
+    .md-doc-switcher-integrated:hover .md-doc-switcher-integrated__dropdown,
+    .md-doc-switcher-integrated__button:focus + .md-doc-switcher-integrated__dropdown,
+    .md-doc-switcher-integrated:focus-within .md-doc-switcher-integrated__dropdown {
+      pointer-events: auto !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: translateY(0) !important;
+      transition: opacity 0.2s ease 0.3s, transform 0.2s ease 0.3s, visibility 0s linear 0s !important;
+    }
+    
+    .md-doc-switcher-integrated__dropdown:hover {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: translateY(0) !important;
+    }
+    
+    .md-doc-switcher-integrated__link {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.3rem !important;
+      padding: 15px 20px !important;
+      margin: 0 !important;
+      color: #333 !important;
+      text-decoration: none !important;
+      font-size: 17px !important;
+      line-height: 48px !important;
+      height: 79px !important;
+      min-height: 0 !important;
+      transition: background 0.15s ease, color 0.15s ease !important;
+      border-bottom: 1px solid #f0f0f0 !important;
+      font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+      font-weight: 400 !important;
+      background: transparent !important;
+    }
+
+    html.dark-mode .md-doc-switcher-integrated__link {
+      color: #e0e0e0 !important;
+      border-bottom-color: #444 !important;
+    }
+    
+    .md-doc-switcher-integrated__link-prefix,
+    .md-doc-switcher-integrated__link-label {
+      color: inherit !important;
+      font-size: inherit !important;
+      line-height: inherit !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    .md-doc-switcher-integrated__link:last-child {
+      border-bottom: none !important;
+    }
+    
+    .md-doc-switcher-integrated__link-prefix {
+      font-weight: 700 !important;
+    }
+    
+    .md-doc-switcher-integrated__link-label {
+      font-weight: 400 !important;
+    }
+    
+    .md-doc-switcher-integrated__link:hover {
+      background: #f5f5f5 !important;
+      color: var(--gs-brand-primary) !important;
+    }
+
+    html.dark-mode .md-doc-switcher-integrated__link:hover {
+      background: #3a3a3a !important;
+      color: var(--gs-brand-primary-light) !important;
+    }
+    
+    .md-doc-switcher-integrated__link:focus {
+      outline: 2px solid var(--gs-brand-primary) !important;
+      outline-offset: -2px !important;
+      background: #f5f5f5 !important;
+    }
+    
+    .md-doc-switcher-integrated__link--active {
+      background: var(--gs-brand-primary) !important;
+      color: white !important;
+      font-weight: 600 !important;
+    }
+    
+    .md-doc-switcher-integrated__link--active .md-doc-switcher-integrated__link-prefix,
+    .md-doc-switcher-integrated__link--active .md-doc-switcher-integrated__link-label {
+      font-weight: 600 !important;
+      color: white !important;
+    }
+    
+    .md-doc-switcher-integrated__link--active:hover {
+      background: var(--gs-brand-primary) !important;
+      color: white !important;
+    }
+    
+    /* GeoServer brand theme — white/dark canvas header matching MkDocs */
+    .swagger-ui .topbar {
+      background-color: var(--gs-header-bg) !important;
+      border-bottom: 0.25em solid transparent;
+      border-image: var(--gs-brand-gradient) 1;
+      transition: background-color 0.3s ease;
+    }
+
+    html.dark-mode .swagger-ui .topbar {
+      background-color: var(--gs-header-bg-dark) !important;
+    }
+
+    /* Swagger logo text: make visible on white header */
+    .swagger-ui .topbar-wrapper .link svg .logo_small_svg__cls-2 {
+      fill: var(--gs-brand-primary) !important;
+    }
+
+    html.dark-mode .swagger-ui .topbar-wrapper .link svg .logo_small_svg__cls-2 {
+      fill: var(--gs-brand-primary-light) !important;
+    }
+
+    /* "Select a definition" label text — visible on white header */
+    .swagger-ui .topbar .download-url-wrapper .select-label span {
+      color: var(--gs-brand-primary) !important;
+      white-space: nowrap !important;
+    }
+
+    html.dark-mode .swagger-ui .topbar .download-url-wrapper .select-label span {
+      color: var(--gs-brand-primary-light) !important;
+    }
+
+    /* Select dropdown — brand colour border, fills remaining space on the right */
+    .swagger-ui .topbar .download-url-wrapper,
+    .swagger-ui .topbar .topbar-wrapper .download-url-wrapper,
+    .swagger-ui .topbar .wrapper .download-url-wrapper {
+      flex: 0 1 auto !important;
+      max-width: none !important;
+    }
+
+    .swagger-ui .topbar .download-url-wrapper .select-label,
+    .swagger-ui .topbar select {
+      max-width: none !important;
+      width: auto !important;
+    }
+
+    .swagger-ui .topbar select {
+      border-color: var(--gs-brand-primary) !important;
+    }
+
+    html.dark-mode .swagger-ui .topbar select {
+      border-color: var(--gs-brand-primary-light) !important;
+    }
+    
+    .swagger-ui .info .title {
+      color: var(--gs-brand-primary);
+    }
+
+    html.dark-mode .swagger-ui .info .title {
+      color: var(--gs-brand-primary-light);
+    }
+    
+    .swagger-ui .btn.authorize,
+    .swagger-ui .btn.execute {
+      background-color: var(--gs-brand-primary);
+      border-color: var(--gs-brand-primary);
+    }
+    
+    .swagger-ui .btn.authorize:hover,
+    .swagger-ui .btn.execute:hover {
+      background-color: var(--gs-brand-primary-dark);
+      border-color: var(--gs-brand-primary-dark);
+    }
+    
+    .swagger-ui .opblock.opblock-get .opblock-summary-method {
+      background: var(--gs-brand-primary);
+    }
+    
+    .swagger-ui .opblock.opblock-get {
+      border-color: var(--gs-brand-primary);
+      background: rgba(0, 118, 161, 0.1);
+    }
+
+    /* --- Dark mode toggle button (matches MkDocs brightness-7 / brightness-4 icons) --- */
+    .swagger-ui .topbar .dark-mode-toggle {
+      display: flex;
+      align-items: center;
+      z-index: 10;
+      flex-shrink: 0;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .dark-mode-toggle button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.4rem;
+      border-radius: 0.25rem;
+      transition: background-color 0.2s ease;
+      color: var(--gs-brand-primary);
+    }
+
+    html.dark-mode .dark-mode-toggle button {
+      color: var(--gs-brand-primary-light);
+    }
+
+    .dark-mode-toggle button:hover {
+      background-color: rgba(0, 118, 161, 0.1);
+    }
+
+    html.dark-mode .dark-mode-toggle button:hover {
+      background-color: rgba(75, 160, 196, 0.15);
+    }
+
+    .dark-mode-toggle button svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    /* --- Dark mode Swagger UI overrides (aligned with Swagger's html.dark-mode system) --- */
+    html.dark-mode .swagger-ui .scheme-container {
+      background: #2d2d2d !important;
+      box-shadow: none !important;
+    }
+
+    html.dark-mode .swagger-ui .opblock {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: #444;
+    }
+
+    html.dark-mode .swagger-ui .opblock .opblock-summary {
+      border-color: #444;
+    }
+
+    html.dark-mode .swagger-ui .opblock-description-wrapper,
+    html.dark-mode .swagger-ui .opblock-body {
+      background: transparent;
+    }
+
+    html.dark-mode .swagger-ui .opblock .opblock-section-header {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    html.dark-mode .swagger-ui table thead tr th,
+    html.dark-mode .swagger-ui table thead tr td,
+    html.dark-mode .swagger-ui .response-col_status,
+    html.dark-mode .swagger-ui .response-col_description,
+    html.dark-mode .swagger-ui .opblock-summary-description,
+    html.dark-mode .swagger-ui .opblock-summary-path,
+    html.dark-mode .swagger-ui .opblock-summary-path span,
+    html.dark-mode .swagger-ui .parameter__name,
+    html.dark-mode .swagger-ui .parameter__type,
+    html.dark-mode .swagger-ui .model-title,
+    html.dark-mode .swagger-ui h4,
+    html.dark-mode .swagger-ui h5,
+    html.dark-mode .swagger-ui p,
+    html.dark-mode .swagger-ui label,
+    html.dark-mode .swagger-ui .info .title,
+    html.dark-mode .swagger-ui .info .base-url,
+    html.dark-mode .swagger-ui .info p,
+    html.dark-mode .swagger-ui .info li {
+      color: #e0e0e0 !important;
+    }
+
+    html.dark-mode .swagger-ui .model-box,
+    html.dark-mode .swagger-ui .models {
+      background: #2d2d2d;
+      border-color: #444;
+    }
+
+    html.dark-mode .swagger-ui select {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    html.dark-mode .swagger-ui input[type="text"] {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    html.dark-mode .swagger-ui textarea {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    /* Dark mode modal/dialog (Authorize, etc.) */
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux {
+      background: #2d2d2d;
+      border-color: #444;
+    }
+
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux-header {
+      border-bottom-color: #444;
+    }
+
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux-header h3 {
+      color: #e0e0e0;
+    }
+
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux-header .close-modal {
+      background: #444;
+    }
+
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux-content p,
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux-content label,
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux-content h4 {
+      color: #e0e0e0;
+    }
+
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux-content input[type="text"],
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux-content input[type="password"] {
+      background: #3a3a3a;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    html.dark-mode .swagger-ui .dialog-ux .modal-ux-content .btn-done {
+      background: #444;
+      color: #e0e0e0;
+    }
+
+    html.dark-mode .swagger-ui .dialog-ux .backdrop-ux {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .info-banner {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 9999;
+      background-color: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: help;
+      color: #856404;
+      transition: all 0.3s ease;
+    }
+    
+    .info-banner .warning-icon {
+      display: block;
+      font-size: 18px;
+      line-height: 32px;
+      text-align: center;
+    }
+    
+    .info-banner:hover {
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      padding: 12px;
+    }
+    
+    .info-banner .warning-text {
+      display: none;
+      max-width: 400px;
+    }
+    
+    .info-banner:hover .warning-icon {
+      display: none;
+    }
+    
+    .info-banner:hover .warning-text {
+      display: block;
+    }
+    
+    .info-banner .warning-text h3 {
+      margin: 0 0 8px 0;
+      color: #856404;
+      font-size: 14px;
+    }
+    
+    .info-banner .warning-text p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #856404;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="info-banner" title="Click for important information">
+    <span class="warning-icon">⚠️</span>
+    <div class="warning-text">
+      <h3>⚠️ Warning</h3>
+      <p>The API is documented as Swagger 2.0 files. However, these files have been written by hand back in 2017, and have not always been kept up to date with the evolution of the GeoServer configuration object structure. Also, they have not been tested for proper client generation, and will likely not work for that purpose. Take them only as a form of documentation.</p>
+    </div>
+  </div>
+  
+  <div id="swagger-ui"></div>
+
+  <script src="./swagger-ui-bundle.js" crossorigin></script>
+  <script src="./swagger-ui-standalone-preset.js" crossorigin></script>
+  <script>
+    // --- Dark mode toggle (matches MkDocs Material brightness-7 / brightness-4 icons) ---
+    (function() {
+      // SVG paths matching Material Design icons used in MkDocs
+      var sunIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z" fill="currentColor"/></svg>';
+      var moonIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z" fill="currentColor"/></svg>';
+
+      function isDark() {
+        return document.documentElement.classList.contains('dark-mode');
+      }
+
+      function setMode(dark) {
+        if (dark) {
+          document.documentElement.classList.add('dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark-mode');
+        }
+        // Sync to Material docs palette key so docs follows Swagger toggle
+        try {
+          var keys = Object.keys(localStorage);
+          for (var i = 0; i < keys.length; i++) {
+            if (keys[i].endsWith('.__palette')) {
+              var palette = JSON.parse(localStorage.getItem(keys[i]));
+              if (palette && palette.color) {
+                palette.color.scheme = dark ? 'slate' : 'default';
+                palette.index = dark ? 1 : 0;
+                localStorage.setItem(keys[i], JSON.stringify(palette));
+              }
+              break;
+            }
+          }
+        } catch (e) { /* ignore */ }
+        updateIcon();
+      }
+
+      function updateIcon() {
+        var btn = document.querySelector('.dark-mode-toggle button');
+        if (!btn) return;
+        // Show sun when in light mode (current state), moon when in dark mode (current state)
+        btn.innerHTML = isDark() ? moonIcon : sunIcon;
+        btn.title = isDark() ? 'Switch to light mode' : 'Switch to dark mode';
+        btn.setAttribute('aria-label', btn.title);
+      }
+
+      // Initialise from Material docs palette preference, then system preference
+      var darkFromDocs = null;
+      try {
+        var keys = Object.keys(localStorage);
+        for (var i = 0; i < keys.length; i++) {
+          if (keys[i].endsWith('.__palette')) {
+            var palette = JSON.parse(localStorage.getItem(keys[i]));
+            if (palette && palette.color && palette.color.scheme) {
+              darkFromDocs = (palette.color.scheme === 'slate');
+              break;
+            }
+          }
+        }
+      } catch (e) { /* ignore */ }
+
+      if (darkFromDocs === true) {
+        document.documentElement.classList.add('dark-mode');
+      } else if (darkFromDocs === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark-mode');
+      }
+
+      // Inject toggle button into topbar after Swagger UI renders
+      function injectToggle() {
+        // Find the download-url-wrapper — the toggle goes right before it
+        var dlWrapper = document.querySelector('.swagger-ui .topbar .download-url-wrapper');
+        if (!dlWrapper) return;
+        var container = dlWrapper.parentNode;
+
+        // Check if a toggle already exists
+        var existing = document.querySelector('.swagger-ui .topbar .dark-mode-toggle');
+        if (existing) {
+          // Wire up click handler
+          var btn = existing.querySelector('button');
+          if (btn) {
+            btn.replaceWith(btn.cloneNode(false));
+            btn = existing.querySelector('button');
+            btn.setAttribute('type', 'button');
+            btn.addEventListener('click', function() { setMode(!isDark()); });
+          }
+          // Move before download-url-wrapper
+          container.insertBefore(existing, dlWrapper);
+          updateIcon();
+          return;
+        }
+
+        // Create a new toggle
+        var toggle = document.createElement('div');
+        toggle.className = 'dark-mode-toggle';
+        toggle.innerHTML = '<button type="button"></button>';
+        toggle.querySelector('button').addEventListener('click', function() {
+          setMode(!isDark());
+        });
+        container.insertBefore(toggle, dlWrapper);
+        updateIcon();
+      }
+
+      // Expose for use after Swagger UI onComplete
+      window.__gsInjectDarkToggle = injectToggle;
+    })();
+
+    window.onload = function() {
+      // Check if a specific spec is requested via hash
+      var hashUrl = window.location.hash.substring(1);
+      
+      // Define all available API specifications
+      const specs = [
+        { name: "About: Manifests", url: "1.0.0/manifests.yaml" },
+        { name: "About: System Status", url: "1.0.0/system-status.yaml" },
+        { name: "Datastores", url: "1.0.0/datastores.yaml" },
+        { name: "Coverages", url: "1.0.0/coverages.yaml" },
+        { name: "Coverage Stores", url: "1.0.0/coveragestores.yaml" },
+        { name: "Feature Types", url: "1.0.0/featuretypes.yaml" },
+        { name: "Fonts", url: "1.0.0/fonts.yaml" },
+        { name: "Layer Groups", url: "1.0.0/layergroups.yaml" },
+        { name: "Layers", url: "1.0.0/layers.yaml" },
+        { name: "Logging", url: "1.0.0/logging.yaml" },
+        { name: "Monitoring", url: "1.0.0/monitoring.yaml" },
+        { name: "Namespaces", url: "1.0.0/namespaces.yaml" },
+        { name: "OWS Services (WMS/WFS/WCS/WMTS)", url: "1.0.0/owsservices.yaml" },
+        { name: "Reload", url: "1.0.0/reload.yaml" },
+        { name: "Resource", url: "1.0.0/resource.yaml" },
+        { name: "Security", url: "1.0.0/security.yaml" },
+        { name: "Settings", url: "1.0.0/settings.yaml" },
+        { name: "Structured Coverages", url: "1.0.0/structuredcoverages.yaml" },
+        { name: "Styles", url: "1.0.0/styles.yaml" },
+        { name: "Templates", url: "1.0.0/templates.yaml" },
+        { name: "Transforms", url: "1.0.0/transforms.yaml" },
+        { name: "WMS Layers", url: "1.0.0/wmslayers.yaml" },
+        { name: "WMS Stores", url: "1.0.0/wmsstores.yaml" },
+        { name: "WMTS Layers", url: "1.0.0/wmtslayers.yaml" },
+        { name: "WMTS Stores", url: "1.0.0/wmtsstores.yaml" },
+        { name: "Workspaces", url: "1.0.0/workspaces.yaml" },
+        { name: "URL Checks", url: "1.0.0/urlchecks.yaml" },
+        { name: "User Groups", url: "1.0.0/usergroup.yaml" },
+        { name: "Roles", url: "1.0.0/roles.yaml" },
+        { name: "Filter Chains", url: "1.0.0/filterchains.yaml" },
+        { name: "Authentication Filters", url: "1.0.0/authenticationfilterconfiguration.yaml" },
+        { name: "Authentication Providers", url: "1.0.0/authenticationproviders.yaml" },
+        { name: "User Group Services", url: "1.0.0/usergroupservices.yaml" },
+        { name: "GWC: Blob Stores", url: "1.0.0/gwcblobstores.yaml" },
+        { name: "GWC: Bounds", url: "1.0.0/gwcbounds.yaml" },
+        { name: "GWC: Disk Quota", url: "1.0.0/gwcdiskquota.yaml" },
+        { name: "GWC: Filter Update", url: "1.0.0/gwcfilterupdate.yaml" },
+        { name: "GWC: Global", url: "1.0.0/gwcglobal.yaml" },
+        { name: "GWC: Gridsets", url: "1.0.0/gwcgridsets.yaml" },
+        { name: "GWC: Index", url: "1.0.0/gwcindex.yaml" },
+        { name: "GWC: Layers", url: "1.0.0/gwclayers.yaml" },
+        { name: "GWC: Mass Truncate", url: "1.0.0/gwcmasstruncate.yaml" },
+        { name: "GWC: Reload", url: "1.0.0/gwcreload.yaml" },
+        { name: "GWC: Seed", url: "1.0.0/gwcseed.yaml" },
+        { name: "Importer: Imports", url: "1.0.0/importer.yaml" },
+        { name: "Importer: Tasks", url: "1.0.0/importerTasks.yaml" },
+        { name: "Importer: Transforms", url: "1.0.0/importerTransforms.yaml" },
+        { name: "Importer: Data", url: "1.0.0/importerData.yaml" },
+        { name: "Metadata Extension", url: "1.0.0/metadata.yaml" },
+        { name: "Monitor Extension", url: "1.0.0/monitoring.yaml" },
+        { name: "OpenSearch EO Extension", url: "1.0.0/opensearch-eo.yaml" },
+        { name: "Params Extractor Extension", url: "1.0.0/params-extractor.yaml" },
+        { name: "Proxy Base Extension", url: "1.0.0/proxy-base-ext.yaml" },
+        { name: "RAT Extension", url: "1.0.0/rat.yaml" },
+        { name: "WPS Download Extension", url: "1.0.0/wpsdownload.yaml" },
+        { name: "XSLT Extension", url: "1.0.0/transforms.yaml" }
+      ];
+      
+      // Initialize Swagger UI
+      const ui = SwaggerUIBundle({
+        urls: specs,
+        "urls.primaryName": specs[0].name,
+        url: hashUrl || specs[0].url,
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        onComplete: function() {
+          // Update hash when spec changes
+          const selectElement = document.querySelector('.download-url-wrapper select');
+          if (selectElement) {
+            selectElement.addEventListener('change', function(e) {
+              const selectedSpec = specs.find(s => s.name === e.target.value);
+              if (selectedSpec) {
+                window.location.hash = selectedSpec.url;
+              }
+            });
+          }
+          
+          // Inject documentation switcher and dark mode toggle into Swagger UI topbar (only once)
+          setTimeout(function() {
+            if (document.querySelector('.md-doc-switcher-integrated')) return;
+            const topbar = document.querySelector('.swagger-ui .topbar');
+            if (topbar) {
+              // Create wrapper for topbar content
+              const wrapper = document.createElement('div');
+              wrapper.className = 'topbar-wrapper';
+              
+              // Move existing topbar content into wrapper
+              while (topbar.firstChild) {
+                wrapper.appendChild(topbar.firstChild);
+              }
+              
+              // Create documentation switcher
+              const switcher = document.createElement('div');
+              switcher.className = 'md-doc-switcher-integrated';
+              switcher.innerHTML = `
+                <button class="md-doc-switcher-integrated__button" aria-label="Switch documentation type" aria-haspopup="true" aria-expanded="false">
+                  <span class="md-doc-switcher-integrated__text">
+                    <span class="md-doc-switcher-integrated__prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__label">API Reference</span>
+                  </span>
+                  <svg class="md-doc-switcher-integrated__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M7 10l5 5 5-5z" fill="currentColor"/>
+                  </svg>
+                </button>
+                <div class="md-doc-switcher-integrated__dropdown" role="menu">
+                  <a href="../user/" class="md-doc-switcher-integrated__link" role="menuitem">
+                    <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__link-label">User Manual</span>
+                  </a>
+                  <a href="../developer/" class="md-doc-switcher-integrated__link" role="menuitem">
+                    <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__link-label">Developer Guide</span>
+                  </a>
+                  <a href="../docguide/" class="md-doc-switcher-integrated__link" role="menuitem">
+                    <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__link-label">Documentation Guide</span>
+                  </a>
+                  <a href="../api/" class="md-doc-switcher-integrated__link md-doc-switcher-integrated__link--active" role="menuitem">
+                    <span class="md-doc-switcher-integrated__link-prefix">GeoServer</span>
+                    <span class="md-doc-switcher-integrated__link-label">API Reference</span>
+                  </a>
+                </div>
+              `;
+              
+              // Find the download-url-wrapper inside the wrapper and insert switcher before it
+              const downloadUrlWrapperInWrapper = wrapper.querySelector('.download-url-wrapper');
+              if (downloadUrlWrapperInWrapper) {
+                downloadUrlWrapperInWrapper.parentNode.insertBefore(switcher, downloadUrlWrapperInWrapper);
+              } else {
+                // Fallback: add switcher to wrapper if download-url-wrapper not found
+                wrapper.appendChild(switcher);
+              }
+              
+              // Add wrapper back to topbar
+              topbar.appendChild(wrapper);
+
+              // Inject dark mode toggle into wrapper (before download-url-wrapper)
+              if (window.__gsInjectDarkToggle) {
+                window.__gsInjectDarkToggle();
+              }
+            }
+          }, 100);
+        }
+      });
+
+      window.ui = ui;
+    }
+  </script>
+</body>
+</html>

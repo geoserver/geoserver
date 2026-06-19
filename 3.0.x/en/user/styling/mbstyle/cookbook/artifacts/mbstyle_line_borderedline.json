@@ -1,0 +1,28 @@
+{
+  "version": 8,
+  "name": "simple-borderedline",
+  "layers": [
+    {
+      "id": "simple-borderedline",
+      "type": "line",
+      "layout": {
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#333333",
+        "line-width": 5
+      }
+    },
+    {
+      "id": "simple-line",
+      "type": "line",
+      "layout": {
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#6699FF",
+        "line-width": 3
+      }
+    }
+  ]
+}

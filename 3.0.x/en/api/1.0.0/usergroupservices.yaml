@@ -1,0 +1,264 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: User Group Services REST endpoints
+  description: >
+    Management of GeoServer User/Group Service configurations. Supports XML and JSON payloads
+    via header-based content negotiation.
+  contact:
+    name: GeoServer
+    email: geoserver-users@osgeo.org
+    url: https://geoserver.org/comm/
+servers:
+  - url: https://localhost:8080/geoserver/rest/security
+  - url: http://localhost:8080/geoserver/rest/security
+tags:
+  - name: UserGroupServices
+    description: User/Group service configuration management
+
+paths:
+  /usergroupservices:
+    get:
+      tags: [UserGroupServices]
+      summary: List user/group services
+      operationId: listUserGroupServices
+      responses:
+        '200':
+          description: List of configured services
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      userGroupService:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/UserGroupServiceSummary'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/UserGroupServiceSummary'
+              examples:
+                wrapped:
+                  summary: Typical JSON list (wrapped)
+                  value:
+                    userGroupService:
+                      - name: default
+                        className: org.geoserver.security.xml.XMLUserGroupService
+                      - name: ldap
+                        className: org.geoserver.security.ldap.LDAPUserGroupService
+                array:
+                  summary: Alternate as plain array
+                  value:
+                    - name: default
+                      className: org.geoserver.security.xml.XMLUserGroupService
+            application/xml:
+              schema:
+                type: object
+                additionalProperties: true
+              examples:
+                example:
+                  summary: XML list (shape may vary)
+                  value: |
+                    <userGroupService>
+                      <userGroupService>
+                        <name>default</name>
+                        <className>org.geoserver.security.xml.XMLUserGroupService</className>
+                      </userGroupService>
+                      <userGroupService>
+                        <name>ldap</name>
+                        <className>org.geoserver.security.ldap.LDAPUserGroupService</className>
+                      </userGroupService>
+                    </userGroupService>
+    post:
+      tags: [UserGroupServices]
+      summary: Create a new user/group service
+      operationId: createUserGroupService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroupServiceConfigJson'
+            examples:
+              xmlServiceJson:
+                summary: XMLUserGroupService JSON
+                value:
+                  org.geoserver.security.xml.XMLUserGroupServiceConfig:
+                    name: default2
+                    className: org.geoserver.security.xml.XMLUserGroupService
+                    fileName: default2.xml
+                    passwordEncoderName: plainTextPasswordEncoder
+                    passwordPolicyName: default
+              ldapServiceJson:
+                summary: LDAPUserGroupService JSON
+                value:
+                  org.geoserver.security.ldap.LDAPUserGroupServiceConfig:
+                    name: testldaproles
+                    className: org.geoserver.security.ldap.LDAPUserGroupService
+                    serverURL: ldap://localhost:10389/dc=acme,dc=org
+                    groupSearchBase: ou=groups
+                    allGroupsSearchFilter: "cn=*"
+                    groupSearchFilter: "member=uid={0},ou=people,dc=acme,dc=org"
+                    userSearchBase: ou=people
+                    allUsersSearchFilter: "uid=*"
+                    useTLS: true
+                    useNestedParentGroups: true
+                    maxGroupSearchLevel: 10
+                    nestedGroupSearchFilter: "(member={0})"
+                    bindBeforeGroupSearch: true
+                    rolePrefix: ROLE_
+                    convertToUpperCase: true
+                    user: admin
+                    password: geoserver
+                    passwordEncoderName: digestPasswordEncoder
+                    passwordPolicyName: default
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UserGroupServiceConfigXml'
+            examples:
+              xmlServiceXml:
+                summary: XMLUserGroupService XML
+                value: |
+                  <org.geoserver.security.xml.XMLUserGroupServiceConfig>
+                    <name>default2</name>
+                    <className>org.geoserver.security.xml.XMLUserGroupService</className>
+                    <fileName>default2.xml</fileName>
+                    <passwordEncoderName>plainTextPasswordEncoder</passwordEncoderName>
+                    <passwordPolicyName>default</passwordPolicyName>
+                  </org.geoserver.security.xml.XMLUserGroupServiceConfig>
+              ldapServiceXml:
+                summary: LDAPUserGroupService XML
+                value: |
+                  <org.geoserver.security.ldap.LDAPUserGroupServiceConfig>
+                    <name>testldaproles</name>
+                    <className>org.geoserver.security.ldap.LDAPUserGroupService</className>
+                    <serverURL>ldap://localhost:10389/dc=acme,dc=org</serverURL>
+                    <groupSearchBase>ou=groups</groupSearchBase>
+                    <allGroupsSearchFilter>cn=*</allGroupsSearchFilter>
+                    <groupSearchFilter>member=uid={0},ou=people,dc=acme,dc=org</groupSearchFilter>
+                    <userSearchBase>ou=people</userSearchBase>
+                    <allUsersSearchFilter>uid=*</allUsersSearchFilter>
+                    <useTLS>true</useTLS>
+                    <useNestedParentGroups>true</useNestedParentGroups>
+                    <maxGroupSearchLevel>10</maxGroupSearchLevel>
+                    <nestedGroupSearchFilter>(member={0})</nestedGroupSearchFilter>
+                    <bindBeforeGroupSearch>true</bindBeforeGroupSearch>
+                    <rolePrefix>ROLE_</rolePrefix>
+                    <convertToUpperCase>true</convertToUpperCase>
+                    <user>admin</user>
+                    <password>geoserver</password>
+                    <passwordEncoderName>digestPasswordEncoder</passwordEncoderName>
+                    <passwordPolicyName>default</passwordPolicyName>
+                  </org.geoserver.security.ldap.LDAPUserGroupServiceConfig>
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              description: URL of the created resource
+              schema: { type: string }
+        '200':
+          description: Created (some deployments return 200)
+        '400':
+          description: Bad request (validation errors or duplicate name)
+        '500':
+          description: Internal server error
+
+  /usergroupservices/{name}:
+    parameters:
+      - name: name
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [UserGroupServices]
+      summary: Get a user/group service
+      operationId: getUserGroupService
+      responses:
+        '200':
+          description: The service configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroupServiceConfigJson'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserGroupServiceConfigXml'
+        '404':
+          description: Service not found
+    put:
+      tags: [UserGroupServices]
+      summary: Update a user/group service
+      operationId: updateUserGroupService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroupServiceConfigJson'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UserGroupServiceConfigXml'
+      responses:
+        '200':
+          description: Updated
+        '400':
+          description: >
+            Bad request (name mismatch between path and payload, or service not found)
+        '500':
+          description: Internal server error
+    delete:
+      tags: [UserGroupServices]
+      summary: Delete a user/group service
+      operationId: deleteUserGroupService
+      responses:
+        '200':
+          description: Deleted
+        '404':
+          description: Not found
+        '410':
+          description: Gone (already deleted)
+        '409':
+          description: Conflict (attempt to delete a required service like 'default')
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    UserGroupServiceSummary:
+      type: object
+      required: [name, className]
+      properties:
+        name:
+          type: string
+          description: Service name
+          example: default
+        className:
+          type: string
+          description: Concrete service implementation class
+          example: org.geoserver.security.xml.XMLUserGroupService
+
+    # JSON payloads may be wrapped by a key naming the concrete config class.
+    UserGroupServiceConfigJson:
+      title: User Group Service Config (JSON)
+      type: object
+      additionalProperties: true
+      description: >
+        Polymorphic configuration for a user/group service. For JSON, requests and responses
+        may be wrapped with a key equal to the fully-qualified config class name, e.g.:
+        {"org.geoserver.security.xml.XMLUserGroupServiceConfig": { ... }}.
+
+    # XML payloads use the concrete class name as the root element.
+    UserGroupServiceConfigXml:
+      title: User Group Service Config (XML)
+      type: object
+      additionalProperties: true
+      description: >
+        Polymorphic configuration for a user/group service. For XML, the root element is the
+        fully-qualified concrete config class name (e.g., org.geoserver.security.xml.XMLUserGroupServiceConfig).
+security:
+  - basicAuth: []

@@ -1,0 +1,38 @@
+<wmsLayer>
+  <name>img states</name>
+  <metaInformation>
+    <title>Nicer title for Image States</title>
+    <description>This is a description. Fascinating.</description>
+  </metaInformation>
+  <mimeFormats>
+    <string>image/gif</string>
+    <string>image/jpeg</string>
+    <string>image/png</string>
+    <string>image/png8</string>
+  </mimeFormats>
+  <gridSubsets>
+    <gridSubset>
+      <gridSetName>EPSG:4326</gridSetName>
+      <extent>
+        <coords>
+          <double>-129.6</double>
+          <double>3.45</double>
+          <double>-62.1</double>
+          <double>70.9</double>
+        </coords>
+      </extent>
+    </gridSubset>
+  </gridSubsets>
+  <expireCacheList>
+    <expirationRule minZoom="0" expiration="60" />
+  </expireCacheList>
+  <expireClientsList>
+    <expirationRule minZoom="0" expiration="500" />
+  </expireClientsList>
+  <wmsUrl>
+    <string>http://demo.opengeo.org/geoserver/wms</string>
+  </wmsUrl>
+  <wmsLayers>nurc:Img_Sample,topp:states</wmsLayers>
+  <transparent>false</transparent>
+  <bgColor>0x0066FF</bgColor>
+</wmsLayer>

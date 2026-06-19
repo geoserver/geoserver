@@ -1,0 +1,13 @@
+title: 'YSLD Cook Book: Graphic fill'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - polygon:
+        fill-color: '#808080'
+        fill-graphic:
+          size: 93
+          symbols:
+          - external:
+              url: colorblocks.png
+              format: image/png

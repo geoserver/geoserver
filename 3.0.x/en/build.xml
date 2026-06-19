@@ -1,0 +1,78 @@
+<project name="docs" basedir="../.." default="build">
+
+  <target name="init">
+    <property environment="env"/>
+    
+    <property name="mkdocs.options" value=""/>
+
+    <condition property="mkdocs.available">
+      <or>
+        <available file="mkdocs" filepath="${env.PATH}"/>
+        <available file="mkdocs.exe" filepath="${env.Path}"/>
+        <available file="mkdocs.exe" filepath="${env.PATH}"/>
+      </or>
+    </condition>
+    
+    <condition property="build.directory" value="${build.directory}" else="${basedir}/target">
+      <isset property="build.directory" />
+    </condition>
+    
+    <echo>Base directory is ${basedir}</echo>
+    <echo>Build directory is ${build.directory}</echo>
+    
+  </target>
+
+  <target name="clean" depends="init">
+    <delete includeemptydirs="true" failonerror="false">
+      <fileset dir="${build.directory}" defaultexcludes="false">
+        <include name="**/" />
+      </fileset>
+    </delete>
+  </target>
+  
+  <target name="build" depends="init,-setup,-build"
+    description="Build documentation for GeoServer">
+    <echo>Documentation generated: ${build.directory}/index.html</echo>
+  </target>
+  
+  <target name="-setup" unless="mkdocs.available">
+    <echo>
+      mkdocs not available, to setup use:
+      
+      source venv/bin/activate &amp;&amp; pip install -r requirements.txt
+      mkdocs --version
+      
+      See README.md for details.
+    </echo>
+  </target>  
+  <target name="-build" if="mkdocs.available">
+    <mkdir dir="${build.directory}"/>
+    <antcall target="mkdocs">
+      <param name="build" value="build" />
+      <param name="argLine" value="--site-dir ${build.directory}" />
+      <param name="offline" value="true" />
+    </antcall>
+  </target>
+  
+  <target name="site" depends="init,-setup"
+    description="Live preview of GeoServer documentation">
+    <echo>Documentation generated: ${build.directory}/index.html</echo>
+    <mkdir dir="${build.directory}"/>
+    <antcall target="mkdocs">
+      <param name="build" value="serve" />
+      <param name="argLine" value="" />
+      <param name="offline" value="false" />
+    </antcall>
+  </target>
+  
+  <target name="mkdocs" if="mkdocs.available">
+    <echo message="Running: [OFFLINE=${offline}] mkdocs ${build} ${argLine}"/>
+    <exec executable="mkdocs" failonerror="true" dir="${basedir}">
+      <arg line="${build}"/>
+      <arg line="${argLine}"/>
+      <env key="OFFLINE" value="${offline}"/>
+      <env key="NO_MKDOCS_2_WARNING" value="1"/>
+    </exec>
+  </target>
+  
+</project>

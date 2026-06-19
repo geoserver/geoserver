@@ -74,3 +74,35 @@ You can also add format options (`format_options=param1:value1;param2:value2;...
 | max_row | Last row number (from the gridset) to use.<br>default: use request bbox to determine which tiles to produce |
 | gridset | Name of the gridset (from GWC GridSetBroker) to uses.<br>default: find based on request SRS |
 | flipy | Do NOT set.<br>default: TRUE (required for GeoPackage - `The tile coordinate (0,0) always refers to the tile in the upper left corner of the tile matrix...`) |
+
+## Concurrent Read Safety
+
+GeoPackage files are SQLite databases. By default, SQLite acquires file-level locks even for
+read operations to guard against concurrent writes by other processes. Under high concurrent WMS
+or WFS load, multiple GeoServer worker threads can block inside the native SQLite locking code,
+eventually causing request timeouts and 503 responses (see [GEOS-12094](https://osgeo-org.atlassian.net/browse/GEOS-12094)).
+
+GeoTools' `GeoPkgDataStoreFactory` provides two parameters that address this:
+
+| Parameter    | Description |
+| ------------ | ----------- |
+| `read_only`  | Opens the SQLite file in read-only mode. Prevents write operations and relaxes internal locking. |
+| `immutable`  | Passes the `immutable=1` URI flag to SQLite, which completely bypasses all file locking. Use this when the GeoPackage file will never be modified while GeoServer is running. |
+
+These parameters already appear in the **Data Store** configuration form in the GeoServer Admin UI.
+For GeoPackage layers that are only ever served (never written to by GeoServer), enabling
+`immutable` provides the best concurrent throughput:
+
+1. In the GeoServer Admin UI, go to **Data** > **Stores** and open the GeoPackage store.
+2. In the connection parameters form, set **immutable** to `true`.
+3. Save the store. Existing layers are unaffected; no data migration is required.
+
+!!! note
+    `immutable=true` is safe only when no other process will modify the GeoPackage file while
+    GeoServer is running. If the file may be updated (for example by an ETL process), use
+    `read_only=true` instead, which permits shared-read access without exclusive locks but still
+    allows SQLite's normal change-detection to operate.
+
+!!! note
+    GeoServer logs a WARNING at startup when a GeoPackage store has neither `read_only` nor
+    `immutable` enabled, as a reminder to review this setting for production deployments.

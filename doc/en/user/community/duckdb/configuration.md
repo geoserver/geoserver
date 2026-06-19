@@ -11,7 +11,7 @@
 
 The following screenshot shows the DuckDB store form in GeoServer:
 
-![](images/duckdb-store-form.png)
+![DuckDB store configuration form in GeoServer](images/duckdb-store-form.png)
 
 *DuckDB store configuration form.*
 

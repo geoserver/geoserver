@@ -35,7 +35,21 @@ The GeoParquet DataStore supports the following key parameters:
     - 0: Group all files together
     - 1+: Use specific level of partitioning
 
-- **simplify**: Enable geometry simplification for rendering optimization (default: true)
+- **use_aws_credential_chain**: Use the AWS SDK credential chain for S3 authentication (default: false)
+
+- **aws_region**: AWS region for S3 access (optional)
+
+- **aws_profile**: AWS profile name to load credentials from `~/.aws/credentials` (optional)
+
+- **endpoint**: S3 endpoint for S3-compatible services such as MinIO or Ceph (optional)
+
+- **url_style**: S3 URL style, such as `path` for path-style access to S3-compatible services (optional)
+
+- **memory_limit**: DuckDB memory limit for the store, for example `1GB` (optional)
+
+- **threads**: DuckDB maximum number of execution threads for the store. Must be greater than zero when provided (optional)
+
+- **simplification**: Enable geometry simplification for rendering optimization (default: true)
 
 - **namespace**: Custom namespace URI for features (optional)
 

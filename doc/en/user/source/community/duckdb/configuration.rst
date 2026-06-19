@@ -36,6 +36,12 @@ The following parameters are relevant for DuckDB:
    * - ``read_only``
      - Enables read-only mode for the store. Default is ``true``.
        Set to ``false`` to allow write operations.
+   * - ``memory_limit``
+     - DuckDB memory limit for the store, for example ``1GB`` or ``512MB``.
+       Leave empty to use DuckDB's default.
+   * - ``threads``
+     - DuckDB maximum number of execution threads for the store.
+       Must be greater than zero when provided. Leave empty to use DuckDB's default.
    * - ``simplification``
      - Enables SQL-side geometry simplification when rendering/query hints request it.
        Default is ``true``.
@@ -55,6 +61,16 @@ DuckDB store configuration enforces the following:
 * ``memory`` and ``database`` are mutually exclusive.
 * If ``memory=false``, ``database`` is required.
 * If ``memory=true``, ``database`` must not be provided.
+* If ``threads`` is provided, it must be greater than zero.
+
+Resource Limits
+---------------
+
+DuckDB accepts per-store resource limits through the ``memory_limit`` and ``threads`` connection parameters.
+GeoServer applies these settings when opening the DuckDB store.
+
+Use ``memory_limit`` to cap memory used by DuckDB for the store, and ``threads`` to cap the number of DuckDB execution threads.
+Leave either value empty to keep DuckDB's default behavior.
 
 Security Model
 --------------

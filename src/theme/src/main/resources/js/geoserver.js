@@ -204,6 +204,79 @@
         }
         initializeUserInitials();
 
+        // Global login form credential encryption
+        function initializeLoginCredentialEncryption() {
+            function getJSEncryptConstructor() {
+                if (typeof window.JSEncrypt === 'function') {
+                    return window.JSEncrypt;
+                }
+                if (window.JSEncrypt && typeof window.JSEncrypt.JSEncrypt === 'function') {
+                    return window.JSEncrypt.JSEncrypt;
+                }
+                return null;
+            }
+
+            function getField(form, name) {
+                return form.querySelector('input[name="' + name + '"]');
+            }
+
+            function getPublicKeyPem() {
+                if (!window.gs_public_key) {
+                    throw new Error('Missing GeoServer login encryption public key.');
+                }
+                var lines = window.gs_public_key.match(/.{1,64}/g) || [];
+                return '-----BEGIN PUBLIC KEY-----\n' + lines.join('\n') + '\n-----END PUBLIC KEY-----';
+            }
+
+            function encryptField(encryptor, field) {
+                if (!field || !field.value || field.value.indexOf('CRYPT:') === 0) {
+                    return null;
+                }
+                var encryptedValue = encryptor.encrypt(field.value);
+                if (!encryptedValue) {
+                    throw new Error('RSA encryption failed for login field "' + field.name + '".');
+                }
+                return { field: field, value: 'CRYPT:' + encryptedValue };
+            }
+
+            function applyEncryptedField(encryptedField) {
+                if (encryptedField) {
+                    encryptedField.field.value = encryptedField.value;
+                }
+            }
+
+            function encryptCredentials(e) {
+                var form = e.target;
+                if (form.tagName !== 'FORM') return;
+                var action = form.getAttribute('action');
+                if (!action || action.indexOf('j_spring_security_check') === -1) return;
+                if (form.getAttribute('data-gs-login-credentials-encrypted') === 'true') return;
+
+                e.preventDefault();
+                try {
+                    var JSEncryptConstructor = getJSEncryptConstructor();
+                    if (!JSEncryptConstructor) {
+                        throw new Error('JSEncrypt is not loaded.');
+                    }
+                    var encryptor = new JSEncryptConstructor();
+                    encryptor.setPublicKey(getPublicKeyPem());
+                    var encryptedFields = [
+                        encryptField(encryptor, getField(form, 'username')),
+                        encryptField(encryptor, getField(form, 'password'))
+                    ];
+                    encryptedFields.forEach(applyEncryptedField);
+                    form.setAttribute('data-gs-login-credentials-encrypted', 'true');
+                    HTMLFormElement.prototype.submit.call(form);
+                } catch (error) {
+                    form.removeAttribute('data-gs-login-credentials-encrypted');
+                    if (window.console && console.error) {
+                        console.error('Unable to RSA encrypt login credentials.', error);
+                    }
+                }
+            }
+            document.addEventListener('submit', encryptCredentials, true);
+        }
+        initializeLoginCredentialEncryption();
         function initializeWicketAutocompleteKeyboardNavigation() {
             var activeContainer = null;
             var activeIndex = -1;

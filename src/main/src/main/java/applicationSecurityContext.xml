@@ -23,6 +23,7 @@
   </bean>
 
   <bean id="geoserverMetadataSource" class="org.geoserver.security.filter.GeoServerSecurityMetadataSource" />
+  <bean id="securityEncryptionManager" class="org.geoserver.security.SecurityEncryptionManager" />
 
   <!--
     The actual remember-me cookie handler

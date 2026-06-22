@@ -12,7 +12,9 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
+import org.geoserver.security.SecurityEncryptionManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -70,6 +72,23 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
                     if (getRequestPath(request).startsWith(pathInfo)) return true;
                 }
                 return false;
+            }
+            @Override
+            protected String obtainPassword(HttpServletRequest request) {
+                return decodeCredential(super.obtainPassword(request), request);
+            }
+
+            @Override
+            protected String obtainUsername(HttpServletRequest request) {
+                return decodeCredential(super.obtainUsername(request), request);
+            }
+
+            private String decodeCredential(String credential, HttpServletRequest request) {
+                SecurityEncryptionManager sem = GeoServerExtensions.bean(SecurityEncryptionManager.class);
+                if (sem == null) {
+                    return credential;
+                }
+                return sem.decryptLoginCredential(credential);
             }
         };
 

@@ -61,6 +61,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.security.SecurityEncryptionManager;
+
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.util.LocalizationsFinder;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -620,11 +622,16 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         response.render(JavaScriptHeaderItem.forUrl(app.versioned("js/jquery.placeholder.js")));
         response.render(JavaScriptHeaderItem.forUrl(app.versioned("js/jquery.fullscreen.js")));
         response.render(JavaScriptHeaderItem.forUrl(app.versioned("js/jquery.hide.ajaxFeedback.js")));
+        response.render(JavaScriptHeaderItem.forUrl(app.versioned("js/jsencrypt.min.js")));
 
         // Due to CSPontent-security-policy, JS must be rendered by Wicket.  This inits the textboxes
         // for placeholders.
         response.render(OnDomReadyHeaderItem.forScript("$('input, textarea').placeholder();"));
-
+        SecurityEncryptionManager securityEncryptionManager = GeoServerExtensions.bean(SecurityEncryptionManager.class);
+        if (securityEncryptionManager != null) {
+            response.render(OnDomReadyHeaderItem.forScript(
+                    "window.gs_public_key = '" + securityEncryptionManager.getPublicKeyBase64() + "';"));
+        }
         List<HeaderContribution> cssContribs = getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {
             try {

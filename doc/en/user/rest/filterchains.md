@@ -7,7 +7,7 @@ render_macros: true
 The REST API allows you to list, create, upload, update, and delete filterChains in GeoServer.
 
 !!! note
-    Read the [API reference for security/filterChains]({{ api_url3 }}?urls.primaryName=Filter%20Chains).
+    Read the [API reference for security/filterChains]({{ api_url }}?urls.primaryName=Filter%20Chains).
 
 ## View a Filter Chain
 

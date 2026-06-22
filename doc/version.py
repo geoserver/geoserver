@@ -166,7 +166,8 @@ def define_env(env):
     env.variables['docs_url'] = 'https://docs.geoserver.org'
 
     # API base URL for REST API Swagger/OpenAPI specs
-    env.variables['api_url'] = '../../api'
-    env.variables['api_url3'] = '../../../api'
-    env.variables['api_url4'] = '../../../../api'
-
+    # Uses absolute url which has been configured relative_to_docs
+    if is_snapshot:
+        env.variables['api_url'] = '/' + version + '.x/en/api'
+    else:
+        env.variables['api_url'] = '/' + branch + '/en/api'

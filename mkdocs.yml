@@ -1,5 +1,5 @@
 site_name: Documentation
-site_url: https://docs.geoserver.org/3.0.x/
+site_url: https://docs.geoserver.org/3.1.x
 repo_url: https://github.com/geoserver/geoserver
 repo_name: geoserver/geoserver
 edit_uri: edit/main/doc/
@@ -13,6 +13,7 @@ exclude_docs: |
   target
   /index.html
   venv
+  en/release
   en/user/styling/ysld/reference/symbolizers/include/
   en/developer/policies/gsip_voting.md
   en/developer/quickstart/checkout.md
@@ -56,7 +57,8 @@ theme:
 
 extra:
   version:
-    default: latest
+    default: stable
+    alias: true
     provider: mike
 
   social:
@@ -113,7 +115,6 @@ not_in_nav: |
   en/docguide/sphinx.md
   en/index.md
   en/LICENSE.md
-  en/release/rest.md
   en/user/data/webadmin/layerpreview.md
   en/user/installation/upgrade2.md
 

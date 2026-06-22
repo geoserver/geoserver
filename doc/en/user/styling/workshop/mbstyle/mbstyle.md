@@ -153,6 +153,11 @@ We use a point symbolizer to indicate we want this content drawn as a **Point** 
 
 !!! note
     Rather than refer to many different icons separately, MBStyles use a single sprite-sheet containing all the necessary icons for the style. This is defined by the `sprite` property at the top-level of the style.
+    
+    The supprt files to be added to your **`styles`** folder:
+    
+    * [sprites.json](../files/sprites.json"}{:download="sprites.json"}
+    * [sprites.png](../files/sprites.png){:download="sprites.png"}
 
 ## Tour
 

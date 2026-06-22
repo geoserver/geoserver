@@ -54,4 +54,4 @@ This is a map generated using the style, with the GetFeatureInfo containing the 
 
 A REST API is available, to fetch the full PAM dataset attached to a raster, and to create styles out of RAT classification fields:
 
-- [/rat]({{ api_url4 }}?urls.primaryName=RAT%20Extension)
+- [/rat]({{ api_url }}?urls.primaryName=RAT%20Extension)

@@ -13,6 +13,7 @@ exclude_docs: |
   target
   /index.html
   venv
+  en/release
   en/user/styling/ysld/reference/symbolizers/include/
   en/developer/policies/gsip_voting.md
   en/developer/quickstart/checkout.md
@@ -109,11 +110,17 @@ extra_javascript:
   - javascripts/hide-empty-toc.js
   - javascripts/version-archive.js
 
+validation:
+  links:
+    absolute_links: relative_to_docs
+    anchors: ignore
+    unrecognized_links: warn
+    not_found: ignore
+
 not_in_nav: |
   en/docguide/sphinx.md
   en/index.md
   en/LICENSE.md
-  en/release/rest.md
   en/user/data/webadmin/layerpreview.md
   en/user/installation/upgrade2.md
 

@@ -10,7 +10,7 @@ The REST API allows you to create and modify layer groups in GeoServer.
     The examples below specify global layer groups, but the examples will work in a workspace-specific construction as well.
 
 !!! note
-    Read the [API reference for /layergroups]({{ api_url3 }}?urls.primaryName=Layer%20Groups).
+    Read the [API reference for /layergroups]({{ api_url }}?urls.primaryName=Layer%20Groups).
 
 ## Creating a layer group
 

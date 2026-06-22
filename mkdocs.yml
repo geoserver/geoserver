@@ -58,7 +58,8 @@ theme:
 
 extra:
   version:
-    default: latest
+    default: stable
+    alias: true
     provider: mike
 
   social:

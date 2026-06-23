@@ -8,7 +8,7 @@ package org.geoserver.geoserver.xstream;
 import com.thoughtworks.xstream.XStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
-import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProviderConfig;
+// import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProviderConfig;
 
 /** @author ETj (etj at geo-solutions.it) */
 public class GeoFenceXStreamPersisterInitializer implements XStreamPersisterInitializer {
@@ -17,8 +17,8 @@ public class GeoFenceXStreamPersisterInitializer implements XStreamPersisterInit
     public void init(XStreamPersister persister) {
 
         XStream xs = persister.getXStream();
-        xs.alias("geoFenceAuthenticationProviderConfig", GeoFenceAuthenticationProviderConfig.class);
-
-        xs.allowTypes(new Class[] {GeoFenceAuthenticationProviderConfig.class});
+        //        xs.alias("geoFenceAuthenticationProviderConfig", GeoFenceAuthenticationProviderConfig.class);
+        //
+        //        xs.allowTypes(new Class[] {GeoFenceAuthenticationProviderConfig.class});
     }
 }

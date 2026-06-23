@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geofence;
+package org.geoserver.geofence.util;
 
 import java.util.ArrayList;
 import java.util.List;

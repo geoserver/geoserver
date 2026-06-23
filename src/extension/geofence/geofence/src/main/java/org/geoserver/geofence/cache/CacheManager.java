@@ -12,9 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geofence.core.services.dto.AccessInfo;
-import org.geofence.core.services.dto.AuthUser;
 import org.geofence.core.services.dto.RuleFilter;
-import org.geoserver.geofence.cache.RuleCacheLoaderFactory.NamePw;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
 import org.geoserver.geofence.containers.ContainerLimitResolver;
@@ -38,7 +36,7 @@ public class CacheManager {
     private ContainerAccessCacheLoaderFactory containerAccessCacheLoaderFactory;
 
     private LoadingCache<RuleFilter, AccessInfo> ruleCache;
-    private LoadingCache<NamePw, AuthUser> userCache;
+    //    private LoadingCache<NamePw, AuthUser> userCache;
     private LoadingCache<RuleFilter, AccessInfo> authCache;
     private LoadingCache<ContainerAccessCacheLoaderFactory.ResolveParams, ContainerLimitResolver.ProcessingResult>
             contCache;
@@ -89,7 +87,7 @@ public class CacheManager {
         cacheConfiguration = configurationManager.getCacheConfiguration();
 
         ruleCache = getCacheBuilder().build(ruleServiceLoaderFactory.createRuleLoader());
-        userCache = getCacheBuilder().build(ruleServiceLoaderFactory.createUserLoader());
+        //        userCache = getCacheBuilder().build(ruleServiceLoaderFactory.createUserLoader());
         authCache = getCacheBuilder().build(ruleServiceLoaderFactory.createAuthLoader());
         contCache = getCacheBuilder().build(containerAccessCacheLoaderFactory.createProcessingResultLoader());
     }
@@ -118,7 +116,7 @@ public class CacheManager {
     public void invalidateAll() {
         if (LOGGER.isLoggable(Level.WARNING)) LOGGER.log(Level.WARNING, "Forcing cache invalidation");
         ruleCache.invalidateAll();
-        userCache.invalidateAll();
+        //        userCache.invalidateAll();
         authCache.invalidateAll();
         contCache.invalidateAll();
     }
@@ -130,7 +128,7 @@ public class CacheManager {
         if (LOGGER.isLoggable(Level.INFO))
             if (dumpCnt.incrementAndGet() % 10 == 0) {
                 LOGGER.info("Rules  :" + ruleCache.stats());
-                LOGGER.info("Users  :" + userCache.stats());
+                //                LOGGER.info("Users  :" + userCache.stats());
                 LOGGER.info("Auth   :" + authCache.stats());
                 LOGGER.info("Cont   :" + contCache.stats());
                 LOGGER.fine("params :" + cacheConfiguration);
@@ -149,11 +147,11 @@ public class CacheManager {
         return ruleCache;
     }
 
-    public LoadingCache<NamePw, AuthUser> getUserCache() {
-        if (userCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
-        logStats();
-        return userCache;
-    }
+    //    public LoadingCache<NamePw, AuthUser> getUserCache() {
+    //        if (userCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
+    //        logStats();
+    //        return userCache;
+    //    }
 
     public LoadingCache<RuleFilter, AccessInfo> getAuthCache() {
         if (authCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
@@ -173,8 +171,8 @@ public class CacheManager {
                 + "["
                 + "Rule:"
                 + ruleCache.stats()
-                + " User:"
-                + userCache.stats()
+                //                + " User:"
+                //                + userCache.stats()
                 + " Auth:"
                 + authCache.stats()
                 + " Cont:"

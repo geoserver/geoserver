@@ -13,7 +13,7 @@
     directory.
   -->
 
-	<context:component-scan base-package="org.geoserver.geofence.rest"/>
+    <context:component-scan base-package="org.geoserver.geofence"/>
     <context:component-scan base-package="org.geofence"/>
 
     <bean id="geofence-configurer" class="org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer">
@@ -72,7 +72,7 @@
 
     </bean>
 
-    <bean id="remoteReaderService" class="org.geoserver.geofence.util.RestRuleReaderService">
+    <bean id="remoteReaderService" class="org.geoserver.geofence.services.RestRuleReaderService">
         <property name="serviceUrl" value="${servicesUrl}"/>
     </bean>
 
@@ -89,7 +89,7 @@
 
         <property name="ruleServiceLoaderFactory">
             <bean class="org.geoserver.geofence.cache.RuleCacheLoaderFactory">
-                <constructor-arg ref="${ruleReaderBackend}"/>
+                <constructor-arg ref="ruleReaderServiceFactory"/>
             </bean>
         </property>
         <property name="containerAccessCacheLoaderFactory" ref="containerAccessCacheLoaderFactory"/>
@@ -126,17 +126,6 @@
         <property name="configurationManager" ref="geofenceConfigurationManager"/>
     </bean>
 
-    <!-- geoserver auth mechanism -->
-
-    <bean id="geofenceFilter" class="org.geoserver.geoserver.authentication.filter.GeoFenceAuthFilterProvider">
-        <property name="geofenceAuth" ref="geofenceAuth"/>
-    </bean>
-
-    <bean id="geofenceAuth" class="org.geoserver.geoserver.authentication.auth.GeoFenceSecurityProvider">
-        <property name="ruleReaderService" ref="${ruleReaderFrontend}"/>
-        <property name="securityManager" ref="geoServerSecurityManager"/>
-    </bean>
-
     <!-- Admin page -->
     <bean id="geofencePage" class="org.geoserver.web.MenuPageInfo">
         <property name="id" value="geofencePage"/>
@@ -146,15 +135,6 @@
         <property name="category" ref="securityCategory" />
         <property name="order" value="1000" />
         <property name="icon" value="img/icons/geofence.png" />
-    </bean>
-
-
-    <!-- ui auth provider panel info-->
-    <bean id="geofenceAuthPanelInfo" class="org.geoserver.geofence.web.authentication.GeoFenceAuthProviderPanelInfo">
-        <property name="id" value="security.geofenceAuthProvider" />
-        <property name="shortTitleKey"  value="GeoFenceAuthProviderPanel.short"/>
-        <property name="titleKey"       value="GeoFenceAuthProviderPanel.title"/>
-        <property name="descriptionKey" value="GeoFenceAuthProviderPanel.description"/>
     </bean>
 
     <bean id="geoFenceXStreamInitializer"
@@ -173,6 +153,17 @@
 
 
     <bean id="geoFenceChainStatusHolder" class="org.geoserver.geofence.wpscommon.ChainStatusHolder">
+    </bean>
+
+    <bean id="ruleReaderServiceFactory" class="org.geoserver.geofence.services.RuleReaderServiceFactory">
+        <constructor-arg>
+            <list value-type="java.lang.String">
+                <value>remoteReaderService</value>
+                <value>RestRuleReaderService</value>
+<!--                <value>RuleReaderServiceImpl</value>
+                <value>RestRuleReaderService</value>-->
+            </list>
+        </constructor-arg>
     </bean>
 
 </beans>

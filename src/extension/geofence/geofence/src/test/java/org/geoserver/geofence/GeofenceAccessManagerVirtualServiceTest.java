@@ -103,6 +103,7 @@ public class GeofenceAccessManagerVirtualServiceTest extends GeoServerSystemTest
         MockHttpServletResponse response = getGetMapResponse(MockData.BUILDINGS, true);
 
         assertEquals(200, response.getStatus());
+        LOGGER.warning("Response: " + response.getContentAsString());
         assertEquals("image/png", response.getContentType());
         assertTrue(response.getContentAsByteArray().length > 0);
     }

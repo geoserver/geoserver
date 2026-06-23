@@ -12,8 +12,9 @@ import java.util.logging.Logger;
 import org.geofence.core.services.AuthorizationService;
 import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
-import org.geofence.core.services.dto.AuthUser;
+// import org.geofence.core.services.dto.AuthUser;
 import org.geofence.core.services.dto.RuleFilter;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -28,9 +29,8 @@ public class RuleCacheLoaderFactory {
     private RuleReaderService realRuleReaderService;
     private AuthorizationService authorizationService;
 
-    public RuleCacheLoaderFactory(RuleReaderService realRuleReaderService, AuthorizationService authorizationService) {
-        this.realRuleReaderService = realRuleReaderService;
-        this.authorizationService = authorizationService;
+    public RuleCacheLoaderFactory(RuleReaderServiceFactory rrsFactory) {
+        this.realRuleReaderService = rrsFactory.getService();
     }
 
     public RuleLoader createRuleLoader() {
@@ -41,9 +41,9 @@ public class RuleCacheLoaderFactory {
         return new AuthLoader();
     }
 
-    public UserLoader createUserLoader() {
-        return new UserLoader();
-    }
+    //    public UserLoader createUserLoader() {
+    //        return new UserLoader();
+    //    }
 
     class RuleLoader extends CacheLoader<RuleFilter, AccessInfo> {
 
@@ -105,100 +105,100 @@ public class RuleCacheLoaderFactory {
         }
     }
 
-    class UserLoader extends CacheLoader<NamePw, AuthUser> {
+    //    class UserLoader extends CacheLoader<NamePw, AuthUser> {
+    //
+    //        private UserLoader() {}
+    //
+    //        @Override
+    //        public AuthUser load(NamePw user) throws NoAuthException {
+    //            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading user '" + user.getName() + "'");
+    //            AuthUser auth = authorizationService.authorize(user.getName(), user.getPw());
+    //            if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
+    //            return auth;
+    //        }
+    //
+    //        @Override
+    //        public ListenableFuture<AuthUser> reload(final NamePw user, AuthUser authUser) throws NoAuthException {
+    //            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading user '" + user.getName() + "'");
+    //
+    //            // this is a sync implementation
+    //            AuthUser auth = authorizationService.authorize(user.getName(), user.getPw());
+    //            if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
+    //            return Futures.immediateFuture(auth);
+    //
+    //            // todo: we may want a asynchronous implementation
+    //        }
+    //    }
 
-        private UserLoader() {}
-
-        @Override
-        public AuthUser load(NamePw user) throws NoAuthException {
-            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading user '" + user.getName() + "'");
-            AuthUser auth = authorizationService.authorize(user.getName(), user.getPw());
-            if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
-            return auth;
-        }
-
-        @Override
-        public ListenableFuture<AuthUser> reload(final NamePw user, AuthUser authUser) throws NoAuthException {
-            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading user '" + user.getName() + "'");
-
-            // this is a sync implementation
-            AuthUser auth = authorizationService.authorize(user.getName(), user.getPw());
-            if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
-            return Futures.immediateFuture(auth);
-
-            // todo: we may want a asynchronous implementation
-        }
-    }
-
-    public static class NamePw {
-        private String name;
-
-        private String pw;
-
-        public NamePw() {}
-
-        public NamePw(String name, String pw) {
-            this.name = name;
-            this.pw = pw;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getPw() {
-            return pw;
-        }
-
-        public void setPw(String pw) {
-            this.pw = pw;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 7;
-            hash = 89 * hash + (this.name != null ? this.name.hashCode() : 0);
-            hash = 89 * hash + (this.pw != null ? this.pw.hashCode() : 0);
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final NamePw other = (NamePw) obj;
-            if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-                return false;
-            }
-            if ((this.pw == null) ? (other.pw != null) : !this.pw.equals(other.pw)) {
-                return false;
-            }
-            return true;
-        }
-    }
-
-    static class NoAuthException extends Exception {
-
-        public NoAuthException() {}
-
-        public NoAuthException(String message) {
-            super(message);
-        }
-
-        public NoAuthException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public NoAuthException(Throwable cause) {
-            super(cause);
-        }
-    }
+    ////    public static class NamePw {
+    ////        private String name;
+    ////
+    ////        private String pw;
+    ////
+    ////        public NamePw() {}
+    ////
+    ////        public NamePw(String name, String pw) {
+    ////            this.name = name;
+    ////            this.pw = pw;
+    ////        }
+    ////
+    ////        public String getName() {
+    ////            return name;
+    ////        }
+    ////
+    ////        public void setName(String name) {
+    ////            this.name = name;
+    ////        }
+    ////
+    ////        public String getPw() {
+    ////            return pw;
+    ////        }
+    ////
+    ////        public void setPw(String pw) {
+    ////            this.pw = pw;
+    ////        }
+    ////
+    ////        @Override
+    ////        public int hashCode() {
+    ////            int hash = 7;
+    ////            hash = 89 * hash + (this.name != null ? this.name.hashCode() : 0);
+    ////            hash = 89 * hash + (this.pw != null ? this.pw.hashCode() : 0);
+    ////            return hash;
+    ////        }
+    ////
+    ////        @Override
+    ////        public boolean equals(Object obj) {
+    ////            if (obj == null) {
+    ////                return false;
+    ////            }
+    ////            if (getClass() != obj.getClass()) {
+    ////                return false;
+    ////            }
+    ////            final NamePw other = (NamePw) obj;
+    ////            if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+    ////                return false;
+    ////            }
+    ////            if ((this.pw == null) ? (other.pw != null) : !this.pw.equals(other.pw)) {
+    ////                return false;
+    ////            }
+    ////            return true;
+    ////        }
+    ////    }
+    //
+    //    static class NoAuthException extends Exception {
+    //
+    //        public NoAuthException() {}
+    //
+    //        public NoAuthException(String message) {
+    //            super(message);
+    //        }
+    //
+    //        public NoAuthException(String message, Throwable cause) {
+    //            super(message, cause);
+    //        }
+    //
+    //        public NoAuthException(Throwable cause) {
+    //            super(cause);
+    //        }
+    //    }
 }

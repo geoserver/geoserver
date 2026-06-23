@@ -49,6 +49,7 @@ import org.geoserver.geofence.containers.ContainerAccessResolver;
 import org.geoserver.geofence.containers.ContainerLimitResolver;
 import org.geoserver.geofence.util.AccessInfoUtils;
 import org.geoserver.geofence.util.GeomHelper;
+import org.geoserver.geofence.util.RuleFilterBuilder;
 import org.geoserver.geofence.wpscommon.WPSHelper;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;

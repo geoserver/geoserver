@@ -218,13 +218,13 @@ public class GeofencePage extends GeoServerSecuredPage {
     private static final String KEY_ADMIN_LOADTIME = "admin.loadtime";
     private static final String KEY_ADMIN_EVICTION = "admin.evict";
 
-    private static final String KEY_USER_SIZE = "user.size";
-    private static final String KEY_USER_HIT = "user.hit";
-    private static final String KEY_USER_MISS = "user.miss";
-    private static final String KEY_USER_LOADOK = "user.loadok";
-    private static final String KEY_USER_LOADKO = "user.loadko";
-    private static final String KEY_USER_LOADTIME = "user.loadtime";
-    private static final String KEY_USER_EVICTION = "user.evict";
+    //    private static final String KEY_USER_SIZE = "user.size";
+    //    private static final String KEY_USER_HIT = "user.hit";
+    //    private static final String KEY_USER_MISS = "user.miss";
+    //    private static final String KEY_USER_LOADOK = "user.loadok";
+    //    private static final String KEY_USER_LOADKO = "user.loadko";
+    //    private static final String KEY_USER_LOADTIME = "user.loadtime";
+    //    private static final String KEY_USER_EVICTION = "user.evict";
 
     private static final String KEY_CONT_SIZE = "cont.size";
     private static final String KEY_CONT_HIT = "cont.hit";
@@ -254,14 +254,14 @@ public class GeofencePage extends GeoServerSecuredPage {
         statsValues.put(KEY_ADMIN_LOADTIME, "" + cache.stats().totalLoadTime());
         statsValues.put(KEY_ADMIN_EVICTION, "" + cache.stats().evictionCount());
 
-        cache = cacheManager.getUserCache();
-        statsValues.put(KEY_USER_SIZE, "" + cache.size());
-        statsValues.put(KEY_USER_HIT, "" + cache.stats().hitCount());
-        statsValues.put(KEY_USER_MISS, "" + cache.stats().missCount());
-        statsValues.put(KEY_USER_LOADOK, "" + cache.stats().loadSuccessCount());
-        statsValues.put(KEY_USER_LOADKO, "" + cache.stats().loadExceptionCount());
-        statsValues.put(KEY_USER_LOADTIME, "" + cache.stats().totalLoadTime());
-        statsValues.put(KEY_USER_EVICTION, "" + cache.stats().evictionCount());
+        //        cache = cacheManager.getUserCache();
+        //        statsValues.put(KEY_USER_SIZE, "" + cache.size());
+        //        statsValues.put(KEY_USER_HIT, "" + cache.stats().hitCount());
+        //        statsValues.put(KEY_USER_MISS, "" + cache.stats().missCount());
+        //        statsValues.put(KEY_USER_LOADOK, "" + cache.stats().loadSuccessCount());
+        //        statsValues.put(KEY_USER_LOADKO, "" + cache.stats().loadExceptionCount());
+        //        statsValues.put(KEY_USER_LOADTIME, "" + cache.stats().totalLoadTime());
+        //        statsValues.put(KEY_USER_EVICTION, "" + cache.stats().evictionCount());
 
         cache = cacheManager.getContainerCache();
         statsValues.put(KEY_CONT_SIZE, "" + cache.size());

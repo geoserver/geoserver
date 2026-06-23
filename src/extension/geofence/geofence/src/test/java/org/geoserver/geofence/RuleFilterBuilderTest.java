@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import java.util.Arrays;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
+import org.geoserver.geofence.util.RuleFilterBuilder;
 import org.geoserver.ows.Request;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

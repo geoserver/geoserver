@@ -66,14 +66,4 @@ public class CachedRuleReader implements RuleReaderService {
     public List<ShortRule> getMatchingRules(RuleFilter filter) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    //    @Override
-    //    public AuthUser authorize(String username, String password) {
-    //        try {
-    //            return cacheManager.getUserCache().get(new NamePw(username, password));
-    //        } catch (ExecutionException ex) {
-    //            LOGGER.warning(ex.getMessage());
-    //            return null;
-    //        }
-    //    }
 }

@@ -42,7 +42,6 @@ public class CacheControllerTest extends GeoServerSystemTestSupport {
         String content = response.getContentAsString();
         assertTrue("Missing RuleStats", content.contains("RuleStats["));
         assertTrue("Missing AdminAuthStats", content.contains("AdminAuthStats["));
-        assertTrue("Missing UserStats", content.contains("UserStats["));
     }
 
     @Test
@@ -53,7 +52,6 @@ public class CacheControllerTest extends GeoServerSystemTestSupport {
         String content = response.getContentAsString();
         assertTrue("Missing RuleStats", content.contains("RuleStats["));
         assertTrue("Missing AdminAuthStats", content.contains("AdminAuthStats["));
-        assertTrue("Missing UserStats", content.contains("UserStats["));
     }
 
     @Test

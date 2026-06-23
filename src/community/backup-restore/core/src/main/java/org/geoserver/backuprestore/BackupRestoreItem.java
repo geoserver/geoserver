@@ -240,7 +240,11 @@ public abstract class BackupRestoreItem<T> {
             if (!isNew) {
                 this.xp.registerLocalConverter(
                         StoreInfoImpl.class, "connectionParameters", this.createParameterizingMapConverter(xstream));
-                this.xp.registerConverter(this.createStoreConverter(xstream));
+                // Register above the StoreInfoConverter that XStreamPersister installs at PRIORITY_NORMAL so this
+                // wrapper (which records the encrypted fields to tokenize) is the one selected for stores. Equal
+                // priorities are an unreliable tie-break across XStream versions, which silently disabled password
+                // parameterization (passwords were written verbatim instead of tokenized).
+                this.xp.registerConverter(this.createStoreConverter(xstream), XStream.PRIORITY_VERY_HIGH);
             } else {
                 String concatenatedPasswordTokens = jobParameters.getString(Backup.PARAM_PASSWORD_TOKENS);
                 Map<String, String> passwordTokens = parseConcatenatedPasswordTokens(concatenatedPasswordTokens);
@@ -401,6 +405,15 @@ public abstract class BackupRestoreItem<T> {
         }
 
         if (resource == null || clazz == WorkspaceInfo.class) {
+            // A workspace pulled in by the subset closure (the home workspace of a cross-workspace layergroup member)
+            // is a forced dependency: keep it even though it falls outside the filter, otherwise the member's
+            // store/resource/layer — which the closure DID drag in — would have no workspace to resolve against on
+            // restore and the whole member would be silently lost. The workspace arrives here through the two-arg
+            // filteredResource(WorkspaceInfo, boolean) overload as the `ws` argument with a null `resource`, so the
+            // closure block above (guarded on `resource != null`) never saw it; check its own id explicitly.
+            if (!isNew() && ws != null && closureIds != null && closureIds.contains(ws.getId())) {
+                return false;
+            }
             if ((strict && ws == null) || (ws != null && getFilters()[0] != null && !getFilters()[0].evaluate(ws))) {
                 LOGGER.info("Skipped filtered workspace: " + ws);
                 return true;

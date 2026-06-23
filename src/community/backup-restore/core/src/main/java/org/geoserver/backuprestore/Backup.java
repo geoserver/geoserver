@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.backuprestore.utils.BackupUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
@@ -99,6 +100,13 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
 
     static Logger LOGGER = Logging.getLogger(Backup.class);
 
+    /**
+     * Grace period (ms) to let a cooperatively-stopped backup/restore job reach a terminal state before a forced
+     * abandon stops waiting. Spring Batch honors a stop request at the next chunk/step boundary, so a job in the middle
+     * of a step needs a moment to wind down.
+     */
+    private static final long STOP_GRACE_MILLIS = 5000;
+
     /* Job Parameters Keys **/
     public static final String PARAM_TIME = "time";
 
@@ -117,9 +125,10 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     public static final String PARAM_BEST_EFFORT_MODE = "BK_BEST_EFFORT";
 
     /**
-     * PROTOTYPE: when {@code true}, a restore runs a pre-flight validation pass over the fully-assembled restore
-     * catalog and ABORTS (job FAILED, so the live reload is skipped) if any catalog object is invalid. Default
-     * {@code false} — the pass only logs and records the findings as warnings.
+     * When {@code true}, a restore runs a pre-flight validation pass over the fully-assembled restore catalog and
+     * ABORTS (job FAILED, the live reload is skipped, and the data directory is rolled back to its pre-restore state by
+     * {@link org.geoserver.backuprestore.listener.RestoreJobExecutionListener}) if any catalog object is invalid.
+     * Default {@code false} — the pass only logs and records the findings as warnings.
      */
     public static final String PARAM_FAIL_ON_INVALID = "BK_FAIL_ON_INVALID";
 
@@ -131,12 +140,12 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     public static final String PARAM_PARAMETERIZE_PASSWDS = "BK_PARAM_PASSWORDS";
 
     /**
-     * When {@code true}, the backup keeps catalog object ids and writes cross-references by id, instead of stripping
-     * ids and referencing by name. The resulting archive can be restored / migrated into another catalog with the
-     * original identities preserved, which lets the restore re-link GWC tile layers (they key strictly by id) and skip
-     * objects that already exist by id rather than merging by name. The same flag must be passed on the matching
-     * restore so the reader expects id references. The default ({@code false}) keeps the legacy portable, name-based
-     * archive format and behaviour.
+     * When {@code true} (the runtime default), the backup keeps catalog object ids and writes cross-references by id,
+     * instead of stripping ids and referencing by name. The resulting archive can be restored / migrated into another
+     * catalog with the original identities preserved, which lets the restore re-link GWC tile layers (they key strictly
+     * by id) and skip objects that already exist by id rather than merging by name. The restore auto-adapts: it reads
+     * whichever of id / name each cross-reference in the archive actually carries, so no matching flag has to be passed
+     * on the restore. Pass {@code false} to produce the legacy portable, name-based archive format instead.
      */
     public static final String PARAM_PRESERVE_IDS = "BK_PRESERVE_IDS";
 
@@ -590,12 +599,54 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
     public void afterJob(JobExecution jobExecution) {
         // Release locks on GeoServer Configuration:
         try {
-            List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-            for (BackupRestoreCallback callback : callbacks) {
-                callback.onEndRequest();
-            }
+            releaseConfigurationLocks();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
+        }
+
+        // Refresh the live catalog from the restored data directory, after the configuration lock is released.
+        reloadCatalogAfterRestore(jobExecution);
+    }
+
+    /**
+     * Releases the GeoServer configuration lock acquired for the current backup/restore request through the registered
+     * {@link BackupRestoreCallback}s. Idempotent per thread: a callback whose lock has already been released is a no-op
+     * (see {@link BackupRestoreConfigurationLockCallback}).
+     */
+    public void releaseConfigurationLocks() {
+        List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+        for (BackupRestoreCallback callback : callbacks) {
+            callback.onEndRequest();
+        }
+    }
+
+    /**
+     * Reloads the live GeoServer catalog from the restored data directory after a successful restore.
+     *
+     * <p>Runs from {@link #afterJob(JobExecution)} on the job thread, <em>after</em> the configuration lock has been
+     * released. {@code GeoServer.reload()} drives the parallel data-directory loader, whose worker threads acquire the
+     * configuration lock; reloading earlier (e.g. from the in-job finalize step, which runs on a separate executor
+     * thread while the job thread still holds the write lock) deadlocks against that lock until it times out (~10
+     * minutes), leaving the job {@code STOPPED}. Only a successfully completed, non-dry-run restore needs this: the
+     * restore writes through to the data directory via a separate restore catalog, so the live in-memory catalog is
+     * stale until reloaded.
+     */
+    private void reloadCatalogAfterRestore(JobExecution jobExecution) {
+        JobParameters params = jobExecution.getJobParameters();
+        boolean isRestore = RESTORE_JOB_NAME.equals(params.getString(PARAM_JOB_NAME));
+        boolean dryRun = Boolean.parseBoolean(params.getString(PARAM_DRY_RUN_MODE, "false"));
+        if (!isRestore || dryRun || jobExecution.getStatus() != BatchStatus.COMPLETED) {
+            return;
+        }
+        try {
+            GeoServer geoserver = getGeoServer();
+            Catalog catalog = geoserver.getCatalog();
+            catalog.getResourcePool().dispose();
+            catalog.dispose();
+            geoserver.dispose();
+            geoserver.reload();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error reloading the GeoServer catalog after restore: ", e);
         }
     }
 
@@ -629,16 +680,10 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
                     jobRepository.update(jobExecution);
                 }
             }
-
-            // Release locks on GeoServer Configuration:
-            try {
-                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-                for (BackupRestoreCallback callback : callbacks) {
-                    callback.onEndRequest();
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
-            }
+            // The configuration lock is released by the job thread in afterJob() as the job winds down to a terminal
+            // state - it cannot be released here. This runs on the request thread, which never owned the lock, and a
+            // ReentrantReadWriteLock can only be unlocked by its acquiring thread; the previous onEndRequest() loop on
+            // this thread was therefore always a no-op.
         }
     }
 
@@ -652,34 +697,109 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         return jobOperator.restart(jobExecution).getId();
     }
 
-    /** Abort a running Backup/Restore Execution */
+    /**
+     * Aborts a backup/restore execution (cooperative stop only; equivalent to {@link #abandonExecution(Long, boolean)}
+     * with {@code force == false}).
+     */
     public void abandonExecution(Long executionId) throws JobExecutionAlreadyRunningException {
-        LOGGER.info("Aborting execution id [" + executionId + "]");
+        abandonExecution(executionId, false);
+    }
+
+    /**
+     * Aborts a backup/restore execution.
+     *
+     * <p>Spring Batch refuses to abandon a still-running execution, so a running job is first asked to
+     * {@link #stopExecution(Long) stop} and given a short grace period to wind down. Only the job thread can release
+     * the configuration lock it acquired in {@link #beforeJob(JobExecution)} - a {@link GeoServerConfigurationLock} is
+     * a reentrant lock, releasable solely by its owning thread - and it does so in {@link #afterJob(JobExecution)} as
+     * it terminates. Driving the job to a terminal state is therefore what actually frees the lock, not any callback
+     * invoked from this (request) thread.
+     *
+     * <p>When {@code force} is set and the job is still running after the grace period - i.e. wedged while (for a
+     * restore) holding the configuration write lock - the lock is force-released by interrupting its owner thread
+     * (break glass; see {@link GeoServerConfigurationLock#tryForceReleaseWriteLock()}), so a hung job cannot hold the
+     * global lock indefinitely. The execution is recorded {@code ABANDONED} regardless.
+     *
+     * @param force escalate to a forced configuration-lock release if the job does not stop within the grace period
+     */
+    public void abandonExecution(Long executionId, boolean force) {
+        LOGGER.info("Aborting execution id [" + executionId + "]" + (force ? " (forced)" : ""));
 
         JobExecution jobExecution = findJobExecution(executionId);
+        if (jobExecution == null) {
+            LOGGER.warning("No job execution found for id " + executionId + "; nothing to abandon.");
+            return;
+        }
         try {
-            if (jobExecution != null) {
+            if (isStillRunning(executionId)) {
+                stopAndAwaitTermination(jobExecution, force);
+            }
+            if (!isStillRunning(executionId)) {
                 jobOperator.abandon(jobExecution);
             } else {
-                LOGGER.warning("No job execution found for id " + executionId + "; nothing to abandon.");
+                // Still running (force not requested, or a non-interruptible wedge): record the abort intent now;
+                // afterJob() will release the configuration lock if/when the job thread finally exits.
+                LOGGER.warning("Execution " + executionId
+                        + " is still running after the abort request; marking it ABANDONED without waiting further.");
+                markAbandoned(jobExecution);
             }
-        } finally {
-            if (jobExecution != null) {
-                jobExecution.setStatus(BatchStatus.ABANDONED);
-                jobExecution.setEndTime(LocalDateTime.now());
-                jobRepository.update(jobExecution);
-            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Could not cleanly abandon execution " + executionId + "; marking ABANDONED.", e);
+            markAbandoned(jobExecution);
+        }
+    }
 
-            // Release locks on GeoServer Configuration:
-            try {
-                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-                for (BackupRestoreCallback callback : callbacks) {
-                    callback.onEndRequest();
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
+    /**
+     * Asks a running execution to stop and waits up to {@link #STOP_GRACE_MILLIS} for it to reach a terminal state.
+     * When {@code force} is set and the job is still running afterwards, interrupts the configuration write-lock owner
+     * thread to force the lock open (break glass).
+     */
+    private void stopAndAwaitTermination(JobExecution jobExecution, boolean force) {
+        try {
+            jobOperator.stop(jobExecution);
+        } catch (JobExecutionNotRunningException e) {
+            return; // already terminal
+        }
+        if (awaitTermination(jobExecution.getId(), STOP_GRACE_MILLIS)) {
+            return;
+        }
+        if (force) {
+            GeoServerConfigurationLock lock = GeoServerExtensions.bean(GeoServerConfigurationLock.class, context);
+            if (lock != null && lock.tryForceReleaseWriteLock()) {
+                LOGGER.warning("Execution " + jobExecution.getId()
+                        + " did not stop within the grace period; force-released the configuration write lock.");
+                awaitTermination(jobExecution.getId(), STOP_GRACE_MILLIS);
             }
         }
+    }
+
+    /** Polls the job repository until the given execution is no longer running, or the grace period elapses. */
+    private boolean awaitTermination(Long executionId, long graceMillis) {
+        long deadline = System.currentTimeMillis() + graceMillis;
+        while (isStillRunning(executionId)) {
+            if (System.currentTimeMillis() >= deadline) {
+                return false;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        return !isStillRunning(executionId);
+    }
+
+    /** Whether the given execution is still among the running backup/restore executions, per the job repository. */
+    private boolean isStillRunning(Long executionId) {
+        return getBackupRunningExecutions().contains(executionId)
+                || getRestoreRunningExecutions().contains(executionId);
+    }
+
+    private void markAbandoned(JobExecution jobExecution) {
+        jobExecution.setStatus(BatchStatus.ABANDONED);
+        jobExecution.setEndTime(LocalDateTime.now());
+        jobRepository.update(jobExecution);
     }
 
     /**

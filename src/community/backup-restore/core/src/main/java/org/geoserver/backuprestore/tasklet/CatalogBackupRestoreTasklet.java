@@ -305,8 +305,14 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         SettingsInfo newSettings = null;
         LoggingInfo newLoggingInfo = null;
         try {
-            newGeoServerInfo = (GeoServerInfo) doRead(sourceRestoreFolder, "global.xml");
-            newLoggingInfo = (LoggingInfo) doRead(sourceRestoreFolder, "logging.xml");
+            // A backup taken with the default BK_SKIP_SETTINGS=true carries no global.xml/logging.xml; read them
+            // back only when present, so such an archive restores cleanly instead of failing this step.
+            if (Resources.exists(sourceRestoreFolder.get("global.xml"))) {
+                newGeoServerInfo = (GeoServerInfo) doRead(sourceRestoreFolder, "global.xml");
+            }
+            if (Resources.exists(sourceRestoreFolder.get("logging.xml"))) {
+                newLoggingInfo = (LoggingInfo) doRead(sourceRestoreFolder, "logging.xml");
+            }
         } catch (Exception e) {
             logValidationExceptions(
                     (ValidationResult) null,
@@ -394,7 +400,9 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         final boolean purgeResources = purge;
         final boolean filterIsValid = filterIsValid();
 
-        if (!skipSettings && !filterIsValid) {
+        // newGeoServerInfo is null when the archive carries no global.xml (e.g. taken with BK_SKIP_SETTINGS=true);
+        // skip the globals restore in that case rather than wiping the target's existing global settings.
+        if (!skipSettings && !filterIsValid && newGeoServerInfo != null) {
             restoreGlobals(geoserver, dd, sourceRestoreFolder, newGeoServerInfo, newLoggingInfo);
         }
 
@@ -521,11 +529,15 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             GeoServerInfo newGeoServerInfo,
             LoggingInfo newLoggingInfo)
             throws Exception {
-        // Restore GeoServer Global Info
-        doWrite(newGeoServerInfo, td.get(Paths.BASE), "global.xml");
+        // Restore GeoServer Global Info (absent when the archive carries no settings)
+        if (newGeoServerInfo != null) {
+            doWrite(newGeoServerInfo, td.get(Paths.BASE), "global.xml");
+        }
 
         // Restore GeoServer Global Logging Settings
-        doWrite(newLoggingInfo, td.get(Paths.BASE), "logging.xml");
+        if (newLoggingInfo != null) {
+            doWrite(newLoggingInfo, td.get(Paths.BASE), "logging.xml");
+        }
 
         // Restore GeoServer Global Services
         restoreGlobalServices(sourceRestoreFolder, td);

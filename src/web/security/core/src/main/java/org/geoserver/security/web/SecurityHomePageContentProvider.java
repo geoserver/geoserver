@@ -17,8 +17,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -28,6 +31,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.SecurityConfigDiagnostics;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.web.passwd.MasterPasswordChangePage;
@@ -215,6 +219,47 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             label = new Label("digestEncoding", new StringResourceModel("digestEncoding", this, null));
             add(label);
             label.setVisible(visibility);
+
+            // warn about security components that could not be loaded (typically created by a community
+            // plugin that is no longer installed) and were therefore disabled, plus the filter chains
+            // that were updated as a result
+            SecurityConfigDiagnostics diagnostics = manager.getConfigDiagnostics();
+
+            WebMarkupContainer disabledContainer = new WebMarkupContainer("disabledComponentsContainer");
+            disabledContainer.setVisible(!diagnostics.getDisabledComponents().isEmpty());
+            add(disabledContainer);
+            disabledContainer.add(
+                    new Label("disabledComponentsHeader", new StringResourceModel("disabledSecurityComponents", this)));
+            disabledContainer.add(new ListView<>("disabledComponents", diagnostics.getDisabledComponents()) {
+                @Override
+                protected void populateItem(ListItem<SecurityConfigDiagnostics.DisabledComponent> item) {
+                    SecurityConfigDiagnostics.DisabledComponent c = item.getModelObject();
+                    String origin =
+                            c.sourcePlugin() != null ? c.sourcePlugin() : (c.alias() != null ? c.alias() : c.name());
+                    item.add(new Label(
+                            "disabledComponent",
+                            new StringResourceModel("disabledSecurityComponent", SecurityWarningsPanel.this)
+                                    .setParameters(c.name(), origin, c.reason())));
+                }
+            });
+
+            WebMarkupContainer affectedContainer = new WebMarkupContainer("affectedChainsContainer");
+            affectedContainer.setVisible(!diagnostics.getAffectedChains().isEmpty());
+            add(affectedContainer);
+            affectedContainer.add(
+                    new Label("affectedChainsHeader", new StringResourceModel("affectedFilterChains", this)));
+            affectedContainer.add(new ListView<>("affectedChains", diagnostics.getAffectedChains()) {
+                @Override
+                protected void populateItem(ListItem<SecurityConfigDiagnostics.AffectedChain> item) {
+                    SecurityConfigDiagnostics.AffectedChain c = item.getModelObject();
+                    String key = c.accessDenied() ? "affectedFilterChainDenied" : "affectedFilterChain";
+                    item.add(new Label(
+                            "affectedChain",
+                            new StringResourceModel(key, SecurityWarningsPanel.this)
+                                    .setParameters(
+                                            c.chainName(), c.removedFilters().toString())));
+                }
+            });
         }
     }
 }

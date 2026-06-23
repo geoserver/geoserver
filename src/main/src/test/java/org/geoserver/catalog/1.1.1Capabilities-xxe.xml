@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE Name [
+		<!ENTITY file SYSTEM "file:///file/not/there">]>
+<WMT_MS_Capabilities version="1.1.1" updateSequence="0">
+	<Service>
+		<Name>OGC:WMS</Name>
+		<Title>Microsoft TerraServer Map Server</Title>
+		<Abstract>WMT Map Server maintained by Microsoft Corporation.  Data returned provided by US Geological Survey.  Contact: tbarclay@microsoft.com or gylee@usgs.gov.</Abstract>
+		<KeywordList>
+			<Keyword>USGS</Keyword>
+
+			<Keyword>DOQ</Keyword>
+			<Keyword>DRG</Keyword>
+			<Keyword>Topographic</Keyword>
+			<Keyword>UrbanArea</Keyword>
+			<Keyword>Urban Areas</Keyword>
+		</KeywordList>
+
+		<!-- Top-level web address of service or service provider.  See also OnlineResource elements under <DCPType>. -->
+		<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://terraservice.net/" />
+		<!-- Contact information -->
+		<ContactInformation>
+			<ContactPersonPrimary>
+				<ContactPerson>Some guy</ContactPerson>
+				<ContactOrganization>Some company</ContactOrganization>
+			</ContactPersonPrimary>
+
+			<ContactPosition>Researcher</ContactPosition>
+			<ContactAddress>
+				<AddressType>postal</AddressType>
+				<Address>555 Street St.</Address>
+				<City>San Francisco</City>
+				<StateOrProvince>CA</StateOrProvince>
+
+				<PostCode>11111</PostCode>
+				<Country>USA</Country>
+			</ContactAddress>
+			<ContactVoiceTelephone>+1 555 555 5555</ContactVoiceTelephone>
+			<ContactFacsimileTelephone>+1 555 555 5556</ContactFacsimileTelephone>
+			<ContactElectronicMailAddress>email@domain.com</ContactElectronicMailAddress>
+
+		</ContactInformation>
+		<!-- Fees or access constraints imposed. -->
+		<Fees>none</Fees>
+		<AccessConstraints>none</AccessConstraints>
+	</Service>
+	<Capability>
+		<Request>
+			<GetCapabilities>
+				<Format>application/vnd.ogc.wms_xml</Format>
+
+				<DCPType>
+					<HTTP>
+						<Get>
+							<!-- The URL here for invoking GetCapabilities using HTTP GET
+                            is only a prefix to which a query string is appended. -->
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+											xlink:type="simple"
+											xlink:href="http://terraservice.net/ogccapabilities.ashx" />
+						</Get>
+						<Post>
+							<!-- The URL here for invoking GetCapabilities using HTTP POST
+                            includes the complete address to which a query would be sent in
+                            XML format.  This is here for future expansion; no POST encoding
+                        has yet been defined. -->
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+											xlink:type="simple"
+											xlink:href="http://terraservice.net/ogccapabilities.ashx" />
+
+						</Post>
+					</HTTP>
+				</DCPType>
+			</GetCapabilities>
+			<GetMap>
+				<Format>image/jpeg</Format>
+				<DCPType>
+					<HTTP>
+
+						<Get>
+							<!-- The URL here for invoking GetMap using HTTP GET
+                            is only a prefix to which a query string is appended. -->
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+											xlink:type="simple"
+											xlink:href="http://terraservice.net/ogcmap.ashx" />
+						</Get>
+					</HTTP>
+				</DCPType>
+			</GetMap>
+		</Request>
+		<Exception>
+
+			<Format>application/vnd.ogc.se_xml</Format>
+			<Format>application/vnd.ogc.se_inimage</Format>
+			<Format>application/vnd.ogc.se_blank</Format>
+			<Format>text/html</Format>
+		</Exception>
+		<Layer>
+			<Title>Microsoft TerraServer Map Server</Title>
+
+			<SRS>EPSG:4326</SRS> <!-- all layers are available in at least this SRS -->
+			<LatLonBoundingBox minx="-168.67" miny="17.84" maxx="-65.15" maxy="71.55" /> <!-- Queried on 3/13/2002 -->
+			<Attribution>
+				<Title>U.S. Geological Survey</Title>
+				<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+								xlink:href="http://terraserver.microsoft.com/about.aspx?n=AboutAboutImages" />
+				<LogoURL width="92" height="36">
+					<Format>image/gif</Format>
+
+					<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+									xlink:type="simple"
+									xlink:href="http://terraservice.net/images/usgslogo.gif" />
+				</LogoURL>
+			</Attribution>
+			<Layer queryable="0" cascaded="0" opaque="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>&file;</Name>
+				<Title>USGS Digital Ortho-Quadrangles</Title>
+				<SRS>EPSG:26920</SRS> <!-- NAD83 / UTM Zone 20N -->
+				<BoundingBox SRS="EPSG:26920" minx="181800" miny="1985200" maxx="269400" maxy="2048600" resx="1" resy="1" />
+			</Layer>
+		</Layer>
+	</Capability>
+</WMT_MS_Capabilities>

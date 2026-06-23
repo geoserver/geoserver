@@ -62,6 +62,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.kml.regionate.CachedHierarchyRegionatingStrategy;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.test.IOTestUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
@@ -488,7 +489,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
 
         // create the kmz
-        File tempDir = org.geoserver.util.IOUtils.createRandomDirectory("./target", "kmplacemark", "test");
+        File tempDir = IOTestUtils.createRandomDirectory("./target", "kmplacemark");
         tempDir.deleteOnExit();
 
         File zip = new File(tempDir, "kmz.zip");

@@ -17,6 +17,8 @@ scripted backups.
 | Restore validation | could false-fail name-based restores | null-id guards + trustworthy pre-flight pass |
 | Security restore | verbatim copy, single-instance only | merge mode + keystore re-encryption for cross-instance migration |
 | Dry-run / fail-on-invalid | wrote to disk incrementally (only the reload was skipped) | snapshot + rollback leave the data directory untouched |
+| Cancelling a running job | could return HTTP 500 | clean cancel (UI or `DELETE`); write-lock force-release as break-glass |
+| Backup password parameterization | unreliable | `BK_PARAM_PASSWORDS` reliably tokenizes store passwords |
 
 ## `BK_PRESERVE_IDS` now defaults to `true` — the one to watch
 
@@ -127,6 +129,31 @@ The practical effect: a `BK_DRY_RUN=true` restore now leaves the data directory 
 making it a safe way to validate an archive — and a failed or `BK_FAIL_ON_INVALID`-aborted restore no
 longer leaves the target half-written.
 
+## Cancelling and recovering a running job
+
+A running backup or restore can now be cancelled cleanly, from the web interface or with
+`DELETE /rest/br/backup/{id}` / `DELETE /rest/br/restore/{id}`. In 2.x cancelling an in-progress job
+could return an HTTP 500; in 3.x the job stops in a well-defined state and the endpoint responds
+without error.
+
+If a job becomes wedged while it still holds the GeoServer configuration write-lock — blocking other
+configuration changes — an administrator can force the lock to be released:
+
+```text
+DELETE /rest/br/restore/{id}?force=true
+```
+
+!!! warning
+    `force=true` is a **break-glass** mechanism for an administrator. It interrupts the lock owner to
+    recover a stuck instance and should be used only when a job is genuinely wedged.
+
+## Reliable backup password parameterization
+
+A backup can replace store passwords with tokens so the archive does not carry plaintext secrets,
+re-supplied at restore time. In 3.x `BK_PARAM_PASSWORDS=true` reliably tokenizes store passwords
+during backup; a tie-break in converter priority that previously let some passwords slip through
+untokenized has been fixed.
+
 ## REST API and archive compatibility
 
 The REST endpoints (`/rest/br/backup`, `/rest/br/restore`) and the JSON/XML response shape are
@@ -134,9 +161,19 @@ unchanged from 2.x, so existing clients and scripts continue to work without mod
 written by 3.x restore into 3.x; the practical difference from a 2.x archive is the id-preserving
 default described above.
 
+## Breaking changes
+
+- **Batch jobs are now defined in Java `@Configuration`.** The custom XML `<batch:job>` and
+  `applicationContext.xml` batch definitions from 2.x are gone. Extensions that contributed steps,
+  tasklets, readers, processors or writers through XML must be rewired in Java (see *For developers
+  and extension authors* below).
+- **`BK_PRESERVE_IDS` now defaults to `true`.** Scripted backups that assume name-based,
+  id-stripped archives must set `BK_PRESERVE_IDS=false` explicitly (see
+  [the section above](#bk_preserve_ids-now-defaults-to-true-the-one-to-watch)).
+
 ## For developers and extension authors
 
-- The engine now runs on **Spring Batch 6.0.3 / Spring 7** (GeoServer 3's JDK 17 baseline applies).
+- The engine now runs on **Spring Batch 6.0.x / Spring 7** (GeoServer 3's JDK 17 baseline applies).
 - The backup and restore **job graphs are defined in Java `@Configuration`**
   (`BackupJobConfiguration`, `RestoreJobConfiguration`, `BatchInfrastructureConfiguration`) instead
   of the old `applicationContext.xml` `<batch:job>` definitions. Custom steps, tasklets, readers,

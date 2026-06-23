@@ -29,6 +29,10 @@ The following parameters are available when configuring a GeoParquet data store:
 | **Use AWS Credential Chain** | No | Enable AWS SDK credential chain for S3 authentication (recommended for S3 access) |
 | **AWS Region** | No | AWS region for S3 access (e.g., us-east-1, eu-west-1). Overrides automatic region detection |
 | **AWS Profile** | No | AWS profile name to load credentials from \~/.aws/credentials |
+| **S3 Endpoint** | No | Custom S3 or S3-compatible service endpoint. Connection parameter: `endpoint` |
+| **S3 URL Style** | No | S3 addressing style to use, such as `path` for path-style access to S3-compatible services. Connection parameter: `url_style` |
+| **DuckDB memory limit for the store, for example '1GB'** | No | DuckDB memory limit applied to this store. Connection parameter: `memory_limit` |
+| **DuckDB maximum number of execution threads for the store** | No | Maximum number of DuckDB execution threads for this store. Must be greater than zero when provided. Connection parameter: `threads` |
 
 ## URI Examples
 
@@ -120,6 +124,20 @@ region = eu-west-1
 
 You can specify which profile to use with the **AWS Profile** parameter. If not specified, the default profile or the profile set via the `AWS_PROFILE` environment variable will be used.
 
+### S3-Compatible Services
+
+For S3-compatible object stores such as MinIO or Ceph, set **S3 Endpoint** (`endpoint`) to the service endpoint and, when required by the service, set **S3 URL Style** (`url_style`) to `path`.
+
+#### Example Configuration:
+
+**GeoParquet URI**: `s3://my-bucket/data/countries.parquet`
+
+**Use AWS Credential Chain**: ✓ (checked)
+
+**S3 Endpoint**: `http://minio.example.com:9000`
+
+**S3 URL Style**: `path`
+
 ### Legacy URI-Based Authentication (Deprecated)
 
 !!! warning
@@ -155,6 +173,15 @@ The data store automatically detects these partitions and creates separate featu
 - **1, 2, 3, etc.**: Use only the specified number of partition levels
 
 **Example:** With `max depth = 2` on the data above, GeoServer would create feature types like `year_2023_month_01` and `year_2023_month_02`, ignoring the day-level partitioning.
+
+## DuckDB Resource Limits
+
+GeoParquet stores are backed by DuckDB. The following optional parameters can be used to limit DuckDB resource usage for a specific store:
+
+- **`memory_limit`**: Sets DuckDB's memory limit for this store, for example `1GB`, `512MB`, or another value accepted by DuckDB.
+- **`threads`**: Sets the maximum number of DuckDB execution threads for this store. The value must be greater than zero.
+
+Leave these parameters empty to use DuckDB's defaults.
 
 ## Publishing Layers
 
@@ -260,6 +287,7 @@ The bucket name often hints at the region (`overturemaps-us-west-2`), but you ca
 - Use glob patterns to limit the files being accessed
 - Leverage Hive partitioning to reduce data scanned
 - Consider adjusting the `max_hive_depth` parameter
+- Consider setting `memory_limit` and `threads` to bound DuckDB resource usage for the store
 - For S3, ensure GeoServer is deployed in the same AWS region as the data
 - Consider caching frequently accessed data locally
 

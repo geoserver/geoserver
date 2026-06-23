@@ -79,7 +79,7 @@ public class AclWPSHelperImpl extends AclWPSHelper {
             LOGGER.fine("Retrieving AccessInfo for proc " + procName);
             AccessRequest processAccessRequest = originalRequest.withSubfield(procName);
             AccessInfo processAccessInfo = aclAuthService.getAccessInfo(processAccessRequest);
-            if (processAccessInfo.getGrant() == GrantType.DENY) {
+            if (processAccessInfo.grant() == GrantType.DENY) {
                 // shortcut: if at least one process is not allowed for current resource, do not  evaluate the other
                 // procs
                 LOGGER.fine(() -> "Process %s not allowed to operate on layer".formatted(procName));
@@ -113,12 +113,12 @@ public class AclWPSHelperImpl extends AclWPSHelper {
         Geometry clipRet = null;
 
         for (AccessInfo accessInfo : accessInfoArr) {
-            if (accessInfo.getGrant() == DENY) {
+            if (accessInfo.grant() == DENY) {
                 return new WPSAccessInfo(AccessInfo.DENY_ALL); // shortcut
             }
 
-            Geometry area = toJTS(accessInfo.getIntersectArea());
-            Geometry clip = toJTS(accessInfo.getClipArea());
+            Geometry area = toJTS(accessInfo.intersectArea());
+            Geometry clip = toJTS(accessInfo.clipArea());
 
             if (ret == null) { // get first entry as base entry
                 ret = accessInfo;
@@ -130,14 +130,14 @@ public class AclWPSHelperImpl extends AclWPSHelper {
             areaRet = reprojectAndIntersect(areaRet, area);
             clipRet = reprojectAndIntersect(clipRet, clip);
 
-            CatalogMode stricter = CatalogMode.stricter(ret.getCatalogMode(), accessInfo.getCatalogMode());
+            CatalogMode stricter = CatalogMode.stricter(ret.catalogMode(), accessInfo.catalogMode());
 
             // CQL (read + write)
-            String cqlRead = intersectCQL(ret.getCqlFilterRead(), accessInfo.getCqlFilterRead());
-            String cqlWrite = intersectCQL(ret.getCqlFilterWrite(), accessInfo.getCqlFilterWrite());
+            String cqlRead = intersectCQL(ret.cqlFilterRead(), accessInfo.cqlFilterRead());
+            String cqlWrite = intersectCQL(ret.cqlFilterWrite(), accessInfo.cqlFilterWrite());
 
             // Attributes
-            Set<LayerAttribute> attributes = intersectAttributes(ret.getAttributes(), accessInfo.getAttributes());
+            Set<LayerAttribute> attributes = intersectAttributes(ret.attributes(), accessInfo.attributes());
 
             ret = ret.toBuilder()
                     .catalogMode(stricter)
@@ -173,10 +173,10 @@ public class AclWPSHelperImpl extends AclWPSHelper {
 
         Map<String, LayerAttribute[]> map = new HashMap<>();
         for (LayerAttribute la : s1) {
-            map.put(la.getName(), new LayerAttribute[] {la, null});
+            map.put(la.name(), new LayerAttribute[] {la, null});
         }
         for (LayerAttribute la : s2) {
-            LayerAttribute[] arr = map.computeIfAbsent(la.getName(), k -> new LayerAttribute[] {null, la});
+            LayerAttribute[] arr = map.computeIfAbsent(la.name(), k -> new LayerAttribute[] {null, la});
             arr[1] = la;
         }
 
@@ -190,9 +190,9 @@ public class AclWPSHelperImpl extends AclWPSHelper {
             }
 
             LayerAttribute la = LayerAttribute.builder()
-                    .name(arr[0].getName())
-                    .dataType(arr[0].getDataType())
-                    .access(AccessType.stricter(arr[0].getAccess(), arr[1].getAccess()))
+                    .name(arr[0].name())
+                    .dataType(arr[0].dataType())
+                    .access(AccessType.stricter(arr[0].access(), arr[1].access()))
                     .build();
 
             ret.add(la);

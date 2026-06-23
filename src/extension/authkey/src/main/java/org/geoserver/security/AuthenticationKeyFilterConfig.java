@@ -9,7 +9,7 @@ import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.SecurityAuthFilterConfig;
@@ -108,7 +108,7 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig implemen
 
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
-        AuthenticationKeyFilterConfig target = (AuthenticationKeyFilterConfig) SerializationUtils.clone(this);
+        AuthenticationKeyFilterConfig target = SerializationUtils.clone(this);
         if (target != null) {
             // Resolve GeoServer Environment placeholders
             final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);

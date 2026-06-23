@@ -322,6 +322,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
         DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory();
         dbf.setNamespaceAware(namespaceAware);
+        XMLUtils.supportDTD(dbf, true, null);
 
         DocumentBuilder db = XMLUtils.newDocumentBuilder(dbf);
 

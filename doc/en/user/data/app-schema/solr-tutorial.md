@@ -94,7 +94,7 @@ The mappings for the attributes are straightforward and follow the normal App-Sc
 
 ## Using Solr as App-Schema Indexes
 
-App-Schema Indexes is an extension for mapping that allows to use Apache Solr as Index for queries and retrieving data from normal App-Schema datasource (SQL DB, MongoDB, \... ).
+App-Schema Indexes is an extension for mapping that allows to use Apache Solr as Index for queries and retrieving data from normal App-Schema datasource (SQL DB, MongoDB, ... ).
 
 The only requirement to use it is having GeoServer App-Schema extension and Solr extension installed.
 

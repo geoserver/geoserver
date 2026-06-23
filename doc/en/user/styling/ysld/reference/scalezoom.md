@@ -99,7 +99,7 @@ Note the edge cases, since the `min` value is inclusive and the `max` value is e
 
 To make comprehension easier and to lessen the chance of errors, scale values can be expressed in scientific notation.
 
-So a scale of `500000000`, which is equal to 5 × 10\^8 (a 5 with eight zeros), can be replaced by `5e8`.
+So a scale of `500000000`, which is equal to 5 × 10^8 (a 5 with eight zeros), can be replaced by `5e8`.
 
 ## Relationship between scale and zoom
 

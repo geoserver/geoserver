@@ -129,7 +129,8 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         writeLock.lock();
         try {
             nameMap.remove(name);
-            return idMap.remove(value.getId());
+            if (value.getId() != null) return idMap.remove(value.getId());
+            return null;
         } finally {
             writeLock.unlock();
         }

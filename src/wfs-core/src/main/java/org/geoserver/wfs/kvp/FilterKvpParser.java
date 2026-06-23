@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.XmlRequestReader;
@@ -23,6 +24,7 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.filter.Filter;
 import org.geotools.gml.GMLFilterDocument;
 import org.geotools.gml.GMLFilterGeometry;
+import org.geotools.util.factory.Hints;
 import org.geotools.xml.XMLUtils;
 import org.geotools.xml.filter.FilterFilter;
 import org.geotools.xsd.Configuration;
@@ -102,7 +104,7 @@ public abstract class FilterKvpParser extends KvpParser {
      * Reads the Filter XML request into a geotools Feature object.
      *
      * <p>This uses the "old" filter parser and is around to maintain some backwards compatability with cases in which
-     * the new parser chokes on a filter that hte old one could handle.
+     * the new parser chokes on a filter that the old one could handle.
      *
      * @param rawRequest The plain POST text from the client.
      * @return The geotools filter constructed from rawRequest.
@@ -121,7 +123,11 @@ public abstract class FilterKvpParser extends KvpParser {
 
         // read in XML file and parse to content handler
         try {
-            SAXParser parser = XMLUtils.newSAXParser();
+            Hints hints = null;
+            SAXParserFactory factory = XMLUtils.newSAXParserFactory();
+            XMLUtils.supportDTD(factory, true, hints);
+            SAXParser parser = XMLUtils.newSAXParser(factory);
+            XMLUtils.supportDTD(parser, true, hints);
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
             adapter.setEntityResolver(entityResolverProvider.getEntityResolver());
             adapter.setContentHandler(documentFilter);

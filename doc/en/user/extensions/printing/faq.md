@@ -38,7 +38,7 @@ There are three possible explanations:
 
 ## The module needs to go through a proxy to access the map services.
 
-It's so 90s\... you should hire some fresh guys for your IT team. ;-)
+It's so 90s... you should hire some fresh guys for your IT team. ;-)
 
 You need to set some system properties (http.proxy*) when you start your java programs.
 

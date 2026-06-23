@@ -4,11 +4,6 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.event;
 
-import lombok.Value;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 
-@Value
-public class LayerChangeEvent {
-    private String layer;
-    private AjaxRequestTarget target;
-}
+public record LayerChangeEvent(String layer, AjaxRequestTarget target) {}

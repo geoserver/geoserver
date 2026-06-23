@@ -15,6 +15,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
 import com.thoughtworks.xstream.mapper.Mapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -36,6 +37,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.SuffixStripFilter;
 import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
@@ -88,6 +90,21 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
             executionId = executionId.substring(0, executionId.length() - 5);
         }
         return executionId;
+    }
+
+    /**
+     * Whether the request is asking for the binary archive (the documented {@code .../{id}.zip} download) rather than a
+     * JSON/XML status representation. The {@code .zip} suffix may arrive on the path variable, or be consumed by the
+     * REST content-negotiation layer ({@link SuffixStripFilter}, which records it under
+     * {@link SuffixStripFilter#EXTENSION_ATTRIBUTE}) before the controller runs - in which case
+     * {@code id.endsWith(".zip")} is already false. Check every signal so the download works regardless of how the
+     * suffix is handled. (Relying on {@code endsWith(".zip")} alone returned the execution adapter instead, which a
+     * downstream message converter then failed to serialize with an HTTP 500.)
+     */
+    protected boolean isArchiveDownload(String id, String format, HttpServletRequest request) {
+        return (id != null && id.endsWith(".zip"))
+                || "zip".equalsIgnoreCase(format)
+                || (request != null && "zip".equals(request.getAttribute(SuffixStripFilter.EXTENSION_ATTRIBUTE)));
     }
 
     /** */

@@ -7,7 +7,7 @@ A [small downloadable shapefile](files/z_order_roads.zip) is provided that shows
 | Name | Type | Notes |
 |----|----|----|
 | osm_id | numeric |  |
-| type | string | The type of the segment, can be "mainroads", "minorroads", "railways", \... |
+| type | string | The type of the segment, can be "mainroads", "minorroads", "railways", ... |
 | bridge | numeric | 0 or 1 |
 | ref | numeric | 0 or 1 |
 | tunnel | numeric |  |

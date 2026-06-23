@@ -13,6 +13,7 @@ import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.EntityResolver2;
 
 /** A wrapper allowing a EntityResolver to participate in schema validation */
 class EntityResolverToLSResourceResolver implements LSResourceResolver {
@@ -115,7 +116,13 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
     public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
         // give the entity resolver an opportunity (mostly to throw an exception)
         try {
-            InputSource is = entityResolver.resolveEntity(publicId, systemId);
+            InputSource is;
+            if (entityResolver instanceof EntityResolver2 entityResolver2) {
+                // Note: order of arguments differs between LSResourceResolver and EntityResolver
+                is = entityResolver2.resolveEntity(null, publicId, baseURI, systemId);
+            } else {
+                is = entityResolver.resolveEntity(publicId, systemId);
+            }
             if (is != null) {
                 return new InputSourceToLSResource(is);
             }

@@ -451,4 +451,4 @@ WFS also supports a number of formats for reporting exceptions. The supported va
 |----|----|----|
 | XML | `exceptions=text/xml` | *(default)* XML output |
 | JSON | `exceptions=application/json` | Simple JSON |
-| JSONP | `exceptions=text/javascript` | Return a JSONP in the form: parseResponse(\...jsonp\...). See [WMS vendor parameters](../wms/vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](../wms/global.md)). |
+| JSONP | `exceptions=text/javascript` | Return a JSONP in the form: parseResponse(...jsonp...). See [WMS vendor parameters](../wms/vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](../wms/global.md)). |

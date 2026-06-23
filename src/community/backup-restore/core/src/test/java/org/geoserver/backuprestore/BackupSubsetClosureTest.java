@@ -17,12 +17,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.resource.Files;
 import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
 import org.junit.Before;
 import org.junit.Test;
@@ -121,6 +125,95 @@ public class BackupSubsetClosureTest extends BackupRestoreTestSupport {
             assertTrue("the workspace-scoped sf_style must be kept in the subset", styleDat.contains("sf_style"));
         } finally {
             catalog.remove(catalog.getStyleByName("orphan_global_subset"));
+        }
+    }
+
+    /**
+     * Regression guard for the cross-workspace layergroup-member <em>data loss</em>: a GLOBAL layergroup grouping an
+     * {@code sf} layer (in the filter) and a foreign-workspace layer (NOT in the filter) must drag the WHOLE foreign
+     * chain into the {@code wsFilter='sf'} archive — the foreign member's workspace, namespace, store, resource and
+     * layer — so the group restores with every member intact.
+     *
+     * <p>The {@link SubsetClosure} math already places the foreign member's <em>workspace</em> in the forced set
+     * (proven by {@code SubsetClosureTest.testCrossWorkspaceLayerGroupMembersArePulledIn}). This test exercises the
+     * live pipeline end-to-end and asserts the WRITTEN ARCHIVE, catching the case where the closure is computed but not
+     * applied to the workspace step: a foreign workspace whose id is in the closure was still dropped by the bare
+     * workspace-filter check, so {@code workspace.dat} carried only {@code sf} and the foreign member was orphaned (its
+     * store/resource/layer survived but had no workspace to resolve against on restore).
+     */
+    @Test
+    public void testGlobalLayerGroupDragsForeignMemberWorkspaceIntoSubset() throws Exception {
+        WorkspaceInfo sf = catalog.getWorkspaceByName("sf");
+        assertNotNull(sf);
+        LayerInfo sfLayer = catalog.getLayerByName("sf:PrimitiveGeoFeature");
+        assertNotNull(sfLayer);
+
+        // a real, persisted layer living in a workspace other than the filtered 'sf' one
+        LayerInfo foreignLayer = catalog.getLayers().stream()
+                .filter(l -> l.getResource() != null
+                        && l.getResource().getStore() != null
+                        && l.getResource().getStore().getWorkspace() != null
+                        && !"sf"
+                                .equals(l.getResource()
+                                        .getStore()
+                                        .getWorkspace()
+                                        .getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("expected a non-sf layer in the test catalog"));
+        WorkspaceInfo foreignWs = foreignLayer.getResource().getStore().getWorkspace();
+        String foreignWsName = foreignWs.getName();
+        String foreignStoreName = foreignLayer.getResource().getStore().getName();
+        String foreignLayerName = foreignLayer.getName();
+        // sanity: the foreign member really is outside the subset, so a plain cascade would drop it
+        assertFalse("test fixture broken: the 'foreign' member is actually in 'sf'", "sf".equals(foreignWsName));
+
+        // a GLOBAL (workspace-less) layergroup grouping the in-subset sf layer and the foreign-workspace layer
+        LayerGroupInfo mixLg = catalog.getFactory().createLayerGroup();
+        mixLg.setName("crossws_global_backup");
+        mixLg.getLayers().add(sfLayer);
+        mixLg.getLayers().add(foreignLayer);
+        mixLg.getStyles().add(null);
+        mixLg.getStyles().add(null);
+        mixLg.setBounds(new ReferencedEnvelope(-180, -90, 180, 90, CRS.decode("EPSG:4326")));
+        catalog.add(mixLg);
+        try {
+            Filter wsFilter = ECQL.toFilter("name = 'sf'");
+            File backupZip = File.createTempFile("subset-closure-crossws-", ".zip");
+            backupZip.deleteOnExit();
+            Hints hints = new Hints(new HashMap<>(2));
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+
+            BackupExecutionAdapter backupExecution =
+                    backupFacade.runBackupAsync(Files.asResource(backupZip), true, wsFilter, null, null, hints);
+            waitForCompletion(backupExecution);
+            assertEquals(BatchStatus.COMPLETED, backupExecution.getStatus());
+
+            String workspaceDat = readFirstEntry(backupZip, "workspace.dat");
+            String storeDat = readFirstEntry(backupZip, "store.dat");
+            String layerDat = readFirstEntry(backupZip, "layer.dat");
+            String layerGroupDat = readFirstEntry(backupZip, "layerGroup.dat");
+
+            // baseline that already worked: the filtered workspace and the global layergroup are in the archive
+            assertTrue(
+                    "workspace.dat must carry the filtered 'sf' workspace", workspaceDat.contains("<name>sf</name>"));
+            assertTrue(
+                    "the global layergroup grouping subset content must be in the archive",
+                    layerGroupDat.contains("crossws_global_backup"));
+
+            // the data-loss assertions: the foreign member's whole chain must be dragged in by the closure.
+            assertTrue(
+                    "DATA LOSS: the foreign member's workspace '"
+                            + foreignWsName
+                            + "' was dropped from the subset, so its layer cannot resolve on restore",
+                    workspaceDat.contains("<name>" + foreignWsName + "</name>"));
+            assertTrue(
+                    "the foreign member's store must be dragged into the subset",
+                    storeDat.contains("<name>" + foreignStoreName + "</name>"));
+            assertTrue(
+                    "the foreign member layer itself must be dragged into the subset",
+                    layerDat.contains("<name>" + foreignLayerName + "</name>"));
+        } finally {
+            catalog.remove(mixLg);
         }
     }
 

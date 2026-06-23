@@ -1,116 +1,122 @@
-# Usage Via GeoServer's User Interface
-
-At the end on Backup and Restore plugin installation you will see a new section in GeoServer UI
-
-![](images/usagegui001.png)
-
-Clicking on the `Backup and Restore` label will give you access to the Backup and Restore configuration settings:
-
-![](images/usagegui002.png)
-
-Here you'll be able to specify various parameters for the Backup / Restore procedure:
-
-1.  `Archive full path`: Path on the file system to the archive created by the backup procedure, in case a Backup is executed, or the archive to restore from, in case of a Restore procedure.
-
-2.  `Filter by Workspace`: Optional parameter that allows you to restrict the scope of the Backup / Restore to workspaces that meet the specified filter.
-
-3.  `Backup Options`:
-
-    1.  `Overwrite Existing Archive`: When enabled the backup procedure will overwrite any previously existing archive
-    2.  `Skip Failing Resources`: If enabled and errors are found during the backup of existing resources, skip the resource and go ahead with the backup procedure
-    3.  `Clean-Up Temp Resources`: Delete the temporary working folder at the end of the execution
-    4.  `Skip GeoWebCache`: Exclude the GWC catalog and tile-layer folders from the backup
-    5.  `Parameterize Store Passwords`: Replace store passwords in the archive with parameterizable tokens instead of the encrypted values (see `BK_PARAM_PASSWORDS` under [Usage Via REST](usagerest.md))
-    6.  `Preserve Catalog IDs (for migration to another instance)`: Keep catalog object ids and write cross-references by id, producing a portable migration archive that restores into another GeoServer with the original object identities — and their GWC tile-layer links — preserved. **On by default.** Turn it off only to produce a legacy name-based archive whose ids are regenerated on restore. See [Migrating a catalog to another GeoServer instance](usecases.md#migrating-a-catalog-to-another-geoserver-instance)
-    7.  `Skip Security Settings`: Exclude the security configuration (users, groups, roles, services) from the backup. **Checked by default**, matching the `BK_SKIP_SECURITY` REST default. Uncheck to include security in the archive
-    8.  `Skip Global Settings`: Exclude the global settings from the backup. **Checked by default**, matching the `BK_SKIP_SETTINGS` REST default
-
-4.  `Backup Executions`: Report of running and previously run backups
-
-5.  `Restore Options`:
-
-    1.  `Dry Run`: Test the restore procedure using the provided archive but do not apply any changes to current configuration. Useful to test archives before actually performing a Restore
-    2.  `Skip Failing Resources`: If enabled and errors are found during the restore of resources, skip the resource and go ahead with the restore procedure
-    3.  `Clean-Up Temp Resources`: Delete the temporary working folder at the end of the execution
-    4.  `Skip GeoWebCache`: Exclude the GWC catalog and tile-layer folders from the restore
-    5.  `Skip Security Settings`: Do not restore the security configuration. **Checked by default**, matching the `BK_SKIP_SECURITY` REST default. Uncheck only when the archive contains a security folder you intend to restore
-    6.  `Skip Global Settings`: Do not restore the global settings. **Checked by default**, matching the `BK_SKIP_SETTINGS` REST default
-    7.  `Purge Existing Resources`: Delete incoming resources where possible before restoring (e.g. drop existing workspaces). **Checked by default**, matching the `BK_PURGE_RESOURCES` REST default. Uncheck to merge into the existing catalog without deleting
-    8.  `Merge Security (cross-instance migration)`: Merge the archive's users, groups and roles into this instance's existing security services instead of replacing the whole security configuration. Keeps this instance's configuration, keystore and master password — use it to migrate users/roles from another GeoServer whose master password differs. **Unchecked by default** (replace mode). New users keep their archived (digest) passwords; reversible passwords must be reset afterwards. This option applies only when security is actually restored — that is, when `Skip Security Settings` is unchecked. See the REST option [`BK_MERGE_SECURITY`](usagerest.md)
-
-6.  `Restore Executions`: Report of running and previously run restore
+# Usage via the web interface
 
 !!! warning
-    `Skip Security Settings` is checked by default for a reason: restoring security configuration replaces the target's users, groups, roles and authentication settings. Only uncheck it when you understand the archive's security content and intend to overwrite the target's security. See the [partial / cross-instance restore notes](usecases.md#partial-and-cross-instance-restores).
+    Backup and Restore is a community module. It is usable, but does not have the same support guarantees as official extensions.
 
-!!! note
-    The remaining `BK_*` options — password-token substitution, `exclude.file.path`, the pre-flight validation gate (`BK_FAIL_ON_INVALID`) and security keystore re-encryption (`BK_SOURCE_MASTER_PASSWORD` / `BK_TARGET_MASTER_PASSWORD`) — are available only through the [REST API](usagerest.md), which exposes the full option set.
+Once the Backup and Restore plugin is installed, a new **Backup and Restore** section appears in the GeoServer web admin interface.
 
-## Performing a full backup via UI
+![GeoServer admin menu showing the new Backup and Restore section](images/usagegui001.png)
 
-In order to perform a full backup, provide the full path of the target `.zip` archive where to store the configuration data.
+Clicking the **Backup and Restore** link opens the configuration page, where you set the archive path, optional filters and the backup or restore options.
 
-!!! note
-    Please notice that the backup will store just the configuration files and **not** the original data.
+![Backup and Restore configuration page with archive path, filter and option checkboxes](images/usagegui002.png)
 
-It is also possible to use the `Browse` instrument to navigate the server folders. In any case the backup procedure won't start until it find a valid `.zip` path archive.
+## Configuration parameters
 
-![](images/usagegui003.png)
+- **Archive full path** — path on the server file system to the archive to create (backup) or to read (restore). The job does not start until a valid `.zip` path is given. Use **Browse** to navigate the server folders.
+- **Filter by Workspace / Store / Layer** — optional filters that restrict the job to the matching catalog objects. See [Saving or restoring only specific workspaces](#saving-or-restoring-only-specific-workspaces) below.
+- **Backup options** and **Restore options** — the checkboxes summarised below.
+- **Backup Executions** and **Restore Executions** — reports of running and previously run jobs.
 
-It is possible to select the backup options by enabling the appropriate checkboxes before starting the backup procedure.
+### Backup options
 
-!!! note
-    Please notice that while performing a backup or restore task, GeoServer won't allow users to access other sections by locking the catalog and configuration until the process has finished. Although it is always possible to stop or abandon a backup or restore procedure.
+The backup checkboxes select what the archive contains and how it is written. Common ones:
 
-While the job runs, the status shown next to the `Start` button updates automatically and reports the current progress as `<status> — step <done>/<total> (<current step>)`. At the end of the backup, the user will be redirected to an `Execution Summary` page
+- **Overwrite Existing Archive** — replace an archive that already exists at the target path.
+- **Skip Failing Resources** — best-effort backup: log and skip a resource that fails instead of aborting the job.
+- **Clean-Up Temp Resources** — delete the temporary working folder when the job ends.
+- **Skip GeoWebCache** — exclude the GWC catalog and tile-layer folders.
+- **Parameterize Store Passwords** — write store passwords as parameterizable tokens instead of encrypted values (the REST `BK_PARAM_PASSWORDS` option).
+- **Preserve Catalog IDs (for migration to another instance)** — keep catalog object ids and write cross-references by id, producing a portable migration archive. **On by default.** Turn it off only to produce a legacy name-based archive whose ids are regenerated on restore. See [Migrating a catalog to another GeoServer instance](usecases.md#migrating-a-catalog-to-another-geoserver-instance).
+- **Skip Security Settings** — exclude the security configuration (users, groups, roles, services). **On by default.**
+- **Skip Global Settings** — exclude the global settings. **On by default.**
 
-![](images/usagegui004.png)
+For the complete checkbox list, defaults and the matching REST option names, see the [options reference](options.md).
 
-The same page can be accessed also later by clicking an execution link from the main page.
+### Restore options
 
-!!! note
-    The `Execution Details` page refreshes itself automatically while the job is still running, so the step states and progress update without any action; a manual `refresh` link is also available. The page stops auto-refreshing once the job reaches a terminal state.
+The restore checkboxes select what is restored and whether the target catalog is purged first. Common ones:
 
-!!! note
-    Please notice that the list of executions is not persisted and therefore it will be reset after a GeoServer container **restart**.
+- **Dry-Run** — validate the archive without applying any change to the running configuration. See [Dry-run restore](#dry-run-restore).
+- **Skip Failing Resources** — best-effort restore: log and skip a resource that fails instead of aborting the job.
+- **Clean-Up Temp Resources** — delete the temporary working folder when the job ends.
+- **Skip GeoWebCache** — exclude the GWC catalog and tile-layer folders.
+- **Skip Security Settings** — do not restore the security configuration. **On by default.**
+- **Skip Global Settings** — do not restore the global settings. **On by default.**
+- **Purge Existing Resources** — drop incoming resources where possible before restoring (for example, remove existing workspaces). **On by default.** Uncheck it to merge into the existing catalog without deleting.
+- **Merge Security (cross-instance migration)** — add the archive's users, groups and roles to this instance's existing security services instead of replacing the whole security configuration. **Off by default** (replace mode). Applies only when security is actually restored — that is, when **Skip Security Settings** is unchecked.
 
-At the bottom of the `Execution Details` page, it's possible to download the `.zip` archive directly by clicking on the `Download Archive File` link.
-
-![](images/usagegui005.png)
-
-In case some running exceptions or warning have been caught by the process, they will be presented on the execution summary. The `Error Detail Level` allows to inspect the causes by exposing the stack trace for each of them.
-
-## Restoring via UI
-
-The steps are almost the same of the backup. Just select the `.zip` archive full path before launching the restore process.
+For the complete checkbox list, defaults and the matching REST option names, see the [options reference](options.md).
 
 !!! warning
-    Please notice that a **non-dry-run restore** will lose all your current GeoServer configuration by replacing it with the new one, so be careful and be sure to backup everything before starting a restore.
-
-### DRY-RUN RESTORE
-
-`Dry Run` option allows a user to **test** a `.zip` archive before actually performing a full restore.
-
-![](images/usagegui006.png)
+    **Skip Security Settings** is checked by default for a reason: restoring security configuration replaces the target's users, groups, roles and authentication settings. Uncheck it only when you understand the archive's security content and intend to overwrite the target. See the [cross-instance security migration](usecases.md#cross-instance-security-migration) use case.
 
 !!! note
-    Please notice that the dry run should always being executed when trying to restore a new configuration.
+    Some options — password-token substitution, the pre-flight validation gate (`BK_FAIL_ON_INVALID`) and security keystore re-encryption (`BK_SOURCE_MASTER_PASSWORD` / `BK_TARGET_MASTER_PASSWORD`) — are available only through the [REST API](usagerest.md), which exposes the full option set. See the [options reference](options.md).
 
-A **failing** restore dry-run will appear like this
+## Performing a full backup
 
-![](images/usagegui007.png)
-
-If some exception occurs, it will be listed on the execution summary page. The original cause can be inspected by rising up the errors details level and refreshing
-
-![](images/usagegui008.png)
-
-## Saving/restoring only specific workspaces
-
-It is possible to backup or restore only a subset of the available workspaces in the catalog. From the WEB interface is currently possible to select all or just one workspace to backup/restore
-
-Through the REST APIs it is possible to filter out also more than one workspaces as explained in the next sections.
-
-![](images/usagegui009.png)
+To perform a full backup, provide the full path of the target `.zip` archive where the configuration is stored, then select any backup options before starting.
 
 !!! note
-    Please notice that from a backup archive containing filtered workspaces won't be possible to restore also the missing ones. In order to do that it is advisable to backup the whole catalog and then restore only the workspaces needed.
+    The backup stores only the configuration files, **not** the original data.
+
+![Backup configuration filled in with a target archive path ready to start](images/usagegui003.png)
+
+!!! note
+    While a backup or restore runs, GeoServer locks the catalog and configuration, so other sections are unavailable until the job finishes. You can still stop or abandon a running job — see [Cancelling a running job](#cancelling-a-running-job).
+
+While the job runs, the status next to the **Start** button updates automatically and reports progress as `<status> — step <done>/<total> (<current step>)`. When the backup finishes, you are redirected to an **Execution Summary** page.
+
+![Backup execution summary page reporting a completed job](images/usagegui004.png)
+
+The same page can be reached later by clicking an execution link on the main page.
+
+!!! note
+    The **Execution Details** page refreshes itself while the job runs, so step states and progress update without any action; a manual **refresh** link is also available. Auto-refresh stops once the job reaches a terminal state.
+
+!!! note
+    The list of executions is not persisted, so it is reset after a GeoServer container **restart**.
+
+At the bottom of the **Execution Details** page, the **Download Archive File** link downloads the `.zip` archive directly.
+
+![Execution details page with the Download Archive File link at the bottom](images/usagegui005.png)
+
+If the job caught any exceptions or warnings, they are listed on the execution summary. The **Error Detail Level** control reveals the stack trace for each, so you can inspect the cause.
+
+## Restoring
+
+The steps mirror a backup: select the `.zip` archive full path and any restore options, then start the restore.
+
+!!! warning
+    A **non-dry-run restore** replaces your current GeoServer configuration with the archive's contents. Back up everything before starting a restore.
+
+### Dry-run restore
+
+The **Dry-Run** option lets you **test** a `.zip` archive before performing a full restore. Since 3.x a dry-run snapshots and rolls back the affected data-directory subtrees, so it leaves the data directory untouched.
+
+![Restore configuration with the Dry-Run option enabled](images/usagegui006.png)
+
+!!! note
+    Always run a dry-run before restoring a new configuration.
+
+A **failing** dry-run is reported on the execution summary.
+
+![Execution summary of a failing dry-run restore](images/usagegui007.png)
+
+Raise the **Error Detail Level** and refresh to expose the original cause of each failure.
+
+![Execution details with the error detail level raised to show the stack trace](images/usagegui008.png)
+
+## Cancelling a running job
+
+A backup or restore can be stopped while it is still running. From the **Backup Executions** or **Restore Executions** report, open the running execution and use the stop control to **stop** (graceful) or **abandon** (force) it; the job moves to a terminal state and the configuration lock is released. The same can be done from automation with `DELETE /rest/br/backup/{id}` or `DELETE /rest/br/restore/{id}` — see [Usage via the REST API](usagerest.md).
+
+## Saving or restoring only specific workspaces
+
+You can back up or restore a subset of the catalog. From the web interface you can select all workspaces or a single workspace to back up or restore. The REST API additionally lets you filter more than one workspace, and filter by store or layer with ECQL — see [Usage via the REST API](usagerest.md).
+
+![Filter by Workspace control selecting a single workspace for a partial backup](images/usagegui009.png)
+
+!!! note
+    An archive that contains only a subset of workspaces cannot be used to restore the missing ones. To migrate or consolidate a full catalog, back up the whole catalog (the default archive already preserves ids for migration) and restore only the workspaces you need.

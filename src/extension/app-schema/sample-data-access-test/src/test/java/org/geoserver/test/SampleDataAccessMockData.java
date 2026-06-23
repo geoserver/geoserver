@@ -16,6 +16,7 @@ import java.util.Map;
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.IOTestUtils;
 import org.geoserver.util.IOUtils;
 import org.geotools.appschema.resolver.data.SampleDataAccess;
 import org.geotools.appschema.resolver.data.SampleDataAccessData;
@@ -56,7 +57,7 @@ public class SampleDataAccessMockData extends SystemTestData {
 
     /** Constructor. Creates empty mock data directory. */
     public SampleDataAccessMockData() throws IOException {
-        data = IOUtils.createRandomDirectory("./target", "sample-data-access-mock", "data");
+        data = IOTestUtils.createRandomDirectory("./target", "sample-data-access-mock");
         data.delete();
         data.mkdir();
 

@@ -74,7 +74,7 @@ maxAnimationFrames=1000
 
 The file can also be manually modified while GeoServer is running, the file is under watch and gets reloaded on modification.
 
-The configuration can also be edited via [the REST API]({{ api_url4 }}?urls.primaryName=WPS%20Download%20Extension).
+The configuration can also be edited via [the REST API]({{ api_url }}?urls.primaryName=WPS%20Download%20Extension).
 
 ## The processes and their usage
 

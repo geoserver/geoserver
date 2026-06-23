@@ -1,0 +1,5 @@
+<keycloakRoleService>
+  <id>legacy-keycloak-role-0001</id>
+  <name>keycloakRoles</name>
+  <className>org.geoserver.security.keycloak.KeycloakRoleService</className>
+</keycloakRoleService>

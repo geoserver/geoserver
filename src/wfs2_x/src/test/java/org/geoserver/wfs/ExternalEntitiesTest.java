@@ -7,8 +7,8 @@ package org.geoserver.wfs;
 import static org.junit.Assert.assertTrue;
 
 import org.geoserver.util.EntityResolverProvider;
-import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 public class ExternalEntitiesTest extends WFSTestSupport {
 
@@ -46,22 +46,28 @@ public class ExternalEntitiesTest extends WFSTestSupport {
 
     @Test
     public void testWfs2_0() throws Exception {
-        // enable entity parsing
+        Document dom;
+        String message;
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
-        String output = string(post("wfs", WFS_2_0_0_REQUEST));
-        // the server tried to read a file on local file system
-        assertTrue(output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        try {
+            // enable entity parsing: server tries to read file on local file system
+            dom = postAsDOM("wfs", WFS_2_0_0_REQUEST);
+            message = checkOws11Exception(dom, "2.0.0", null, null);
+            assertTrue(
+                    "not compliant to GetFeature element",
+                    message.contains("xml request is most probably not compliant to GetFeature element"));
 
-        // disable entity parsing
-        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
-        output = string(post("wfs", WFS_2_0_0_REQUEST));
-        assertTrue(output.indexOf("Request parsing failed") > -1);
-        assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
-
-        // set default (entity parsing disabled);
-        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
-        output = string(post("wfs", WFS_2_0_0_REQUEST));
-        assertTrue(output.indexOf("Request parsing failed") > -1);
-        assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+            // disable entity parsing: DOCTYPE must be rejected
+            System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+            dom = postAsDOM("wfs", WFS_2_0_0_REQUEST);
+            message = checkOws11Exception(dom, "2.0.0", null, null);
+            assertTrue(message.contains("DOCTYPE"));
+        } finally {
+            System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        }
+        // default (entity parsing disabled): DOCTYPE must be rejected
+        dom = postAsDOM("wfs", WFS_2_0_0_REQUEST);
+        message = checkOws11Exception(dom, "2.0.0", null, null);
+        assertTrue(message.contains("DOCTYPE"));
     }
 }

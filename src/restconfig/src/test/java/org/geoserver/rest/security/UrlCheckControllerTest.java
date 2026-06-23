@@ -87,7 +87,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
     @Test
     public void testGetAllAsHtml() throws Exception {
 
-        Document dom = getAsDOM(ROOT_PATH + "/urlchecks.html");
+        Document dom = getAsDOM(ROOT_PATH + "/urlchecks.html", true);
 
         assertXpathEvaluatesTo("3", "count(//html:li)", dom);
 
@@ -135,7 +135,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
     @Test
     public void testGetAsHtml() throws Exception {
 
-        Document dom = getAsDOM(ROOT_PATH + "/urlchecks/check3.html");
+        Document dom = getAsDOM(ROOT_PATH + "/urlchecks/check3.html", true);
 
         assertXpathEvaluatesTo("1", "count(//html:ul)", dom);
 

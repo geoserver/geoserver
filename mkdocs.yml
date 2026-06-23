@@ -693,6 +693,18 @@ nav:
         - en/user/extensions/geofence-wps/installing.md
         - en/user/extensions/geofence-wps/gui.md
       - CAS integration: en/user/extensions/cas/index.md
+      - OAuth2 OpenID Connect:
+        - en/user/extensions/oidc/index.md
+        - en/user/extensions/oidc/installing.md
+        - en/user/extensions/oidc/configuring.md
+        - en/user/extensions/oidc/oauth2/google.md
+        - en/user/extensions/oidc/oauth2/github.md
+        - en/user/extensions/oidc/oauth2/azure.md
+        - en/user/extensions/oidc/oauth2/keycloak.md
+        - en/user/extensions/oidc/oauth2/generic.md
+        - en/user/extensions/oidc/role-config.md
+        - en/user/extensions/oidc/advanced.md
+        - en/user/extensions/oidc/migrating.md
       - Parameters Extractor:
         - en/user/extensions/params-extractor/index.md
         - en/user/extensions/params-extractor/install.md
@@ -750,13 +762,15 @@ nav:
         - en/user/community/opensearch-eo/STAC.md
         - en/user/community/opensearch-eo/templates.md
         - en/user/community/opensearch-eo/upgrading.md
-      - Backup and Restore Documentation:
+      - Backup and Restore:
         - en/user/community/backuprestore/index.md
         - en/user/community/backuprestore/installation.md
         - en/user/community/backuprestore/usagegui.md
         - en/user/community/backuprestore/usagerest.md
+        - en/user/community/backuprestore/options.md
         - en/user/community/backuprestore/extensions.md
         - en/user/community/backuprestore/usecases.md
+        - en/user/community/backuprestore/migration.md
       - COG (Cloud Optimized GeoTIFF) Documentation:
         - en/user/community/cog/index.md
         - en/user/community/cog/cog.md
@@ -857,17 +871,6 @@ nav:
         - OGC API - 3D GeoVolumes: en/user/community/ogc-api/3dgeovolumes/index.md
         - en/user/community/ogc-api/testbed.md
       - OGR datastore: en/user/community/ogr-store/index.md
-      - OAuth2 OpenID Connect:
-        - en/user/community/oidc/index.md
-        - en/user/community/oidc/installing.md
-        - en/user/community/oidc/configuring.md
-        - en/user/community/oidc/oauth2/google.md
-        - en/user/community/oidc/oauth2/github.md
-        - en/user/community/oidc/oauth2/azure.md
-        - en/user/community/oidc/oauth2/keycloak.md
-        - en/user/community/oidc/oauth2/generic.md
-        - en/user/community/oidc/role-config.md
-        - en/user/community/oidc/advanced.md
       - PMTiles DataStore:
         - en/user/community/pmtiles-store/index.md
         - en/user/community/pmtiles-store/installing.md

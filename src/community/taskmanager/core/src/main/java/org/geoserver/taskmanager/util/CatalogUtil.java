@@ -32,7 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.wicket.util.io.IOUtils;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CoverageDimensionInfo;

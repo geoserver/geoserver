@@ -6,7 +6,7 @@ Reference: [GetFeatureInfo Templates](../../tutorials/GetFeatureInfo/index.md)
 
 ## Example Configuration on a Vector Layer
 
-The WFS GetFeature can generate output in various formats: GML, GeoJSON, \... and, through this extension, also HTML.
+The WFS GetFeature can generate output in various formats: GML, GeoJSON, ... and, through this extension, also HTML.
 
 WFS Templating is concerned with the HTML one.
 

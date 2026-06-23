@@ -506,7 +506,6 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         assertEquals(1, messages.size());
         String message = messages.get(0).toString();
         assertThat(message, containsString("Entity resolution disallowed"));
-        assertThat(message, containsString("/this/file/does/not/exist"));
     }
 
     @Test

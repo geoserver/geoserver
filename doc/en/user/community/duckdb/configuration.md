@@ -11,7 +11,7 @@
 
 The following screenshot shows the DuckDB store form in GeoServer:
 
-![](images/duckdb-store-form.png)
+![DuckDB store configuration form in GeoServer](images/duckdb-store-form.png)
 
 *DuckDB store configuration form.*
 
@@ -23,6 +23,8 @@ The following parameters are relevant for DuckDB:
 | `memory` | If `true`, use an in-memory DuckDB database. Default is `false`. |
 | `database` | Path to the DuckDB database file. Required when `memory=false`. Must be omitted when `memory=true`. |
 | `read_only` | Enables read-only mode for the store. Default is `true`. Set to `false` to allow write operations. |
+| `memory_limit` | DuckDB memory limit for the store, for example `1GB` or `512MB`. Leave empty to use DuckDB's default. |
+| `threads` | DuckDB maximum number of execution threads for the store. Must be greater than zero when provided. Leave empty to use DuckDB's default. |
 | `simplification` | Enables SQL-side geometry simplification when rendering or query hints request it. Default is `true`. |
 | `screenmap` | Enables screenmap rendering optimization to skip features that fall in already painted screen pixels. Default is `true`. |
 | `namespace` | Namespace URI used for published feature types. |
@@ -35,6 +37,13 @@ DuckDB store configuration enforces the following:
 - `memory` and `database` are mutually exclusive.
 - If `memory=false`, `database` is required.
 - If `memory=true`, `database` must not be provided.
+- If `threads` is provided, it must be greater than zero.
+
+## Resource Limits
+
+DuckDB accepts per-store resource limits through the `memory_limit` and `threads` connection parameters. GeoServer applies these settings when opening the DuckDB store.
+
+Use `memory_limit` to cap memory used by DuckDB for the store, and `threads` to cap the number of DuckDB execution threads. Leave either value empty to keep DuckDB's default behavior.
 
 ## Security Model
 

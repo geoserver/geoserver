@@ -30,6 +30,18 @@
         <p>
           <span wicket:id="strongEncryptionMsg"/>
         </p>
+        <div wicket:id="disabledComponentsContainer">
+          <p class="warning-link" wicket:id="disabledComponentsHeader"></p>
+          <ul>
+            <li wicket:id="disabledComponents"><span class="warning-link" wicket:id="disabledComponent"></span></li>
+          </ul>
+        </div>
+        <div wicket:id="affectedChainsContainer">
+          <p class="warning-link" wicket:id="affectedChainsHeader"></p>
+          <ul>
+            <li wicket:id="affectedChains"><span class="warning-link" wicket:id="affectedChain"></span></li>
+          </ul>
+        </div>
       </div>
     </wicket:panel>
   </body>

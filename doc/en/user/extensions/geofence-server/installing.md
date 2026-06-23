@@ -76,7 +76,7 @@ geofenceEntityManagerFactory.jpaPropertyMap[hibernate.validationQuery]=SELECT 1
 ```
 
 !!! note
-    The `PostgisDialect` is deprecated and should be replaced according to the PostgreSQL version used. Please use the proper dialect as reported in the [hibernate summary page](https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/spatial/dialect/postgis/package-summary.md)
+    The `PostgisDialect` is deprecated and should be replaced according to the PostgreSQL version used. Please use the proper dialect as reported in the [hibernate summary page](https://docs.hibernate.org/orm/5.6/javadocs/org/hibernate/spatial/dialect/postgis/package-summary.html)
 
 !!! note
     By default GeoFence will create the initial schema or update the DB schema by itself when needed. In case you want to manage the schema by yourself, you may want to use the SQL file located [here](https://github.com/geoserver/geofence/tree/main/doc/setup/sql)

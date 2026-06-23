@@ -36,7 +36,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testEmptyListHTMLTemplate() throws Exception {
         try {
-            getAsDOM(BASEPATH + "/about/version?manifest=NOTEXISTS.*");
+            getAsDOM(BASEPATH + "/about/version?manifest=NOTEXISTS.*", false);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
@@ -94,11 +94,12 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     public void testGetStatusAsHTML() throws Exception {
         // add an escape char to the environment
         System.setProperty("badString", "\u0007\u0008\u001b[46m");
+
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM(BASEPATH + "/about/status");
+        Document dom = getAsDOM(BASEPATH + "/about/status", true);
         checkHTMLModel(dom);
 
-        Document dom2 = getAsDOM(BASEPATH + "/about/status.html");
+        Document dom2 = getAsDOM(BASEPATH + "/about/status.html", true);
         checkHTMLModel(dom2);
     }
 

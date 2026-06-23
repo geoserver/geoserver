@@ -1,400 +1,324 @@
-# Usage Via GeoServer's REST API
+# Usage via GeoServer's REST API
 
-The Backup and Restore REST API consists of a few resources meant to be used in an asynchronous fashion:
+The Backup and Restore REST API exposes a small set of resources, used asynchronously: you start a backup or restore with a `POST`, then poll the returned execution with a `GET` until it reaches a terminal state. The same engine, options and filters used by the [user interface](usagegui.md) are available here, plus a few REST-only options (see [all options](options.md)).
 
-| Resource | Method | Parameters and Notes |
+!!! warning
+    Backup and Restore is a GeoServer **community module**. It is experimental and comes with weaker guarantees than official extensions: APIs and behaviour may change between releases. Always run a `BK_DRY_RUN=true` restore first, and keep a known-good archive before restoring into a live instance.
+
+Backup and Restore saves or reloads the GeoServer **catalog and configuration** (workspaces, stores, layers, styles, layer groups, GeoWebCache configuration, services, and global and security settings). It does **not** copy the underlying data — only the configuration that references it.
+
+## Resources
+
+The REST base path is `/rest/br`. Both representations (`.json` and `.xml`) are supported; the examples below use JSON.
+
+| Resource | Method | Description |
 |----|----|----|
-| /rest/br/backup/ | POST | Post a JSON/XML document with the backup parameters, see below |
-| /rest/br/backup/backupId | GET | Returns a json/xml representation of the backup operation. See below |
-| /rest/br/backup/backupId | DELETE | Cancels the backup operation |
-| /rest/br/restore | POST | Post a JSON/XML document with the restore parameters, see below |
-| /rest/br/restore/restoreId | GET | Returns a json/xml representation of the backup operation, see below |
-| /rest/br/restore/restoreId | DELETE | Cancels the restore operation |
+| `/rest/br/backup` | `GET` | List all backup executions known to the running instance. |
+| `/rest/br/backup` | `POST` | Start a new backup. Body is a JSON/XML document with the backup configuration (see below). Returns `201 Created`. |
+| `/rest/br/backup/{id}.{json\|xml}` | `GET` | Status of backup execution `{id}`, including per-step progress. |
+| `/rest/br/backup/{id}.zip` | `GET` | Download the generated archive for execution `{id}`. |
+| `/rest/br/backup/{id}` | `DELETE` | Cancel backup execution `{id}`. Add `?force=true` to escalate a wedged job (see [Cancel or abort a job](#cancel-or-abort-a-job)). |
+| `/rest/br/restore` | `GET` | List all restore executions known to the running instance. |
+| `/rest/br/restore` | `POST` | Start a new restore from a server-side archive. Body is a JSON/XML document with the restore configuration (see below). Returns `201 Created`. |
+| `/rest/br/restore/{id}.{json\|xml}` | `GET` | Status of restore execution `{id}`, including per-step progress. |
+| `/rest/br/restore/{id}` | `DELETE` | Cancel restore execution `{id}`. Add `?force=true` to escalate a wedged job. |
 
-## Usage Example
+!!! note
+    The execution list is held **in memory** and is reset when GeoServer restarts. Download archives and note any execution detail you need before restarting the container.
 
-We are going to use the command line tool cURL to send HTTP REST requests to GeoServer.
+## Request body
 
-The `/rest/br/backup/` and `/rest/br/restore` endpoints accept an optional format suffix that allows the Backup / Restore archive to be streamed to / from the client instead of being written on / read from the file system.
+A backup or restore is described by a single JSON object whose root key is `backup` or `restore`:
 
-### Initiate a Backup
+```json
+{
+  "backup": {
+    "archiveFile": "/var/backups/geoserver/backup1.zip",
+    "overwrite": true,
+    "options": {
+      "option": ["BK_SKIP_SECURITY=false", "BK_PARAM_PASSWORDS=true"]
+    },
+    "wsFilter": "name IN ('topp','sf')"
+  }
+}
+```
 
-Prepare a file containing with a JSON object representing the Backup procedure configuration.
+| Field | Applies to | Meaning |
+|----|----|----|
+| `archiveFile` | both | Absolute path, **on the server**, of the `.zip` archive to write (backup) or read (restore). See the note on server-side paths below. |
+| `overwrite` | backup | When `true`, replace an existing archive at `archiveFile`. |
+| `options` | both | Object with an `option` array of `BK_KEY=value` strings. See [all options](options.md). |
+| `wsFilter` / `siFilter` / `liFilter` | both | Optional ECQL strings scoping the job to specific workspaces / stores / layers. See [Filtered backup](#filtered-backup). |
+
+!!! note
+    The restore reads the archive from a **server-side path**: `archiveFile` must point to a `.zip` that the GeoServer process can read on its own file system. There is **no** client-side or multipart upload — copy the archive to a location GeoServer can reach, then reference its absolute path. (To move an archive between machines, download it with the `.zip` endpoint and place it on the target server.)
+
+## Examples
+
+The examples use the command-line tool cURL against a GeoServer running at `http://localhost:8080/geoserver`, authenticating as the default `admin` user. Adjust the base URL, credentials and archive paths for your environment.
+
+### Start a full backup
+
+Write the configuration to a file:
 
 `backup_post.json`:
 
 ```json
 {
-   "backup":{
-      "archiveFile":"/home/sg/BackupAndRestore/test_rest_1.zip",
-      "overwrite":true,
-      "options":{
+  "backup": {
+    "archiveFile": "/var/backups/geoserver/backup1.zip",
+    "overwrite": true,
+    "options": {}
+  }
+}
+```
+
+With no options specified, the defaults apply (see [all options](options.md)). Post it:
+
+```bash
+curl -u admin:geoserver -H "Content-Type: application/json" \
+  -X POST -d @backup_post.json \
+  "http://localhost:8080/geoserver/rest/br/backup"
+```
+
+GeoServer answers `201 Created` and returns the new execution. Note its `id` (here, `0`) — you will use it to poll status and download the archive:
+
+```json
+{
+  "backup": {
+    "execution": {
+      "id": 0,
+      "status": "STARTED",
+      "progress": "1/8",
+      "archiveFile": "/var/backups/geoserver/backup1.zip",
+      "overwrite": true,
+      "options": {
+        "option": ["OVERWRITE=true"]
       }
-   }
+    }
+  }
 }
 ```
 
-In this case we did not specify any options in the backup configuration so default values will be used.
+### Poll the status of an execution
 
-Available options are:
+Request the execution by id, adding the `.json` (or `.xml`) suffix:
 
-1.  `BK_BEST_EFFORT`: Skip any failing resources and proceed with the backup procedure. Default: `false`.
-2.  `BK_PARAM_PASSWORDS`: Whether outgoing store passwords should be parameterized in the backup. With this option set all store passwords will be replaced with a token that looks like `\${workspaceName:storeName.passwd.encryptedValue}`. See also `BK_PASSWORD_TOKENS` for the Restore command.
-3.  `BK_SKIP_SECURITY`: This will exclude security settings from the backup. Default: `true`.
-4.  `BK_SKIP_SETTINGS`: This will attempt to exclude global settings from the backup, as well as security settings. Default: `true`.
-5.  `BK_SKIP_GWC`: This option will avoid backup / restore the GWC catalog and folders. Default: `false`.
-6.  `BK_CLEANUP_TEMP`: This will attempt to delete temporary folder at the end of the execution. Default: `true`.
-7.  `exclude.file.path`: A `;` separated list of paths relative to the `GEOSERVER_DATA_DIR` (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`. WARNING: `security` and `workspaces` are treated differently. This option should be used only for custom external resources located under the `GEOSERVER_DATA_DIR`.
+```bash
+curl -u admin:geoserver \
+  "http://localhost:8080/geoserver/rest/br/backup/0.json"
+```
 
-Also an optional `Filter` can be passed to restrict the scope of the restore operation to a list of workspaces.
-
-For example:
+The response reports the overall `status` and `progress` plus the list of steps, each with its own status, exit code and timings. A completed backup looks like:
 
 ```json
 {
-   "backup":{
-      "archiveFile":"/home/sg/BackupAndRestore/test_rest_1.zip",
-"overwrite":true,
-      "options":{
-        "option": ["BK_BEST_EFFORT=true"] 
+  "backup": {
+    "execution": {
+      "id": 0,
+      "status": "COMPLETED",
+      "progress": "8/8",
+      "startTime": "2026-06-06T10:21:14.802",
+      "endTime": "2026-06-06T10:21:25.356",
+      "exitStatus": {
+        "exitCode": "COMPLETED",
+        "exitDescription": ""
       },
-"filter": "name IN ('topp','geosolutions-it')"
-   }
+      "stepExecutions": {
+        "step": [
+          {
+            "name": "backupWorkspacesAndLayers",
+            "status": "COMPLETED",
+            "exitStatus": { "exitCode": "COMPLETED", "exitDescription": "" },
+            "readCount": 12,
+            "writeCount": 12,
+            "failureExceptions": ""
+          }
+        ]
+      },
+      "archiveFile": "/var/backups/geoserver/backup1.zip"
+    }
+  }
 }
 ```
 
-Backup procedure will be initiated.
+The `status` is one of `STARTING`, `STARTED`, `STOPPING`, `STOPPED`, `COMPLETED`, `FAILED` or `ABANDONED`. Keep polling while it is `STARTING` or `STARTED`. The `failureExceptions` of a failed step carries the message chain and stack trace for troubleshooting.
 
-Here is a sample response:
+### Download the archive
 
-```http
-HTTP/1.1 201 Created
-Date: Mon, 01 Aug 2016 14:35:44 GMT
-Location: http://mygeoserver/geoserver/rest/br/backup/1
-Server: Noelios-Restlet-Engine/1.0..8
-Content-Type: application/json
-Transfer-Encoding: chunked
-```
-
-```json
-{
-   "backup":{
-      "totalNumberOfSteps":9,
-      "execution":{
-         "id":1,
-         "version":1,
-         "stepExecutions":{
-            "@class":"java.util.concurrent.CopyOnWriteArraySet"
-         },
-         "status":[
-            "STARTED"
-         ],
-         "startTime":"2016-08-01 14:35:44.802 UTC",
-         "createTime":"2016-08-01 14:35:44.798 UTC",
-         "lastUpdated":"2016-08-01 14:35:44.803 UTC",
-         "exitStatus":{
-            "exitCode":"UNKNOWN",
-            "exitDescription":""
-         },
-         "progress":"1\/9"
-      },
-      "options":{
-         "@class":"synchList",
-         "option":[
-            "OVERWRITE=true"
-         ]
-      },
-      "warningsList":{
-         "@class":"synchList"
-      },
-      "archiveFile":{
-         "@class":"resource",
-         "$":"\/home\/sg\/BackupAndRestore\/test_rest_1.zip"
-      },
-      "overwrite":true
-   }
-}
-```
-
-At the end of the backup procedure you'll be able to download the generated archive to your local file system by making an HTTP GET request to the same endpoint, using the **backup ID** as above and adding the `.zip` at the end.
+Once the backup is `COMPLETED`, download the generated `.zip` by requesting the same resource with a `.zip` suffix:
 
 ```bash
-curl -u "admin:geoserver" -i -X GET  "http://mygeoserver/geoserver/rest/br/backup/1.zip" -o 1.zip
+curl -u admin:geoserver \
+  "http://localhost:8080/geoserver/rest/br/backup/0.zip" -o backup.zip
 ```
 
-![](images/usagerest001.png)
+### Start a restore
 
-### Query status of Backup executions
-
-Status of the operation can be queried making an HTTP GET request to the location listed in the response.
-
-```text
-http://mygeoserver/geoserver/rest/br/backup/$ID.{json/xml}
-```
-
-Replace `$ID` with the **ID** of the backup operation you'd like to inspect.
-
-```bash
-curl -u "admin:geoserver" http://mygeoserver/geoserver/rest/br/backup/1.json
-```
-
-or
-
-```bash
-curl -u "admin:geoserver" http://mygeoserver/geoserver/rest/br/backup/1.xml
-```
-
-GeoServer will respond with the status of the backup job corresponding to that ID
-
-![](images/usagerest002.png)
-
-![](images/usagerest003.png)
-
-Here you are able to see the status of all the steps involved in the backup procedure with creation time, start time, end time, exit status etc.
-
-### Cancel a Backup
-
-Cancel an in progress Backup by sending an HTTP DELETE request with the ID of the task
-
-```bash
-curl -v -XDELETE -u "admin:geoserver" http://mygeoserver/geoserver/rest/br/backup/$ID
-```
-
-Replace `$ID` with the **ID** of the backup operation you'd like to cancel.
-
-### Initiate a Restore
-
-Prepare a file with a JSON object representing the Restore procedure configuration
+Restore from a `.zip` already present on the server's file system. Write the configuration:
 
 `restore_post.json`:
 
 ```json
 {
-   "restore":{
-      "archiveFile":"/home/sg/BackupAndRestore/test_rest_1.zip",
-      "options":{
-      }
-   }
+  "restore": {
+    "archiveFile": "/var/backups/geoserver/backup1.zip",
+    "options": {}
+  }
 }
 ```
 
-In this case we did not specify any options in the restore configuration so default values will be used.
-
-Available Options are:
-
-1.  `BK_DRY_RUN`: Only test the archive do not persist the restored configuration. Default: `false`.
-
-2.  `BK_BEST_EFFORT`: Skip any failing resources and proceed with the restore procedure. Default: `false`.
-
-3.  `BK_PASSWORD_TOKENS`: A comma separated list of equal sign separated key/values to be replaced in data store passwords in an incoming backup. For example:
-
-    ```text
-    BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValue}=foo,${workspace:store2.passwd.encryptedValue}=bar
-    ```
-
-4.  `BK_SKIP_SECURITY`: This will exclude security settings from the restore. Default: `true`.
-
-5.  `BK_SKIP_SETTINGS`: This will attempt to exclude global settings from the backup, as well as security settings. Default: `true`.
-
-6.  `BK_PURGE_RESOURCES`: If 'false' this parameter will avoid deleting incoming resources where possible. In particular, existing workspaces will not be deleted during the restore. Default: `true`.
-
-7.  `BK_SKIP_GWC`: This option will avoid backup / restore the GWC catalog and folders. Default: `false`.
-
-8.  `BK_CLEANUP_TEMP`: This will attempt to delete temporary folder at the end of the execution. Default: `true`.
-
-9.  `exclude.file.path`: A `;` separated list of paths relative to the `GEOSERVER_DATA_DIR` (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`. WARNING: `security` and `workspaces` are treated differently. This option should be used only for custom external resources located under the `GEOSERVER_DATA_DIR`.
-
-Also an optional `Filter` can be passed to restrict the scope of the restore operation to a list of workspaces.
-
-For example:
-
-```text
-{
-   "restore":{
-      "archiveFile":"/home/sg/BackupAndRestore/test_rest_1.zip",
-      "options":{
-        "option": ["BK_DRY_RUN=true"] 
-      },
-"filter": "name IN ('topp','geosolutions-it')"
-   }
-}
-```
-
-If `archiveFile` is specified, the archive specified on that path of the remote file system will be used to initiate the restore procedure. Otherwise the archive needs to be uploaded from your local system.
-
-Then make a POST HTTP request to GeoServer's REST interface endpoint for the restore procedure
+Post it:
 
 ```bash
-curl -u "admin:geoserver" -i -H "Content-Type: application/json" -X POST --data @restore_post.json http://mygeoserver/geoserver/rest/br/restore/
+curl -u admin:geoserver -H "Content-Type: application/json" \
+  -X POST -d @restore_post.json \
+  "http://localhost:8080/geoserver/rest/br/restore"
 ```
 
-Restore procedure will be initiated.
+As with a backup, GeoServer returns `201 Created` and an execution with an `id`; poll `/rest/br/restore/{id}.json` until it reaches a terminal state.
 
-Here is a sample response:
+!!! warning
+    With the default options a restore is **destructive**: it purges pre-existing resources (`BK_PURGE_RESOURCES=true`) before restoring. Validate first with a dry run, and pass `BK_PURGE_RESOURCES=false` to merge into the current catalog without deleting. See [all options](options.md).
 
-```http
-HTTP/1.1 201 Created
-Date: Mon, 01 Aug 2016 15:07:29 GMT
-Location: http://mygeoserver/geoserver/rest/br/restore/2
-Server: Noelios-Restlet-Engine/1.0..8
-Content-Type: application/json
-Transfer-Encoding: chunked
-```
+### Dry-run and fail-on-invalid restore
+
+Validate an archive without changing anything: a dry run assembles the restore catalog and rolls back the data directory when it finishes. Combine it with `BK_FAIL_ON_INVALID=true` to make the validation pass fail the job on the first invalid object instead of only recording warnings:
 
 ```json
 {
-   "restore":{
-      "totalNumberOfSteps":9,
-      "execution":{
-         "id":2,
-         "version":1,
-         "stepExecutions":{
-            "@class":"java.util.concurrent.CopyOnWriteArraySet"
-         },
-         "status":[
-            "STARTED"
-         ],
-         "startTime":"2016-08-01 15:07:29.398 UTC",
-         "createTime":"2016-08-01 15:07:29.393 UTC",
-         "lastUpdated":"2016-08-01 15:07:29.398 UTC",
-         "exitStatus":{
-            "exitCode":"UNKNOWN",
-            "exitDescription":""
-         },
-         "progress":"0\/9"
-      },
-      "options":{
-         "@class":"synchList"
-      },
-      "warningsList":{
-         "@class":"synchList"
-      },
-      "archiveFile":{
-         "@class":"resource",
-         "$":"\/home\/sg\/BackupAndRestore\/test_rest_1.zip"
-      }
-   }
+  "restore": {
+    "archiveFile": "/var/backups/geoserver/backup1.zip",
+    "options": {
+      "option": ["BK_DRY_RUN=true", "BK_FAIL_ON_INVALID=true"]
+    }
+  }
 }
 ```
 
-![](images/usagerest004.png)
+```bash
+curl -u admin:geoserver -H "Content-Type: application/json" \
+  -X POST -d @restore_dryrun.json \
+  "http://localhost:8080/geoserver/rest/br/restore"
+```
 
-To upload the archive from our local system instead, omit the archiveFile parameter in the JSON object and pass the `--upload-file` parameter to cURL:
+A failing dry run ends with `status` `FAILED`; inspect the `failureExceptions` on the offending step. See [Transactional dry-run and fail-on-invalid](migration.md#transactional-dry-run-and-fail-on-invalid).
 
-`restore_post.json`:
+### Filtered backup
+
+Scope a backup (or restore) to selected workspaces, stores or layers with the `wsFilter`, `siFilter` and `liFilter` ECQL strings. To back up only the `topp` and `sf` workspaces:
 
 ```json
 {
-   "restore":{
-      "options":{
-      },
-   }
+  "backup": {
+    "archiveFile": "/var/backups/geoserver/subset.zip",
+    "overwrite": true,
+    "options": {},
+    "wsFilter": "name IN ('topp','sf')"
+  }
 }
 ```
 
 ```bash
-curl -u "admin:geoserver" -i -H "Content-Type: application/json" --upload-file "archive_to_restore.zip" -X POST --data @restore_post.json http://localhost:8081/geoserver/rest/br/restore/
+curl -u admin:geoserver -H "Content-Type: application/json" \
+  -X POST -d @backup_filtered.json \
+  "http://localhost:8080/geoserver/rest/br/backup"
 ```
 
-Local `archive_to_restore.zip` archive will be uploaded and used by the restore procedure.
+!!! note
+    A workspace-filtered archive omits the global and security configuration, so it cannot be used to restore the workspaces it does **not** contain. To migrate or consolidate a full catalog, back up the whole catalog and restore the workspaces you need. See [the filter reference](options.md#scoping-filters).
 
-![](images/usagerest005.png)
+### Cross-instance security migration
 
-Query for status of Restore operations
+By default a backup excludes security and a restore does not apply it (`BK_SKIP_SECURITY=true` on both). To carry users, groups and roles to another instance, include security in the backup and **merge** it on restore. Merge mode adds the archive's principals to the target's existing security services, keeping the target's own configuration, keystore and master password — so it works even when the two master passwords differ.
 
-`http://mygeoserver/geoser/restore/$ID.{json/xml}`:
+Back up with security included:
 
-```text
+```json
 {
-   "restore":{
-      "execution":{
-         "hash":2,
-         "key":{
-            "@class":"long",
-            "$":"2"
-         },
-         "val":{
-            "@class":"restore",
-            "totalNumberOfSteps":9,
-            "execution":{
-               "id":2,
-               "version":2,
-               "stepExecutions":{
-                  "@class":"java.util.concurrent.CopyOnWriteArraySet",
-                  "step":[
-                     {
-                        "name":"restoreNamespaceInfos",
-                        "status":"COMPLETED",
-                        "exitStatus":{
-                           "exitCode":"COMPLETED",
-                           "exitDescription":""
-                        },
-                        "startTime":"8\/1\/16 3:07 PM",
-                        "endTime":"8\/1\/16 3:07 PM",
-                        "lastUpdated":"8\/1\/16 3:07 PM",
-                        "parameters":{
-                           "input.file.path":"file:\/\/\/opt\/tomcat-geoserver-2.9.x\/temp\/tmpbbe2388a-f26d-4f26-a20f-88c653d88aec",
-                           "time":1470064049392
-                        },
-                        "readCount":1,
-                        "writeCount":1,
-                        "failureExceptions":""
-                     },
-                    ...
-                     {
-                        "name":"restoreGeoServerSecurityManager",
-                        "status":"COMPLETED",
-                        "exitStatus":{
-                           "exitCode":"COMPLETED",
-                           "exitDescription":""
-                        },
-                        "startTime":"8\/1\/16 3:07 PM",
-                        "endTime":"8\/1\/16 3:07 PM",
-                        "lastUpdated":"8\/1\/16 3:07 PM",
-                        "parameters":{
-                           "input.file.path":"file:\/\/\/opt\/tomcat-geoserver-2.9.x\/temp\/tmpbbe2388a-f26d-4f26-a20f-88c653d88aec",
-                           "time":1470064049392
-                        },
-                        "readCount":0,
-                        "writeCount":0,
-                        "failureExceptions":""
-                     }
-                  ]
-               },
-               "status":"COMPLETED",
-               "startTime":"2016-08-01 15:07:29.398 UTC",
-               "createTime":"2016-08-01 15:07:29.393 UTC",
-               "endTime":"2016-08-01 15:07:30.356 UTC",
-               "lastUpdated":"2016-08-01 15:07:30.772 UTC",
-               "exitStatus":{
-                  "exitCode":"COMPLETED",
-                  "exitDescription":""
-               },
-               "progress":"9\/9"
-            },
-            "options":{
-               "@class":"synchList"
-            },
-            "warningsList":{
-               "@class":"synchList"
-            },
-            "archiveFile":{
-               "@class":"resource",
-               "$":"\/home\/sg\/BackupAndRestore\/test_rest_1.zip"
-            }
-         }
-      }
-      ...
+  "backup": {
+    "archiveFile": "/var/backups/geoserver/with-security.zip",
+    "overwrite": true,
+    "options": {
+      "option": ["BK_SKIP_SECURITY=false"]
+    }
+  }
+}
 ```
 
-Here you are able to see the status of all the steps involved in the restore procedure with creation time, start time, end time, exit status etc.
+Restore it into the target, merging security:
 
-### Cancel a Restore
+```json
+{
+  "restore": {
+    "archiveFile": "/var/backups/geoserver/with-security.zip",
+    "options": {
+      "option": ["BK_SKIP_SECURITY=false", "BK_MERGE_SECURITY=true"]
+    }
+  }
+}
+```
 
-Cancel an in-progress Restore by sending an HTTP DELETE request:
+!!! note
+    New principals keep their archived (digest) passwords; reversible passwords must be reset on the target afterwards. To instead **replace** the target's whole security folder from an archive encrypted under a different master password, use the REST-only `BK_SOURCE_MASTER_PASSWORD` / `BK_TARGET_MASTER_PASSWORD` parameters described in [all options](options.md#master-password-parameters).
+
+### Parameterized store passwords
+
+To produce an archive whose store passwords are substitutable tokens instead of encrypted values — useful when the target uses different database credentials — back up with `BK_PARAM_PASSWORDS=true`:
+
+```json
+{
+  "backup": {
+    "archiveFile": "/var/backups/geoserver/parameterized.zip",
+    "overwrite": true,
+    "options": {
+      "option": ["BK_PARAM_PASSWORDS=true"]
+    }
+  }
+}
+```
+
+Each store password is written as a token such as `${workspaceName:storeName.passwd.encryptedValue}`. On restore, supply the replacements with `BK_PASSWORD_TOKENS`, a comma-separated list of `token=value` pairs:
+
+```json
+{
+  "restore": {
+    "archiveFile": "/var/backups/geoserver/parameterized.zip",
+    "options": {
+      "option": [
+        "BK_PASSWORD_TOKENS=${ws:store1.passwd.encryptedValue}=secret1,${ws:store2.passwd.encryptedValue}=secret2"
+      ]
+    }
+  }
+}
+```
+
+!!! tip
+    Pass the substituted passwords as transient parameters; never commit them to scripts or logs.
+
+### Cancel or abort a job
+
+Cancel a running backup or restore by sending a `DELETE` with its id:
 
 ```bash
-curl -v -XDELETE -u "admin:geoserver" http://mygeoserver/geoserver/rest/br/restore/$ID
+curl -u admin:geoserver -X DELETE \
+  "http://localhost:8080/geoserver/rest/br/restore/0"
 ```
 
-Replace `$ID` with the **ID** of the restore operation you'd like to cancel.
+The job is asked to stop cooperatively at the next step boundary.
+
+If a job has wedged and is holding the GeoServer configuration write-lock — blocking the rest of the UI and API — an administrator can escalate with `?force=true`. This is a **break-glass, last-resort** action: it interrupts the stuck job and forcibly releases the configuration lock.
+
+```bash
+curl -u admin:geoserver -X DELETE \
+  "http://localhost:8080/geoserver/rest/br/restore/0?force=true"
+```
+
+!!! warning
+    Use `?force=true` only when a job is genuinely stuck and the configuration lock will not release on its own. Forcibly releasing the lock mid-write can leave the data directory in an inconsistent state — have a backup ready.
+
+## See also
+
+- [Backup and Restore options](options.md) — the full `BK_*` option reference and the ECQL filters.
+- [Usage via the user interface](usagegui.md) — the same operations from the GeoServer web UI.
+- [Use cases](usecases.md) — migration, partial restores and ImageMosaic scenarios.

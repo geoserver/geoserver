@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-features-templating</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -90,17 +90,6 @@
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-features</artifactId>
       <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-app-schema</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-app-schema</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

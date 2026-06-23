@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-acl</artifactId>
@@ -19,8 +19,8 @@
     <module>assembly</module>
   </modules>
   <properties>
-    <geoserver-acl.version>3.0-RC3</geoserver-acl.version>
-    <lombok.version>1.18.42</lombok.version>
+    <geoserver-acl.version>3.0.0</geoserver-acl.version>
+    <lombok.version>1.18.46</lombok.version>
   </properties>
   <dependencyManagement>
     <dependencies>

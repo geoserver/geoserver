@@ -7,6 +7,7 @@ package org.geoserver.web;
 
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 
+import de.agilecoders.wicket.webjars.WicketWebjars;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -84,7 +85,6 @@ import org.springframework.security.authentication.event.InteractiveAuthenticati
  * @author Andrea Aaime, The Open Planning Project
  * @author Justin Deoliveira, The Open Planning Project
  */
-// TODO WICKET8 - Verify this page works OK
 public class GeoServerApplication extends WebApplication
         implements ApplicationContextAware, ApplicationListener<ApplicationEvent> {
 
@@ -245,9 +245,11 @@ public class GeoServerApplication extends WebApplication
     }
 
     /** Initialization override which sets up a locator for i18n resources. */
-    @SuppressWarnings("deprecation")
     @Override
     protected void init() {
+        // install webjars, eg. for wicketstuff select2
+        WicketWebjars.install(this);
+
         // fips secure Wicket random supplier
         getSecuritySettings().setRandomSupplier(new WicketSecureRandomSupplier());
         // enable GeoServer custom resource locators

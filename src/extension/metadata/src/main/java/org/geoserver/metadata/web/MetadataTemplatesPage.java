@@ -5,15 +5,14 @@
 
 package org.geoserver.metadata.web;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
-
 import java.io.IOException;
 import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -125,7 +124,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                             sb.append(resource.getString());
                             for (MetadataTemplate template : templatesPanel.getSelection()) {
                                 sb.append("\n&nbsp;&nbsp;");
-                                sb.append(escapeHtml(template.getName()));
+                                sb.append(StringEscapeUtils.escapeHtml4(template.getName()));
                             }
                             return new MultiLineLabel(id, sb.toString()).setEscapeModelStrings(false);
                         }

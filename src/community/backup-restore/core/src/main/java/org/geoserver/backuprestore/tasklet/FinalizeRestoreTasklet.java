@@ -1,20 +1,23 @@
 package org.geoserver.backuprestore.tasklet;
 
-import java.util.logging.Level;
 import org.geoserver.backuprestore.Backup;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.config.GeoServer;
-import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.core.step.StepContribution;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 
-/** Spring batch tasklet responsible for performing final restore steps. In particular, reloaded the catalog */
+/**
+ * Spring Batch tasklet for the final restore step.
+ *
+ * <p>The catalog dispose and {@code GeoServer.reload()} that used to run here were moved to
+ * {@link Backup#afterJob(org.springframework.batch.core.job.JobExecution)}. Tasklets execute on a separate executor
+ * thread while the restore job holds the GeoServer configuration write lock on the job thread; reloading here runs the
+ * parallel data-directory loader, whose worker threads acquire that same lock and deadlock against it (~10 minutes
+ * until the lock times out, leaving the job {@code STOPPED}). {@code afterJob} runs on the job thread after the lock is
+ * released, so the reload performed there is lock-free.
+ */
 public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet {
-
-    private boolean dryRun;
 
     public FinalizeRestoreTasklet(Backup backupFacade) {
         super(backupFacade);
@@ -23,33 +26,11 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
     @Override
     RepeatStatus doExecute(StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
             throws Exception {
-        // Reload GeoServer Catalog
-        if (jobExecution.getStatus() != BatchStatus.STOPPED) {
-
-            GeoServer geoserver = backupFacade.getGeoServer();
-            Catalog catalog = geoserver.getCatalog();
-
-            if (!dryRun) {
-                try {
-                    // TODO: add option 'cleanUpGeoServerDataDir'
-                    // TODO: purge/preserve GEOSERVER_DATA_DIR
-                    catalog.getResourcePool().dispose();
-                    catalog.dispose();
-                    geoserver.dispose();
-                    geoserver.reload(getCatalog());
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Error occurred while trying to Reload the GeoServer Catalog: ", e);
-                }
-            }
-
-            geoserver.reload();
-        }
-
         return RepeatStatus.FINISHED;
     }
 
     @Override
     protected void initialize(StepExecution stepExecution) {
-        dryRun = Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_DRY_RUN_MODE, "false"));
+        // No per-step initialization required: the catalog reload moved to Backup.afterJob.
     }
 }

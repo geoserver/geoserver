@@ -1,0 +1,8 @@
+<geoNodeOauth2Authentication>
+  <id>legacy-geonode-0001</id>
+  <name>geonode</name>
+  <className>org.geoserver.security.oauth2.GeoNodeOAuthAuthenticationFilter</className>
+  <cliendId>geoserver</cliendId>
+  <clientSecret>s3cr3t</clientSecret>
+  <baseRedirectUri>http://geonode.example/</baseRedirectUri>
+</geoNodeOauth2Authentication>

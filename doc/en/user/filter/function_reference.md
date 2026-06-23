@@ -27,8 +27,8 @@ Unless otherwise specified, none of the filter functions in this reference are u
 | equalTo | `a`:Object, `b`:Object | Can be used to compare for equality two numbers, two strings, two dates, and so on |
 | greaterEqualThan | `x`:Object, `y`:Object | Returns true if `x` >= `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used) |
 | greaterThan | `x`:Object, `y`:Object | Returns true if `x` > `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used) |
-| in2, in3, in4, in5, in6, in7, in8, in9, in10 | `candidate`:Object, `v1`:Object, \..., `v9`:Object | Returns true if `candidate` is equal to one of the `v1`, \..., `v9` values. Use the function name matching the number of arguments specified. |
-| in | `candidate`:Object, `v1`:Object, `v2`:Object, \... | Works exactly the same as the in2, \..., in10 functions described above, but takes any number of values as input. |
+| in2, in3, in4, in5, in6, in7, in8, in9, in10 | `candidate`:Object, `v1`:Object, ..., `v9`:Object | Returns true if `candidate` is equal to one of the `v1`, ..., `v9` values. Use the function name matching the number of arguments specified. |
+| in | `candidate`:Object, `v1`:Object, `v2`:Object, ... | Works exactly the same as the in2, ..., in10 functions described above, but takes any number of values as input. |
 | isLike | `string`:String, `pattern`:String | Returns true if the string matches the specified pattern. For the full syntax of the pattern specification see the [Java Pattern class javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.md) |
 | isNull | `obj`:Object | Returns true the passed parameter is `null`, false otherwise |
 | lessThan | `x`:Object, `y`:Object | Returns true if `x` < `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used |
@@ -163,8 +163,8 @@ For more information about the precise meaning of the spatial relationships cons
 | int2bbool | `x`: Integer | Returns true if `x` is zero, false otherwise |
 | int2ddouble | `x`: Integer | Converts `x` to a Double |
 | log | `x`: Integer | Returns the natural logarithm (base `e`) of `x` |
-| max, max_3, max_4 | `x1`: Double, `x2`:Double, `x3`:Double, `x4`:Double | Returns the maximum between `x1`, \..., `x4` |
-| min, min_3, min_4 | `x1`: Double, `x2`:Double, `x3`:Double, `x4`:Double | Returns the minimum between `x1`, \..., `x4` |
+| max, max_3, max_4 | `x1`: Double, `x2`:Double, `x3`:Double, `x4`:Double | Returns the maximum between `x1`, ..., `x4` |
+| min, min_3, min_4 | `x1`: Double, `x2`:Double, `x3`:Double, `x4`:Double | Returns the minimum between `x1`, ..., `x4` |
 | pi | None | Returns an approximation of `pi`, the ratio of the circumference of a circle to its diameter |
 | pow | `base`:Double, `exponent`:Double | Returns the value of `base` raised to the power of `exponent` |
 | random | None | Returns a Double value with a positive sign, greater than or equal to `0.0` and less than `1.0`. Returned values are chosen pseudo-randomly with (approximately) uniform distribution from that range. |
@@ -183,7 +183,7 @@ String functions generally will accept any type of value for `String` arguments.
 
 | **Name** | **Arguments** | **Description** |
 |----|----|----|
-| Concatenate | `s1`:String, `s2`:String, \... | Concatenates any number of strings. Non-string arguments are allowed. |
+| Concatenate | `s1`:String, `s2`:String, ... | Concatenates any number of strings. Non-string arguments are allowed. |
 | strAbbreviate | `sentence`:String, `lower`:Integer, `upper`:Integer, `append`:String | Abbreviates the sentence at first space beyond `lower` (or at `upper` if no space). Appends `append` if string is abbreviated. |
 | strCapitalize | `sentence`:String | Fully capitalizes the sentence. For example, "HoW aRe YOU?" will be turned into "How Are You?" |
 | strConcat | `a`:String, `b`:String | Concatenates the two strings into one |
@@ -228,6 +228,6 @@ Transformation functions transform values from one data space into another. Thes
 
 | **Name**    | **Arguments**                                                                    | **Description**                                                                  |
 |-------------|----------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
-| Recode      | `lookupValue`:Object,<br>`data`:Object, `value`:Object, \...                     | Transforms a `lookupValue` from a set of discrete data values into another set of values. Any number of `data`/`value` pairs may be specified. |
-| Categorize  | `lookupValue`:Object, `value`:Object,<br>`threshold`:Object, \... `value`:Object,<br>`belongsTo` : String | Transforms a continuous-valued attribute value into a set of discrete values. `lookupValue` and `value` must be an orderable type (typically numeric). The initial `value` is required. Any number of additional `threshold`/`value` pairs may be specified. `belongsTo` is optional, with the value `succeeding` or `preceding`. It defines which interval to use when the lookup value equals a threshold value. |
-| Interpolate | `lookupValue`:Numeric,<br>`data`:Numeric, `value`:Numeric *or* #RRGGBB, \...<br>`mode`:String, `method`:String | Transforms a continuous-valued attribute value into another continuous range of values. Any number of `data`/`value` pairs may be specified. `mode` is optional, with the value `linear`, `cosine` or `cubic`. It defines the interpolation algorithm to use. `method` is optional, with the value `numeric` or `color`. It defines whether the target values are numeric or RGB color specifications. |
+| Recode      | `lookupValue`:Object,<br>`data`:Object, `value`:Object, ...                     | Transforms a `lookupValue` from a set of discrete data values into another set of values. Any number of `data`/`value` pairs may be specified. |
+| Categorize  | `lookupValue`:Object, `value`:Object,<br>`threshold`:Object, ... `value`:Object,<br>`belongsTo` : String | Transforms a continuous-valued attribute value into a set of discrete values. `lookupValue` and `value` must be an orderable type (typically numeric). The initial `value` is required. Any number of additional `threshold`/`value` pairs may be specified. `belongsTo` is optional, with the value `succeeding` or `preceding`. It defines which interval to use when the lookup value equals a threshold value. |
+| Interpolate | `lookupValue`:Numeric,<br>`data`:Numeric, `value`:Numeric *or* #RRGGBB, ...<br>`mode`:String, `method`:String | Transforms a continuous-valued attribute value into another continuous range of values. Any number of `data`/`value` pairs may be specified. `mode` is optional, with the value `linear`, `cosine` or `cubic`. It defines the interpolation algorithm to use. `method` is optional, with the value `numeric` or `color`. It defines whether the target values are numeric or RGB color specifications. |

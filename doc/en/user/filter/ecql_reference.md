@@ -9,8 +9,8 @@ The sections below describe the major language constructs. Each construct lists 
 - Symbols which are part of the ECQL language are shown in `code font`. All other symbols are part of the grammar description.
 - ECQL keywords are not case-sensitive.
 - A vertical bar symbol '**|**' indicates that a choice of keyword can be made.
-- Brackets '**[** \... **]**' delimit syntax that is optional.
-- Braces '**{** \... **}**' delimit syntax that may be present zero or more times.
+- Brackets '**[** ... **]**' delimit syntax that is optional.
+- Braces '**{** ... **}**' delimit syntax that may be present zero or more times.
 
 ## Condition {: #ecql_cond }
 

@@ -20,7 +20,7 @@ Current version: 1.3
 
 ### MockRunner
 
-The [MockRunner](http://mockrunner.sourceforge.net) framework provides a set of classes that implement the various interfaces of the J2EE and Java Servlet apis. It is typically used to create `HttpServletRequest` , `HttpServletResponse`, etc\... objects for testing servlet based components.
+The [MockRunner](http://mockrunner.sourceforge.net) framework provides a set of classes that implement the various interfaces of the J2EE and Java Servlet apis. It is typically used to create `HttpServletRequest` , `HttpServletResponse`, etc... objects for testing servlet based components.
 
 Current version: 0.3.6
 
@@ -161,7 +161,7 @@ Depending on whether the test uses a single or repeated setup this method will b
 
 #### onSetUp
 
-This callback method is invoked after the system has been created. It is meant for standard post system initialization tasks. Like for instance changing some service configuration, adding new layers, etc\...
+This callback method is invoked after the system has been created. It is meant for standard post system initialization tasks. Like for instance changing some service configuration, adding new layers, etc...
 
 Depending on whether the test uses a single or repeated setup this method will be called once or many times. For this reason this method can not be used to simply initialize fields of the test class. For instance, consider the following:
 

@@ -44,11 +44,11 @@ Query all layers as follows:
 
     http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd
 
-Request a particular layer by ID\...:
+Request a particular layer by ID...:
 
     http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecordById&elementsetname=summary&id=CoverageInfoImpl--4a9eec43:132d48aac79:-8000&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd
 
-\...or use a filter to retrieve it by Title:
+...or use a filter to retrieve it by Title:
 
     http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd&constraint=Title=%27mosaic%27
 

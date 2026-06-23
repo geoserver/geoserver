@@ -169,9 +169,9 @@ public abstract class XmlRequestReader {
         Throwable cause = saxException.getCause();
         // We only wish to check SAXException which echos internal caused by message
         // Subclasses such as SAXParserException provide a useful message
-        if (saxException != null && saxException.getCause() != null && saxException.getClass() == SAXException.class) {
+        if (saxException != null && saxException.getClass() == SAXException.class) {
             String saxMessage = saxException.getMessage();
-            String causeMessage = cause.getLocalizedMessage();
+            String causeMessage = cause != null ? cause.getLocalizedMessage() : null;
             if (causeMessage != null && saxMessage.contains(causeMessage)) {
                 return createParseException(saxException);
             }
@@ -180,7 +180,7 @@ public abstract class XmlRequestReader {
     }
 
     /**
-     * Log the cause, and return a SAXException indicaitng a parse failure.
+     * Log the cause, and return a SAXException indicating a parse failure.
      *
      * <p>This is a replacement for the provided cause, and includes the same stack trace to assist with troubleshooting
      * and debugging.

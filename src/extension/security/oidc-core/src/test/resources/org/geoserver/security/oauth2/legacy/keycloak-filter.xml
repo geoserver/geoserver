@@ -1,0 +1,12 @@
+<keycloakAdapter>
+  <id>legacy-keycloak-0001</id>
+  <name>keycloak</name>
+  <className>org.geoserver.security.keycloak.GeoServerKeycloakFilter</className>
+  <adapterConfig>{
+  "realm": "gs",
+  "auth-server-url": "https://idp.example.org/auth",
+  "resource": "geoserver-client",
+  "credentials": { "secret": "s3cr3t" }
+}</adapterConfig>
+  <roleSource>RoleService</roleSource>
+</keycloakAdapter>

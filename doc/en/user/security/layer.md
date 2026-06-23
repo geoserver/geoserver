@@ -24,7 +24,7 @@ The parameters include:
 
 - `workspace`--- Name of the workspace. The wildcard `*` is used to indicate all workspaces.
 
-- `layer`--- Name of a resource (featuretype/coverage/etc\...). The wildcard `*` is used to indicate all layers.
+- `layer`--- Name of a resource (featuretype/coverage/etc...). The wildcard `*` is used to indicate all layers.
 
 - `workspaceLayerGroup`--- Name of a workspace specific layer group.
 

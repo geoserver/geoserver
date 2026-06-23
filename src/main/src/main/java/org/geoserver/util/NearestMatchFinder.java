@@ -38,6 +38,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.feature.visitor.NearestVisitor;
@@ -157,41 +158,48 @@ public abstract class NearestMatchFinder {
      */
     public Object getNearest(Object value) throws IOException {
         if (value == null) return null;
-        // simple point vs point comparison?
-        if (endAttribute == null
-                && (!(value instanceof Range) || ((Range) value).getMinValue().equals(((Range) value).getMaxValue()))) {
+        // an asymmetric acceptable range (e.g. accept the past but not the future) makes one side
+        // impossible to match: skip the search that cannot return anything
+        boolean lower = acceptableRange == null || acceptableRange.getBefore().longValue() > 0;
+        boolean higher = acceptableRange == null || acceptableRange.getAfter().longValue() > 0;
+        boolean instant = !(value instanceof Range r) || r.getMinValue().equals(r.getMaxValue());
+        // Instant data resolves in a single pass over the data, which matters for stores with no
+        // query optimization (shapefile, flatgeobuf, ...) where the visit reads every feature.
+        // Interval data instead needs the max of the end attribute and the min of the start
+        // attribute, two different columns a single nearest visitor cannot span.
+        if (endAttribute == null && instant) {
             Date date = (Date) (value instanceof Range r ? r.getMinValue() : value);
-            NearestVisitor visitor = new NearestVisitor(attribute, date);
             Filter filter = Filter.INCLUDE;
             if (acceptableRange != null) {
                 Range searchRange = acceptableRange.getSearchRange(date);
                 filter = FF.between(
                         attribute, FF.literal(searchRange.getMinValue()), FF.literal(searchRange.getMaxValue()));
             }
-            FeatureCollection features = getMatches(filter);
-            features.accepts(visitor, null);
-            Object result = visitor.getResult().getValue();
-            if (date.equals(result)) {
-                return value;
+            FeatureCalc visitor;
+            if (!higher) {
+                visitor = new MaxVisitor(attribute);
+            } else if (!lower) {
+                visitor = new MinVisitor(attribute);
             } else {
-                return result;
+                visitor = new NearestVisitor(attribute, date);
             }
-        } else {
-            // find the highest among the lower values
-            Filter lowerFilter = buildComparisonFilter(value, HIGHEST_AMONG_LOWERS);
-            FeatureCollection lowers = getMatches(lowerFilter);
-            MaxVisitor lowersVisitor = new MaxVisitor(endAttribute == null ? attribute : endAttribute);
-            lowers.accepts(lowersVisitor, null);
-            Comparable maxOfSmallers = (Comparable) lowersVisitor.getResult().getValue();
-
-            // find the lowest among the higher values
-            Filter higherFilter = buildComparisonFilter(value, LOWEST_AMONG_HIGHER);
-            FeatureCollection highers = getMatches(higherFilter);
-            MinVisitor highersVisitor = new MinVisitor(attribute);
-            highers.accepts(highersVisitor, null);
-            Comparable minOfGreater = (Comparable) highersVisitor.getResult().getValue();
-            return closest(value, maxOfSmallers, minOfGreater);
+            getMatches(filter).accepts(visitor, null);
+            Object result = visitor.getResult().getValue();
+            return date.equals(result) ? value : result;
         }
+        // range case, two separate visitors are needed
+        Comparable maxOfSmallers = lower ? extreme(value, HIGHEST_AMONG_LOWERS) : null;
+        Comparable minOfGreater = higher ? extreme(value, LOWEST_AMONG_HIGHER) : null;
+        return closest(value, maxOfSmallers, minOfGreater);
+    }
+
+    /** Highest value not above (HIGHEST_AMONG_LOWERS) or lowest not below (LOWEST_AMONG_HIGHER) the reference. */
+    private Comparable extreme(Object value, FilterDirection direction) throws IOException {
+        FeatureCollection matches = getMatches(buildComparisonFilter(value, direction));
+        PropertyName attr = getComparisonAttribute(direction);
+        FeatureCalc visitor = direction == HIGHEST_AMONG_LOWERS ? new MaxVisitor(attr) : new MinVisitor(attr);
+        matches.accepts(visitor, null);
+        return (Comparable) visitor.getResult().getValue();
     }
 
     protected Object closest(Object value, Object maxOfSmallers, Object minOfGreater) {

@@ -136,7 +136,7 @@ public class GeoServerDigestPasswordEncoderTest {
         // form was stored as if precomposed. The string encoder must keep normalizing so such
         // a stored password still validates. The char[] path is intentionally not covered (master
         // password digest relies on it staying un-normalized).
-        String decomposed = "caf\u0065\u0301"; // 'e' + combining acute (NFD form of "cafe-acute")
+        String decomposed = "cafe\u0301"; // 'e' + combining acute (NFD form of "cafe-acute")
 
         StrongPasswordEncryptor oldEncryptor = new StrongPasswordEncryptor();
         String stored = oldEncryptor.encryptPassword(decomposed);

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.codec.binary.Base64;
 import org.jasypt.digest.StandardByteDigester;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.junit.Test;
 
 public class GeoServerDigestPasswordEncoderTest {
@@ -126,6 +127,24 @@ public class GeoServerDigestPasswordEncoderTest {
 
         assertFalse(passwordEncoder.isPasswordValid(jasyptEncoded, "wrong_password", null));
         assertFalse(passwordEncoder.isPasswordValid(jasyptEncoded, "wrong_password".toCharArray(), null));
+    }
+
+    @Test
+    public void testJasyptStringEncoderDecomposedUnicode() {
+        // Old string path went through StrongPasswordEncryptor -> StandardStringDigester,
+        // which NFC-normalizes the message before digesting. A password typed in decomposed
+        // form was stored as if precomposed. The string encoder must keep normalizing so such
+        // a stored password still validates. The char[] path is intentionally not covered (master
+        // password digest relies on it staying un-normalized).
+        String decomposed = "caf\u0065\u0301"; // 'e' + combining acute (NFD form of "cafe-acute")
+
+        StrongPasswordEncryptor oldEncryptor = new StrongPasswordEncryptor();
+        String stored = oldEncryptor.encryptPassword(decomposed);
+
+        GeoServerDigestPasswordEncoder passwordEncoder = new GeoServerDigestPasswordEncoder();
+        passwordEncoder.setPrefix("digest1");
+
+        assertTrue(passwordEncoder.isPasswordValid(stored, decomposed, null));
     }
 
     @Test

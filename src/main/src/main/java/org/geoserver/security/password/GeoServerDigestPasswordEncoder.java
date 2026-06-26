@@ -8,6 +8,7 @@ package org.geoserver.security.password;
 import static org.geoserver.security.SecurityUtils.scramble;
 
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import org.geoserver.security.SecurityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -34,7 +35,8 @@ public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEnc
         return new PasswordEncoder() {
             @Override
             public String encode(CharSequence rawPassword) {
-                byte[] bytes = toBytes(rawPassword);
+                // legacy Jasypt StandardStringDigester applied NFC normalization, keep it for compat
+                byte[] bytes = toBytes(Normalizer.normalize(rawPassword, Normalizer.Form.NFC));
                 try {
                     return digester.encode(bytes);
                 } finally {
@@ -44,7 +46,7 @@ public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEnc
 
             @Override
             public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                byte[] bytes = toBytes(rawPassword);
+                byte[] bytes = toBytes(Normalizer.normalize(rawPassword, Normalizer.Form.NFC));
                 try {
                     return digester.matches(bytes, encodedPassword);
                 } finally {

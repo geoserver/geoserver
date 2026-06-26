@@ -77,7 +77,7 @@ Support for the [STAC Datacube Extension](https://github.com/stac-extensions/dat
 
 - property - The name of the property being summarized.
 
-  - Note that for the "bounds" aggregate, this value should either be "x","y","xmin","ymin","xmax", or "ymax".
+    - Note that for the "bounds" aggregate, this value should either be "x","y","xmin","ymin","xmax", or "ymax".
 
 **JSON Template Example**:
 
@@ -143,12 +143,12 @@ Layers are kept in the `layers` attribute of a collection, each one exposes the 
 - The layer `title` and `description` from the GeoServer own configuration
 
 - A list of `styles`, matching the styles associated to the layer. The first one is the default style. Each style contains the following properties:
-  - `name`: the style name
-  - `title`: the style title
+    - `name`: the style name
+    - `title`: the style title
 
 - A `services` object with attributes matching a lowercase service name, e.g., `wms`, `wcs`, `wmts`, each one being an object with the following two fields:
 
-  - `enabled`: true or false (might depend on the layer configuration too)
+    - `enabled`: true or false (might depend on the layer configuration too)
       - `formats`: the formats supported, for that layer, by the main service output (e.g., maps, coverages, tiles)
 
 This information could be used, for example, to implement the STAC [web-map-links](https://github.com/stac-extensions/web-map-links) extension.

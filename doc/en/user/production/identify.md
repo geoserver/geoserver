@@ -13,11 +13,11 @@ This is possible by setting one variable, `GEOSERVER_NODE_OPTS`, with one of the
 `GEOSERVER_NODE_OPTS` is a semicolon separated list of key/value pairs and it can contain the following keys:
 
 - `id`: the string identifying the node, which in turn can be a static string, or include the following substitution tokens
-  - `$host_ip`: the IP address of the node
-  - `$host_name`: the hostname of the node
-  - `$host_short_name`: the hostname truncated to not include the domain (`foo.local` becomes `foo`)
-  - `$host_compact_name`: the hostname with all domain parts shortened to their first character (`foo.local` becomes `foo.l`)
-  - `$git_branch`: the Git branch name (requires the `.git` folder to be present in the GEOSERVER_DATA_DIR, its immediate parent or the current working directory)
+    - `$host_ip`: the IP address of the node
+    - `$host_name`: the hostname of the node
+    - `$host_short_name`: the hostname truncated to not include the domain (`foo.local` becomes `foo`)
+    - `$host_compact_name`: the hostname with all domain parts shortened to their first character (`foo.local` becomes `foo.l`)
+    - `$git_branch`: the Git branch name (requires the `.git` folder to be present in the GEOSERVER_DATA_DIR, its immediate parent or the current working directory)
 - `color`: the label color, as a CSS color
 - `background`: the background color, as a CSS color
 

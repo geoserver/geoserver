@@ -33,9 +33,9 @@ The *Download Process* calls the *Download Estimator Process*, checks the file s
 - `bestResolutionOnMatchingCRS` : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See [RasterDownload of Heterogeneous CRS ImageMosaic](#heterogeneous_imagemosaic) below section for more details on this param.
 - `targetVerticalCRS` : optional TargetVerticalCRS, to be used to transform elevation data from a VerticalCRS to another one. See [Vertical data resampling on download](#vertical_resampling) below section for more details on this param
 - `resolutionsDifferenceTolerance` : the parameter allows to specify a tolerance value to control the use of native resolution of the data, when no target size has been specified and granules are reprojected. If
-  - the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,
-  - native resolution is the same for all the requested granules,
-  - the unit of measure is the same for native and target CRS,
+    - the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,
+    - native resolution is the same for all the requested granules,
+    - the unit of measure is the same for native and target CRS,
 
     the reprojected coverage will be forced to use native resolutions. For example by specifying a value of 5.0, if the percentage difference between native and reprojected data is below 5%, assuming that also the other two conditions are respected, the native resolutions will be preserved. Default values is 0.
 
@@ -420,15 +420,15 @@ The supported writing parameters are:
 - `tilewidth` : Width of internal tiles, in pixels
 - `tileheight` : Height of internal tiles, in pixels
 - `compression` : Compression type used to store internal tiles. Supported values are:
-  - `CCITT RLE` (Lossless) (Huffman)
-  - `LZW` (Lossless)
-  - `JPEG` (Lossy)
-  - `ZLib` (Lossless)
-  - `PackBits` (Lossless)
-  - `Deflate` (Lossless)
+    - `CCITT RLE` (Lossless) (Huffman)
+    - `LZW` (Lossless)
+    - `JPEG` (Lossy)
+    - `ZLib` (Lossless)
+    - `PackBits` (Lossless)
+    - `Deflate` (Lossless)
 - `quality` : Compression quality. Value is in the range [0 : 1]
-  - for `JPEG` lossy compression, 0 is for worst quality/higher compression and 1 is for best quality/lower compression. (default is 1).
-  - for `Deflate` lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]: `(deflate level = 1 + 8 * (quality))`, where level 1 is for best speed and level 9 is for best compression. (default level is 9)
+    - for `JPEG` lossy compression, 0 is for worst quality/higher compression and 1 is for best quality/lower compression. (default is 1).
+    - for `Deflate` lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]: `(deflate level = 1 + 8 * (quality))`, where level 1 is for best speed and level 9 is for best compression. (default level is 9)
 - `writenodata` : Supported value is one of true/false. Note that, by default, a [nodata TAG](https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.md) is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.
 
 # Direct download

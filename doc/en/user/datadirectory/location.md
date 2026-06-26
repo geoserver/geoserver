@@ -64,8 +64,8 @@ To create a new data directory:
 
   Navigate to the [GeoServer Download page](https://geoserver.org/download), select a version of GeoServer, and download the provided data directory zip.
 
-  - For GeoServer {{ release }} Nightly: [data](https://sourceforge.net/projects/geoserver/files/GeoServer/data)
-  - For GeoServer {{ version }}: [data](https://build.geoserver.org/geoserver/main/release/data)
+    - For GeoServer {{ release }} Nightly: [data](https://sourceforge.net/projects/geoserver/files/GeoServer/data)
+    - For GeoServer {{ version }}: [data](https://build.geoserver.org/geoserver/main/release/data)
 
 - You may also use a new empty folder as the data directory location.
 

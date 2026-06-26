@@ -1303,11 +1303,11 @@ When a property interpolation targets an attribute with multiple cardinality in 
 
 - `aggregate`: takes as arguments an expression (a property name or a function) that returns a list of values and a literal with the aggregation type eg. `aggregate(my.property.name,'MIN')`. The supported aggregation type are the following:
 
-  - `MIN` will return the minimum value from a list of numeric values.
-  - `MAX` will return the max value from a list of numeric values.
-  - `AVG` will return the average value from a list of numeric values.
-  - `UNIQUE` will remove duplicates values from a list of values.
-  - `JOIN` will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: `aggregate(my.property.name,'JOIN(,)')` .
+    - `MIN` will return the minimum value from a list of numeric values.
+    - `MAX` will return the max value from a list of numeric values.
+    - `AVG` will return the average value from a list of numeric values.
+    - `UNIQUE` will remove duplicates values from a list of values.
+    - `JOIN` will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: `aggregate(my.property.name,'JOIN(,)')` .
 
 - `stream`: takes an undefined number of expressions as parameters and chain them so that each expression evaluate on top of the output of the previous expression: eg. `stream(aPropertyName,aFunction,anotherPropertyName)` while evaluate the `aFunction` on the output of `aPropertyName` evaluation and finally `anotherPropertyName` will evaluate on top of the result of `aFunction`.
 

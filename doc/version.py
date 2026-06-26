@@ -63,7 +63,7 @@ def _guess_version(branch, default='3.1'):
     return default
 
 
-def _guess_release(branch, version, default='3.1.0'):
+def _guess_release(branch, version, default='3.0.0'):
     # Numeric release tag exact (3.1.2)
     if re.match(r'^\d+\.\d+\.\d+$', branch):
         return branch
@@ -169,4 +169,3 @@ def define_env(env):
     env.variables['api_url'] = '../../api'
     env.variables['api_url3'] = '../../../api'
     env.variables['api_url4'] = '../../../../api'
-

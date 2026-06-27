@@ -4,7 +4,7 @@ CQL functions enable data conversion and conditional behaviour to be specified i
 
 - The uDig manual includes a list of CQL functions:
 
-  - <http://udig.refractions.net/confluence/display/EN/Constraint%20Query%20Language.html>
+    - <http://udig.refractions.net/confluence/display/EN/Constraint%20Query%20Language.html>
 
 - CQL string literals are enclosed in single quotes, for example `'urn:ogc:def:nil:OGC:missing'`.
 

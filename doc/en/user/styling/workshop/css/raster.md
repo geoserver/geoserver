@@ -12,9 +12,9 @@ Review of raster symbology:
 
 - When queried with a "sample" location:
 
-  - A grid coverage can determine the appropriate array location and retrieve a value. Different techniques may be used interpolate an appropriate value from several measurements (higher quality) or directly return the "nearest neighbor" (faster).
-  - A vector coverages would use a point-in-polygon check and return an appropriate attribute value.
-  - A scientific model can calculate a value for each sample location
+    - A grid coverage can determine the appropriate array location and retrieve a value. Different techniques may be used interpolate an appropriate value from several measurements (higher quality) or directly return the "nearest neighbor" (faster).
+    - A vector coverages would use a point-in-polygon check and return an appropriate attribute value.
+    - A scientific model can calculate a value for each sample location
 
 - Many raster formats organize information into bands of content. Values recorded in these bands and may be mapped into colors for display (a process similar to theming an attribute for vector data).
 

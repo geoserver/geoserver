@@ -38,6 +38,9 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
 
     Boolean useTLS;
 
+    /** convert from group's member to a username for user-based search. Blank/null = do nothing */
+    String groupMember2UserName;
+
     /** Activates hierarchical nested parent groups search */
     private boolean useNestedParentGroups = false;
 
@@ -250,6 +253,14 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
             return ROLE_PREFIX_DEFAULT;
         }
         return rolePrefix;
+    }
+
+    public String getGroupMember2UserName() {
+        return groupMember2UserName;
+    }
+
+    public void setGroupMember2UserName(String groupMember2UserName) {
+        this.groupMember2UserName = groupMember2UserName;
     }
 
     public void setRolePrefix(String rolePrefix) {

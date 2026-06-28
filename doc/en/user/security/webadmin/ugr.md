@@ -70,7 +70,14 @@ In addition to the parameters listed above, the following additional parameter w
 
 To add a new LDAP user/group service, click the **Add new** link, and then the **LDAP** option at the top of the following form. The following figure shows the configuration options for a LDAP user/group service.
 
-![](images/ldap_group_service.png)
+
+
+![](images/ldap-group-sevice-a.png)
+![](images/ldap-group-sevice-b.png)
+![](images/ldap-group-sevice-c.png)
+![](images/ldap-group-sevice-d.png)
+![](images/ldap-group-sevice-e.png)
+![](images/ldap-group-sevice-f.png)
 
 *Adding a user/group service via LDAP*
 
@@ -86,7 +93,8 @@ To add a new LDAP user/group service, click the **Add new** link, and then the *
 | Filter to search group by name                    | Sets the LDAP filter for search a group by its name. Leave blank to derive from attribute.                                                                                   |
 | Attribute which contains the name of the group    | Sets attribute containing the group name. Leave blank to derive from name filter.                                                                                            |
 | Query format to retrieve the user/group mapping | Query format used for mapping user/group memberships. Leave blank to derive from attribute. This may contain some placeholder values:<br>`{0}`, the `username` of the user, for example `bob`.<br>`{1}`, the full DN of the user, for example `uid=bob,ou=users`. |
-| Attribute name to retrieve the user/group mapping | Attribute name used for mapping user/group memberships. Leave blank to derive from filter.                                                                                   |
+| Attribute name to retrieve the user/group mapping | Attribute name used for mapping user/group memberships. Leave blank to derive from filter.  
+| Key for converting group member to username    | Some LDAP systems need a conversion from the username listed as a member of a group to the username used in a search for that user.  <br>For example, the group's member might be `"cn=Adm-AD-Blasby,ou=Administration,ou=Production,ou=Accounts,ou=ApplicationServerManagement,dc=ad,dc=geocat,dc=net"`, but we need to search for the user using just the information in the `"cn="` part.  In this case, we would configure `"cn"` here to extract that username. <br> In this example, `"Adm-AD-Blasby"` will be used in the user search (see configuration option "Filter to search user by name").  If this is blank, then no conversion is done.                                                                         |
 | User search base                                  | LDAP search base for users.                                                                                                                                                  |
 | Filter to search all users                        | Sets the filter for search all available users. Leave blank to derive from attribute.                                                                                        |
 | Filter to search user by name                     | Sets the filter format for search a user by its name. Leave blank to derive from attribute.                                                                                  |

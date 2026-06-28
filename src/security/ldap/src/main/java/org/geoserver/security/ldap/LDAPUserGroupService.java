@@ -216,6 +216,17 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
 
         authenticateIfNeeded((ctx, ldapEntryIdentification) -> {
             try {
+                LOGGER.log(Level.FINE, "---- getUserByUsername");
+                LOGGER.log(Level.FINE, "username: " + username);
+                LOGGER.log(Level.FINE, "userSearchBase: " + userSearchBase);
+                LOGGER.log(Level.FINE, "userNameFilter: " + userNameFilter);
+                try {
+                    LOGGER.log(Level.FINE, "ctx.getNameInNamespace(): " + ctx.getNameInNamespace());
+                } catch (Exception e) {
+                    LOGGER.log(Level.FINE, "error for ctx.getNameInNamespace()", e);
+                }
+                LOGGER.log(Level.FINE, "^^^^ getUserByUsername");
+
                 DirContextOperations dco = LDAPUtils.getLdapTemplateInContext(ctx, template)
                         .searchForSingleEntry(userSearchBase, userNameFilter, new String[] {username});
 
@@ -267,7 +278,8 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
                             if (m.matches()) {
                                 user = m.group(1);
                             }
-                            String userNameFromMembership = getUserNameFromMembership(user);
+                            String userNameFromMembership = groupName2UserName(user);
+                            userNameFromMembership = getUserNameFromMembership(userNameFromMembership);
                             if (StringUtils.isNotBlank(userNameFromMembership)) {
                                 GeoServerUser userByUsername = getUserByUsername(userNameFromMembership);
                                 if (userByUsername != null) users.add(userByUsername);
@@ -310,7 +322,9 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService implements Geo
 
         for (String dn : memberGroupDns) {
             String memberGroupName = extractGroupCnFromDn(dn);
-            if (StringUtils.isNotBlank(memberGroupName)) childGroups.add(new GeoServerUserGroup(memberGroupName));
+            if (StringUtils.isNotBlank(memberGroupName)) {
+                childGroups.add(new GeoServerUserGroup(memberGroupName));
+            }
         }
         return childGroups;
     }

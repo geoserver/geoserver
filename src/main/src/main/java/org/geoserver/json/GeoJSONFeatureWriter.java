@@ -30,7 +30,6 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.util.ISO8601Formatter;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
@@ -304,7 +303,13 @@ public abstract class GeoJSONFeatureWriter<T extends FeatureType, F extends Feat
 
     /** Writes a OGC API - Features compliant timeStamp collection attribute */
     protected void writeCollectionTimeStamp(GeoJSONBuilder jw) {
-        jw.key("timeStamp").value(new ISO8601Formatter().format(new Date()));
+        Date timestamp = new Date();
+        jw.key("timeStamp");
+        if (TemporalUtils.isDateTimeFormatEnabled()) {
+            jw.value(TemporalUtils.printDate(timestamp));
+        } else {
+            jw.value(timestamp);
+        }
     }
 
     /**

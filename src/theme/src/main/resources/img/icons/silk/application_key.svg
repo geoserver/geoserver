@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>application_key</title>
+    <defs>
+        <linearGradient x1="0%" y1="46.4444444%" x2="100%" y2="53.5555556%" id="linearGradient-1">
+            <stop stop-color="#86AEDE" offset="0%"></stop>
+            <stop stop-color="#7091C2" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="6.49983724%" y1="33.3573676%" x2="92.4243164%" y2="66.1174588%" id="linearGradient-2">
+            <stop stop-color="#7BA8DD" offset="0%"></stop>
+            <stop stop-color="#5570A3" offset="99.9713542%"></stop>
+        </linearGradient>
+        <linearGradient x1="81.7438559%" y1="35.6857861%" x2="28.6846454%" y2="67.5591427%" id="linearGradient-3">
+            <stop stop-color="#DEE6F1" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-4">
+            <stop stop-color="#C98032" offset="0%"></stop>
+            <stop stop-color="#979797" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="application_key" stroke="none" fill="none">
+        <g id="application" stroke-width="1" fill-rule="evenodd" transform="translate(0, 6)">
+            <rect id="Frame" stroke="url(#linearGradient-1)" stroke-width="4" fill="#92BAE8" x="2" y="0" width="56" height="12" rx="6"></rect>
+            <rect id="window" stroke="url(#linearGradient-2)" stroke-width="4" fill="#92BAE8" x="2" y="8" width="56" height="40"></rect>
+            <rect id="Page" stroke="#FFFFFF" stroke-width="4" fill="url(#linearGradient-3)" x="6" y="12" width="48" height="32"></rect>
+        </g>
+        <g id="key" transform="translate(24, 24)">
+            <path d="M4,36 L4,30 L16,20 C15.0772068,15.7941153 15.0772068,12.460782 16,10 C17.3841899,6.30882701 19.5010922,6.24945388 22,5 C24.4989078,3.75054612 23.4258234,2.38618483 28,5 C32.5741766,7.61381517 33.6322488,9.60643537 35,12 C36.3677512,14.3935646 36.7663414,14.4673172 35,18 C33.2336586,21.5326828 34.3370016,22.3736244 30,24 C27.1086656,25.0842504 23.7753323,25.0842504 20,24 L20,28 L16,28 L16,32 L12,32 L12,36 L4,36 Z M28,8 L32,12 L28,16 L24,12 L28,8 Z" fill="#F4D847" fill-rule="evenodd"></path>
+            <path d="M4,36 L4,30 L16,20 C15.0819419,15.7814883 15.0819419,12.448155 16,10 C17.3770872,6.3277675 19.5346802,6.23265992 22,5 C23.6435466,4.17822672 25.6435466,4.17822672 28,5 L31,8 C27,7.33333333 24,8 22,10 C19,13 20.0793719,20.1536446 20,24 C19.96481,25.7053055 19.96481,27.0386389 20,28 L16,28 L16,32 L12,32 L12,36 L4,36 Z" id="highlight" fill-opacity="0.8" fill="#FFFFFF" fill-rule="evenodd"></path>
+            <path d="M28.658569,3.11153849 L29.0906447,3.26221759 L36.534654,10.7062269 L36.6329932,10.8452995 C38.2679316,13.1574516 38.2679316,15.9362727 36.7888544,18.8944272 C36.5499307,19.3722745 36.3579959,19.8175214 36.1733927,20.3050651 C36.075925,20.5624807 35.7828673,21.3903616 35.7331781,21.5239165 C35.1913285,22.9803046 34.5520759,23.8653122 33.2382785,24.6865158 C32.5869304,25.0936482 31.7746737,25.4704983 30.7022469,25.8726584 C28.0776488,26.8568826 25.1705575,27.0620144 22,26.5004273 L22,30 L18,30 L18,34 L14,34 L14,38 L2,38 L2,29.0632501 L2.7196312,28.4635574 L13.8109626,19.2207813 C13.0618243,15.2034655 13.1499342,11.904173 14.1273416,9.29775312 C15.2390061,6.33331451 16.6711075,5.10047083 19.5037006,3.91488196 C20.7088111,3.41048 20.695057,3.41640353 21.1055728,3.21114562 C23.278972,2.12444604 25.8280591,2.12444604 28.658569,3.11153849 Z M26.8284271,12 L28,13.1715729 L29.1715729,12 L28,10.8284271 Z" id="outline" stroke="url(#linearGradient-4)" stroke-width="4"></path>
+        </g>
+    </g>
+</svg>

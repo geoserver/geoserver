@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>add</title>
+    <defs>
+        <linearGradient x1="14.2857143%" y1="14.2857143%" x2="85.7142857%" y2="85.7142857%" id="linearGradient-1">
+            <stop stop-color="#55C034" stop-opacity="0.95686275" offset="0%"></stop>
+            <stop stop-color="#1D6C1A" stop-opacity="0.95686275" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="10%" y1="10%" x2="90%" y2="90%" id="linearGradient-2">
+            <stop stop-color="#76CA6A" offset="0%"></stop>
+            <stop stop-color="#6EB558" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="add" stroke="none" fill="none" fill-rule="evenodd">
+        <circle id="path863" fill="url(#linearGradient-1)" cx="32" cy="32" r="28"></circle>
+        <circle id="path863-7" fill="#AEDCA5" cx="32" cy="32" r="24"></circle>
+        <circle id="path905" fill="url(#linearGradient-2)" cx="32" cy="32" r="20"></circle>
+        <polygon id="path949" fill="#FFFFFF" points="28 20 36 20 36 28 44 28 44 36 36 36 36 44 28 44 28 36 20 36 20 28 28 28"></polygon>
+    </g>
+</svg>

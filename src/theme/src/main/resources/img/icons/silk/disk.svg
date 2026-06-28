@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>disk</title>
+    <defs>
+        <linearGradient x1="3.84615385%" y1="3.84615385%" x2="96.1538462%" y2="96.1538462%" id="linearGradient-1">
+            <stop stop-color="#80AAE9" offset="0%"></stop>
+            <stop stop-color="#658DCA" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="-3.84615385%" y1="-3.84615385%" x2="103.846154%" y2="103.846154%" id="linearGradient-2">
+            <stop stop-color="#D1DFF6" offset="0%"></stop>
+            <stop stop-color="#7C9BC9" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="disk" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g id="svg8">
+            <polygon id="path875-3" stroke="#366BBB" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" points="6 58 6 6 50 6 58 14 58 58"></polygon>
+            <polygon id="path875" stroke="url(#linearGradient-2)" stroke-width="4" fill="url(#linearGradient-1)" stroke-linecap="round" stroke-linejoin="round" points="6 58 6 6 50 6 58 14 58 58"></polygon>
+            <rect id="rect863" stroke="#FFFFFF" stroke-width="4" fill="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" x="14" y="42" width="36" height="16"></rect>
+            <rect id="rect869" fill="#88C062" x="16" y="44" width="32" height="4"></rect>
+            <rect id="rect871" fill="#88C062" x="16" y="52" width="32" height="4"></rect>
+            <rect id="rect873" fill="#FFFFFF" x="12" y="4" width="28" height="20"></rect>
+            <rect id="rect875" fill="#648CC8" x="16" y="8" width="6" height="12"></rect>
+            <rect id="rect875" fill="#648CC8" x="12" y="24" width="28" height="4"></rect>
+        </g>
+    </g>
+</svg>

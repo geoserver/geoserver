@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>database</title>
+    <defs>
+        <linearGradient x1="10%" y1="50%" x2="90%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#DADADA" offset="0%"></stop>
+            <stop stop-color="#F5F5F5" offset="50%"></stop>
+            <stop stop-color="#B3B3B3" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="10%" x2="50%" y2="90%" id="linearGradient-2">
+            <stop stop-color="#CCCCCC" offset="0%"></stop>
+            <stop stop-color="#F2F2F2" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="database" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g>
+            <polygon id="path1090" fill="url(#linearGradient-1)" points="12 16 12 48 20 56 44 56 52 48 52 16"></polygon>
+            <ellipse id="path1086" fill="url(#linearGradient-2)" cx="32" cy="16" rx="22" ry="10"></ellipse>
+            <path d="M10,26 C10,20.4771525 19.8497355,16 32,16 C44.1502645,16 54,20.4771525 54,26" id="path960-3-6" stroke="#C2C2C2" stroke-width="4" stroke-linejoin="round" transform="translate(32, 21) rotate(-180) translate(-32, -21)"></path>
+            <path d="M10,16 C10,10.4771525 19.8497355,6 32,6 C37.8347628,6 43.4305489,7.0535684 47.5563492,8.92893219 C51.6821495,10.804296 54,13.3478351 54,16" id="path960" stroke="#8B8B8B" stroke-width="4" stroke-linejoin="round"></path>
+            <line x1="50" y1="16" x2="50" y2="48" id="path1059" stroke="#F4F4F4" stroke-width="4" stroke-linejoin="round"></line>
+            <line x1="14" y1="48" x2="14" y2="16" id="path1057" stroke="#F4F4F4" stroke-width="4" stroke-linejoin="round"></line>
+            <path d="M10,58 C10,52.4771525 19.8497355,48 32,48 C44.1502645,48 54,52.4771525 54,58" id="path960-3" stroke="#8B8B8B" stroke-width="4" stroke-linejoin="round" transform="translate(32, 53) rotate(-180) translate(-32, -53)"></path>
+            <line x1="10" y1="16" x2="10" y2="48" id="path982" stroke="#8B8B8B" stroke-width="4" stroke-linejoin="round"></line>
+            <line x1="54" y1="16" x2="54" y2="48" id="path984" stroke="#8B8B8B" stroke-width="4" stroke-linejoin="round"></line>
+            <path d="M32,8 C26.849291,8 22.18556,8.6770791 18.638672,9.859375 C16.865228,10.450523 15.364838,11.156668 14.175781,12.09375 C12.986724,13.030832 12,14.360913 12,16 L16,16 C16,15.982233 16.019701,15.734906 16.652344,15.236328 C17.284986,14.73775 18.420381,14.148935 19.904297,13.654297 C22.872128,12.66502 27.209584,12 32,12 C36.790416,12 41.127872,12.66502 44.095703,13.654297 C45.579619,14.148935 46.715014,14.73775 47.347656,15.236328 C47.980299,15.734906 48,15.982233 48,16 L52,16 C52,14.360913 51.013276,13.030832 49.824219,12.09375 C48.635162,11.156668 47.134772,10.450523 45.361328,9.859375 C41.81444,8.6770791 37.150709,8 32,8 Z" id="path1035" fill="#F4F4F4"></path>
+            <path d="M32,48 C26.849291,48 22.18556,48.677079 18.638672,49.859375 C16.865228,50.450523 15.364838,51.156668 14.175781,52.09375 C12.986724,53.030832 12,54.360913 12,56 L16,56 C16,55.982233 16.019701,55.734906 16.652344,55.236328 C17.284986,54.73775 18.420381,54.148935 19.904297,53.654297 C22.872128,52.66502 27.209584,52 32,52 C36.790416,52 41.127872,52.66502 44.095703,53.654297 C45.579619,54.148935 46.715014,54.73775 47.347656,55.236328 C47.980299,55.734906 48,55.982233 48,56 L52,56 C52,54.360913 51.013276,53.030832 49.824219,52.09375 C48.635162,51.156668 47.134772,50.450523 45.361328,49.859375 C41.81444,48.677079 37.150709,48 32,48 Z" id="path1035-1" fill="#F4F4F4" transform="translate(32, 52) rotate(-180) translate(-32, -52)"></path>
+        </g>
+    </g>
+</svg>

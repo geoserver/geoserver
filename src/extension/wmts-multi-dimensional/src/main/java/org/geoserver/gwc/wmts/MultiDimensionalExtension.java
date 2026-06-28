@@ -359,6 +359,13 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                         EXPAND_LIMIT,
                         "Invalid " + EXPAND_LIMIT + " " + "value " + clientExpandLimit + ", expected an integer value");
             }
+            if (value < 0) {
+                throw new OWSException(
+                        400,
+                        "InvalidParameterValue",
+                        EXPAND_LIMIT,
+                        "Invalid " + EXPAND_LIMIT + " value " + value + ", must be non-negative");
+            }
             if (value < expandLimitMax) {
                 return value;
             } else {
@@ -396,6 +403,13 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                                 + "value "
                                 + clientLimit
                                 + ", expected an integer value");
+            }
+            if (value < 0) {
+                throw new OWSException(
+                        400,
+                        "InvalidParameterValue",
+                        DOMAIN_VALUES_LIMIT,
+                        "Invalid " + DOMAIN_VALUES_LIMIT + " value " + value + ", must be non-negative");
             }
             int limitMax = DOMAIN_VALUES_LIMIT_MAX_DEFAULT;
             if (value < limitMax) {

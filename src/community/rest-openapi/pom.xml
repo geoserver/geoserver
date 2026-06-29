@@ -25,7 +25,7 @@
     <feign-version>13.11</feign-version>
     <feign-form-version>3.8.0</feign-form-version>
     <oltu-version>1.0.2</oltu-version>
-    <jackson.version>2.18.2</jackson.version>
+    <jackson.version>2.22.0</jackson.version>
     <openapi-base-folder>${maven.multiModuleProjectDirectory}/src/community/rest-openapi/openapi/1.0.0</openapi-base-folder>
     <openapi.api.v1>${openapi.basepackage}.api.v1</openapi.api.v1>
     <openapi.api.v1.client>${openapi.api.v1}.client</openapi.api.v1.client>

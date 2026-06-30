@@ -196,11 +196,13 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
 
         // Avoid saving the Layer
         FormTester formTester = tester.newFormTester("form");
-        formTester.setValue("panel:tileLayerEditor:container:configs:createTileLayer", false);
+        formTester.setValue("panel:tileLayerEditor:container:createTileLayer", false);
 
-        tester.executeAjaxEvent("form:panel:tileLayerEditor:container:configs:createTileLayer", "change");
+        tester.executeAjaxEvent("form:panel:tileLayerEditor:container:createTileLayer", "change");
 
         tester.isInvisible("form:panel:tileLayerEditor:container:configs");
+        // the master checkbox must stay visible so caching can be re-enabled (GEOS regression)
+        tester.assertVisible("form:panel:tileLayerEditor:container:createTileLayer");
 
         LayerCacheOptionsTabPanel panel =
                 (LayerCacheOptionsTabPanel) tester.getComponentFromLastRenderedPage("form:panel");
@@ -251,7 +253,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         // mimic what the editor does to remove a tile layer associated with a layer info
         // print(tester.getComponentFromLastRenderedPage("form:panel"), true, true);
         FormTester formTester = tester.newFormTester("form");
-        formTester.setValue("panel:tileLayerEditor:container:configs:createTileLayer", false);
+        formTester.setValue("panel:tileLayerEditor:container:createTileLayer", false);
 
         formTester.submit();
 

@@ -13,7 +13,6 @@ import static org.geoserver.ows.util.ResponseUtils.params;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.awt.Dimension;
@@ -1679,16 +1678,16 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 if (onlineResourceIsURL) {
                     legendURL = legendInfo.getOnlineResource();
                 } else {
-
-                    // The base URL should be composed using the context path of the web application, obtained from
-                    // the ServletContext object. The base URL provided by the org.geoserver.ows.util.baseURL utility
-                    // cannot be reliably used as it obtains the context path from the HttpServletRequest object
-                    // which may include path segments in addition to the servlet context path, resulting in a
-                    // malformed custom legend URL.
-                    HttpServletRequest request = Dispatcher.REQUEST.get().getHttpRequest();
-                    ServletContext servletContext = request.getServletContext();
-                    String baseUrl = request.getScheme() + "://" + request.getServerName() + ":"
-                            + request.getServerPort() + servletContext.getContextPath();
+                    String wsSuffix = LocalWorkspace.get() != null
+                            ? "/" + LocalWorkspace.get().getName()
+                            : "";
+                    String baseUrl = baseUrl();
+                	// Strip out the workspace suffix from the base URL if included
+                   if (!wsSuffix.isEmpty() && baseUrl != null) {
+                    	// Remove the last occurrence of the workspace suffix string to avoid corrupting the base URL if the
+                    	// domain or context path coincidentally contains a match.
+                    	baseUrl = baseUrl.replaceFirst("(?s)" + wsSuffix + "(?!.*" + wsSuffix + ")", "");
+                    }
 
                     // Build the URL path
                     String path = "";

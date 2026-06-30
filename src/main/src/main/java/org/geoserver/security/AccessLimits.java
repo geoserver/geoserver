@@ -7,6 +7,7 @@ package org.geoserver.security;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Base class for all AccessLimits declared by a {@link ResourceAccessManager}.
@@ -25,6 +26,17 @@ public class AccessLimits implements Serializable, Cloneable {
     /** Gets the catalog mode for this layer */
     CatalogMode mode;
 
+    /**
+     * Optional tags used for targeted cache invalidation (tile caches, CDNs, WMS caches, etc.).
+     * {@link ResourceAccessManager} implementations supporting tag-based invalidation may populate this with opaque
+     * tags, that can then be used to drop tile caches affected by security rule changes. Deliberately excluded from
+     * {@link #equals} and {@link #hashCode}: tags are invalidation metadata, not part of the content fingerprint.
+     *
+     * <p><strong>A tag must not contain a comma</strong>: tags are stored as a single comma-separated value in the tile
+     * cache, so a comma in a tag breaks targeted invalidation. Comma-bearing tags are rejected.
+     */
+    private Set<String> securityTags;
+
     /** Builds a generic AccessLimits */
     public AccessLimits(CatalogMode mode) {
         this.mode = mode;
@@ -33,6 +45,29 @@ public class AccessLimits implements Serializable, Cloneable {
     /** The catalog mode for this layer */
     public CatalogMode getMode() {
         return mode;
+    }
+
+    /** Tags used for targeted cache invalidation, or null if none. See {@link #securityTags}. */
+    public Set<String> getSecurityTags() {
+        return securityTags;
+    }
+
+    /**
+     * Sets tags used for targeted cache invalidation. See {@link #securityTags}.
+     *
+     * @throws IllegalArgumentException if any tag contains a comma
+     */
+    public void setSecurityTags(Set<String> securityTags) {
+        if (securityTags == null) {
+            this.securityTags = null;
+            return;
+        }
+        for (String tag : securityTags) {
+            if (tag.indexOf(',') >= 0) {
+                throw new IllegalArgumentException("Security tag must not contain a comma: " + tag);
+            }
+        }
+        this.securityTags = Set.copyOf(securityTags);
     }
 
     @Override

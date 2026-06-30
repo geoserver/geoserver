@@ -102,6 +102,10 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         getUserMap(userName).put(securedItem.getId(), limits);
     }
 
+    public void clearLimits() {
+        limits.clear();
+    }
+
     Map<String, AccessLimits> getUserMap(String userName) {
         Map<String, AccessLimits> userMap = limits.get(userName);
         if (userMap == null) {

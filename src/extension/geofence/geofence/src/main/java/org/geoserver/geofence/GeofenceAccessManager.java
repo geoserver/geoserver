@@ -612,12 +612,13 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         CatalogMode catalogMode = getCatalogMode(accessInfo, resultLimits);
         LOGGER.log(Level.FINE, "Returning mode {0} for resource {1}", new Object[] {catalogMode, info});
 
-        AccessLimits accessLimits = null;
+        AccessLimits accessLimits;
         if (info instanceof FeatureTypeInfo) {
             // merge the area among the filters
-            if (intersectsArea != null) {
-                Filter areaFilter = FF.intersects(FF.property(""), FF.literal(intersectsArea));
-                if (clipArea != null) {
+            if (intersectsArea != null || clipArea != null) {
+                Geometry filterArea = intersectsArea != null ? intersectsArea : clipArea;
+                Filter areaFilter = FF.intersects(FF.property(""), FF.literal(filterArea));
+                if (intersectsArea != null && clipArea != null) {
                     Filter intersectClipArea = FF.intersects(FF.property(""), FF.literal(clipArea));
                     areaFilter = FF.or(areaFilter, intersectClipArea);
                 }

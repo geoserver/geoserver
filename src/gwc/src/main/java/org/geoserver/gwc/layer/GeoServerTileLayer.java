@@ -1682,11 +1682,12 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                             ? "/" + LocalWorkspace.get().getName()
                             : "";
                     String baseUrl = baseUrl();
-                	// Strip out the workspace suffix from the base URL if included
-                   if (!wsSuffix.isEmpty() && baseUrl != null) {
-                    	// Remove the last occurrence of the workspace suffix string to avoid corrupting the base URL if the
-                    	// domain or context path coincidentally contains a match.
-                    	baseUrl = baseUrl.replaceFirst("(?s)" + wsSuffix + "(?!.*" + wsSuffix + ")", "");
+                    // Strip out the workspace suffix from the base URL if included
+                    if (!wsSuffix.isEmpty() && baseUrl != null) {
+                        // Remove the last occurrence of the workspace suffix string to avoid corrupting the base URL if
+                        // the
+                        // domain or context path coincidentally contains a match.
+                        baseUrl = baseUrl.replaceFirst("(?s)" + wsSuffix + "(?!.*" + wsSuffix + ")", "");
                     }
 
                     // Build the URL path

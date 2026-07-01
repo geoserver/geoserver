@@ -23,12 +23,16 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ReTypingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.collection.ClippedFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
@@ -125,7 +129,10 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
         Geometry clipFilter = limits.getClipVectorFilter();
         Geometry intersectFilter = limits.getIntersectVectorFilter();
         if (clipFilter != null) {
+            CoordinateReferenceSystem collectionCRS = collection.getSchema().getCoordinateReferenceSystem();
+            clipFilter = reprojectToCollectionCRS(clipFilter, collectionCRS);
             if (intersectFilter != null) {
+                intersectFilter = reprojectToCollectionCRS(intersectFilter, collectionCRS);
                 collection = (FeatureCollection<T, F>) new ClipIntersectsFeatureCollection(
                         (SimpleFeatureCollection) collection, clipFilter, intersectFilter);
             } else {
@@ -134,6 +141,20 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
             }
         }
         return collection;
+    }
+
+    private static Geometry reprojectToCollectionCRS(Geometry geometry, CoordinateReferenceSystem targetCRS) {
+        if (geometry == null || targetCRS == null || geometry.getSRID() == 0) return geometry;
+        try {
+            CoordinateReferenceSystem geomCRS = CRS.decode("EPSG:" + geometry.getSRID(), true);
+            MathTransform mt = CRS.findMathTransform(geomCRS, targetCRS, true);
+            if (!mt.isIdentity()) {
+                return JTS.transform(geometry, mt);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Could not reproject clip geometry to collection CRS", e);
+        }
+        return geometry;
     }
 
     protected Query getReadQuery() {

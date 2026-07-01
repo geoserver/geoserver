@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -19,6 +20,8 @@ import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.geofence.core.model.enums.GrantType;
+import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.CoverageAccessLimits;
@@ -225,6 +228,31 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
 
         assertEquals(filter, vl.getReadFilter());
         assertEquals(filter, vl.getWriteFilter());
+    }
+
+    /**
+     * This test ensures that, with a CLIP-only rule (no intersects area set), the read and write filters produced by
+     * {@code buildResourceAccessLimits} include an INTERSECTS restriction built from the clip area.
+     */
+    @Test
+    public void testClipOnlyAddsSpatialFilter() throws Exception {
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+        FeatureTypeInfo resource = (FeatureTypeInfo)
+                catalog.getLayerByName(getLayerId(MockData.GENERICENTITY)).getResource();
+
+        AccessInfo accessInfo = new AccessInfo(GrantType.LIMIT);
+        accessInfo.setClipAreaWkt("MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))");
+
+        VectorAccessLimits vl =
+                (VectorAccessLimits) accessManager.buildResourceAccessLimits(resource, accessInfo, null);
+
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+        Geometry clip = new WKTReader().read("MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))");
+        Filter expected = ff.intersects(ff.property(""), ff.literal(clip));
+
+        assertEquals(expected, vl.getReadFilter());
+        assertEquals(expected, vl.getWriteFilter());
+        assertEquals(clip, vl.getClipVectorFilter());
     }
 
     /**

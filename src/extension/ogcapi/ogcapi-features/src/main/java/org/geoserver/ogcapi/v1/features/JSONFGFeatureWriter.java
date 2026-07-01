@@ -120,6 +120,7 @@ public class JSONFGFeatureWriter<T extends FeatureType, F extends Feature> exten
     }
 
     private String getCRSURI(CoordinateReferenceSystem crs) {
+        if (crs == null) return null;
         try {
             // prefer EPSG authority if possible, more commonly understood
             String epsgIdentifier = CRS.lookupIdentifier(Citations.EPSG, crs, false);

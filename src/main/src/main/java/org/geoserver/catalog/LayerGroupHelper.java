@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
@@ -250,8 +251,18 @@ public class LayerGroupHelper {
 
     public List<LayerInfo> allLayersForRendering() {
         List<LayerInfo> layers = new ArrayList<>();
-        allLayersForRendering(group, null, layers, true);
+        allLayersForRendering((layer, containers) -> layers.add(layer));
         return layers;
+    }
+
+    /**
+     * Visits every leaf layer that would be rendered for this group, together with the chain of groups containing it
+     * (top group first, direct parent last), mirroring {@link #allLayersForRendering()} including mode handling. The
+     * container list handed to the consumer is a snapshot safe to retain. Self-referential groups are skipped, so the
+     * traversal terminates even on a cyclic (invalid) structure.
+     */
+    public void allLayersForRendering(BiConsumer<LayerInfo, List<LayerGroupInfo>> consumer) {
+        allLayersForRendering(group, null, true, List.of(), consumer);
     }
 
     /**
@@ -270,10 +281,20 @@ public class LayerGroupHelper {
 
     @SuppressWarnings("FallThrough") // switch intentionally falls through default
     private void allLayersForRendering(
-            LayerGroupInfo group, LayerGroupStyle groupStyle, List<LayerInfo> layers, boolean root) {
+            LayerGroupInfo group,
+            LayerGroupStyle groupStyle,
+            boolean root,
+            List<LayerGroupInfo> parents,
+            BiConsumer<LayerInfo, List<LayerGroupInfo>> consumer) {
+        // guard against cyclic references; catalog validation forbids them, but be defensive so the walk terminates
+        if (parents.contains(group)) {
+            return;
+        }
+        List<LayerGroupInfo> containers = new ArrayList<>(parents);
+        containers.add(group);
         switch (group.getMode()) {
             case EO:
-                layers.add(group.getRootLayer());
+                consumer.accept(group.getRootLayer(), containers);
                 break;
             case CONTAINER:
                 if (root) {
@@ -289,13 +310,14 @@ public class LayerGroupHelper {
                     PublishedInfo p = publishables.get(i);
                     StyleInfo s = styles.get(i);
                     if (p instanceof LayerInfo l) {
-                        layers.add(l);
+                        consumer.accept(l, containers);
                     } else if (p instanceof LayerGroupInfo groupInfo) {
-                        LayerGroupStyle gStyle = null;
-                        gStyle = getStyleOrThrow(groupInfo, s);
-                        allLayersForRendering(groupInfo, gStyle, layers, false);
+                        LayerGroupStyle gStyle = getStyleOrThrow(groupInfo, s);
+                        allLayersForRendering(groupInfo, gStyle, false, containers, consumer);
                     } else if (p == null && s != null) {
-                        expandStyleGroup(s, getCrs(group.getBounds()), layers, null);
+                        List<LayerInfo> expanded = new ArrayList<>();
+                        expandStyleGroup(s, getCrs(group.getBounds()), expanded, null);
+                        expanded.forEach(l -> consumer.accept(l, containers));
                     }
                 }
         }

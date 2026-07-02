@@ -5,6 +5,22 @@
  */
 package org.geoserver.security.decorators;
 
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.easymock.Capture;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.VectorAccessLimits;
@@ -42,23 +58,6 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class SecuredFeatureSourceTest extends SecureObjectsTest {
 
@@ -174,7 +173,8 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
             q.setProperties(pnames);
             ro.getFeatures(q);
             String notExpectedMessage =
-                    "Complex store returned more properties than allowed by security (because they are required by the schema). Either the security setup is broken or you have a security breach";
+                    "Complex store returned more properties than allowed by security (because they are required by the"
+                            + " schema). Either the security setup is broken or you have a security breach";
             assertFalse(customLogHandler.messages.contains(notExpectedMessage));
         } finally {
             logger.removeHandler(customLogHandler);

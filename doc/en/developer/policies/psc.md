@@ -148,13 +148,13 @@ Long term project management. Duties include:
 The PSC is responsible for defining project policies and practiced. Examples include:
 
 - Development Practices
-  - Code Reviews
-  - Intellectual Property
-  - Documentation Requirements
-  - Commit Access
-  - Testing Requirements
-  - Branch Culture
+    - Code Reviews
+    - Intellectual Property
+    - Documentation Requirements
+    - Commit Access
+    - Testing Requirements
+    - Branch Culture
 - Release Procedures
-  - Frequency
-  - Version numbering
-  - Stable vs Maintenance vs R&D
+    - Frequency
+    - Version numbering
+    - Stable vs Maintenance vs R&D

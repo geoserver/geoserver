@@ -37,36 +37,37 @@ Here are the data models (as you can see there are redundancies, in particular i
 
 - name (string): the type name
 - attributes (listMap): the type attributes
-  - name (string): attribute name
-  - namespace (string): attribute namespace URI
-  - prefix (string): attribute namespace prefix
-  - type (string): attribute type, the fully qualified Java class name
-  - isGeometry (boolean): true if the attribute is geometric, false otherwise
+ 
+    - name (string): attribute name
+    - namespace (string): attribute namespace URI
+    - prefix (string): attribute namespace prefix
+    - type (string): attribute type, the fully qualified Java class name
+    - isGeometry (boolean): true if the attribute is geometric, false otherwise
 
 #### Feature (map)
 
 - fid (string): the feature ID (WFS feature id)
 - typeName (string): the type name
 - attributes (listMap): the list of attributes (both data and metadata)
-  - name (string): attribute name
-  - namespace (string): attribute namespace URI
-  - prefix (string): attribute namespace prefix
-  - isGeometry (boolean): true if the attribute is geometric, false otherwise
-  - value: a string representation of the attribute value
-  - isComplex (boolean): true if the attribute is a feature (see [app-schema.complex-features](../data/app-schema/complex-features.md)), false otherwise
-  - type (string or FeatureType): attribute type: if isComplex is false, the fully qualified Java class name; if isComplex is true, a FeatureType
-  - rawValue: the actual attribute value (is isComplex is true rawValue is a Feature)
+    - name (string): attribute name
+    - namespace (string): attribute namespace URI
+    - prefix (string): attribute namespace prefix
+    - isGeometry (boolean): true if the attribute is geometric, false otherwise
+    - value: a string representation of the attribute value
+    - isComplex (boolean): true if the attribute is a feature (see [app-schema.complex-features](../data/app-schema/complex-features.md)), false otherwise
+    - type (string or FeatureType): attribute type: if isComplex is false, the fully qualified Java class name; if isComplex is true, a FeatureType
+    - rawValue: the actual attribute value (is isComplex is true rawValue is a Feature)
 - type (map)
-  - name (string): the type name (same as typeName)
-  - namespace (string): attribute namespace URI
-  - prefix (string): attribute namespace prefix
-  - title (string): The title configured in the admin console
-  - abstract (string): The abstract for the type
-  - description (string): The description for the type
-  - keywords (list): The keywords for the type
-  - metadataLinks (list): The metadata URLs for the type
-  - SRS (string): The layer's SRS
-  - nativeCRS (string): The layer's coordinate reference system as WKT
+    - name (string): the type name (same as typeName)
+    - namespace (string): attribute namespace URI
+    - prefix (string): attribute namespace prefix
+    - title (string): The title configured in the admin console
+    - abstract (string): The abstract for the type
+    - description (string): The description for the type
+    - keywords (list): The keywords for the type
+    - metadataLinks (list): The metadata URLs for the type
+    - SRS (string): The layer's SRS
+    - nativeCRS (string): The layer's coordinate reference system as WKT
 
 #### FeatureCollection (map)
 
@@ -93,14 +94,14 @@ Allows accessing math functions.
 
 #### request
 
-- \${request.LAYERS}
-- \${request.ENV.PROPERTY}
+- `${request.LAYERS}`
+- `${request.ENV.PROPERTY}`
 
 #### environment
 
-- \${environment.GEOSERVER_DATA_DIR}
-- \${environment.WEB_SITE_URL}
+- `${environment.GEOSERVER_DATA_DIR}`
+- `${environment.WEB_SITE_URL}`
 
 #### Math
 
-- \${Math.max(request.NUMBER1,request.NUMBER2)}
+- `${Math.max(request.NUMBER1,request.NUMBER2)}`

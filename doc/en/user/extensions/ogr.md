@@ -147,12 +147,12 @@ The file showcases all possible usage of the configuration elements:
 
 - `Format` defines a single format, which is defined by the following tags:
 
-  - `ogrFormat`: the name of the format to be passed to ogr2ogr with the -f option (it's case sensitive).
-  - `formatName`: is the name of the output format as advertised by GeoServer
-  - `fileExtension`: is the extension of the file generated after the translation, if any (can be omitted)
-  - `option`: can be used to add one or more options to the ogr2ogr command line. As you can see by the MIF example, each item must be contained in its own tag. You can get a full list of options by running ogr2ogr --help or by visiting the ogr2ogr web page. Also consider that each format supports specific creation options, listed in the description page for each format (for example, here is the MapInfo one).
-  - `singleFile` (since 2.0.3): if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file
-  - `mimeType` (since 2.0.3): the mime type of the file returned when using `singleFile`. If not specified `application/octet-stream` will be used as a default.
+    - `ogrFormat`: the name of the format to be passed to ogr2ogr with the -f option (it's case sensitive).
+    - `formatName`: is the name of the output format as advertised by GeoServer
+    - `fileExtension`: is the extension of the file generated after the translation, if any (can be omitted)
+    - `option`: can be used to add one or more options to the ogr2ogr command line. As you can see by the MIF example, each item must be contained in its own tag. You can get a full list of options by running ogr2ogr --help or by visiting the ogr2ogr web page. Also consider that each format supports specific creation options, listed in the description page for each format (for example, here is the MapInfo one).
+    - `singleFile` (since 2.0.3): if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file
+    - `mimeType` (since 2.0.3): the mime type of the file returned when using `singleFile`. If not specified `application/octet-stream` will be used as a default.
 
 # OGR based WPS Output Format
 

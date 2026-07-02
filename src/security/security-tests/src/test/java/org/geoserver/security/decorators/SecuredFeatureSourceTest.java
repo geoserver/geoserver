@@ -5,21 +5,7 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
+import org.easymock.Capture;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WrapperPolicy;
@@ -56,6 +42,23 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SecuredFeatureSourceTest extends SecureObjectsTest {
 
@@ -176,6 +179,43 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         } finally {
             logger.removeHandler(customLogHandler);
         }
+    }
+
+    /**
+     * This test ensures that the query sent to the delegate feature source carries both the security read filter and
+     * the caller's pagination parameters (startIndex/maxFeatures).
+     */
+    @Test
+    public void testGetFeaturesMergesPaginationWithSecurityFilter() throws Exception {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Filter securityFilter = ff.equals(ff.property("name"), ff.literal("foo"));
+        VectorAccessLimits limits =
+                new VectorAccessLimits(CatalogMode.HIDE, null, securityFilter, null, securityFilter);
+
+        SimpleFeatureType schema = createNiceMock(SimpleFeatureType.class);
+        replay(schema);
+        SimpleFeatureCollection fc = createNiceMock(SimpleFeatureCollection.class);
+        expect(fc.getSchema()).andReturn(schema).anyTimes();
+        replay(fc);
+
+        SimpleFeatureSource fs = createNiceMock(SimpleFeatureSource.class);
+        Capture<Query> queryCapture = Capture.newInstance();
+        expect(fs.getFeatures(capture(queryCapture))).andReturn(fc).anyTimes();
+        replay(fs);
+
+        SecuredFeatureSource<SimpleFeatureType, SimpleFeature> secured =
+                new SecuredFeatureSource<>(fs, WrapperPolicy.readOnlyHide(limits));
+
+        Query userQuery = new Query();
+        userQuery.setStartIndex(5);
+        userQuery.setMaxFeatures(10);
+
+        secured.getFeatures(userQuery);
+
+        Query mixed = queryCapture.getValue();
+        assertEquals(Integer.valueOf(5), mixed.getStartIndex());
+        assertEquals(10, mixed.getMaxFeatures());
+        assertEquals(securityFilter, mixed.getFilter());
     }
 
     /**

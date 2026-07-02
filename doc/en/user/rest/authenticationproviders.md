@@ -24,12 +24,12 @@ The Security REST service lets administrators **list, create, update, delete, en
 
 - **Create (POST):** `className` is **required**.
 - **Update (PUT):**
-  - Path `{providerName}` **must match** payload `name`.
-  - `className` **cannot change**; omit it to keep the current value.
-  - `id` may be omitted; the existing value is preserved.
+    - Path `{providerName}` **must match** payload `name`.
+    - `className` **cannot change**; omit it to keep the current value.
+    - `id` may be omitted; the existing value is preserved.
 - **Order & enable/disable:**
-  - The active list in the security config (`<authproviderNames>`) defines both **order** and **which providers are enabled**.
-  - Names **present** = enabled (in that order). Names **absent** = disabled (kept on disk).
+    - The active list in the security config (`<authproviderNames>`) defines both **order** and **which providers are enabled**.
+    - Names **present** = enabled (in that order). Names **absent** = disabled (kept on disk).
 
 ## Base URL
 

@@ -21,9 +21,9 @@ Because a single `gsml:GeologicUnit` can be observed at several distinct locatio
 
 - Install the app-schema plugin `geoserver-*-app-schema-plugin.zip`:
 
-  - Place the jar files in `WEB-INF/lib`.
+    - Place the jar files in `WEB-INF/lib`.
 
-  - The `tutorial` folder contains the GeoServer configuration (data directory) used for this tutorial.
+    - The `tutorial` folder contains the GeoServer configuration (data directory) used for this tutorial.
 
       - Either replace your existing `data` directory with the tutorial data directory,
       - Or edit `WEB-INF/web.xml` to set `GEOSERVER_DATA_DIR` to point to the tutorial data directory. (Be sure to uncomment the section that sets `GEOSERVER_DATA_DIR`.)

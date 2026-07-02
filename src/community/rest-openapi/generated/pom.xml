@@ -9,9 +9,19 @@
   <artifactId>gs-rest-openapi-generated</artifactId>
   <packaging>pom</packaging>
   <name>OpenAPI generated-code parent pom</name>
-
   <modules>
     <module>model</module>
     <module>feign-client</module>
   </modules>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>2.22.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

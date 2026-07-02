@@ -30053,14 +30053,20 @@
 <p>Numeric values consist of a number, or a number annotated with a measurement value. In general, it is wise to use measurement annotations most of the time, to avoid ambiguity and protect against potential future changes to the default units.</p>
 <p>Currently, the supported units include:</p>
 <ul>
-<li>Length</li>
+<li>Length<ul>
 <li><code>px</code> pixels</li>
 <li><code>m</code> meters</li>
 <li><code>ft</code> feet</li>
-<li>Angle</li>
+</ul>
+</li>
+<li>Angle<ul>
 <li><code>deg</code> degrees</li>
-<li>Ratio</li>
+</ul>
+</li>
+<li>Ratio<ul>
 <li><code>%</code> percentage</li>
+</ul>
+</li>
 </ul>
 <p>When using expressions in place of numeric values, the first unit listed for the type of measure is assumed.</p>
 <p>Since the CSS module translates styles to SLD before any rendering occurs, its model of unit-of-measure is tied to that of SLD. In practice, this means that for any particular symbolizer, there only one unit-of-measure applied for the style. Therefore, the CSS module extracts that unit-of-measure from one special property for each symbolizer type. Those types are listed below for reference:</p>

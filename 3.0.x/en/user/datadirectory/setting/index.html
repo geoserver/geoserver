@@ -30370,10 +30370,8 @@
 </li>
 <li>
 <p><code>GEOSERVER_DATA_DIR_LOADER_THREADS</code>: Controls the number of threads used for loading and parsing</p>
-</li>
-<li>
-<p>By default, the loader uses a heuristic that selects the minimum between <code>16</code> and the number of available processors as reported by the JVM</p>
 <ul>
+<li>By default, the loader uses a heuristic that selects the minimum between <code>16</code> and the number of available processors as reported by the JVM</li>
 <li>Set to a specific number to override this heuristic (e.g., <code>8</code> to use 8 threads)</li>
 <li>Values less than or equal to zero will produce a warning and fall back to the default heuristic</li>
 </ul>

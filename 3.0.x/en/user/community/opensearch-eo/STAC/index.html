@@ -29990,7 +29990,7 @@
 </ul>
 <p>Given the differences in names and structures the STAC resources are created using templates, in particular:</p>
 <ul>
-<li>The HTML representation is built using <a href="../../../tutorials/freemarker/">Freemarker templates</a></li>
+<li>The HTML representation is built using <a href="../../tutorials/freemarker.md">Freemarker templates</a></li>
 <li>The GeoJSON representation is built using GeoJSON <a href="../../features-templating/">features templates</a></li>
 </ul>
 <p>The default templates work against the <a href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql">default PostGIS database structure</a> and can be customized to include new properties to follow eventual database modifications.</p>
@@ -30056,9 +30056,9 @@
 </li>
 <li>
 <p>property - The name of the property being summarized.</p>
-</li>
-<li>
-<p>Note that for the "bounds" aggregate, this value should either be "x","y","xmin","ymin","xmax", or "ymax".</p>
+<ul>
+<li>Note that for the "bounds" aggregate, this value should either be "x","y","xmin","ymin","xmax", or "ymax".</li>
+</ul>
 </li>
 </ul>
 <p><strong>JSON Template Example</strong>:</p>
@@ -30120,17 +30120,15 @@
 </li>
 <li>
 <p>A list of <code>styles</code>, matching the styles associated to the layer. The first one is the default style. Each style contains the following properties:</p>
-</li>
+<ul>
 <li><code>name</code>: the style name</li>
-<li>
-<p><code>title</code>: the style title</p>
+<li><code>title</code>: the style title</li>
+</ul>
 </li>
 <li>
 <p>A <code>services</code> object with attributes matching a lowercase service name, e.g., <code>wms</code>, <code>wcs</code>, <code>wmts</code>, each one being an object with the following two fields:</p>
-</li>
-<li>
-<p><code>enabled</code>: true or false (might depend on the layer configuration too)</p>
 <ul>
+<li><code>enabled</code>: true or false (might depend on the layer configuration too)</li>
 <li><code>formats</code>: the formats supported, for that layer, by the main service output (e.g., maps, coverages, tiles)</li>
 </ul>
 </li>

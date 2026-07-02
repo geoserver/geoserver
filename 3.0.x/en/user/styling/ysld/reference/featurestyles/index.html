@@ -30191,13 +30191,17 @@
 <p>A Feature Style is a <strong>top-level element</strong> in a YSLD style.</p>
 <p>Consider the following hierarchy:</p>
 <ul>
-<li>Feature Style 1</li>
+<li>Feature Style 1<ul>
 <li>Rule 1a</li>
 <li>Rule 1b</li>
-<li>Feature Style 2</li>
+</ul>
+</li>
+<li>Feature Style 2<ul>
 <li>Rule 2a</li>
 <li>Rule 2b</li>
 <li>Rule 2c</li>
+</ul>
+</li>
 </ul>
 <p>In this case, the rules contained inside Feature Style 1 will be processed and their <a href="../symbolizers/">symbolizers</a> drawn first. After Rule 1a and 1b are processed, the renderer will move on to Feature Style 2, where Rule 2a, 2b, and 2c will then be processed and their symbolizers drawn.</p>
 <p><img alt="" src="../img/feature-style-order.svg" /></p>

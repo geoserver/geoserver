@@ -30227,7 +30227,7 @@
 
 
   
-    <a href="https://github.com/geoserver/geoserver/edit/main/doc/en/user/tutorials/freemarker.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/geoserver/geoserver/edit/main/doc/en/user/tutorials/freemarker/index.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -30239,7 +30239,7 @@
 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
 <p>This tutorial will introduce you to a more in depth view of what FreeMarker templates are and how you can use the data provided to templates by GeoServer.</p>
 <p><a href="http://www.freemarker.org/">Freemarker</a> is a simple yet powerful template engine that GeoServer uses to allow user customization of outputs. In particular, at the time of writing it is used to allow customization of GetFeatureInfo, GeoRSS and KML outputs.</p>
-<p>Freemarker allows for simple variable expansions, as in <code>${myVarName}</code>, expansion of nested properties, such as in <code>${feature.myAtt.value}</code>, up to little programs using loops, ifs and variables. Most of the relevant information about how to approach template writing is included in the Freemarker's <a href="http://www.freemarker.org/docs/dgui.md">Designer guide</a> and won't be repeated here: the guide, along with the <a href="../../extensions/kml/tutorials/kmlplacemark/">KML Placemark Templates</a> and <a href="../GetFeatureInfo/">GetFeatureInfo Templates</a> tutorials should be good enough to give you a good grip on how a template is built.</p>
+<p>Freemarker allows for simple variable expansions, as in <code>${myVarName}</code>, expansion of nested properties, such as in <code>${feature.myAtt.value}</code>, up to little programs using loops, ifs and variables. Most of the relevant information about how to approach template writing is included in the Freemarker's <a href="http://www.freemarker.org/docs/dgui.md">Designer guide</a> and won't be repeated here: the guide, along with the <a href="../extensions/kml/tutorials/kmlplacemark/index.md">KML Placemark Templates</a> and <a href="GetFeatureInfo/index.md">GetFeatureInfo Templates</a> tutorials should be good enough to give you a good grip on how a template is built.</p>
 <h3 id="template-lookup">Template Lookup<a class="headerlink" href="#template-lookup" title="Permanent link">&para;</a></h3>
 <p>GeoServer looks up templates in three different places, allowing for various levels of customization. For example given the <code>content.ftl</code> template used to generate WMS GetFeatureInfo content:</p>
 <ul>
@@ -30263,27 +30263,33 @@
 <h4 id="featuretype-map">FeatureType (map)<a class="headerlink" href="#featuretype-map" title="Permanent link">&para;</a></h4>
 <ul>
 <li>name (string): the type name</li>
-<li>attributes (listMap): the type attributes</li>
+<li>
+<p>attributes (listMap): the type attributes</p>
+<ul>
 <li>name (string): attribute name</li>
 <li>namespace (string): attribute namespace URI</li>
 <li>prefix (string): attribute namespace prefix</li>
 <li>type (string): attribute type, the fully qualified Java class name</li>
 <li>isGeometry (boolean): true if the attribute is geometric, false otherwise</li>
 </ul>
+</li>
+</ul>
 <h4 id="feature-map">Feature (map)<a class="headerlink" href="#feature-map" title="Permanent link">&para;</a></h4>
 <ul>
 <li>fid (string): the feature ID (WFS feature id)</li>
 <li>typeName (string): the type name</li>
-<li>attributes (listMap): the list of attributes (both data and metadata)</li>
+<li>attributes (listMap): the list of attributes (both data and metadata)<ul>
 <li>name (string): attribute name</li>
 <li>namespace (string): attribute namespace URI</li>
 <li>prefix (string): attribute namespace prefix</li>
 <li>isGeometry (boolean): true if the attribute is geometric, false otherwise</li>
 <li>value: a string representation of the attribute value</li>
-<li>isComplex (boolean): true if the attribute is a feature (see <a href="../../data/app-schema/complex-features/">app-schema.complex-features</a>), false otherwise</li>
+<li>isComplex (boolean): true if the attribute is a feature (see <a href="../data/app-schema/complex-features.md">app-schema.complex-features</a>), false otherwise</li>
 <li>type (string or FeatureType): attribute type: if isComplex is false, the fully qualified Java class name; if isComplex is true, a FeatureType</li>
 <li>rawValue: the actual attribute value (is isComplex is true rawValue is a Feature)</li>
-<li>type (map)</li>
+</ul>
+</li>
+<li>type (map)<ul>
 <li>name (string): the type name (same as typeName)</li>
 <li>namespace (string): attribute namespace URI</li>
 <li>prefix (string): attribute namespace prefix</li>
@@ -30294,6 +30300,8 @@
 <li>metadataLinks (list): The metadata URLs for the type</li>
 <li>SRS (string): The layer's SRS</li>
 <li>nativeCRS (string): The layer's coordinate reference system as WKT</li>
+</ul>
+</li>
 </ul>
 <h4 id="featurecollection-map">FeatureCollection (map)<a class="headerlink" href="#featurecollection-map" title="Permanent link">&para;</a></h4>
 <ul>
@@ -30314,17 +30322,17 @@
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <h4 id="request">request<a class="headerlink" href="#request" title="Permanent link">&para;</a></h4>
 <ul>
-<li>\${request.LAYERS}</li>
-<li>\${request.ENV.PROPERTY}</li>
+<li><code>${request.LAYERS}</code></li>
+<li><code>${request.ENV.PROPERTY}</code></li>
 </ul>
 <h4 id="environment">environment<a class="headerlink" href="#environment" title="Permanent link">&para;</a></h4>
 <ul>
-<li>\${environment.GEOSERVER_DATA_DIR}</li>
-<li>\${environment.WEB_SITE_URL}</li>
+<li><code>${environment.GEOSERVER_DATA_DIR}</code></li>
+<li><code>${environment.WEB_SITE_URL}</code></li>
 </ul>
 <h4 id="math">Math<a class="headerlink" href="#math" title="Permanent link">&para;</a></h4>
 <ul>
-<li>\${Math.max(request.NUMBER1,request.NUMBER2)}</li>
+<li><code>${Math.max(request.NUMBER1,request.NUMBER2)}</code></li>
 </ul>
 
 

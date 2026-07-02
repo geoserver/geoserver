@@ -3069,10 +3069,6 @@
          <lastmod>2026-07-02</lastmod>
     </url>
     <url>
-         <loc>https://docs.geoserver.org/3.0.x/3.0.x/en/user/tutorials/freemarker/</loc>
-         <lastmod>2026-07-02</lastmod>
-    </url>
-    <url>
          <loc>https://docs.geoserver.org/3.0.x/3.0.x/en/user/tutorials/staticfiles/</loc>
          <lastmod>2026-07-02</lastmod>
     </url>
@@ -3106,6 +3102,10 @@
     </url>
     <url>
          <loc>https://docs.geoserver.org/3.0.x/3.0.x/en/user/tutorials/feature-pregeneralized/feature-pregeneralized_tutorial/</loc>
+         <lastmod>2026-07-02</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/3.0.x/en/user/tutorials/freemarker/</loc>
          <lastmod>2026-07-02</lastmod>
     </url>
     <url>

@@ -31833,15 +31833,13 @@
 <ul>
 <li>
 <p><code>aggregate</code>: takes as arguments an expression (a property name or a function) that returns a list of values and a literal with the aggregation type eg. <code>aggregate(my.property.name,'MIN')</code>. The supported aggregation type are the following:</p>
-</li>
-<li>
-<p><code>MIN</code> will return the minimum value from a list of numeric values.</p>
-</li>
+<ul>
+<li><code>MIN</code> will return the minimum value from a list of numeric values.</li>
 <li><code>MAX</code> will return the max value from a list of numeric values.</li>
 <li><code>AVG</code> will return the average value from a list of numeric values.</li>
 <li><code>UNIQUE</code> will remove duplicates values from a list of values.</li>
-<li>
-<p><code>JOIN</code> will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: <code>aggregate(my.property.name,'JOIN(,)')</code> .</p>
+<li><code>JOIN</code> will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: <code>aggregate(my.property.name,'JOIN(,)')</code> .</li>
+</ul>
 </li>
 <li>
 <p><code>stream</code>: takes an undefined number of expressions as parameters and chain them so that each expression evaluate on top of the output of the previous expression: eg. <code>stream(aPropertyName,aFunction,anotherPropertyName)</code> while evaluate the <code>aFunction</code> on the output of <code>aPropertyName</code> evaluation and finally <code>anotherPropertyName</code> will evaluate on top of the result of <code>aFunction</code>.</p>

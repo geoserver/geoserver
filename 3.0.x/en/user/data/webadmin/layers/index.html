@@ -30552,10 +30552,12 @@
 <ul>
 <li><strong>Native SRS</strong>---Specifies the coordinate system the layer is stored in. Clicking the projection link displays a description of the SRS.</li>
 <li><strong>Declared SRS</strong>---Specifies the coordinate system GeoServer publishes to clients</li>
-<li><strong>SRS Handling</strong>---Determines how GeoServer should handle projection when the two SRSs differ. Possible values are:</li>
+<li><strong>SRS Handling</strong>---Determines how GeoServer should handle projection when the two SRSs differ. Possible values are:<ul>
 <li><strong>Force declared</strong> (default): the declared SRS is forced upon the data, overwriting the native one. This is the default option and normally the best course of action, the declared code comes from the EPSG database and has a wealth of extra information in it, starting from a valid EPSG code, an area of validity, a link back in the database to find the best transformation steps to other coordinate reference systems should reprojection be required. Use this option when the source has no native CRS, has a wrong one, or has one matching the EPSG code (in order to get full metadata in the CRS used by GeoServer).</li>
 <li><strong>Reproject from native</strong>: This setting should be used when the native data set has a CRS that is not matching any official EPSG. OGC protocols need to advertise a EPSG code for the layers, with this setting the declared one will be advertised, and reprojection from native will happen on the fly as needed (in case a third CRS is requested, the reprojection will go directly from native to declared)</li>
 <li><strong>Keep native</strong>: this is a setting that should be used in very rare cases. Keeping native means using the declared one in the capabilities documents, but then using the native CRS in all other requests (with no reprojection in between, unless explicitly requested from client). This is particularly problematic if the source is a shapefile, as the PRJ files lack all the extra information provided by the EPSG database (it will for example break WFS 1.1 and 2.0 SRS declarations in GML output). The setting meant to be used in cases where WMS is the primary target, and the native and declared CRSs have very small differences, avoiding on the fly reprojection and datum change.</li>
+</ul>
+</li>
 </ul>
 <p>In summary, use <strong>Force Declared</strong> as your primary option, <strong>Reproject from native</strong> only if your source data does not match any EPSG code, and <strong>Keep Native</strong> only if you really know what you're doing.</p>
 <p>For Cascaded WMS and WMTS servers and WFS-NG layers with multiple supported CRSs in the capabilities document, the Native CRS can be selected by clicking the Find button next to the Native SRS field.</p>
@@ -30747,11 +30749,13 @@
 <p>Limits features based on certain criteria, otherwise known as <strong>regionation</strong>.</p>
 <ul>
 <li><strong>Default Regionating Attribute</strong>---Choose which feature should show up more prominently than others.</li>
-<li><strong>Regionating Methods</strong>---There are four types of regionating methods:</li>
+<li><strong>Regionating Methods</strong>---There are four types of regionating methods:<ul>
 <li><em>external-sorting</em>---Creates a temporary auxiliary database within GeoServer. The first request to build an index takes longer than subsequent requests.</li>
 <li><em>geometry</em>---Externally sorts by length (if lines) or area (if polygons)</li>
 <li><em>native-sorting</em>---Uses the default sorting algorithm of the backend where the data is hosted. It is faster than external-sorting, but will only work with PostGIS datastores.</li>
 <li><em>random</em>---Uses the existing order of the data and does not sort</li>
+</ul>
+</li>
 </ul>
 <h2 id="data_webadmin_layers_edit_dimensions">Edit Layer: Dimensions<a class="headerlink" href="#data_webadmin_layers_edit_dimensions" title="Permanent link">&para;</a></h2>
 <p>GeoServer supports adding specific dimensions to WMS layers, as specified in WMS 1.1.1 and WMS 1.3.0 standards. There are two pre-defined dimensions in the WMS standards mentioned above, <strong>TIME</strong> and <strong>ELEVATION</strong>. Enabling dimensions for a layer allows users to specify those as extra parameters in GetMap requests, filtering the dataset to that particular set of times or elevations.</p>
@@ -30763,11 +30767,13 @@
 <li><strong>Attribute</strong>---Attribute name for picking the value for this dimension (vector only). This is treated at start of the range if <strong>End attribute</strong> is also given.</li>
 <li><strong>End attribute</strong>---Attribute name for picking the end of the value range for this dimension (optional, vector only).</li>
 <li><strong>Presentation</strong>---The presentation type for the available values in the capabilities document. Either <em>each value separately (list)</em>, <em>interval and resolution</em>, or <em>continuous interval</em>.</li>
-<li><strong>Default value</strong>---Default value to use for this dimension if none is provided with the request. Select one of from four strategies:</li>
+<li><strong>Default value</strong>---Default value to use for this dimension if none is provided with the request. Select one of from four strategies:<ul>
 <li><strong>smallest domain value</strong>---Uses the smallest available value from the data</li>
 <li><strong>biggest domain value</strong>---Uses the biggest available value from the data</li>
 <li><strong>nearest to the reference value</strong>---Selects the data value closest to the given reference value</li>
 <li><strong>reference value</strong>---Tries to use the given reference value as-is, regardless of whether it's actually available in the data or not.</li>
+</ul>
+</li>
 <li><strong>Reference value</strong>---The default value specifier. Only shown for the default value strategies where it's used.</li>
 <li><strong>Nearest match</strong>---Whether to enable, or not, WMS nearest match support on this dimension. Currently supported only on the time dimension.</li>
 <li><strong>Nearest match on raw data</strong>---Whether to enable, or not, nearest match support on this dimension for raw data requests (WCS for coverage layers, WFS for feature layers). Currently supported only on the time dimension for WCS service.</li>
@@ -30792,11 +30798,13 @@
 <li><strong>Attribute</strong>---Attribute name for picking the value for this dimension (vector only). This is treated at start of the range if <strong>End attribute</strong> is also given.</li>
 <li><strong>End attribute</strong>---Attribute name for picking the end of the value range for this dimension (optional, vector only).</li>
 <li><strong>Presentation</strong>---The presentation type for the available values in the capabilities document. Either <em>each value separately (list)</em>, <em>interval and resolution</em>, or <em>continuous interval</em>.</li>
-<li><strong>Default value</strong>---Default value to use for this dimension if none is provided with the request. Select one of from four strategies:</li>
+<li><strong>Default value</strong>---Default value to use for this dimension if none is provided with the request. Select one of from four strategies:<ul>
 <li><strong>smallest domain value</strong>---Uses the smallest available value from the data</li>
 <li><strong>biggest domain value</strong>---Uses the biggest available value from the data</li>
 <li><strong>nearest to the reference value</strong>---Selects the data value closest to the given reference value</li>
 <li><strong>reference value</strong>---Tries to use the given reference value as-is, regardless of whether it's actually available in the data or not.</li>
+</ul>
+</li>
 <li><strong>Reference value</strong>---The default value specifier. Only shown for the default value strategies where it's used.</li>
 <li><strong>Nearest match</strong>---Whether to enable, or not, WMS nearest match support on this dimension.</li>
 <li><strong>Acceptable interval</strong>---A maximum search distance from the specified value (available only when nearest match is enabled). Can be empty (no limit), a single value (symmetric search) or using a <code>before/after</code> syntax to specify an asymmetric search range.</li>

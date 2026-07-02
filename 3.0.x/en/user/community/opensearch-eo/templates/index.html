@@ -29874,13 +29874,17 @@
 <p>General rules for writing the (Geo)JSON templates:</p>
 <ul>
 <li>Single <code>//</code> and multiline <code>/* ... */</code> comments are allowed in the input, for the editor's convenience. and will be discarded in the output.</li>
-<li>The properties follow the same names as the OpenSearch queryables:</li>
+<li>The properties follow the same names as the OpenSearch queryables:<ul>
 <li>If the column in the database has no prefix, use none in the template too (e.g. <code>startTime</code>).</li>
 <li>If the column has a prefix, it gets transformed, so for example, <code>eoInstrument</code> in the database becomes <code>eo:instrument</code> in the template.</li>
 <li>The "eo" prefix has a special rule, when it's used in the <code>products</code> table, it's called <code>eop</code> in the template. For example the column <code>eoSensorMode</code> in the <code>products</code> tables becomes <code>eop:sensorMode</code>.</li>
-<li>Two special CQL functions assist in the creation of links:</li>
+</ul>
+</li>
+<li>Two special CQL functions assist in the creation of links:<ul>
 <li><code>serviceLink</code> takes a URL template using the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.md">Java Formatter syntax</a> and all the subsequent parameters are meant to be replaced in the template, one by one. This is used for links that are built on the fly based on product/collection attributes only.</li>
 <li><code>templateLink</code> takes a URL template using a single <code>${BASE_URL}</code> placeholder, and replaces it with the base URL of the request. This is already used by RSS output, and assumes the links are contained database fields, like the OGC links.</li>
+</ul>
+</li>
 </ul>
 <p>For information about building feature templates, refer to the <a href="../../features-templating/">features templating</a> documentation.</p>
 

@@ -30454,13 +30454,17 @@
 <h2 id="general-rules">General rules<a class="headerlink" href="#general-rules" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Create (POST):</strong> <code>className</code> is <strong>required</strong>.</li>
-<li><strong>Update (PUT):</strong></li>
+<li><strong>Update (PUT):</strong><ul>
 <li>Path <code>{providerName}</code> <strong>must match</strong> payload <code>name</code>.</li>
 <li><code>className</code> <strong>cannot change</strong>; omit it to keep the current value.</li>
 <li><code>id</code> may be omitted; the existing value is preserved.</li>
-<li><strong>Order &amp; enable/disable:</strong></li>
+</ul>
+</li>
+<li><strong>Order &amp; enable/disable:</strong><ul>
 <li>The active list in the security config (<code>&lt;authproviderNames&gt;</code>) defines both <strong>order</strong> and <strong>which providers are enabled</strong>.</li>
 <li>Names <strong>present</strong> = enabled (in that order). Names <strong>absent</strong> = disabled (kept on disk).</li>
+</ul>
+</li>
 </ul>
 <h2 id="base-url">Base URL<a class="headerlink" href="#base-url" title="Permanent link">&para;</a></h2>
 <p>All examples assume:</p>

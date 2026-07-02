@@ -30147,16 +30147,16 @@
 <ul>
 <li>
 <p><code>Format</code> defines a single format, which is defined by the following tags:</p>
-</li>
-<li>
-<p><code>toolFormat</code>: the name of the format to be passed to gdal_translate with the -of option (case insensitive).</p>
-</li>
+<ul>
+<li><code>toolFormat</code>: the name of the format to be passed to gdal_translate with the -of option (case insensitive).</li>
 <li><code>geoserverFormat</code>: is the name of the output format as advertised by GeoServer</li>
 <li><code>fileExtension</code>: is the extension of the file generated after the translation, if any (can be omitted)</li>
 <li><code>option</code>: can be used to add one or more options to the gdal_translate command line. As you can see by the JPEG2000 example, each item must be contained in its own <code>option</code> tag. You can get a full list of options by running <code>gdal_translate --help</code> or by visiting the <a href="http://www.gdal.org">GDAL website</a>). Also, consider that each format supports specific creation options, listed in the description page for each format (for example, here is the <a href="http://www.gdal.org/frmt_jpeg2000.md">JPEG2000 one</a>).</li>
 <li><code>singleFile</code>: if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file</li>
 <li><code>mimeType</code>: the mime type of the file returned when using <code>singleFile</code>. If not specified <code>application/octet-stream</code> will be used as a default.</li>
 <li><code>formatAdapters</code>: transformations on the coverage that might need to be applied in order to successfully encode the output. The transformations are applied only if their input conditions are met.</li>
+</ul>
+</li>
 </ul>
 <p>The available format adapters are:</p>
 <ul>

@@ -30110,15 +30110,15 @@
 </li>
 <li>
 <p><code>Format</code> defines a single format, which is defined by the following tags:</p>
-</li>
-<li>
-<p><code>ogrFormat</code>: the name of the format to be passed to ogr2ogr with the -f option (it's case sensitive).</p>
-</li>
+<ul>
+<li><code>ogrFormat</code>: the name of the format to be passed to ogr2ogr with the -f option (it's case sensitive).</li>
 <li><code>formatName</code>: is the name of the output format as advertised by GeoServer</li>
 <li><code>fileExtension</code>: is the extension of the file generated after the translation, if any (can be omitted)</li>
 <li><code>option</code>: can be used to add one or more options to the ogr2ogr command line. As you can see by the MIF example, each item must be contained in its own tag. You can get a full list of options by running ogr2ogr --help or by visiting the ogr2ogr web page. Also consider that each format supports specific creation options, listed in the description page for each format (for example, here is the MapInfo one).</li>
 <li><code>singleFile</code> (since 2.0.3): if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file</li>
 <li><code>mimeType</code> (since 2.0.3): the mime type of the file returned when using <code>singleFile</code>. If not specified <code>application/octet-stream</code> will be used as a default.</li>
+</ul>
+</li>
 </ul>
 <h1 id="ogr-based-wps-output-format">OGR based WPS Output Format<a class="headerlink" href="#ogr-based-wps-output-format" title="Permanent link">&para;</a></h1>
 <p>The OGR based WPS output format provides the ability to turn feature collection (vector layer) output types into formats supported by OGR, using the same configuration and same machinery provided by the OGR WFS output format (which should also be installed for the WPS portion to work).</p>

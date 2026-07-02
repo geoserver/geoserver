@@ -29879,12 +29879,14 @@
 </ol>
 <p><code>GEOSERVER_NODE_OPTS</code> is a semicolon separated list of key/value pairs and it can contain the following keys:</p>
 <ul>
-<li><code>id</code>: the string identifying the node, which in turn can be a static string, or include the following substitution tokens</li>
+<li><code>id</code>: the string identifying the node, which in turn can be a static string, or include the following substitution tokens<ul>
 <li><code>$host_ip</code>: the IP address of the node</li>
 <li><code>$host_name</code>: the hostname of the node</li>
 <li><code>$host_short_name</code>: the hostname truncated to not include the domain (<code>foo.local</code> becomes <code>foo</code>)</li>
 <li><code>$host_compact_name</code>: the hostname with all domain parts shortened to their first character (<code>foo.local</code> becomes <code>foo.l</code>)</li>
 <li><code>$git_branch</code>: the Git branch name (requires the <code>.git</code> folder to be present in the GEOSERVER_DATA_DIR, its immediate parent or the current working directory)</li>
+</ul>
+</li>
 <li><code>color</code>: the label color, as a CSS color</li>
 <li><code>background</code>: the background color, as a CSS color</li>
 </ul>

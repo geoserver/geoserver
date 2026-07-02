@@ -30045,20 +30045,20 @@
 </li>
 <li>
 <p>Use GeoServer roles to get authorizations</p>
-</li>
-<li>
-<p>Disabled: For each authorization request, GeoServer sends only the user info to GeoFence.</p>
+<ul>
+<li>Disabled: For each authorization request, GeoServer sends only the user info to GeoFence.</li>
+</ul>
 <p>GeoFence will retrieve all the roles associated with the user, and will merge the permissions granted for each role.</p>
-</li>
-<li>
-<p>Enabled: For each authorization request, GeoServer sends to GeoFence the user info AND the roles assigned in the current request session.</p>
+<ul>
+<li>Enabled: For each authorization request, GeoServer sends to GeoFence the user info AND the roles assigned in the current request session.</li>
+</ul>
 <p>GeoFence will retrieve all the roles associated to the user, and will only consider the requested roles that are really associated to the user.</p>
 </li>
 <li>
 <p>Comma delimited list of mutually exclusive roles for authorization</p>
-</li>
-<li>
-<p>This field is mandatory when the previous option is enabled.</p>
+<ul>
+<li>This field is mandatory when the previous option is enabled.</li>
+</ul>
 <p>GeoServer will send to GeoFence the roles in the current request session which match the entries in this list. You can use the '<em>' symbol to match any session role. When using "</em>", you can use the format "<code>-ROLENAME</code>" to exclude one or more roles from the session roles list.</p>
 </li>
 </ul>
@@ -30083,14 +30083,11 @@
 <li>Open the GeoFence admin page; you'll get to this page:</li>
 </ul>
 <p>You can notice here the information that allow the GeoFence probe inside GeoServer to communicate with the GeoFence engine:</p>
+<div class="highlight"><pre><span></span><code>- the URL that the probe shall use to communicate with GeoFence;
+- the name (default is `default-gs`) this instance will use to identify itself to GeoFence. This instance name should be equal to the one we set into GeoFence.
+</code></pre></div>
 <ul>
-<li>the URL that the probe shall use to communicate with GeoFence;</li>
-<li>
-<p>the name (default is <code>default-gs</code>) this instance will use to identify itself to GeoFence. This instance name should be equal to the one we set into GeoFence.</p>
-</li>
-<li>
-<p>Testing connection to GeoFence.</p>
-</li>
+<li>Testing connection to GeoFence.</li>
 </ul>
 <p>We already performed a connection test from GeoFence to GeoServer. Using the button <strong>Test connection</strong> we can also test that GeoServer can communicate to GeoFence. If everything is ok, you'll get this message:</p>
 <p><img alt="" src="../images/basic_003.png" /></p>
@@ -30117,13 +30114,13 @@
 <ul>
 <li>
 <p>Get back to GeoFence, and add a rule which allows all layers in workspace tiger for user <code>tiger</code>; create a rule defining:</p>
-</li>
-<li>
-<p>user <code>tiger</code></p>
-</li>
+<ul>
+<li>user <code>tiger</code></li>
 <li>instance <code>default-gs</code></li>
 <li>workspace <code>tiger</code> (you will get a dropdown menu containing all the workspaces available in the selected instance)</li>
 <li>grant type: <code>allow</code> You'll get a line like this one:</li>
+</ul>
+</li>
 </ul>
 <p><img alt="" src="../images/basic_008.png" /></p>
 <ul>

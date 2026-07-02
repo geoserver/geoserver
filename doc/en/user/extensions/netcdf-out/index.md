@@ -25,50 +25,50 @@ NetCDF output settings can be configured for each raster layer. The similar sect
 
 - Variable Name (optional)
 
-  - Sets the NetCDF variable name.
+    - Sets the NetCDF variable name.
       - Does not change the layer name, which can be configured in the Data tab.
 
 - Variable Unit of Measure (optional)
 
-  - Sets the NetCDF `uom` attribute.
+    - Sets the NetCDF `uom` attribute.
 
 - Data Packing
 
-  - Lossy compression by storing data in reduced precision.
+    - Lossy compression by storing data in reduced precision.
       - One of *NONE*, *BYTE*, *SHORT*, or *INT*.
 
 - NetCDF-4 Compression Level
 
-  - Lossless compression.
+    - Lossless compression.
       - Level is an integer from 0 (no compression, fastest) to 9 (most compression, slowest).
 
 - NetCDF-4 Chunk Shuffling
 
-  - Lossless byte reordering to improve compression.
+    - Lossless byte reordering to improve compression.
 
 - Copy Variable Attributes from NetCDF/GRIB Source
 
-  - Most attributes are copied from the source NetCDF/GRIB variable.
+    - Most attributes are copied from the source NetCDF/GRIB variable.
       - Some attributes such as `coordinates` and `missing_value` are skipped as these may no longer be valid.
       - For an ImageMosaic, one granule is chosen as the source.
 
 - Copy Global Attributes from NetCDF/GRIB Source
 
-  - Attributes are copied from the source NetCDF/GRIB global attributes.
+    - Attributes are copied from the source NetCDF/GRIB global attributes.
       - For an ImageMosaic, one granule is chosen as the source.
 
 - Variable Attributes
 
-  - Values are encoded as integers or doubles if possible, otherwise strings.
+    - Values are encoded as integers or doubles if possible, otherwise strings.
       - Values set here overwrite attributes set elsewhere, such as those copied from a source NetCDF/GRIB variable.
 
 - Global Attributes
 
-  - Values are encoded as integers or doubles if possible, otherwise strings.
+    - Values are encoded as integers or doubles if possible, otherwise strings.
 
 - Scalar Variables Copied from NetCDF/GRIB Source
 
-  - Source specifies the name of the source variable in a NetCDF file or the `toolsUI` view of a GRIB file; only scalar source variables are supported.
+    - Source specifies the name of the source variable in a NetCDF file or the `toolsUI` view of a GRIB file; only scalar source variables are supported.
       - Output specifies the name of the variable in the output NetCDF file.
       - If only one of Source or Output is given, the other is taken as the same.
       - Dimension is either blank to simply copy the source scalar from one granule, or the name of one output NetCDF dimension to cause values to be copied from multiple granules (such as those from an ImageMosaic over a non-spatial dimension) into a one-dimensional variable. The example above copies a single value from multiple `reftime` scalars into `forecast_reference_time` dimensioned by `time` in an ImageMosaic over time.

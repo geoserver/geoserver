@@ -934,7 +934,7 @@ nav:
       - WPS OpenAI process: en/user/community/wps-openai/index.md
     - Tutorials:
       - en/user/tutorials/index.md
-      - en/user/tutorials/freemarker.md
+      - en/user/tutorials/freemarker/index.md
       - en/user/tutorials/georss/georss.md
       - GetFeatureInfo Templates:
         - en/user/tutorials/GetFeatureInfo/index.md

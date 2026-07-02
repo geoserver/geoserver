@@ -11,7 +11,7 @@ Template:
 
 <div class="grid cards" markdown>
 
-- [Freemarker Templates](freemarker.md)
+- [Freemarker Templates](freemarker/index.md)
 - [GeoRSS](georss/georss.md)
 - [GetFeatureInfo Templates](GetFeatureInfo/index.md)
 

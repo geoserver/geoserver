@@ -209,7 +209,7 @@ The data directory loader can be configured with the following environment varia
 
 - `GEOSERVER_DATA_DIR_LOADER_THREADS`: Controls the number of threads used for loading and parsing
 
-  - By default, the loader uses a heuristic that selects the minimum between `16` and the number of available processors as reported by the JVM
+    - By default, the loader uses a heuristic that selects the minimum between `16` and the number of available processors as reported by the JVM
       - Set to a specific number to override this heuristic (e.g., `8` to use 8 threads)
       - Values less than or equal to zero will produce a warning and fall back to the default heuristic
 

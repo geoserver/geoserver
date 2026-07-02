@@ -40,6 +40,7 @@ import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -208,7 +209,7 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         fb.add("North Carolina");
         delegateCollection.add(fb.buildFeature("states.2"));
 
-        // clip area as stored by GeoFence, in conventional (lon, lat) order, SRID 4326
+        // clip area as stored by the ResourceAccessManager, in conventional (lon, lat) order, SRID 4326
         Geometry clip = reader.read("POLYGON((-106.8 24, -93 24, -93 36.6, -106.8 36.6, -106.8 24))");
         clip.setSRID(4326);
 
@@ -216,11 +217,7 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
                 new VectorAccessLimits(CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.INCLUDE);
         limits.setClipVectorFilter(clip);
 
-        SimpleFeatureSource fs = createNiceMock(SimpleFeatureSource.class);
-        expect(fs.getFeatures((Query) anyObject()))
-                .andReturn(delegateCollection)
-                .anyTimes();
-        replay(fs);
+        SimpleFeatureSource fs = DataUtilities.source(delegateCollection);
 
         SecuredFeatureSource<SimpleFeatureType, SimpleFeature> secured =
                 new SecuredFeatureSource<>(fs, WrapperPolicy.readOnlyHide(limits));

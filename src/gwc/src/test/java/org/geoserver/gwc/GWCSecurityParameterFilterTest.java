@@ -480,6 +480,31 @@ public class GWCSecurityParameterFilterTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testGroupContainerContextRestrictionSeparatesCache() throws Exception {
+        // a member layer restricted only when accessed via the group (container context): the group key must
+        // reflect that limit, while direct access to the same layer stays unrestricted
+        GWC.get().getConfig().setSecurityEnabled(true);
+        LayerInfo lakes = getCatalog().getLayerByName(getLayerId(MockData.LAKES));
+        LayerGroupInfo group = getCatalog().getLayerGroupByName(GROUP);
+        getRAM().putLimits("user_b", lakes, group, vectorFilter("NAME = 'Blue Lake'"));
+
+        // direct access ignores the group-scoped limit, so both users share the direct-layer cache
+        login("user_a", "test");
+        assertTileResult(MockData.LAKES, "MISS");
+        login("user_b", "test");
+        assertTileResult(MockData.LAKES, "HIT");
+
+        // group access applies the container-scoped limit for user_b, giving it a distinct key
+        login("user_a", "test");
+        assertTileResult(GROUP, 0, "MISS");
+        login("user_b", "test");
+        assertTileResult(GROUP, 0, "MISS");
+
+        login("user_b", "test");
+        assertTileResult(GROUP, 0, "HIT");
+    }
+
+    @Test
     public void testVectorIntersectFilterSeparatesCache() throws Exception {
         GWC.get().getConfig().setSecurityEnabled(true);
         LayerInfo layer = getCatalog().getLayerByName(getLayerId(MockData.BASIC_POLYGONS));

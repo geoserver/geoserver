@@ -6,6 +6,7 @@
 package org.geoserver.security;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -64,6 +65,22 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
     }
 
     @Override
+    public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
+        if (user == null) {
+            return null;
+        }
+        // container-specific limits win: a rule may restrict a layer only when reached through a given group
+        Map<String, AccessLimits> userMap = getUserMap(user.getName());
+        for (LayerGroupInfo container : containers) {
+            DataAccessLimits limits = (DataAccessLimits) userMap.get(containerKey(layer, container));
+            if (limits != null) {
+                return limits;
+            }
+        }
+        return getAccessLimits(user, layer);
+    }
+
+    @Override
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource) {
         if (user == null) {
             return null;
@@ -100,6 +117,15 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
      */
     public void putLimits(String userName, CatalogInfo securedItem, AccessLimits limits) {
         getUserMap(userName).put(securedItem.getId(), limits);
+    }
+
+    /** Limits applied to {@code layer} only when it is accessed through {@code container} (directly or nested). */
+    public void putLimits(String userName, LayerInfo layer, LayerGroupInfo container, DataAccessLimits limits) {
+        getUserMap(userName).put(containerKey(layer, container), limits);
+    }
+
+    private static String containerKey(LayerInfo layer, LayerGroupInfo container) {
+        return layer.getId() + "@" + container.getId();
     }
 
     public void clearLimits() {

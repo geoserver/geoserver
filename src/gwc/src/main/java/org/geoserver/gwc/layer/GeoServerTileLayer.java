@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
@@ -373,11 +374,15 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             key = keyBuilder.buildKey(limits);
             tags = tagsFrom(limits);
         } else if (published instanceof LayerGroupInfo group) {
-            List<LayerInfo> layers = group.layers();
-            List<String> names = layers.stream().map(LayerInfo::prefixedName).toList();
-            List<AccessLimits> limits = layers.stream()
-                    .map(l -> (AccessLimits) ram.getAccessLimits(auth, l))
-                    .toList();
+            // member limits can depend on the containing group (see ResourceAccessManager direct vs group
+            // access), so compute each rendered leaf's limits with its chain of containing groups rather than
+            // treating members as directly accessed; LayerGroupHelper drives the mode-correct traversal
+            List<String> names = new ArrayList<>();
+            List<AccessLimits> limits = new ArrayList<>();
+            new LayerGroupHelper(group).allLayersForRendering((layer, containers) -> {
+                names.add(layer.prefixedName());
+                limits.add(ram.getAccessLimits(auth, layer, containers));
+            });
             key = keyBuilder.buildLayerGroupKey(names, limits);
             Set<String> allTags = new TreeSet<>();
             limits.forEach(l -> collectTags(l, allTags));

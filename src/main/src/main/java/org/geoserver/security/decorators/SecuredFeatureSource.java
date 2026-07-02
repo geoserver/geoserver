@@ -23,8 +23,10 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ReTypingFeatureCollection;
@@ -123,8 +125,8 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
     }
 
     @SuppressWarnings("unchecked")
-    private FeatureCollection<T, F> decoratesForClipping(
-            VectorAccessLimits limits, FeatureCollection<T, F> collection) {
+    private FeatureCollection<T, F> decoratesForClipping(VectorAccessLimits limits, FeatureCollection<T, F> collection)
+            throws IOException {
         if (!(collection instanceof SimpleFeatureCollection)) return collection;
         Geometry clipFilter = limits.getClipVectorFilter();
         Geometry intersectFilter = limits.getIntersectVectorFilter();
@@ -143,7 +145,8 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
         return collection;
     }
 
-    private static Geometry reprojectToCollectionCRS(Geometry geometry, CoordinateReferenceSystem targetCRS) {
+    private static Geometry reprojectToCollectionCRS(Geometry geometry, CoordinateReferenceSystem targetCRS)
+            throws IOException {
         if (geometry == null || targetCRS == null || geometry.getSRID() == 0) return geometry;
         try {
             CoordinateReferenceSystem geomCRS = CRS.decode("EPSG:" + geometry.getSRID(), true);
@@ -151,8 +154,9 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
             if (!mt.isIdentity()) {
                 return JTS.transform(geometry, mt);
             }
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Could not reproject clip geometry to collection CRS", e);
+        } catch (FactoryException | TransformException e) {
+            // fail closed to avoid exposing data
+            throw new IOException("Could not reproject clip geometry to collection CRS", e);
         }
         return geometry;
     }

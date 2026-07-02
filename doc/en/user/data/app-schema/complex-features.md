@@ -100,11 +100,11 @@ For example, we could map the GPS station to a `sa:SamplingPoint` with a `gsml:G
 
 - <http://schemas.opengis.net/sampling/1.0.0/sampling.xsd>
 
-  - Documentation: OGC 07-002r3: <http://portal.opengeospatial.org/files/?artifact_id=22467>
+    - Documentation: OGC 07-002r3: <http://portal.opengeospatial.org/files/?artifact_id=22467>
 
 - <http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd>
 
-  - Documentation: <http://www.geosciml.org/geosciml/2.0/doc/>
+    - Documentation: <http://www.geosciml.org/geosciml/2.0/doc/>
 
 The complex feature WFS response fragment could then be encoded as:
 

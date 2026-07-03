@@ -41,13 +41,23 @@ import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.expression.PropertyName;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.WKTReader;
 
 public class SecuredFeatureSourceTest extends SecureObjectsTest {
 
@@ -163,7 +173,8 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
             q.setProperties(pnames);
             ro.getFeatures(q);
             String notExpectedMessage =
-                    "Complex store returned more properties than allowed by security (because they are required by the schema). Either the security setup is broken or you have a security breach";
+                    "Complex store returned more properties than allowed by security (because they are required by the"
+                            + " schema). Either the security setup is broken or you have a security breach";
             assertFalse(customLogHandler.messages.contains(notExpectedMessage));
         } finally {
             logger.removeHandler(customLogHandler);
@@ -205,5 +216,58 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         assertEquals(Integer.valueOf(5), mixed.getStartIndex());
         assertEquals(10, mixed.getMaxFeatures());
         assertEquals(securityFilter, mixed.getFilter());
+    }
+
+    /**
+     * This test ensures that the clip geometry is reprojected to the collection's actual coordinate reference system,
+     * including axis order, before being intersected with the features, so only the feature actually covered by the
+     * clip area is returned.
+     */
+    @Test
+    public void testDecoratesForClippingReprojectsClipToCollectionCRS() throws Exception {
+        CoordinateReferenceSystem latLonCRS = CRS.decode("urn:ogc:def:crs:EPSG::4326", false);
+
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.setName("states");
+        tb.add("geom", Polygon.class, latLonCRS);
+        tb.add("name", String.class);
+        SimpleFeatureType schema = tb.buildFeatureType();
+
+        DefaultFeatureCollection delegateCollection = new DefaultFeatureCollection(null, schema);
+        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
+        WKTReader reader = new WKTReader();
+
+        // feature geometries as delivered by WFS 2.0.0, in (lat, lon) order
+        Geometry texas = reader.read("POLYGON((30 -100, 30 -98, 32 -98, 32 -100, 30 -100))");
+        fb.add(texas);
+        fb.add("Texas");
+        delegateCollection.add(fb.buildFeature("states.1"));
+        fb.reset();
+
+        Geometry northCarolina = reader.read("POLYGON((35 -80, 35 -78, 37 -78, 37 -80, 35 -80))");
+        fb.add(northCarolina);
+        fb.add("North Carolina");
+        delegateCollection.add(fb.buildFeature("states.2"));
+
+        // clip area as stored by the ResourceAccessManager, in conventional (lon, lat) order, SRID 4326
+        Geometry clip = reader.read("POLYGON((-106.8 24, -93 24, -93 36.6, -106.8 36.6, -106.8 24))");
+        clip.setSRID(4326);
+
+        VectorAccessLimits limits =
+                new VectorAccessLimits(CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.INCLUDE);
+        limits.setClipVectorFilter(clip);
+
+        SimpleFeatureSource fs = DataUtilities.source(delegateCollection);
+
+        SecuredFeatureSource<SimpleFeatureType, SimpleFeature> secured =
+                new SecuredFeatureSource<>(fs, WrapperPolicy.readOnlyHide(limits));
+
+        FeatureCollection<SimpleFeatureType, SimpleFeature> result = secured.getFeatures(Query.ALL);
+
+        assertEquals(1, result.size());
+        try (SimpleFeatureIterator it = ((SimpleFeatureCollection) result).features()) {
+            SimpleFeature f = it.next();
+            assertEquals("Texas", f.getAttribute("name"));
+        }
     }
 }

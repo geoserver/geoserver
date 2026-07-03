@@ -12,7 +12,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
@@ -241,6 +243,37 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     private void assertExpectedRenderingLayers(List<LayerInfo> expected, LayerGroupInfo group) {
         List<LayerInfo> layers = new LayerGroupHelper(group).allLayersForRendering();
         assertEquals(expected, layers);
+    }
+
+    @Test
+    public void testAllLayersForRenderingWithContainers() {
+        Map<LayerInfo, List<LayerGroupInfo>> containers = renderingContainers(nested);
+
+        // each rendered leaf carries its chain of containing groups (top group first)
+        Map<LayerInfo, List<LayerGroupInfo>> expected = new HashMap<>();
+        expected.put(forestLayer, Arrays.asList(nested)); // direct member
+        expected.put(roadSegmentsLayer, Arrays.asList(nested, lakesNeatline)); // EO root of a nested group
+        expected.put(buildingsLayer, Arrays.asList(nested));
+        expected.put(pondsLayer, Arrays.asList(nested, ponds)); // member of a nested group
+        assertEquals(expected, containers);
+    }
+
+    @Test
+    public void testAllLayersForRenderingTerminatesOnLoop() {
+        // self reference: the leaf is emitted once, the recursive reference is skipped by the cycle guard
+        assertEquals(Map.of(forestLayer, Arrays.asList(loop1)), renderingContainers(loop1));
+
+        // indirect loop2 -> ponds -> loop2: each leaf emitted once, the back-reference to loop2 is skipped
+        Map<LayerInfo, List<LayerGroupInfo>> expected = new HashMap<>();
+        expected.put(forestLayer, Arrays.asList(loop2));
+        expected.put(pondsLayer, Arrays.asList(loop2, loop2Child));
+        assertEquals(expected, renderingContainers(loop2));
+    }
+
+    private Map<LayerInfo, List<LayerGroupInfo>> renderingContainers(LayerGroupInfo group) {
+        Map<LayerInfo, List<LayerGroupInfo>> containers = new HashMap<>();
+        new LayerGroupHelper(group).allLayersForRendering(containers::put);
+        return containers;
     }
 
     @Test

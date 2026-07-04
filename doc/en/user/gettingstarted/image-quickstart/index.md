@@ -27,7 +27,7 @@ First let's gather the data that we'll be publishing.
 
 ## Creating a new workspace
 
-The next step is to create a workspace for the geopackage. A workspace is a folder used to group similar layers together.
+The next step is to create a workspace for the geotiff file. A workspace is a folder used to group similar layers together.
 
 !!! note
     This step is optional if you'd like to use an existing workspace. Usually, a workspace is created for each project, which can include stores and layers that are related to each other.
@@ -54,13 +54,13 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
 ## Create a store
 
-Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the geopackage.
+Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the geotiff file.
 
 1.  Navigate to **Data > Stores**.
 
 2.  This page displays a list of stores, including the type of store and the workspace that the store belongs to.
 
-3.  In order to add the geopackage, you need to create a new store. Click the **Add new Store** button. You will be redirected to a list of data sources supported by GeoServer. Note that data sources are extensible, so your list may look slightly different.
+3.  In order to add the geotiff, you need to create a new store. Click the **Add new Store** button. You will be redirected to a list of data sources supported by GeoServer. Note that data sources are extensible, so your list may look slightly different.
 
 4.  From the list of **Raster Data Sources** locate and click the **GeoTIFF** link.
 
@@ -68,7 +68,7 @@ Once the workspace is created, we are ready to add a new store. The store tells 
 
     *Raster Data Sources*
 
-5.  The **New Vector Data Source** page will display.
+5.  The **Add Raster Data Source** page will display.
 
 6.  Begin by configuring the **Basic Store Info**.
 
@@ -86,9 +86,9 @@ Once the workspace is created, we are ready to add a new store. The store tells 
 
 1.  Connection parameters are used to establish the location of your data.
 2.  Under **Connection Parameters**, browse to the location **URL** of the image, in our example **`file:data/ne/SR_50M.tif`**.
-3.  The **Connection Parameters** for our geopackage are:
+3.  The **Connection Parameters** for our geotiff are:
 
-    | database | `file:data/ne/SR_50M.tif` |
+    | url | `file:data/ne/SR_50M.tif` |
     |----------|---------------------------------------|
 
 

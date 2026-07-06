@@ -117,7 +117,7 @@
     <gf.version>3.8.2</gf.version>
     <hazelcast.version>5.3.8</hazelcast.version>
     <cors.version>3.1</cors.version>
-    <hibernate-version>7.4.3.Final</hibernate-version>
+    <hibernate-version>7.4.4.Final</hibernate-version>
     <httpcore.version>4.4.16</httpcore.version>
     <httpclient.version>5.4.4</httpclient.version>
     <jacoco.version>0.8.14</jacoco.version>

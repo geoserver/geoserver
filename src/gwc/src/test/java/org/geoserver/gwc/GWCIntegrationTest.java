@@ -90,7 +90,9 @@ import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
+import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.DimensionWarning;
@@ -1851,6 +1853,102 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                                 + WMTSService.REST_PATH
                                 + "/WMTSCapabilities.xml'])",
                         doc));
+    }
+
+    /**
+     * Verifies that a workspace-prefixed WMTS GetCapabilities response keeps the workspace path in place and appends
+     * the propagated token after the existing query parameters in every backlink.
+     */
+    @Test
+    public void testGetCapabilitiesQueryParametersPlacementWorkspace() throws Exception {
+        GeoServerExtensionsHelper.singleton(
+                "projecttokenMangler",
+                new URLMangler() {
+                    @Override
+                    public void mangleURL(
+                            StringBuilder baseURL,
+                            StringBuilder path,
+                            Map<String, String> kvp,
+                            URLMangler.URLType type) {
+                        kvp.put("projecttoken", "abc123");
+                    }
+                },
+                URLMangler.class);
+
+        try {
+            Document doc = getAsDOM(CITE_PREFIX + "/gwc/service/wmts?request=GetCapabilities");
+            assertProjectTokenPlacement(doc, "/" + CITE_PREFIX, "BasicPolygons");
+        } finally {
+            GeoServerExtensionsHelper.clear();
+        }
+    }
+
+    /**
+     * Verifies that the global WMTS GetCapabilities response keeps the service path in place and appends the propagated
+     * token after the existing query parameters in every backlink.
+     */
+    @Test
+    public void testGetCapabilitiesQueryParametersPlacementGlobal() throws Exception {
+        GeoServerExtensionsHelper.singleton(
+                "projecttokenMangler",
+                new URLMangler() {
+                    @Override
+                    public void mangleURL(
+                            StringBuilder baseURL,
+                            StringBuilder path,
+                            Map<String, String> kvp,
+                            URLMangler.URLType type) {
+                        kvp.put("projecttoken", "abc123");
+                    }
+                },
+                URLMangler.class);
+
+        try {
+            Document doc = getAsDOM("/gwc/service/wmts?request=GetCapabilities");
+            assertProjectTokenPlacement(doc, "", CITE_PREFIX + ":BasicPolygons");
+        } finally {
+            GeoServerExtensionsHelper.clear();
+        }
+    }
+
+    private void assertProjectTokenPlacement(Document doc, String servicePrefix, String layerPathSegment)
+            throws Exception {
+        String serviceRoot = "http://localhost:8080/geoserver"
+                + (servicePrefix.isEmpty() ? "" : servicePrefix)
+                + "/gwc/service/wmts";
+
+        assertEquals(
+                serviceRoot
+                        + "/rest/"
+                        + layerPathSegment
+                        + "/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}?format=image/png&projecttoken=abc123",
+                WMTS_XPATH_10.evaluate(
+                        "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']"
+                                + "/wmts:ResourceURL[@resourceType='tile' and @format='image/png']/@template",
+                        doc));
+        assertEquals(
+                serviceRoot
+                        + "/rest/"
+                        + layerPathSegment
+                        + "/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}/{J}/{I}?format=text/plain&projecttoken=abc123",
+                WMTS_XPATH_10.evaluate(
+                        "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']"
+                                + "/wmts:ResourceURL[@resourceType='FeatureInfo' and @format='text/plain']/@template",
+                        doc));
+        assertEquals(
+                "1",
+                WMTS_XPATH_10.evaluate(
+                        "count(//wmts:Capabilities/wmts:ServiceMetadataURL[@xlink:href='"
+                                + serviceRoot
+                                + "/rest/WMTSCapabilities.xml?projecttoken=abc123'])",
+                        doc));
+        assertEquals(
+                "0",
+                WMTS_XPATH_10.evaluate("count(//wmts:ResourceURL[contains(@template,'?projecttoken=abc123/')])", doc));
+        assertEquals(
+                "0",
+                WMTS_XPATH_10.evaluate(
+                        "count(//wmts:ServiceMetadataURL[contains(@xlink:href,'?projecttoken=abc123/')])", doc));
     }
 
     @Test

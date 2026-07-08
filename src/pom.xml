@@ -727,7 +727,7 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-lts8on</artifactId>
-        <version>2.73.10</version>
+        <version>2.73.11</version>
       </dependency>
       <!-- wicket framework -->
       <dependency>

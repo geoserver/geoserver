@@ -68,6 +68,17 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
     }
 
     @Test
+    public void testProductClassValidation() throws Exception {
+        tester.startPage(OSEOAdminPage.class);
+        // the add link appends a product class with empty name, prefix and namespace, which
+        // must be rejected on save
+        tester.clickLink("form:addClass");
+        FormTester formTester = tester.newFormTester("form");
+        formTester.submit("submit");
+        assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+    }
+
+    @Test
     public void testCacheTTLValidatation() throws Exception {
         setupCacheValues(-10);
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());

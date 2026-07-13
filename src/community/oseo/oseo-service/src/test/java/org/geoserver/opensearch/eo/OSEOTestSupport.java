@@ -29,6 +29,8 @@ import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.util.NullEntityResolver;
+import org.geotools.util.factory.Hints;
 import org.geotools.xml.XMLUtils;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -53,10 +55,19 @@ public abstract class OSEOTestSupport extends GeoServerSystemTestSupport {
     protected SimpleNamespaceContext namespaceContext;
 
     static {
-        final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        OS_SCHEMA = parseSchema("/schemas/OpenSearch.xsd");
+        ATOM_SCHEMA = parseSchema("/schemas/searchResults.xsd");
+    }
+
+    /**
+     * Parses a schema bundled in the test classpath. Uses a permissive entity resolver so the trusted local schemas can
+     * resolve their relative includes, which the default resolver now blocks.
+     */
+    private static Schema parseSchema(String resource) {
+        Hints hints = new Hints(Hints.ENTITY_RESOLVER, NullEntityResolver.INSTANCE);
+        SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, hints);
         try {
-            OS_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
-            ATOM_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
+            return factory.newSchema(OSEOTestSupport.class.getResource(resource));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the OpenSearch schemas", e);
         }
@@ -64,25 +75,14 @@ public abstract class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     private static Schema getOsSchema() {
         if (OS_SCHEMA == null) {
-            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            try {
-                OS_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
-            } catch (Exception e) {
-                throw new RuntimeException("Could not parse the OpenSearch schemas", e);
-            }
+            OS_SCHEMA = parseSchema("/schemas/OpenSearch.xsd");
         }
-
         return OS_SCHEMA;
     }
 
     private static Schema getAtomSchema() {
         if (ATOM_SCHEMA == null) {
-            final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            try {
-                ATOM_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
-            } catch (Exception e) {
-                throw new RuntimeException("Could not parse the OpenSearch schemas", e);
-            }
+            ATOM_SCHEMA = parseSchema("/schemas/searchResults.xsd");
         }
         return ATOM_SCHEMA;
     }

@@ -27,20 +27,29 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         return postgis;
     }
 
+    /** Location of the OSEOAdminPanel within the form: it lives in the service tab of the tabbed presentation */
+    private static final String PANEL = "tabs:panel:initial:";
+
     @Before
     public void startPage() {
         login();
+        openAdminPage();
+    }
+
+    /** Starts the page and selects the service tab, where the OSEO specific panel is shown */
+    private void openAdminPage() {
         tester.startPage(OSEOAdminPage.class);
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
     }
 
     @Test
     public void smokeTest() throws Exception {
         tester.assertNoErrorMessage();
-        tester.assertModelValue("form:maximumRecordsPerPage", OSEOInfo.DEFAULT_MAXIMUM_RECORDS);
-        tester.assertModelValue("form:recordsPerPage", OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
-        tester.assertModelValue("form:aggregatesCacheTTL", OSEOInfo.DEFAULT_AGGR_CACHE_TTL);
-        tester.assertModelValue("form:aggregatesCacheTTLUnit", OSEOInfo.DEFAULT_AGGR_CACHE_TTL_UNIT);
-        tester.assertModelValue("form:attribution", null);
+        tester.assertModelValue("form:" + PANEL + "maximumRecordsPerPage", OSEOInfo.DEFAULT_MAXIMUM_RECORDS);
+        tester.assertModelValue("form:" + PANEL + "recordsPerPage", OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
+        tester.assertModelValue("form:" + PANEL + "aggregatesCacheTTL", OSEOInfo.DEFAULT_AGGR_CACHE_TTL);
+        tester.assertModelValue("form:" + PANEL + "aggregatesCacheTTLUnit", OSEOInfo.DEFAULT_AGGR_CACHE_TTL_UNIT);
+        tester.assertModelValue("form:" + PANEL + "attribution", null);
         // print(tester.getLastRenderedPage(), true, true);
     }
 
@@ -54,10 +63,10 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
 
     @Test
     public void testAttribution() throws Exception {
-        tester.startPage(OSEOAdminPage.class);
+        openAdminPage();
         FormTester formTester = tester.newFormTester("form");
         String attributionValue = "Attribution test";
-        formTester.setValue("attribution", attributionValue);
+        formTester.setValue(PANEL + "attribution", attributionValue);
         formTester.submit("submit");
         tester.assertNoErrorMessage();
 
@@ -98,9 +107,9 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
 
     @Test
     public void testQueryables() throws Exception {
-        tester.startPage(OSEOAdminPage.class);
+        openAdminPage();
         FormTester formTester = tester.newFormTester("form");
-        formTester.setValue("globalQueryables", "  a,  b,c");
+        formTester.setValue(PANEL + "globalQueryables", "  a,  b,c");
         formTester.submit("submit");
         tester.assertNoErrorMessage();
 
@@ -109,24 +118,24 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
     }
 
     private void setupPagingValues(int records, int maxRecords) {
-        tester.startPage(OSEOAdminPage.class);
+        openAdminPage();
         FormTester formTester = tester.newFormTester("form");
-        formTester.setValue("recordsPerPage", "" + records);
-        formTester.setValue("maximumRecordsPerPage", "" + maxRecords);
-        formTester.submit();
+        formTester.setValue(PANEL + "recordsPerPage", "" + records);
+        formTester.setValue(PANEL + "maximumRecordsPerPage", "" + maxRecords);
+        formTester.submit("submit");
     }
 
     private void setupCacheValues(int ttl) {
-        tester.startPage(OSEOAdminPage.class);
+        openAdminPage();
         FormTester formTester = tester.newFormTester("form");
-        formTester.setValue("aggregatesCacheTTL", "" + ttl);
+        formTester.setValue(PANEL + "aggregatesCacheTTL", "" + ttl);
         formTester.submit();
     }
 
     private void checkRequired(String componentName) {
-        tester.startPage(OSEOAdminPage.class);
+        openAdminPage();
         FormTester formTester = tester.newFormTester("form");
-        formTester.setValue(componentName, null);
+        formTester.setValue(PANEL + componentName, null);
         formTester.submit();
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
     }
@@ -138,9 +147,9 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         oseo.setSkipNumberMatched(false);
         gs.save(oseo);
 
-        tester.startPage(OSEOAdminPage.class);
+        openAdminPage();
         FormTester formTester = tester.newFormTester("form");
-        formTester.setValue("skipNumberMatched", "true");
+        formTester.setValue(PANEL + "skipNumberMatched", "true");
         formTester.submit("submit");
         tester.assertNoErrorMessage();
 

@@ -124,6 +124,15 @@ public class CoverageAccessPage extends ServerAdminPage {
         imageIOCacheThreshold.add(RangeValidator.minimum(0l));
         form.add(imageIOCacheThreshold);
 
+        NumberTextField<Integer> granuleCacheMaxSizeMB = new NumberTextField<>("granuleCacheMaxSizeMB", Integer.class);
+        granuleCacheMaxSizeMB.setMinimum(0);
+        form.add(granuleCacheMaxSizeMB);
+
+        NumberTextField<Integer> granuleCacheThresholdKB =
+                new NumberTextField<>("granuleCacheThresholdKB", Integer.class);
+        granuleCacheThresholdKB.setMinimum(0);
+        form.add(granuleCacheThresholdKB);
+
         Button submit = new Button("submit") {
             @Serial
             private static final long serialVersionUID = 4149741045073254811L;

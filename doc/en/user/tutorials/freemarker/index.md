@@ -4,22 +4,22 @@
 
 This tutorial will introduce you to a more in depth view of what FreeMarker templates are and how you can use the data provided to templates by GeoServer.
 
-[Freemarker](http://www.freemarker.org/) is a simple yet powerful template engine that GeoServer uses to allow user customization of outputs. In particular, at the time of writing it is used to allow customization of GetFeatureInfo, GeoRSS and KML outputs.
+[Freemarker](https://www.freemarker.org/) is a simple yet powerful template engine that GeoServer uses to allow user customization of outputs. In particular, at the time of writing it is used to allow customization of GetFeatureInfo, GeoRSS and KML outputs.
 
-Freemarker allows for simple variable expansions, as in `${myVarName}`, expansion of nested properties, such as in `${feature.myAtt.value}`, up to little programs using loops, ifs and variables. Most of the relevant information about how to approach template writing is included in the Freemarker's [Designer guide](http://www.freemarker.org/docs/dgui.md) and won't be repeated here: the guide, along with the [KML Placemark Templates](../extensions/kml/tutorials/kmlplacemark/index.md) and [GetFeatureInfo Templates](GetFeatureInfo/index.md) tutorials should be good enough to give you a good grip on how a template is built.
+Freemarker allows for simple variable expansions, as in `${myVarName}`, expansion of nested properties, such as in `${feature.myAtt.value}`, up to little programs using loops, ifs and variables. Most of the relevant information about how to approach template writing is included in the Freemarker's [Designer guide](https://www.freemarker.org/docs/dgui.md) and won't be repeated here: the guide, along with the [KML Placemark Templates](../../extensions/kml/tutorials/kmlplacemark/index.md) and [GetFeatureInfo Templates](../GetFeatureInfo/index.md) tutorials provide a good basis on how a template is built.
 
 ### Template Lookup
 
-GeoServer looks up templates in three different places, allowing for various levels of customization. For example given the `content.ftl` template used to generate WMS GetFeatureInfo content:
+GeoServer looks up templates in three different places, allowing for various levels of customization. For example given the **`content.ftl`** template used to generate WMS GetFeatureInfo content:
 
-- Look into `GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/<featuretype>/content.ftl` to see if there is a feature type specific template
-- Look into `GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/content.ftl` to see if there is a store specific template
-- Look into `GEOSERVER_DATA_DIR/workspaces/<workspace>/content.ftl` to see if there is a workspace specific template
-- Look into `GEOSERVER_DATA_DIR/workspaces/content.ftl` looking for a global override
-- Look into `GEOSERVER_DATA_DIR/templates/content.ftl` looking for a global override
+- Look into **`GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/<featuretype>/content.ftl`** to see if there is a feature type specific template
+- Look into **`GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/content.ftl`** to see if there is a store specific template
+- Look into **`GEOSERVER_DATA_DIR/workspaces/<workspace>/content.ftl`** to see if there is a workspace specific template
+- Look into **`GEOSERVER_DATA_DIR/workspaces/content.ftl`** looking for a global override
+- Look into **`GEOSERVER_DATA_DIR/templates/content.ftl`** looking for a global override
 - Look into the GeoServer classpath and load the default template
 
-Each templated output format tutorial should provide you with the template names, and state whether the templates can be type specific, or not. If you can't find the source files for the default template, look in the service jar of the geoserver distribution (for example, wms-x.y.z.jar). You just have to unzip it, and you'll find the xxx.ftl files GeoServer is using as the default templates.
+Each templated output format tutorial provides the template names, and state whether the templates can be type specific, or not. If you can't find the source files for the default template, look in the service jar of the geoserver distribution (for example, wms-x.y.z.jar). You just have to unzip it, and you'll find the **`xxx.ftl`** files GeoServer is using as the default templates.
 
 ### Common Data Models
 
@@ -56,6 +56,7 @@ Here are the data models (as you can see there are redundancies, in particular i
     - value: a string representation of the attribute value
     - isComplex (boolean): true if the attribute is a feature (see [app-schema.complex-features](../data/app-schema/complex-features.md)), false otherwise
     - type (string or FeatureType): attribute type: if isComplex is false, the fully qualified Java class name; if isComplex is true, a FeatureType
+    - description (string): attribute description
     - rawValue: the actual attribute value (is isComplex is true rawValue is a Feature)
 - type (map)
     - name (string): the type name (same as typeName)

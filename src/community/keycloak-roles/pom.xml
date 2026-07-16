@@ -16,14 +16,14 @@
   </parent>
 
   <groupId>org.geoserver.community.security</groupId>
-  <artifactId>gs-sec-keycloak</artifactId>
+  <artifactId>gs-sec-keycloak-roles</artifactId>
   <packaging>pom</packaging>
-  <name>GeoServer Keycloak Security Community Modules</name>
+  <name>GeoServer Keycloak Roles Security Community Modules</name>
 
   <modules>
-    <module>keycloak-core</module>
-    <module>keycloak-web</module>
-    <module>keycloak-assembly</module>
+    <module>keycloak-roles-core</module>
+    <module>keycloak-roles-web</module>
+    <module>keycloak-roles-assembly</module>
   </modules>
 
 </project>

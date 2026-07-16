@@ -4,24 +4,24 @@
  */
 package org.geoserver.gwc;
 
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
-import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geowebcache.util.URLMangler;
 
+/** Adapts GeoWebCache URL callbacks to GeoServer's URL mangling implementation. */
 public class ResponseUtilsURLMangler implements URLMangler {
 
     @Override
-    public String buildURL(String baseURL, String contextPath, String path) {
-        // In order to allow GWC to dispatch the requests the GwcServiceDispatcherCallback
-        // puts the local workspace in the servlet context, however to build correct backlinks we
-        // need to original base URL with the workspace stuck in the path so that the
-        // proxy base URL rewrite won't eat it away
-        final String originalBaseURL = GwcServiceDispatcherCallback.GWC_ORIGINAL_BASEURL.get();
-        String base = originalBaseURL == null ? StringUtils.strip(baseURL, "/") : originalBaseURL;
-        String cp = StringUtils.strip(contextPath, "/");
-        String rest = cp + "/" + StringUtils.stripStart(path, "/");
-        return ResponseUtils.buildURL(base, rest, null, URLType.SERVICE);
+    public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLMangler.URLType type) {
+        String originalBaseURL = GwcServiceDispatcherCallback.GWC_ORIGINAL_BASEURL.get();
+        String base = originalBaseURL == null ? StringUtils.strip(baseURL.toString(), "/") : originalBaseURL;
+        org.geoserver.ows.URLMangler.URLType geoServerType = org.geoserver.ows.URLMangler.URLType.valueOf(type.name());
+        String result = ResponseUtils.buildURL(base, path.toString(), kvp, geoServerType);
+        baseURL.setLength(0);
+        baseURL.append(result);
+        path.setLength(0);
+        kvp.clear();
     }
 }

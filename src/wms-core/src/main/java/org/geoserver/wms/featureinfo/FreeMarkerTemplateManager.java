@@ -149,9 +149,8 @@ public abstract class FreeMarkerTemplateManager {
         GeoServerMemberAccessPolicy policy = DEFAULT_ACCESS.withStaticAccess(staticAccess);
         templateConfig = TemplateUtils.getSafeConfiguration(wrapper, policy, null);
         // As we want to look up different templates for each resource, the templates cannot
-        // be cached by name. Freemarker used to clear the cache when setting the loader,
-        // Freemarker used to clear the cache when setting the loader,
-        // but does not do that anymore since
+        // be cached by name.
+        // Freemarker no longer clears the cache when setting the loader since
         // https://github.com/apache/freemarker/commit/fc9eba51492c3cd4da3547ba15b95c7db9b3d237
         // because we use the same loader, we just re-configure it to point to a different resource
         templateConfig.setCacheStorage(new NullCacheStorage());

@@ -53,5 +53,15 @@ public interface CoverageAccessInfo extends Cloneable, Serializable {
 
     long getImageIOCacheThreshold();
 
+    /** Total size of the shared image-mosaic granule image cache, in MB; 0 or less disables it. */
+    int getGranuleCacheMaxSizeMB();
+
+    void setGranuleCacheMaxSizeMB(int granuleCacheMaxSizeMB);
+
+    /** Default largest decoded granule eligible for the granule image cache, in KB. */
+    int getGranuleCacheThresholdKB();
+
+    void setGranuleCacheThresholdKB(int granuleCacheThresholdKB);
+
     public CoverageAccessInfo clone();
 }

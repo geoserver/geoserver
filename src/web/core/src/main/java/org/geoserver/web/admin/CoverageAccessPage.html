@@ -33,6 +33,19 @@
       </div>
     </div>
   </fieldset>
+  <fieldset>
+    <legend><span><wicket:message key="granuleCache">Granule Image Cache</wicket:message></span></legend>
+    <div class="gs-form">
+      <div class="gs-form-group">
+        <label for="granuleCacheMaxSizeMB"><wicket:message key="granuleCacheMaxSizeMB">Granule cache max size (MB, 0 disables)</wicket:message></label>
+        <input id="granuleCacheMaxSizeMB" class="w-sm" type="number" wicket:id="granuleCacheMaxSizeMB" />
+      </div>
+      <div class="gs-form-group">
+        <label for="granuleCacheThresholdKB"><wicket:message key="granuleCacheThresholdKB">Default per-granule caching threshold (KB)</wicket:message></label>
+        <input id="granuleCacheThresholdKB" class="w-md" type="number" wicket:id="granuleCacheThresholdKB" />
+      </div>
+    </div>
+  </fieldset>
   <div class="button-group toolbar-sticky selfclear">
     <button type="submit" class="form-button-save primary" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>
     <a href="#a" class="form-button-apply button outline-primary" wicket:id="apply"><wicket:message key="apply">Apply</wicket:message></a>

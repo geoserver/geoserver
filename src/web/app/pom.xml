@@ -754,12 +754,12 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community.security</groupId>
-          <artifactId>gs-sec-keycloak-core</artifactId>
+          <artifactId>gs-sec-keycloak-roles-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
           <groupId>org.geoserver.community.security</groupId>
-          <artifactId>gs-sec-keycloak-web</artifactId>
+          <artifactId>gs-sec-keycloak-roles-web</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

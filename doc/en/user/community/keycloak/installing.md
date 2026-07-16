@@ -10,14 +10,14 @@ render_macros: true
 
 2. Visit the [GeoServer download page](https://geoserver.org/download), open the **Development** tab, and locate the nightly build that matches your version.
 
-   Follow the **Community Modules** link and download the `sec-keycloak` archive:
+   Follow the **Community Modules** link and download the `sec-keycloak-roles` archive:
 
-   - {{ snapshot }} example: [sec-keycloak](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-sec-keycloak-plugin.zip)
+   - {{ snapshot }} example: [sec-keycloak-roles](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-sec-keycloak-roles-plugin.zip)
 
 3. Extract the contents of the archive into the **`WEB-INF/lib`** directory of your GeoServer installation.
 
    !!! warning
-       The version number in the filename must match the GeoServer version you are running (for example `geoserver-{{ snapshot }}-sec-keycloak-plugin.zip`).
+       The version number in the filename must match the GeoServer version you are running (for example `geoserver-{{ snapshot }}-sec-keycloak-roles-plugin.zip`).
 
 4. Restart GeoServer.
 
@@ -26,25 +26,25 @@ render_macros: true
 To compile the module yourself, download the GeoServer source for your version and run:
 
 ``` bash
-cd src/community/keycloak
+cd src/community/keycloak-roles
 mvn install -Passembly -DskipTests
 ```
 
 The assembled ZIP is written to:
 
 ```
-src/community/target/release/geoserver-<version>-sec-keycloak-plugin.zip
+src/community/target/release/geoserver-<version>-sec-keycloak-roles-plugin.zip
 ```
 
-The ZIP contains exactly two JARs — `gs-sec-keycloak-core` and `gs-sec-keycloak-web` — both of which must be placed in `WEB-INF/lib`. All other required libraries (`httpclient5`, `jackson-databind`) are already bundled in the standard GeoServer WAR.
+The ZIP contains exactly two JARs — `gs-sec-keycloak-roles-core` and `gs-sec-keycloak-roles-web` — both of which must be placed in `WEB-INF/lib`. All other required libraries (`httpclient5`, `jackson-databind`) are already bundled in the standard GeoServer WAR.
 
 ## Using with the GeoServer Docker container
 
-Pass `sec-keycloak-plugin` as a community extension:
+Pass `sec-keycloak-roles-plugin` as a community extension:
 
 ```bash
 docker run -it -p 8080:8080 \
   --env INSTALL_EXTENSIONS=true \
-  --env COMMUNITY_EXTENSIONS="sec-keycloak-plugin" \
+  --env COMMUNITY_EXTENSIONS="sec-keycloak-roles-plugin" \
   docker.osgeo.org/geoserver:{{ snapshot }}
 ```

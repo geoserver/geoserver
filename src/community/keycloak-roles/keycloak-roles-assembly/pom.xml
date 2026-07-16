@@ -11,25 +11,25 @@
 
   <parent>
     <groupId>org.geoserver.community.security</groupId>
-    <artifactId>gs-sec-keycloak</artifactId>
+    <artifactId>gs-sec-keycloak-roles</artifactId>
     <version>3.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>gs-sec-keycloak-assembly</artifactId>
+  <artifactId>gs-sec-keycloak-roles-assembly</artifactId>
   <packaging>jar</packaging>
-  <name>GeoServer Keycloak Security Module - Assembly</name>
+  <name>GeoServer Keycloak Roles Security Module - Assembly</name>
 
   <dependencies>
 
     <dependency>
       <groupId>org.geoserver.community.security</groupId>
-      <artifactId>gs-sec-keycloak-core</artifactId>
+      <artifactId>gs-sec-keycloak-roles-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geoserver.community.security</groupId>
-      <artifactId>gs-sec-keycloak-web</artifactId>
+      <artifactId>gs-sec-keycloak-roles-web</artifactId>
       <version>${project.version}</version>
     </dependency>
 

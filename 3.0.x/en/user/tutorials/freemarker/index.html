@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -30238,19 +30238,19 @@
 <h1 id="freemarker-templates">Freemarker Templates<a class="headerlink" href="#freemarker-templates" title="Permanent link">&para;</a></h1>
 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
 <p>This tutorial will introduce you to a more in depth view of what FreeMarker templates are and how you can use the data provided to templates by GeoServer.</p>
-<p><a href="http://www.freemarker.org/">Freemarker</a> is a simple yet powerful template engine that GeoServer uses to allow user customization of outputs. In particular, at the time of writing it is used to allow customization of GetFeatureInfo, GeoRSS and KML outputs.</p>
-<p>Freemarker allows for simple variable expansions, as in <code>${myVarName}</code>, expansion of nested properties, such as in <code>${feature.myAtt.value}</code>, up to little programs using loops, ifs and variables. Most of the relevant information about how to approach template writing is included in the Freemarker's <a href="http://www.freemarker.org/docs/dgui.md">Designer guide</a> and won't be repeated here: the guide, along with the <a href="../extensions/kml/tutorials/kmlplacemark/index.md">KML Placemark Templates</a> and <a href="GetFeatureInfo/index.md">GetFeatureInfo Templates</a> tutorials should be good enough to give you a good grip on how a template is built.</p>
+<p><a href="https://www.freemarker.org/">Freemarker</a> is a simple yet powerful template engine that GeoServer uses to allow user customization of outputs. In particular, at the time of writing it is used to allow customization of GetFeatureInfo, GeoRSS and KML outputs.</p>
+<p>Freemarker allows for simple variable expansions, as in <code>${myVarName}</code>, expansion of nested properties, such as in <code>${feature.myAtt.value}</code>, up to little programs using loops, ifs and variables. Most of the relevant information about how to approach template writing is included in the Freemarker's <a href="https://www.freemarker.org/docs/dgui.md">Designer guide</a> and won't be repeated here: the guide, along with the <a href="../../extensions/kml/tutorials/kmlplacemark/">KML Placemark Templates</a> and <a href="../GetFeatureInfo/">GetFeatureInfo Templates</a> tutorials provide a good basis on how a template is built.</p>
 <h3 id="template-lookup">Template Lookup<a class="headerlink" href="#template-lookup" title="Permanent link">&para;</a></h3>
-<p>GeoServer looks up templates in three different places, allowing for various levels of customization. For example given the <code>content.ftl</code> template used to generate WMS GetFeatureInfo content:</p>
+<p>GeoServer looks up templates in three different places, allowing for various levels of customization. For example given the <strong><code>content.ftl</code></strong> template used to generate WMS GetFeatureInfo content:</p>
 <ul>
-<li>Look into <code>GEOSERVER_DATA_DIR/workspaces/&lt;workspace&gt;/&lt;datastore&gt;/&lt;featuretype&gt;/content.ftl</code> to see if there is a feature type specific template</li>
-<li>Look into <code>GEOSERVER_DATA_DIR/workspaces/&lt;workspace&gt;/&lt;datastore&gt;/content.ftl</code> to see if there is a store specific template</li>
-<li>Look into <code>GEOSERVER_DATA_DIR/workspaces/&lt;workspace&gt;/content.ftl</code> to see if there is a workspace specific template</li>
-<li>Look into <code>GEOSERVER_DATA_DIR/workspaces/content.ftl</code> looking for a global override</li>
-<li>Look into <code>GEOSERVER_DATA_DIR/templates/content.ftl</code> looking for a global override</li>
+<li>Look into <strong><code>GEOSERVER_DATA_DIR/workspaces/&lt;workspace&gt;/&lt;datastore&gt;/&lt;featuretype&gt;/content.ftl</code></strong> to see if there is a feature type specific template</li>
+<li>Look into <strong><code>GEOSERVER_DATA_DIR/workspaces/&lt;workspace&gt;/&lt;datastore&gt;/content.ftl</code></strong> to see if there is a store specific template</li>
+<li>Look into <strong><code>GEOSERVER_DATA_DIR/workspaces/&lt;workspace&gt;/content.ftl</code></strong> to see if there is a workspace specific template</li>
+<li>Look into <strong><code>GEOSERVER_DATA_DIR/workspaces/content.ftl</code></strong> looking for a global override</li>
+<li>Look into <strong><code>GEOSERVER_DATA_DIR/templates/content.ftl</code></strong> looking for a global override</li>
 <li>Look into the GeoServer classpath and load the default template</li>
 </ul>
-<p>Each templated output format tutorial should provide you with the template names, and state whether the templates can be type specific, or not. If you can't find the source files for the default template, look in the service jar of the geoserver distribution (for example, wms-x.y.z.jar). You just have to unzip it, and you'll find the xxx.ftl files GeoServer is using as the default templates.</p>
+<p>Each templated output format tutorial provides the template names, and state whether the templates can be type specific, or not. If you can't find the source files for the default template, look in the service jar of the geoserver distribution (for example, wms-x.y.z.jar). You just have to unzip it, and you'll find the <strong><code>xxx.ftl</code></strong> files GeoServer is using as the default templates.</p>
 <h3 id="common-data-models">Common Data Models<a class="headerlink" href="#common-data-models" title="Permanent link">&para;</a></h3>
 <p>Freemarker calls "data model" the set of data provided to the template. Each output format used by GeoServer will inject a different data model according to the information it's managing. There are three very common elements that appear in almost every template: Feature, FeatureType and FeatureCollection. Here we provide a data model of each.</p>
 <p>The data model is a sort of tree, where each element has a name and a type. Besides basic types, we'll use:</p>
@@ -30286,6 +30286,7 @@
 <li>value: a string representation of the attribute value</li>
 <li>isComplex (boolean): true if the attribute is a feature (see <a href="../data/app-schema/complex-features.md">app-schema.complex-features</a>), false otherwise</li>
 <li>type (string or FeatureType): attribute type: if isComplex is false, the fully qualified Java class name; if isComplex is true, a FeatureType</li>
+<li>description (string): attribute description</li>
 <li>rawValue: the actual attribute value (is isComplex is true rawValue is a Feature)</li>
 </ul>
 </li>
@@ -30461,7 +30462,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../../javascripts/hide-empty-toc.js"></script>
       

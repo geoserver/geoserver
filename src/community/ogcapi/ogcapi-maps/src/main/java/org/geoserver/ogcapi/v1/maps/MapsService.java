@@ -209,7 +209,7 @@ public class MapsService {
     @ResponseBody
     public FeatureInfoResponse info(
             @PathVariable(name = "collectionId") String collectionId,
-            @PathVariable(name = "styleId") String styleId,
+            @PathVariable(name = "styleId", required = false) String styleId,
             @RequestParam(name = "f") String format,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "crs", required = false) String crs,
@@ -219,9 +219,21 @@ public class MapsService {
             @RequestParam(name = "transparent", required = false, defaultValue = "true") boolean transparent,
             @RequestParam(name = "bgcolor", required = false) String bgcolor,
             @RequestParam(name = "i") int i,
-            @RequestParam(name = "j") int j
+            @RequestParam(name = "j") int j,
+            @RequestParam(name = "limit", required = false, defaultValue = "1") int limit
             // TODO: add all the vendor parameters we normally support in WMS
             ) throws IOException, FactoryException, ParseException {
+        WMSInfo wmsInfo = getService();
+        if (!MapsConformance.configuration(wmsInfo).featureInfo(wmsInfo)) {
+            throw new APIException(
+                    APIException.NOT_FOUND,
+                    "GetFeatureInfo is a GeoServer extension and is not enabled on this server",
+                    HttpStatus.NOT_FOUND);
+        }
+        if (limit < 1) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE, "limit must be greater than zero, got " + limit, HttpStatus.BAD_REQUEST);
+        }
         GetMapRequest getMapRequest = toGetMapRequest(
                 collectionId, styleId, "image/png", bbox, crs, datetime, width, height, transparent, bgcolor);
         DefaultWebMapService.autoSetBoundsAndSize(getMapRequest);
@@ -231,6 +243,7 @@ public class MapsService {
         request.setXPixel(i);
         request.setYPixel(j);
         request.setInfoFormat(format);
+        request.setFeatureCount(limit);
         request.setQueryLayers(getMapRequest.getLayers());
 
         FeatureCollectionType collection = wms.getFeatureInfo(request);

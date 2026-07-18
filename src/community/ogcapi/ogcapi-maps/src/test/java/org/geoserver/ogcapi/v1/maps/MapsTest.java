@@ -4,6 +4,8 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -22,6 +24,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class MapsTest extends MapsTestSupport {
 
@@ -100,6 +103,58 @@ public class MapsTest extends MapsTestSupport {
                     200);
             assertEquals(values[i], json.read("$.numberReturned", Integer.class));
         }
+    }
+
+    @Test
+    public void testDefaultStyleInfo() throws Exception {
+        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
+        // no styleId segment: exercises the default-style binding on the info endpoint
+        DocumentContext json = getAsJSONPath(
+                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map/info?i=50&j=50&f=application%2Fjson&datetime=2012-02-11",
+                200);
+        assertEquals(Integer.valueOf(1), json.read("$.numberReturned", Integer.class));
+        // the info payload is GeoJSON: verify the actual feature, not just the count
+        assertEquals("FeatureCollection", json.read("$.type"));
+        assertEquals("Polygon", json.read("$.features[0].geometry.type"));
+        assertEquals(1.0, json.read("$.features[0].properties.startElevation", Double.class), 0.0);
+    }
+
+    // a pixel inside Blue Lake, which also falls inside Green Forest, so both layers of the group answer
+    private static final String GROUP_INFO =
+            "ogc/maps/v1/collections/nature/map/info?f=application%2Fjson&bbox=-0.002,-0.003,0.005,0.002"
+                    + "&width=100&height=100&i=50&j=64";
+
+    @Test
+    public void testInfoLimitDefaultsToOneFeature() throws Exception {
+        DocumentContext json = getAsJSONPath(GROUP_INFO, 200);
+        assertEquals(Integer.valueOf(1), json.read("$.features.length()"));
+    }
+
+    @Test
+    public void testInfoLimitReturnsAllGroupLayers() throws Exception {
+        DocumentContext json = getAsJSONPath(GROUP_INFO + "&limit=10", 200);
+        assertEquals(Integer.valueOf(2), json.read("$.features.length()"));
+        assertEquals("Blue Lake", json.read("$.features[0].properties.NAME"));
+        assertEquals("Green Forest", json.read("$.features[1].properties.NAME"));
+    }
+
+    @Test
+    public void testInfoInvalidLimitRejected() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(GROUP_INFO + "&limit=-1");
+        assertEquals(400, response.getStatus());
+        assertEquals("application/json", getBaseMimeType(response.getContentType()));
+        DocumentContext json = getAsJSONPath(response);
+        assertEquals("InvalidParameterValue", json.read("type"));
+        assertThat(json.read("title"), containsString("limit"));
+    }
+
+    @Test
+    public void testInfoDisabled() throws Exception {
+        withConformance(MapsConformance::setFeatureInfo, false, () -> {
+            MockHttpServletResponse response =
+                    getAsServletResponse("ogc/maps/v1/collections/Lakes/map/info?i=5&j=5&f=application%2Fjson");
+            assertEquals(404, response.getStatus());
+        });
     }
 
     @Test

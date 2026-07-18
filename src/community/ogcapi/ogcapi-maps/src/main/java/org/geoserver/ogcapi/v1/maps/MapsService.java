@@ -5,7 +5,10 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import static org.geoserver.ogcapi.APIException.INVALID_PARAMETER_VALUE;
+import static org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import java.awt.Color;
 import java.io.IOException;
 import java.text.ParseException;
@@ -48,6 +51,7 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,6 +91,16 @@ public class MapsService {
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public MapsLandingPage landingPage() {
         return new MapsLandingPage(getService(), getCatalog(), "ogc/maps/v1");
+    }
+
+    @GetMapping(
+            path = {"openapi", "openapi.json", "openapi.yaml"},
+            name = "getApi",
+            produces = {OPEN_API_MEDIA_TYPE_VALUE, APPLICATION_YAML_VALUE, MediaType.TEXT_XML_VALUE})
+    @ResponseBody
+    @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
+    public OpenAPI api() throws IOException {
+        return new MapsAPIBuilder().build(getService());
     }
 
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")

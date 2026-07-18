@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.v1.maps;
 
 import java.util.Collections;
 import java.util.TimeZone;
+import java.util.function.BiConsumer;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -15,9 +16,11 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
+import org.geoserver.wms.WMSInfo;
 import org.junit.BeforeClass;
 
 public class MapsTestSupport extends OGCApiTestSupport {
@@ -69,6 +72,27 @@ public class MapsTestSupport extends OGCApiTestSupport {
                 "TimeElevationWithStartEndDate.properties",
                 getClass(),
                 catalog);
+    }
+
+    /** A test body that may throw, used by {@link #withConformance}. */
+    @FunctionalInterface
+    protected interface ThrowingRunnable {
+        void run() throws Exception;
+    }
+
+    /** Flips one Maps conformance flag, runs the body, and always resets the flag to its default (null) afterwards. */
+    protected void withConformance(BiConsumer<MapsConformance, Boolean> flag, boolean value, ThrowingRunnable body)
+            throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        flag.accept(MapsConformance.configuration(wms), value);
+        gs.save(wms);
+        try {
+            body.run();
+        } finally {
+            flag.accept(MapsConformance.configuration(wms), null);
+            gs.save(wms);
+        }
     }
 
     protected void setupStartEndTimeDimension(QName typeName, String dimension, String start, String end) {

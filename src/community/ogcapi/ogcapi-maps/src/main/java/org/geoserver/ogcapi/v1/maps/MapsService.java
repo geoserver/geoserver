@@ -26,11 +26,11 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIBBoxParser;
+import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
-import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.StyleDocument;
@@ -57,11 +57,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @APIService(service = "Maps", version = "1.0.1", landingPage = "ogc/maps/v1", serviceClass = WMSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps/v1")
 public class MapsService {
-
-    public static final String CONF_CLASS_CORE = "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/core";
-    public static final String CONF_CLASS_GEODATA = "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/geodata";
-    public static final String CONF_CLASS_BBOX = "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/bbox";
-    public static final String CONF_CLASS_CRS = "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/crs";
 
     private static final String DISPLAY_NAME = "OGC API Maps";
     private TimeParser timeParser = new TimeParser();
@@ -98,13 +93,10 @@ public class MapsService {
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(
-                ConformanceClass.CORE,
-                ConformanceClass.COLLECTIONS,
-                CONF_CLASS_CORE,
-                CONF_CLASS_GEODATA,
-                CONF_CLASS_BBOX,
-                CONF_CLASS_CRS);
+        WMSInfo wms = getService();
+        List<String> classes = MapsConformance.configuration(wms).conformances(wms).stream()
+                .map(APIConformance::getId)
+                .toList();
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 

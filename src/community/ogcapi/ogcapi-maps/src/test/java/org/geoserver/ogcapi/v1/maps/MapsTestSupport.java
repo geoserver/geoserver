@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
+import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.TimeZone;
 import java.util.function.BiConsumer;
@@ -93,6 +94,39 @@ public class MapsTestSupport extends OGCApiTestSupport {
             flag.accept(MapsConformance.configuration(wms), null);
             gs.save(wms);
         }
+    }
+
+    /**
+     * Alpha of one pixel, 0 fully transparent and 255 fully opaque. {@link BufferedImage#getRGB} returns the pixel as
+     * ARGB with alpha in the high byte.
+     */
+    protected static int alpha(BufferedImage image, int x, int y) {
+        return alpha(image.getRGB(x, y));
+    }
+
+    /** Alpha of an ARGB pixel as returned by {@link BufferedImage#getRGB}, 0 fully transparent and 255 fully opaque. */
+    protected static int alpha(int argb) {
+        return argb >>> 24;
+    }
+
+    /** Red band of an ARGB pixel, 0 to 255. */
+    protected static int red(int argb) {
+        return (argb >> 16) & 0xFF;
+    }
+
+    /** Green band of an ARGB pixel, 0 to 255. */
+    protected static int green(int argb) {
+        return (argb >> 8) & 0xFF;
+    }
+
+    /** Blue band of an ARGB pixel, 0 to 255. */
+    protected static int blue(int argb) {
+        return argb & 0xFF;
+    }
+
+    /** The three colour bands of an ARGB pixel, with the alpha dropped, for comparisons that ignore opacity. */
+    protected static int rgb(int argb) {
+        return argb & 0xFFFFFF;
     }
 
     protected void setupStartEndTimeDimension(QName typeName, String dimension, String start, String end) {

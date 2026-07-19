@@ -15,11 +15,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.opengis.wfs.FeatureCollectionType;
@@ -27,10 +29,12 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIConformance;
@@ -42,6 +46,7 @@ import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.ogcapi.TimeExtentCalculator;
+import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.DimensionWarning;
@@ -49,6 +54,8 @@ import org.geoserver.util.DimensionWarning.WarningType;
 import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -56,6 +63,8 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
+import org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader;
+import org.geoserver.wms.legendgraphic.LegendGraphic;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
@@ -84,11 +93,17 @@ public class MapsService {
     private final GeoServer geoServer;
     private final WebMapService wms;
     private final WMS wmsFacade;
+    private final GetLegendGraphicKvpReader legendReader;
 
-    public MapsService(GeoServer geoServer, @Qualifier("wmsService2") WebMapService wms, WMS wmsFacade) {
+    public MapsService(
+            GeoServer geoServer,
+            @Qualifier("wmsService2") WebMapService wms,
+            WMS wmsFacade,
+            GetLegendGraphicKvpReader legendReader) {
         this.geoServer = geoServer;
         this.wms = wms;
         this.wmsFacade = wmsFacade;
+        this.legendReader = legendReader;
     }
 
     public WMSInfo getService() {
@@ -154,7 +169,11 @@ public class MapsService {
     @HTMLResponseBody(templateName = "styles.ftl", fileName = "styles.html")
     public StylesDocument styles(@PathVariable(name = "collectionId") String collectionId) {
         PublishedInfo p = getPublished(collectionId);
-        return new StylesDocument(p);
+        WMSInfo wmsInfo = getService();
+        List<MediaType> legendFormats = MapsConformance.configuration(wmsInfo).legend(wmsInfo)
+                ? new ArrayList<>(APIRequestInfo.get().getProducibleMediaTypes(LegendResponse.class, false))
+                : List.of();
+        return new StylesDocument(p, legendFormats);
     }
 
     private PublishedInfo getPublished(String collectionId) {
@@ -352,8 +371,8 @@ public class MapsService {
      */
     private void checkFormatConformance(String format) {
         if (format == null) return;
-        MapsConformance conf = MapsConformance.configuration(getService());
         WMSInfo wms = getService();
+        MapsConformance conf = MapsConformance.configuration(wms);
         String f = format.toLowerCase();
         if (f.contains("tiff") && !conf.tiff(wms)) throw notAcceptableFormat("TIFF");
         if (f.contains("svg") && !conf.svg(wms)) throw notAcceptableFormat("SVG");
@@ -416,6 +435,13 @@ public class MapsService {
         }
     }
 
+    /** Fails with a 404 when the operation is disabled: its conformance class is not declared, so it must not exist. */
+    private void checkEnabled(boolean enabled, String operation) {
+        if (enabled) return;
+        throw new APIException(
+                APIException.NOT_FOUND, operation + " is not enabled on this server", HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping(
             path = {"collections/{collectionId}/styles/{styleId}/map/info", "collections/{collectionId}/map/info"},
             name = "getCollectionInfo")
@@ -437,12 +463,7 @@ public class MapsService {
             // TODO: add all the vendor parameters we normally support in WMS
             ) throws IOException, FactoryException, ParseException {
         WMSInfo wmsInfo = getService();
-        if (!MapsConformance.configuration(wmsInfo).featureInfo(wmsInfo)) {
-            throw new APIException(
-                    APIException.NOT_FOUND,
-                    "GetFeatureInfo is a GeoServer extension and is not enabled on this server",
-                    HttpStatus.NOT_FOUND);
-        }
+        checkEnabled(MapsConformance.configuration(wmsInfo).featureInfo(wmsInfo), "GetFeatureInfo");
         if (limit < 1) {
             throw new APIException(
                     INVALID_PARAMETER_VALUE, "limit must be greater than zero, got " + limit, HttpStatus.BAD_REQUEST);
@@ -461,6 +482,120 @@ public class MapsService {
 
         FeatureCollectionType collection = wms.getFeatureInfo(request);
         return new FeatureInfoResponse(collection, request);
+    }
+
+    @GetMapping(
+            path = {"collections/{collectionId}/styles/{styleId}/legend", "collections/{collectionId}/legend"},
+            name = "getCollectionLegend")
+    @ResponseBody
+    public LegendResponse legend(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "styleId", required = false) String styleId,
+            @RequestParam(name = "f", required = false, defaultValue = "image/png") String format,
+            @RequestParam(name = "width", required = false) Integer width,
+            @RequestParam(name = "height", required = false) Integer height,
+            @RequestParam(name = "scale", required = false) Double scale,
+            @RequestParam(name = "rule", required = false) String rule,
+            @RequestParam(name = "lang", required = false) String lang,
+            @RequestParam(name = "transparent", required = false, defaultValue = "true") boolean transparent,
+            @RequestParam(name = "bgcolor", required = false) String bgcolor,
+            @RequestParam(name = "legend-options", required = false) String legendOptions)
+            throws Exception {
+        WMSInfo wmsInfo = getService();
+        checkEnabled(MapsConformance.configuration(wmsInfo).legend(wmsInfo), "GetLegendGraphic");
+        PublishedInfo p = getPublished(collectionId);
+        if (styleId != null) {
+            checkStyle(p, styleId);
+        }
+
+        if (wmsFacade.getLegendGraphicOutputFormat(format) == null) throw notAcceptableFormat(format);
+
+        GetLegendGraphicRequest request = new GetLegendGraphicRequest();
+        request.setWms(wmsFacade);
+        request.setBaseUrl(APIRequestInfo.get().getBaseURL());
+        request.setStrict(false);
+        request.setFormat(format);
+        request.setTransparent(transparent);
+        if (scale != null) request.setScale(scale);
+        if (lang != null) request.setLocale(Locale.forLanguageTag(lang));
+        if (width != null) request.setWidth(width);
+        if (height != null) request.setHeight(height);
+
+        request.getLegends().addAll(legends(p, styleId, request));
+        // like WMS, a single rule applies to the first legend only, the others keep all of their rules
+        if (rule != null) request.setRule(rule);
+        applyConfiguredSize(request, width == null, height == null);
+
+        Map<String, Object> options = new LinkedHashMap<>();
+        if (legendOptions != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> parsed = (Map<String, Object>) new FormatOptionsKvpParser().parse(legendOptions);
+            options.putAll(parsed);
+        }
+        if (bgcolor != null) options.put("bgColor", bgcolor);
+        if (!options.isEmpty()) request.setLegendOptions(options);
+
+        LegendGraphic legend = (LegendGraphic) wms.getLegendGraphic(request);
+        return new LegendResponse(legend, request);
+    }
+
+    /**
+     * The legends to draw, one per layer, a layer group unfolded into its members drawn each in the style the group
+     * assigns it. The legend graphic reader is used as a library here, it owns the layer lookups that have no
+     * equivalent outside WMS.
+     */
+    private List<LegendRequest> legends(PublishedInfo p, String styleId, GetLegendGraphicRequest request)
+            throws Exception {
+        if (p instanceof LayerInfo layer) {
+            StyleInfo style = styleId != null && !StyleDocument.DEFAULT_STYLE_NAME.equals(styleId)
+                    ? getCatalog().getStyleByName(styleId)
+                    : layer.getDefaultStyle();
+            return List.of(legendRequest(layer, style, request));
+        }
+        LayerGroupInfo group = (LayerGroupInfo) p;
+        List<LayerInfo> layers = group.layers();
+        List<StyleInfo> styles = group.styles();
+        List<LegendRequest> legends = new ArrayList<>();
+        for (int i = 0; i < layers.size(); i++) {
+            LayerInfo layer = layers.get(i);
+            StyleInfo style = i < styles.size() && styles.get(i) != null ? styles.get(i) : layer.getDefaultStyle();
+            LegendRequest legend = legendRequest(layer, style, request);
+            legend.setLayerGroupInfo(group);
+            legends.add(legend);
+        }
+        return legends;
+    }
+
+    /** The legend of a single layer, asking the remote server for it when the layer cascades one. */
+    private LegendRequest legendRequest(LayerInfo layer, StyleInfo style, GetLegendGraphicRequest request)
+            throws Exception {
+        if (layer.getResource() instanceof WMSLayerInfo) {
+            return legendReader.getCascadeLegendRequest(layer, request);
+        }
+        LegendRequest legend = new LegendRequest(
+                legendReader.getLayerFeatureType(layer), layer.getResource().getQualifiedName());
+        legend.setLayer(layer.prefixedName());
+        legend.setLayerInfo(layer);
+        legend.setStyle(style.getStyle());
+        // a label configured on the layer is the legend title, in the requested language when there is one
+        MapLayerInfo mapLayer = new MapLayerInfo(layer, request.getLocale());
+        if (mapLayer.getLabel() != null) legend.setTitle(mapLayer.getLabel());
+        // a legend graphic on the style wins over one on the layer, as in WMS; both are resolved against the
+        // styles directory, and are dropped when the reference does not resolve
+        LegendInfo legendInfo = legendReader.resolveLegendInfo(style.getLegend(), request, style);
+        if (legendInfo == null) legendInfo = legendReader.resolveLegendInfo(layer.getLegend(), request, null);
+        legend.setLegendInfo(legendInfo);
+        return legend;
+    }
+
+    /** Sizes the legend after the graphic configured on the style or layer, for the dimensions the caller left out. */
+    private static void applyConfiguredSize(GetLegendGraphicRequest request, boolean noWidth, boolean noHeight) {
+        for (LegendRequest legend : request.getLegends()) {
+            LegendInfo legendInfo = legend.getLegendInfo();
+            if (legendInfo == null) continue;
+            if (noWidth && legendInfo.getWidth() > 0) request.setWidth(legendInfo.getWidth());
+            if (noHeight && legendInfo.getHeight() > 0) request.setHeight(legendInfo.getHeight());
+        }
     }
 
     private GetMapRequest toGetMapRequest(String collectionId, String styleId, String format, MapQuery query)
@@ -705,13 +840,14 @@ public class MapsService {
                     "center requires width, height and scale-denominator to define the map extent",
                     HttpStatus.BAD_REQUEST);
         }
-        double[] c = parseNumbers(q.center());
-        if (c.length < 2) {
+        String[] ordinates = q.center().split(",");
+        if (ordinates.length < 2) {
             throw new APIException(
                     APIException.INVALID_PARAMETER_VALUE,
                     "center must have at least two ordinates",
                     HttpStatus.BAD_REQUEST);
         }
+        double[] c = {Double.parseDouble(ordinates[0].trim()), Double.parseDouble(ordinates[1].trim())};
         CoordinateReferenceSystem crs =
                 q.centerCrs() != null ? APIBBoxParser.parseCRS(q.centerCrs()) : DefaultGeographicCRS.WGS84;
         // center ordinates follow the identifier axis order; read them into longitude/latitude and work in the XY twin
@@ -814,15 +950,6 @@ public class MapsService {
             result.envelope = new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
         }
         return result;
-    }
-
-    private double[] parseNumbers(String csv) {
-        String[] parts = csv.split(",");
-        double[] values = new double[parts.length];
-        for (int i = 0; i < parts.length; i++) {
-            values[i] = Double.parseDouble(parts[i].trim());
-        }
-        return values;
     }
 
     private void setupTimeSubset(String datetime, PublishedInfo p, GetMapRequest request)

@@ -35,6 +35,7 @@ public class LandingPageTest extends MapsTestSupport {
                         "describeCollection",
                         "getCollections",
                         "getCollectionInfo",
+                        "getCollectionLegend",
                         "getCollectionMap",
                         "getLandingPage",
                         "getConformanceDeclaration",

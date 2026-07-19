@@ -137,6 +137,44 @@ public class MapsTest extends MapsTestSupport {
     }
 
     @Test
+    public void testBBoxCrsSafeCurie() throws Exception {
+        // [EPSG:4326] is the authority latitude/longitude order, so the same area the plain crs expresses as
+        // -2,-1,2,1 (lon,lat) is here -1,-2,1,2 (lat,lon), and yields the identical delivered extent
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-2,1,2&bbox-crs=[EPSG:4326]&crs=EPSG:4326&width=50&height=50");
+        assertEquals(200, response.getStatus());
+        assertEquals("-1.0,-2.0,1.0,2.0", response.getHeader("Content-Bbox"));
+    }
+
+    @Test
+    public void testOutputCrsSafeCurie() throws Exception {
+        // the SafeCURIE form must be accepted for the output crs, and deliver the same map as the bare code
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-2,-1,2,1&crs=[EPSG:4326]&width=50&height=50");
+        assertEquals(200, response.getStatus());
+        assertEquals("-1.0,-2.0,1.0,2.0", response.getHeader("Content-Bbox"));
+    }
+
+    @Test
+    public void testSubsetCrsSafeCurie() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/maps/v1/collections/Lakes/map?f=image/png&subset=Lon(0:2),Lat(0:2)&subset-crs=[EPSG:4326]&width=50&height=50");
+        assertEquals(200, response.getStatus());
+        assertEquals("0.0,0.0,2.0,2.0", response.getHeader("Content-Bbox"));
+    }
+
+    @Test
+    public void testCenterCrsAxisOrder() throws Exception {
+        // center in CRS84 (lon,lat) and the same point in authority [EPSG:4326] (lat,lon) must define the same extent
+        String base = "ogc/maps/v1/collections/Lakes/map?f=image/png&scale-denominator=1000000&width=50&height=50";
+        MockHttpServletResponse lonLat = getAsServletResponse(base + "&center=0.5,1");
+        MockHttpServletResponse latLon = getAsServletResponse(base + "&center=1,0.5&center-crs=[EPSG:4326]");
+        assertEquals(200, lonLat.getStatus());
+        assertEquals(200, latLon.getStatus());
+        assertEquals(lonLat.getHeader("Content-Bbox"), latLon.getHeader("Content-Bbox"));
+    }
+
+    @Test
     public void testOutputCrsReprojection() throws Exception {
         // the output crs must actually reproject: the delivered CRS is EPSG:3395, not the layer native EPSG:4326
         MockHttpServletResponse response = getAsServletResponse(

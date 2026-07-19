@@ -394,16 +394,6 @@ public class MapsService {
         }
     }
 
-    /** Decodes a CRS identifier, mapping an unknown or invalid code to a 400 (OGC API - Maps, clause 13). */
-    private CoordinateReferenceSystem decodeCrs(String code) {
-        try {
-            return CRS.decode(code, true);
-        } catch (FactoryException e) {
-            throw new APIException(
-                    INVALID_PARAMETER_VALUE, "Unsupported or invalid CRS: " + code, HttpStatus.BAD_REQUEST, e);
-        }
-    }
-
     @GetMapping(
             path = {"collections/{collectionId}/styles/{styleId}/map/info", "collections/{collectionId}/map/info"},
             name = "getCollectionInfo")
@@ -484,7 +474,10 @@ public class MapsService {
         if (styleInfo != null) request.setStyles(Arrays.asList(styleInfo.getStyle()));
         request.setFormat(format);
 
-        CoordinateReferenceSystem outputCrs = q.crs() != null ? decodeCrs(q.crs()) : null;
+        // accept the SafeCURIE/URN forms for the output CRS, but render in longitude/latitude like the rest of the
+        // pipeline; the delivered axis order is reported back through the Content-Crs and Content-Bbox headers
+        CoordinateReferenceSystem outputCrs =
+                q.crs() != null ? APIBBoxParser.toLonLat(APIBBoxParser.parseCRS(q.crs())) : null;
 
         // area of interest: bbox, or subset spatial ranges, or a box built around a center point
         String datetime = q.datetime();
@@ -505,6 +498,8 @@ public class MapsService {
         }
         Integer width = q.width();
         Integer height = q.height();
+        // a bbox or spatial subset is an explicit extent; center is not (it needs width/height and scale-denominator)
+        boolean explicitExtent = region != null;
         if (region == null && q.center() != null) {
             region = boundsFromCenter(q, width, height);
         }
@@ -521,6 +516,11 @@ public class MapsService {
                         e);
             }
         }
+        // width/height together with a bbox/subset extent and scale-denominator is spec invalid
+        if (q.scaleDenominator() != null && explicitSize && explicitExtent) {
+            rejectCombination("scale-denominator cannot be combined with width/height and a spatial extent");
+        }
+
         // set both CRS and SRS: wms.reflect() guesses the layer SRS when getSRS() is null, which would silently
         // overwrite the requested output CRS
         if (region != null) {
@@ -530,12 +530,6 @@ public class MapsService {
         } else if (outputCrs != null) {
             request.setCrs(outputCrs);
             request.setSRS(CRS.toSRS(outputCrs));
-        }
-
-        // width/height together with a spatial extent and scale-denominator is an over-constrained request
-        // (OGC API - Maps, Scaling, scale-denominator requirement E)
-        if (q.scaleDenominator() != null && explicitSize && region != null) {
-            rejectCombination("scale-denominator cannot be combined with width/height and a spatial extent");
         }
 
         // scale-denominator sizes the image when width/height are not both given
@@ -696,12 +690,18 @@ public class MapsService {
                     "center must have at least two ordinates",
                     HttpStatus.BAD_REQUEST);
         }
-        CoordinateReferenceSystem crs = q.centerCrs() != null ? decodeCrs(q.centerCrs()) : DefaultGeographicCRS.WGS84;
+        CoordinateReferenceSystem crs =
+                q.centerCrs() != null ? APIBBoxParser.parseCRS(q.centerCrs()) : DefaultGeographicCRS.WGS84;
+        // center ordinates follow the identifier axis order; read them into longitude/latitude and work in the XY twin
+        boolean northEast = CRS.getAxisOrder(crs) == CRS.AxisOrder.NORTH_EAST;
+        double lon = northEast ? c[1] : c[0];
+        double lat = northEast ? c[0] : c[1];
+        crs = APIBBoxParser.toLonLat(crs);
         double metersPerUnit = RendererUtilities.toMeters(1d, crs);
         double groundResolution = q.scaleDenominator() * pixelSizeMeters(q); // meters per pixel
         double halfWidth = (width / 2d) * groundResolution / metersPerUnit;
         double halfHeight = (height / 2d) * groundResolution / metersPerUnit;
-        return new ReferencedEnvelope(c[0] - halfWidth, c[0] + halfWidth, c[1] - halfHeight, c[1] + halfHeight, crs);
+        return new ReferencedEnvelope(lon - halfWidth, lon + halfWidth, lat - halfHeight, lat + halfHeight, crs);
     }
 
     /** Result of an OGC subset expression: a spatial envelope and/or a temporal value. */
@@ -749,7 +749,11 @@ public class MapsService {
     /** Parses a {@code Lat(30:60),Lon(10:20)} / {@code time(...)} subset, mapping Lat/Lon (or N/E, Y/X) to a box. */
     private SubsetResult parseSubset(String subset, String subsetCrs) throws FactoryException {
         SubsetResult result = new SubsetResult();
-        CoordinateReferenceSystem crs = subsetCrs != null ? decodeCrs(subsetCrs) : DefaultGeographicCRS.WGS84;
+        // the ranges are keyed by axis name (Lat/Lon), so the envelope is built in longitude/latitude order and only
+        // needs the matching XY CRS regardless of the identifier axis order
+        CoordinateReferenceSystem crs = subsetCrs != null
+                ? APIBBoxParser.toLonLat(APIBBoxParser.parseCRS(subsetCrs))
+                : DefaultGeographicCRS.WGS84;
         Double minX = null, maxX = null, minY = null, maxY = null;
         // look for commas immediately preceded by a closing parenthesis, as the separator
         for (String dim : subset.split("(?<=\\)),")) {

@@ -211,6 +211,25 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testBBOXSafeCurieAxisOrder() throws Exception {
+        String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        // the SafeCURIE [EPSG:4326] follows the authority latitude/longitude order, so the same area the CRS84
+        // request expresses as 35,0,60,3 (lon,lat) is here 0,35,3,60 (lat,lon)
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/" + collectionName + "/items?bbox=0,35,3,60&bbox-crs=[EPSG:4326]", 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
+        assertEquals(
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class)
+                        .size());
+    }
+
+    @Test
     public void testInvalidBBOXCRS() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json = getAsJSONPath(

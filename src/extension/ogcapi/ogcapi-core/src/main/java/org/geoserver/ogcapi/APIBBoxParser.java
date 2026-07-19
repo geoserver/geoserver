@@ -21,6 +21,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
@@ -114,10 +115,21 @@ public class APIBBoxParser {
         return parse(value, parseCRS(crs));
     }
 
-    /** Decodes an OGC API CRS identifier in longitude/latitude order, null when the identifier is null. */
+    /**
+     * Decodes an OGC API CRS identifier: the SafeCURIE {@code [authority:code]} and URN/URI forms keep the authority
+     * axis order, a bare {@code authority:code} keeps the GeoServer longitude/latitude default. Returns null on null.
+     */
     public static CoordinateReferenceSystem parseCRS(String crs) throws FactoryException {
+        if (crs == null) {
+            return null;
+        }
         try {
-            return crs != null ? CRS.decode(crs, true) : null;
+            // the global forceXY hint would flatten a plain decode back to XY even with longitudeFirst=false, so map
+            // the CURIE to the URN form, which honors the authority axis order regardless of that hint
+            if (crs.startsWith("[") && crs.endsWith("]")) {
+                return CRS.decode(toUrn(crs.substring(1, crs.length() - 1).trim()), false);
+            }
+            return CRS.decode(crs, true);
         } catch (NoSuchAuthorityCodeException e) {
             throw new APIException(INVALID_PARAMETER_VALUE, "Invalid CRS: " + crs, HttpStatus.BAD_REQUEST);
         }
@@ -151,6 +163,14 @@ public class APIBBoxParser {
                 throw new IllegalArgumentException(
                         "Bounding box coordinate " + i + " is not parsable:" + unparsed.get(i));
             }
+        }
+
+        // the rest of the code, and every downstream consumer, works in longitude/latitude (XY) order: when the CRS
+        // is expressed in authority latitude/longitude order, swap the horizontal ordinates and the CRS to its XY twin
+        if (crs != null && CRS.getAxisOrder(crs) == CRS.AxisOrder.NORTH_EAST) {
+            swap(bbox, 0, 1);
+            swap(bbox, countco == 6 ? 3 : 2, countco == 6 ? 4 : 3);
+            crs = toLonLat(crs);
         }
 
         // ensure the values are sane
@@ -237,6 +257,29 @@ public class APIBBoxParser {
                 throw new InvalidParameterValueException("Unexpected BBOX, can only handle 2D or 3D ones");
             }
         }
+    }
+
+    /** Maps a {@code authority:code} CURIE body to the equivalent OGC URN, leaving anything else untouched. */
+    private static String toUrn(String curie) {
+        int colon = curie.indexOf(':');
+        if (colon < 0 || curie.indexOf(':', colon + 1) >= 0) {
+            return curie; // not a simple authority:code, let the decoder try as-is
+        }
+        return SrsSyntax.OGC_URN.getSRS(curie);
+    }
+
+    private static void swap(double[] values, int i, int j) {
+        double tmp = values[i];
+        values[i] = values[j];
+        values[j] = tmp;
+    }
+
+    /**
+     * Returns the longitude/latitude (forceXY) twin of an authority-ordered CRS, or the input if it has no EPSG code.
+     */
+    public static CoordinateReferenceSystem toLonLat(CoordinateReferenceSystem crs) throws FactoryException {
+        Integer code = CRS.lookupEpsgCode(crs, false);
+        return code != null ? CRS.decode("EPSG:" + code, true) : crs;
     }
 
     private static double rollLongitude(final double x) {

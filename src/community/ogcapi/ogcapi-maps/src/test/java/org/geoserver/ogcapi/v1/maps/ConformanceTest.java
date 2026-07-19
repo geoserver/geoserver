@@ -45,7 +45,8 @@ public class ConformanceTest extends MapsTestSupport {
                         MapsConformance.CRS.getId(),
                         MapsConformance.BACKGROUND.getId(),
                         MapsConformance.ORIENTATION.getId(),
-                        MapsConformance.FEATURE_INFO.getId()));
+                        MapsConformance.FEATURE_INFO.getId(),
+                        MapsConformance.LEGEND.getId()));
         // the pre-1.0.0 draft URIs must be gone
         assertThat(
                 classes,
@@ -86,6 +87,14 @@ public class ConformanceTest extends MapsTestSupport {
         withConformance(MapsConformance::setFeatureInfo, false, () -> {
             List<String> classes = getAsJSONPath("ogc/maps/v1/conformance", 200).read("$.conformsTo");
             assertThat(classes, not(hasItems(MapsConformance.FEATURE_INFO.getId())));
+        });
+    }
+
+    @Test
+    public void testLegendDisabled() throws Exception {
+        withConformance(MapsConformance::setLegend, false, () -> {
+            List<String> classes = getAsJSONPath("ogc/maps/v1/conformance", 200).read("$.conformsTo");
+            assertThat(classes, not(hasItems(MapsConformance.LEGEND.getId())));
         });
     }
 }

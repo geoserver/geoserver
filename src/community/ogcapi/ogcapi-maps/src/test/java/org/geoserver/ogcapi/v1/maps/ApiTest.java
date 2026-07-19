@@ -74,7 +74,9 @@ public class ApiTest extends MapsTestSupport {
                         "/collections/{collectionId}/styles",
                         "/collections/{collectionId}/map",
                         "/collections/{collectionId}/styles/{styleId}/map",
-                        "/collections/{collectionId}/map/info"));
+                        "/collections/{collectionId}/map/info",
+                        "/collections/{collectionId}/legend",
+                        "/collections/{collectionId}/styles/{styleId}/legend"));
         // dataset maps and tilesets are intentionally out of scope
         assertThat(api.getPaths().keySet(), not(hasItems("/map", "/styles/{styleId}/map", "/map/tiles")));
         assertThat(enumOf(api, "f-map"), hasItems("image/png", "image/jpeg", "image/tiff"));
@@ -155,6 +157,34 @@ public class ApiTest extends MapsTestSupport {
     }
 
     @Test
+    public void testWidthHeightKeptWhenScalingOffButSubsettingOn() throws Exception {
+        // spatial subsetting provides width/height when scaling is off, so the doc must keep them
+        withConformance(MapsConformance::setScaling, false, () -> {
+            List<String> params = mapParamRefs(readApi());
+            assertThat(params, hasItems("#/components/parameters/width", "#/components/parameters/height"));
+            assertThat(params, not(hasItems("#/components/parameters/scale-denominator")));
+        });
+    }
+
+    @Test
+    public void testWidthHeightDroppedWhenScalingAndSubsettingOff() throws Exception {
+        withConformance(
+                MapsConformance::setScaling,
+                false,
+                () -> withConformance(MapsConformance::setSpatialSubsetting, false, () -> {
+                    List<String> params = mapParamRefs(readApi());
+                    assertThat(
+                            params, not(hasItems("#/components/parameters/width", "#/components/parameters/height")));
+                }));
+    }
+
+    private static List<String> mapParamRefs(OpenAPI api) {
+        return api.getPaths().get("/collections/{collectionId}/map").getGet().getParameters().stream()
+                .map(p -> p.get$ref())
+                .toList();
+    }
+
+    @Test
     public void testInfoFormats() throws Exception {
         OpenAPI api = readApi();
         assertThat(enumOf(api, "f-info"), hasItems("application/json", "text/html"));
@@ -204,6 +234,17 @@ public class ApiTest extends MapsTestSupport {
         withConformance(MapsConformance::setFeatureInfo, false, () -> {
             OpenAPI api = readApi();
             assertThat(api.getPaths().keySet(), not(hasItems("/collections/{collectionId}/map/info")));
+        });
+    }
+
+    @Test
+    public void testLegendPathRemovedWhenDisabled() throws Exception {
+        withConformance(MapsConformance::setLegend, false, () -> {
+            assertThat(
+                    readApi().getPaths().keySet(),
+                    not(hasItems(
+                            "/collections/{collectionId}/legend",
+                            "/collections/{collectionId}/styles/{styleId}/legend")));
         });
     }
 }

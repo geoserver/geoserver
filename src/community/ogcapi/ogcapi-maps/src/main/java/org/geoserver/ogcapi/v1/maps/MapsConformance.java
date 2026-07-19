@@ -54,6 +54,14 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
             CORE,
             "featureInfo");
 
+    /** GeoServer extension: WMS-style GetLegendGraphic for a style, not part of the OGC API - Maps standard. */
+    public static final APIConformance LEGEND = new APIConformance(
+            "http://geoserver.org/spec/ogcapi-maps/1.0/conf/legend",
+            COMMUNITY_STANDARD,
+            APIConformance.Type.EXTENSION,
+            CORE,
+            "legend");
+
     private Boolean core = null;
     private Boolean spatialSubsetting = null;
     private Boolean scaling = null;
@@ -65,6 +73,7 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     private Boolean tiff = null;
     private Boolean svg = null;
     private Boolean featureInfo = null;
+    private Boolean legend = null;
 
     public MapsConformance() {}
 
@@ -100,7 +109,8 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
                 ORIENTATION,
                 TIFF,
                 SVG,
-                FEATURE_INFO));
+                FEATURE_INFO,
+                LEGEND));
     }
 
     @Override
@@ -131,6 +141,7 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
         if (tiff(wmsInfo)) conformance.add(TIFF);
         if (svg(wmsInfo)) conformance.add(SVG);
         if (featureInfo(wmsInfo)) conformance.add(FEATURE_INFO);
+        if (legend(wmsInfo)) conformance.add(LEGEND);
         return conformance;
     }
 
@@ -345,5 +356,17 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     /** @return {@code true} if GetFeatureInfo conformance is enabled, resolving {@code null} to the class default */
     public boolean featureInfo(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, featureInfo, FEATURE_INFO);
+    }
+
+    public Boolean isLegend() {
+        return legend;
+    }
+
+    public void setLegend(Boolean enabled) {
+        this.legend = enabled;
+    }
+
+    public boolean legend(WMSInfo wmsInfo) {
+        return isEnabled(wmsInfo, legend, LEGEND);
     }
 }

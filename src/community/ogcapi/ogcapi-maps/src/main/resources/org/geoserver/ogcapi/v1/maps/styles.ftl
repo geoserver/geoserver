@@ -18,6 +18,8 @@
         </div>
         <div class="card-body">
           <#if style.title??><p>${style.title}</p></#if>
+          <#assign legendUrl = style.getLinkUrl('https://www.opengis.net/def/rel/ogc/1.0/legend', 'image/png')!''>
+          <#if legendUrl?has_content><img src="${legendUrl}&legend-options=fontAntiAliasing:true" alt="Legend for ${style.id}"/></#if>
         </div>
         <div class="card-footer">
           <div class="row">

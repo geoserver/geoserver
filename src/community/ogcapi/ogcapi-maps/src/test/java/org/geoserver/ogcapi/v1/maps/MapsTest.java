@@ -8,12 +8,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import javax.imageio.ImageIO;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -395,6 +398,40 @@ public class MapsTest extends MapsTestSupport {
         assertThat(response.getContentAsString(), containsString("ThisDoesNotExist"));
     }
 
+    @Test
+    public void testTiffFormat() throws Exception {
+        // TIFF is a configurable class, enabled by default, so the request must succeed and decode to a real raster
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/maps/v1/collections/Lakes/map?f=image/tiff&bbox=-1,-1,1,1&width=50&height=50");
+        assertEquals(200, response.getStatus());
+        assertEquals("image/tiff", response.getContentType());
+        BufferedImage tiff = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertNotNull("TIFF payload must decode", tiff);
+        assertEquals(50, tiff.getWidth());
+        assertEquals(50, tiff.getHeight());
+    }
+
+    @Test
+    public void testTiffDisabledNotAcceptable() throws Exception {
+        // a disabled format class means the encoding is not offered: content negotiation fails with 406
+        withConformance(MapsConformance::setTiff, false, () -> {
+            MockHttpServletResponse response = getAsServletResponse(
+                    "ogc/maps/v1/collections/Lakes/map?f=image/tiff&bbox=-1,-1,1,1&width=50&height=50");
+            assertEquals(406, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("TIFF"));
+        });
+    }
+
+    @Test
+    public void testSvgDisabledNotAcceptable() throws Exception {
+        withConformance(MapsConformance::setSvg, false, () -> {
+            MockHttpServletResponse response = getAsServletResponse(
+                    "ogc/maps/v1/collections/Lakes/map?f=image/svg%2Bxml&bbox=-1,-1,1,1&width=50&height=50");
+            assertEquals(406, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("SVG"));
+        });
+    }
+
     /** Asserts the request returns a 400 whose error body names the offending parameter. */
     private void assertBadRequestMentions(String url, String parameter) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(url);
@@ -412,8 +449,8 @@ public class MapsTest extends MapsTestSupport {
         setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
         int instant = northEastPixel("subset=time(\"2012-02-11T00:00:00Z\")");
         int interval = northEastPixel("subset=time(\"2012-02-11T00:00:00Z\":\"2012-02-12T00:00:00Z\")");
-        assertEquals("a single instant leaves the second timestamp out", 0, instant >>> 24);
-        assertEquals("the interval covers both timestamps", 255, interval >>> 24);
+        assertEquals("a single instant leaves the second timestamp out", 0, alpha(instant));
+        assertEquals("the interval covers both timestamps", 255, alpha(interval));
         // the same interval written as a datetime must render identically
         assertEquals(interval, northEastPixel("datetime=2012-02-11T00:00:00Z/2012-02-12T00:00:00Z"));
 

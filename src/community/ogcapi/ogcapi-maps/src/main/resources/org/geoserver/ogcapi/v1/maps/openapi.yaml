@@ -208,6 +208,53 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/legend':
+    get:
+      tags: [Maps]
+      summary: GeoServer extension, legend graphic for the default style
+      operationId: getCollectionLegend
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/f-legend'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale'
+        - $ref: '#/components/parameters/rule'
+        - $ref: '#/components/parameters/lang'
+        - $ref: '#/components/parameters/transparent'
+        - $ref: '#/components/parameters/bgcolor'
+        - $ref: '#/components/parameters/legend-options'
+      responses:
+        '200':
+          description: the legend graphic for the default style
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/styles/{styleId}/legend':
+    get:
+      tags: [Maps]
+      summary: GeoServer extension, legend graphic for the given style
+      operationId: getCollectionStyleLegend
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/f-legend'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale'
+        - $ref: '#/components/parameters/rule'
+        - $ref: '#/components/parameters/lang'
+        - $ref: '#/components/parameters/transparent'
+        - $ref: '#/components/parameters/bgcolor'
+        - $ref: '#/components/parameters/legend-options'
+      responses:
+        '200':
+          description: the legend graphic for the given style
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 components:
   parameters:
     collectionId:
@@ -236,6 +283,31 @@ components:
       description: maximum number of features to return, across all the layers of the collection
       required: false
       schema: {type: integer, minimum: 1, default: 1}
+    f-legend:
+      name: f
+      in: query
+      required: false
+      schema: {type: string, enum: [image/png, image/jpeg, image/gif, application/json]}
+    scale:
+      name: scale
+      in: query
+      required: false
+      schema: {type: number, minimum: 0}
+    rule:
+      name: rule
+      in: query
+      required: false
+      schema: {type: string}
+    lang:
+      name: lang
+      in: query
+      required: false
+      schema: {type: string}
+    legend-options:
+      name: legend-options
+      in: query
+      required: false
+      schema: {type: string}
     bbox:
       name: bbox
       in: query

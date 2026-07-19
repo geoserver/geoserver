@@ -40,7 +40,8 @@ public class MapsServiceAdminPanelTest extends GeoServerWicketTestSupport {
             "Orientation",
             "TIFF output",
             "SVG output",
-            "Feature info (GeoServer extension)"
+            "Feature info (GeoServer extension)",
+            "Legend (GeoServer extension)"
         }) {
             assertTrue("Missing conformance class row: " + label, markup.contains(label));
         }

@@ -33,6 +33,12 @@ import org.geotools.api.filter.Filter;
 /** Builds the OGC API - Maps 1.0.0 OpenAPI document, pruned to the conformance classes enabled on this server. */
 public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
 
+    private static final List<String> MAP_PATHS = List.of(
+            "/collections/{collectionId}/map",
+            "/collections/{collectionId}/styles/{styleId}/map",
+            "/collections/{collectionId}/map/info",
+            "/collections/{collectionId}/styles/{styleId}/map/info");
+
     public MapsAPIBuilder() {
         super(MapsAPIBuilder.class, "openapi.yaml", "Maps 1.0 server", MapsService.class);
     }
@@ -49,9 +55,14 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
             api.getPaths().remove("/collections/{collectionId}/styles/{styleId}/map/info");
         }
 
+        // GetLegendGraphic is a GeoServer extension, drop its paths when disabled
+        if (!maps.legend(wms)) {
+            api.getPaths().remove("/collections/{collectionId}/legend");
+            api.getPaths().remove("/collections/{collectionId}/styles/{styleId}/legend");
+        }
+
         // prune optional map parameters that map to disabled conformance classes
-        pruneMapParameters(api, "/collections/{collectionId}/map", maps, wms);
-        pruneMapParameters(api, "/collections/{collectionId}/styles/{styleId}/map", maps, wms);
+        pruneMapParameters(api, maps, wms);
 
         // declare the negotiated response formats
         declareGetResponseFormats(api, "/", OpenAPI.class);
@@ -100,35 +111,33 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
         return api;
     }
 
-    private void pruneMapParameters(OpenAPI api, String path, MapsConformance maps, WMSInfo wms) {
-        if (api.getPaths().get(path) == null) return;
-        List<Parameter> parameters = api.getPaths().get(path).getGet().getParameters();
+    /**
+     * Removes the parameters of every disabled conformance class from all the map operations, the info ones included:
+     * they take the same query parameters and {@link MapsService} ignores them there too.
+     */
+    private void pruneMapParameters(OpenAPI api, MapsConformance maps, WMSInfo wms) {
+        List<String> disabled = new ArrayList<>();
         if (!maps.spatialSubsetting(wms)) {
-            removeParams(parameters, "bbox", "bbox-crs", "subset", "subset-crs", "center", "center-crs");
+            disabled.addAll(List.of("bbox", "bbox-crs", "subset", "subset-crs", "center", "center-crs"));
         }
-        if (!maps.scaling(wms)) {
-            removeParams(parameters, "scale-denominator");
-        }
-        if (!maps.displayResolution(wms)) {
-            removeParams(parameters, "mm-per-pixel");
-        }
-        if (!maps.datetime(wms)) {
-            removeParams(parameters, "datetime");
-        }
-        if (!maps.crs(wms)) {
-            removeParams(parameters, "crs");
-        }
-        if (!maps.background(wms)) {
-            removeParams(parameters, "bgcolor", "transparent", "void-color", "void-transparent");
-        }
-        if (!maps.orientation(wms)) {
-            removeParams(parameters, "orientation");
-        }
-    }
+        if (!maps.scaling(wms)) disabled.add("scale-denominator");
+        // width/height are provided by the scaling class and, when it is off, by the spatial subsetting class
+        // (OGC API - Maps, /req/spatial-subsetting/width-height), so they are gone only when both are disabled
+        if (!maps.scaling(wms) && !maps.spatialSubsetting(wms)) disabled.addAll(List.of("width", "height"));
+        if (!maps.displayResolution(wms)) disabled.add("mm-per-pixel");
+        if (!maps.datetime(wms)) disabled.add("datetime");
+        if (!maps.crs(wms)) disabled.add("crs");
+        if (!maps.background(wms)) disabled.addAll(List.of("bgcolor", "transparent", "void-color", "void-transparent"));
+        if (!maps.orientation(wms)) disabled.add("orientation");
+        if (disabled.isEmpty()) return;
 
-    private void removeParams(List<Parameter> parameters, String... names) {
-        for (String name : names) {
-            parameters.removeIf(p -> ("#/components/parameters/" + name).equals(p.get$ref()));
+        for (String path : MAP_PATHS) {
+            PathItem item = api.getPaths().get(path);
+            if (item == null) continue;
+            List<Parameter> parameters = item.getGet().getParameters();
+            for (String name : disabled) {
+                parameters.removeIf(p -> ("#/components/parameters/" + name).equals(p.get$ref()));
+            }
         }
     }
 

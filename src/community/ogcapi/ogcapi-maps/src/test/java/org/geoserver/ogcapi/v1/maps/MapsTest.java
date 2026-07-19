@@ -8,12 +8,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import javax.imageio.ImageIO;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -390,6 +393,40 @@ public class MapsTest extends MapsTestSupport {
                 getAsServletResponse("ogc/maps/v1/collections/ThisDoesNotExist/map?f=image/png&width=50&height=50");
         assertThat(response.getStatus(), greaterThanOrEqualTo(400));
         assertThat(response.getContentAsString(), containsString("ThisDoesNotExist"));
+    }
+
+    @Test
+    public void testTiffFormat() throws Exception {
+        // TIFF is a configurable class, enabled by default, so the request must succeed and decode to a real raster
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/maps/v1/collections/Lakes/map?f=image/tiff&bbox=-1,-1,1,1&width=50&height=50");
+        assertEquals(200, response.getStatus());
+        assertEquals("image/tiff", response.getContentType());
+        BufferedImage tiff = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertNotNull("TIFF payload must decode", tiff);
+        assertEquals(50, tiff.getWidth());
+        assertEquals(50, tiff.getHeight());
+    }
+
+    @Test
+    public void testTiffDisabledNotAcceptable() throws Exception {
+        // a disabled format class means the encoding is not offered: content negotiation fails with 406
+        withConformance(MapsConformance::setTiff, false, () -> {
+            MockHttpServletResponse response = getAsServletResponse(
+                    "ogc/maps/v1/collections/Lakes/map?f=image/tiff&bbox=-1,-1,1,1&width=50&height=50");
+            assertEquals(406, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("TIFF"));
+        });
+    }
+
+    @Test
+    public void testSvgDisabledNotAcceptable() throws Exception {
+        withConformance(MapsConformance::setSvg, false, () -> {
+            MockHttpServletResponse response = getAsServletResponse(
+                    "ogc/maps/v1/collections/Lakes/map?f=image/svg%2Bxml&bbox=-1,-1,1,1&width=50&height=50");
+            assertEquals(406, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("SVG"));
+        });
     }
 
     /** Asserts the request returns a 400 whose error body names the offending parameter. */

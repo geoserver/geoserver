@@ -223,6 +223,7 @@ public class MapsService {
                 bgcolor,
                 voidColor,
                 voidTransparent);
+        checkFormatConformance(format);
         GetMapRequest request = toGetMapRequest(collectionId, styleId, format, query);
 
         if ("text/html".equals(format) || "html".equals(format)) {
@@ -342,6 +343,27 @@ public class MapsService {
     private static String crsUri(String identifier) {
         String[] parts = identifier.split(":");
         return "<http://www.opengis.net/def/crs/" + parts[0] + "/0/" + parts[parts.length - 1] + ">";
+    }
+
+    /**
+     * A TIFF or SVG output format whose optional conformance class is disabled is not an offered encoding, so the
+     * request fails content negotiation with a 406. The format is chosen by HTTP content negotiation, with the OGC API
+     * Common {@code f} parameter overriding the {@code Accept} header.
+     */
+    private void checkFormatConformance(String format) {
+        if (format == null) return;
+        MapsConformance conf = MapsConformance.configuration(getService());
+        WMSInfo wms = getService();
+        String f = format.toLowerCase();
+        if (f.contains("tiff") && !conf.tiff(wms)) throw notAcceptableFormat("TIFF");
+        if (f.contains("svg") && !conf.svg(wms)) throw notAcceptableFormat("SVG");
+    }
+
+    private APIException notAcceptableFormat(String format) {
+        return new APIException(
+                "NotAcceptable",
+                "The " + format + " output format is not available on this server",
+                HttpStatus.NOT_ACCEPTABLE);
     }
 
     /** Query parameters shared by the map operations; hyphenated OGC names cannot be Java fields, hence a carrier. */

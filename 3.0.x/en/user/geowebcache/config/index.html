@@ -15513,6 +15513,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="GeoServer Data Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-tags-and-targeted-invalidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security tags and targeted invalidation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -30018,6 +30035,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="GeoServer Data Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-tags-and-targeted-invalidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security tags and targeted invalidation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -30078,8 +30112,42 @@
 <p>For stability reasons, it is not recommended to use the embedded GeoWebCache with multiple GeoServer instances. If you want to configure GeoWebCache as a front-end for multiple instances of GeoServer, we recommend using the <a href="https://geowebcache.osgeo.org">standalone GeoWebCache</a>.</p>
 <h2 id="gwc_data_security">GeoServer Data Security<a class="headerlink" href="#gwc_data_security" title="Permanent link">&para;</a></h2>
 <p>GWC Data Security is an option that can be turned on and turned off through the <a href="../webadmin/defaults/">Caching defaults</a> page. By default it is turned off.</p>
-<p>When turned on, the embedded GWC will do a data security check before calling GeoWebCache, i.e. verify whether the user actually has access to the layer, and reject the request if this is not the case. In the case of WMS-C requests, there is also limited support for data access limit filters, only with respect to geographic boundaries (all other types of data access limits will be ignored). The embedded GWC will reject requests for which the requested bounding box is (partly) inaccessible. It is only possible to request a tile within a bounding box that is fully accessible. This behaviour is different from the regular WMS, which will filter the data before serving it. However, if the integrated WMS/WMS-C is used, the request will be forwarded back to WMS and give the desired result.</p>
-<p>When using the default GeoServer security system, rules cannot combine data security with service security. However, when using a security subsystem it may be possible to make such particular combinations. In this case the WMS-C service inherits all security rules from the regular WMS service; while all other GWC services will get their security from rules associated with the 'GWC' service itself.</p>
+<p>When turned on, the embedded GWC enforces GeoServer data security on every tile request:</p>
+<ul>
+<li>
+<p><strong>Layer access</strong>: users without access to a layer receive a "layer not found" error (HIDE mode) or an authentication challenge (CHALLENGE mode), consistent with regular WMS behavior.</p>
+</li>
+<li>
+<p><strong>Spatial access limits</strong>: when a user's access is restricted to a geographic area, tiles outside that area are rendered as empty transparent tiles rather than being rejected with an error. This is consistent with the regular WMS, which filters data before serving it.</p>
+</li>
+<li>
+<p><strong>Security-aware tile caching</strong>: when a user has data access restrictions (filters, geometry clips), GeoWebCache caches their tiles separately from unrestricted users and from users with different restrictions. The separation is based on the <em>access profile</em> (the actual restriction rules), not on the user identity. Two users with identical restrictions share the same cached tiles; users with different restrictions get independent cache entries.</p>
+</li>
+</ul>
+<p>The tile cache separation is implemented by injecting a synthetic <code>ACCESS_LIMITS_KEY</code> parameter into the tile request before it reaches the cache. The value is a compact JSON object encoding the active access restrictions. For example, a user restricted to features where <code>NAME = 'Blue Lake'</code> would carry:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ACCESS_LIMITS_KEY={&quot;readFilter&quot;:&quot;NAME = &#39;Blue Lake&#39;&quot;}
+</code></pre></div>
+<p>A user clipped to a raster region in Australia would carry:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ACCESS_LIMITS_KEY={&quot;rasterFilter&quot;:&quot;MULTIPOLYGON (((140 -50, 150 -50, 150 -30, 140 -30, 140 -50)))&quot;}
+</code></pre></div>
+<p>Unrestricted users have no <code>ACCESS_LIMITS_KEY</code> in their tile parameters and continue to use the shared default cache. GWC hashes all tile parameters into the <code>parametersId</code> used to locate tiles in the cache storage, so tiles with different <code>ACCESS_LIMITS_KEY</code> values are stored at different cache paths even if they cover the same bounding box.</p>
+<p>When access restrictions involve complex geometries or long filter expressions, the <code>ACCESS_LIMITS_KEY</code> value can become large. GeoWebCache limits it to <strong>64 KB</strong> by default. If the serialized key exceeds this limit, individual field values are truncated (longest first) until the total fits. Each truncated value is replaced with a visible prefix followed by <code>...too long, sha is &lt;sha256hex&gt;</code>, where the SHA-256 is computed from the full original value. The limit can be overridden with the system property <code>gwc.security.maxKeyLength</code> (value in characters).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>ACCESS_LIMITS_KEY</code> parameter is injected at runtime and is <strong>never written</strong> to the gwc-layers XML configuration files (<code>&lt;data_dir&gt;/gwc-layers/</code>). It will not appear there when inspecting layer configuration. To observe it however one can check out the property files collecting the filter parameter values for the various tile caches, found in each tile layer folder.</p>
+</div>
+<h3 id="security-tags-and-targeted-invalidation">Security tags and targeted invalidation<a class="headerlink" href="#security-tags-and-targeted-invalidation" title="Permanent link">&para;</a></h3>
+<p>When access rules change, the tiles cached under the old restrictions become stale. The <a href="../webadmin/diskquotas/">disk quota</a> eventually reclaims them, but a security subsystem can also trigger immediate invalidation of just the affected tiles.</p>
+<p>To make that targeted, GeoWebCache injects a second synthetic parameter, <code>SECURITY_TAGS_KEY</code>, alongside <code>ACCESS_LIMITS_KEY</code> whenever the access manager attaches <em>security tags</em> to the computed restrictions. The value is a comma-separated, sorted list of opaque tags (for example rule identifiers or role names) describing which security rules shaped the restriction:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>SECURITY_TAGS_KEY=role:planner,rule:42
+</code></pre></div>
+<p><code>SECURITY_TAGS_KEY</code> is only present when <code>ACCESS_LIMITS_KEY</code> is also present (tags without a restriction are meaningless), and like it is injected at runtime, not persisted.</p>
+<p>When the security subsystem signals that a rule changed, GeoWebCache drops the cached tiles associated to the modified security tags, leaving unrelated security-keyed tiles intact. Access managers that do not attach tags fall back to dropping all security-keyed tiles for the affected layers. Tiles without an <code>ACCESS_LIMITS_KEY</code> (unrestricted access) are never touched. Layer-group tiles are dropped too when one of their member layers is affected.</p>
+<p>At the time of writing <strong>no security subsystem ships an implementation that drives this eager removal</strong>: stale tiles are reclaimed by disk quota until one does. Current or third-party access managers can choose to eagerly drop tiles; check their documentation to confirm.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This invalidation works only in a live, user-driven deployment where security changes flow through the running instance. Changes applied out of band (database restore, bulk imports, environment promotion) produce no invalidation; disk quota remains the cleanup mechanism in those cases. In a clustered deployment with per-node local disk caches, an invalidation reaches only the node that received it; a shared blob store (S3, Azure, NFS) does not have this limitation.</p>
+</div>
 
 
 

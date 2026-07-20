@@ -108,7 +108,7 @@
     <profile>
       <id>keycloak</id>
       <modules>
-        <module>keycloak</module>
+        <module>keycloak-roles</module>
       </modules>
     </profile>
     <profile>
@@ -138,7 +138,7 @@
         <module>ncwms</module>
         <module>gwc-sqlite</module>
         <module>jwt-headers</module>
-        <module>keycloak</module>
+        <module>keycloak-roles</module>
         <module>oseo</module>
         <module>s3-geotiff</module>
         <module>netcdf-ghrsst</module>

@@ -37,7 +37,7 @@ public class JSONFGFeatureWriterTest {
         gs.setCatalog(new CatalogImpl());
     }
 
-    JSONFGFeatureWriter toTest = new JSONFGFeatureWriter(gs, null, null) {
+    JSONFGFeatureWriter<SimpleFeatureType, SimpleFeature> toTest = new JSONFGFeatureWriter<>(gs, null, null) {
         @Override
         protected boolean isFeatureBounding() {
             return false;
@@ -46,23 +46,23 @@ public class JSONFGFeatureWriterTest {
 
     private List<FeatureCollection<SimpleFeatureType, SimpleFeature>> geoCollection()
             throws SchemaException, ParseException {
-        SimpleFeatureType TYPE = DataUtilities.createType("location", "geom:Point:srid=4326,name:String");
-        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", TYPE);
+        SimpleFeatureType type = DataUtilities.createType("location", "geom:Point:srid=4326,name:String");
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", type);
 
         WKTReader2 wkt = new WKTReader2();
 
-        featureCollection.add(SimpleFeatureBuilder.build(TYPE, new Object[] {wkt.read("POINT(1 2)"), "poi1"}, null));
-        featureCollection.add(SimpleFeatureBuilder.build(TYPE, new Object[] {wkt.read("POINT(4 4)"), "poi2"}, null));
+        featureCollection.add(SimpleFeatureBuilder.build(type, new Object[] {wkt.read("POINT(1 2)"), "poi1"}, null));
+        featureCollection.add(SimpleFeatureBuilder.build(type, new Object[] {wkt.read("POINT(4 4)"), "poi2"}, null));
 
         return List.of(featureCollection);
     }
 
     private List<FeatureCollection<SimpleFeatureType, SimpleFeature>> nonGeoCollection() throws SchemaException {
-        SimpleFeatureType TYPE = DataUtilities.createType("places", "name:String,population:Integer");
-        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", TYPE);
+        SimpleFeatureType type = DataUtilities.createType("places", "name:String,population:Integer");
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", type);
 
-        featureCollection.add(SimpleFeatureBuilder.build(TYPE, new Object[] {"Canada", 40_518_860}, null));
-        featureCollection.add(SimpleFeatureBuilder.build(TYPE, new Object[] {"France", 69_082_000}, null));
+        featureCollection.add(SimpleFeatureBuilder.build(type, new Object[] {"Canada", 40_518_860}, null));
+        featureCollection.add(SimpleFeatureBuilder.build(type, new Object[] {"France", 69_082_000}, null));
 
         return List.of(featureCollection);
     }

@@ -4,7 +4,6 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.ByteArrayOutputStream;

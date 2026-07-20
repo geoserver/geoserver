@@ -106,7 +106,7 @@ public class STACQueryablesBuilderTest {
         Schema constellation = properties.get("constellation");
         assertNotNull(constellation);
         assertEquals(TYPE_STRING, constellation.getType());
-        assertEquals("string", constellation.getFormat());
+        assertNull(constellation.getFormat());
 
         // check the cloud cover, which has a math expression
         Schema cloudCover = properties.get("eo:cloud_cover");
@@ -178,7 +178,6 @@ public class STACQueryablesBuilderTest {
         // grab the queryables
         Queryables queryables = builder.getQueryables();
         Map<String, Schema> properties = queryables.getProperties();
-        System.out.println(properties);
 
         // check the keywords queryable, top level, not in "properties"
         Schema keywords = properties.get("keywords");
@@ -265,6 +264,7 @@ public class STACQueryablesBuilderTest {
         assertNull(platform);
 
         Schema constellation = properties.get("constellation");
-        assertNull(platform);
+        assertNotNull(constellation);
+        assertEquals(TYPE_STRING, constellation.getType());
     }
 }

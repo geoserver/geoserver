@@ -82,6 +82,7 @@ public class JSONFGFeatureWriterTest {
 
         toTest.write(nonGeoCollection(), out, BigInteger.TEN, false);
 
-        assertThat(out.toString(), containsString("\"geometry\":null"));
+        assertEquals("FeatureCollection", JsonPath.parse(out.toString()).read("$.type", String.class));
+        assertNull(JsonPath.parse(out.toString()).read("$.features[0].geometry", String.class));
     }
 }

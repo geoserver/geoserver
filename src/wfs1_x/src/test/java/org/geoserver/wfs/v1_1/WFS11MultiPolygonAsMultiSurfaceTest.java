@@ -35,7 +35,7 @@ public class WFS11MultiPolygonAsMultiSurfaceTest extends WFSTestSupport {
         print(dft);
 
         XMLAssert.assertXpathExists("//xsd:element[@name='geom' and @type='gml:MultiSurfacePropertyType']", dft);
-        XMLAssert.assertXpathNotExists("//xsd:element[@name='geom' and @type='gml:MultyPolygonPropertyType']", dft);
+        XMLAssert.assertXpathNotExists("//xsd:element[@name='geom' and @type='gml:MultiPolygonPropertyType']", dft);
 
         // 2. Check GetFeature
         Document gf = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typename=" + getLayerId(COUNTRIES));

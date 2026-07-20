@@ -72,7 +72,8 @@ public class JSONFGFeatureWriterTest {
 
         toTest.write(geoCollection(), out, BigInteger.TEN, false);
 
-        assertThat(out.toString(), containsString("\"type\":\"FeatureCollection\""));
+        JsonContext json = (JsonContext) JsonPath.parse(out.toString());
+        assertEquals("FeatureCollection", json.read("$.type", String.class));
     }
 
     @Test

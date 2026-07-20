@@ -57,8 +57,7 @@ public class JSONFGFeatureWriterTest {
         return List.of(featureCollection);
     }
 
-    private List<FeatureCollection<SimpleFeatureType, SimpleFeature>> nonGeoCollection()
-            throws SchemaException, ParseException {
+    private List<FeatureCollection<SimpleFeatureType, SimpleFeature>> nonGeoCollection() throws SchemaException {
         SimpleFeatureType TYPE = DataUtilities.createType("places", "name:String,population:Integer");
         DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", TYPE);
 
@@ -79,7 +78,7 @@ public class JSONFGFeatureWriterTest {
     }
 
     @Test
-    public void testFeatureWriterNonGeo() throws SchemaException, IOException, ParseException {
+    public void testFeatureWriterNonGeo() throws SchemaException, IOException {
         OutputStream out = new ByteArrayOutputStream();
 
         toTest.write(nonGeoCollection(), out, BigInteger.TEN, false);

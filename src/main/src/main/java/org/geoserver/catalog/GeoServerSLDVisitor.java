@@ -47,6 +47,8 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureReader;
 import org.geotools.data.memory.MemoryDataStore;
+import org.geotools.data.ows.URLCheckerException;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.feature.SchemaException;
@@ -332,6 +334,11 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
      * @throws ServiceException if there was a problem accessing the remote service
      */
     protected static DataStore connectRemoteWFS(URL remoteOwsUrl) {
+        try {
+            URLCheckers.confirm(remoteOwsUrl);
+        } catch (URLCheckerException e) {
+            throw new ServiceException("Invalid remote URL: " + remoteOwsUrl, e);
+        }
         try {
             WFSDataStoreFactory storeFactory = new WFSDataStoreFactory();
             Map<String, Serializable> params = new HashMap<>();

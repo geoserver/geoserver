@@ -155,6 +155,6 @@ def on_post_build(config, **kwargs):
     copied_count = copy_download_files(docs_dir, site_dir, download_links)
     
     if copied_count > 0:
-        logger.info(f"Successfully copied {copied_count} download files")
+        logger.info(f"Successfully copied {copied_count} download files out of {len(download_links)} download links.")
     else:
         logger.warning("No download files were copied")

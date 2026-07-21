@@ -11,6 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.CoverageAccessInfo.QueueType;
@@ -19,6 +20,8 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.platform.ExtensionPriority;
+import org.geotools.gce.imagemosaic.GranuleImageCache;
+import org.geotools.gce.imagemosaic.GuavaGranuleImageCache;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
@@ -134,6 +137,25 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
 
             // setup the memory/file system cache usage threshold
             ImageIOExt.setFilesystemThreshold(coverageAccess.getImageIOCacheThreshold() * 1024);
+
+            initGranuleImageCache(coverageAccess);
+        }
+    }
+
+    /**
+     * Builds once, then reconfigures the shared granule image cache in place. The instance is kept for the life of the
+     * resource pool and always injected into readers, so enabling, disabling or resizing never changes the reader cache
+     * key and never forces readers to be rebuilt.
+     */
+    void initGranuleImageCache(CoverageAccessInfo coverageAccess) {
+        ResourcePool resourcePool = gs.getCatalog().getResourcePool();
+        long maximumSizeBytes = Math.max(0, coverageAccess.getGranuleCacheMaxSizeMB()) * 1024L * 1024;
+        long thresholdBytes = coverageAccess.getGranuleCacheThresholdKB() * 1024L;
+        GranuleImageCache current = resourcePool.getGranuleImageCache();
+        if (current == null) {
+            resourcePool.setGranuleImageCache(new GuavaGranuleImageCache(maximumSizeBytes, thresholdBytes));
+        } else {
+            current.reconfigure(maximumSizeBytes, thresholdBytes);
         }
     }
 

@@ -112,10 +112,10 @@ extra_javascript:
 
 validation:
   links:
-    absolute_links: relative_to_docs
+    absolute_links: ignore
     anchors: ignore
     unrecognized_links: warn
-    not_found: ignore
+    not_found: warn
 
 not_in_nav: |
   en/docguide/sphinx.md

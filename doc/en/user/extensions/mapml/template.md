@@ -1,6 +1,6 @@
 # Templates With FreeMarker
 
-MapML templates are written in [Freemarker](http://www.freemarker.org/) , a Java-based template engine. The templates below are feature type specific and will not be applied in multi-layer WMS requests. See [Freemarker Templates](../../tutorials/freemarker.md) for general information about FreeMarker implementation in GeoServer.
+MapML templates are written in [Freemarker](https://www.freemarker.org/) , a Java-based template engine. The templates below are feature type specific and will not be applied in multi-layer WMS requests. See [Freemarker Templates](../../tutorials/freemarker/index.md) for general information about FreeMarker implementation in GeoServer.
 
 MapML supports the following template types:
 

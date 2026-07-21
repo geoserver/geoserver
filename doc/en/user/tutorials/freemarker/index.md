@@ -54,7 +54,7 @@ Here are the data models (as you can see there are redundancies, in particular i
     - prefix (string): attribute namespace prefix
     - isGeometry (boolean): true if the attribute is geometric, false otherwise
     - value: a string representation of the attribute value
-    - isComplex (boolean): true if the attribute is a feature (see [app-schema.complex-features](../data/app-schema/complex-features.md)), false otherwise
+    - isComplex (boolean): true if the attribute is a feature (see [app-schema.complex-features](../../data/app-schema/complex-features.md)), false otherwise
     - type (string or FeatureType): attribute type: if isComplex is false, the fully qualified Java class name; if isComplex is true, a FeatureType
     - description (string): attribute description
     - rawValue: the actual attribute value (is isComplex is true rawValue is a Feature)

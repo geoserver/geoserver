@@ -123,7 +123,7 @@ Read [GetMap](../../services/wms/reference.md#wms_getmap) for general informatio
 
 Read [GetFeatureInfo](../../services/wms/reference.md#wms_getfeatureinfo) for general information on the GetFeatureInfo request. Read the tutorial on [GetFeatureInfo Templates](../../tutorials/GetFeatureInfo/index.md) for information on how to template the html output. If you want to store a separate standard template for complex feature collections, save it under the filename `complex_content.ftl` in the template directory.
 
-Read the tutorial on [Freemarker Templates](../../tutorials/freemarker.md) for more information on how to use the freemarker templates. Freemarker templates support recursive calls, which can be useful for templating complex content. For example, the following freemarker template creates a table of features with a column for each property, and will create another table inside each cell that contains a feature as property: :
+Read the tutorial on [Freemarker Templates](../../tutorials/freemarker/index.md) for more information on how to use the freemarker templates. Freemarker templates support recursive calls, which can be useful for templating complex content. For example, the following freemarker template creates a table of features with a column for each property, and will create another table inside each cell that contains a feature as property: :
 
 ```
 <#-- 

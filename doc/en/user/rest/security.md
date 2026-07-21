@@ -7,7 +7,7 @@ render_macros: true
 The REST API allows you to adjust GeoServer security settings.
 
 !!! note
-    Read the [API reference for /security]({{ api_url3 }}?urls.primaryName=Security).
+    Read the [API reference for /security]({{ api_url }}?urls.primaryName=Security).
 
 ## Listing the keystore password {: #rest_security_keystore }
 

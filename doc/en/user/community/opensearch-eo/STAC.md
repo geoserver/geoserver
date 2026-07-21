@@ -9,7 +9,7 @@ The landing page of the STAC API is linked from the GeoServer home page, and ava
 
 Given the differences in names and structures the STAC resources are created using templates, in particular:
 
-- The HTML representation is built using [Freemarker templates](../../tutorials/freemarker.md)
+- The HTML representation is built using [Freemarker templates](../../tutorials/freemarker/index.md)
 - The GeoJSON representation is built using GeoJSON [features templates](../features-templating/index.md)
 
 The default templates work against the [default PostGIS database structure](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql) and can be customized to include new properties to follow eventual database modifications.

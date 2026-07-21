@@ -29965,12 +29965,12 @@
 <p>The default templates are automatically used, and the old <code>htmlDescription</code> columns ignored (they should therefore be removed).</p>
 <p>In order for the default <a href="https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.json">collection.ftl</a> to work, two new fields, <code>title</code> and <code>description</code>, should be added to the database structure, if not already present.</p>
 <p>As a result of these changes, the REST resources previously used to manage the description templates have been removed, and residual HTML description templates included in product or collection zips will be ignored.</p>
-<p>The replacement Freemarker templates are <a href="../configuration/#oseo_html_templates">located in the data directory</a> and can be thus managed via the <a href="../../../../api?urls.primaryName=Resource">/resource</a> REST API.</p>
+<p>The replacement Freemarker templates are <a href="../configuration/#oseo_html_templates">located in the data directory</a> and can be thus managed via the <a href="/3.0.x/3.0.xen/api?urls.primaryName=Resource">/resource</a> REST API.</p>
 <h2 id="removal-of-collection_metadata-and-product_metadata">Removal of <code>collection_metadata</code> and <code>product_metadata</code><a class="headerlink" href="#removal-of-collection_metadata-and-product_metadata" title="Permanent link">&para;</a></h2>
 <p>Starting with version 2.20 the OpenSearch module dropped the metadata storage tables from the database, and switched to freemarker templates instead. This relieves the database from a significant burden, especially on the products metadata table.</p>
 <p>The default templates are automatically used, and the old metadata tables are ignored (they should therefore be removed).</p>
 <p>As a result of these changes, the REST resources previously used to manage the metadata have been removed, and residual metadata xml files included in product or collection zips will be ignored.</p>
-<p>The replacement Freemarker templates are <a href="../configuration/#oseo_metadata_templates">located in the data directory</a> and can be thus managed via the <a href="../../api?urls.primaryName=Resource">/resource</a> REST API.</p>
+<p>The replacement Freemarker templates are <a href="../configuration/#oseo_metadata_templates">located in the data directory</a> and can be thus managed via the <a href="/3.0.x/3.0.xen/api?urls.primaryName=Resource">/resource</a> REST API.</p>
 
 
 

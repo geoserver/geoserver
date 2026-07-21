@@ -1,0 +1,86 @@
+{
+    "white_square16": {
+        "height": 16,
+        "pixelRatio": 1,
+        "width": 16,
+        "x": 1,
+        "y": 1
+    },
+    "grey_square8": {
+        "height": 8,
+        "pixelRatio": 1,
+        "width": 8,
+        "x": 24,
+        "y": 18
+    },
+    "grey_square16": {
+        "height": 16,
+        "pixelRatio": 1,
+        "width": 16,
+        "x": 18,
+        "y": 1
+    },
+    "grey_square22": {
+        "height": 22,
+        "pixelRatio": 1,
+        "width": 22,
+        "x": 1,
+        "y": 18
+    },
+    "green_square16": {
+        "height": 16,
+        "pixelRatio": 1,
+        "width": 16,
+        "x": 35,
+        "y": 1
+    },
+    "grey_x": {
+        "height": 30,
+        "pixelRatio": 1,
+        "width": 30,
+        "x": 1,
+        "y": 41
+    },
+    "grey_diag8": {
+        "height": 8,
+        "pixelRatio": 1,
+        "width": 8,
+        "x": 24,
+        "y": 27
+    },
+    "grey_diag16": {
+        "height": 16,
+        "pixelRatio": 1,
+        "width": 16,
+        "x": 35,
+        "y": 18
+    },
+    "grey_circle": {
+        "height": 17,
+        "pixelRatio": 1,
+        "width": 17,
+        "x": 36,
+        "y": 36
+    },
+    "airport": {
+        "height": 16,
+        "pixelRatio": 1,
+        "width": 16,
+        "x": 52,
+        "y": 18
+    },
+    "port": {
+        "height": 16,
+        "pixelRatio": 1,
+        "width": 16,
+        "x": 52,
+        "y": 1
+    },
+    "star": {
+        "height": 16,
+        "pixelRatio": 1,
+        "width": 16,
+        "x": 69,
+        "y": 1
+    }
+}

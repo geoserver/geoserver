@@ -6,6 +6,7 @@ edit_uri: edit/main/doc/
 
 docs_dir: doc
 site_dir: mkdocs_output
+strict: true
 
 # Exclude include files from the build (they are included by other pages)
 exclude_docs: |

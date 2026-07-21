@@ -10,6 +10,7 @@ To update the version for a new release, change the values below.
 
 import os
 import re
+from urllib.parse import urlparse
 
 
 def _detect_branch():
@@ -166,8 +167,5 @@ def define_env(env):
     env.variables['docs_url'] = 'https://docs.geoserver.org'
 
     # API base URL for REST API Swagger/OpenAPI specs
-    # Uses absolute url which has been configured relative_to_docs
-    if is_snapshot:
-        env.variables['api_url'] = '/' + version + '.x/en/api'
-    else:
-        env.variables['api_url'] = '/' + branch + '/en/api'
+    absolute = urlparse(env.conf['site_url']).path
+    env.variables['api_url'] = absolute + 'en/api'

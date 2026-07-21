@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.DataStore;
@@ -342,7 +343,10 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
         try {
             WFSDataStoreFactory storeFactory = new WFSDataStoreFactory();
             Map<String, Serializable> params = new HashMap<>();
-            params.put(WFSDataStoreFactory.URL.key, remoteOwsUrl + "&request=GetCapabilities&service=WFS");
+            params.put(
+                    WFSDataStoreFactory.URL.key,
+                    ResponseUtils.appendQueryString(
+                            remoteOwsUrl.toExternalForm(), "REQUEST=GetCapabilities&SERVICE=WFS"));
             params.put(WFSDataStoreFactory.TRY_GZIP.key, Boolean.TRUE);
             DataStore dataStore = storeFactory.createDataStore(params);
 

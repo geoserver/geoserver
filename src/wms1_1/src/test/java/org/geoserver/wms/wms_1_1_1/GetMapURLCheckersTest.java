@@ -96,12 +96,6 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
                         .withBody(capabilities)));
-        service.stubFor(
-                WireMock.get(urlEqualTo("/wfs&request=GetCapabilities&service=WFS?REQUEST=GetCapabilities&SERVICE=WFS"))
-                        .willReturn(aResponse()
-                                .withStatus(200)
-                                .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                .withBody(capabilities)));
         String describe = getWFSResource("describePoi.xml");
         Map<String, String> namespaces = Map.of("wfs", "http://www.opengis.net/wfs");
         service.stubFor(WireMock.post("/wfs")
@@ -250,9 +244,7 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
         String localWfs = "http://localhost:" + service.port() + "/wfs";
         dao.save(new RegexURLCheck("localWFS", "The local wiremock WFS", "^" + localWfs + ".*$"));
 
-        // GeoServerSLDVisitor.connectRemoteWFS() appends "&request=..." (no '?') to the OnlineResource URL,
-        // then WFSDataStoreFactory appends its own "?REQUEST=..." on top, hence the doubled-up query string
-        String capsPath = "/wfs&request=GetCapabilities&service=WFS?REQUEST=GetCapabilities&SERVICE=WFS";
+        String capsPath = "/wfs?REQUEST=GetCapabilities&SERVICE=WFS";
         String request = getMapRemoteWFSSldBody(localWfs);
         getAsServletResponse(request);
         service.verify(1, getRequestedFor(urlEqualTo(capsPath)));

@@ -6,7 +6,7 @@ Currently, the checks are performed on the following functionality:
 
 - WMS GetMap, GetFeatureInfo and GetLegendGraphic requests with remote SLD stylesheets (`sld` parameter)
 - Remote icons referenced by styles (access to icons in the data directory is always allowed)
-- WMS GetMap and GetFeatureInfo requests in feature portrayal mode (`REMOTE_OWS` and `REMOTE_OWS_TYPE` parameters)
+- WMS GetMap and GetFeatureInfo requests in feature portrayal mode, either via the `REMOTE_OWS_URL`/`REMOTE_OWS_TYPE` parameters or a `<RemoteOWS>`/`<OnlineResource>` element embedded in an SLD document (`sld` or `sld_body` parameter)
 - WPS remote inputs, either as GET or POST requests
 
 External URLs configured by admins in the GUI (e.g. WFS, cascaded WMS & WMTS data stores) are not subject to this check.

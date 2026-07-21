@@ -30009,7 +30009,7 @@
 <p>The windows <strong><code>Program Files</code></strong> location above is not ideal due to restrictions placed on this location.</p>
 </li>
 <li>
-<p>Web archive: If GeoServer is running as a <strong>web archive</strong> inside of your application server, the data directory is by default located at <strong><code>&lt;web application root&gt;/data</code></strong>`.</p>
+<p>Web archive: If GeoServer is running as a <strong>web archive</strong> inside of your application server, the data directory is by default located at <strong><code>&lt;web application root&gt;/data</code></strong>.</p>
 <table>
 <thead>
 <tr>
@@ -30048,11 +30048,11 @@
 </li>
 <li>
 <p>Docker: The Docker image maintains a data directory in <code>/opt/geoserver_data</code>.</p>
+<p>This location should be mapped to an absolute path in your host as described in <a href="../../installation/docker/#installation_docker_data">Using your own Data Directory</a>.</p>
 </li>
 </ul>
-<p>This location should be mapped to an absolute path in your host as described in <a href="../../installation/docker/#installation_docker_data">Using your own Data Directory</a>.</p>
 <h2 id="external-data-directory-location">External data directory location<a class="headerlink" href="#external-data-directory-location" title="Permanent link">&para;</a></h2>
-<p>To make <a href="../../installation/upgrade3.md">upgrading</a> easier, <strong>Web Archive</strong> users should switch to an <em>external</em> data directory (outside the application).</p>
+<p>To make <a href="../../installation/upgrade3/">upgrading</a> easier, <strong>Web Archive</strong> users should switch to an <em>external</em> data directory (outside the application).</p>
 <table>
 <thead>
 <tr>
@@ -30082,16 +30082,19 @@
 </ul>
 <p>Once the data directory has been located, copy it to a new location. To point a GeoServer instance at the new data directory proceed to the next section <a href="../setting/">Setting the data directory location</a>.</p>
 <ul>
-<li>You may download the sample data directory.</li>
-</ul>
+<li>
+<p>You may download the sample data directory.</p>
 <p>Navigate to the <a href="https://geoserver.org/download">GeoServer Download page</a>, select a version of GeoServer, and download the provided data directory zip.</p>
-<div class="highlight"><pre><span></span><code>- For GeoServer 3.0.0 Nightly: [data](https://sourceforge.net/projects/geoserver/files/GeoServer/data)
-- For GeoServer 3.0: [data](https://build.geoserver.org/geoserver/main/release/data)
-</code></pre></div>
 <ul>
-<li>You may also use a new empty folder as the data directory location.</li>
+<li>For GeoServer 3.0.0: <a href="https://sourceforge.net/projects/geoserver/files/GeoServer/3.0.0/geoserver-3.0.0-data.zip">geoserver-3.0.0-data.zip</a></li>
+<li>For GeoServer 3.0: <a href="https://build.geoserver.org/geoserver/3.0.x/geoserver-3.0-SNAPSHOT-data.zip">geoserver-3.0-SNAPSHOT-data.zip</a></li>
 </ul>
+</li>
+<li>
+<p>You may also use a new empty folder as the data directory location.</p>
 <p>GeoServer will create configuration files and folders as needed.</p>
+</li>
+</ul>
 
 
 

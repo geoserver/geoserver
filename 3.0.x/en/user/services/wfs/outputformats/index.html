@@ -30085,7 +30085,7 @@
 <li><code>format_option=filename:&lt;zipfile&gt;</code>: if a file name is provided, the name is used as the output file name. For example, <code>format_options=filename:roads.zip</code>.</li>
 </ul>
 <h3 id="shapefile-filename-customization">Shapefile filename customization<a class="headerlink" href="#shapefile-filename-customization" title="Permanent link">&para;</a></h3>
-<p>If a file name is not specified, the output file name is inferred from the requested feature type name. The shapefile output format output can be customized by preparing a <a href="../../tutorials/freemarker.md">Freemarker template</a> which will configure the file name of the archive (ZIP file) and the files it contains. The default template is:</p>
+<p>If a file name is not specified, the output file name is inferred from the requested feature type name. The shapefile output format output can be customized by preparing a <a href="../../../tutorials/freemarker/">Freemarker template</a> which will configure the file name of the archive (ZIP file) and the files it contains. The default template is:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">zip</span><span class="o">=</span><span class="s">${typename}</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">shp</span><span class="o">=</span><span class="s">${typename}${geometryName}${geometryType}</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">txt</span><span class="o">=</span><span class="s">wfsrequest</span>

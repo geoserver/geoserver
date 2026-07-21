@@ -117,6 +117,7 @@ import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gce.geotiff.GeoTiffFormat;
+import org.geotools.gce.imagemosaic.GranuleImageCache;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.GML;
@@ -212,6 +213,7 @@ public class ResourcePool {
 
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
+    GranuleImageCache granuleImageCache;
     CatalogRepository repository;
     EntityResolverProvider entityResolverProvider;
 
@@ -437,6 +439,16 @@ public class ResourcePool {
     /** Returns the coverage executor. See also {@link #setCoverageExecutor(ThreadPoolExecutor)}. */
     public synchronized ThreadPoolExecutor getCoverageExecutor() {
         return this.coverageExecutor;
+    }
+
+    /** Sets the shared granule image cache injected into image mosaic readers, or {@code null} to disable it. */
+    public synchronized void setGranuleImageCache(GranuleImageCache granuleImageCache) {
+        this.granuleImageCache = granuleImageCache;
+    }
+
+    /** Returns the shared granule image cache. See also {@link #setGranuleImageCache(GranuleImageCache)}. */
+    public synchronized GranuleImageCache getGranuleImageCache() {
+        return this.granuleImageCache;
     }
 
     /** Adds a pool listener. */
@@ -1591,6 +1603,9 @@ public class ResourcePool {
         if (coverageExecutor != null) {
             hints.add(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
         }
+        if (granuleImageCache != null) {
+            hints.add(new RenderingHints(Hints.GRANULE_IMAGE_CACHE, granuleImageCache));
+        }
         // look into the cache
         CoverageHintReaderKey key = new CoverageHintReaderKey(info.getId(), hints);
         key = coverageCacheKeys.unique(key);
@@ -2296,6 +2311,12 @@ public class ResourcePool {
 
         cacheKeys.clear();
         coverageCacheKeys.clear();
+
+        // clearing the reader caches disposes each reader, which drops its own mosaic entries; also clear the pool
+        // outright to catch entries whose reader was already evicted
+        if (granuleImageCache != null) {
+            granuleImageCache.invalidateAll();
+        }
     }
 
     /**

@@ -38,6 +38,19 @@
       <button type="submit" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
     </div>
   </fieldset>
+  <fieldset>
+    <legend><span><wicket:message key="granuleCache">Granule Image Cache</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label for="granuleCacheMaxSizeMB"><wicket:message key="granuleCacheMaxSizeMB">Granule cache max size (MB, 0 disables)</wicket:message></label>
+        <input id="granuleCacheMaxSizeMB" class="field text" type="number" wicket:id="granuleCacheMaxSizeMB" />
+      </li>
+      <li>
+        <label for="granuleCacheThresholdKB"><wicket:message key="granuleCacheThresholdKB">Default per-granule caching threshold (KB)</wicket:message></label>
+        <input id="granuleCacheThresholdKB" class="field text" type="number" wicket:id="granuleCacheThresholdKB" />
+      </li>
+    </ul>
+  </fieldset>
   </form>
 </wicket:extend>
 </body>

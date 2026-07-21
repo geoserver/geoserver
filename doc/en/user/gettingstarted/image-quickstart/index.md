@@ -170,7 +170,7 @@ In order to verify that the `tutorial:shaded` layer is published correctly, we c
 
 3.  An OpenLayers map will load in a new tab and display the imagery with the default raster style.
 
-    You can use this preview map to zoom and pan around the dataset, as well as display the attributes of features.
+    You can use this preview map to zoom and pan around the dataset, as well as click on the map to display the value stored at that pixel.
 
     ![](images/openlayers.png)
 

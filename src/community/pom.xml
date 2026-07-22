@@ -106,6 +106,12 @@
       </modules>
     </profile>
     <profile>
+      <id>keycloak</id>
+      <modules>
+        <module>keycloak-roles</module>
+      </modules>
+    </profile>
+    <profile>
       <id>communityRelease</id>
       <modules>
         <module>dds</module>
@@ -132,6 +138,7 @@
         <module>ncwms</module>
         <module>gwc-sqlite</module>
         <module>jwt-headers</module>
+        <module>keycloak-roles</module>
         <module>oseo</module>
         <module>s3-geotiff</module>
         <module>netcdf-ghrsst</module>

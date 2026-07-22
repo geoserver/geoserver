@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ (c) 2026 Open Source Geospatial Foundation - all rights reserved
+  ~ This code is licensed under the GPL 2.0 license, available at the root
+  ~ application directory.
+  ~
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver.community.security</groupId>
+    <artifactId>gs-sec-keycloak-roles</artifactId>
+    <version>3.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>gs-sec-keycloak-roles-assembly</artifactId>
+  <packaging>jar</packaging>
+  <name>GeoServer Keycloak Roles Security Module - Assembly</name>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.geoserver.community.security</groupId>
+      <artifactId>gs-sec-keycloak-roles-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.community.security</groupId>
+      <artifactId>gs-sec-keycloak-roles-web</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+  </dependencies>
+
+</project>

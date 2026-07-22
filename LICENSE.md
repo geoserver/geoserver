@@ -91,7 +91,7 @@ release to public domain and Poskanzer's original notice (which is new
 BSD).  Source code is included in GeoServer source, with modifications done
 by David Blasby for The Open Planning Project (now OpenPlans).  
 
-------
+---
 
 > Since Gif89Encoder includes significant sections of code from Jef Poskanzer's
 > GifEncoder.java, I'm including its notice in this distribution as requested (appended

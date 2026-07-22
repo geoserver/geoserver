@@ -5,6 +5,7 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -235,6 +236,63 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
                 + "&REMOTE_OWS_URL="
                 + localWfs
                 + "&REMOTE_OWS_TYPE=WFS";
+    }
+
+    @Test
+    public void testRemoteWFSViaSldBodyAllowed() throws Exception {
+        URLCheckDAO dao = applicationContext.getBean(URLCheckDAO.class);
+        String localWfs = "http://localhost:" + service.port() + "/wfs";
+        dao.save(new RegexURLCheck("localWFS", "The local wiremock WFS", "^" + localWfs + ".*$"));
+
+        String capsPath = "/wfs?REQUEST=GetCapabilities&SERVICE=WFS";
+        String request = getMapRemoteWFSSldBody(localWfs);
+        getAsServletResponse(request);
+        service.verify(1, getRequestedFor(urlEqualTo(capsPath)));
+    }
+
+    @Test
+    public void testRemoteWFSViaSldBodyDisallowed() throws Exception {
+        URLCheckDAO dao = applicationContext.getBean(URLCheckDAO.class);
+        String localWfs = "http://localhost:" + service.port() + "/wfs";
+        dao.save(new RegexURLCheck("deny", "Won't match anything useful", "^abcd$"));
+
+        String request = getMapRemoteWFSSldBody(localWfs);
+        Document dom = getAsDOM(request);
+        String message = checkLegacyException(dom, null, null);
+        assertThat(message, containsString("Invalid remote URL"));
+        assertThat(message, containsString(localWfs));
+    }
+
+    private static String getMapRemoteWFSSldBody(String localWfs) {
+        String sldBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<StyledLayerDescriptor version=\"1.0.0\""
+                + " xmlns=\"http://www.opengis.net/sld\""
+                + " xmlns:xlink=\"http://www.w3.org/1999/xlink\">"
+                + " <UserLayer>"
+                + "  <Name>ssrf</Name>"
+                + "  <RemoteOWS>"
+                + "    <Service>WFS</Service>"
+                + "    <OnlineResource xlink:type=\"simple\" xlink:href=\""
+                + localWfs
+                + "\"/>"
+                + "  </RemoteOWS>"
+                + "  <LayerFeatureConstraints>"
+                + "    <FeatureTypeConstraint>"
+                + "      <FeatureTypeName>tiger:poi</FeatureTypeName>"
+                + "    </FeatureTypeConstraint>"
+                + "  </LayerFeatureConstraints>"
+                + "  <UserStyle>"
+                + "    <FeatureTypeStyle>"
+                + "      <Rule/>"
+                + "    </FeatureTypeStyle>"
+                + "  </UserStyle>"
+                + " </UserLayer>"
+                + "</StyledLayerDescriptor>";
+
+        return "wms?service=WMS&version=1.1.1&request=GetMap&bbox=-74.044847,40.694924,-73.963094,40.726836"
+                + "&width=256&height=256&srs=EPSG:4326&format=image/png"
+                + "&sld_body="
+                + ResponseUtils.urlEncode(sldBody);
     }
 
     @Test

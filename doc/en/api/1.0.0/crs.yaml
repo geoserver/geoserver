@@ -6,7 +6,7 @@ info:
   description: REST API for listing and retrieving Coordinate Reference Systems (CRS) available in GeoServer
   contact:
     name: GeoServer
-    email: 'geoserver-users@osgeo.org'
+    email: 'geoserver-user@discourse.osgeo.org'
     url: 'https://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest

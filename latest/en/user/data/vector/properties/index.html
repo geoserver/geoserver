@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/data/vector/properties/">
+        <link rel="canonical" href="https://docs.geoserver.org/3.1.x/latest/en/user/data/vector/properties/">
       
       
         <link rel="prev" href="../directory/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -30038,15 +30038,19 @@
 </code></pre></div>
 <ul>
 <li>Blank lines are not permitted anywhere in the file.</li>
-<li>The first line of the property file begins with <code>_=</code> and defines the type information required to interpret the following lines.</li>
+<li>The first line of the property file begins with <code>_=</code> and defines the type information required to interpret the following lines.<ul>
 <li>Comma separated values are of the form <code>NAME:TYPE</code></li>
 <li>Names are the property name that are used to encode the property in WFS responses.</li>
 <li>Types include <code>Integer</code>, <code>String</code>, <code>Float</code>, and <code>Geometry</code></li>
 <li><code>Geometry</code> can have an extra suffix <code>:srid=XXXX</code> that defines the Spatial Reference System by its numeric EPSG code. Note that geometries defined in this way are in longitude/latitude order.</li>
-<li>Subsequent lines define features, one per line.</li>
+</ul>
+</li>
+<li>Subsequent lines define features, one per line.<ul>
 <li>The key before the <code>=</code> is the feature ID (<code>fid</code> or <code>gml:id</code> in WFS responses). Each must be an <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName">NCName</a>.</li>
 <li>Feature data follows the <code>=</code> separated by vertical bars (<code>|</code>). The types of the data must match the declaration on the first line.</li>
 <li>Leave a field empty if you want it to be null; in this case the property will be ignored.</li>
+</ul>
+</li>
 </ul>
 <p>Note that in this example <code>srid=4326</code> sets the spatial reference system (SRS) to <code>EPSG:4326</code>, which is by convention in longitude/latitude order when referred to in the short form. If you request these features in GML 3 you will see that GeoServer correctly translates the geometry to the URN form SRS <code>urn:x-ogc:def:crs:EPSG:4326</code> in latitude/longitude form. See the <a href="../../../services/wfs/webadmin/">WFS settings</a> page for more on SRS axis order options.</p>
 
@@ -30173,10 +30177,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../../../javascripts/hide-empty-toc.js"></script>
       

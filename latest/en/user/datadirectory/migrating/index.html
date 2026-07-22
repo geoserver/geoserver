@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/datadirectory/migrating/">
+        <link rel="canonical" href="https://docs.geoserver.org/3.1.x/latest/en/user/datadirectory/migrating/">
       
       
         <link rel="prev" href="../structure/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -29875,21 +29875,28 @@
 <p><strong>Care should be taken to back up the data directory prior to migration.</strong></p>
 </li>
 <li>
-<p>There should generally be no problems or issues updating data directories between patch versions of GeoServer (for example, from 2.28.0 to 2.28.1 or vice versa).</p>
+<p>There should generally be no problems updating data directories with an incremental release of GeoServer (for example, from 2.28.0 to 2.28.1).</p>
+<p>It is also generally possible to revert a patch update and maintain data directory compatibility (for example, from GeoServer 2.28.1 to 2.28.0).</p>
+</li>
+<li>
+<p>There should rarely be any issues involved with upgrading between minor versions (for example, from 2.27.x to 2.28.x).</p>
+<p>Always check to <a href="../../installation/upgrade3/">Upgrading GeoServer</a> page for notes on upgrading between different versions. This provides specific guidance for any manual steps required and notes any incompatibilities.</p>
 </li>
 </ul>
-<p>It is also generally possible to revert a minor update and maintain data directory compatibility.</p>
-<ul>
-<li>There should rarely be any issues involved with upgrading between minor versions (for example, from 2.27.x to 2.28.x).</li>
-</ul>
-<p>Always check to <a href="../installation/upgrade.md">Upgrading GeoServer</a> page for notes on upgrading between different versions. This provides specific guidance for any manual steps required.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Some minor version upgrades may not be reversible, since <strong>newer versions of GeoServer may make backwards-incompatible changes</strong> to the data directory.</p>
+<p>Check updating page as some minor version upgrades may not be reversible, since <strong>newer versions of GeoServer may make backwards-incompatible changes</strong> to the data directory.</p>
 </div>
 <ul>
-<li>Upgrading between major versions of GeoServer (for example from 2.28 to 3.0) may not be reversible, since newer versions of GeoServer may make backwards-incompatible changes to the data directory.</li>
+<li>
+<p>Upgrading between major versions of GeoServer (for example from 2.28 to 3.0) may not always be reversible, since newer versions of GeoServer may make backwards-incompatible changes to the data directory.</p>
+<p>Always check to <a href="../../installation/upgrade3/">Upgrading GeoServer</a> page for notes on upgrading between different versions. This provides specific guidance for any manual steps required and notes any incompatibilities.</p>
+</li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the specifc case of GeoServer 2.28 to GeoServer 3.0 contact information <code>title</code> was added to customize the global welcome page or workspace welcome page. This setting is new for GeoServer 3.0, and is ignored if you downgrade to GeoServer 2.28.0.</p>
+</div>
 
 
 
@@ -30014,10 +30021,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../../javascripts/hide-empty-toc.js"></script>
       

@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/community/elasticsearch/">
+        <link rel="canonical" href="https://docs.geoserver.org/3.1.x/latest/en/user/community/elasticsearch/">
       
       
         <link rel="prev" href="../duckdb/configuration/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -30928,8 +30928,10 @@ log4j.category.org.geoserver.process.elasticsearch=DEBUG
 <li><code>PropertyIsEqualTo</code> maps to an Elasticsearch term query, which will return documents that contain the supplied term. When searching on an analyzed string field, ensure that the search values are consistent with the analyzer used in the index. For example, values may need to be lowercase when querying fields analyzed with the default analyzer. See the Elasticsearch term query documentation for more information.</li>
 <li><code>PropertyIsLike</code> maps to either a query string query or a regexp query, depending on whether the field is analyzed or not. Reserved characters should be escaped as applicable. Note case sensitive and insensitive searches may not be supported for analyzed and not analyzed fields, respectively. See Elasticsearch query string and regexp query documentation for more information.</li>
 <li>Date conversions are handled using the valid date formats from the associated type mapping, or <code>date_optional_time</code> if not found. Note that UTC timezone is used for both parsing and printing of dates.</li>
-<li>Filtering on Elasticsearch <code>object</code> types is supported. By default, field names will include the full path to the field (e.g. "parent.child.field_name"), but this can be changed in the GeoServer layer configuration.</li>
+<li>Filtering on Elasticsearch <code>object</code> types is supported. By default, field names will include the full path to the field (e.g. "parent.child.field_name"), but this can be changed in the GeoServer layer configuration.<ul>
 <li>When referencing fields with path elements using <code>cql_filter</code>, it may be necessary to quote the name (e.g. <code>cql_filter="parent.child.field_name"='value'</code>)</li>
+</ul>
+</li>
 <li>Filtering on Elasticsearch <code>nested</code> types is supported only for non-geospatial fields.</li>
 <li>Circle geometries are approximate and may not be fully consistent with the implementation in Elasticsearch, especially at extreme latitudes (see <a href="https://github.com/ngageoint/elasticgeo/issues/86">#86</a>).</li>
 <li>The <code>joda-shaded</code> module may need to be excluded when importing the project into Eclipse. Otherwise modules may have build errors of the form <code>DateTimeFormatter cannot be resolved to a type</code>.</li>
@@ -31059,10 +31061,10 @@ log4j.category.org.geoserver.process.elasticsearch=DEBUG
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../../javascripts/hide-empty-toc.js"></script>
       

@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/community/features-templating/directives/">
+        <link rel="canonical" href="https://docs.geoserver.org/3.1.x/latest/en/user/community/features-templating/directives/">
       
       
         <link rel="prev" href="../installing/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -31833,15 +31833,13 @@
 <ul>
 <li>
 <p><code>aggregate</code>: takes as arguments an expression (a property name or a function) that returns a list of values and a literal with the aggregation type eg. <code>aggregate(my.property.name,'MIN')</code>. The supported aggregation type are the following:</p>
-</li>
-<li>
-<p><code>MIN</code> will return the minimum value from a list of numeric values.</p>
-</li>
+<ul>
+<li><code>MIN</code> will return the minimum value from a list of numeric values.</li>
 <li><code>MAX</code> will return the max value from a list of numeric values.</li>
 <li><code>AVG</code> will return the average value from a list of numeric values.</li>
 <li><code>UNIQUE</code> will remove duplicates values from a list of values.</li>
-<li>
-<p><code>JOIN</code> will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: <code>aggregate(my.property.name,'JOIN(,)')</code> .</p>
+<li><code>JOIN</code> will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: <code>aggregate(my.property.name,'JOIN(,)')</code> .</li>
+</ul>
 </li>
 <li>
 <p><code>stream</code>: takes an undefined number of expressions as parameters and chain them so that each expression evaluate on top of the output of the previous expression: eg. <code>stream(aPropertyName,aFunction,anotherPropertyName)</code> while evaluate the <code>aFunction</code> on the output of <code>aPropertyName</code> evaluation and finally <code>anotherPropertyName</code> will evaluate on top of the result of <code>aFunction</code>.</p>
@@ -31991,10 +31989,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../../../javascripts/hide-empty-toc.js"></script>
       

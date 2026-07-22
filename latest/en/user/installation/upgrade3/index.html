@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/installation/upgrade3/">
+        <link rel="canonical" href="https://docs.geoserver.org/3.1.x/latest/en/user/installation/upgrade3/">
       
       
         <link rel="prev" href="../docker/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -30310,13 +30310,15 @@ All indexing is now handled in-memory and derived directly from the NetCDF datas
 <p>Existing installations may still contain legacy index artifacts that are not needed anymore in GeoServer 3. 
 Hidden directories named like: <code>.&lt;FILENAME_HASH&gt;</code> (e.g. <code>.polyphemus_20130301_710e4edfc7d0ff89faf932b208ca22bda37a6921</code>) are companion folders created next to the NetCDF file (e.g. <code>polyphemus_20130301.nc</code>) and used to store:
 - the H2 db files:
-  - the primary H2 data storage file. (e.g. <code>polyphemus_20130301.data.db</code>)
-  - the index storage file (e.g. <code>polyphemus_20130301.index.db</code>)
-  - the transaction log (e.g. <code>polyphemus_20130301.4.log.db</code>)
-  - the debug/trace log (e.g. <code>polyphemus_20130301.trace.db</code>)</p>
+    - the primary H2 data storage file. (e.g. <code>polyphemus_20130301.data.db</code>)
+    - the index storage file (e.g. <code>polyphemus_20130301.index.db</code>)
+    - the transaction log (e.g. <code>polyphemus_20130301.4.log.db</code>)
+    - the debug/trace log (e.g. <code>polyphemus_20130301.trace.db</code>)</p>
 <ul>
-<li>the binary index file:</li>
+<li>the binary index file:<ul>
 <li>FILENAME.idx (e.g. <code>polyphemus_20130301.idx</code>)</li>
+</ul>
+</li>
 </ul>
 <p>All such files are now obsolete and can be deleted without affecting functionality.
 If the <code>NETCDF_DATA_DIR JAVA_OPT</code> is configured, these hidden folders are grouped within the specified directory instead of being located alongside each NetCDF file.</p>
@@ -30653,10 +30655,10 @@ If you wish to continue making these services available you may install these ex
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../../javascripts/hide-empty-toc.js"></script>
       

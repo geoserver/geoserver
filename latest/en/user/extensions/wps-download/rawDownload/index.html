@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/extensions/wps-download/rawDownload/">
+        <link rel="canonical" href="https://docs.geoserver.org/3.1.x/latest/en/user/extensions/wps-download/rawDownload/">
       
       
         <link rel="prev" href="../">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -30232,11 +30232,13 @@
 <li><code>minimizeReprojections</code> : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS's coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See <a href="#heterogeneous_imagemosaic">RasterDownload of Heterogeneous CRS ImageMosaic</a> below section for more details on this param.</li>
 <li><code>bestResolutionOnMatchingCRS</code> : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See <a href="#heterogeneous_imagemosaic">RasterDownload of Heterogeneous CRS ImageMosaic</a> below section for more details on this param.</li>
 <li><code>targetVerticalCRS</code> : optional TargetVerticalCRS, to be used to transform elevation data from a VerticalCRS to another one. See <a href="#vertical_resampling">Vertical data resampling on download</a> below section for more details on this param</li>
-<li><code>resolutionsDifferenceTolerance</code> : the parameter allows to specify a tolerance value to control the use of native resolution of the data, when no target size has been specified and granules are reprojected. If</li>
+<li>
+<p><code>resolutionsDifferenceTolerance</code> : the parameter allows to specify a tolerance value to control the use of native resolution of the data, when no target size has been specified and granules are reprojected. If</p>
+<ul>
 <li>the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,</li>
 <li>native resolution is the same for all the requested granules,</li>
-<li>
-<p>the unit of measure is the same for native and target CRS,</p>
+<li>the unit of measure is the same for native and target CRS,</li>
+</ul>
 <p>the reprojected coverage will be forced to use native resolutions. For example by specifying a value of 5.0, if the percentage difference between native and reprojected data is below 5%, assuming that also the other two conditions are respected, the native resolutions will be preserved. Default values is 0.</p>
 </li>
 </ul>
@@ -30544,16 +30546,20 @@
 <ul>
 <li><code>tilewidth</code> : Width of internal tiles, in pixels</li>
 <li><code>tileheight</code> : Height of internal tiles, in pixels</li>
-<li><code>compression</code> : Compression type used to store internal tiles. Supported values are:</li>
+<li><code>compression</code> : Compression type used to store internal tiles. Supported values are:<ul>
 <li><code>CCITT RLE</code> (Lossless) (Huffman)</li>
 <li><code>LZW</code> (Lossless)</li>
 <li><code>JPEG</code> (Lossy)</li>
 <li><code>ZLib</code> (Lossless)</li>
 <li><code>PackBits</code> (Lossless)</li>
 <li><code>Deflate</code> (Lossless)</li>
-<li><code>quality</code> : Compression quality. Value is in the range [0 : 1]</li>
+</ul>
+</li>
+<li><code>quality</code> : Compression quality. Value is in the range [0 : 1]<ul>
 <li>for <code>JPEG</code> lossy compression, 0 is for worst quality/higher compression and 1 is for best quality/lower compression. (default is 1).</li>
 <li>for <code>Deflate</code> lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]: <code>(deflate level = 1 + 8 * (quality))</code>, where level 1 is for best speed and level 9 is for best compression. (default level is 9)</li>
+</ul>
+</li>
 <li><code>writenodata</code> : Supported value is one of true/false. Note that, by default, a <a href="https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.md">nodata TAG</a> is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.</li>
 </ul>
 <h1 id="direct-download">Direct download<a class="headerlink" href="#direct-download" title="Permanent link">&para;</a></h1>
@@ -30762,10 +30768,10 @@ PARAMETER[&quot;Interpolation CRS code&quot;, 4312]]
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../../../javascripts/hide-empty-toc.js"></script>
       

@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/configuration/logging/">
+        <link rel="canonical" href="https://docs.geoserver.org/3.1.x/latest/en/user/configuration/logging/">
       
       
         <link rel="prev" href="../REST/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -30100,10 +30100,12 @@
 <li>GeoTools loggers record the activity of the data access and rendering library used by GeoServer.</li>
 <li>The appender <code>stdout</code> is setup as a Console appender sending information to standard output, based on <strong>Log to Stdout</strong> <a href="../globalsettings/#config_globalsettings_log_stdout">global settings</a>.</li>
 <li>The appender <code>geoserverlogfile</code> is setup as a FileAppender or RollingFile appender sending information to the <strong>Log location</strong> set using the <code>GEOSERVER_LOG_LOCATION</code> application property.</li>
-<li>Logging levels range from:</li>
+<li>Logging levels range from:<ul>
 <li>Failure (<code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>) levels</li>
 <li>Operational (<code>INFO</code>, <code>CONFIG</code>) levels</li>
 <li>Verbose (<code>DEBUG</code>, <code>TRACE</code>, <code>FINEST</code>) levels</li>
+</ul>
+</li>
 </ul>
 <p>In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another logging library altogether).</p>
 <h2 id="logging_builtin">Built-in logging profiles<a class="headerlink" href="#logging_builtin" title="Permanent link">&para;</a></h2>
@@ -30196,13 +30198,15 @@
 <p>There are however a few rules to follow:</p>
 <ul>
 <li>Custom levels are available for <code>CONFIG</code> and <code>FINEST</code> levels.</li>
-<li>Appenders are used to output logging information, with GeoServer providing external configuration for appenders named <code>geoserverlogfile</code> and <code>stdout</code>.</li>
 <li>
-<p>Always include a <code>geoserverlogfile</code> <code>FileAppender</code> or <code>RollingFile</code> appender that GeoServer will configure to work against the location configured using the <code>GEOSERVER_LOG_LOCATION</code> application property.</p>
+<p>Appenders are used to output logging information, with GeoServer providing external configuration for appenders named <code>geoserverlogfile</code> and <code>stdout</code>.</p>
+<ul>
+<li>Always include a <code>geoserverlogfile</code> <code>FileAppender</code> or <code>RollingFile</code> appender that GeoServer will configure to work against the location configured using the <code>GEOSERVER_LOG_LOCATION</code> application property.</li>
+</ul>
 <p>Care is taken to preserve your file extension when updating <code>&lt;filename&gt;</code> location, so if you wish to log to <strong><code>access_logs.txt</code></strong> you may do so, and the <strong><code>txt</code></strong> extension will be preserved.</p>
-</li>
-<li>
-<p>When setting <code>geoserverlogfile</code> appender as <code>RollingFile</code> appender, care is taken to preserve your <code>&lt;filePattern&gt;</code> extensions, which must align with the roll over strategies configured.</p>
+<ul>
+<li>When setting <code>geoserverlogfile</code> appender as <code>RollingFile</code> appender, care is taken to preserve your <code>&lt;filePattern&gt;</code> extensions, which must align with the roll over strategies configured.</li>
+</ul>
 <p>As an example <code>-%i</code> is used with DefaultRolloverStrategy to produce a maximum of <code>3</code> backup files.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;RollingFile</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;geoserverlogfile&quot;</span><span class="nt">&gt;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nt">&lt;filename&gt;</span>logs/geoserver.log<span class="nt">&lt;/filename&gt;</span>
@@ -30214,33 +30218,33 @@
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">&lt;DefaultRolloverStrategy</span><span class="w"> </span><span class="na">max=</span><span class="s">&quot;3&quot;</span><span class="w"> </span><span class="na">fileIndex=</span><span class="s">&quot;min&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nt">&lt;/RollingFile&gt;</span>
 </code></pre></div>
-</li>
-<li>
-<p>a <code>Console</code> appender writing to the standard output should be called <code>stdout</code> and again GeoServer will enable/disable it according to the configuration set in the <a href="../globalsettings/#config_globalsettings_log_stdout">global settings</a></p>
+<ul>
+<li>a <code>Console</code> appender writing to the standard output should be called <code>stdout</code> and again GeoServer will enable/disable it according to the configuration set in the <a href="../globalsettings/#config_globalsettings_log_stdout">global settings</a></li>
+</ul>
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;Console</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;stdout&quot;</span><span class="w"> </span><span class="na">target=</span><span class="s">&quot;SYSTEM_OUT&quot;</span><span class="nt">&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">&lt;PatternLayout</span><span class="w"> </span><span class="na">pattern=</span><span class="s">&quot;%date{dd MMM HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">&lt;/Console&gt;</span>
 </code></pre></div>
 - Loggers are used to collect messages from geoserver components, and individual libraries used.
-  - GeoServer Logger names match up with the package names in the project javadocs overview (available for download).</p>
+- GeoServer Logger names match up with the package names in the project javadocs overview (available for download).</p>
 <p>As an example package <code>org.geoserver.wms</code> is listed, allowing level of WMS service logging to be controlled:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;Logger</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;org.geoserver.wms&quot;</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;debug&quot;</span><span class="w"> </span><span class="na">additivity=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="nt">&lt;AppenderRef</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;stdout&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">&lt;AppenderRef</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;geoserverlogfile&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nt">&lt;/Logger&gt;</span>
 </code></pre></div>
-</li>
-<li>
-<p>GeoTools Logger names match up with the package names in the <a href="https://docs.geotools.org/latest/javadocs/overview-summary.md">project javadocs overview</a>.</p>
+<ul>
+<li>GeoTools Logger names match up with the package names in the <a href="https://docs.geotools.org/latest/javadocs/overview-summary.md">project javadocs overview</a>.</li>
+</ul>
 <p>As an example package <code>org.geotools.data.shapefile</code> is listed, allowing level of shapefile logging to be controlled:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;Logger</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;org.geotools.data.shapefile&quot;</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;debug&quot;</span><span class="w"> </span><span class="na">additivity=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="nt">&lt;AppenderRef</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;stdout&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&lt;AppenderRef</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;geoserverlogfile&quot;</span><span class="nt">/&gt;</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nt">&lt;/Logger&gt;</span>
 </code></pre></div>
-</li>
-<li>
-<p>Assign a level to each logger indicating the level of detail you wish to record:</p>
+<ul>
+<li>Assign a level to each logger indicating the level of detail you wish to record:</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -30292,13 +30296,13 @@
 </tbody>
 </table>
 <p>The more verbose logging levels potentially include a stack-trace showing where the message occurred.</p>
-</li>
-<li>
-<p>Use <code>additivity="false"</code> to prevent a message collected from one logger from being passed to the next.</p>
+<ul>
+<li>Use <code>additivity="false"</code> to prevent a message collected from one logger from being passed to the next.</li>
+</ul>
 <p>If you end up with double log messages chances check for this common misconfiguration.</p>
-</li>
-<li>
-<p>The <code>Root</code> logger is last in the list and should collect everything.</p>
+<ul>
+<li>The <code>Root</code> logger is last in the list and should collect everything.</li>
+</ul>
 </li>
 </ul>
 <h3 id="example-of-console-only-logging">Example of console only logging<a class="headerlink" href="#example-of-console-only-logging" title="Permanent link">&para;</a></h3>
@@ -30525,10 +30529,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../../javascripts/hide-empty-toc.js"></script>
       

@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docs.geoserver.org/3.0.x/latest/en/user/extensions/netcdf-out/">
+        <link rel="canonical" href="https://docs.geoserver.org/3.1.x/latest/en/user/extensions/netcdf-out/">
       
       
         <link rel="prev" href="../netcdf/netcdf/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -29981,83 +29981,69 @@
 <ul>
 <li>
 <p>Variable Name (optional)</p>
-</li>
-<li>
-<p>Sets the NetCDF variable name.</p>
 <ul>
+<li>Sets the NetCDF variable name.</li>
 <li>Does not change the layer name, which can be configured in the Data tab.</li>
 </ul>
 </li>
 <li>
 <p>Variable Unit of Measure (optional)</p>
-</li>
-<li>
-<p>Sets the NetCDF <code>uom</code> attribute.</p>
+<ul>
+<li>Sets the NetCDF <code>uom</code> attribute.</li>
+</ul>
 </li>
 <li>
 <p>Data Packing</p>
-</li>
-<li>
-<p>Lossy compression by storing data in reduced precision.</p>
 <ul>
+<li>Lossy compression by storing data in reduced precision.</li>
 <li>One of <em>NONE</em>, <em>BYTE</em>, <em>SHORT</em>, or <em>INT</em>.</li>
 </ul>
 </li>
 <li>
 <p>NetCDF-4 Compression Level</p>
-</li>
-<li>
-<p>Lossless compression.</p>
 <ul>
+<li>Lossless compression.</li>
 <li>Level is an integer from 0 (no compression, fastest) to 9 (most compression, slowest).</li>
 </ul>
 </li>
 <li>
 <p>NetCDF-4 Chunk Shuffling</p>
-</li>
-<li>
-<p>Lossless byte reordering to improve compression.</p>
+<ul>
+<li>Lossless byte reordering to improve compression.</li>
+</ul>
 </li>
 <li>
 <p>Copy Variable Attributes from NetCDF/GRIB Source</p>
-</li>
-<li>
-<p>Most attributes are copied from the source NetCDF/GRIB variable.</p>
 <ul>
+<li>Most attributes are copied from the source NetCDF/GRIB variable.</li>
 <li>Some attributes such as <code>coordinates</code> and <code>missing_value</code> are skipped as these may no longer be valid.</li>
 <li>For an ImageMosaic, one granule is chosen as the source.</li>
 </ul>
 </li>
 <li>
 <p>Copy Global Attributes from NetCDF/GRIB Source</p>
-</li>
-<li>
-<p>Attributes are copied from the source NetCDF/GRIB global attributes.</p>
 <ul>
+<li>Attributes are copied from the source NetCDF/GRIB global attributes.</li>
 <li>For an ImageMosaic, one granule is chosen as the source.</li>
 </ul>
 </li>
 <li>
 <p>Variable Attributes</p>
-</li>
-<li>
-<p>Values are encoded as integers or doubles if possible, otherwise strings.</p>
 <ul>
+<li>Values are encoded as integers or doubles if possible, otherwise strings.</li>
 <li>Values set here overwrite attributes set elsewhere, such as those copied from a source NetCDF/GRIB variable.</li>
 </ul>
 </li>
 <li>
 <p>Global Attributes</p>
-</li>
-<li>
-<p>Values are encoded as integers or doubles if possible, otherwise strings.</p>
+<ul>
+<li>Values are encoded as integers or doubles if possible, otherwise strings.</li>
+</ul>
 </li>
 <li>
 <p>Scalar Variables Copied from NetCDF/GRIB Source</p>
-</li>
-<li>
-<p>Source specifies the name of the source variable in a NetCDF file or the <code>toolsUI</code> view of a GRIB file; only scalar source variables are supported.</p>
 <ul>
+<li>Source specifies the name of the source variable in a NetCDF file or the <code>toolsUI</code> view of a GRIB file; only scalar source variables are supported.</li>
 <li>Output specifies the name of the variable in the output NetCDF file.</li>
 <li>If only one of Source or Output is given, the other is taken as the same.</li>
 <li>Dimension is either blank to simply copy the source scalar from one granule, or the name of one output NetCDF dimension to cause values to be copied from multiple granules (such as those from an ImageMosaic over a non-spatial dimension) into a one-dimensional variable. The example above copies a single value from multiple <code>reftime</code> scalars into <code>forecast_reference_time</code> dimensioned by <code>time</code> in an ImageMosaic over time.</li>
@@ -30319,10 +30305,10 @@ colourbar uses the CF-conformant <code>units</code> attribute.</em></p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../../javascripts/hide-empty-toc.js"></script>
       

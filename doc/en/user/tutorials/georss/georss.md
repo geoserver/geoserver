@@ -1,6 +1,6 @@
 # GeoRSS
 
-GeoServer supports [GeoRSS](http://georss.org/) as an output format allowing you to serve features as an RSS feed.
+GeoServer supports [GeoRSS](https://georss.org/) as an output format allowing you to serve features as an RSS feed.
 
 ## Quick Start
 
@@ -11,7 +11,7 @@ If you are using a web browser which can render RSS feeds simply visit the URL <
 
 ## Templating
 
-GeoServer uses FreeMarker templates to customize the returned GeoRSS feed. If you are not familiar with FreeMarker templates you may wish to read the [Freemarker Templates](../freemarker.md) tutorial, and the [KML Placemark Templates](../../extensions/kml/tutorials/kmlplacemark/index.md) page, which has simple examples.
+GeoServer uses FreeMarker templates to customize the returned GeoRSS feed. If you are not familiar with FreeMarker templates you may wish to read the [Freemarker Templates](../freemarker/index.md) tutorial, and the [KML Placemark Templates](../../extensions/kml/tutorials/kmlplacemark/index.md) page, which has simple examples.
 
 Three template files are currently supported:
 

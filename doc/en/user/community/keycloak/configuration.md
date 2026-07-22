@@ -57,7 +57,7 @@ The role service can be used in two ways:
 
 **As the active role service** — navigate to **Security → Settings** and set the **Active Role Service** to the Keycloak role service. GeoServer will look up every authenticated user's roles from Keycloak on each request.
 
-**As a role source for the OIDC filter** — if you are using the [OAuth2/OIDC module](../oidc/index.md) for login, you can configure the OIDC filter to use this role service as its role source. This separates authentication (handled by the OIDC filter using token claims) from authorization (looked up live from Keycloak via the Admin API).
+**As a role source for the OIDC filter** — if you are using the [OAuth2/OIDC module](../../extensions/oidc/index.md) for login, you can configure the OIDC filter to use this role service as its role source. This separates authentication (handled by the OIDC filter using token claims) from authorization (looked up live from Keycloak via the Admin API).
 
 ## Keycloak 17+ URL paths
 

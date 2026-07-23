@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>bullet_arrow_right</title>
+    <defs>
+        <linearGradient x1="24.7661837%" y1="26.9083497%" x2="50%" y2="58.5366477%" id="linearGradient-1">
+            <stop stop-color="#B2B2B2" offset="0%"></stop>
+            <stop stop-color="#E0E0E0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="71.131252%" y1="73.0916503%" x2="7.10542736e-13%" y2="26.9083497%" id="linearGradient-2">
+            <stop stop-color="#C1C1C1" offset="0%"></stop>
+            <stop stop-color="#696969" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="bullet_arrow_right" stroke="none" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+        <polygon id="path892" stroke="url(#linearGradient-2)" fill="url(#linearGradient-1)" transform="translate(29.6911, 30.0859) rotate(-90) translate(-29.6911, -30.0859)" points="17.5738806 26.2706579 29.6911151 38.3205566 41.8083496 26.2706579 41.8083496 21.8512243 17.5738806 21.8512243"></polygon>
+    </g>
+</svg>

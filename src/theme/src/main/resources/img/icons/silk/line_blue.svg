@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>line_blue</title>
+    <defs>
+        <linearGradient x1="0%" y1="22.7788247%" x2="100%" y2="80.6167729%" id="linearGradient-1">
+            <stop stop-color="#89B2E5" offset="0%"></stop>
+            <stop stop-color="#678ED6" offset="50.8615792%"></stop>
+            <stop stop-color="#5D86D4" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="line_blue" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g id="line" transform="translate(7, 7)">
+            <polyline id="linestring" stroke="url(#linearGradient-1)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" points="3 3 3 46 47 3 47 46"></polyline>
+            <circle id="vertext" stroke="#17A6F8" stroke-width="4" fill="#7EC7F8" cx="47" cy="46" r="5"></circle>
+            <circle id="vertext" stroke="#17A6F8" stroke-width="4" fill="#7EC7F8" cx="3" cy="47" r="5"></circle>
+            <circle id="vertext" stroke="#17A6F8" stroke-width="4" fill="#7EC7F8" cx="3" cy="3" r="5"></circle>
+            <circle id="vertext" stroke="#17A6F8" stroke-width="4" fill="#7EC7F8" cx="47" cy="3" r="5"></circle>
+        </g>
+    </g>
+</svg>

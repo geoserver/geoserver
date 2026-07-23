@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>layers</title>
+    <defs>
+        <linearGradient x1="-4.54545455%" y1="20.2479339%" x2="104.545455%" y2="79.7520661%" id="linearGradient-1">
+            <stop stop-color="#81CE7B" offset="0%"></stop>
+            <stop stop-color="#33842D" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="104.545455%" y1="79.7520661%" x2="-4.54545536%" y2="20.2479339%" id="linearGradient-2">
+            <stop stop-color="#1E5B1A" offset="0%"></stop>
+            <stop stop-color="#88CF7E" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="-4.54545455%" y1="20.2479339%" x2="104.545455%" y2="79.7520661%" id="linearGradient-3">
+            <stop stop-color="#81CE7B" offset="0%"></stop>
+            <stop stop-color="#176F10" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="layers" stroke="none" fill="none" fill-opacity="0.66" fill-rule="evenodd" stroke-width="4">
+        <g id="Layers" stroke="url(#linearGradient-2)">
+            <rect id="Rectangle" fill="url(#linearGradient-1)" opacity="0.33" x="2" y="6" width="44" height="32"></rect>
+            <rect id="Rectangle" fill="url(#linearGradient-1)" opacity="0.66" x="10" y="14" width="44" height="32"></rect>
+            <rect id="Rectangle" fill="url(#linearGradient-3)" x="18" y="22" width="44" height="32"></rect>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>magnifier</title>
+    <defs>
+        <linearGradient x1="50%" y1="10%" x2="50%" y2="90%" id="linearGradient-1">
+            <stop stop-color="#E8CBAB" offset="0%"></stop>
+            <stop stop-color="#DDB589" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="10%" y1="30%" x2="90%" y2="70%" id="linearGradient-2">
+            <stop stop-color="#DCAC78" offset="0%"></stop>
+            <stop stop-color="#975F18" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="-5.54855556%" y1="-5.55555556%" x2="105.548889%" y2="105.555556%" id="linearGradient-3">
+            <stop stop-color="#CCE1F6" offset="22.016%"></stop>
+            <stop stop-color="#BBD6F3" offset="78.5979%"></stop>
+        </linearGradient>
+        <linearGradient x1="-5.55555556%" y1="-5.47311111%" x2="105.555556%" y2="105.473333%" id="linearGradient-4">
+            <stop stop-color="#CDE2F9" offset="15.1975%"></stop>
+            <stop stop-color="#7CA1D0" offset="85.1206%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="magnifier" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g transform="translate(6, 6)">
+            <path d="M34.6324555,30.1026334 L37.381167,31.0188706 C38.302128,31.1063501 39.1686057,31.5117896 39.8285934,32.1715662 L46.8293676,39.1721409 C47.578782,39.922355 48,40.9395405 48,42 L48,44 C48,46.2089695 46.2089695,48 44,48 L42,48 C40.9395405,48 39.922355,47.578782 39.1713662,46.8285934 L32.1713603,39.8283874 C31.5117641,39.1685802 31.1063462,38.3021231 31.0188701,37.3811657 L30.1026334,34.6324555 L30,34.3245553 L30,34 C30,31.7908705 31.7908705,30 34,30 L34.3245553,30 Z" id="Path" stroke="url(#linearGradient-2)" stroke-width="4" fill="url(#linearGradient-1)" stroke-linejoin="round"></path>
+            <circle id="Oval" stroke="url(#linearGradient-4)" stroke-width="4" fill="url(#linearGradient-3)" cx="18" cy="18" r="18"></circle>
+            <circle id="Oval" stroke-opacity="0.33" stroke="#FFFFFF" stroke-width="4" cx="18" cy="18" r="14"></circle>
+        </g>
+    </g>
+</svg>

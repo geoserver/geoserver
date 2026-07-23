@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>bullet_go</title>
+    <defs>
+        <linearGradient x1="29.6437073%" y1="97.6921929%" x2="71.7152328%" y2="-3.75773112%" id="linearGradient-1">
+            <stop stop-color="#228103" offset="0%"></stop>
+            <stop stop-color="#7CB053" offset="41.8834344%"></stop>
+            <stop stop-color="#338808" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="32.54776%" y1="97.6921929%" x2="68.2650704%" y2="-2.76700921%" id="linearGradient-2">
+            <stop stop-color="#99C383" offset="0%"></stop>
+            <stop stop-color="#85B769" offset="42.3619792%"></stop>
+            <stop stop-color="#8EBB6F" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="bullet_go" stroke="none" fill="none" fill-rule="evenodd">
+        <path d="M41,14 L41,30 L49,30 C49,34.6666667 49,37 49,37 C49,38 48.7071068,38.2928932 48,39 C48,39 36,51 36,51 C35.6043672,51.3956328 33,54 32,54 C31,54 31,54 30,54 C29,54 27.7071068,52.7071068 27,52 C27,52 14,39 14,39 C13.2928932,38.2928932 13,38 13,37 C13,37 13,34.6666667 13,30 L21,30 L21,14 L41,14 Z" id="outter" fill="url(#linearGradient-1)" transform="translate(31, 34) scale(1, -1) rotate(-90) translate(-31, -34)"></path>
+        <path d="M37,18 L37,34 L45,34 C45,35.3333333 45,36 45,36 C45,36.775 45.0999439,36.9039845 44,38 C44,38 33,49 33,49 C32.4500281,49.5480078 31.7777778,50 31,50 C30.2222222,50 29.5499719,49.5480078 29,49 C29,49 18,38 18,38 C16.9000561,36.9039845 17,36.775 17,36 C17,36 17,35.3333333 17,34 L25,34 L25,18 L37,18 Z" id="inner" fill="#A9CC90" transform="translate(31, 34) scale(1, -1) rotate(-90) translate(-31, -34)"></path>
+        <path d="M33,22 L33,37 C38.3333333,37 41,37 41,37 C41,37.4117188 33,45 33,45 C32.2887417,45.7029308 31.4165963,46 31,46 C30.5834037,46 29.7071068,45.7071068 29,45 C23.6666667,39.9208202 21,37.2541535 21,37 C21,37 23.6666667,37 29,37 L29,22 L33,22 Z" id="bullet" fill="url(#linearGradient-2)" transform="translate(31, 34) scale(1, -1) rotate(-90) translate(-31, -34)"></path>
+    </g>
+</svg>

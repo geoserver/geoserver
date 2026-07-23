@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>photo</title>
+    <defs>
+        <linearGradient x1="13.3333333%" y1="18.1712963%" x2="86.6666667%" y2="81.8287037%" id="linearGradient-1">
+            <stop stop-color="#D6B45F" offset="0%"></stop>
+            <stop stop-color="#B98048" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="13.3333333%" y1="18.1712963%" x2="86.6666667%" y2="81.8287037%" id="linearGradient-2">
+            <stop stop-color="#BB8436" offset="0%"></stop>
+            <stop stop-color="#87581D" offset="100%"></stop>
+        </linearGradient>
+        <rect id="path-3" x="0" y="0" width="40" height="28"></rect>
+        <linearGradient x1="100%" y1="74.5%" x2="-10.9205%" y2="52.58979%" id="linearGradient-5">
+            <stop stop-color="#5DB7FF" offset="0%"></stop>
+            <stop stop-color="#76C8FF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="-16.6666667%" x2="50%" y2="83.3333333%" id="linearGradient-6">
+            <stop stop-color="#74D550" offset="0%"></stop>
+            <stop stop-color="#9DE272" offset="83.4534%"></stop>
+        </linearGradient>
+        <linearGradient x1="18.1818182%" y1="28.5625%" x2="81.8181818%" y2="71.4375%" id="linearGradient-7">
+            <stop stop-color="#BB8436" offset="0%"></stop>
+            <stop stop-color="#87581D" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="50%" x2="100%" y2="50%" id="linearGradient-8">
+            <stop stop-color="#EAE9C1" offset="0%"></stop>
+            <stop stop-color="#E7E1AC" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="photo" stroke="none" fill="none">
+        <rect id="frame" stroke="url(#linearGradient-2)" stroke-width="3" fill="url(#linearGradient-1)" fill-rule="evenodd" x="3.5" y="7.5" width="57" height="47"></rect>
+        <g id="painting" stroke-width="1" fill-rule="evenodd" transform="translate(12, 16)">
+            <mask id="mask-4" fill="white">
+                <use xlink:href="#path-3"></use>
+            </mask>
+            <g id="Rectangle"></g>
+            <g id="Group" mask="url(#mask-4)">
+                <g transform="translate(-2, -10)">
+                    <rect id="Rectangle" stroke="none" fill="url(#linearGradient-5)" x="2" y="10" width="40" height="28"></rect>
+                    <rect id="Rectangle" stroke="none" fill="#2E9CFF" x="18" y="26" width="24" height="12"></rect>
+                    <path d="M0,16.04944 C3.44468,16.21156 8.06772,16.79736 12.04752,18.17088 C16.0958,19.568 18.81808,22.51728 19.69452,25.109 C16.45768,25.42504 13.90676,24.4062 11.81876,25.759 C9.30124,27.39008 7.5668,28.49596 6.17736,30.26436 C6.05624,30.41852 5.93872,30.56852 5.82448,30.71436 C4.5354,32.3596 3.65988,33.4772 2.64268,34.1268 C2.15984,34.4348 1.68108,34.604 1.12912,34.6364 C0.81624,34.6544 0.4448,34.6308 0,34.5364 L0,16.04944 Z" id="Path" stroke="#2DBA3E" stroke-width="4" fill="#60CB70"></path>
+                    <path d="M37.0570851,31.9292892 L37.0571156,31.9293075 C39.8452345,33.5944456 41.5363277,35.0930553 44.48837,38.1638541 C44.8244984,38.5133741 44.9195977,38.6120848 45.0766232,38.7739468 L45.5,39.210364 L45.5,42.5 L-1.5,42.5 L-1.5,39.0722994 L-1.38483675,38.7956085 C-1.36145867,38.7398698 -1.36145867,38.7398698 -1.33670027,38.6821616 C-1.16647645,38.2879468 -0.949410768,37.846831 -0.681264791,37.370033 C0.0878139123,36.0032105 1.10866699,34.6348508 2.4133035,33.3572524 C6.15038896,29.6976178 11.4183445,27.5 18.50792,27.5 C26.3057653,27.5 32.2716052,29.0714283 37.0570851,31.9292892 Z" id="Path" stroke="#7BD84B" stroke-width="3" fill="url(#linearGradient-6)"></path>
+                    <circle id="Oval" stroke="#F8DE60" stroke-width="3" fill="#FAE78C" cx="42" cy="10" r="10"></circle>
+                </g>
+            </g>
+        </g>
+        <path d="M53.5,45.5 L10.5,45.5 L10.5,14.5 L53.5,14.5 Z" id="matt" stroke="url(#linearGradient-7)" stroke-width="3" stroke-linejoin="round"></path>
+        <rect id="label" fill="url(#linearGradient-8)" fill-rule="evenodd" x="24" y="48" width="16" height="4" rx="0.5"></rect>
+        <rect id="label" fill="#DFCD78" fill-rule="evenodd" x="28" y="48" width="8" height="4"></rect>
+    </g>
+</svg>

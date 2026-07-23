@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>arrow_refresh</title>
+    <defs>
+        <linearGradient x1="66.9434159%" y1="1.40456406%" x2="33.0565841%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#ABD8A2" offset="0%"></stop>
+            <stop stop-color="#7CBE76" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="66.9434159%" y1="40.5110139%" x2="33.0565841%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#73C768" offset="0%"></stop>
+            <stop stop-color="#205E1D" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="33.0565841%" y1="100%" x2="66.9434159%" y2="0%" id="linearGradient-3">
+            <stop stop-color="#ABD8A2" offset="0%"></stop>
+            <stop stop-color="#7CBE76" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="33.0565841%" y1="75.3125171%" x2="66.9434159%" y2="0%" id="linearGradient-4">
+            <stop stop-color="#73C768" offset="0%"></stop>
+            <stop stop-color="#205E1D" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="arrow_refresh" stroke="none" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+        <path d="M12.2533048,-7.83458586 C23.8118985,-7.83458586 32.014047,-0.176382737 32.014047,12.1151212 C32.014047,12.1151212 32.014047,17.3523386 32.014047,27.8267734 L40.1195157,27.8267734 C32.8967031,34.8221688 28.7682851,38.701075 27.7342618,39.4634921 C26.7002384,40.2259092 25.5679142,40.2259092 24.3372891,39.4634921 L12.2533048,27.8267734 L20.3001798,27.8267734 C20.3001798,17.3523386 20.3001798,12.1151212 20.3001798,12.1151212 C20.3001798,8.32117586 15.4710782,4.34314851 12.2533048,4.34314851 C12.2533048,4.34314851 12.2533048,-7.83458586 12.2533048,-7.83458586 Z" id="refresh" stroke="url(#linearGradient-2)" fill="url(#linearGradient-1)" transform="translate(26.1864, 16.1004) rotate(-90) translate(-26.1864, -16.1004)"></path>
+        <path d="M24.2533048,24.1654141 C35.8118985,24.1654141 44.014047,31.8236173 44.014047,44.1151212 C44.014047,44.1151212 44.014047,49.3523386 44.014047,59.8267734 L52.1195157,59.8267734 C44.8967031,66.8221688 40.7682851,70.701075 39.7342618,71.4634921 C38.7002384,72.2259092 37.5679142,72.2259092 36.3372891,71.4634921 L24.2533048,59.8267734 L32.3001798,59.8267734 C32.3001798,49.3523386 32.3001798,44.1151212 32.3001798,44.1151212 C32.3001798,40.3211759 27.4710782,36.3431485 24.2533048,36.3431485 C24.2533048,36.3431485 24.2533048,24.1654141 24.2533048,24.1654141 Z" id="refresh" stroke="url(#linearGradient-4)" fill="url(#linearGradient-3)" transform="translate(38.1864, 48.1004) rotate(-270) translate(-38.1864, -48.1004)"></path>
+    </g>
+</svg>

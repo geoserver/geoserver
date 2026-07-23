@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>information</title>
+    <defs>
+        <radialGradient cx="88.4615385%" cy="88.4615385%" fx="88.4615385%" fy="88.4615385%" r="108.785385%" id="radialGradient-1">
+            <stop stop-color="#6187B2" offset="33.147%"></stop>
+            <stop stop-color="#B7D2F2" stop-opacity="0.956863" offset="100%"></stop>
+        </radialGradient>
+        <linearGradient x1="88.4615385%" y1="88.4615385%" x2="11.5384615%" y2="11.5384615%" id="linearGradient-2">
+            <stop stop-color="#3F6FAB" stop-opacity="0.956863" offset="0%"></stop>
+            <stop stop-color="#B7D2F2" stop-opacity="0.956863" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Information" stroke="none" fill="none">
+        <circle id="Sign" stroke="url(#linearGradient-2)" stroke-width="4" fill="url(#radialGradient-1)" fill-rule="evenodd" cx="32" cy="32" r="28"></circle>
+        <circle id="Highlight" stroke-opacity="0.66" stroke="#FFFFFF" stroke-width="4" cx="32" cy="32" r="24"></circle>
+        <path d="M31.97424,18.112 C33.73424,18.112 34.95024,19.36 34.95024,20.96 C34.95024,22.592 33.73424,23.808 31.97424,23.808 C30.21424,23.808 28.96624,22.592 28.96624,20.96 C28.96624,19.36 30.21424,18.112 31.97424,18.112 Z M35.01424,27.008 L35.01424,40.544 L39.36624,40.544 L39.36624,44 L25.15824,44 L25.15824,40.544 L29.95824,40.544 L29.95824,30.464 L25.31824,30.464 L25.31824,27.008 L35.01424,27.008 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+    </g>
+</svg>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>arrow_up</title>
+    <defs>
+        <linearGradient x1="35.7630992%" y1="100%" x2="64.2369008%" y2="0%" id="linearGradient-1">
+            <stop stop-color="#ABD8A2" offset="0%"></stop>
+            <stop stop-color="#7CBE76" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="42.1603496%" y1="100%" x2="64.2369008%" y2="0%" id="linearGradient-2">
+            <stop stop-color="#73C768" offset="0%"></stop>
+            <stop stop-color="#205E1D" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="arrow_up" stroke="none" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+        <path d="M37.8378906,5.98925781 L37.8378906,46.0029297 L45.9433594,46.0029297 C38.7205468,52.9983251 34.5921288,56.8772314 33.5581055,57.6396484 C32.5240821,58.4020655 31.3917579,58.4020655 30.1611328,57.6396484 L18.0771484,46.0029297 L26.1240234,46.0029297 L26.1240234,5.98925781 L37.8378906,5.98925781 Z" id="path1039" stroke="url(#linearGradient-2)" fill="url(#linearGradient-1)" transform="translate(32.0103, 32.1004) scale(1, -1) translate(-32.0103, -32.1004)"></path>
+    </g>
+</svg>

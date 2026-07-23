@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>door-in</title>
+    <defs>
+        <linearGradient x1="0%" y1="50%" x2="100%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#B7B7B7" offset="0%"></stop>
+            <stop stop-color="#6C6C6C" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="4.16666667%" x2="50%" y2="95.8333333%" id="linearGradient-2">
+            <stop stop-color="#999999" offset="0%"></stop>
+            <stop stop-color="#A5A5A5" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="25.0179375%" y1="4.16666667%" x2="74.981875%" y2="95.8333333%" id="linearGradient-3">
+            <stop stop-color="#808080" offset="0%"></stop>
+            <stop stop-color="#454545" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="27.7133333%" y1="16.6666667%" x2="48.2866667%" y2="90%" id="linearGradient-4">
+            <stop stop-color="#D59D6E" offset="0%"></stop>
+            <stop stop-color="#935B11" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="45.9844898%" y1="14.2857143%" x2="62.1787755%" y2="92.8571429%" id="linearGradient-5">
+            <stop stop-color="#DFC290" offset="0%"></stop>
+            <stop stop-color="#C79554" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="79.5450846%" y1="100%" x2="23.6884223%" y2="0%" id="linearGradient-6">
+            <stop stop-color="#286824" offset="0%"></stop>
+            <stop stop-color="#3D8036" offset="51.3575649%"></stop>
+            <stop stop-color="#8AB685" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="24.8687744%" y1="97.6921929%" x2="76.4746094%" y2="-1.77635684e-13%" id="linearGradient-7">
+            <stop stop-color="#99C383" offset="0%"></stop>
+            <stop stop-color="#85B769" offset="42.3619792%"></stop>
+            <stop stop-color="#8EBB6F" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="door-in" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g id="door" transform="translate(0, 2)">
+            <rect id="Rectangle" fill="url(#linearGradient-1)" x="0" y="54" width="56" height="4" rx="0.5"></rect>
+            <rect id="Rectangle" stroke="url(#linearGradient-3)" stroke-width="4" fill="url(#linearGradient-2)" x="12" y="10" width="32" height="44"></rect>
+            <path d="M39.10556,8.21116 C38.428,8.54992 38,9.24244 38,10 L38,54 C38,54.9176 38.6246,55.7176 39.51492,55.9404 L55.5148,59.9404 C55.6736,59.98 55.8364,60 56,60 L60,60 C61.1044,60 62,59.1044 62,58 L62,2 C62,0.895432 61.1044,0 60,0 L56,0 C55.6896,0 55.3832,0.072292 55.1056,0.211144 L39.10556,8.21116 Z" id="Path" stroke="url(#linearGradient-4)" stroke-width="4" fill="#B58B51" stroke-linejoin="round"></path>
+            <polygon id="Path" fill="url(#linearGradient-5)" points="40 10 56 2 56 58 40 54"></polygon>
+            <polygon id="Path" stroke-opacity="0.33" stroke="#FFFFFF" stroke-width="4" points="42 52.4384 42 11.23608 54 5.23608 54 55.4384"></polygon>
+            <path d="M50,38 C53.3137085,38 54,35.3137085 54,32 C54,28.6862915 53.3137085,26 50,26 C46.6862915,26 46,28.6862915 46,32 C46,35.3137085 46.6862915,38 50,38 Z" id="knob" fill="#FFD44B"></path>
+        </g>
+        <g id="in" transform="translate(-4, 15)">
+            <path d="M32,1 L32,13 L40,13 C40,17.6666667 40,20 40,20 C40,21 39.7071068,21.2928932 39,22 C39,22 27,34 27,34 C26.6043672,34.3956328 24,37 23,37 C22,37 22,37 21,37 C20,37 18.7071068,35.7071068 18,35 C18,35 5,22 5,22 C4.29289322,21.2928932 4,21 4,20 C4,20 4,17.6666667 4,13 L12,13 L12,1 L32,1 Z" id="outter" fill="url(#linearGradient-6)" transform="translate(22, 19) scale(1, -1) rotate(-90) translate(-22, -19)"></path>
+            <path d="M28,5 L28,17 L36,17 C36,18.3333333 36,19 36,19 C36,19.775 36.0999439,19.9039845 35,21 C35,21 24,32 24,32 C23.4500281,32.5480078 22.7777778,33 22,33 C21.2222222,33 20.5499719,32.5480078 20,32 C20,32 9,21 9,21 C7.90005612,19.9039845 8,19.775 8,19 C8,19 8,18.3333333 8,17 L16,17 L16,5 L28,5 Z" id="inner" fill="#A9CC90" transform="translate(22, 19) scale(1, -1) rotate(-90) translate(-22, -19)"></path>
+            <path d="M24,9 L24,20 C29.3333333,20 32,20 32,20 C32,20.4117188 24,28 24,28 C23.2887417,28.7029308 22.4165963,29 22,29 C21.5834037,29 20.7071068,28.7071068 20,28 C14.6666667,22.9208202 12,20.2541535 12,20 C12,20 14.6666667,20 20,20 L20,9 L24,9 Z" id="bullet" fill="url(#linearGradient-7)" transform="translate(22, 19) scale(1, -1) rotate(-90) translate(-22, -19)"></path>
+        </g>
+    </g>
+</svg>

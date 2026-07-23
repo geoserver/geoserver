@@ -7,15 +7,17 @@ package org.geoserver.monitor;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
@@ -49,17 +51,87 @@ public class PipeliningTaskQueueTest {
             workers.add(list);
         }
 
+        long submitStart = System.currentTimeMillis();
         for (int i = 0; i < groups; i++) {
             for (int j = 0; j < groups; j++) {
                 Worker w = workers.get(j).get(i);
                 taskQueue.execute(w.group, w);
             }
         }
+        long submitEnd = System.currentTimeMillis();
 
-        await().atMost(60, SECONDS).until(() -> completed.size() >= groups * groups);
+        int totalTasks = groups * groups;
+        try {
+            await().atMost(60, SECONDS).until(() -> completed.size() >= totalTasks);
+        } catch (Exception e) {
+            // Capture diagnostic state on timeout
+            long elapsed = System.currentTimeMillis() - submitEnd;
+            StringBuilder diag = new StringBuilder();
+            diag.append("\n=== PipeliningTaskQueueTest TIMEOUT DIAGNOSTICS ===\n");
+            diag.append("Completed: ").append(completed.size()).append("/").append(totalTasks);
+            diag.append(" after ").append(elapsed).append("ms\n");
+            diag.append("Submit took: ").append(submitEnd - submitStart).append("ms\n");
+            diag.append("Completed workers (group.seq @ startMs/endMs):\n");
+            for (Worker w : completed) {
+                diag.append("  group=")
+                        .append(w.group)
+                        .append(" seq=")
+                        .append(w.seq)
+                        .append(" started=")
+                        .append(w.startTimeMs.get())
+                        .append("ms ended=")
+                        .append(w.endTimeMs.get())
+                        .append("ms slept=")
+                        .append(w.actualSleepMs.get())
+                        .append("ms\n");
+            }
+            // Report which tasks never completed
+            diag.append("Missing workers:\n");
+            for (int g = 0; g < groups; g++) {
+                for (int s = 0; s < groups; s++) {
+                    Worker w = workers.get(g).get(s);
+                    if (w.endTimeMs.get() == 0) {
+                        diag.append("  group=")
+                                .append(w.group)
+                                .append(" seq=")
+                                .append(w.seq)
+                                .append(" started=")
+                                .append(w.startTimeMs.get())
+                                .append("ms\n");
+                    }
+                }
+            }
+            fail(diag.toString() + "\nOriginal exception: " + e.getMessage());
+        }
+
+        // Verify ordering within each group
+        long completionTime = System.currentTimeMillis() - submitEnd;
         int[] status = new int[groups];
-        for (Worker w : completed) {
-            assertEquals(status[w.group], w.seq.intValue());
+        List<Worker> completedList = new ArrayList<>(completed);
+        for (int idx = 0; idx < completedList.size(); idx++) {
+            Worker w = completedList.get(idx);
+            if (status[w.group] != w.seq.intValue()) {
+                // Build diagnostic showing the full completion order for this group
+                String groupOrder = completedList.stream()
+                        .filter(x -> x.group.equals(w.group))
+                        .map(x -> "seq=" + x.seq + "@" + x.endTimeMs.get() + "ms")
+                        .collect(Collectors.joining(", "));
+                fail("Ordering violation at position "
+                        + idx
+                        + ": group="
+                        + w.group
+                        + " expected seq="
+                        + status[w.group]
+                        + " but got seq="
+                        + w.seq
+                        + ". Total completion time: "
+                        + completionTime
+                        + "ms. Group "
+                        + w.group
+                        + " completion order: ["
+                        + groupOrder
+                        + "]");
+            }
             status[w.group]++;
         }
     }
@@ -69,6 +141,9 @@ public class PipeliningTaskQueueTest {
         Integer group;
         Integer seq;
         Queue<Worker> completed;
+        AtomicLong startTimeMs = new AtomicLong();
+        AtomicLong endTimeMs = new AtomicLong();
+        AtomicLong actualSleepMs = new AtomicLong();
 
         public Worker(Integer group, Integer seq, Queue<Worker> completed) {
             this.group = group;
@@ -78,15 +153,19 @@ public class PipeliningTaskQueueTest {
 
         @Override
         public void run() {
+            startTimeMs.set(System.currentTimeMillis());
             Random r = new Random();
             int x = r.nextInt(10) + 1;
             try {
+                long before = System.currentTimeMillis();
                 Thread.sleep(x * 10);
+                actualSleepMs.set(System.currentTimeMillis() - before);
             } catch (InterruptedException e) {
                 LOGGER.log(Level.WARNING, "", e);
             }
 
             completed.add(this);
+            endTimeMs.set(System.currentTimeMillis());
         }
     }
 }

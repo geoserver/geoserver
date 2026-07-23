@@ -131,6 +131,7 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         ugStore.addUser(ugStore.createUserObject("cite_texas", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_mosaic1", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_mosaic2", "cite", true));
+        ugStore.addUser(ugStore.createUserObject("cite_mosaic3", "cite", true));
         ugStore.store();
 
         GeoServerRoleStore roleStore =
@@ -143,6 +144,7 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         roleStore.associateRoleToUser(role, "cite_cite_texas");
         roleStore.associateRoleToUser(role, "cite_mosaic1");
         roleStore.associateRoleToUser(role, "cite_mosaic2");
+        roleStore.associateRoleToUser(role, "cite_mosaic3");
         roleStore.store();
 
         prepare();
@@ -164,6 +166,11 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         WKTReader wkt = new WKTReader();
         MultiPolygon cropper = (MultiPolygon) wkt.read("MULTIPOLYGON(((0 0, 0.5 0, 0.5 0.5, 0 0.5, 0 0)))");
         tam.putLimits("cite_mosaic2", coverage, new CoverageAccessLimits(CatalogMode.HIDE, green, cropper, null));
+
+        // Triangular cropper
+        MultiPolygon triangleCropper = (MultiPolygon) wkt.read("MULTIPOLYGON(((0 0, 0.5 0, 0 0.5, 0 0)))");
+        tam.putLimits(
+                "cite_mosaic3", coverage, new CoverageAccessLimits(CatalogMode.HIDE, green, triangleCropper, null));
 
         // add a wms store too, if possible
         if (!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
@@ -376,6 +383,44 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         image.getData().getPixel(149, 149, pixel);
         assertEquals(0, pixel[0]);
         assertEquals(0, pixel[1]);
+        assertEquals(0, pixel[2]);
+    }
+
+    @Test
+    public void testRasterCropAtDifferentResolution() throws Exception {
+        // Test a triangular raster crop on a low resolution image, requesting
+        // a higher resolution output. The resulting crop will be a smooth
+        // triangle rather than a jagged stair-steps shape.
+        setRequestAuth("cite_mosaic3", "cite");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=300&HEIGHT=300&transparent=false");
+
+        assertEquals("image/png", response.getContentType());
+
+        RenderedImage image = ImageIO.read(getBinaryInputStream(response));
+        // deep inside the triangle, well clear of the hypotenuse -> green
+        int[] pixel = new int[3];
+        image.getData().getPixel(30, 270, pixel);
+        assertEquals(0, pixel[0]);
+        assertEquals(255, pixel[1]);
+        assertEquals(0, pixel[2]);
+
+        // outside the triangle -> black
+        image.getData().getPixel(210, 90, pixel);
+        assertEquals(0, pixel[0]);
+        assertEquals(0, pixel[1]);
+        assertEquals(0, pixel[2]);
+
+        // inside the edge of the triangle crop, near the triangle's hypotenuse:
+        // Without rescaling the image before the crop, the resulting crop would have been
+        // made of a jagged "stair-steps" edge, due to the low resolution of the original image,
+        // therefore resulting in black pixels on the lower corners of the steps.
+        // With rescaling in place, the image is oversampled so the triangular crop
+        // is no more heavily jagged so the edge pixel is actually green.
+        image.getData().getPixel(34, 192, pixel);
+        assertEquals(0, pixel[0]);
+        assertEquals(255, pixel[1]);
         assertEquals(0, pixel[2]);
     }
 }

@@ -54,19 +54,14 @@ jobs:
 
           if [ "$BRANCH" = "main" ]; then
             echo "version=latest" >> $GITHUB_OUTPUT
-            echo "title=main (Latest)" >> $GITHUB_OUTPUT
-            echo "aliases=main 3.1.x" >> $GITHUB_OUTPUT
+            echo "title=3.1.x (Latest) main" >> $GITHUB_OUTPUT
+            echo "aliases=3.1.x main" >> $GITHUB_OUTPUT
             echo "is_default=false" >> $GITHUB_OUTPUT
           elif [ "$BRANCH" = "3.0.x" ]; then
-            echo "version=3.0.x" >> $GITHUB_OUTPUT
-            echo "title=3.0.x" >> $GITHUB_OUTPUT
-            echo "aliases=stable" >> $GITHUB_OUTPUT
+            echo "version=stable" >> $GITHUB_OUTPUT
+            echo "title=3.0.x (Stable)" >> $GITHUB_OUTPUT
+            echo "aliases=3.0.x" >> $GITHUB_OUTPUT
             echo "is_default=true" >> $GITHUB_OUTPUT
-          elif [ "$BRANCH" = "2.28.x" ]; then
-            echo "version=2.28.x" >> $GITHUB_OUTPUT
-            echo "title=2.28.x" >> $GITHUB_OUTPUT
-            echo "aliases=" >> $GITHUB_OUTPUT
-            echo "is_default=false" >> $GITHUB_OUTPUT
           else
             echo "version=$BRANCH" >> $GITHUB_OUTPUT
             echo "title=$BRANCH" >> $GITHUB_OUTPUT

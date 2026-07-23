@@ -549,6 +549,18 @@
          <lastmod>2026-07-23</lastmod>
     </url>
     <url>
+         <loc>https://docs.geoserver.org/3.0.x/3.0.x/en/user/community/keycloak/</loc>
+         <lastmod>2026-07-23</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/3.0.x/en/user/community/keycloak/configuration/</loc>
+         <lastmod>2026-07-23</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.geoserver.org/3.0.x/3.0.x/en/user/community/keycloak/installing/</loc>
+         <lastmod>2026-07-23</lastmod>
+    </url>
+    <url>
          <loc>https://docs.geoserver.org/3.0.x/3.0.x/en/user/community/libdeflate/</loc>
          <lastmod>2026-07-23</lastmod>
     </url>

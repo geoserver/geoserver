@@ -8,10 +8,12 @@ package org.geoserver.security.impl;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.geoserver.security.BulkLoadableRoleService;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerUserGroupService;
 
@@ -144,9 +146,41 @@ public class RoleCalculator {
 
     /** Adds inherited roles to a role set */
     public void addInheritedRoles(Collection<GeoServerRole> coll) throws IOException {
-        Set<GeoServerRole> inherited = new HashSet<>();
-        for (GeoServerRole role : coll) addParentRole(role, inherited);
-        coll.addAll(inherited);
+        if (roleService instanceof BulkLoadableRoleService) {
+            // Bulk-load path: load all parent mappings and role properties in 2 queries,
+            // then resolve hierarchy in-memory. This avoids O(N) per-role getParentRole() calls.
+            // Note: wrapper services (e.g., GroupAdminRoleService) that delegate to a JDBC service
+            // but do not themselves implement BulkLoadableRoleService will use the legacy path.
+            Map<String, String> parentMappings = roleService.getParentMappings();
+            Map<String, Properties> allProperties = ((BulkLoadableRoleService) roleService).getAllRoleProperties();
+
+            Set<GeoServerRole> inherited = new HashSet<>();
+            for (GeoServerRole role : coll) {
+                // Walk up the parent chain using in-memory maps
+                String currentName = role.getAuthority();
+                Set<String> visited = new HashSet<>();
+                visited.add(currentName);
+
+                String parentName = parentMappings.get(currentName);
+                while (parentName != null && !visited.contains(parentName)) {
+                    visited.add(parentName);
+                    GeoServerRole parentRole = roleService.createRoleObject(parentName);
+                    Properties props = allProperties.get(parentName);
+                    if (props != null) {
+                        parentRole.getProperties().putAll(props);
+                    }
+                    inherited.add(parentRole);
+                    currentName = parentName;
+                    parentName = parentMappings.get(currentName);
+                }
+            }
+            coll.addAll(inherited);
+        } else {
+            // Existing path for services with O(1) in-memory lookups (e.g., AbstractRoleService)
+            Set<GeoServerRole> inherited = new HashSet<>();
+            for (GeoServerRole role : coll) addParentRole(role, inherited);
+            coll.addAll(inherited);
+        }
     }
 
     /** Takes the role set for a user and personalizes the roles (matching user properties and role parameters) */

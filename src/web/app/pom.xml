@@ -750,6 +750,22 @@
     </profile>
 
     <profile>
+      <id>keycloak</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community.security</groupId>
+          <artifactId>gs-sec-keycloak-roles-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community.security</groupId>
+          <artifactId>gs-sec-keycloak-roles-web</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
       <id>cas</id>
       <dependencies>
         <dependency>

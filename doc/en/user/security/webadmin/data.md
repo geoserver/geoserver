@@ -40,7 +40,7 @@ This mode configures how GeoServer will advertise secured layers and behave when
 
 ## File sandbox
 
-The sandbox allows a GeoServer full administrator to limit file system access to workspace administrators. In particular, both GUI and REST API will sandbox workspace administrators to `<sandbox>/<workspace>`, and prevent them from accessing files outside of it.
+The sandbox allows a GeoServer full administrator to limit file system access to workspace administrators. In particular, both GUI and REST API will sandbox workspace administrators to `<sandbox>/<workspace>`, and prevent them from accessing files outside of it. For more information about workspace administrators, please see [Workspace Administration](../workspaceadmin/index.md).
 
 ![](images/fs_sandbox.png)
 

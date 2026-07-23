@@ -7,6 +7,7 @@ package org.geoserver.rest.service;
 
 import freemarker.template.ObjectWrapper;
 import java.util.Collections;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -60,7 +61,13 @@ public abstract class ServiceSettingsController<T extends ServiceInfo> extends A
 
     public void serviceSettingsPut(T info, String workspaceName) {
         WorkspaceInfo ws = null;
-        if (workspaceName != null) ws = geoServer.getCatalog().getWorkspaceByName(workspaceName);
+        if (workspaceName != null) {
+            Catalog catalog = geoServer.getCatalog();
+            ws = catalog.getWorkspaceByName(workspaceName);
+            if (ws == null) {
+                throw new RestException("Workspace " + workspaceName + " does not exist", HttpStatus.NOT_FOUND);
+            }
+        }
 
         T originalInfo;
         if (ws != null) {

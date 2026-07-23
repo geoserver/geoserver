@@ -572,6 +572,9 @@ nav:
       - en/user/security/layer.md
       - en/user/security/sandbox.md
       - en/user/security/rest.md
+      - Workspace Administration:
+        - en/user/security/workspaceadmin/index.md
+        - en/user/security/workspaceadmin/rest.md
       - en/user/security/urlchecks.md
       - en/user/security/csp.md
       - en/user/security/disable.md
@@ -585,6 +588,7 @@ nav:
         - Configuring HTTP Header Proxy Authentication: en/user/security/tutorials/httpheaderproxy/index.md
         - Configuring Apache HTTPD Session Integration: en/user/security/tutorials/credentialsfromheaders/index.md
         - Authentication with CAS: en/user/security/tutorials/cas/index.md
+        - Workspace Administration: en/user/security/tutorials/workspaceadmin/index.md
     - GeoWebCache:
       - en/user/geowebcache/index.md
       - GeoWebCache settings:

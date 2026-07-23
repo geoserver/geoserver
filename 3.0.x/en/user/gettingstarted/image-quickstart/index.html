@@ -30054,7 +30054,7 @@
 </li>
 </ol>
 <h2 id="creating-a-new-workspace">Creating a new workspace<a class="headerlink" href="#creating-a-new-workspace" title="Permanent link">&para;</a></h2>
-<p>The next step is to create a workspace for the geopackage. A workspace is a folder used to group similar layers together.</p>
+<p>The next step is to create a workspace for the geotiff file. A workspace is a folder used to group similar layers together.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This step is optional if you'd like to use an existing workspace. Usually, a workspace is created for each project, which can include stores and layers that are related to each other.</p>
@@ -30096,7 +30096,7 @@
 <li>The <code>tutorial</code> workspace will be added to the <strong>Workspaces</strong> list.</li>
 </ol>
 <h2 id="create-a-store">Create a store<a class="headerlink" href="#create-a-store" title="Permanent link">&para;</a></h2>
-<p>Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the geopackage.</p>
+<p>Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the geotiff file.</p>
 <ol>
 <li>
 <p>Navigate to <strong>Data &gt; Stores</strong>.</p>
@@ -30105,7 +30105,7 @@
 <p>This page displays a list of stores, including the type of store and the workspace that the store belongs to.</p>
 </li>
 <li>
-<p>In order to add the geopackage, you need to create a new store. Click the <strong>Add new Store</strong> button. You will be redirected to a list of data sources supported by GeoServer. Note that data sources are extensible, so your list may look slightly different.</p>
+<p>In order to add the geotiff, you need to create a new store. Click the <strong>Add new Store</strong> button. You will be redirected to a list of data sources supported by GeoServer. Note that data sources are extensible, so your list may look slightly different.</p>
 </li>
 <li>
 <p>From the list of <strong>Raster Data Sources</strong> locate and click the <strong>GeoTIFF</strong> link.</p>
@@ -30113,7 +30113,7 @@
 <p><em>Raster Data Sources</em></p>
 </li>
 <li>
-<p>The <strong>New Vector Data Source</strong> page will display.</p>
+<p>The <strong>Add Raster Data Source</strong> page will display.</p>
 </li>
 <li>
 <p>Begin by configuring the <strong>Basic Store Info</strong>.</p>
@@ -30144,11 +30144,11 @@
 </li>
 <li>Under <strong>Connection Parameters</strong>, browse to the location <strong>URL</strong> of the image, in our example <strong><code>file:data/ne/SR_50M.tif</code></strong>.</li>
 <li>
-<p>The <strong>Connection Parameters</strong> for our geopackage are:</p>
+<p>The <strong>Connection Parameters</strong> for our geotiff are:</p>
 <table>
 <thead>
 <tr>
-<th>database</th>
+<th>url</th>
 <th><code>file:data/ne/SR_50M.tif</code></th>
 </tr>
 </thead>
@@ -30267,7 +30267,7 @@
 </li>
 <li>
 <p>An OpenLayers map will load in a new tab and display the imagery with the default raster style.</p>
-<p>You can use this preview map to zoom and pan around the dataset, as well as display the attributes of features.</p>
+<p>You can use this preview map to zoom and pan around the dataset, as well as click on the map to display the value stored at that pixel.</p>
 <p><img alt="" src="images/openlayers.png" /></p>
 <p><em>Preview map of shaded relief</em></p>
 </li>

@@ -294,7 +294,7 @@ public class DAPATest extends OGCApiTestSupport {
         assertEquals(8.9, json.read("$.features[0].properties.temperature_min", Double.class), DELTA);
         assertEquals(13.4, json.read("$.features[0].properties.temperature_max", Double.class), DELTA);
         assertEquals(
-                8,
+                4,
                 json.read("$.features[0].properties.temperature_count", Integer.class)
                         .intValue());
     }

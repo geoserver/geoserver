@@ -77,6 +77,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         Processors.addProcessFactory(MonkeyProcess.getFactory());
         Processors.addProcessFactory(MultiRawProcess.getFactory());
         Processors.addProcessFactory(MultiOutputEchoProcess.getFactory());
+        Processors.addProcessFactory(BboxProcess.getFactory());
     }
 
     public static class AutoCloseableResource implements AutoCloseable {

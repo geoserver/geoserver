@@ -245,10 +245,11 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
                 List<Double> min = new ArrayList<>(envelope.getDimension());
                 List<Double> max = new ArrayList<>(envelope.getDimension());
                 for (int i = 0; i < envelope.getDimension(); i++) {
-                    min.set(i, envelope.getMinimum(i));
-                    max.set(i, envelope.getMaximum(i));
+                    min.add(envelope.getMinimum(i));
+                    max.add(envelope.getMaximum(i));
                 }
-
+                bbox.setLowerCorner(min);
+                bbox.setUpperCorner(max);
                 return bbox;
             } else {
                 return null;

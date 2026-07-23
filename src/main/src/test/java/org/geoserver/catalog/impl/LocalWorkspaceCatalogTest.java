@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -102,6 +103,16 @@ public class LocalWorkspaceCatalogTest {
         expect(ft2.getNamespace()).andReturn(ns2).anyTimes();
         replay(ft2);
 
+        CoverageInfo cov1 = createNiceMock(CoverageInfo.class);
+        expect(cov1.getName()).andReturn("c1").anyTimes();
+        expect(cov1.getNamespace()).andReturn(ns1).anyTimes();
+        replay(cov1);
+
+        CoverageInfo cov2 = createNiceMock(CoverageInfo.class);
+        expect(cov2.getName()).andReturn("c2").anyTimes();
+        expect(cov2.getNamespace()).andReturn(ns2).anyTimes();
+        replay(cov2);
+
         LayerInfo l2 = createNiceMock(LayerInfo.class);
         expect(l2.getName()).andReturn("ws2:l2").anyTimes();
         expect(l2.getResource()).andReturn(ft2).anyTimes();
@@ -127,6 +138,19 @@ public class LocalWorkspaceCatalogTest {
         expect(cat.getWorkspaceByName("ws2")).andReturn(ws2).anyTimes();
         expect(cat.getNamespaceByPrefix("ws1")).andReturn(ns1).anyTimes();
         expect(cat.getNamespaceByPrefix("ws2")).andReturn(ns2).anyTimes();
+
+        // Full-catalog lookups (what a workspace-scoped request should NOT use) vs the
+        // namespace-scoped lookups that should be used when a LocalWorkspace is set.
+        expect(cat.getFeatureTypes()).andReturn(Arrays.asList(ft1, ft2)).anyTimes();
+        expect(cat.getFeatureTypesByNamespace(ns1))
+                .andReturn(Arrays.asList(ft1))
+                .anyTimes();
+        expect(cat.getFeatureTypesByNamespace(ns2))
+                .andReturn(Arrays.asList(ft2))
+                .anyTimes();
+        expect(cat.getCoverages()).andReturn(Arrays.asList(cov1, cov2)).anyTimes();
+        expect(cat.getCoveragesByNamespace(ns1)).andReturn(Arrays.asList(cov1)).anyTimes();
+        expect(cat.getCoveragesByNamespace(ns2)).andReturn(Arrays.asList(cov2)).anyTimes();
 
         expect(cat.getStyleByName("ws1", "s1")).andReturn(s1).anyTimes();
         expect(cat.getStyleByName(ws1, "s1")).andReturn(s1).anyTimes();
@@ -184,6 +208,40 @@ public class LocalWorkspaceCatalogTest {
     @After
     public void tearDown() {
         LocalWorkspace.remove();
+    }
+
+    @Test
+    public void testGetFeatureTypesScopedToLocalWorkspace() {
+        // Without a local workspace (e.g. global capabilities) all feature types are returned.
+        assertEquals(2, catalog.getFeatureTypes().size());
+
+        // Under a local (virtual service) workspace, getFeatureTypes() must return only that
+        // workspace's feature types, looked up by namespace, rather than loading every feature
+        // type in the catalog and discarding all but those from the relevant workspace.
+        WorkspaceInfo ws1 = catalog.getWorkspaceByName("ws1");
+        LocalWorkspace.set(ws1);
+        try {
+            List<FeatureTypeInfo> scoped = catalog.getFeatureTypes();
+            assertEquals(1, scoped.size());
+            assertEquals("l1", scoped.get(0).getName());
+        } finally {
+            LocalWorkspace.remove();
+        }
+    }
+
+    @Test
+    public void testGetCoveragesScopedToLocalWorkspace() {
+        assertEquals(2, catalog.getCoverages().size());
+
+        WorkspaceInfo ws2 = catalog.getWorkspaceByName("ws2");
+        LocalWorkspace.set(ws2);
+        try {
+            List<CoverageInfo> scoped = catalog.getCoverages();
+            assertEquals(1, scoped.size());
+            assertEquals("c2", scoped.get(0).getName());
+        } finally {
+            LocalWorkspace.remove();
+        }
     }
 
     @Test

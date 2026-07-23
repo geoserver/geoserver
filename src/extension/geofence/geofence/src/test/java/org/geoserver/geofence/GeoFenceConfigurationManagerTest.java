@@ -63,7 +63,7 @@ public class GeoFenceConfigurationManagerTest extends GeoServerTestSupport {
         // get the beans we use for testing
         // manager = (GeofenceAccessManager)
         // applicationContext.getBean("geofenceRuleAccessManager");
-        // geofenceService = (RuleReaderService) applicationContext.getBean("ruleReaderService");
+        // geofenceService = (RuleReaderService) applicationContext.getBean("ruleReaderServiceImpl");
         manager = (GeoFenceConfigurationManager) applicationContext.getBean("geofenceConfigurationManager");
 
         configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");

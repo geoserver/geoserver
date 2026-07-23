@@ -22,14 +22,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geofence.core.model.LayerAttribute;
 import org.geofence.core.model.enums.AccessType;
 import org.geofence.core.model.enums.GrantType;
-import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.CatalogModeDTO;
 import org.geofence.core.services.dto.RuleFilter;
-import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -47,6 +46,7 @@ import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.containers.ContainerAccessResolver;
 import org.geoserver.geofence.containers.ContainerLimitResolver;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.util.AccessInfoUtils;
 import org.geoserver.geofence.util.GeomHelper;
 import org.geoserver.geofence.util.RuleFilterBuilder;
@@ -91,10 +91,13 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -104,6 +107,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * @author Andrea Aime - GeoSolutions
  * @author Emanuele Tajariol- GeoSolutions
  */
+@Component("geofenceRuleAccessManager")
 public class GeofenceAccessManager implements ResourceAccessManager, DispatcherCallback, ExtensionPriority {
 
     private static final Logger LOGGER = Logging.getLogger(GeofenceAccessManager.class);
@@ -120,7 +124,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
     static final CatalogMode DEFAULT_CATALOG_MODE = CatalogMode.HIDE;
 
-    RuleReaderService rulesService;
+    RuleReaderServiceFactory rulesServiceFactory;
 
     Catalog catalog;
 
@@ -131,14 +135,15 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
     private WPSHelper wpsHelper;
 
+    @Autowired
     public GeofenceAccessManager(
-            RuleReaderService rulesService,
-            Catalog catalog,
+            @Qualifier("ruleReaderFrontendFactory") RuleReaderServiceFactory rulesServiceFactory,
+            @Qualifier("rawCatalog") Catalog catalog,
             GeoFenceConfigurationManager configurationManager,
-            ContainerAccessResolver containerAccessResolver,
+            @Qualifier("cachedContainerAccessResolver") ContainerAccessResolver containerAccessResolver,
             WPSHelper wpsHelper) {
 
-        this.rulesService = rulesService;
+        this.rulesServiceFactory = rulesServiceFactory;
         this.catalog = new LocalWorkspaceCatalog(catalog);
         this.configurationManager = configurationManager;
         this.groupsCache = new LayerGroupContainmentCache(catalog);
@@ -215,7 +220,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             LOGGER.log(Level.FINE, "AdminAuth filter: {0}", ruleFilter);
         }
 
-        AccessInfo auth = rulesService.getAdminAuthorization(ruleFilter);
+        AccessInfo auth = rulesServiceFactory.getService().getAdminAuthorization(ruleFilter);
 
         LOGGER.log(Level.FINE, "Admin auth for User:{0} Workspace:{1}: {2}", new Object[] {
             user.getName(), workspaceName, auth.getAdminRights()
@@ -388,7 +393,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         String ipAddress = retrieveCallerIpAddress();
         String date = DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now());
         RuleFilter ruleFilter = buildRuleFilter(workspace, layer, user, ipAddress, date);
-        AccessInfo accessInfo = rulesService.getAccessInfo(ruleFilter);
+        AccessInfo accessInfo = rulesServiceFactory.getService().getAccessInfo(ruleFilter);
 
         if (accessInfo == null) {
             accessInfo = AccessInfo.DENY_ALL;
@@ -861,7 +866,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             ruleFilter.setLayer(resource.getName());
 
             LOGGER.log(Level.FINE, "Getting access limits for getLegendGraphic", ruleFilter);
-            AccessInfo rule = rulesService.getAccessInfo(ruleFilter);
+            AccessInfo rule = rulesServiceFactory.getService().getAccessInfo(ruleFilter);
 
             // get the requested style
             String styleName = styles.get(i);
@@ -928,7 +933,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
             LOGGER.log(Level.FINE, "Getting access limits for getMap", ruleFilter);
 
-            AccessInfo rule = rulesService.getAccessInfo(ruleFilter);
+            AccessInfo rule = rulesServiceFactory.getService().getAccessInfo(ruleFilter);
 
             // get the requested style name
             String styleName = styleNameList.get(i);

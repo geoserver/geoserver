@@ -32,6 +32,8 @@ import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationController;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
+import org.geoserver.geofence.services.RestRuleReaderService;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -100,21 +102,19 @@ public class GeofencePage extends GeoServerSecuredPage {
                             ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                         }
                     }
-                    // HttpInvokerProxyFactoryBean is deprecated because
-                    // Spring no longer supports serialized RMI invocations
-                    @SuppressWarnings("deprecation")
+
                     private RuleReaderService getRuleReaderService(String servicesUrl) throws IOException {
                         if (config.isInternal()) {
-                            return (RuleReaderService) GeoServerExtensions.bean("ruleReaderService");
+                            RuleReaderServiceFactory backendFactory =
+                                    (RuleReaderServiceFactory) GeoServerExtensions.bean("ruleReaderBackendFactory");
+                            return backendFactory.getService();
                         } else {
-                            /*org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean invoker =
-                                    new org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean();
-                            invoker.setServiceUrl(servicesUrl);
-                            invoker.setServiceInterface(RuleReaderService.class);
-                            invoker.afterPropertiesSet();
-                            return (RuleReaderService) invoker.getObject();*/
-
-                            return null;
+                            // RestRuleReaderService replaces the old HttpInvokerProxyFactoryBean-based remote
+                            // client (Spring no longer supports serialized RMI invocations). It's a stub for now
+                            // (see RestRuleReaderService) - it doesn't make real REST calls yet.
+                            RestRuleReaderService restReader = new RestRuleReaderService();
+                            restReader.setServiceUrl(servicesUrl);
+                            return restReader;
                         }
                     }
                 }.setDefaultFormProcessing(false));

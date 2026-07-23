@@ -22,13 +22,17 @@ import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.data.test.MockData;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.utils.RuleReaderServiceAdapter;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -55,9 +59,21 @@ public class GeofenceAccessManagerVirtualServiceTest extends GeoServerSystemTest
         };
     }
 
+    protected MockHttpServletResponse _getAsServletResponse(String path) throws Exception {
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        Request r = new Request();
+        r.setHttpRequest(request);
+        r.setGet(true);
+        Dispatcher.REQUEST.set(r);
+
+        return dispatch(request, null);
+    }
+
     MockHttpServletResponse getGetMapResponse(QName qlayer, boolean layerInContext) throws Exception {
         GeofenceAccessManager gf = GeoServerExtensions.bean(GeofenceAccessManager.class);
-        gf.rulesService = CUSTOM_RULE_SERVICE;
+        gf.rulesServiceFactory = RuleReaderServiceFactory.of(CUSTOM_RULE_SERVICE);
 
         // Ensure workspace/layer exist in the test data
         // Skipping check bc the call goes through all the security stack
@@ -71,7 +87,7 @@ public class GeofenceAccessManagerVirtualServiceTest extends GeoServerSystemTest
         }
 
         MockHttpServletResponse response =
-                getAsServletResponse(context + "/ows?service=WMS&version=1.1.0&request=GetMap"
+                _getAsServletResponse(context + "/ows?service=wms&version=1.1.0&request=GetMap"
                         + "&layers=" + getLayerId(qlayer)
                         + "&styles="
                         + "&bbox=-180,-90,180,90"
@@ -82,7 +98,7 @@ public class GeofenceAccessManagerVirtualServiceTest extends GeoServerSystemTest
 
     Document getGetCapabilitiesResponse(QName qlayer, String service, boolean layerInContext) throws Exception {
         GeofenceAccessManager gf = GeoServerExtensions.bean(GeofenceAccessManager.class);
-        gf.rulesService = CUSTOM_RULE_SERVICE;
+        gf.rulesServiceFactory = RuleReaderServiceFactory.of(CUSTOM_RULE_SERVICE);
 
         // Build the virtual layer or virtual workspace path
         String context = qlayer.getPrefix();
@@ -96,6 +112,29 @@ public class GeofenceAccessManagerVirtualServiceTest extends GeoServerSystemTest
         else fail("Bad service " + service);
 
         return getAsDOM(context + "/ows?service=" + service + "&version=" + version + "&request=GetCapabilities");
+    }
+
+    @Test
+    public void testNoVirtualLayerGetMapAllowed() throws Exception {
+        // This is a baseline test for a plain non-virtual WMS request
+        QName qlayer = MockData.BUILDINGS;
+
+        GeofenceAccessManager gf = GeoServerExtensions.bean(GeofenceAccessManager.class);
+        gf.rulesServiceFactory = RuleReaderServiceFactory.of(CUSTOM_RULE_SERVICE);
+
+        MockHttpServletResponse response = getAsServletResponse("/ows?"
+                + "service=wms&version=1.1.0&request=GetMap"
+                + "&layers=" + getLayerId(qlayer)
+                + "&styles="
+                + "&bbox=-180,-90,180,90"
+                + "&width=256&height=256"
+                + "&srs=EPSG:4326&format=image/png");
+
+        LOGGER.warning("Baseline response [" + response.getStatus() + "] " + response.getContentAsString());
+
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertTrue(response.getContentAsByteArray().length > 0);
     }
 
     @Test

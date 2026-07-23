@@ -37,11 +37,11 @@
 
                 <!-- The backend will be injected in the cached reader. -->
                 <!-- use the server rule reader service directly -->
-                <prop key="ruleReaderBackend">ruleReaderService</prop>
+                <prop key="ruleReaderBackend">ruleReaderServiceImpl</prop>
 
                 <!-- The frontend will be injected in the access manager. -->
-                <!-- You may replace the cachedRuleReader ref with ruleReaderService in order to disable the caching -->
-                <!--<prop key="ruleReaderFrontend">ruleReaderService</prop>-->
+                <!-- You may replace the cachedRuleReader ref with ruleReaderServiceImpl in order to disable the caching -->
+                <!--<prop key="ruleReaderFrontend">ruleReaderServiceImpl</prop>-->
                 <prop key="ruleReaderFrontend">cachedRuleReader</prop>
             </props>
         </property>

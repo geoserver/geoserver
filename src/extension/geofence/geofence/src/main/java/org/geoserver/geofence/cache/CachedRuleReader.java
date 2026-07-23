@@ -12,21 +12,24 @@ import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geofence.core.services.dto.ShortRule;
+import org.geoserver.geofence.services.RuleReaderDecorator;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * A delegating {@link RuleReaderService} with caching capabilities.
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it)
  */
-public class CachedRuleReader implements RuleReaderService {
+@Component
+public class CachedRuleReader implements RuleReaderService, RuleReaderDecorator {
 
     static final Logger LOGGER = Logging.getLogger(CachedRuleReader.class);
 
     private CacheManager cacheManager;
 
-    public CachedRuleReader() {}
-
+    @Autowired
     public CachedRuleReader(CacheManager cacheManager) {
         setCacheManager(cacheManager);
     }

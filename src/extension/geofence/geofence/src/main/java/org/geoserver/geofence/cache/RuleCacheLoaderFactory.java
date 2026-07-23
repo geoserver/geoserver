@@ -10,7 +10,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geofence.core.services.AuthorizationService;
-import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
 // import org.geofence.core.services.dto.AuthUser;
 import org.geofence.core.services.dto.RuleFilter;
@@ -26,11 +25,11 @@ public class RuleCacheLoaderFactory {
 
     static final Logger LOGGER = Logging.getLogger(RuleCacheLoaderFactory.class);
 
-    private RuleReaderService realRuleReaderService;
+    private final RuleReaderServiceFactory rrsFactory;
     private AuthorizationService authorizationService;
 
     public RuleCacheLoaderFactory(RuleReaderServiceFactory rrsFactory) {
-        this.realRuleReaderService = rrsFactory.getService();
+        this.rrsFactory = rrsFactory;
     }
 
     public RuleLoader createRuleLoader() {
@@ -54,7 +53,7 @@ public class RuleCacheLoaderFactory {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading {0}", filter);
             // the service, when integrated, may modify the filter
             RuleFilter clone = filter.clone();
-            return realRuleReaderService.getAccessInfo(clone);
+            return rrsFactory.getService().getAccessInfo(clone);
         }
 
         @Override
@@ -65,7 +64,7 @@ public class RuleCacheLoaderFactory {
             RuleFilter clone = filter.clone();
 
             // this is a sync implementation
-            AccessInfo ret = realRuleReaderService.getAccessInfo(clone);
+            AccessInfo ret = rrsFactory.getService().getAccessInfo(clone);
             return Futures.immediateFuture(ret);
 
             // next there is an asynchronous implementation, but in tests it seems to hang
@@ -89,7 +88,7 @@ public class RuleCacheLoaderFactory {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading {0}", filter);
             // the service, when integrated, may modify the filter
             RuleFilter clone = filter.clone();
-            return realRuleReaderService.getAdminAuthorization(clone);
+            return rrsFactory.getService().getAdminAuthorization(clone);
         }
 
         @Override
@@ -100,7 +99,7 @@ public class RuleCacheLoaderFactory {
             RuleFilter clone = filter.clone();
 
             // this is a sync implementation
-            AccessInfo ret = realRuleReaderService.getAdminAuthorization(clone);
+            AccessInfo ret = rrsFactory.getService().getAdminAuthorization(clone);
             return Futures.immediateFuture(ret);
         }
     }

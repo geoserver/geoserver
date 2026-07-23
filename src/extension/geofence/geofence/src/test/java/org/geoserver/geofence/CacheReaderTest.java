@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
 import com.google.common.base.Ticker;
-import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,8 +51,8 @@ public class CacheReaderTest extends GeofenceBaseTest {
         configurer.setLocation(
                 new UrlResource(Objects.requireNonNull(this.getClass().getResource("/test-cache-config.properties"))));
 
-        //        realReader = applicationContext.getBean("remoteReaderService", RuleReaderService.class);
-        RuleReaderServiceFactory rrsFactory = new RuleReaderServiceFactory(List.of("remoteReaderService"));
+        //        realReader = applicationContext.getBean("restRuleReaderService", RuleReaderService.class);
+        RuleReaderServiceFactory rrsFactory = new RuleReaderServiceFactory("restRuleReaderService", false);
         rrsFactory.setApplicationContext(applicationContext);
 
         ticker = new CustomTicker();
@@ -79,8 +78,8 @@ public class CacheReaderTest extends GeofenceBaseTest {
         cachedRuleReader = new CachedRuleReader(cacheManager);
 
         cacheManager.setRuleServiceLoaderFactory(new RuleCacheLoaderFactory(rrsFactory));
-        cacheManager.setContainerAccessCacheLoaderFactory(
-                new ContainerAccessCacheLoaderFactory(new DefaultContainerAccessResolver(cachedRuleReader)));
+        cacheManager.setContainerAccessCacheLoaderFactory(new ContainerAccessCacheLoaderFactory(
+                new DefaultContainerAccessResolver(RuleReaderServiceFactory.of(cachedRuleReader))));
         cacheManager.init();
     }
 

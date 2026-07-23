@@ -10,14 +10,14 @@ import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geofence.core.services.dto.ShortRule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Component("RestRuleReaderService")
+@Component
 public class RestRuleReaderService implements RuleReaderService {
 
+    @Value("${servicesUrl}")
     private String serviceUrl;
-
-    public RestRuleReaderService(String serviceUrl) {}
 
     @Override
     public AccessInfo getAccessInfo(RuleFilter filter) {

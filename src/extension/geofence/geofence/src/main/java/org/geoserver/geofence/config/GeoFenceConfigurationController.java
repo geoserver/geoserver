@@ -7,20 +7,33 @@ package org.geoserver.geofence.config;
 import java.io.IOException;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.CacheManager;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 /** @author Emanuele Tajariol (etj at geo-solutions.it) */
+@Component
 public class GeoFenceConfigurationController {
 
-    private GeoFenceConfigurationManager configurationManager;
+    private final GeoFenceConfigurationManager configurationManager;
 
-    private CacheManager cacheManager;
+    private final CacheManager cacheManager;
 
-    public void setConfigurationManager(GeoFenceConfigurationManager configurationManager) {
+    private final RuleReaderServiceFactory ruleReaderBackendFactory;
+
+    private final RuleReaderServiceFactory ruleReaderFrontendFactory;
+
+    @Autowired
+    public GeoFenceConfigurationController(
+            GeoFenceConfigurationManager configurationManager,
+            CacheManager cacheManager,
+            @Qualifier("ruleReaderBackendFactory") RuleReaderServiceFactory ruleReaderBackendFactory,
+            @Qualifier("ruleReaderFrontendFactory") RuleReaderServiceFactory ruleReaderFrontendFactory) {
         this.configurationManager = configurationManager;
-    }
-
-    public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
+        this.ruleReaderBackendFactory = ruleReaderBackendFactory;
+        this.ruleReaderFrontendFactory = ruleReaderFrontendFactory;
     }
 
     /**
@@ -38,6 +51,10 @@ public class GeoFenceConfigurationController {
         // set config and recreates the cache
         configurationManager.setCacheConfiguration(cacheConfig);
         cacheManager.init();
+
+        // switch the active RuleReaderService backend/frontend, if they changed
+        ruleReaderBackendFactory.setActiveServiceName(gfConfig.getRuleReaderBackend());
+        ruleReaderFrontendFactory.setActiveServiceName(gfConfig.getRuleReaderFrontend());
 
         // write the config to disk
         configurationManager.storeConfiguration();

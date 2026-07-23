@@ -17,6 +17,8 @@ import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
 import org.geoserver.geofence.containers.ContainerLimitResolver;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * A centralized point of cache control for GeoFence auth calls
@@ -28,6 +30,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it)
  */
+@Component
 public class CacheManager {
 
     static final Logger LOGGER = Logging.getLogger(CacheManager.class);
@@ -46,17 +49,15 @@ public class CacheManager {
     /** Latest configuration used */
     private CacheConfiguration cacheConfiguration = new CacheConfiguration();
 
-    /**
-     * This is a do-it-all constructor, that also calls the init() method. Useful whien testing. You may want to use the
-     * simpler constructor + setters in a running environment, in order to avoid circular bean dependencies.
-     */
+    /** This is a do-it-all constructor, that also calls the init() method. */
+    @Autowired
     public CacheManager(
             GeoFenceConfigurationManager configurationManager,
             RuleCacheLoaderFactory cachedRuleLoaders,
             ContainerAccessCacheLoaderFactory containerAccessCacheLoaderFactory) {
 
         this(configurationManager);
-        setRuleServiceLoaderFactory(ruleServiceLoaderFactory);
+        setRuleServiceLoaderFactory(cachedRuleLoaders);
         setContainerAccessCacheLoaderFactory(containerAccessCacheLoaderFactory);
         init();
     }

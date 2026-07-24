@@ -31,7 +31,7 @@ To override an OGC API Features template:
 
 ## Writing templates
 
-For details on how to write templates see [Freemarker Templates](../../tutorials/freemarker.md) tutorial.
+For details on how to write templates see [Freemarker Templates](../../tutorials/freemarker/index.md) tutorial.
 
 The following functions are specific to OGC API templates:
 

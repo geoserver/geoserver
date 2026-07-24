@@ -297,25 +297,67 @@ Numbered lists:
 
 === "Preview"
 
-    ```markdown
     1. First item
     2. Second item
     3. Third item
-    ```
 
-Nested bullets and outdenting
+Any additional content must be indented *four additional spaces*.
 
 === "Markdown"
     
     ```markdown
-    - Top level
-        - Nested level
+    1. First item
+    2. Second item
+        
+        Additional content.
+        
+    3. Third item
     ```
 
 === "Preview"
 
-    - Top level
-        - Nested level
+    1. First item
+    2. Second item
+        
+        Additional content.
+        
+    3. Third item
+
+Bullet items are defined by `-`, `+`, or `*`. Take care that any indented content is indented *four spaces*.
+
+=== "Markdown"
+    
+    ```markdown
+     -  item
+     -  item
+     
+         Additional text.
+     
+     -  item
+    ```
+
+=== "Preview"
+
+     -  item
+     -  item
+     
+         Additional text.
+     
+     -  item
+
+Nested bullets are additional content, and require the same indentation of *four spaces*.
+
+=== "Markdown"
+    
+    ```markdown
+     -  Top level
+         -  Nested level
+    ```
+
+=== "Preview"
+
+    -  Top level
+        -  Nested level
 
 To return to top level, use 0 indentation again. For example:
 
@@ -449,7 +491,7 @@ For use of note-like callout inside a list item, use inline emphasis can be an a
             
     2. Remember use of ``ENTITY_RESOLUTION_UNRESTRICTED`` intended for troubleshooting only.
        
-        **:material-pencil-circle: Note:** Do not rely on this in production.
+        **:material-lightning-bolt-circle: Danger:** Do not rely on this in production.
 
     ```
     
@@ -465,7 +507,7 @@ For use of note-like callout inside a list item, use inline emphasis can be an a
             
     2. Remember use of ``ENTITY_RESOLUTION_UNRESTRICTED`` intended for troubleshooting only.
        
-        **:material-pencil-circle: Note:** Do not rely on this in production.
+        **:material-lightning-bolt-circle: Danger:** Do not rely on this in production.
 
 <a name="anchor"/>
 

@@ -7,7 +7,7 @@ render_macros: true
 The REST API allows you to create and manage workspaces in GeoServer.
 
 !!! note
-    Read the [API reference for /workspaces]({{ api_url3 }}?urls.primaryName=Workspaces).
+    Read the [API reference for /workspaces]({{ api_url }}?urls.primaryName=Workspaces).
 
 ## Adding a new workspace
 

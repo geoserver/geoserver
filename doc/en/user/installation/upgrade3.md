@@ -74,13 +74,13 @@ All indexing is now handled in-memory and derived directly from the NetCDF datas
 Existing installations may still contain legacy index artifacts that are not needed anymore in GeoServer 3. 
 Hidden directories named like: `.<FILENAME_HASH>` (e.g. `.polyphemus_20130301_710e4edfc7d0ff89faf932b208ca22bda37a6921`) are companion folders created next to the NetCDF file (e.g. `polyphemus_20130301.nc`) and used to store:
 - the H2 db files:
-  - the primary H2 data storage file. (e.g. `polyphemus_20130301.data.db`)
-  - the index storage file (e.g. `polyphemus_20130301.index.db`)
-  - the transaction log (e.g. `polyphemus_20130301.4.log.db`)
-  - the debug/trace log (e.g. `polyphemus_20130301.trace.db`)
+    - the primary H2 data storage file. (e.g. `polyphemus_20130301.data.db`)
+    - the index storage file (e.g. `polyphemus_20130301.index.db`)
+    - the transaction log (e.g. `polyphemus_20130301.4.log.db`)
+    - the debug/trace log (e.g. `polyphemus_20130301.trace.db`)
 
 - the binary index file:
-  - FILENAME.idx (e.g. `polyphemus_20130301.idx`)
+    - FILENAME.idx (e.g. `polyphemus_20130301.idx`)
 
 All such files are now obsolete and can be deleted without affecting functionality.
 If the `NETCDF_DATA_DIR JAVA_OPT` is configured, these hidden folders are grouped within the specified directory instead of being located alongside each NetCDF file.

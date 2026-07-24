@@ -511,7 +511,7 @@ After deploying the customized plugin, the new geohash grid computer can be used
 - `PropertyIsLike` maps to either a query string query or a regexp query, depending on whether the field is analyzed or not. Reserved characters should be escaped as applicable. Note case sensitive and insensitive searches may not be supported for analyzed and not analyzed fields, respectively. See Elasticsearch query string and regexp query documentation for more information.
 - Date conversions are handled using the valid date formats from the associated type mapping, or `date_optional_time` if not found. Note that UTC timezone is used for both parsing and printing of dates.
 - Filtering on Elasticsearch `object` types is supported. By default, field names will include the full path to the field (e.g. "parent.child.field_name"), but this can be changed in the GeoServer layer configuration.
-  - When referencing fields with path elements using `cql_filter`, it may be necessary to quote the name (e.g. `cql_filter="parent.child.field_name"='value'`)
+    - When referencing fields with path elements using `cql_filter`, it may be necessary to quote the name (e.g. `cql_filter="parent.child.field_name"='value'`)
 - Filtering on Elasticsearch `nested` types is supported only for non-geospatial fields.
 - Circle geometries are approximate and may not be fully consistent with the implementation in Elasticsearch, especially at extreme latitudes (see [#86](https://github.com/ngageoint/elasticgeo/issues/86)).
 - The `joda-shaded` module may need to be excluded when importing the project into Eclipse. Otherwise modules may have build errors of the form `DateTimeFormatter cannot be resolved to a type`.

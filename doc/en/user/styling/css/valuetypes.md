@@ -9,13 +9,13 @@ Numeric values consist of a number, or a number annotated with a measurement val
 Currently, the supported units include:
 
 - Length
-  - `px` pixels
-  - `m` meters
-  - `ft` feet
+    - `px` pixels
+    - `m` meters
+    - `ft` feet
 - Angle
-  - `deg` degrees
+    - `deg` degrees
 - Ratio
-  - `%` percentage
+    - `%` percentage
 
 When using expressions in place of numeric values, the first unit listed for the type of measure is assumed.
 

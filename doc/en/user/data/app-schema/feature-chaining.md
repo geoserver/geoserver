@@ -235,7 +235,7 @@ When nesting another complex type, you need to specify in your source expression
 
 - **linkElement**:
 
-  - the nested element name, which is normally the targetElement or mappingName of the corresponding type.
+    - the nested element name, which is normally the targetElement or mappingName of the corresponding type.
       - on some cases, it has to be an OCQL function (see [app-schema.polymorphism](polymorphism.md))
 
 - **linkField**: the indexed XPath attribute on the nested element that OCQL corresponds to

@@ -6,9 +6,9 @@ The delegate datastore can be in any format that GeoServer supports but there ar
 
 - There must be a geometry field representing the index spatial area in either Polygon or MultiPolygon form. There are not requirements on the name of such field.
 - There should be a field called `params`, in text format, that contains either:
-  - The name of a store already configured in GeoServer (useful to handle few granule stores, and avoid re-creating the store at every read). The string is considered a potential name if it does not contain an equal sign (making it a candidate for property format) or a colon or having path separators (making it a candidate for URI/URL).
-  - The URI/URL pointing at granule resources like shapefiles, GeoPackage, FlatGeobuf, etc. (for simplicity).
-  - A configuration string in .properties format. (See [Java Properties file](https://en.wikipedia.org/wiki/.properties) for more details about the format).
+    - The name of a store already configured in GeoServer (useful to handle few granule stores, and avoid re-creating the store at every read). The string is considered a potential name if it does not contain an equal sign (making it a candidate for property format) or a colon or having path separators (making it a candidate for URI/URL).
+    - The URI/URL pointing at granule resources like shapefiles, GeoPackage, FlatGeobuf, etc. (for simplicity).
+    - A configuration string in .properties format. (See [Java Properties file](https://en.wikipedia.org/wiki/.properties) for more details about the format).
 
 In addition to that, the following fields are optional:
 

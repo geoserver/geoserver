@@ -48,13 +48,13 @@ stations.31=31|ALBY|Albany|POINT(117.8102 -34.9502)
 
 - Blank lines are not permitted anywhere in the file.
 - The first line of the property file begins with `_=` and defines the type information required to interpret the following lines.
-  - Comma separated values are of the form `NAME:TYPE`
-  - Names are the property name that are used to encode the property in WFS responses.
-  - Types include `Integer`, `String`, `Float`, and `Geometry`
-  - `Geometry` can have an extra suffix `:srid=XXXX` that defines the Spatial Reference System by its numeric EPSG code. Note that geometries defined in this way are in longitude/latitude order.
+    - Comma separated values are of the form `NAME:TYPE`
+    - Names are the property name that are used to encode the property in WFS responses.
+    - Types include `Integer`, `String`, `Float`, and `Geometry`
+    - `Geometry` can have an extra suffix `:srid=XXXX` that defines the Spatial Reference System by its numeric EPSG code. Note that geometries defined in this way are in longitude/latitude order.
 - Subsequent lines define features, one per line.
-  - The key before the `=` is the feature ID (`fid` or `gml:id` in WFS responses). Each must be an [NCName](http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName).
-  - Feature data follows the `=` separated by vertical bars (`|`). The types of the data must match the declaration on the first line.
-  - Leave a field empty if you want it to be null; in this case the property will be ignored.
+    - The key before the `=` is the feature ID (`fid` or `gml:id` in WFS responses). Each must be an [NCName](http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName).
+    - Feature data follows the `=` separated by vertical bars (`|`). The types of the data must match the declaration on the first line.
+    - Leave a field empty if you want it to be null; in this case the property will be ignored.
 
 Note that in this example `srid=4326` sets the spatial reference system (SRS) to `EPSG:4326`, which is by convention in longitude/latitude order when referred to in the short form. If you request these features in GML 3 you will see that GeoServer correctly translates the geometry to the URN form SRS `urn:x-ogc:def:crs:EPSG:4326` in latitude/longitude form. See the [WFS settings](../../services/wfs/webadmin.md) page for more on SRS axis order options.

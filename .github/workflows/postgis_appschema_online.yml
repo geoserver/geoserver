@@ -37,9 +37,9 @@ jobs:
         with:
           java-version: 17
           distribution: 'temurin'
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Maven repository caching
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.m2/repository
           key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}

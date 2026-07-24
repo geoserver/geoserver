@@ -42,8 +42,8 @@ For more information see [Community Support](http://geoserver.org/comm/).
 
 - Public CVE: Most reliable response is to locate the CVE on advisory database and issue a pull-request clarification.
 
-  - <https://github.com/advisories?query=geoserver>
-  - <https://github.com/advisories?query=geotools>
+    - <https://github.com/advisories?query=geoserver>
+    - <https://github.com/advisories?query=geotools>
 
   You may also go through the steps of "disputing" a CVE, this involves contacting the original numbering authority (each of which have their own procedures).
 

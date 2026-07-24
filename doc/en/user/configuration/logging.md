@@ -10,9 +10,9 @@ The GeoServer logging profiles assign logging levels to specific server operatio
 - The appender `stdout` is setup as a Console appender sending information to standard output, based on **Log to Stdout** [global settings](globalsettings.md#config_globalsettings_log_stdout).
 - The appender `geoserverlogfile` is setup as a FileAppender or RollingFile appender sending information to the **Log location** set using the `GEOSERVER_LOG_LOCATION` application property.
 - Logging levels range from:
-  - Failure (`FATAL`, `ERROR`, `WARN`) levels
-  - Operational (`INFO`, `CONFIG`) levels
-  - Verbose (`DEBUG`, `TRACE`, `FINEST`) levels
+    - Failure (`FATAL`, `ERROR`, `WARN`) levels
+    - Operational (`INFO`, `CONFIG`) levels
+    - Verbose (`DEBUG`, `TRACE`, `FINEST`) levels
 
 In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another logging library altogether).
 
@@ -53,11 +53,11 @@ There are however a few rules to follow:
 
 - Custom levels are available for `CONFIG` and `FINEST` levels.
 - Appenders are used to output logging information, with GeoServer providing external configuration for appenders named `geoserverlogfile` and `stdout`.
-  - Always include a `geoserverlogfile` `FileAppender` or `RollingFile` appender that GeoServer will configure to work against the location configured using the `GEOSERVER_LOG_LOCATION` application property.
+    - Always include a `geoserverlogfile` `FileAppender` or `RollingFile` appender that GeoServer will configure to work against the location configured using the `GEOSERVER_LOG_LOCATION` application property.
 
     Care is taken to preserve your file extension when updating `<filename>` location, so if you wish to log to **`access_logs.txt`** you may do so, and the **`txt`** extension will be preserved.
 
-  - When setting `geoserverlogfile` appender as `RollingFile` appender, care is taken to preserve your `<filePattern>` extensions, which must align with the roll over strategies configured.
+    - When setting `geoserverlogfile` appender as `RollingFile` appender, care is taken to preserve your `<filePattern>` extensions, which must align with the roll over strategies configured.
 
     As an example `-%i` is used with DefaultRolloverStrategy to produce a maximum of `3` backup files.
 
@@ -65,13 +65,13 @@ There are however a few rules to follow:
     --8<-- "src/main/src/main/resources/DEFAULT_LOGGING.xml:9:17"
     ```
 
-  - a `Console` appender writing to the standard output should be called `stdout` and again GeoServer will enable/disable it according to the configuration set in the [global settings](globalsettings.md#config_globalsettings_log_stdout)
+    - a `Console` appender writing to the standard output should be called `stdout` and again GeoServer will enable/disable it according to the configuration set in the [global settings](globalsettings.md#config_globalsettings_log_stdout)
 
     ```xml
     --8<-- "src/main/src/main/resources/DEFAULT_LOGGING.xml:6:8"
     ```
 - Loggers are used to collect messages from geoserver components, and individual libraries used.
-  - GeoServer Logger names match up with the package names in the project javadocs overview (available for download).
+    - GeoServer Logger names match up with the package names in the project javadocs overview (available for download).
 
     As an example package `org.geoserver.wms` is listed, allowing level of WMS service logging to be controlled:
 
@@ -82,7 +82,7 @@ There are however a few rules to follow:
     </Logger>
     ```
 
-  - GeoTools Logger names match up with the package names in the [project javadocs overview](https://docs.geotools.org/latest/javadocs/overview-summary.md).
+    - GeoTools Logger names match up with the package names in the [project javadocs overview](https://docs.geotools.org/latest/javadocs/overview-summary.md).
 
     As an example package `org.geotools.data.shapefile` is listed, allowing level of shapefile logging to be controlled:
 
@@ -93,7 +93,7 @@ There are however a few rules to follow:
     </Logger>
     ```
 
-  - Assign a level to each logger indicating the level of detail you wish to record:
+    - Assign a level to each logger indicating the level of detail you wish to record:
 
     | Level | Description |
     |----|----|
@@ -110,11 +110,11 @@ There are however a few rules to follow:
 
     The more verbose logging levels potentially include a stack-trace showing where the message occurred.
 
-  - Use `additivity="false"` to prevent a message collected from one logger from being passed to the next.
+    - Use `additivity="false"` to prevent a message collected from one logger from being passed to the next.
 
     If you end up with double log messages chances check for this common misconfiguration.
 
-  - The `Root` logger is last in the list and should collect everything.
+    - The `Root` logger is last in the list and should collect everything.
 
 ### Example of console only logging
 

@@ -13,12 +13,12 @@ A Feature Style is a **top-level element** in a YSLD style.
 Consider the following hierarchy:
 
 - Feature Style 1
-  - Rule 1a
-  - Rule 1b
+    - Rule 1a
+    - Rule 1b
 - Feature Style 2
-  - Rule 2a
-  - Rule 2b
-  - Rule 2c
+    - Rule 2a
+    - Rule 2b
+    - Rule 2c
 
 In this case, the rules contained inside Feature Style 1 will be processed and their [symbolizers](symbolizers/index.md) drawn first. After Rule 1a and 1b are processed, the renderer will move on to Feature Style 2, where Rule 2a, 2b, and 2c will then be processed and their symbolizers drawn.
 

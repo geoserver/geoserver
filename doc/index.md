@@ -1,11 +1,12 @@
 ---
+render_macros: true
 hide:
   - navigation
   - toc
 ---
-# GeoServer Documentation
+# GeoServer {{ version }} Documentation
 
-Welcome to the GeoServer documentation. Choose a guide to get started:
+Welcome to the GeoServer {{ release }} documentation. Choose a guide to get started:
 
 <div class="grid cards doc-cards" markdown="span">
 [:book:{: .doc-card-icon } <br/><span class="guide">User Manual</span><br/>Learn how to install, configure, and use GeoServer for publishing geospatial data](en/user/index.md){: .doc-card}

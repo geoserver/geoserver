@@ -390,6 +390,8 @@ public class FeatureWrapper extends BeansWrapper {
      *
      * <ul>
      *   <li>name: String holding the attribute name
+     *   <li>namespace: String holding the attribute namespace
+     *   <li>description: String holding attribute description
      *   <li>type: String with the java class name bound to the attribute type
      *   <li>value: String representation of the attribute value suitable to be used directly in a template expression.
      *       {@code null} values are returned as the empty string, non String values as per
@@ -478,7 +480,8 @@ public class FeatureWrapper extends BeansWrapper {
                 entrySet.add(new MapEntry<Object, Object>("name", attributeName.getLocalPart()));
                 entrySet.add(new MapEntry<Object, Object>("namespace", getNamespace(attributeName)));
                 entrySet.add(new MapEntry<Object, Object>("prefix", getPrefix(attributeName)));
-
+                entrySet.add(new MapEntry<Object, Object>(
+                        "description", attributeDescr.getType().getDescription()));
                 if (attributeDescr.getType() instanceof ComplexType) {
                     entrySet.add(
                             new MapEntry<Object, Object>("type", buildType((ComplexType) attributeDescr.getType())));

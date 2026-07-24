@@ -20,7 +20,7 @@ jobs:
     name: Build GeoServer WAR
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
@@ -34,7 +34,7 @@ jobs:
         with:
           maven-version: 3.9.16
       - name: Maven repository caching
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.m2/repository
           key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -62,7 +62,7 @@ jobs:
         java-version: [17, 21, 25]
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 

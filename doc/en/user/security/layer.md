@@ -30,9 +30,9 @@ The parameters include:
 
 - `permission`--- Type of access permission/mode.
 
-  - `r`---Read access
-  - `w`---Write access
-  - `a`---Admin access
+    - `r`---Read access
+    - `w`---Write access
+    - `a`---Admin access
 
   See [Access modes](#access_mode) for more details.
 

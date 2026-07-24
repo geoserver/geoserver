@@ -126,8 +126,8 @@ The `typeMappings` section is the heart of the app-schema module. It defines the
 
 - `sourceType` is the simple feature type name. For example:
 
-  - a table or view name, lowercase for PostGIS, uppercase for Oracle.
-  - a property file name (without the .properties suffix)
+    - a table or view name, lowercase for PostGIS, uppercase for Oracle.
+    - a property file name (without the .properties suffix)
 
 - `targetElement` is the element name in the target application schema. This is the same as the WFS feature type name.
 
@@ -396,7 +396,7 @@ CQL functions enable data conversion and conditional behaviour to be specified i
 
 - The uDig manual includes a list of CQL functions:
 
-  - <http://udig.github.io/docs/user/concepts/Constraint%20Query%20Language.html>
+    - <http://udig.github.io/docs/user/concepts/Constraint%20Query%20Language.html>
 
 - CQL string literals are enclosed in single quotes, for example `'urn:ogc:def:nil:OGC:missing'`.
 

@@ -7,7 +7,7 @@ render_macros: true
 The REST API allows you to list, create, update, and delete **user/group services** in GeoServer. These endpoints manage the *configuration* objects (e.g., XMLUserGroupService, JDBC, LDAP), not the users/groups themselves.
 
 !!! note
-    Read the [API reference for security/userGroupServices]({{ api_url3 }}?urls.primaryName=User%20Group%20Services).
+    Read the [API reference for security/userGroupServices]({{ api_url }}?urls.primaryName=User%20Group%20Services).
 
 ## View a User/Group Service
 

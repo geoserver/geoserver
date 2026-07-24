@@ -39,6 +39,22 @@ The imageMosaic reader may load, in parallel, different files that make up the m
 !!! note
     If `corePoolSize` and `maximumPoolSize` are the same, a fixed-size thread pool is used.
 
+## Granule Image Cache
+
+Mosaics made of many small granules (small image tiles, or zoomed-out views that compose thousands of tiny overviews when no pyramid was built) re-read and re-decode the same granules from disk on every request. This section configures an optional in-memory cache that keeps the decoded granule images and serves later reads of the same granule from memory, skipping the disk read and decode. All later processing still runs after the cache, so the produced image is identical to an uncached read. A single cache pool is shared by all image mosaic layers.
+
+**Granule Cache Max Size**---Total size of the cache, expressed in MegaBytes and measured on the decoded (uncompressed) image size. Defaults to `128` MB; set to `0` to disable the cache. When the cache fills up, the least recently used granules are evicted.
+
+**Default Per-Granule Caching Threshold**---The largest decoded granule, expressed in KiloBytes, eligible for caching. A granule whose full decoded size exceeds this value is read normally and never cached, so that a few large granules cannot evict many useful small ones. Defaults to 1024 KB, enough to hold the top of a typical overview pyramid (a tile  of maximum 512x512 with 4 bands).
+
+A non-zero size only makes the cache available, but caching is turned on per layer, so the default 128 MB budget stays unused until a mosaic opts in. On the layer's *Coverage Parameters* (edit) section, set **Cache Granules** to `true`, and optionally set **Cache Threshold (KB)** to override the default threshold for that layer (`-1` keeps the global default).
+
+The cache is one server-wide pool, not one per layer: its memory is bounded by the size above regardless of how many mosaics use it. Each cached image is tagged with the mosaic it came from, so when a layer is reconfigured, removed, or the configuration is reloaded, that layer's cached images are released right away and the heap they occupied is freed.
+
+!!! note
+    A granule is assumed to keep the same content for its location between harvesting operations. Re-harvesting a granule, or removing it with the option that deletes its files, drops the corresponding cached image automatically. Only if a granule file is overwritten in place *without* re-harvesting the mosaic may the cache keep serving the previous content, until the pool evicts it or the server is restarted.
+     The cache is also cleared on configuration reload and reset.
+
 ## System Properties Configuration
 
 There are some additional global configuration parameters involved in raster access which can be specified through System properties.

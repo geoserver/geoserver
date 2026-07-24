@@ -750,6 +750,22 @@
     </profile>
 
     <profile>
+      <id>keycloak</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community.security</groupId>
+          <artifactId>gs-sec-keycloak-roles-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community.security</groupId>
+          <artifactId>gs-sec-keycloak-roles-web</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
       <id>cas</id>
       <dependencies>
         <dependency>
@@ -1409,7 +1425,7 @@
         <dependency>
           <groupId>com.h2database</groupId>
           <artifactId>h2</artifactId>
-          <version>2.1.214</version>
+          <version>2.2.220</version>
         </dependency>
       </dependencies>
     </profile>

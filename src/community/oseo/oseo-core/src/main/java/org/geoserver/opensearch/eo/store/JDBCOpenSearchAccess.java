@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.geoserver.catalog.Catalog;
@@ -800,8 +801,27 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return "\"" + indexField + "\"";
     }
 
+    // Postgres NAMEDATALEN - 1: identifiers past this are silently truncated, which would let
+    // distinct index names clash. See https://www.postgresql.org/docs/current/limits.html
+    private static final int MAX_IDENTIFIER_LENGTH = 63;
+
     private String getIndexTitle(String collectionName, String fieldName) {
-        return collectionName.replaceAll(":", "_") + "_" + fieldName.replaceAll(":", "_") + "_idx";
+        // the index name is used as an unquoted SQL identifier, keep only chars legal there so
+        // collection ids with dots, dashes, spaces and the like do not break the DDL
+        String name = sanitizeIdentifier(collectionName) + "_" + sanitizeIdentifier(fieldName) + "_idx";
+        // an unquoted identifier cannot start with a digit, prefix if the collection id does
+        char first = name.charAt(0);
+        if (!Character.isLetter(first) && first != '_') name = "_" + name;
+        if (name.length() <= MAX_IDENTIFIER_LENGTH) return name;
+        // too long: keep a readable head and append a hash of the raw ids, so distinct
+        // collection/field pairs (including punctuation-only variants) stay unique
+        String hash = DigestUtils.sha256Hex(collectionName + " " + fieldName).substring(0, 16);
+        String suffix = "_" + hash + "_idx";
+        return name.substring(0, MAX_IDENTIFIER_LENGTH - suffix.length()) + suffix;
+    }
+
+    private static String sanitizeIdentifier(String name) {
+        return name.replaceAll("[^a-zA-Z0-9_]", "_");
     }
 
     private String encodeJsonPointer(Function jsonPointer, Indexable.FieldType type) throws IOException {

@@ -13,6 +13,7 @@ import static org.geotools.coverage.grid.io.AbstractGridFormat.RESCALE_PIXELS;
 import static org.geotools.coverage.grid.io.AbstractGridFormat.USE_IMAGEN_IMAGEREAD;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ACCURATE_RESOLUTION;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ALLOW_MULTITHREADING;
+import static org.geotools.gce.imagemosaic.ImageMosaicFormat.CACHE_GRANULES;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.EXCESS_GRANULE_REMOVAL;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.MERGE_BEHAVIOR;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.OUTPUT_TRANSPARENT_COLOR;
@@ -262,7 +263,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                     || ACCURATE_RESOLUTION.getName().getCode().equals(parameterKey)
                     || ALLOW_MULTITHREADING.getName().getCode().equals(parameterKey)
                     || RESCALE_PIXELS.getName().getCode().equals(parameterKey)
-                    || SKIP_DUPLICATES.getName().getCode().equals(parameterKey)) {
+                    || SKIP_DUPLICATES.getName().getCode().equals(parameterKey)
+                    || CACHE_GRANULES.getName().getCode().equals(parameterKey)) {
                 assertThat(parameterKey, c, CoreMatchers.instanceOf(CheckBoxParamPanel.class));
             } else if (EXCESS_GRANULE_REMOVAL.getName().getCode().equals(parameterKey)
                     || FOOTPRINT_BEHAVIOR.getName().getCode().equals(parameterKey)

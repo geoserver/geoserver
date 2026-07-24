@@ -210,7 +210,7 @@ If the above did not help, then a full cleanup of the GeoServer configuration is
 1.  Remove the affected store, either Mosaic or GRIB Store, referring to the problematic GRIB files.
 
     - Follow up standard procedure to delete affected stores and underlying layer
-    - Alternatively, consider using [REST APIs]({{ api_url3 }}?urls.primaryName=Coverage%20Stores) to do that by referring to the DELETE method for `/workspaces/{workspace}/coveragestores/{store}` . Use `?recurse=true&purge=metadata` to delete layers and auxiliary files as well
+    - Alternatively, consider using [REST APIs]({{ api_url }}?urls.primaryName=Coverage%20Stores) to do that by referring to the DELETE method for `/workspaces/{workspace}/coveragestores/{store}` . Use `?recurse=true&purge=metadata` to delete layers and auxiliary files as well
 
 2.  Recreate the stores and layers using the known procedures.
 

@@ -95,8 +95,8 @@ The [Security](../security/webadmin/index.md) section configures the built-in [s
 
 - The [Tools](../configuration/tools/index.md) section contains administrative tools.
 
-  - The [Web Resource](../configuration/tools/resource/index.md) tool provides management of data directory icons, fonts, and configuration files.
-  - The [Catalog Bulk Load Tool](../configuration/tools/bulk/index.md) can bulk copy configuration for testing
+    - The [Web Resource](../configuration/tools/resource/index.md) tool provides management of data directory icons, fonts, and configuration files.
+    - The [Catalog Bulk Load Tool](../configuration/tools/bulk/index.md) can bulk copy configuration for testing
 
 ## User interface
 

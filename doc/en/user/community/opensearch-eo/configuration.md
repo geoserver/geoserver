@@ -12,7 +12,7 @@ Follow these steps:
 
 - Go into the "OS-EO" service configuration page and configure the "OpenSearch" store
 
-  - (Optional) You can also configure how long values will be cached for performance purposes for templates that require collection level aggregate statistics by adjusting the cache time to live duration and time units.
+    - (Optional) You can also configure how long values will be cached for performance purposes for templates that require collection level aggregate statistics by adjusting the cache time to live duration and time units.
 
   ![](images/service.png)
 

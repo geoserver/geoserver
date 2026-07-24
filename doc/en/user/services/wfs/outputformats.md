@@ -47,7 +47,7 @@ Shapefile output `format_options`:
 
 ### Shapefile filename customization
 
-If a file name is not specified, the output file name is inferred from the requested feature type name. The shapefile output format output can be customized by preparing a [Freemarker template](../../tutorials/freemarker.md) which will configure the file name of the archive (ZIP file) and the files it contains. The default template is:
+If a file name is not specified, the output file name is inferred from the requested feature type name. The shapefile output format output can be customized by preparing a [Freemarker template](../../tutorials/freemarker/index.md) which will configure the file name of the archive (ZIP file) and the files it contains. The default template is:
 
 ```properties
 zip=${typename}

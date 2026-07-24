@@ -20,12 +20,10 @@
   <properties>
     <openapi-generator-maven-plugin.version>7.21.0</openapi-generator-maven-plugin.version>
     <mapstruct.version>1.6.3</mapstruct.version>
-
     <lombok.version>1.18.42</lombok.version>
     <feign-version>13.11</feign-version>
     <feign-form-version>3.8.0</feign-form-version>
     <oltu-version>1.0.2</oltu-version>
-    <jackson.version>2.18.2</jackson.version>
     <openapi-base-folder>${maven.multiModuleProjectDirectory}/src/community/rest-openapi/openapi/1.0.0</openapi-base-folder>
     <openapi.api.v1>${openapi.basepackage}.api.v1</openapi.api.v1>
     <openapi.api.v1.client>${openapi.api.v1}.client</openapi.api.v1.client>
@@ -51,21 +49,6 @@
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct-processor</artifactId>
         <version>${mapstruct.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-jsr310</artifactId>
-        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>io.github.openfeign</groupId>

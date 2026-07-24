@@ -13,8 +13,8 @@ Base path: `/geoserver/rest`
 
 - `application/xml` --- uses the concrete config class name as the element
 - `application/json` --- plain objects; request envelopes supported:
-  - `{ "authprovider": { … } }` for single
-  - `{ "authproviders": [ { … }, … ] }` for lists
+    - `{ "authprovider": { … } }` for single
+    - `{ "authproviders": [ { … }, … ] }` for lists
 
 ## Status codes
 

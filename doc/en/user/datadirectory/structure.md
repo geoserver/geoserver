@@ -138,7 +138,7 @@ The `styles` directory can also be used to host support files referenced during 
 The `templates` directory contains files used by the GeoServer templating subsystem. Templates are used to customize the output of various GeoServer operations.
 
 !!! note
-    See also [Freemarker Templates](../tutorials/freemarker.md) for more information..
+    See also [Freemarker Templates](../tutorials/freemarker/index.md) for more information..
 
 ## `user_projections`
 

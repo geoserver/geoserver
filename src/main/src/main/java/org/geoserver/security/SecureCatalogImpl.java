@@ -120,7 +120,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);
-        return lwManager;
+        // will cache results of the RAM within the same HTTP request
+        CachingResourceAccessManager cachingManager = new CachingResourceAccessManager();
+        cachingManager.setDelegate(lwManager);
+        return cachingManager;
     }
 
     public SecureCatalogImpl(Catalog catalog, ResourceAccessManager manager) {

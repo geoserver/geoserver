@@ -33,11 +33,7 @@
         <!-- default properties -->
         <property name="properties">
             <props>
-            	<prop key="geofence-ovr">geofence-datasource-ovr.properties</prop>
-
-                <!-- The backend will be injected in the cached reader. -->
-                <!-- use the server rule reader service directly -->
-                <prop key="ruleReaderBackend">ruleReaderServiceImpl</prop>
+                <!-- ruleReaderBackend: no default here, see GeoFenceSpringConfig.resolveRuleReaderBackend() -->
 
                 <!-- The frontend will be injected in the access manager. -->
                 <!-- You may replace the cachedRuleReader ref with ruleReaderServiceImpl in order to disable the caching -->
@@ -47,35 +43,12 @@
         </property>
     </bean>
 
-    <alias name="geofence-server-configurer" alias="geofence-configurer"/>
+    <!-- GeoFence's own DB connection (geofence.datasource.*): see GefencePersistenceConfig. -->
 
-<!--    <bean class="org.geoserver.config.GeoServerPropertyOverrideConfigurer" >-->
-<!--        <constructor-arg ref="dataDirectory"/>-->
-<!--        <property name="ignoreResourceNotFound" value="true"/>-->
-<!--        <property name="locations">-->
-<!--            <list>-->
-<!--                <value>classpath*:geofence-default-override.properties</value>-->
-<!--                &lt;!&ndash; Optional overriding values for custom db. Path relative to data dir &ndash;&gt;-->
-<!--                <value>file:geofence/geofence-datasource-ovr.properties</value>-->
-<!--                &lt;!&ndash; Optional, use this property if you want to keep your ovr file in a different location than the data dir &ndash;&gt;-->
-<!--                <value>${geofence-ovr}</value>-->
-<!--            </list>-->
-<!--        </property>-->
-<!--        <property name="properties">-->
-<!--            <props>-->
-<!--                &lt;!&ndash; This value is used to find out if we are using an embedded geofence instance &ndash;&gt;-->
-<!--                <prop key="geofenceConfigurationManager.configuration.servicesUrl">internal:/</prop>-->
-<!--                <prop key="geofenceDataSource.url">jdbc:postgresql://localhost:5432/geofence</prop>-->
-<!--                &lt;!&ndash; "update" is not a good option in production &ndash;&gt;-->
-<!--                <prop key="hibernate.hbm2ddl.auto">update</prop>-->
-<!--            </props>-->
-<!--        </property>-->
-<!--    </bean>-->
-
-    <!-- use the internal user resolver so geofence uses geoserver users and roles rather than its own -->
-    <bean id="securityContextUserResolver" class="org.geoserver.geofence.server.internal.SecurityContextUserResolver" />
-
-    <alias name="securityContextUserResolver" alias="defaultUserResolver" />
+    <!-- Use GeoServer's own users/roles rather than geofence's DefaultUserResolver. -->
+    <bean id="securityContextUserResolver"
+          class="org.geoserver.geofence.server.internal.SecurityContextUserResolver"
+          primary="true" />
 
     <!-- web admin page -->
     <bean id="geofenceServerPage" class="org.geoserver.web.MenuPageInfo">

@@ -548,11 +548,6 @@
         <version>2.14.0</version>
       </dependency>
       <dependency>
-        <groupId>com.googlecode.genericdao</groupId>
-        <artifactId>search-jpa-hibernate</artifactId>
-        <version>${hibernate-generic-dao-version}</version>
-      </dependency>
-      <dependency>
         <groupId>net.sf.opencsv</groupId>
         <artifactId>opencsv</artifactId>
         <version>2.3</version>
@@ -564,20 +559,19 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate-version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hibernatespatial</groupId>
-        <artifactId>hibernate-spatial</artifactId>
-        <version>${hibernate-spatial-version}</version>
-        <!-- fork: https://github.com/geosolutions-it/hibernate-spatial -->
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-jcache</artifactId>
+        <version>${hibernate-version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hibernatespatial</groupId>
-        <artifactId>hibernate-spatial-h2-geodb</artifactId>
-        <version>${hibernate-spatial-version}</version>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-spatial</artifactId>
+        <version>${hibernate-version}</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>

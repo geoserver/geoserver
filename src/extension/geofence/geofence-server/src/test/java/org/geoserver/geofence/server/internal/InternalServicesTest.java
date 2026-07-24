@@ -7,6 +7,7 @@ package org.geoserver.geofence.server.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.model.Rule;
 import org.geofence.core.model.RuleLimits;
 import org.geofence.core.model.enums.CatalogMode;
@@ -26,6 +27,11 @@ import org.locationtech.jts.io.WKTReader;
 
 /** @author Niels Charlier */
 public class InternalServicesTest extends ServicesTest {
+
+    static {
+        // Must run before the Spring context builds, so a static initializer.
+        GeofenceTestDatabase.applyAsSystemProperties();
+    }
 
     protected RulesRestController controller;
 
@@ -50,7 +56,8 @@ public class InternalServicesTest extends ServicesTest {
 
     @Test
     public void testConfigurationInternal() {
-        assertTrue(configManager.getConfiguration().isInternal());
+        // ruleReaderBackend, not the legacy isInternal()/servicesUrl convention (no longer kept in sync)
+        assertEquals("ruleReaderServiceImpl", configManager.getConfiguration().getRuleReaderBackend());
         if (geofenceService != null) {
             assertTrue(geofenceService instanceof RuleReaderServiceImpl);
         }

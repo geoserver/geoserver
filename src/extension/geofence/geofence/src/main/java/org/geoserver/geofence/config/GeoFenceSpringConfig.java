@@ -56,9 +56,7 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
         // The frontend will be injected in the access manager.
         // You may replace the cachedRuleReader value with restRuleReaderService in order to disable the caching
         props.setProperty("ruleReaderFrontend", "cachedRuleReader");
-        // The backend will be injected in the cached reader.
-        // We need this entry to allow geofence-server to replace the backend with the local bean
-        props.setProperty("ruleReaderBackend", "restRuleReaderService");
+        // ruleReaderBackend has no default here - see resolveRuleReaderBackend().
         configurer.setProperties(props);
 
         return configurer;
@@ -75,7 +73,7 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
             @Value("${acceptedRoles:}") String acceptedRoles,
             @Value("${gwc.context.suffix:gwc}") String gwcContextSuffix,
             @Value("${org.geoserver.rest.DefaultUserGroupServiceName:default}") String defaultUserGroupServiceName,
-            @Value("${ruleReaderBackend}") String ruleReaderBackend,
+            @Value("${ruleReaderBackend:}") String ruleReaderBackend,
             @Value("${ruleReaderFrontend}") String ruleReaderFrontend) {
         GeoFenceConfiguration cfg = new GeoFenceConfiguration();
         cfg.setInstanceName(instanceName);
@@ -86,9 +84,22 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
         cfg.setAcceptedRoles(acceptedRoles);
         cfg.setGwcContextSuffix(gwcContextSuffix);
         cfg.setDefaultUserGroupServiceName(defaultUserGroupServiceName);
-        cfg.setRuleReaderBackend(ruleReaderBackend);
+        cfg.setRuleReaderBackend(resolveRuleReaderBackend(ruleReaderBackend));
         cfg.setRuleReaderFrontend(ruleReaderFrontend);
         return cfg;
+    }
+
+    /**
+     * An explicit {@code ruleReaderBackend} property always wins; otherwise default to the embedded engine if
+     * geofence-server is on the classpath, else the REST client.
+     */
+    private String resolveRuleReaderBackend(String explicit) {
+        if (explicit != null && !explicit.isBlank()) {
+            return explicit;
+        }
+        return context.containsBeanDefinition("ruleReaderServiceImpl")
+                ? "ruleReaderServiceImpl"
+                : "restRuleReaderService";
     }
 
     @Bean
@@ -111,7 +122,7 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
             @Qualifier("ruleReaderBackendFactory") RuleReaderServiceFactory ruleReaderBackendFactory,
             @Qualifier("ruleReaderFrontendFactory") RuleReaderServiceFactory ruleReaderFrontendFactory) {
         GeoFenceConfigurationManager manager = new GeoFenceConfigurationManager();
-        manager.setConfigurer(configurer);
+        manager.setConfigurer(resolveConfigurer(configurer));
         manager.setConfiguration(geoFenceConfiguration);
         manager.setCacheConfiguration(cacheConfiguration);
         manager.setRuleReaderBackendFactory(ruleReaderBackendFactory);
@@ -119,9 +130,16 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
         return manager;
     }
 
+    /** Which properties file {@link GeoFenceConfigurationManager} reads/saves through: prefer geofence-server's. */
+    private GeoFencePropertyPlaceholderConfigurer resolveConfigurer(GeoFencePropertyPlaceholderConfigurer base) {
+        return context.containsBeanDefinition("geofence-server-configurer")
+                ? context.getBean("geofence-server-configurer", GeoFencePropertyPlaceholderConfigurer.class)
+                : base;
+    }
+
     @Bean
-    public RuleReaderServiceFactory ruleReaderBackendFactory(@Value("${ruleReaderBackend}") String backendName) {
-        return new RuleReaderServiceFactory(backendName, false);
+    public RuleReaderServiceFactory ruleReaderBackendFactory(@Value("${ruleReaderBackend:}") String backendName) {
+        return new RuleReaderServiceFactory(resolveRuleReaderBackend(backendName), false);
     }
 
     @Bean

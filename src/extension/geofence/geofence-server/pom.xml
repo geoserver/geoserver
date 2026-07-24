@@ -16,18 +16,6 @@
   <description>GeoFence security embedded engine</description>
 
   <dependencies>
-    <dependency>
-      <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>6.5.3.Final</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.opengeo</groupId>
-      <artifactId>geodb</artifactId>
-      <version>${opengeo-geodb.version}</version>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.postgresql</groupId>
@@ -42,6 +30,14 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- for GeofenceTestDatabase, the shared Testcontainers bootstrap -->
+      <groupId>org.geofence</groupId>
+      <artifactId>geofence-persistence</artifactId>
+      <version>${gf.version}</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -75,6 +71,13 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
+      <exclusions>
+        <!-- conflicts with geofence-persistence's org.ehcache:ehcache:jakarta classifier -->
+        <exclusion>
+          <groupId>org.ehcache</groupId>
+          <artifactId>ehcache</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -245,8 +248,8 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <includeGroupIds>org.postgresql,org.postgis,org.opengeo</includeGroupIds>
-                  <includeArtifactIds>postgresql,postgis-jdbc,geodb</includeArtifactIds>
+                  <includeGroupIds>org.postgresql,org.postgis</includeGroupIds>
+                  <includeArtifactIds>postgresql,postgis-jdbc</includeArtifactIds>
                 </configuration>
               </execution>
             </executions>

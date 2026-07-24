@@ -21,6 +21,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
@@ -68,11 +69,6 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
         registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xp = XMLUnit.newXpathEngine();
-
-        //        testData.copyTo(
-        //
-        // this.getClass().getClassLoader().getResourceAsStream("geofence-server.properties"),
-        //                "geofence/geofence-server.properties");
 
         testData.setUp();
 
@@ -135,8 +131,9 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
     }
 
     protected boolean isGeoFenceAvailable() {
-        geofenceService = (RuleReaderService) applicationContext.getBean(
-                applicationContext.getBeanFactory().resolveEmbeddedValue("${ruleReaderBackend}"));
+        geofenceService = applicationContext
+                .getBean("ruleReaderBackendFactory", RuleReaderServiceFactory.class)
+                .getService();
         try {
             /**
              * In order to run live tests, you will need to run an instance of GeoFence on port 9191 and create two

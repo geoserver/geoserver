@@ -9,12 +9,82 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geotools.image.test.ImageAssert;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
 public class MapsTest extends MapsTestSupport {
+
+    static final String NATURE_GROUP = "nature";
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // a layer group with default styling, to exercise the default map on a group; tighten the
+        // forests bounds too, so the group extent matches the actual data instead of the world
+        Catalog catalog = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        LayerInfo forests = catalog.getLayerByName(getLayerId(MockData.FORESTS));
+        cb.setupBounds(forests.getResource());
+        catalog.save(forests.getResource());
+        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
+        group.setName(NATURE_GROUP);
+        group.getLayers().add(lakes);
+        group.getLayers().add(forests);
+        group.getStyles().add(null);
+        group.getStyles().add(null);
+        cb.calculateLayerGroupBounds(group);
+        catalog.add(group);
+    }
+
+    @Test
+    public void testDefaultMap() throws Exception {
+        BufferedImage image = getAsImage("ogc/maps/v1/collections/Lakes/map?f=image/png", "image/png");
+        File expectedImage = new File("src/test/resources/expected/mapsDefault.png");
+        ImageAssert.assertEquals(expectedImage, image, 0);
+    }
+
+    @Test
+    public void testDefaultMapWidth() throws Exception {
+        BufferedImage image = getAsImage("ogc/maps/v1/collections/Lakes/map?f=image/png&width=100", "image/png");
+        File expectedImage = new File("src/test/resources/expected/mapsDefaultW100.png");
+        ImageAssert.assertEquals(expectedImage, image, 0);
+    }
+
+    @Test
+    public void testDefaultMapHeight() throws Exception {
+        BufferedImage image = getAsImage("ogc/maps/v1/collections/Lakes/map?f=image/png&height=50", "image/png");
+        File expectedImage = new File("src/test/resources/expected/mapsDefaultH50.png");
+        ImageAssert.assertEquals(expectedImage, image, 0);
+    }
+
+    @Test
+    public void testDefaultMapLayerGroup() throws Exception {
+        // default map on a layer group goes through the null-styleInfo branch: it must still render
+        BufferedImage image = getAsImage("ogc/maps/v1/collections/" + NATURE_GROUP + "/map?f=image/png", "image/png");
+        File expectedImage = new File("src/test/resources/expected/mapsGroup.png");
+        ImageAssert.assertEquals(expectedImage, image, 0);
+    }
+
+    @Test
+    public void testDefaultStyledMap() throws Exception {
+        BufferedImage image = getAsImage("ogc/maps/v1/collections/cite:Lakes/styles/red/map?f=image/png", "image/png");
+        File expectedImage = new File("src/test/resources/expected/mapsRed.png");
+        ImageAssert.assertEquals(expectedImage, image, 0);
+    }
+
     @Test
     public void testDatetimeJson() throws Exception {
         setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");

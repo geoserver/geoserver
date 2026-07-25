@@ -114,7 +114,8 @@ public class APIBBoxParser {
         return parse(value, parseCRS(crs));
     }
 
-    private static CoordinateReferenceSystem parseCRS(String crs) throws FactoryException {
+    /** Decodes an OGC API CRS identifier in longitude/latitude order, null when the identifier is null. */
+    public static CoordinateReferenceSystem parseCRS(String crs) throws FactoryException {
         try {
             return crs != null ? CRS.decode(crs, true) : null;
         } catch (NoSuchAuthorityCodeException e) {

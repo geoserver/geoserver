@@ -152,11 +152,16 @@ public class MapsService {
         return p;
     }
 
-    @GetMapping(path = "collections/{collectionId}/styles/{styleId}/map", name = "getCollectionMap")
+    @GetMapping(
+            path = {
+                "collections/{collectionId}/styles/{styleId}/map",
+                "collections/{collectionId}/map" // default style variation
+            },
+            name = "getCollectionMap")
     @ResponseBody
     public WebMap map(
             @PathVariable(name = "collectionId") String collectionId,
-            @PathVariable(name = "styleId") String styleId,
+            @PathVariable(name = "styleId", required = false) String styleId,
             @RequestParam(name = "f") String format,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "crs", required = false) String crs,
@@ -206,7 +211,9 @@ public class MapsService {
                 APIException.INVALID_PARAMETER_VALUE, "Invalid style identifier: " + styleId, HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping(path = "collections/{collectionId}/styles/{styleId}/map/info", name = "getCollectionInfo")
+    @GetMapping(
+            path = {"collections/{collectionId}/styles/{styleId}/map/info", "collections/{collectionId}/map/info"},
+            name = "getCollectionInfo")
     @ResponseBody
     public FeatureInfoResponse info(
             @PathVariable(name = "collectionId") String collectionId,
@@ -251,8 +258,17 @@ public class MapsService {
             String bgcolor)
             throws IOException, FactoryException, ParseException {
         PublishedInfo p = getPublished(collectionId);
-        checkStyle(p, styleId);
-        StyleInfo styleInfo = getCatalog().getStyleByName(styleId);
+        if (styleId != null) {
+            checkStyle(p, styleId);
+        } else {
+            // default style
+            if (p instanceof LayerInfo l) {
+                styleId = l.getDefaultStyle().prefixedName();
+            } else if (p instanceof LayerGroupInfo) {
+                styleId = StyleDocument.DEFAULT_STYLE_NAME;
+            }
+        }
+        StyleInfo styleInfo = styleId != null ? getCatalog().getStyleByName(styleId) : null;
 
         GetMapRequest request = new GetMapRequest();
         request.setBaseUrl(APIRequestInfo.get().getBaseURL());

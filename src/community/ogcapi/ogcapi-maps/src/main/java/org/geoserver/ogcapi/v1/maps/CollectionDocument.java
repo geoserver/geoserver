@@ -6,18 +6,25 @@ package org.geoserver.ogcapi.v1.maps;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIException;
+import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
+import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.LinkInfoConverter;
 import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ogcapi.TimeExtentCalculator;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.WebMap;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -25,11 +32,13 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links"})
 public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo> {
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
+    static final String REL_MAP = "https://www.opengis.net/def/rel/ogc/1.0/map";
 
     PublishedInfo published;
 
@@ -48,7 +57,19 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
 
         addSelfLinks("ogc/maps/v1/collections/" + id);
 
-        // queryables
+        // maps in default style
+        Collection<MediaType> formats = APIRequestInfo.get().getProducibleMediaTypes(WebMap.class, true);
+        String baseUrl = APIRequestInfo.get().getBaseURL();
+        for (MediaType format : formats) {
+            String mapHref = ResponseUtils.buildURL(
+                    baseUrl,
+                    "ogc/maps/v1/collections/" + collectionId + "/map",
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
+            addLink(new Link(mapHref, REL_MAP, format.toString(), collectionId + " map as " + format, "defaultMap"));
+        }
+
+        // styles
         new LinksBuilder(StylesDocument.class, "ogc/maps/v1/collections/")
                 .segment(published.prefixedName(), true)
                 .segment("styles")

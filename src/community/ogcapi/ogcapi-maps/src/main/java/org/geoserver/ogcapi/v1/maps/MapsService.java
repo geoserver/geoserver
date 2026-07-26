@@ -11,11 +11,13 @@ import static org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA
 import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,10 +44,14 @@ import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.DimensionWarning;
+import org.geoserver.util.DimensionWarning.WarningType;
+import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
@@ -77,10 +83,12 @@ public class MapsService {
 
     private final GeoServer geoServer;
     private final WebMapService wms;
+    private final WMS wmsFacade;
 
-    public MapsService(GeoServer geoServer, @Qualifier("wmsService2") WebMapService wms) {
+    public MapsService(GeoServer geoServer, @Qualifier("wmsService2") WebMapService wms, WMS wmsFacade) {
         this.geoServer = geoServer;
         this.wms = wms;
+        this.wmsFacade = wmsFacade;
     }
 
     public WMSInfo getService() {
@@ -225,7 +233,115 @@ public class MapsService {
             if (height != null) request.setHeight(height);
             return new HTMLMap(new WMSMapContent(request));
         }
-        return wms.reflect(request);
+        WebMap map = wms.reflect(request);
+        addContentHeaders(request);
+        return map;
+    }
+
+    /** Sets the OGC API - Maps content headers describing the delivered CRS, extent, orientation and time. */
+    private void addContentHeaders(GetMapRequest request) throws FactoryException {
+        HttpServletResponse response = APIRequestInfo.get().getResponse();
+        if (response == null) return;
+        // the rotation actually applied, in decimal degrees, zero when the map is north up
+        // (/req/orientation/response-headers A)
+        response.setHeader("Content-Orientation", String.valueOf(request.getAngle()));
+        if (request.getBbox() != null) {
+            String[] headers = contentCrsAndBbox(new ReferencedEnvelope(request.getBbox(), request.getCrs()));
+            if (headers[0] != null) response.setHeader("Content-Crs", headers[0]);
+            response.setHeader("Content-Bbox", headers[1]);
+        }
+        String datetime = contentDatetime(request);
+        if (datetime != null) response.setHeader("Content-Datetime", datetime);
+    }
+
+    /**
+     * The {@code Content-Datetime} value: the time as the client asked for it (the parser widens an instant to a range
+     * of its own precision, and the spec also accepts the shortened {@code yyyy} and {@code yyyy-mm} forms). An open
+     * bound is not a datetime, so those requests, and the ones with no time at all, report the instants actually
+     * rendered. Null when the map has no temporal aspect.
+     */
+    private String contentDatetime(GetMapRequest request) {
+        String requested = request.getRawKvp().get("time");
+        if (requested != null && !requested.contains("..") && !requested.startsWith("/") && !requested.endsWith("/")) {
+            // nearest match draws a time the client did not ask for, and the header reports what was drawn
+            Object nearest = nearestTime();
+            return nearest != null ? formatDatetime(nearest) : requested;
+        }
+        Object time = request.getTime() != null && !request.getTime().isEmpty()
+                ? request.getTime().get(0)
+                : getDefaultTime(request);
+        return time != null ? formatDatetime(time) : null;
+    }
+
+    /**
+     * The time nearest match snapped to, read off the warnings the WMS dimension handling collected while rendering.
+     * Null when nearest match is off, or when no value was found within the acceptable interval.
+     */
+    private static Object nearestTime() {
+        return HTTPWarningAppender.getWarnings().stream()
+                .filter(w -> w.getWarningType() == WarningType.Nearest)
+                .filter(w -> ResourceInfo.TIME.equals(w.getDimensionName()))
+                .map(DimensionWarning::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * The time rendered when the request did not ask for one: the dimension default of the first layer having a time
+     * dimension, which the renderer uses in that case. Null when no layer has one, the map then having no temporal
+     * aspect to report.
+     */
+    private Object getDefaultTime(GetMapRequest request) {
+        for (MapLayerInfo layer : request.getLayers()) {
+            ResourceInfo resource = layer.getResource();
+            DimensionInfo dimension = resource.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+            if (dimension != null && dimension.isEnabled()) return wmsFacade.getDefaultTime(resource);
+        }
+        return null;
+    }
+
+    /**
+     * A rendered time as RFC 3339: an instant, or {@code instant/instant} for an interval (OGC API - Maps,
+     * {@code /req/core/map-response}).
+     */
+    private static String formatDatetime(Object time) {
+        if (time instanceof Date date) return ISO_INSTANT.format(date.toInstant());
+        if (time instanceof DateRange range) {
+            return ISO_INSTANT.format(range.getMinValue().toInstant()) + "/"
+                    + ISO_INSTANT.format(range.getMaxValue().toInstant());
+        }
+        return String.valueOf(time);
+    }
+
+    /**
+     * Content-Crs and Content-Bbox header values for a longitude-first delivered envelope: element 0 is the Content-Crs
+     * (null when the CRS has no authority identifier, e.g. a custom projection), element 1 the Content-Bbox in the CRS
+     * authority axis order.
+     */
+    static String[] contentCrsAndBbox(ReferencedEnvelope bbox) throws FactoryException {
+        CoordinateReferenceSystem crs = bbox.getCoordinateReferenceSystem();
+        String identifier = crs != null ? ResourcePool.lookupIdentifier(crs, false) : null;
+        boolean latFirst = false;
+        if (identifier != null) {
+            // the envelope is longitude-first; the header must follow the CRS authority axis order. Decode via the
+            // WMS 1.3.0 SRS so forceXY does not flatten it back to EAST_NORTH (see APIBBoxParser#parseCRS)
+            String srs13 = WMS.toInternalSRS(identifier, WMS.version("1.3.0"));
+            latFirst = CRS.getAxisOrder(CRS.decode(srs13)) == CRS.AxisOrder.NORTH_EAST;
+        }
+        String contentBbox = latFirst
+                ? bbox.getMinY() + "," + bbox.getMinX() + "," + bbox.getMaxY() + "," + bbox.getMaxX()
+                : bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY();
+        return new String[] {identifier != null ? crsUri(identifier) : null, contentBbox};
+    }
+
+    /**
+     * The {@code Content-Crs} value for an authority identifier: the CRS URI between angle brackets, e.g.
+     * {@code <http://www.opengis.net/def/crs/EPSG/0/4326>} for {@code EPSG:4326}, as the header examples of
+     * {@code /req/core/map-response} show.
+     */
+    private static String crsUri(String identifier) {
+        String[] parts = identifier.split(":");
+        return "<http://www.opengis.net/def/crs/" + parts[0] + "/0/" + parts[parts.length - 1] + ">";
     }
 
     /** Query parameters shared by the map operations; hyphenated OGC names cannot be Java fields, hence a carrier. */
@@ -405,11 +521,15 @@ public class MapsService {
                         e);
             }
         }
+        // set both CRS and SRS: wms.reflect() guesses the layer SRS when getSRS() is null, which would silently
+        // overwrite the requested output CRS
         if (region != null) {
             request.setBbox(region);
             request.setCrs(region.getCoordinateReferenceSystem());
+            request.setSRS(CRS.toSRS(region.getCoordinateReferenceSystem()));
         } else if (outputCrs != null) {
             request.setCrs(outputCrs);
+            request.setSRS(CRS.toSRS(outputCrs));
         }
 
         // width/height together with a spatial extent and scale-denominator is an over-constrained request
@@ -437,6 +557,8 @@ public class MapsService {
         Map<String, String> rawParamers = new LinkedHashMap<>();
         if (q.bbox() != null) rawParamers.put("bbox", q.bbox());
         if (q.crs() != null) rawParamers.put("crs", q.crs());
+        // the requested time, kept for the Content-Datetime header: the parsed value is a range even for an instant
+        if (datetime != null) rawParamers.put("time", datetime);
         rawParamers.put("width", String.valueOf(width));
         rawParamers.put("height", String.valueOf(height));
         rawParamers.put("layers", collectionId);

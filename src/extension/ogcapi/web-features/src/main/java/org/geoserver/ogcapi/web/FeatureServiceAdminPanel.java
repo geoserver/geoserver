@@ -10,6 +10,7 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.ogcapi.v1.features.CQL2Conformance;
 import org.geoserver.ogcapi.v1.features.ECQLConformance;
 import org.geoserver.ogcapi.v1.features.FeatureConformance;
+import org.geoserver.web.ogcapi.ConformanceTable;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.wfs.WFSInfo;
 
@@ -48,9 +49,14 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
 
     public FeatureServiceAdminPanel(String id, final IModel<?> info) {
         super(id, info);
-        WFSInfo wfsInfo = (WFSInfo) info.getObject();
-        add(new ConformanceTable("featureConformance", FeatureConformance.configuration(wfsInfo), this));
-        add(new ConformanceTable("cqlConformance", CQL2Conformance.configuration(wfsInfo), this));
-        add(new ConformanceTable("ecqlConformance", ECQLConformance.configuration(wfsInfo), this));
+        // resolve each configuration from the live WFSInfo on access: the service is reloaded per request
+        add(new ConformanceTable(
+                "featureConformance",
+                IModel.of(() -> FeatureConformance.configuration((WFSInfo) info.getObject())),
+                this));
+        add(new ConformanceTable(
+                "cqlConformance", IModel.of(() -> CQL2Conformance.configuration((WFSInfo) info.getObject())), this));
+        add(new ConformanceTable(
+                "ecqlConformance", IModel.of(() -> ECQLConformance.configuration((WFSInfo) info.getObject())), this));
     }
 }

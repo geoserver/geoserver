@@ -108,10 +108,48 @@ public class MapsTest extends MapsTestSupport {
     }
 
     @Test
+    public void testContentHeaders() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse("ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50");
+        assertEquals(200, response.getStatus());
+        assertEquals("-1.0,-1.0,1.0,1.0", response.getHeader("Content-Bbox"));
+        // the map is delivered in CRS84, the default response CRS when the collection declares no storageCrs, so
+        // /req/core/map-response part C leaves it out of the header and part D reads the bbox in it
+        assertNull(response.getHeader("Content-Crs"));
+    }
+
+    @Test
+    public void testOutputCrsBareCode() throws Exception {
+        // the bare EPSG:4326 code is a GeoServer extension over the URI and SafeCURIE forms of the spec, and like
+        // everywhere else in GeoServer it is longitude-first, which makes it CRS84: no header, no axis flip
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-2,-1,2,1&crs=EPSG:4326&width=50&height=50");
+        assertEquals(200, response.getStatus());
+        assertEquals("-2.0,-1.0,2.0,1.0", response.getHeader("Content-Bbox"));
+        assertNull(response.getHeader("Content-Crs"));
+    }
+
+    @Test
     public void testSubsetToBBox() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
                 "ogc/maps/v1/collections/Lakes/map?f=image/png&subset=Lon(1:3),Lat(0:2)&width=50&height=50");
         assertEquals(200, response.getStatus());
+        assertNull(response.getHeader("Content-Crs"));
+        assertEquals("1.0,0.0,3.0,2.0", response.getHeader("Content-Bbox"));
+    }
+
+    @Test
+    public void testOutputCrsReprojection() throws Exception {
+        // the output crs must actually reproject: the delivered CRS is EPSG:3395, not the layer native EPSG:4326
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-2,1,2&crs=EPSG:3395&width=50&height=50");
+        assertEquals(200, response.getStatus());
+        assertEquals("<http://www.opengis.net/def/crs/EPSG/0/3395>", response.getHeader("Content-Crs"));
+        // the bbox is now in metres, and the taller box tells the easting from the northing: one degree of
+        // longitude is 111319 m at the equator, two degrees of latitude 221194 m on the World Mercator ellipsoid
+        String[] ordinates = response.getHeader("Content-Bbox").split(",");
+        assertEquals(111319.49, Double.parseDouble(ordinates[2]), 1.0);
+        assertEquals(221194.85, Double.parseDouble(ordinates[3]), 1.0);
     }
 
     /** A map is flat: the vertical range of a six ordinate bbox is dropped, the map is the horizontal one. */
@@ -132,6 +170,12 @@ public class MapsTest extends MapsTestSupport {
 
     @Test
     public void testOrientation() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50&orientation=45");
+        assertEquals(200, response.getStatus());
+        assertEquals("45.0", response.getHeader("Content-Orientation"));
+        // the extent is the one before the rotation (/req/orientation/response-headers B)
+        assertEquals("-1.0,-1.0,1.0,1.0", response.getHeader("Content-Bbox"));
         BufferedImage image = getAsImage(
                 "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50&orientation=45",
                 "image/png");
@@ -146,6 +190,8 @@ public class MapsTest extends MapsTestSupport {
             MockHttpServletResponse response = getAsServletResponse(
                     "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50&orientation=45");
             assertEquals(200, response.getStatus());
+            // no rotation was applied, so the header reports a north up map
+            assertEquals("0.0", response.getHeader("Content-Orientation"));
         });
     }
 
@@ -226,6 +272,7 @@ public class MapsTest extends MapsTestSupport {
         MockHttpServletResponse response = getAsServletResponse(
                 "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=170,-50,-170,-30&width=50&height=50");
         assertEquals(200, response.getStatus());
+        assertEquals("170.0,-50.0,190.0,-30.0", response.getHeader("Content-Bbox"));
     }
 
     @Test
@@ -335,6 +382,35 @@ public class MapsTest extends MapsTestSupport {
         // an asterisk stands for the earliest and the latest time of the layer own extent
         assertEquals(interval, northEastPixel("subset=time(*:*)"));
         assertEquals(instant, northEastPixel("subset=time(*:\"2012-02-11T00:00:00Z\")"));
+    }
+
+    /**
+     * A layer with a time dimension reports the time actually rendered, also when the request did not ask for one, and
+     * always as an RFC 3339 instant or interval.
+     */
+    @Test
+    public void testContentDatetime() throws Exception {
+        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
+        String base = "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=50&height=50";
+        // an instant is reported as an instant, not as the one second window the parser matches it against
+        assertEquals(
+                "2012-02-11T00:00:00Z",
+                getAsServletResponse(base + "&datetime=2012-02-11T00:00:00Z").getHeader("Content-Datetime"));
+        assertEquals(
+                "2012-02-11T00:00:00Z/2012-02-12T00:00:00Z",
+                getAsServletResponse(base + "&datetime=2012-02-11T00:00:00Z/2012-02-12T00:00:00Z")
+                        .getHeader("Content-Datetime"));
+        // the shortened forms the spec allows are reported as given too
+        assertEquals("2012-02", getAsServletResponse(base + "&datetime=2012-02").getHeader("Content-Datetime"));
+        // an open bound is not a datetime, so the end of the layer extent it resolved to is reported instead
+        assertEquals(
+                "2012-02-11T00:00:00Z/2012-02-14T00:00:00.999Z",
+                getAsServletResponse(base + "&datetime=2012-02-11T00:00:00Z/..").getHeader("Content-Datetime"));
+        // no datetime: the dimension default the renderer used, here the latest time of the layer
+        assertEquals("2012-02-12T00:00:00Z", getAsServletResponse(base).getHeader("Content-Datetime"));
+        // a layer with no time dimension has no temporal aspect to report
+        assertNull(getAsServletResponse("ogc/maps/v1/collections/Lakes/map?f=image/png&width=50&height=50")
+                .getHeader("Content-Datetime"));
     }
 
     /** The datetime parameter takes the same open-ended intervals, written with the OGC double dot. */

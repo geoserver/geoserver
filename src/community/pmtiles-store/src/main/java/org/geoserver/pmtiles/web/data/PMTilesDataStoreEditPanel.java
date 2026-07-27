@@ -4,12 +4,12 @@
  */
 package org.geoserver.pmtiles.web.data;
 
-import static org.geotools.tileverse.rangereader.RangeReaderParams.MEMORY_CACHE_BLOCK_SIZE;
 import static org.geotools.tileverse.rangereader.RangeReaderParams.RANGEREADER_PROVIDER_ID;
 import static org.geotools.tileverse.rangereader.RangeReaderParams.S3_AWS_REGION;
 
-import io.tileverse.rangereader.spi.RangeReaderConfig;
+import io.tileverse.storage.StorageConfig;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,15 +24,19 @@ import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.danekja.java.util.function.serializable.SerializableFunction;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.data.store.DataAccessEditPage;
+import org.geoserver.web.data.store.DataAccessNewPage;
 import org.geoserver.web.data.store.DefaultDataStoreEditPanel;
 import org.geoserver.web.data.store.ParamInfo;
+import org.geoserver.web.data.store.panel.ParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.geotools.api.data.DataAccessFactory.Param;
 import org.geotools.pmtiles.store.PMTilesDataStoreFactory;
-import org.springframework.util.unit.DataSize;
 
 /**
  * Specific edit panel for Protomaps PMTiles data stores.
@@ -41,6 +45,8 @@ import org.springframework.util.unit.DataSize;
  */
 @SuppressWarnings("serial")
 public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
+
+    private static final Set<String> ALWAYS_VISIBLE_PARAMS = Set.of("namespace", "pmtiles", "storage.provider");
 
     private Map<String, Panel> visiblePanelsPerProviderId = new HashMap<>();
 
@@ -62,18 +68,41 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
     protected void onBeforeRender() {
         DataStoreInfo storeInfo = (DataStoreInfo) super.storeEditForm.getModelObject();
         Map<String, Serializable> params = storeInfo.getConnectionParameters();
-        // Translate forward-compatible storage.* keys (canonical in tileverse 2.x) to the canonical
-        // io.tileverse.rangereader.* form in place so Wicket MapModel widgets, which are bound to the
-        // factory's canonical Param.key, populate correctly for stores persisted by a future
-        // GeoServer 3.1+/tileverse 2.0 consumer.
-        Map<String, Serializable> rewritten = new LinkedHashMap<>(params.size());
-        params.forEach((k, v) -> rewritten.put(RangeReaderConfig.normalizeKey(k), v));
-        params.clear();
-        params.putAll(rewritten);
+        rewriteLegacyKeys(params);
+        alignNamespaceWithWorkspace(storeInfo);
 
         super.onBeforeRender();
         String providerId = (String) params.get(RANGEREADER_PROVIDER_ID.key);
         sendEvent(new RangeReaderChangedEvent(providerId, null));
+    }
+
+    /**
+     * Forces the namespace connection parameter to the store's workspace namespace. GeoServer keeps the namespace in
+     * step with the workspace only when the workspace dropdown is changed; on the workspace-scoped "Add new store" flow
+     * the workspace is pre-selected and never fires that change, leaving the namespace seeded from the default
+     * workspace. A store saved that way reads over WMS but fails WFS GetFeature, whose catalog lookup is keyed by the
+     * namespace. Re-deriving the namespace from the workspace on every render keeps the store correct regardless, and
+     * matches GeoServer's own intent that the namespace follows the workspace.
+     */
+    private void alignNamespaceWithWorkspace(DataStoreInfo storeInfo) {
+        WorkspaceInfo workspace = storeInfo.getWorkspace();
+        if (workspace == null) {
+            return;
+        }
+        NamespaceInfo namespace = GeoServerApplication.get().getCatalog().getNamespaceByPrefix(workspace.getName());
+        if (namespace == null) {
+            return;
+        }
+        storeInfo.getConnectionParameters().put("namespace", namespace.getURI());
+    }
+
+    /**
+     * Called by {@link DataAccessEditPage} and {@link DataAccessNewPage} to determine whether to apply and save
+     * changes. Overriding to discourage
+     */
+    @Override
+    public boolean onSave() {
+        return true;
     }
 
     /**
@@ -104,15 +133,31 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
             panel = rangeReaderProvider(componentId, paramsModel, paramMetadata);
         } else if (paramName.equals(S3_AWS_REGION.key)) {
             panel = awsRegion(componentId, paramsModel, paramMetadata);
-        } else if (paramName.equals(MEMORY_CACHE_BLOCK_SIZE.key)) {
-            panel = memoryCacheBlockSize(componentId, paramsModel, paramMetadata);
         } else {
             panel = super.getInputComponent(componentId, paramsModel, paramMetadata);
+            keepUriParamsAsPlainStrings(panel, paramMetadata);
         }
-        this.visiblePanelsPerProviderId.put(paramName, panel);
         panel.setOutputMarkupId(true);
-        panel.setOutputMarkupPlaceholderTag(true); // required to toggle visibility
+        // Only the provider-dependent parameters take part in the show/hide toggle. The always-visible core
+        // parameters are left to the base panel; in particular this keeps the namespace field under GeoServer's
+        // own namespace-follows-workspace synchronization.
+        if (!ALWAYS_VISIBLE_PARAMS.contains(paramName)) {
+            panel.setOutputMarkupPlaceholderTag(true); // required to toggle visibility
+            this.visiblePanelsPerProviderId.put(paramName, panel);
+        }
         return panel;
+    }
+
+    /**
+     * GeoServer's application-wide Wicket converter for {@link URI} ({@code DataDirectoryConverterLocator}) resolves
+     * submitted values as files in the data directory and converts anything else to null, silently dropping http
+     * endpoints like {@code storage.s3.endpoint} on save. Keep URI-typed params as plain strings; the factory converts
+     * them when connecting.
+     */
+    private void keepUriParamsAsPlainStrings(Panel panel, ParamInfo paramMetadata) {
+        if (URI.class.equals(paramMetadata.getBinding()) && panel instanceof ParamPanel<?> paramPanel) {
+            paramPanel.getFormComponent().setType(String.class);
+        }
     }
 
     @Override
@@ -129,31 +174,39 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
 
     private void applyVisibility(String paramName, Panel paramPanel, RangeReaderChangedEvent event) {
         final String providerId = event.providerId() == null ? "" : event.providerId();
-        final Set<String> alwaysVisible = Set.of("namespace", "pmtiles", "io.tileverse.rangereader.provider");
         final Set<String> cacheable = Set.of("http", "s3", "gcs", "azure");
 
-        if (alwaysVisible.contains(paramName)) {
-            return;
-        }
         boolean visible = false;
-        if (paramName.startsWith("io.tileverse.rangereader.caching")) {
+        if (paramName.startsWith("storage.caching.")) {
             visible = cacheable.contains(providerId);
         } else if ("s3".equals(providerId)) {
-            visible = paramName.startsWith("io.tileverse.rangereader.s3.");
+            visible = paramName.startsWith("storage.s3.");
         } else if ("azure".equals(providerId)) {
-            visible = paramName.startsWith("io.tileverse.rangereader.azure.");
+            visible = paramName.startsWith("storage.azure.");
         } else if ("gcs".equals(providerId)) {
-            visible = paramName.startsWith("io.tileverse.rangereader.gcs.");
+            visible = paramName.startsWith("storage.gcs.");
         } else if ("http".equals(providerId)) {
-            visible = paramName.startsWith("io.tileverse.rangereader.http.");
+            visible = paramName.startsWith("storage.http.");
         } else if ("file".equals(providerId)) {
-            visible = paramName.startsWith("io.tileverse.rangereader.file.");
+            visible = paramName.startsWith("storage.file.");
         }
 
         paramPanel.setVisible(visible);
         if (event.target() != null) {
             event.target().add(paramPanel);
         }
+    }
+
+    /**
+     * Rewrite any legacy {@code io.tileverse.rangereader.*} keys into the canonical {storage.*} form, in place; Wicket
+     * MapModel widgets are keyed off the factory's short {@code Param.key} and would otherwise miss values persisted in
+     * pre-migration GeoServer catalogs.
+     */
+    static void rewriteLegacyKeys(Map<String, Serializable> params) {
+        Map<String, Serializable> rewritten = new LinkedHashMap<>(params.size());
+        params.forEach((k, v) -> rewritten.put(StorageConfig.normalizeKey(k), v));
+        params.clear();
+        params.putAll(rewritten);
     }
 
     private Select2ChoiceParamPanel<String> awsRegion(
@@ -169,56 +222,6 @@ public class PMTilesDataStoreEditPanel extends DefaultDataStoreEditPanel {
         return Select2ChoiceParamPanel.ofStrings(componentId, labelModel, model, options)
                 .allowCustomValues(true)
                 .setPlaceHolder("us-east-1");
-    }
-
-    private Select2ChoiceParamPanel<Integer> memoryCacheBlockSize(
-            String componentId, IModel<Map<String, Serializable>> paramsModel, ParamInfo paramMetadata) {
-        String paramName = paramMetadata.getName();
-        IModel<String> labelModel = new ResourceModel(paramName, paramName);
-        IModel<Integer> model = new IntegerModel(new MapModel<>(paramsModel, paramName));
-        List<Integer> options = paramMetadata.getOptions().stream()
-                .map(opt -> Integer.valueOf(String.valueOf(opt)))
-                .toList();
-        SerializableFunction<Integer, String> displayFunction =
-                i -> DataSize.ofBytes(i).toKilobytes() + "KB";
-        return Select2ChoiceParamPanel.of(componentId, labelModel, model, options, displayFunction)
-                .allowCustomValues(false)
-                .setPlaceHolder(16384);
-    }
-
-    static class IntegerModel implements IModel<Integer> {
-
-        private IModel<Serializable> baseModel;
-
-        IntegerModel(IModel<Serializable> baseModel) {
-            this.baseModel = baseModel;
-        }
-
-        @Override
-        public Integer getObject() {
-            Serializable object = baseModel.getObject();
-            if (object == null) {
-                return null;
-            }
-            if (object instanceof Integer i) {
-                return i;
-            }
-            return Integer.valueOf(String.valueOf(object));
-        }
-
-        @Override
-        public void setObject(final Integer object) {
-            if (object == null) {
-                baseModel.setObject(null);
-            } else {
-                baseModel.setObject(String.valueOf(object));
-            }
-        }
-
-        @Override
-        public void detach() {
-            baseModel.detach();
-        }
     }
 
     private RadioGroupParamPanel<String> rangeReaderProvider(

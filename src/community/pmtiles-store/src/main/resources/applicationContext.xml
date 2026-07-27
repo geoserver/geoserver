@@ -13,9 +13,12 @@
     directory.
   -->
 
-   <!-- load from PMTilesStoreConfiguration -->
-  <context:component-scan base-package="org.geoserver.pmtiles.data"/>
-  <context:component-scan base-package="org.geoserver.pmtiles.web.data"/>
+  <context:annotation-config/>
+
+  <!-- load from PMTilesStoreConfiguration -->
+  <bean class="org.geoserver.pmtiles.data.PMTilesPluginConfiguration"/>
+  <bean class="org.geoserver.pmtiles.data.PMTilesWmsIntegrationConfiguration"/>
+  <bean class="org.geoserver.pmtiles.web.data.PMTilesWebUIConfiguration"/>
 
   <bean id="pmtilesStoreExtension"
         class="org.geoserver.platform.ModuleStatusImpl">
@@ -24,6 +27,5 @@
         <property name="component" value="PMTiles Plugin" />
         <property name="available" value="true" />
         <property name="enabled" value="true" />
-        <property name="category" value="COMMUNITY"/>
   </bean>
 </beans>

@@ -17,10 +17,13 @@ ul:has(li[data-wicket-placeholder]) {
     display: flex;
     margin-bottom: 0px;
     overflow: hidden;
+    /* lets the @container rule below react to the group's own width */
+    container-type: inline-size;
 }
 
 .radio-group-param ul{
     display: flex;
+    flex-wrap: wrap;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -48,6 +51,7 @@ ul:has(li[data-wicket-placeholder]) {
     box-shadow: none;
     transition: all 0.1s ease-in-out;
     display: inline-block; /* Ensures padding and margin work correctly */
+    white-space: nowrap; /* Never wrap a button's text; narrow widths stack the buttons instead */
 }
 
 .radio-group-param ul li label:hover {
@@ -93,4 +97,29 @@ input[type="radio"]:checked[class~="rw"] + label  {
 
 .radio-group-param ul li:last-child label {
     border-radius: 0 4px 4px 0;
+}
+
+/*
+ * When the group gets too narrow for a single row, stack the buttons
+ * vertically instead of wrapping their text.
+ * Note: @container has good browser support since early 2023.
+ */
+@container (max-width: 400px) {
+    .radio-group-param ul {
+        flex-direction: column;
+    }
+
+    .radio-group-param ul li label {
+        display: block;
+        margin-right: 0;
+        margin-bottom: -1px; /* Overlap borders vertically, as margin-right does in row mode */
+    }
+
+    .radio-group-param ul li:first-child label {
+        border-radius: 4px 4px 0 0;
+    }
+
+    .radio-group-param ul li:last-child label {
+        border-radius: 0 0 4px 4px;
+    }
 }
